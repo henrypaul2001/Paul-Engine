@@ -130,7 +130,7 @@
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
-    <ClInclude Include="IComponent.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SystemManager.h" />
@@ -139,7 +139,7 @@
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
-    <ClCompile Include="IComponent.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SystemManager.cpp" />

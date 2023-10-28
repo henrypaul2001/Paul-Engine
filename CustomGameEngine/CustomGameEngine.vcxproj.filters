@@ -51,7 +51,7 @@
     <ClInclude Include="ComponentTransform.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="IComponent.h">
+    <ClInclude Include="Component.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="EntityManager.h">
@@ -77,7 +77,7 @@
     <ClCompile Include="ComponentTransform.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="IComponent.cpp">
+    <ClCompile Include="Component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
