@@ -10,7 +10,12 @@ namespace Engine
 
 	void SystemManager::ActionSystems(EntityManager& entityManager)
 	{
-		
+		std::vector<Entity>* entityList = &entityManager.Entities();
+		for (System& s : systemList) {
+			for (Entity& e : *entityList) {
+				s.OnAction(e);
+			}
+		}
 	}
 
 	void SystemManager::AddSystem(System& system)
