@@ -8,15 +8,15 @@ namespace Engine
 	class SystemManager
 	{
 	private:
-		std::vector<System> systemList;
+		std::vector<System*> systemList;
 		System* FindSystem(std::string name);
 
 	public:
 		SystemManager();
 		~SystemManager();
 
-		void ActionSystems(EntityManager& entityManager);
-		void AddSystem(System& system);
+		void ActionSystems(EntityManager* entityManager);
+		void AddSystem(System* system);
 	};
 }
 

@@ -11,16 +11,16 @@ namespace Engine
 		delete& mask;
 	}
 
-	void Entity::AddComponent(Component& component) {
+	void Entity::AddComponent(Component* component) {
 		_ASSERT(&component != nullptr, "Component cannot be null");
 
 		componentList.push_back(component);
-		mask |= component.ComponentType();
+		mask |= component->ComponentType();
 	}
 
 	void Entity::Close() {
-		for (Component& c : componentList) {
-			c.Close();
+		for (Component* c : componentList) {
+			c->Close();
 		}
 	}
 }

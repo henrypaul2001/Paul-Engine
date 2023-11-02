@@ -6,7 +6,7 @@ namespace Engine
 	class System
 	{
 	public:
-		virtual void OnAction(Entity& entity) = 0;
+		virtual void OnAction(Entity* entity) = 0;
 		virtual std::string Name() = 0;
 	};
 }

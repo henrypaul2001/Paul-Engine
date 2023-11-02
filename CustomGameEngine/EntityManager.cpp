@@ -9,18 +9,18 @@ namespace Engine
 		delete& entityList;
 	}
 
-	void EntityManager::AddEntity(Entity& entity)
+	void EntityManager::AddEntity(Entity* entity)
 	{
-		Entity* result = FindEntity(entity.Name());
+		Entity* result = FindEntity(entity->Name());
 		_ASSERT(result == nullptr, "Entity '" + entity.Name() + "' already exists");
 		entityList.push_back(entity);
 	}
 
 	Entity* EntityManager::FindEntity(std::string name)
 	{
-		for (Entity& e : entityList) {
-			if (e.Name() == name) {
-				return &e;
+		for (Entity* e : entityList) {
+			if (e->Name() == name) {
+				return e;
 			}
 		}
 
@@ -29,8 +29,8 @@ namespace Engine
 
 	void EntityManager::Close()
 	{
-		for (Entity& e : entityList) {
-			e.Close();
+		for (Entity* e : entityList) {
+			e->Close();
 		}
 	}
 }

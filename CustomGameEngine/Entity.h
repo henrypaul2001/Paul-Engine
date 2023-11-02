@@ -8,7 +8,7 @@ namespace Engine
 	{
 	private:
 		std::string name;
-		std::vector<Component> componentList;
+		std::vector<Component*> componentList;
 		ComponentTypes mask;
 
 	public:
@@ -17,9 +17,9 @@ namespace Engine
 
 		std::string& Name() { return name; }
 		ComponentTypes& Mask() { return mask; }
-		std::vector<Component>& Components() { return componentList; }
+		std::vector<Component*>& Components() { return componentList; }
 
-		void AddComponent(Component& component);
+		void AddComponent(Component* component);
 		void Close();
 	};
 }
