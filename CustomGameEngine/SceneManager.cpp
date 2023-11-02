@@ -15,4 +15,23 @@ namespace Engine
 		delete& keyboardDownDelegate;
 		delete& mouseDelegate;
 	}
+
+	void SceneManager::OnLoad() {
+		// OpenGL setup
+
+		// Load GUI
+
+		StartMenu();
+	}
+
+	void SceneManager::OnUpdateFrame() {
+		updater();
+	}
+
+	void SceneManager::OnRenderFrame() {
+		renderer();
+
+		// GL flush
+		// Swap buffers
+	}
 }

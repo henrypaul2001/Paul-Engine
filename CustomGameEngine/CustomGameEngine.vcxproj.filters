@@ -13,99 +13,123 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Components">
-      <UniqueIdentifier>{ce4c140f-d332-4122-a851-29025cac26cf}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{8923e1ec-fb1d-4a9b-9f39-d46b6effc659}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Managers">
-      <UniqueIdentifier>{fb8fd4f1-2c0d-4e23-ab62-f72fd78c5d51}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Objects">
-      <UniqueIdentifier>{c14a281b-407e-47e2-8010-c3c39a632926}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Scenes">
-      <UniqueIdentifier>{73f21fcc-e4fa-476b-b863-96157b0a1c2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Systems">
-      <UniqueIdentifier>{af6b515d-d520-48ce-b102-f58237195829}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Components">
-      <UniqueIdentifier>{59776547-084a-4e1c-9ba0-8bd39b743b6c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Systems">
+    <Filter Include="Source Files\Engine\Systems">
       <UniqueIdentifier>{8cf85346-c9a1-47e6-9bc3-34c1421ecc06}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Objects">
+    <Filter Include="Source Files\Engine\Managers">
+      <UniqueIdentifier>{4ce19bdf-a226-47ac-8cda-d1606c0eeb6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Objects">
       <UniqueIdentifier>{db5142c4-9d07-43e1-a287-2a2dfd7dc70f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Scenes">
+    <Filter Include="Source Files\Engine\Scenes">
       <UniqueIdentifier>{94c32e91-5949-4405-b99d-8b9a6727d676}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Managers">
-      <UniqueIdentifier>{4ce19bdf-a226-47ac-8cda-d1606c0eeb6e}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine\Components">
+      <UniqueIdentifier>{59776547-084a-4e1c-9ba0-8bd39b743b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{4fe86ddb-9a16-4127-a255-8cd5af566904}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Components">
+      <UniqueIdentifier>{ce4c140f-d332-4122-a851-29025cac26cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Managers">
+      <UniqueIdentifier>{fb8fd4f1-2c0d-4e23-ab62-f72fd78c5d51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Objects">
+      <UniqueIdentifier>{c14a281b-407e-47e2-8010-c3c39a632926}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Scenes">
+      <UniqueIdentifier>{73f21fcc-e4fa-476b-b863-96157b0a1c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Systems">
+      <UniqueIdentifier>{af6b515d-d520-48ce-b102-f58237195829}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{9677f4e1-14fa-4625-a33f-76845ebb6fc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{abc1d0a2-7cd0-489c-b0f7-c8e2b3e504c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Managers">
+      <UniqueIdentifier>{b8d48292-cbcb-4079-a666-43cbf1a420dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Scenes">
+      <UniqueIdentifier>{4cefeaf9-45c9-421d-be00-aa7284111b5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Managers">
+      <UniqueIdentifier>{00a904db-68ba-482f-9b1f-54b01975cf5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Scenes">
+      <UniqueIdentifier>{fba4d923-a0ed-4c22-a40a-8bff095a1702}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
-      <Filter>Header Files\Objects</Filter>
+      <Filter>Header Files\Engine\Objects</Filter>
     </ClInclude>
     <ClInclude Include="ComponentTransform.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="Component.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="EntityManager.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
     <ClInclude Include="SystemManager.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Header Files\Scenes</Filter>
+      <Filter>Header Files\Engine\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="System.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="SystemPhysics.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="ComponentVelocity.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
-      <Filter>Source Files\Managers</Filter>
+      <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>Source Files\Managers</Filter>
+      <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
     <ClCompile Include="ComponentTransform.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Source Files\Scenes</Filter>
+      <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\Objects</Filter>
+      <Filter>Source Files\Engine\Objects</Filter>
     </ClCompile>
     <ClCompile Include="EntityManager.cpp">
-      <Filter>Source Files\Managers</Filter>
+      <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="SystemPhysics.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="ComponentVelocity.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

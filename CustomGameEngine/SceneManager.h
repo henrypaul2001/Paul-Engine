@@ -9,6 +9,10 @@ namespace Engine
 
 	class SceneManager
 	{
+	protected:
+		void OnLoad();
+		void OnUpdateFrame();
+		void OnRenderFrame();
 	public:
 		static int width;
 		static int height;
