@@ -1,6 +1,7 @@
 #include "SystemPhysics.h"
 #include "Scene.h"
 #include <algorithm>
+#include <iostream>
 namespace Engine 
 {
 	SystemPhysics::SystemPhysics() {}
@@ -31,6 +32,7 @@ namespace Engine
 				}
 			}
 
+			std::cout << entity->Name();
 			Motion(transform, velocity);
 		}
 	}
@@ -39,5 +41,7 @@ namespace Engine
 	{
 		transform->SetLastPosition(transform->Position());
 		transform->SetPosition(transform->Position() + velocity->Velocity() * Scene::dt);
+		std::cout << " position: " << transform->Position().x << ", " << transform->Position().y << ", " << transform->Position().z << ". last position: " << transform->LastPosition().x 
+			<< ", " << transform->LastPosition().y << ", " << transform->LastPosition().z << std::endl;
 	}
 }

@@ -19,7 +19,7 @@ namespace Engine
 	class SceneManager
 	{
 	protected:
-		void OnLoad();
+		void OnLoadTemp();
 		void OnUpdateFrame();
 		void OnRenderFrame();
 

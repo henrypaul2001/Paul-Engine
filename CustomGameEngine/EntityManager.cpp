@@ -6,7 +6,6 @@ namespace Engine
 	EntityManager::~EntityManager()
 	{
 		Close();
-		delete& entityList;
 	}
 
 	void EntityManager::AddEntity(Entity* entity)
@@ -31,6 +30,7 @@ namespace Engine
 	{
 		for (Entity* e : entityList) {
 			e->Close();
+			delete e;
 		}
 	}
 }

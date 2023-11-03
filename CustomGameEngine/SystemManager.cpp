@@ -5,7 +5,6 @@ namespace Engine
 
 	SystemManager::~SystemManager()
 	{
-		delete& systemList;
 	}
 
 	void SystemManager::ActionSystems(EntityManager* entityManager)
@@ -21,7 +20,7 @@ namespace Engine
 	void SystemManager::AddSystem(System* system)
 	{
 		System* result = FindSystem(system->Name());
-		_ASSERT(result != nullptr, "System '" + system.Name() + "' already exists");
+		_ASSERT(result == nullptr, "System '" + system.Name() + "' already exists");
 		systemList.push_back(system);
 	}
 

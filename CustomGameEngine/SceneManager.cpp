@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include <chrono>
 #include <thread>
+#include <iostream>
 namespace Engine
 {
 	int SceneManager::width;
@@ -15,26 +16,22 @@ namespace Engine
 		this->height = height;
 		this->windowXPos = windowXPos;
 		this->windowYPos = windowYPos;
-		OnLoad();
+		OnLoadTemp();
 	}
 
 	SceneManager::~SceneManager() 
 	{
-		delete& renderer;
-		delete& updater;
-		delete& keyboardUpDelegate;
-		delete& keyboardDownDelegate;
-		delete& mouseDelegate;
+
 	}
 
-	void SceneManager::OnLoad() 
+	void SceneManager::OnLoadTemp() 
 	{
 		// OpenGL setup
 
 		// Load GUI
 
 		//gameIsRunning = true;
-		StartNewGame();
+		std::cout << "Onload\n";
 	}
 
 	void SceneManager::OnUpdateFrame() 
@@ -53,14 +50,19 @@ namespace Engine
 	void SceneManager::Run() 
 	{
 		// Temporary "game loop" standing in for future OpenGL game loop
+		std::cout << "Starting new game\n";
+		StartNewGame();
+
 		const double targetFrameTime = 1.0 / 60.0;
 		auto startTime = std::chrono::high_resolution_clock::now();
 		auto previousTime = startTime;
 		auto currentTime = startTime;
-		while ((currentTime - startTime).count() > 10.0)
+		//currentTime - startTime).count() < std::chrono::seconds(10).count()
+		while (true)
 		{
 			currentTime = std::chrono::high_resolution_clock::now();
-			Scene::dt = (currentTime - previousTime).count();
+			std::chrono::duration<float, std::milli> duration = currentTime - previousTime;
+			Scene::dt = duration.count();
 
 			OnUpdateFrame();
 			OnRenderFrame();

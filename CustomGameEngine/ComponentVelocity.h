@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 namespace Engine
 {
-	class ComponentVelocity : Component
+	class ComponentVelocity : public Component
 	{
 	private:
 		glm::vec3 velocity;

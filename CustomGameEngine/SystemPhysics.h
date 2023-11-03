@@ -5,7 +5,7 @@
 #include "ComponentVelocity.h"
 namespace Engine 
 {
-	class SystemPhysics : System
+	class SystemPhysics : public System
 	{
 	private:
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_VELOCITY);

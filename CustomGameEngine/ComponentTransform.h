@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 namespace Engine
 {
-	class ComponentTransform : Component
+	class ComponentTransform : public Component
 	{
 	private:
 		glm::vec3 position;

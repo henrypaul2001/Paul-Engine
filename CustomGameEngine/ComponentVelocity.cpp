@@ -13,7 +13,6 @@ namespace Engine
 
 	ComponentVelocity::~ComponentVelocity()
 	{
-		Close();
 		delete& velocity;
 	}
 

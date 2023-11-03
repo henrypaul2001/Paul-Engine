@@ -16,7 +16,6 @@ namespace Engine
 	}
 
 	ComponentTransform::~ComponentTransform() {
-		Close();
 		delete& position;
 		delete& lastPosition;
 		delete& rotation;
