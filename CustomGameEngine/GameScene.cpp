@@ -37,7 +37,6 @@ namespace Engine
 
 	void GameScene::Update()
 	{
-
 	}
 
 	void GameScene::Render()

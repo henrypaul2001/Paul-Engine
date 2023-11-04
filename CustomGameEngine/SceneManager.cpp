@@ -53,24 +53,39 @@ namespace Engine
 		std::cout << "Starting new game\n";
 		StartNewGame();
 
-		const double targetFrameTime = 1.0 / 60.0;
+		const double targetFrameTime = (1.0 / 60.0) / 1.2;
 		auto startTime = std::chrono::high_resolution_clock::now();
 		auto previousTime = startTime;
 		auto currentTime = startTime;
-		//currentTime - startTime).count() < std::chrono::seconds(10).count()
+		
 		while (true)
 		{
 			currentTime = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<float, std::milli> duration = currentTime - previousTime;
-			Scene::dt = duration.count();
+			std::chrono::duration<float> timeStep = currentTime - previousTime;
+			//std::chrono::duration<float, std::milli> duration = currentTime - previousTime;
+			Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;
 
 			OnUpdateFrame();
 			OnRenderFrame();
 
-			double sleepTime = targetFrameTime - (std::chrono::high_resolution_clock::now() - currentTime).count();
-			if (sleepTime > 0) {
-				std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
+			previousTime = currentTime;
+			//std::cout << "FPS: " << (1.0f / Scene::dt) << std::endl;
+
+			auto endTime = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> frameDuration = endTime - currentTime;
+			std::chrono::duration<double> remainingTime = std::chrono::duration<double>(targetFrameTime) - frameDuration;
+
+			if (remainingTime.count() > 0) {
+				std::this_thread::sleep_for(remainingTime);
 			}
+			/*
+			auto nextFrameTime = currentTime + std::chrono::nanoseconds(16666667);
+			// Sleep until nextFrameTime
+			auto sleepDuration = nextFrameTime - std::chrono::high_resolution_clock::now();
+			if (sleepDuration > std::chrono::nanoseconds(0)) {
+				std::this_thread::sleep_for(sleepDuration);
+			}
+			*/
 		}
 	}
 }
