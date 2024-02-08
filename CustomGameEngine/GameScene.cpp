@@ -37,16 +37,17 @@ namespace Engine
 
 	void GameScene::Update()
 	{
+		systemManager.ActionSystems(&entityManager);
 	}
 
 	void GameScene::Render()
 	{
-		systemManager.ActionSystems(&entityManager);
+		//systemManager.ActionSystems(&entityManager);
 	}
 
 	void GameScene::Close()
 	{
-		std::cout << "Closing game scene\n";
+		std::cout << "Closing game scene" << std::endl;
 		delete this;
 	}
 }

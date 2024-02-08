@@ -19,12 +19,12 @@ namespace Engine
 		OnLoadTemp();
 	}
 
-	SceneManager::~SceneManager() 
+	SceneManager::~SceneManager()
 	{
 
 	}
 
-	void SceneManager::OnLoadTemp() 
+	void SceneManager::OnLoadTemp()
 	{
 		// OpenGL setup
 
@@ -34,12 +34,12 @@ namespace Engine
 		std::cout << "Onload\n";
 	}
 
-	void SceneManager::OnUpdateFrame() 
+	void SceneManager::OnUpdateFrame()
 	{
 		updater();
 	}
 
-	void SceneManager::OnRenderFrame() 
+	void SceneManager::OnRenderFrame()
 	{
 		renderer();
 
@@ -47,7 +47,7 @@ namespace Engine
 		// Swap buffers
 	}
 
-	void SceneManager::Run() 
+	void SceneManager::Run()
 	{
 		// Temporary "game loop" standing in for future OpenGL game loop
 		std::cout << "Starting new game\n";
@@ -65,8 +65,18 @@ namespace Engine
 			//std::chrono::duration<float, std::milli> duration = currentTime - previousTime;
 			Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;
 
+			// Process inputs
+
+
+			// Update scene
 			OnUpdateFrame();
+
+			// Render scene
 			OnRenderFrame();
+
+			// Poll events
+
+			// Prepare for next frame
 
 			previousTime = currentTime;
 			//std::cout << "FPS: " << (1.0f / Scene::dt) << std::endl;
@@ -87,5 +97,10 @@ namespace Engine
 			}
 			*/
 		}
+	}
+
+	void SceneManager::UpdateKeyCallback(GLFWwindow* window, GLFWkeyfun callback)
+	{
+		glfwSetKeyCallback(window, callback);
 	}
 }

@@ -1,7 +1,7 @@
 #include "GameSceneManager.h"
 #include "GameScene.h"
 #include <iostream>
-namespace Engine 
+namespace Engine
 {
 	GameSceneManager::GameSceneManager(int width, int height, int windowXPos, int windowYPos) : SceneManager(width, height, windowXPos, windowYPos)
 	{
@@ -14,10 +14,10 @@ namespace Engine
 
 	void GameSceneManager::ChangeScene(SceneTypes sceneType)
 	{
-		std::cout << "Checking if current scene exists\n";
+		std::cout << "Checking if current scene exists" << std::endl;
 		if (this->scene != nullptr) { scene->Close(); }
 
-		std::cout << "Attempting to create scene\n";
+		std::cout << "Attempting to create scene" << std::endl;
 		Scene* newScene{};
 		switch (sceneType) {
 		case SCENE_MAIN_MENU:
@@ -34,7 +34,7 @@ namespace Engine
 			newScene = nullptr;
 			break;
 		}
-		std::cout << "Scene '" << sceneType << "' created\n";
+		std::cout << "Scene '" << sceneType << "' created" << std::endl;
 		scene = newScene;
 	}
 

@@ -1,9 +1,9 @@
 #pragma once
 #include <functional>
+#include "Scene.h"
+#include <GLFW/glfw3.h>
 namespace Engine
 {
-	class Scene;
-
 	enum SceneTypes {
 		SCENE_NONE,
 		SCENE_MAIN_MENU,
@@ -13,8 +13,10 @@ namespace Engine
 	};
 
 	using SceneDelegate = std::function<void()>;
-	using KeyboardDelegate = std::function<void()>;
 	using MouseDelegate = std::function<void()>;
+
+	typedef void (*KeyCallbackFunction)(GLFWwindow*, int, int, int, int);
+	using KeyboardDelegate = std::function<void(GLFWwindow*, int, int, int, int)>;
 
 	class SceneManager
 	{
@@ -38,10 +40,11 @@ namespace Engine
 		SceneDelegate renderer;
 		SceneDelegate updater;
 
-		KeyboardDelegate keyboardDownDelegate;
-		KeyboardDelegate keyboardUpDelegate;
+		//KeyboardDelegate keyDelegate;
 
 		MouseDelegate mouseDelegate;
+
+		void UpdateKeyCallback(GLFWwindow* window, GLFWkeyfun callback);
 
 		virtual void StartNewGame() = 0;
 		virtual void StartMenu() = 0;
