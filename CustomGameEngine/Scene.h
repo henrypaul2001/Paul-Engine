@@ -15,5 +15,6 @@ namespace Engine
 		virtual void Render() = 0;
 		virtual void Update() = 0;
 		virtual void Close() = 0;
+		virtual void SetupScene() = 0;
 	};
 }

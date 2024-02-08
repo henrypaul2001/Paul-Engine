@@ -11,14 +11,30 @@ namespace Engine
 		entityManager = EntityManager();
 		systemManager = SystemManager();
 
-		CreateEntities();
-		CreateSystems();
+		SetupScene();
 	}
 
 	GameScene::~GameScene()
 	{
 		delete& entityManager;
 		delete& systemManager;
+	}
+
+	void GameScene::SetupScene()
+	{
+		// Configure GL global state
+		glEnable(GL_DEPTH_TEST);
+
+		// Set-up framebuffers
+
+		// Compile shaders
+
+		// Configure shaders
+
+		// Prepare scene
+
+		CreateEntities();
+		CreateSystems();
 	}
 
 	void GameScene::CreateEntities()
@@ -42,12 +58,10 @@ namespace Engine
 
 	void GameScene::Render()
 	{
-		//systemManager.ActionSystems(&entityManager);
 	}
 
 	void GameScene::Close()
 	{
 		std::cout << "Closing game scene" << std::endl;
-		delete this;
 	}
 }

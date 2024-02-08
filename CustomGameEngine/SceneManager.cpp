@@ -1,22 +1,16 @@
 #include "SceneManager.h"
 #include "Scene.h"
-#include <chrono>
 #include <thread>
 #include <iostream>
 namespace Engine
 {
-	int SceneManager::width;
-	int SceneManager::height;
-	int SceneManager::windowXPos;
-	int SceneManager::windowYPos;
-
 	SceneManager::SceneManager(int width, int height, int windowXPos, int windowYPos) 
 	{
-		this->width = width;
-		this->height = height;
+		this->SCR_WIDTH = width;
+		this->SCR_HEIGHT = height;
 		this->windowXPos = windowXPos;
 		this->windowYPos = windowYPos;
-		OnLoadTemp();
+		OnLoad();
 	}
 
 	SceneManager::~SceneManager()
@@ -24,14 +18,48 @@ namespace Engine
 
 	}
 
-	void SceneManager::OnLoadTemp()
+	void SceneManager::OnLoad()
 	{
-		// OpenGL setup
+		// glfw: initialize and configure
+		// ------------------------------
+		glfwInit();
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_SAMPLES, 4);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+
+#ifdef __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+		// glfw: create window
+		// -------------------
+		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Paul Engine", NULL, NULL);
+		glfwMakeContextCurrent(window);
+		if (window == NULL) {
+			std::cout << "FAIL::SCENEMANAGER::ONLOAD::Failed to create GLFW window" << std::endl;
+			glfwTerminate();
+		}
+		//glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+		//glfwSetCursorPosCallback(window, mouse_callback);
+		//glfwSetScrollCallback(window, scroll_callback);
+
+		// Capture mouse
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		// glad: load OpenGL function pointers
+		// -----------------------------------
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+			std::cout << "FAIL::SCENEMANAGER::ONLOAD::Failed to initialize GLAD" << std::endl;
+			glfwTerminate();
+		}
+
+		// Set up GL Debug output
 
 		// Load GUI
 
-		//gameIsRunning = true;
-		std::cout << "Onload\n";
+		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
 
 	void SceneManager::OnUpdateFrame()
@@ -50,23 +78,20 @@ namespace Engine
 	void SceneManager::Run()
 	{
 		// Temporary "game loop" standing in for future OpenGL game loop
-		std::cout << "Starting new game\n";
+		std::cout << "Starting new game" << std::endl;
 		StartNewGame();
-
-		const double targetFrameTime = (1.0 / 60.0) / 1.2;
-		auto startTime = std::chrono::high_resolution_clock::now();
-		auto previousTime = startTime;
-		auto currentTime = startTime;
 		
-		while (true)
+		float lastFrame = 0.0f;
+		float currentFrame;
+		while (!glfwWindowShouldClose(window))
 		{
-			currentTime = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<float> timeStep = currentTime - previousTime;
-			//std::chrono::duration<float, std::milli> duration = currentTime - previousTime;
-			Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;
+			currentFrame = static_cast<float>(glfwGetTime());
+			Scene::dt = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+			//Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;
 
 			// Process inputs
-
+			process
 
 			// Update scene
 			OnUpdateFrame();
@@ -75,6 +100,7 @@ namespace Engine
 			OnRenderFrame();
 
 			// Poll events
+			glfwPollEvents();
 
 			// Prepare for next frame
 
@@ -97,10 +123,5 @@ namespace Engine
 			}
 			*/
 		}
-	}
-
-	void SceneManager::UpdateKeyCallback(GLFWwindow* window, GLFWkeyfun callback)
-	{
-		glfwSetKeyCallback(window, callback);
 	}
 }

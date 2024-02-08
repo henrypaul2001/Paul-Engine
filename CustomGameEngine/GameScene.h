@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "EntityManager.h"
 #include "SystemManager.h"
+#include <GLFW/glfw3.h>
 namespace Engine
 {
 	class GameScene : public Scene
@@ -19,5 +20,6 @@ namespace Engine
 		void Update() override;
 		void Render() override;
 		void Close() override;
+		void SetupScene() override;
 	};
 }

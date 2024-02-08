@@ -2,6 +2,7 @@
 #include <functional>
 #include "Scene.h"
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 namespace Engine
 {
 	enum SceneTypes {
@@ -15,13 +16,10 @@ namespace Engine
 	using SceneDelegate = std::function<void()>;
 	using MouseDelegate = std::function<void()>;
 
-	typedef void (*KeyCallbackFunction)(GLFWwindow*, int, int, int, int);
-	using KeyboardDelegate = std::function<void(GLFWwindow*, int, int, int, int)>;
-
 	class SceneManager
 	{
 	protected:
-		void OnLoadTemp();
+		void OnLoad();
 		void OnUpdateFrame();
 		void OnRenderFrame();
 
@@ -30,8 +28,8 @@ namespace Engine
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
 
-		static int width;
-		static int height;
+		static int SCR_WIDTH;
+		static int SCR_HEIGHT;
 		static int windowXPos;
 		static int windowYPos;
 
@@ -40,7 +38,7 @@ namespace Engine
 		SceneDelegate renderer;
 		SceneDelegate updater;
 
-		//KeyboardDelegate keyDelegate;
+		GLFWwindow* window;
 
 		MouseDelegate mouseDelegate;
 
@@ -50,8 +48,8 @@ namespace Engine
 		virtual void StartMenu() = 0;
 		virtual void ChangeScene(SceneTypes sceneType) = 0;
 
-		static int& getWindowHeight() { return height; }
-		static int& getWindowWidth() { return width; }
+		static int& getWindowHeight() { return SCR_HEIGHT; }
+		static int& getWindowWidth() { return SCR_WIDTH; }
 
 		void Run();
 	};

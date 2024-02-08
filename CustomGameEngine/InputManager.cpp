@@ -1,8 +1,18 @@
 #include "InputManager.h"
 namespace Engine {
+	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		if (action == GLFW_RELEASE) {
+			InputManager::instance->keyboard_Release(key, scancode, action, mods);
+		}
+		else if (action == GLFW_PRESS) {
+			InputManager::instance->keyboard_Press(key, scancode, action, mods);
+		}
+	}
+
 	InputManager::InputManager()
 	{
-		glfwSetKeyCallback(glfwGetCurrentContext(), key_callback);
+		glfwSetKeyCallback(glfwGetCurrentContext(), &key_callback);
 		instance = this;
 	}
 
@@ -25,15 +35,5 @@ namespace Engine {
 	void InputManager::keyboard_Release(int key, int scancode, int action, int mods) {
 		keysPressed[key] = true;
 		keyDown(key);
-	}
-
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-		if (action == GLFW_RELEASE) {
-			InputManager::instance->keyboard_Release(key, scancode, action, mods);
-		}
-		else if (action == GLFW_PRESS) {
-			InputManager::instance->keyboard_Press(key, scancode, action, mods);
-		}
 	}
 }

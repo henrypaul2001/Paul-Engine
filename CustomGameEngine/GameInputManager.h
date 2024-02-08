@@ -4,7 +4,7 @@ namespace Engine {
 	class GameInputManager : public InputManager
 	{
 	public:
-		GameInputManager(SceneManager* sceneManager);
+		GameInputManager();
 		~GameInputManager();
 		void ProcessInputs() override;
 		void Close() override;
