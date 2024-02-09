@@ -37,11 +37,11 @@ namespace Engine {
 
 	void InputManager::keyboard_Press(int key, int scancode, int action, int mods) {
 		keysPressed[key] = true;
-		keyUp(key);
+		keyDown(key);
 	}
 
 	void InputManager::keyboard_Release(int key, int scancode, int action, int mods) {
 		keysPressed[key] = false;
-		keyDown(key);
+		keyUp(key);
 	}
 }

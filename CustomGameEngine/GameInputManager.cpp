@@ -31,11 +31,11 @@ namespace Engine {
 
 	void Engine::GameInputManager::keyUp(int key)
 	{
-
+		std::cout << "Key num: " << key << "| UP" << std::endl;
 	}
 
 	void Engine::GameInputManager::keyDown(int key)
 	{
-		std::cout << "Key num: " << key << std::endl;
+		std::cout << "Key num: " << key << "| DOWN" << std::endl;
 	}
 }
