@@ -1,8 +1,10 @@
 #pragma once
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <functional>
 #include "Scene.h"
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <thread>
+#include <iostream>
 namespace Engine
 {
 	enum SceneTypes {
@@ -23,15 +25,15 @@ namespace Engine
 		void OnUpdateFrame();
 		void OnRenderFrame();
 
+		int SCR_WIDTH;
+		int SCR_HEIGHT;
+		int windowXPos;
+		int windowYPos;
+
 		//bool gameIsRunning = false;
 	public:
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
-
-		static int SCR_WIDTH;
-		static int SCR_HEIGHT;
-		static int windowXPos;
-		static int windowYPos;
 
 		Scene* scene;
 
@@ -42,14 +44,12 @@ namespace Engine
 
 		MouseDelegate mouseDelegate;
 
-		void UpdateKeyCallback(GLFWwindow* window, GLFWkeyfun callback);
-
 		virtual void StartNewGame() = 0;
 		virtual void StartMenu() = 0;
 		virtual void ChangeScene(SceneTypes sceneType) = 0;
 
-		static int& getWindowHeight() { return SCR_HEIGHT; }
-		static int& getWindowWidth() { return SCR_WIDTH; }
+		int* getWindowHeight() { return &SCR_HEIGHT; }
+		int* getWindowWidth() { return &SCR_WIDTH; }
 
 		void Run();
 	};

@@ -112,7 +112,7 @@
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
     <ClInclude Include="GameInputManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Game\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,8 +161,11 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="GameInputManager.cpp">
+    <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInputManager.cpp">
+      <Filter>Source Files\Game\Managers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

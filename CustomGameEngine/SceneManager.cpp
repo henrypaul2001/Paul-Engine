@@ -1,7 +1,5 @@
 #include "SceneManager.h"
-#include "Scene.h"
-#include <thread>
-#include <iostream>
+#include "InputManager.h"
 namespace Engine
 {
 	SceneManager::SceneManager(int width, int height, int windowXPos, int windowYPos) 
@@ -91,7 +89,7 @@ namespace Engine
 			//Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;
 
 			// Process inputs
-			process
+			scene->GetInputManager()->ProcessInputs();
 
 			// Update scene
 			OnUpdateFrame();
@@ -103,10 +101,10 @@ namespace Engine
 			glfwPollEvents();
 
 			// Prepare for next frame
-
-			previousTime = currentTime;
+			// 
 			//std::cout << "FPS: " << (1.0f / Scene::dt) << std::endl;
 
+			/*
 			auto endTime = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> frameDuration = endTime - currentTime;
 			std::chrono::duration<double> remainingTime = std::chrono::duration<double>(targetFrameTime) - frameDuration;
@@ -114,6 +112,7 @@ namespace Engine
 			if (remainingTime.count() > 0) {
 				std::this_thread::sleep_for(remainingTime);
 			}
+			*/
 			/*
 			auto nextFrameTime = currentTime + std::chrono::nanoseconds(16666667);
 			// Sleep until nextFrameTime

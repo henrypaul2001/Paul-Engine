@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
+#include "InputManager.h"
+#include "SystemManager.h"
 namespace Engine
 {
 	float Scene::dt;
@@ -13,5 +15,10 @@ namespace Engine
 
 	Scene::~Scene()
 	{
+	}
+
+	InputManager* Scene::GetInputManager()
+	{
+		return inputManager;
 	}
 }

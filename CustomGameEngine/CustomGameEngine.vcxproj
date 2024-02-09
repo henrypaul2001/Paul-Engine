@@ -166,6 +166,7 @@
     <ClCompile Include="GameInputManager.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GameSceneManager.cpp" />
+    <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />

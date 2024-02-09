@@ -4,20 +4,26 @@
 #include "ComponentTransform.h"
 #include "ComponentVelocity.h"
 #include "SystemPhysics.h"
+#include <glad/glad.h>
+#include "EntityManager.h"
+#include "SystemManager.h"
+#include "GameInputManager.h"
 namespace Engine
 {
 	GameScene::GameScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
-		entityManager = EntityManager();
-		systemManager = SystemManager();
+		entityManager = new EntityManager();
+		systemManager = new SystemManager();
+		inputManager = new GameInputManager();
 
 		SetupScene();
 	}
 
 	GameScene::~GameScene()
 	{
-		delete& entityManager;
-		delete& systemManager;
+		delete entityManager;
+		delete systemManager;
+		delete inputManager;
 	}
 
 	void GameScene::SetupScene()
@@ -43,17 +49,17 @@ namespace Engine
 		newEntity->AddComponent(new ComponentTransform(10.0, 0, 10.0));
 		newEntity->AddComponent(new ComponentVelocity(1.0, 0, 0));
 
-		entityManager.AddEntity(newEntity);
+		entityManager->AddEntity(newEntity);
 	}
 
 	void GameScene::CreateSystems()
 	{
-		systemManager.AddSystem(new SystemPhysics());
+		systemManager->AddSystem(new SystemPhysics());
 	}
 
 	void GameScene::Update()
 	{
-		systemManager.ActionSystems(&entityManager);
+		systemManager->ActionSystems(entityManager);
 	}
 
 	void GameScene::Render()

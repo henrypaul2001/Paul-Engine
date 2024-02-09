@@ -1,39 +1,47 @@
 #include "InputManager.h"
 namespace Engine {
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		if (action == GLFW_RELEASE) {
-			InputManager::instance->keyboard_Release(key, scancode, action, mods);
+			keyboard_Release(key, scancode, action, mods);
 		}
 		else if (action == GLFW_PRESS) {
-			InputManager::instance->keyboard_Press(key, scancode, action, mods);
+			keyboard_Press(key, scancode, action, mods);
 		}
 	}
 
 	InputManager::InputManager()
 	{
-		glfwSetKeyCallback(glfwGetCurrentContext(), &key_callback);
-		instance = this;
+		ClearInputs();
+
+		// Allow a C++ member function to be used by the C, OpenGl api callback for key inputs
+		glfwSetWindowUserPointer(glfwGetCurrentContext(), this);
+		auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+			static_cast<InputManager*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
+		};
+
+		glfwSetKeyCallback(glfwGetCurrentContext(), func);
 	}
 
 	InputManager::~InputManager()
 	{
-		delete[] keysPressed;
+
 	}
 
 	void InputManager::ClearInputs()
 	{
-		delete[] keysPressed;
-		keysPressed = new bool[255];
+		for (int i = 0; i < 349; i++) {
+			keysPressed[i] = false;
+		}
 	}
 
 	void InputManager::keyboard_Press(int key, int scancode, int action, int mods) {
-		keysPressed[key] = false;
+		keysPressed[key] = true;
 		keyUp(key);
 	}
 
 	void InputManager::keyboard_Release(int key, int scancode, int action, int mods) {
-		keysPressed[key] = true;
+		keysPressed[key] = false;
 		keyDown(key);
 	}
 }

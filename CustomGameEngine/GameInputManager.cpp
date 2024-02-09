@@ -1,6 +1,4 @@
 #include "GameInputManager.h"
-#include <iostream>
-
 namespace Engine {
 	Engine::GameInputManager::GameInputManager()
 	{
@@ -14,6 +12,10 @@ namespace Engine {
 
 	void Engine::GameInputManager::ProcessInputs()
 	{
+		if (keysPressed[GLFW_KEY_ESCAPE]) {
+			std::cout << "GAMEINPUTMANAGER::KEYCHECK::ESCAPE::TRUE" << std::endl;
+			glfwSetWindowShouldClose(glfwGetCurrentContext(), true);
+		}
 		if (keysPressed[GLFW_KEY_W]) {
 			std::cout << "GAMEINPUTMANAGER::KEYCHECK::W::TRUE" << std::endl;
 		}
@@ -34,6 +36,6 @@ namespace Engine {
 
 	void Engine::GameInputManager::keyDown(int key)
 	{
-
+		std::cout << "Key num: " << key << std::endl;
 	}
 }
