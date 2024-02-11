@@ -97,6 +97,9 @@ namespace Engine
 			// Render scene
 			OnRenderFrame();
 
+			// Swap buffers
+			glfwSwapBuffers(window);
+
 			// Poll events
 			glfwPollEvents();
 
