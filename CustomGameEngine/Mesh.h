@@ -1,7 +1,6 @@
 #pragma once
 #include "Shader.h"
-
-#include <glm/glm.hpp>
+#include <iostream>
 #include <vector>
 namespace Engine {
 	enum TextureTypes {
@@ -10,7 +9,11 @@ namespace Engine {
 		TEXTURE_NORMAL = 1 << 1,
 		TEXTURE_METAL = 1 << 2,
 		TEXTURE_DISPLACE = 1 << 3,
-		TEXTURE_AO = 1 << 4
+		TEXTURE_AO = 1 << 4,
+		TEXTURE_SPECULAR = 1 << 5,
+		TEXTURE_HEIGHT = 1 << 6,
+		TEXTURE_ALBEDO = 1 << 7,
+		TEXTURE_ROUGHNESS = 1 << 8
 	};
 	inline TextureTypes operator| (TextureTypes a, TextureTypes b) { return (TextureTypes)((int)a | (int)b); }
 	inline TextureTypes operator|= (TextureTypes a, TextureTypes b) { return (TextureTypes)((int&)a |= (int)b); }
@@ -18,7 +21,7 @@ namespace Engine {
 	struct Texture {
 		unsigned int id;
 		TextureTypes type;
-		const char* filepath;
+		std::string filepath;
 	};
 
 	// #define MAX_BONE_INFLUENCE 4
