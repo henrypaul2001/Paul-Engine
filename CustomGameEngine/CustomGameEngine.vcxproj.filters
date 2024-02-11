@@ -114,6 +114,9 @@
     <ClInclude Include="GameInputManager.h">
       <Filter>Header Files\Game\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="SystemRender.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -166,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="GameInputManager.cpp">
       <Filter>Source Files\Game\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemRender.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

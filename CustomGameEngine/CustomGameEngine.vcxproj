@@ -156,6 +156,7 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemPhysics.h" />
+    <ClInclude Include="SystemRender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComponentVelocity.cpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
+    <ClCompile Include="SystemRender.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

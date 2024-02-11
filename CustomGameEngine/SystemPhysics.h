@@ -13,7 +13,7 @@ namespace Engine
 		SystemPhysics();
 		~SystemPhysics();
 
-		std::string Name() override { return "SystemPhysics"; }
+		SystemTypes Name() override { return SYSTEM_PHYSICS; }
 		void OnAction(Entity* entity) override;
 
 		void Motion(ComponentTransform* transform, ComponentVelocity* velocity);
