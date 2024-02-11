@@ -1,11 +1,13 @@
 #pragma once
 #include "Component.h"
+#include "Model.h"
+#include "Shader.h"
 namespace Engine {
 	class ComponentGeometry : Component
 	{
 	public:
-		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath);
-		ComponentGeometry(const char* modelFilepath);
+		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr);
+		ComponentGeometry(const char* modelFilepath, bool pbr);
 		~ComponentGeometry();
 
 		ComponentTypes ComponentType() override { return COMPONENT_GEOMETRY; }
@@ -13,11 +15,13 @@ namespace Engine {
 
 		bool PBR() { return pbr; }
 
-		// Model* GetModel() { return model; }
-		// Shader& GetShader() { return shader; }
+		Model* GetModel() { return model; }
+		Shader* GetShader() { return shader; }
 	private:
-		// Shader shader
-		// Model model
+		// TODO: Make these pointers to resources in a resource manager
+		Model* model;
+		Shader* shader;
+
 		bool pbr;
 	};
 }
