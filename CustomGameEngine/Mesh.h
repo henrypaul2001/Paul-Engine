@@ -18,6 +18,32 @@ namespace Engine {
 	inline TextureTypes operator| (TextureTypes a, TextureTypes b) { return (TextureTypes)((int)a | (int)b); }
 	inline TextureTypes operator|= (TextureTypes a, TextureTypes b) { return (TextureTypes)((int&)a |= (int)b); }
 
+	static std::string ConvertTextureTypeToString(TextureTypes type) {
+		switch (type) {
+		case TEXTURE_NONE:
+			return "TEXTURE_NONE";
+		case TEXTURE_DIFFUSE:
+			return "TEXTURE_DIFFUSE";
+		case TEXTURE_NORMAL:
+			return "TEXTURE_NORMAL";
+		case TEXTURE_METAL:
+			return "TEXTURE_METAL";
+		case TEXTURE_DISPLACE:
+			return "TEXTURE_DISPLACE";
+		case TEXTURE_AO:
+			return "TEXTURE_AO";
+		case TEXTURE_SPECULAR:
+			return "TEXTURE_SPECULAR";
+		case TEXTURE_HEIGHT:
+			return "TEXTURE_HEIGHT";
+		case TEXTURE_ALBEDO:
+			return "TEXTURE_ALBEDO";
+		case TEXTURE_ROUGHNESS:
+			return "TEXTURE_ROUGHNESS";
+		}
+		return "NULL";
+	}
+
 	struct Texture {
 		unsigned int id;
 		TextureTypes type;
@@ -46,12 +72,16 @@ namespace Engine {
 		std::vector<Texture> textures;
 		unsigned int VAO;
 
-		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, bool pbr);
 		~Mesh();
+
+		bool PBR() { return pbr; }
 
 		void Draw(Shader& shader);
 	private:
 		unsigned int VBO, EBO;
+		bool pbr;
+
 		void SetupMesh();
 	};
 }

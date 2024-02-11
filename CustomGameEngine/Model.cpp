@@ -105,7 +105,7 @@ namespace Engine {
 		if (mesh->mMaterialIndex >= 0) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			if (!PBR()) {
+			if (!pbr) {
 				std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
 				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
@@ -136,7 +136,7 @@ namespace Engine {
 			}
 		}
 
-		return Mesh(vertices, indices, textures);
+		return Mesh(vertices, indices, textures, pbr);
 	}
 
 	std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name)
