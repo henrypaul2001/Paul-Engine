@@ -24,7 +24,7 @@ namespace Engine
 		systemList.push_back(system);
 	}
 
-	System* SystemManager::FindSystem(std::string name)
+	System* SystemManager::FindSystem(SystemTypes name)
 	{
 		for (System* s : systemList) {
 			if (s->Name() == name) {

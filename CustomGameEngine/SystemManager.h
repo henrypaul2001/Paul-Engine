@@ -9,7 +9,7 @@ namespace Engine
 	{
 	private:
 		std::vector<System*> systemList;
-		System* FindSystem(std::string name);
+		System* FindSystem(SystemTypes name);
 
 	public:
 		SystemManager();
