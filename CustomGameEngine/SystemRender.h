@@ -1,5 +1,6 @@
 #pragma once
 #include "System.h"
+#include "ComponentGeometry.h"
 #include "ComponentTransform.h"
 namespace Engine {
 	class SystemRender : public System
