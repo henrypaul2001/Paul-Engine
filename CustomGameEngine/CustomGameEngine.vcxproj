@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ComponentGeometry.h" />
     <ClInclude Include="ComponentVelocity.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="Entity.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="SystemRender.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ComponentGeometry.cpp" />
     <ClCompile Include="ComponentVelocity.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="Entity.cpp" />
