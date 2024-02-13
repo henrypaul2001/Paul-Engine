@@ -3,20 +3,28 @@
 #include "System.h"
 #include "EntityManager.h"
 #include <string>
+#include "SystemRender.h"
 namespace Engine
 {
+	enum SystemLists {
+		RENDER_SYSTEMS = 0,
+		UPDATE_SYSTEMS = 1 << 0
+	};
+
 	class SystemManager
 	{
 	private:
-		std::vector<System*> systemList;
-		System* FindSystem(SystemTypes name);
+		std::vector<System*> updateSystemList;
+		std::vector<System*> renderSystemList;
+		System* FindSystem(SystemTypes name, SystemLists list);
 
 	public:
 		SystemManager();
 		~SystemManager();
 
-		void ActionSystems(EntityManager* entityManager);
-		void AddSystem(System* system);
+		void ActionUpdateSystems(EntityManager* entityManager);
+		void ActionRenderSystems(EntityManager* entityManager);
+		void AddSystem(System* system, SystemLists list);
 	};
 }
 

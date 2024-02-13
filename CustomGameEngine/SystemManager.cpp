@@ -1,32 +1,62 @@
 #include "SystemManager.h"
 namespace Engine
 {
-	SystemManager::SystemManager() {}
+	SystemManager::SystemManager() 
+	{
+
+	}
 
 	SystemManager::~SystemManager()
 	{
+
 	}
 
-	void SystemManager::ActionSystems(EntityManager* entityManager)
+	void SystemManager::ActionUpdateSystems(EntityManager* entityManager)
 	{
 		std::vector<Entity*> entityList = entityManager->Entities();
-		for (System* s : systemList) {
+		for (System* s : updateSystemList) {
 			for (Entity* e : entityList) {
 				s->OnAction(e);
 			}
 		}
 	}
 
-	void SystemManager::AddSystem(System* system)
+	void SystemManager::ActionRenderSystems(EntityManager* entityManager)
 	{
-		System* result = FindSystem(system->Name());
-		_ASSERT(result == nullptr, "System '" + system.Name() + "' already exists");
-		systemList.push_back(system);
+		std::vector<Entity*> entityList = entityManager->Entities();
+		for (System* s : renderSystemList) {
+			for (Entity* e : entityList) {
+				s->OnAction(e);
+			}
+		}
 	}
 
-	System* SystemManager::FindSystem(SystemTypes name)
+	void SystemManager::AddSystem(System* system, SystemLists list)
 	{
-		for (System* s : systemList) {
+		System* result = FindSystem(system->Name(), list);
+		_ASSERT(result == nullptr, "System '" + system.Name() + "' already exists");
+		if (list == UPDATE_SYSTEMS) {
+			updateSystemList.push_back(system);
+		}
+		else if (list == RENDER_SYSTEMS) {
+			renderSystemList.push_back(system);
+		}
+	}
+
+	System* SystemManager::FindSystem(SystemTypes name, SystemLists list)
+	{
+		std::vector<System*>* search = nullptr;
+		if (list == RENDER_SYSTEMS) {
+			search = &renderSystemList;
+		}
+		else if (list == UPDATE_SYSTEMS) {
+			search = &updateSystemList;
+		}
+		else {
+			return nullptr;
+		}
+
+		for (System* s : *search) {
 			if (s->Name() == name) {
 				return s;
 			}
