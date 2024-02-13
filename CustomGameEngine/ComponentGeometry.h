@@ -23,5 +23,6 @@ namespace Engine {
 		Shader* shader;
 
 		bool pbr;
+		bool usingDefaultShader;
 	};
 }

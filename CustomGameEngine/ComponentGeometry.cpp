@@ -1,32 +1,38 @@
 #include "ComponentGeometry.h"
+#include "SceneManager.h"
 namespace Engine {
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr)
 	{
 		this->pbr = pbr;
-		model = new Model(modelFilepath, pbr);
-		shader = new Shader(vShaderFilepath, fShaderFilepath);
+		model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
+		usingDefaultShader = false;
+		shader = new Shader(vShaderFilepath, fShaderFilepath); // dont do this. Use resource manager instead to avoid duplicate shaders, also do it at start instead of potentially loading shaders during gameplay
 	}
 
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr)
 	{
 		this->pbr = pbr;
-		model = new Model(modelFilepath, pbr);
+		model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
 		std::string v;
 		std::string f;
 		if (pbr) {
-			v = "default_pbr.vert";
-			f = "default_pbr.frag";
+			v = "Shaders/defaultLit_pbr.vert";
+			f = "Shaders/defaultLit_pbr.frag";
+			shader = new Shader(v.c_str(), f.c_str()); // dont do this. Use resource manager instead to avoid duplicate shaders, also do it at start instead of potentially loading shaders during gameplay
 		}
 		else {
-			v = "default.vert";
-			f = "default.frag";
+			//v = "Shaders/defaultLit.vert";
+			//f = "Shaders/defaultLit.frag";
+			shader = &defaultLit;
+			usingDefaultShader = true;
 		}
-		shader = new Shader(v.c_str(), f.c_str());
 	}
 
 	ComponentGeometry::~ComponentGeometry()
 	{
-		delete shader;
+		if (!usingDefaultShader) {
+			delete shader;
+		}
 		delete model;
 	}
 
