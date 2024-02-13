@@ -13,6 +13,7 @@ namespace Engine {
 		void OnAction(Entity* entity) override;
 
 	private:
-		void Draw(ComponentTransform transform, ComponentGeometry geometry);
+		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
+		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
 	};
 }
