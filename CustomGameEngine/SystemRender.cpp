@@ -46,6 +46,7 @@ namespace Engine {
 		model = glm::rotate(model, glm::radians(transform->RotationAngle()), transform->RotationAxis());
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+		shader->setFloat("textureScale", 1.0f);
 		geometry->GetModel()->Draw(*geometry->GetShader());
 	}
 }

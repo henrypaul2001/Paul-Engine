@@ -82,6 +82,7 @@ namespace Engine
 
 	void SceneManager::OnUpdateFrame()
 	{
+		// Call scene update delegate
 		updater();
 	}
 
@@ -99,6 +100,7 @@ namespace Engine
 
 		// defaultLit.setVec3("viewPos", camera.Position);
 
+		// Call scene render delegate
 		renderer();
 
 		// GL flush
