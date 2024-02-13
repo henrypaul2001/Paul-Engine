@@ -12,6 +12,7 @@ namespace Engine {
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr)
 	{
 		this->pbr = pbr;
+		usingDefaultShader = true;
 		model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
 		std::string v;
 		std::string f;
@@ -24,8 +25,9 @@ namespace Engine {
 			//v = "Shaders/defaultLit.vert";
 			//f = "Shaders/defaultLit.frag";
 			shader = &defaultLit;
-			usingDefaultShader = true;
 		}
+		
+		// configure shader uniforms
 	}
 
 	ComponentGeometry::~ComponentGeometry()

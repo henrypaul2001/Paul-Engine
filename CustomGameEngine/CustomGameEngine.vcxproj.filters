@@ -67,6 +67,9 @@
     <Filter Include="Header Files\Game\Scenes">
       <UniqueIdentifier>{fba4d923-a0ed-4c22-a40a-8bff095a1702}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Shaders">
+      <UniqueIdentifier>{b1b0f24f-ed49-41b4-bed5-4b76d678d9b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -203,5 +206,19 @@
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\defaultLit.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit_pbr.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit_pbr.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -188,6 +188,12 @@
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\defaultLit.frag" />
+    <None Include="Shaders\defaultLit.vert" />
+    <None Include="Shaders\defaultLit_pbr.frag" />
+    <None Include="Shaders\defaultLit_pbr.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

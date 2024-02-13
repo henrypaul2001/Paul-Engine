@@ -57,6 +57,26 @@ namespace Engine
 
 		// Load GUI
 
+		// Configure default shaders
+		// -------------------------
+		
+		defaultLit.Use();
+		defaultLit.setInt("material.TEXTURE_DIFFUSE", 0);
+		defaultLit.setInt("material.TEXTURE_SPECULAR", 1);
+
+		// Uniform blocks
+		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLit.GetID(), "Matrices");
+		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
+		glUniformBlockBinding(defaultLit.GetID(), defaultLitBlockLocation, 0);
+		// same again for pbr
+
+		glGenBuffers(1, &uboMatrices);
+		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+
 		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
 
@@ -67,6 +87,18 @@ namespace Engine
 
 	void SceneManager::OnRenderFrame()
 	{
+		// Configure default shaders
+		// -------------------------
+		defaultLit.Use();
+		defaultLit.setBool("gamma", false);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+		//glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		// defaultLit.setVec3("viewPos", camera.Position);
+
 		renderer();
 
 		// GL flush

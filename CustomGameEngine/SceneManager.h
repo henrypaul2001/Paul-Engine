@@ -15,13 +15,15 @@ namespace Engine
 		SCENE_WIN
 	};
 
-	Shader defaultLit = Shader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
+	static Shader defaultLit = Shader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
 
 	using SceneDelegate = std::function<void()>;
 	using MouseDelegate = std::function<void()>;
 
 	class SceneManager
 	{
+	private:
+		unsigned int uboMatrices;
 	protected:
 		void OnLoad();
 		void OnUpdateFrame();
