@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "Shader.h"
 namespace Engine {
-	class ComponentGeometry : Component
+	class ComponentGeometry : public Component
 	{
 	public:
 		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr);

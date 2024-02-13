@@ -1,8 +1,6 @@
 #include "GameScene.h"
 #include <iostream>
 #include <glm/vec3.hpp>
-#include "ComponentTransform.h"
-#include "ComponentVelocity.h"
 #include "SystemPhysics.h"
 #include <glad/glad.h>
 #include "EntityManager.h"
@@ -48,18 +46,20 @@ namespace Engine
 		Entity* newEntity = new Entity("TestEntity");
 		newEntity->AddComponent(new ComponentTransform(10.0, 0, 10.0));
 		newEntity->AddComponent(new ComponentVelocity(1.0, 0, 0));
+		newEntity->AddComponent(new ComponentGeometry("Models/rock/rock.obj", false));
 
 		entityManager->AddEntity(newEntity);
 	}
 
 	void GameScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemPhysics());
+		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemRender(), RENDER_SYSTEMS);
 	}
 
 	void GameScene::Update()
 	{
-		systemManager->ActionSystems(entityManager);
+		systemManager->ActionUpdateSystems(entityManager);
 	}
 
 	void GameScene::Render()
@@ -68,7 +68,7 @@ namespace Engine
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render entities
-
+		systemManager->ActionRenderSystems(entityManager);
 	}
 
 	void GameScene::Close()

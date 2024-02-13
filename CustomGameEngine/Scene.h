@@ -1,4 +1,7 @@
 #pragma once
+#include "ComponentTransform.h"
+#include "ComponentVelocity.h"
+#include "ComponentGeometry.h"
 namespace Engine 
 {
 	class SceneManager;

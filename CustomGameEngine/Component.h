@@ -5,7 +5,7 @@ namespace Engine
 		COMPONENT_NONE = 0,
 		COMPONENT_TRANSFORM = 1 << 0,
 		COMPONENT_VELOCITY = 1 << 1,
-		COMPONENT_GEOMETRY = 1 << 1
+		COMPONENT_GEOMETRY = 1 << 2
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }
