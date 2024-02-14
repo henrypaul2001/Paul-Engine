@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Model.h"
-#include "Shader.h"
+//#include "Shader.h"
 namespace Engine {
 	class ComponentGeometry : public Component
 	{
@@ -16,11 +16,11 @@ namespace Engine {
 		bool PBR() { return pbr; }
 
 		Model* GetModel() { return model; }
-		Shader* GetShader() { return shader; }
+		Shader* GetShader() { return *defaultShader; }
 	private:
 		// TODO: Make these pointers to resources in a resource manager
 		Model* model;
-		Shader* shader;
+		Shader** defaultShader;
 
 		bool pbr;
 		bool usingDefaultShader;

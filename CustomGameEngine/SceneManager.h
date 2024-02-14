@@ -15,8 +15,6 @@ namespace Engine
 		SCENE_WIN
 	};
 
-	static Shader defaultLit = Shader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
-
 	using SceneDelegate = std::function<void()>;
 	using MouseDelegate = std::function<void()>;
 
@@ -39,6 +37,7 @@ namespace Engine
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
 
+		static Shader* defaultLit;
 		Scene* scene;
 
 		SceneDelegate renderer;

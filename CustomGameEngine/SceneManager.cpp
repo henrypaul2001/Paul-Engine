@@ -2,18 +2,21 @@
 #include "InputManager.h"
 namespace Engine
 {
+	Shader* SceneManager::defaultLit = nullptr;
+
 	SceneManager::SceneManager(int width, int height, int windowXPos, int windowYPos) 
 	{
 		this->SCR_WIDTH = width;
 		this->SCR_HEIGHT = height;
 		this->windowXPos = windowXPos;
 		this->windowYPos = windowYPos;
+		//defaultLit = nullptr;
 		OnLoad();
 	}
 
 	SceneManager::~SceneManager()
 	{
-
+		delete defaultLit;
 	}
 
 	void SceneManager::OnLoad()
@@ -59,15 +62,15 @@ namespace Engine
 
 		// Configure default shaders
 		// -------------------------
-		
-		defaultLit.Use();
-		defaultLit.setInt("material.TEXTURE_DIFFUSE", 0);
-		defaultLit.setInt("material.TEXTURE_SPECULAR", 1);
+		defaultLit = new Shader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
+		defaultLit->Use();
+		defaultLit->setInt("material.TEXTURE_DIFFUSE", 0);
+		defaultLit->setInt("material.TEXTURE_SPECULAR", 1);
 
 		// Uniform blocks
-		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLit.GetID(), "Matrices");
+		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLit->GetID(), "Matrices");
 		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
-		glUniformBlockBinding(defaultLit.GetID(), defaultLitBlockLocation, 0);
+		glUniformBlockBinding(defaultLit->GetID(), defaultLitBlockLocation, 0);
 		// same again for pbr
 
 		glGenBuffers(1, &uboMatrices);
@@ -90,8 +93,8 @@ namespace Engine
 	{
 		// Configure default shaders
 		// -------------------------
-		defaultLit.Use();
-		defaultLit.setBool("gamma", false);
+		//defaultLit->Use();
+		//defaultLit->setBool("gamma", false);
 
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 		//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
@@ -112,7 +115,7 @@ namespace Engine
 		// Temporary "game loop" standing in for future OpenGL game loop
 		std::cout << "Starting new game" << std::endl;
 		StartNewGame();
-		
+
 		float lastFrame = 0.0f;
 		float currentFrame;
 		while (!glfwWindowShouldClose(window))

@@ -32,7 +32,6 @@ namespace Engine {
 				}
 			}
 
-			//std::cout << entity->Name();
 			Draw(transform, geometry);
 		}
 	}
