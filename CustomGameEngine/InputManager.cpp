@@ -10,17 +10,51 @@ namespace Engine {
 		}
 	}
 
+	void InputManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+		camera->ProcessMouseScroll(yoffset);
+	}
+
+	void InputManager::mouse_callback(GLFWwindow* window, double xpos, double ypos)
+	{
+		if (firstMouse) {
+			lastMouseX = xpos;
+			lastMouseY = ypos;
+			firstMouse = false;
+		}
+
+		float xoffset = xpos - lastMouseX;
+		float yoffset = lastMouseY - ypos;
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+
+		camera->ProcessMouseMovement(xoffset, yoffset, true);
+	}
+
 	InputManager::InputManager()
 	{
 		ClearInputs();
+		firstMouse = true;
+		lastMouseX = 400;
+		lastMouseY = 300;
 
-		// Allow a C++ member function to be used by the C, OpenGl api callback for key inputs
+		// Allow a C++ member function to be used by the C, OpenGl api callback for input callbacks
 		glfwSetWindowUserPointer(glfwGetCurrentContext(), this);
-		auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		auto key = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 			static_cast<InputManager*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
 		};
 
-		glfwSetKeyCallback(glfwGetCurrentContext(), func);
+		auto scroll = [](GLFWwindow* window, double xoffset, double yoffset) {
+			static_cast<InputManager*>(glfwGetWindowUserPointer(window))->scroll_callback(window, xoffset, yoffset);
+		};
+
+		auto mouse = [](GLFWwindow* window, double xpos, double ypos) {
+			static_cast<InputManager*>(glfwGetWindowUserPointer(window))->mouse_callback(window, xpos, ypos);
+		};
+
+		glfwSetKeyCallback(glfwGetCurrentContext(), key);
+		glfwSetScrollCallback(glfwGetCurrentContext(), scroll);
+		glfwSetCursorPosCallback(glfwGetCurrentContext(), mouse);
 	}
 
 	InputManager::~InputManager()

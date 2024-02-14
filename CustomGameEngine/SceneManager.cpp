@@ -115,6 +115,8 @@ namespace Engine
 		// Temporary "game loop" standing in for future OpenGL game loop
 		std::cout << "Starting new game" << std::endl;
 		StartNewGame();
+		Camera* camera = &scene->camera;
+		scene->GetInputManager()->SetCameraPointer(camera);
 
 		float lastFrame = 0.0f;
 		float currentFrame;

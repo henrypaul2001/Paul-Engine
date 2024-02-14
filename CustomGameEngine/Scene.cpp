@@ -10,11 +10,13 @@ namespace Engine
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
+		camera = Camera();
 		dt = 0;
 	}
 
 	Scene::~Scene()
 	{
+
 	}
 
 	InputManager* Scene::GetInputManager()

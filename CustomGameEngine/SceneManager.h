@@ -16,7 +16,6 @@ namespace Engine
 	};
 
 	using SceneDelegate = std::function<void()>;
-	using MouseDelegate = std::function<void()>;
 
 	class SceneManager
 	{
@@ -44,8 +43,6 @@ namespace Engine
 		SceneDelegate updater;
 
 		GLFWwindow* window;
-
-		MouseDelegate mouseDelegate;
 
 		virtual void StartNewGame() = 0;
 		virtual void StartMenu() = 0;

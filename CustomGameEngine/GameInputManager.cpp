@@ -1,16 +1,16 @@
 #include "GameInputManager.h"
 namespace Engine {
-	Engine::GameInputManager::GameInputManager()
+	GameInputManager::GameInputManager()
 	{
 
 	}
 
-	Engine::GameInputManager::~GameInputManager()
+	GameInputManager::~GameInputManager()
 	{
 		Close();
 	}
 
-	void Engine::GameInputManager::ProcessInputs()
+	void GameInputManager::ProcessInputs()
 	{
 		if (keysPressed[GLFW_KEY_ESCAPE]) {
 			std::cout << "GAMEINPUTMANAGER::KEYCHECK::ESCAPE::TRUE" << std::endl;
@@ -24,17 +24,17 @@ namespace Engine {
 		}
 	}
 
-	void Engine::GameInputManager::Close()
+	void GameInputManager::Close()
 	{
 		// clear scene manager delegates
 	}
 
-	void Engine::GameInputManager::keyUp(int key)
+	void GameInputManager::keyUp(int key)
 	{
 		std::cout << "Key num: " << key << "| UP" << std::endl;
 	}
 
-	void Engine::GameInputManager::keyDown(int key)
+	void GameInputManager::keyDown(int key)
 	{
 		std::cout << "Key num: " << key << "| DOWN" << std::endl;
 	}

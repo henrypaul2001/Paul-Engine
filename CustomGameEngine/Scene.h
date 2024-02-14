@@ -2,6 +2,7 @@
 #include "ComponentTransform.h"
 #include "ComponentVelocity.h"
 #include "ComponentGeometry.h"
+#include "Camera.h"
 namespace Engine 
 {
 	class SceneManager;
@@ -27,5 +28,6 @@ namespace Engine
 		virtual void SetupScene() = 0;
 
 		InputManager* GetInputManager();
+		Camera camera;
 	};
 }
