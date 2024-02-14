@@ -1,5 +1,4 @@
 #pragma once
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include "Camera.h"
 namespace Engine {
@@ -20,11 +19,11 @@ namespace Engine {
 		virtual void Close() = 0;
 		void SetCameraPointer(Camera* camPointer) { camera = camPointer; }
 	private:
-		Camera* camera;
 		bool firstMouse;
 		float lastMouseX;
 		float lastMouseY;
 	protected:
+		Camera* camera;
 		bool keysPressed[349];
 		virtual void keyUp(int key) = 0;
 		virtual void keyDown(int key) = 0;

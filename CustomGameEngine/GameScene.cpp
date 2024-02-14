@@ -37,15 +37,15 @@ namespace Engine
 
 		// Prepare scene
 
-		CreateEntities();
 		CreateSystems();
+		CreateEntities();
 	}
 
 	void GameScene::CreateEntities()
 	{
 		Entity* newEntity = new Entity("TestEntity");
-		newEntity->AddComponent(new ComponentTransform(10.0, 0, 10.0));
-		newEntity->AddComponent(new ComponentVelocity(1.0, 0, 0));
+		newEntity->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
+		newEntity->AddComponent(new ComponentVelocity(0.25f, 0.0f, 0.0f));
 		newEntity->AddComponent(new ComponentGeometry("Models/rock/rock.obj", false));
 
 		entityManager->AddEntity(newEntity);

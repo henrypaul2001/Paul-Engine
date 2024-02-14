@@ -16,12 +16,12 @@ namespace Engine
 	private:
 		std::vector<System*> updateSystemList;
 		std::vector<System*> renderSystemList;
-		System* FindSystem(SystemTypes name, SystemLists list);
 
 	public:
 		SystemManager();
 		~SystemManager();
 
+		System* FindSystem(SystemTypes name, SystemLists list);
 		void ActionUpdateSystems(EntityManager* entityManager);
 		void ActionRenderSystems(EntityManager* entityManager);
 		void AddSystem(System* system, SystemLists list);

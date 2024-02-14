@@ -1,6 +1,4 @@
 #pragma once
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <functional>
 #include "Scene.h"
 #include <thread>
@@ -24,14 +22,12 @@ namespace Engine
 	protected:
 		void OnLoad();
 		void OnUpdateFrame();
-		void OnRenderFrame();
+		void OnRenderFrame(Camera* camera);
 
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
 		int windowXPos;
 		int windowYPos;
-
-		//bool gameIsRunning = false;
 	public:
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();

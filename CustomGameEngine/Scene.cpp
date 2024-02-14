@@ -10,7 +10,7 @@ namespace Engine
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
-		camera = Camera();
+		camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
 	}
 
@@ -22,5 +22,10 @@ namespace Engine
 	InputManager* Scene::GetInputManager()
 	{
 		return inputManager;
+	}
+
+	SystemManager* Scene::GetSystemManager()
+	{
+		return systemManager;
 	}
 }

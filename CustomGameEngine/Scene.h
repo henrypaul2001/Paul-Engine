@@ -3,12 +3,12 @@
 #include "ComponentVelocity.h"
 #include "ComponentGeometry.h"
 #include "Camera.h"
+#include "SystemManager.h"
+#include "EntityManager.h"
+#include "InputManager.h"
 namespace Engine 
 {
 	class SceneManager;
-	class InputManager;
-	class SystemManager;
-	class EntityManager;
 
 	class Scene
 	{
@@ -28,6 +28,7 @@ namespace Engine
 		virtual void SetupScene() = 0;
 
 		InputManager* GetInputManager();
+		SystemManager* GetSystemManager();
 		Camera camera;
 	};
 }

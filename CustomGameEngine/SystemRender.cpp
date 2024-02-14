@@ -3,7 +3,7 @@
 namespace Engine {
 	SystemRender::SystemRender()
 	{
-
+		//camera = nullptr;
 	}
 
 	SystemRender::~SystemRender()

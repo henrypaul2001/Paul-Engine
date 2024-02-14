@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 namespace Engine {
 	Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch, glm::vec3 front, float moveSpeed, float mouseSens, float zoom)
 	{
@@ -9,6 +10,7 @@ namespace Engine {
 		Pitch = pitch;
 		Front = front;
 		MovementSpeed = moveSpeed;
+		MouseSensitivity = mouseSens;
 		Zoom = zoom;
 		UpdateCameraVectors();
 	}
@@ -22,6 +24,13 @@ namespace Engine {
 	{
 		return glm::lookAt(Position, Position + Front, Up);
 	}
+
+	/*
+	glm::mat4 Camera::GetProjection()
+	{
+		//return glm::perspective(glm::radians(Zoom), (float))
+	}
+	*/
 
 	void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 	{
@@ -60,11 +69,12 @@ namespace Engine {
 		Yaw += xoffset;
 		Pitch += yoffset;
 
-		if (constrainPitch) {
+		if (constrainPitch)
+		{
 			if (Pitch > 89.0f) {
 				Pitch = 89.0f;
 			}
-			else if (Pitch < -89.0f) {
+			if (Pitch < -89.0f) {
 				Pitch = -89.0f;
 			}
 		}

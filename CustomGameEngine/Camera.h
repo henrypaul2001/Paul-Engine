@@ -1,6 +1,7 @@
 #pragma once
-#include "glm/glm.hpp"
 #include <glad/glad.h>
+#include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
 namespace Engine {
 	enum CameraMovement {
 		FORWARD,
@@ -33,6 +34,8 @@ namespace Engine {
 		~Camera();
 
 		glm::mat4 GetViewMatrix();
+		//glm::mat4 GetProjection();
+
 		void ProcessKeyboard(CameraMovement direction, float deltaTime);
 		void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 		void ProcessMouseScroll(float yoffset);
