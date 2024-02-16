@@ -18,5 +18,9 @@ namespace Engine {
 		void operator=(const ResourceManager&) = delete; // singleton should not be assignable
 
 		static ResourceManager* GetInstance();
+
+		Model* LoadModel(std::string filepath, bool pbr);
+		Shader* LoadShader(std::string filepath);
+		Texture* LoadTexture(std::string filepath);
 	};
 }
