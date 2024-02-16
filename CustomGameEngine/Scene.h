@@ -6,6 +6,7 @@
 #include "SystemManager.h"
 #include "EntityManager.h"
 #include "InputManager.h"
+#include "ResourceManager.h"
 namespace Engine 
 {
 	class SceneManager;

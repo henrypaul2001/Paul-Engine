@@ -10,7 +10,6 @@ namespace Engine
 		this->SCR_HEIGHT = height;
 		this->windowXPos = windowXPos;
 		this->windowYPos = windowYPos;
-		//defaultLit = nullptr;
 		OnLoad();
 	}
 
@@ -62,7 +61,8 @@ namespace Engine
 
 		// Configure default shaders
 		// -------------------------
-		defaultLit = new Shader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
+
+		defaultLit = ResourceManager::GetInstance()->LoadShader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
 		defaultLit->Use();
 		defaultLit->setInt("material.TEXTURE_DIFFUSE", 0);
 		defaultLit->setInt("material.TEXTURE_SPECULAR", 1);

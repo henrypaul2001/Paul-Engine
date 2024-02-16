@@ -16,11 +16,11 @@ namespace Engine {
 		bool PBR() { return pbr; }
 
 		Model* GetModel() { return model; }
-		Shader* GetShader() { return *defaultShader; }
+		Shader* GetShader() { return shader; }
 	private:
 		// TODO: Make these pointers to resources in a resource manager
 		Model* model;
-		Shader** defaultShader;
+		Shader* shader;
 
 		bool pbr;
 		bool usingDefaultShader;

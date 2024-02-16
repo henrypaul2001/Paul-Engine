@@ -1,6 +1,5 @@
 #pragma once
 #include <unordered_map>
-#include <string>
 #include "Model.h"
 namespace Engine {
 	class ResourceManager
@@ -20,7 +19,7 @@ namespace Engine {
 		static ResourceManager* GetInstance();
 
 		Model* LoadModel(std::string filepath, bool pbr);
-		Shader* LoadShader(std::string filepath);
+		Shader* LoadShader(std::string vertexPath, std::string fragmentPath);
 		Texture* LoadTexture(std::string filepath);
 	};
 }
