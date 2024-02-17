@@ -20,6 +20,6 @@ namespace Engine {
 
 		Model* LoadModel(std::string filepath, bool pbr);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath);
-		Texture* LoadTexture(std::string filepath);
+		Texture* LoadTexture(std::string filepath, TextureTypes type);
 	};
 }

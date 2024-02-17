@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 namespace Engine {
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, bool pbr)
+	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, bool pbr)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
@@ -33,7 +33,7 @@ namespace Engine {
 			std::string name;
 			for (unsigned int i = 0; i < textures.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + i);
-				name = ConvertTextureTypeToString(textures[i].type);
+				name = ConvertTextureTypeToString(textures[i]->type);
 				if (name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
 					number = std::to_string(diffuseNr++);
 					shader.setBool("useDiffuseMap", true);
@@ -52,7 +52,7 @@ namespace Engine {
 				}
 
 				shader.setInt(("material." + name + number).c_str(), i);
-				glBindTexture(GL_TEXTURE_2D, textures[i].id);
+				glBindTexture(GL_TEXTURE_2D, textures[i]->id);
 			}
 			glActiveTexture(GL_TEXTURE0);
 		}
@@ -73,7 +73,7 @@ namespace Engine {
 			std::string name;
 			for (unsigned int i = 0; i < textures.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + i);
-				name = ConvertTextureTypeToString(textures[i].type);
+				name = ConvertTextureTypeToString(textures[i]->type);
 				if (name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
 					number = std::to_string(albedoNr++);
 					shader.setBool("useAlbedoMap", true);
@@ -96,7 +96,7 @@ namespace Engine {
 				}
 
 				shader.setInt(("material." + name + number).c_str(), i);
-				glBindTexture(GL_TEXTURE_2D, textures[i].id);
+				glBindTexture(GL_TEXTURE_2D, textures[i]->id);
 			}
 			glActiveTexture(GL_TEXTURE0);
 		}

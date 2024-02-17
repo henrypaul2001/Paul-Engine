@@ -1,4 +1,5 @@
 #include "Model.h"
+#include "ResourceManager.h"
 namespace Engine {
 	Model::Model(const char* filepath)
 	{
@@ -54,7 +55,7 @@ namespace Engine {
 	{
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
-		std::vector<Texture> textures;
+		std::vector<Texture*> textures;
 
 		// retrieve vertices
 		Vertex vertex;
@@ -106,32 +107,32 @@ namespace Engine {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 			if (!pbr) {
-				std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
+				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
 				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-				std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR);
+				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR);
 				textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-				std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
+				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
 				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-				std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
+				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
 				textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 			}
 			else {
-				std::vector<Texture> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
+				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
 				textures.insert(textures.end(), albedoMaps.begin(), albedoMaps.end());
 
-				std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
+				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
 				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-				std::vector<Texture> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, TEXTURE_METAL);
+				std::vector<Texture*> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, TEXTURE_METAL);
 				textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
 
-				std::vector<Texture> roughnessMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_ROUGHNESS);
+				std::vector<Texture*> roughnessMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_ROUGHNESS);
 				textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
 
-				std::vector<Texture> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
+				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
 				textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
 			}
 		}
@@ -139,74 +140,17 @@ namespace Engine {
 		return Mesh(vertices, indices, textures, pbr);
 	}
 
-	std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name)
+	std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name)
 	{
-		std::vector<Texture> textures;
+		std::vector<Texture*> textures;
 		bool skip;
 		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
 			aiString str;
 			mat->GetTexture(type, i, &str);
 
-			skip = false;
-			for (unsigned int j = 0; j < textures_loaded.size(); j++) {
-				if (std::strcmp(textures_loaded[j].filepath.data(), str.C_Str()) == 0) {
-					textures.push_back(textures_loaded[j]);
-					skip = true;
-					break;
-				}
-			}
-
-			if (!skip) {
-				Texture texture;
-				texture.id = TextureFromFile(str.C_Str(), directory);
-				texture.type = name;
-				texture.filepath = str.C_Str();
-				textures.push_back(texture);
-				textures_loaded.push_back(texture);
-			}
+			textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name));
 		}
 
 		return textures;
-	}
-
-	unsigned int Model::TextureFromFile(const char* path, const std::string& directory)
-	{
-		std::string filename = std::string(path);
-		filename = directory + '/' + filename;
-
-		unsigned int textureID;
-		glGenTextures(1, &textureID);
-
-		int width, height, nrComponents;
-		unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-		if (data) {
-			GLenum format;
-			if (nrComponents == 1) {
-				format = GL_RED;
-			}
-			else if (nrComponents == 3) {
-				format = GL_RGB;
-			}
-			else if (nrComponents == 4) {
-				format = GL_RGBA;
-			}
-
-			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			stbi_image_free(data);
-		}
-		else {
-			std::cout << "ERROR::ASSIMP::TEXTURELOAD::Texture failed to load at path: " << path << std::endl;
-			stbi_image_free(data);
-		}
-		
-		return textureID;
 	}
 }

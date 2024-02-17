@@ -69,10 +69,10 @@ namespace Engine {
 	public:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
-		std::vector<Texture> textures;
+		std::vector<Texture*> textures;
 		unsigned int VAO;
 
-		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, bool pbr);
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, bool pbr);
 		~Mesh();
 
 		bool PBR() { return pbr; }

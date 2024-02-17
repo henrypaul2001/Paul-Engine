@@ -17,7 +17,7 @@ namespace Engine {
 		bool PBR() { return pbr; }
 
 		std::vector<Mesh> meshes;
-		std::vector<Texture> textures_loaded;
+		//std::vector<Texture> textures_loaded;
 	private:
 		std::string directory;
 		bool pbr;
@@ -25,7 +25,6 @@ namespace Engine {
 		void LoadModel(std::string filepath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-		std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name);
-		unsigned int TextureFromFile(const char* path, const std::string& directory);
+		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name);
 	};
 }

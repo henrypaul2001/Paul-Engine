@@ -55,7 +55,7 @@ namespace Engine {
 				return it->second;
 			}
 			else {
-				std::cout << "ERROR::RESOURCEMANAGER::LOADMODEL:: Mismatch, requested model at path '" << filepath << "' already loaded with different PBR property" << std::endl;
+				std::cout << "ERROR::RESOURCEMANAGER::LOADMODEL::Mismatch, requested model at path '" << filepath << "' already loaded with different PBR property" << std::endl;
 				return nullptr;
 			}
 		}
@@ -76,8 +76,55 @@ namespace Engine {
 		return it->second;
 	}
 
-	Texture* ResourceManager::LoadTexture(std::string filepath)
+	Texture* ResourceManager::LoadTexture(std::string filepath, TextureTypes type)
 	{
-		return nullptr;
+		// First check if already loaded
+		std::unordered_map<std::string, Texture*>::iterator it = textures.find(filepath);
+
+		if (it == textures.end()) {
+			// Load texture
+			unsigned int textureID;
+			glGenTextures(1, &textureID);
+
+			int width, height, nrComponents;
+			unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrComponents, 0);
+			if (data) {
+				GLenum format = GL_RGB;
+				if (nrComponents == 1) {
+					format = GL_RED;
+				}
+				else if (nrComponents == 3) {
+					format = GL_RGB;
+				}
+				else if (nrComponents == 4) {
+					format = GL_RGBA;
+				}
+
+				glBindTexture(GL_TEXTURE_2D, textureID);
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				stbi_image_free(data);
+			}
+			else {
+				std::cout << "ERROR::RESOURCEMANAGER::TEXTURELOAD::Texture failed to load at path: " << filepath << std::endl;
+				stbi_image_free(data);
+			}
+
+			Texture* texture = new Texture();
+			texture->id = textureID;
+			texture->type = type;
+			texture->filepath = filepath;
+
+			textures[filepath] = texture;
+			return textures[filepath];
+		}
+
+		return it->second;
 	}
 }
