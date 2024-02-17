@@ -43,12 +43,18 @@ namespace Engine
 
 	void GameScene::CreateEntities()
 	{
-		Entity* newEntity = new Entity("TestEntity");
-		newEntity->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
-		newEntity->AddComponent(new ComponentVelocity(0.25f, 0.0f, 0.0f));
-		newEntity->AddComponent(new ComponentGeometry("Models/rock/rock.obj", false));
+		Entity* rock = new Entity("Rock");
+		rock->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
+		rock->AddComponent(new ComponentVelocity(0.25f, 0.0f, 0.0f));
+		rock->AddComponent(new ComponentGeometry("Models/rock/rock.obj", false));
+		entityManager->AddEntity(rock);
 
-		entityManager->AddEntity(newEntity);
+		Entity* backpack = new Entity("Backpack");
+		backpack->AddComponent(new ComponentTransform(0.0f, 2.0f, -5.0f));
+		stbi_set_flip_vertically_on_load(true);
+		backpack->AddComponent(new ComponentGeometry("Models/backpack/backpack.obj", false));
+		stbi_set_flip_vertically_on_load(false);
+		entityManager->AddEntity(backpack);
 	}
 
 	void GameScene::CreateSystems()
