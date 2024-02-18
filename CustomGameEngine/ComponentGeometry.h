@@ -18,7 +18,6 @@ namespace Engine {
 		Model* GetModel() { return model; }
 		Shader* GetShader() { return shader; }
 	private:
-		// TODO: Make these pointers to resources in a resource manager
 		Model* model;
 		Shader* shader;
 

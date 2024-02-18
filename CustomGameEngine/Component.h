@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <string>
 namespace Engine
 {
 	enum ComponentTypes {
@@ -10,9 +12,16 @@ namespace Engine
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }
 
+	class Entity;
+
 	class Component
 	{
+	private:
+		Entity* owner;
 	public:
+		Entity* GetOwner();
+		void SetOwner(Entity* newOwner);
+
 		virtual ComponentTypes ComponentType() = 0;
 		virtual void Close() = 0;
 	};

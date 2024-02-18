@@ -26,6 +26,8 @@ namespace Engine
 
 		componentList.push_back(component);
 		mask = mask | component->ComponentType();
+
+		component->SetOwner(this);
 	}
 
 	void Entity::Close() {

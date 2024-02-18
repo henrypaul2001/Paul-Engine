@@ -39,10 +39,15 @@ namespace Engine {
 	void SystemRender::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
 		Shader* shader = geometry->GetShader();
+
+		/*
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, transform->Position());
 		model = glm::scale(model, transform->Scale());
 		model = glm::rotate(model, glm::radians(transform->RotationAngle()), transform->RotationAxis());
+		*/
+
+		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 		shader->setFloat("textureScale", 1.0f);
