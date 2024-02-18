@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
 #include "Component.h"
 namespace Engine
 {
@@ -18,6 +16,7 @@ namespace Engine
 		std::string& Name() { return name; }
 		ComponentTypes& Mask() { return mask; }
 		std::vector<Component*>& Components() { return componentList; }
+		Component* GetComponent(ComponentTypes type);
 
 		void AddComponent(Component* component);
 		void Close();

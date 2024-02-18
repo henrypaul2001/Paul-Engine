@@ -11,6 +11,16 @@ namespace Engine
 		delete& mask;
 	}
 
+	Component* Entity::GetComponent(ComponentTypes type)
+	{
+		for (Component* c : componentList) {
+			if (c->ComponentType() == type) {
+				return c;
+			}
+		}
+		return nullptr;
+	}
+
 	void Entity::AddComponent(Component* component) {
 		_ASSERT(&component != nullptr, "Component cannot be null");
 
