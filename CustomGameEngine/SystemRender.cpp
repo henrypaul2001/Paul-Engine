@@ -1,4 +1,5 @@
 #include "SystemRender.h"
+#include "LightManager.h"
 
 namespace Engine {
 	SystemRender::SystemRender()
@@ -47,10 +48,15 @@ namespace Engine {
 		model = glm::rotate(model, glm::radians(transform->RotationAngle()), transform->RotationAxis());
 		*/
 
+		shader->Use();
+
+		LightManager::GetInstance()->SetShaderUniforms(shader);
+
 		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 		shader->setFloat("textureScale", geometry->GetTextureScale());
+		shader->setFloat("material.SHININESS", 10.0f);
 		geometry->GetModel()->Draw(*geometry->GetShader());
 	}
 }

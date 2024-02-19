@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Entity.h"
+#include "Shader.h"
 namespace Engine {
 	class LightManager
 	{
@@ -20,6 +21,8 @@ namespace Engine {
 		void AddLightEntity(Entity* entity);
 		void SetDirectionalLightEntity(Entity* entity);
 		void RemoveLightEntity(Entity* entity);
+
+		void SetShaderUniforms(Shader* shader);
 
 		std::vector<Entity*> GetLightEntities() { return lightEntities; }
 		Entity* GetDirectionalLightEntity() { return directionalLight; }
