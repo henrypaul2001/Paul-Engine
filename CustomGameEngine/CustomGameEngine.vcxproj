@@ -152,6 +152,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GameSceneManager.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="GameSceneManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Mesh.cpp" />

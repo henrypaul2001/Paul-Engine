@@ -10,11 +10,12 @@ namespace Engine {
 		std::unordered_map<std::string, Texture*> textures;
 
 		ResourceManager();
-		~ResourceManager();
 		static ResourceManager* instance;
 	public:
 		ResourceManager(ResourceManager& other) = delete; // singleton should not be cloneable
 		void operator=(const ResourceManager&) = delete; // singleton should not be assignable
+
+		~ResourceManager();
 
 		static ResourceManager* GetInstance();
 

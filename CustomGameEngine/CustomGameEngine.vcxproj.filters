@@ -141,6 +141,9 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -216,6 +219,9 @@
       <Filter>Source Files\Engine\Objects</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files\Engine\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
   </ItemGroup>
