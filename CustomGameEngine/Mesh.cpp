@@ -19,10 +19,10 @@ namespace Engine {
 	void Mesh::Draw(Shader& shader)
 	{
 		if (!pbr) {
-			shader.setBool("useDiffuseMap", false);
-			shader.setBool("useSpecularMap", false);
-			shader.setBool("useNormalMap", false);
-			shader.setBool("useHeightMap", false);
+			shader.setBool("material.useDiffuseMap", false);
+			shader.setBool("material.useSpecularMap", false);
+			shader.setBool("material.useNormalMap", false);
+			shader.setBool("material.useHeightMap", false);
 
 			unsigned int diffuseNr = 1;
 			unsigned int specularNr = 1;
@@ -36,19 +36,19 @@ namespace Engine {
 				name = ConvertTextureTypeToString(textures[i]->type);
 				if (name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
 					number = std::to_string(diffuseNr++);
-					shader.setBool("useDiffuseMap", true);
+					shader.setBool("material.useDiffuseMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_SPECULAR)) {
 					number = std::to_string(specularNr++);
-					shader.setBool("useSpecularMap", true);
+					shader.setBool("material.useSpecularMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
 					number = std::to_string(normalNr++);
-					shader.setBool("useNormalMap", true);
+					shader.setBool("material.useNormalMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_HEIGHT)) {
 					number = std::to_string(heightNr++);
-					shader.setBool("useHeightMap", true);
+					shader.setBool("material.useHeightMap", true);
 				}
 
 				shader.setInt(("material." + name + number).c_str(), i);
@@ -57,11 +57,11 @@ namespace Engine {
 			glActiveTexture(GL_TEXTURE0);
 		}
 		else {
-			shader.setBool("useAlbedoMap", false);
-			shader.setBool("useNormalMap", false);
-			shader.setBool("useMetallicMap", false);
-			shader.setBool("useRoughnessMap", false);
-			shader.setBool("useAoMap", false);
+			shader.setBool("material.useAlbedoMap", false);
+			shader.setBool("material.useNormalMap", false);
+			shader.setBool("material.useMetallicMap", false);
+			shader.setBool("material.useRoughnessMap", false);
+			shader.setBool("material.useAoMap", false);
 
 			unsigned int albedoNr = 1;
 			unsigned int normalNr = 1;
@@ -76,23 +76,23 @@ namespace Engine {
 				name = ConvertTextureTypeToString(textures[i]->type);
 				if (name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
 					number = std::to_string(albedoNr++);
-					shader.setBool("useAlbedoMap", true);
+					shader.setBool("material.useAlbedoMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
 					number = std::to_string(normalNr++);
-					shader.setBool("useNormalMap", true);
+					shader.setBool("material.useNormalMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_METAL)) {
 					number = std::to_string(metallicNr++);
-					shader.setBool("useMetallicMap", true);
+					shader.setBool("material.useMetallicMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_ROUGHNESS)) {
 					number = std::to_string(roughnessNr++);
-					shader.setBool("useRoughnessMap", true);
+					shader.setBool("material.useRoughnessMap", true);
 				}
 				else if (name == ConvertTextureTypeToString(TEXTURE_AO)) {
 					number = std::to_string(aoNr++);
-					shader.setBool("useAoMap", true);
+					shader.setBool("material.useAoMap", true);
 				}
 
 				shader.setInt(("material." + name + number).c_str(), i);
