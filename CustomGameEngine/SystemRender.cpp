@@ -50,7 +50,7 @@ namespace Engine {
 		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-		shader->setFloat("textureScale", 1.0f);
+		shader->setFloat("textureScale", geometry->GetTextureScale());
 		geometry->GetModel()->Draw(*geometry->GetShader());
 	}
 }

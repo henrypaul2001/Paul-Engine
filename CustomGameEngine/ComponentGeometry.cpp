@@ -6,6 +6,7 @@ namespace Engine {
 		this->pbr = pbr;
 		model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
 		usingDefaultShader = false;
+		textureScale = 1.0f;
 		//shader = new Shader(vShaderFilepath, fShaderFilepath); // dont do this. Use resource manager instead to avoid duplicate shaders, also do it at start instead of potentially loading shaders during gameplay
 	}
 
@@ -26,6 +27,8 @@ namespace Engine {
 			//f = "Shaders/defaultLit.frag";
 			shader = SceneManager::defaultLit;
 		}
+
+		textureScale = 1.0f;
 		
 		// configure shader uniforms
 	}

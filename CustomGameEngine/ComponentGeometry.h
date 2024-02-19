@@ -17,9 +17,14 @@ namespace Engine {
 
 		Model* GetModel() { return model; }
 		Shader* GetShader() { return shader; }
+		float GetTextureScale() { return textureScale; }
+		
+		void SetTextureScale(float newScale) { textureScale = newScale; }
 	private:
 		Model* model;
 		Shader* shader;
+
+		float textureScale;
 
 		bool pbr;
 		bool usingDefaultShader;
