@@ -2,6 +2,7 @@
 #include "ComponentTransform.h"
 #include "ComponentVelocity.h"
 #include "ComponentGeometry.h"
+#include "ComponentLight.h"
 #include "Camera.h"
 #include "SystemManager.h"
 #include "EntityManager.h"

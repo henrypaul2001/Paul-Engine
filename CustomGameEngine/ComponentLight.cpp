@@ -5,13 +5,14 @@ namespace Engine {
 	ComponentLight::ComponentLight(LightTypes type)
 	{
 		this->type = type;
-		switch (type) {
-			case DIRECTIONAL:
-				DefaultDirectional();
-			case SPOT:
-				DefaultSpot();
-			case POINT:
-				DefaultPoint();
+		if (type == DIRECTIONAL) {
+			DefaultDirectional();
+		}
+		else if (type == SPOT) {
+			DefaultSpot();
+		}
+		else if (type == POINT) {
+			DefaultPoint();
 		}
 	}
 
@@ -24,8 +25,8 @@ namespace Engine {
 	{
 		Direction = glm::vec3(0.0f, -0.5f, -1.0f);
 
-		Colour = glm::vec3(1.0f, 1.0f, 1.0f);
-		Specular = glm::vec3(1.0f, 1.0f, 1.0f);
+		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
+		Specular = glm::vec3(0.75f, 0.75f, 0.75f);
 		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 	}
 

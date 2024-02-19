@@ -56,7 +56,8 @@ namespace Engine {
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 		shader->setFloat("textureScale", geometry->GetTextureScale());
-		shader->setFloat("material.SHININESS", 10.0f);
+		shader->setFloat("material.SHININESS", 60.72f);
+
 		geometry->GetModel()->Draw(*geometry->GetShader());
 	}
 }

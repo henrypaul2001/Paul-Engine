@@ -45,8 +45,13 @@ namespace Engine
 	{
 		Entity* rock = new Entity("Rock");
 		rock->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
-		rock->AddComponent(new ComponentVelocity(0.25f, 0.0f, 0.0f));
+		rock->AddComponent(new ComponentVelocity(0.5f, 0.0f, 0.0f));
 		rock->AddComponent(new ComponentGeometry("Models/rock/rock.obj", false));
+		ComponentLight* rockLight = new ComponentLight(POINT);
+		rockLight->Colour = glm::vec3(0.8f, 0.0f, 0.0f);
+		rockLight->Specular = glm::vec3(0.8f, 0.0f, 0.0f);
+		rockLight->Ambient = glm::vec3(0.2f, 0.0f, 0.0f);
+		rock->AddComponent(rockLight);
 		entityManager->AddEntity(rock);
 
 		Entity* rockChild = new Entity("RockChild");
@@ -75,6 +80,17 @@ namespace Engine
 		backpack->AddComponent(new ComponentGeometry("Models/backpack/backpack.obj", false));
 		stbi_set_flip_vertically_on_load(false);
 		entityManager->AddEntity(backpack);
+
+		Entity* dirLight = new Entity("Directional Light");
+		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
+		entityManager->AddEntity(dirLight);
+
+		Entity* spotLight = new Entity("Spot Light");
+		spotLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 1.0f));
+		spotLight->AddComponent(new ComponentLight(SPOT));
+		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
+		entityManager->AddEntity(spotLight);
 	}
 
 	void GameScene::CreateSystems()

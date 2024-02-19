@@ -8,7 +8,7 @@ namespace Engine {
 		SPOT
 	};
 
-	class ComponentLight : Component
+	class ComponentLight : public Component
 	{
 	private:
 		LightTypes type;

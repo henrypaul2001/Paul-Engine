@@ -5,6 +5,7 @@ namespace Engine {
 	LightManager* LightManager::instance = nullptr;
 	LightManager::LightManager() {
 		directionalLight = nullptr;
+		lightEntities = std::vector<Entity*>();
 	}
 
 	LightManager::~LightManager() {
@@ -61,26 +62,27 @@ namespace Engine {
 			ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
 
 			if (lightComponent->GetLightType() == POINT) {
-				shader->setVec3(std::string("lights[" + i + std::string("].Position")), transformComponent->GetWorldPosition());
-				shader->setVec3(std::string("lights[" + i + std::string("].Colour")), lightComponent->Colour);
-				shader->setVec3(std::string("lights[" + i + std::string("].Specular")), lightComponent->Specular);
-				shader->setVec3(std::string("lights[" + i + std::string("].Ambient")), lightComponent->Ambient);
-				shader->setFloat(std::string("lights[" + i + std::string("].Constant")), lightComponent->Constant);
-				shader->setFloat(std::string("lights[" + i + std::string("].Linear")), lightComponent->Linear);
-				shader->setFloat(std::string("lights[" + i + std::string("].Quadratic")), lightComponent->Quadratic);
-				shader->setBool(std::string("lights[" + i + std::string("].SpotLight")), false);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Position")), transformComponent->GetWorldPosition());
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Colour")), lightComponent->Colour);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Specular")), lightComponent->Specular);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Ambient")), lightComponent->Ambient);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Constant")), lightComponent->Constant);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Linear")), lightComponent->Linear);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Quadratic")), lightComponent->Quadratic);
+				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
 			}
 			else if (lightComponent->GetLightType() == SPOT) {
-				shader->setVec3(std::string("lights[" + i + std::string("].Position")), transformComponent->GetWorldPosition());
-				shader->setVec3(std::string("lights[" + i + std::string("].Colour")), lightComponent->Colour);
-				shader->setVec3(std::string("lights[" + i + std::string("].Specular")), lightComponent->Specular);
-				shader->setVec3(std::string("lights[" + i + std::string("].Ambient")), lightComponent->Ambient);
-				shader->setFloat(std::string("lights[" + i + std::string("].Constant")), lightComponent->Constant);
-				shader->setFloat(std::string("lights[" + i + std::string("].Linear")), lightComponent->Linear);
-				shader->setFloat(std::string("lights[" + i + std::string("].Quadratic")), lightComponent->Quadratic);
-				shader->setBool(std::string("lights[" + i + std::string("].SpotLight")), true);
-				shader->setFloat("lights[" + i + std::string("].Cutoff"), lightComponent->Cutoff);
-				shader->setFloat("lights[" + i + std::string("].OuterCutoff"), lightComponent->OuterCutoff);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Position")), transformComponent->GetWorldPosition());
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Colour")), lightComponent->Colour);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Specular")), lightComponent->Specular);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Ambient")), lightComponent->Ambient);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Constant")), lightComponent->Constant);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Linear")), lightComponent->Linear);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Quadratic")), lightComponent->Quadratic);
+				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), true);
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Direction")), lightComponent->Direction);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Cutoff")), lightComponent->Cutoff);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].OuterCutoff")), lightComponent->OuterCutoff);
 			}
 		}
 	}

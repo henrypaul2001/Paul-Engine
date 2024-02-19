@@ -54,12 +54,12 @@ struct Light {
 };
 #define NR_REAL_TIME_LIGHTS 8
 uniform Light lights[NR_REAL_TIME_LIGHTS];
+uniform int activeLights;
 
 uniform vec3 viewPos;
 uniform bool gamma;
 
-vec3 BlinnPhongPointLight(Light light, vec3 normal, vec3 fragPos)
-{
+vec3 BlinnPhongPointLight(Light light, vec3 normal, vec3 fragPos) {
     // diffuse
     vec3 lightDir = normalize(light.Position - fragPos);
     float diff = max(dot(lightDir, normal), 0.0);
@@ -193,7 +193,7 @@ void main()
     lighting += BlinnPhongDirLight(dirLight, normalize(fs_in.Normal), normalize(viewPos - fs_in.WorldPos));
 
     // Point and spotlights
-    for (int i = 0; i < lights.length(); ++i) {
+    for (int i = 0; i < activeLights; i++) {
         if (lights[i].SpotLight) {
             lighting += BlinnPhongSpotLight(lights[i], normalize(fs_in.Normal), fs_in.WorldPos);
         }
