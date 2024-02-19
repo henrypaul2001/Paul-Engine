@@ -45,11 +45,15 @@ namespace Engine {
 		shader->Use();
 
 		// First set directional light
-		ComponentLight* directional = dynamic_cast<ComponentLight*>(directionalLight->GetComponent(COMPONENT_LIGHT));
-		shader->setVec3("dirLight.Direction", directional->Direction);
-		shader->setVec3("dirLight.Colour", directional->Colour);
-		shader->setVec3("dirLight.Specular", directional->Specular);
-		shader->setVec3("dirLight.Ambient", directional->Ambient);
+		if (directionalLight != nullptr) {
+			ComponentLight* directional = dynamic_cast<ComponentLight*>(directionalLight->GetComponent(COMPONENT_LIGHT));
+			shader->setVec3("dirLight.Direction", directional->Direction);
+			shader->setVec3("dirLight.Colour", directional->Colour);
+			shader->setVec3("dirLight.Specular", directional->Specular);
+			shader->setVec3("dirLight.Ambient", directional->Ambient);
+		}
+
+		shader->setInt("activeLights", lightEntities.size());
 
 		// Now spot and point lights
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
@@ -57,7 +61,7 @@ namespace Engine {
 			ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
 
 			if (lightComponent->GetLightType() == POINT) {
-				shader->setVec3(std::string("lights[" + i + std::string("].Position")), transformComponent->Position());
+				shader->setVec3(std::string("lights[" + i + std::string("].Position")), transformComponent->GetWorldPosition());
 				shader->setVec3(std::string("lights[" + i + std::string("].Colour")), lightComponent->Colour);
 				shader->setVec3(std::string("lights[" + i + std::string("].Specular")), lightComponent->Specular);
 				shader->setVec3(std::string("lights[" + i + std::string("].Ambient")), lightComponent->Ambient);
@@ -67,7 +71,7 @@ namespace Engine {
 				shader->setBool(std::string("lights[" + i + std::string("].SpotLight")), false);
 			}
 			else if (lightComponent->GetLightType() == SPOT) {
-				shader->setVec3(std::string("lights[" + i + std::string("].Position")), transformComponent->Position());
+				shader->setVec3(std::string("lights[" + i + std::string("].Position")), transformComponent->GetWorldPosition());
 				shader->setVec3(std::string("lights[" + i + std::string("].Colour")), lightComponent->Colour);
 				shader->setVec3(std::string("lights[" + i + std::string("].Specular")), lightComponent->Specular);
 				shader->setVec3(std::string("lights[" + i + std::string("].Ambient")), lightComponent->Ambient);

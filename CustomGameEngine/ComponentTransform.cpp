@@ -91,6 +91,16 @@ namespace Engine
 		}
 	}
 
+	glm::vec3 ComponentTransform::GetWorldPosition()
+	{
+		glm::vec3 worldPos = Position();
+		if (parent != nullptr) {
+			worldPos += dynamic_cast<ComponentTransform*>(parent->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
+		}
+
+		return worldPos;
+	}
+
 	Entity* ComponentTransform::FindChildWithName(std::string name)
 	{
 		for (Entity* e : children) {

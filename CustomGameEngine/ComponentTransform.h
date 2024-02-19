@@ -40,6 +40,8 @@ namespace Engine
 		glm::vec3 Scale() { return scale; }
 		glm::mat4 GetWorldModelMatrix() { return worldModelMatrix; }
 
+		glm::vec3 GetWorldPosition();
+
 		std::vector<Entity*> GetChildren() { return children; }
 		Entity* FindChildWithName(std::string name);
 		Entity* GetParent() { return parent; }
