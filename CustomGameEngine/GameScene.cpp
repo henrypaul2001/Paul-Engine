@@ -87,7 +87,7 @@ namespace Engine
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");
-		spotLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 1.0f));
+		spotLight->AddComponent(new ComponentTransform(0.0f, 0.0f, -3.5f));
 		spotLight->AddComponent(new ComponentLight(SPOT));
 		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
@@ -107,6 +107,8 @@ namespace Engine
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 0.0f, 1.0f), sin(time) * 180.0f);
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild2")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), sin(time) * 180.0f);
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild3")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 1.0f, 1.0f), sin(time) * 180.0f);
+
+		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
 	}
 
 	void GameScene::Render()
