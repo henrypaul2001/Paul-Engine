@@ -87,10 +87,10 @@ namespace Engine
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");
-		spotLight->AddComponent(new ComponentTransform(0.0f, 0.0f, -3.5f));
+		spotLight->AddComponent(new ComponentTransform(0.0f, 2.0f, -7.5f));
 		spotLight->AddComponent(new ComponentLight(SPOT));
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
-		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
+		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
 	}
 

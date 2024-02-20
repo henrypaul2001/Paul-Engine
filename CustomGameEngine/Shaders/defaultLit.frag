@@ -5,13 +5,14 @@ in VS_OUT {
     vec3 WorldPos;
     vec3 Normal;
     vec2 TexCoords;
+    mat3 TBN;
 } fs_in;
 
 // material struct
 struct Material {
     sampler2D TEXTURE_DIFFUSE1;
     sampler2D TEXTURE_SPECULAR1;
-    // normal map
+    sampler2D TEXTURE_NORMAL1;
     // height map
 
     float SHININESS;
@@ -189,16 +190,23 @@ void main()
 {
     vec3 lighting = vec3(0.0);
 
+    vec3 normal = normalize(fs_in.Normal);
+    if (material.useNormalMap) {
+        normal = texture(material.TEXTURE_NORMAL1, fs_in.TexCoords).rgb;
+        normal = normal * 2.0 - 1.0;
+        normal = normalize(fs_in.TBN * normal);
+    }
+
     // Directional light
-    lighting += BlinnPhongDirLight(dirLight, normalize(fs_in.Normal), normalize(viewPos - fs_in.WorldPos));
+    lighting += BlinnPhongDirLight(dirLight, normal, normalize(viewPos - fs_in.WorldPos));
 
     // Point and spotlights
     for (int i = 0; i < activeLights; i++) {
         if (lights[i].SpotLight) {
-            lighting += BlinnPhongSpotLight(lights[i], normalize(fs_in.Normal), fs_in.WorldPos);
+            lighting += BlinnPhongSpotLight(lights[i], normal, fs_in.WorldPos);
         }
         else {
-            lighting += BlinnPhongPointLight(lights[i], normalize(fs_in.Normal), fs_in.WorldPos);
+            lighting += BlinnPhongPointLight(lights[i], normal, fs_in.WorldPos);
         }
     }
 
