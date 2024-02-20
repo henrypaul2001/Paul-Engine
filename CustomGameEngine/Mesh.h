@@ -64,6 +64,18 @@ namespace Engine {
 		// float Weights[MAX_BONE_INFLUENCE];
 	};
 
+	struct Material {
+		std::vector<Texture*> diffuseMaps;
+		std::vector<Texture*> specularMaps;
+		std::vector<Texture*> normalMaps;
+		std::vector<Texture*> heightMaps;
+
+		float shininess;
+
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+	};
+
 	class Mesh
 	{
 	public:
@@ -73,6 +85,7 @@ namespace Engine {
 		unsigned int VAO;
 
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, bool pbr);
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material, bool pbr);
 		~Mesh();
 
 		bool PBR() { return pbr; }
@@ -80,6 +93,7 @@ namespace Engine {
 		void Draw(Shader& shader);
 	private:
 		unsigned int VBO, EBO;
+		Material* material;
 		bool pbr;
 
 		void SetupMesh();
