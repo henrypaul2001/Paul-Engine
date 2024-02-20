@@ -18,6 +18,7 @@ namespace Engine
 			for (Entity* e : entityList) {
 				s->OnAction(e);
 			}
+			s->AfterAction();
 		}
 	}
 
@@ -28,6 +29,7 @@ namespace Engine
 			for (Entity* e : entityList) {
 				s->OnAction(e);
 			}
+			s->AfterAction();
 		}
 	}
 

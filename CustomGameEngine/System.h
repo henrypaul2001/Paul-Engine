@@ -17,6 +17,7 @@ namespace Engine
 	{
 	public:
 		virtual void OnAction(Entity* entity) = 0;
+		virtual void AfterAction() = 0;
 		virtual SystemTypes Name() = 0;
 	};
 }
