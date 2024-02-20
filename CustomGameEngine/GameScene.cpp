@@ -43,6 +43,13 @@ namespace Engine
 
 	void GameScene::CreateEntities()
 	{
+		Entity* backpack = new Entity("Backpack");
+		backpack->AddComponent(new ComponentTransform(0.0f, 2.0f, -5.0f));
+		stbi_set_flip_vertically_on_load(true);
+		backpack->AddComponent(new ComponentGeometry("Models/backpack/backpack.obj", false));
+		stbi_set_flip_vertically_on_load(false);
+		entityManager->AddEntity(backpack);
+
 		Entity* rock = new Entity("Rock");
 		rock->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
 		rock->AddComponent(new ComponentVelocity(0.5f, 0.0f, 0.0f));
@@ -73,13 +80,6 @@ namespace Engine
 		rockChild3->AddComponent(new ComponentGeometry("Models/rock/rock.obj", false));
 		dynamic_cast<ComponentTransform*>(rockChild3->GetComponent(COMPONENT_TRANSFORM))->SetParent(rockChild2);
 		entityManager->AddEntity(rockChild3);
-
-		Entity* backpack = new Entity("Backpack");
-		backpack->AddComponent(new ComponentTransform(0.0f, 2.0f, -5.0f));
-		stbi_set_flip_vertically_on_load(true);
-		backpack->AddComponent(new ComponentGeometry("Models/backpack/backpack.obj", false));
-		stbi_set_flip_vertically_on_load(false);
-		entityManager->AddEntity(backpack);
 
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

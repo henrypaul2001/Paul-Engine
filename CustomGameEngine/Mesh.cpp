@@ -23,7 +23,10 @@ namespace Engine {
 
 	Mesh::~Mesh()
 	{
-		delete material;
+		if (material != nullptr) {
+			// TODO: COME BACK TO THIS LATER DONT FORGET
+			//delete material;
+		}
 	}
 
 	void Mesh::Draw(Shader& shader)
@@ -79,12 +82,12 @@ namespace Engine {
 					glActiveTexture(GL_TEXTURE0 + count);
 					name = ConvertTextureTypeToString(material->diffuseMaps[i]->type);
 					if (name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
+						shader.setInt(("material." + name + std::to_string(diffuseNr)).c_str(), count);
+						glBindTexture(GL_TEXTURE_2D, material->diffuseMaps[i]->id);
 						diffuseNr++;
 						shader.setBool("material.useDiffuseMap", true);
 					}
 					count++;
-					shader.setInt(("material." + name + std::to_string(diffuseNr)).c_str(), i);
-					glBindTexture(GL_TEXTURE_2D, material->diffuseMaps[i]->id);
 				}
 
 				// specular maps
@@ -92,12 +95,12 @@ namespace Engine {
 					glActiveTexture(GL_TEXTURE0 + count);
 					name = ConvertTextureTypeToString(material->specularMaps[i]->type);
 					if (name == ConvertTextureTypeToString(TEXTURE_SPECULAR)) {
+						shader.setInt(("material." + name + std::to_string(specularNr)).c_str(), count);
+						glBindTexture(GL_TEXTURE_2D, material->specularMaps[i]->id);
 						specularNr++;
 						shader.setBool("material.useSpecularMap", true);
 					}
 					count++;
-					shader.setInt(("material." + name + std::to_string(specularNr)).c_str(), i);
-					glBindTexture(GL_TEXTURE_2D, material->specularMaps[i]->id);
 				}
 
 				// normal maps
@@ -105,12 +108,12 @@ namespace Engine {
 					glActiveTexture(GL_TEXTURE0 + count);
 					name = ConvertTextureTypeToString(material->normalMaps[i]->type);
 					if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
+						shader.setInt(("material." + name + std::to_string(normalNr)).c_str(), count);
+						glBindTexture(GL_TEXTURE_2D, material->normalMaps[i]->id);
 						normalNr++;
 						shader.setBool("material.useNormalMap", true);
 					}
 					count++;
-					shader.setInt(("material." + name + std::to_string(normalNr)).c_str(), i);
-					glBindTexture(GL_TEXTURE_2D, material->normalMaps[i]->id);
 				}
 
 				// height maps
@@ -118,12 +121,12 @@ namespace Engine {
 					glActiveTexture(GL_TEXTURE0 + count);
 					name = ConvertTextureTypeToString(material->heightMaps[i]->type);
 					if (name == ConvertTextureTypeToString(TEXTURE_HEIGHT)) {
+						shader.setInt(("material." + name + std::to_string(heightNr)).c_str(), count);
+						glBindTexture(GL_TEXTURE_2D, material->heightMaps[i]->id);
 						heightNr++;
 						shader.setBool("material.useHeightMap", true);
 					}
 					count++;
-					shader.setInt(("material." + name + std::to_string(heightNr)).c_str(), i);
-					glBindTexture(GL_TEXTURE_2D, material->heightMaps[i]->id);
 				}
 			}
 

@@ -56,6 +56,7 @@ namespace Engine {
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<Texture*> textures;
+		Material* meshMaterial = new Material();
 
 		// retrieve vertices
 		Vertex vertex;
@@ -107,17 +108,48 @@ namespace Engine {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 			if (!pbr) {
+
+				float shine;
+				if (AI_SUCCESS != aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shine)) {
+					// default
+					shine = 15.0f;
+				}
+
+				aiColor4D baseColour;
+				if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &baseColour)) {
+					// default
+					baseColour = aiColor4D(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+				glm::vec3 diffuseColour = glm::vec3(baseColour.r, baseColour.b, baseColour.g);
+
+				aiColor4D specColour;
+				if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specColour)) {
+					// default
+					specColour = aiColor4D(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+				glm::vec3 specularColour = glm::vec3(specColour.r, specColour.b, specColour.g);
+
+				meshMaterial->diffuse = diffuseColour;
+				meshMaterial->specular = specularColour;
+				meshMaterial->shininess = shine;
+
 				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
-				textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+				meshMaterial->diffuseMaps = diffuseMaps;
+				//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR);
-				textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+				meshMaterial->specularMaps = specularMaps;
+				//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
-				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+				meshMaterial->normalMaps = normalMaps;
+				//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
 				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
-				textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+				meshMaterial->heightMaps = heightMaps;
+				//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+				return Mesh(vertices, indices, meshMaterial, pbr);
 			}
 			else {
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
@@ -134,10 +166,10 @@ namespace Engine {
 
 				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
 				textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
+
+				return Mesh(vertices, indices, textures, pbr);
 			}
 		}
-
-		return Mesh(vertices, indices, textures, pbr);
 	}
 
 	std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name)

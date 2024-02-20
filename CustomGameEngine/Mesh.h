@@ -74,6 +74,8 @@ namespace Engine {
 
 		glm::vec3 diffuse;
 		glm::vec3 specular;
+
+		// I have no idea how to delete this properly without causing an error. Come back later
 	};
 
 	class Mesh
