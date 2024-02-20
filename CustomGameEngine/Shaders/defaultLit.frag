@@ -5,7 +5,6 @@ in VS_OUT {
     vec3 WorldPos;
     vec3 Normal;
     vec2 TexCoords;
-    mat3 TBN;
 } fs_in;
 
 // material struct
@@ -186,15 +185,29 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     return diffuse + specular + ambient;
 }
 
+vec3 GetNormalFromMap() {
+    vec3 tangentNormal = texture(material.TEXTURE_NORMAL1, fs_in.TexCoords).xyz * 2.0 - 1.0;
+
+    vec3 Q1 = dFdx(fs_in.WorldPos);
+    vec3 Q2  = dFdy(fs_in.WorldPos);
+    vec2 st1 = dFdx(fs_in.TexCoords);
+    vec2 st2 = dFdy(fs_in.TexCoords);
+
+    vec3 N = normalize(fs_in.Normal);
+    vec3 T = normalize(Q1 * st2.t - Q2 * st1.t);
+    vec3 B = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
+
 void main()
 {
     vec3 lighting = vec3(0.0);
 
     vec3 normal = normalize(fs_in.Normal);
     if (material.useNormalMap) {
-        normal = texture(material.TEXTURE_NORMAL1, fs_in.TexCoords).rgb;
-        normal = normal * 2.0 - 1.0;
-        normal = normalize(fs_in.TBN * normal);
+        normal = GetNormalFromMap();
     }
 
     // Directional light
