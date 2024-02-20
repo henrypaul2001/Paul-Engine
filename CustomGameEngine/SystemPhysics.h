@@ -15,6 +15,7 @@ namespace Engine
 
 		SystemTypes Name() override { return SYSTEM_PHYSICS; }
 		void OnAction(Entity* entity) override;
+		void AfterAction() override;
 
 		void Motion(ComponentTransform* transform, ComponentVelocity* velocity);
 	};

@@ -37,6 +37,11 @@ namespace Engine
 		}
 	}
 
+	void SystemPhysics::AfterAction()
+	{
+
+	}
+
 	void SystemPhysics::Motion(ComponentTransform* transform, ComponentVelocity* velocity)
 	{
 		transform->SetLastPosition(transform->Position());

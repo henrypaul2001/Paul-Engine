@@ -46,17 +46,28 @@ namespace Engine {
 	void SystemRender::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
 		Shader* shader = geometry->GetShader();
-
-		/*
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, transform->Position());
-		model = glm::scale(model, transform->Scale());
-		model = glm::rotate(model, glm::radians(transform->RotationAngle()), transform->RotationAxis());
-		*/
+		if (shadersUsedThisFrame.size() > 0) {
+			for (Shader* s : shadersUsedThisFrame) {
+				if (&s == &shader) {
+					// lighting uniforms already set
+				}
+				else {
+					// add shader to list and set lighting uniforms
+					shadersUsedThisFrame.push_back(s);
+					shader->Use();
+					LightManager::GetInstance()->SetShaderUniforms(shader);
+					break;
+				}
+			}
+		}
+		else {
+			shader->Use();
+			LightManager::GetInstance()->SetShaderUniforms(shader);
+		}
 
 		shader->Use();
 
-		LightManager::GetInstance()->SetShaderUniforms(shader);
+		//LightManager::GetInstance()->SetShaderUniforms(shader);
 
 		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
