@@ -4,7 +4,7 @@ namespace Engine {
 	Model::Model(PremadeModel modelType)
 	{
 		if (modelType == MODEL_PLANE) {
-
+			meshes.push_back(*ResourceManager::GetInstance()->DefaultPlane());
 		}
 		else if (modelType == MODEL_CUBE) {
 			meshes.push_back(*ResourceManager::GetInstance()->DefaultCube());

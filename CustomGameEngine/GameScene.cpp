@@ -43,22 +43,31 @@ namespace Engine
 
 	void GameScene::CreateEntities()
 	{
-		Entity* defaultCube = new Entity("Default Cube");
-		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
-		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		Material* newMeshMaterial = new Material();
 		newMeshMaterial->diffuse = glm::vec3(0.8f, 0.0f, 0.8f);
 		newMeshMaterial->specular = glm::vec3(1.0f, 0.0f, 1.0f);
 		newMeshMaterial->shininess = 100.0f;
+
+		Entity* defaultCube = new Entity("Default Cube");
+		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
+		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(newMeshMaterial);
 		entityManager->AddEntity(defaultCube);
+
+		Entity* defaultPlane = new Entity("Default Plane");
+		ComponentTransform* transform = new ComponentTransform(0.0f, -10.0f, 0.0f);
+		transform->SetScale(glm::vec3(50.0f, 50.0f, 1.0f));
+		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		defaultPlane->AddComponent(transform);
+		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		entityManager->AddEntity(defaultPlane);
 
 		Entity* backpack = new Entity("Backpack");
 		backpack->AddComponent(new ComponentTransform(0.0f, 2.0f, -5.0f));
 		stbi_set_flip_vertically_on_load(true);
 		backpack->AddComponent(new ComponentGeometry("Models/backpack/backpack.obj", false));
 		stbi_set_flip_vertically_on_load(false);
-		dynamic_cast<ComponentGeometry*>(backpack->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(ResourceManager::GetInstance()->DefaultMaterial());
+		//dynamic_cast<ComponentGeometry*>(backpack->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(ResourceManager::GetInstance()->DefaultMaterial());
 		entityManager->AddEntity(backpack);
 
 		Entity* rock = new Entity("Rock");

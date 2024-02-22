@@ -10,6 +10,7 @@ namespace Engine {
 		std::unordered_map<std::string, Texture*> textures;
 
 		Mesh* defaultCube;
+		Mesh* defaultPlane;
 		Material* defaultMaterial;
 
 		ResourceManager();
@@ -29,6 +30,7 @@ namespace Engine {
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
 		Mesh* DefaultCube() { return defaultCube; }
+		Mesh* DefaultPlane() { return defaultPlane; }
 		Material* DefaultMaterial() { return defaultMaterial; }
 	};
 }
