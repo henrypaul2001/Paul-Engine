@@ -48,6 +48,15 @@ namespace Engine
 		newMeshMaterial->specular = glm::vec3(1.0f, 0.0f, 1.0f);
 		newMeshMaterial->shininess = 100.0f;
 
+		Material* cobbleFloor = new Material();
+		cobbleFloor->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE));
+		cobbleFloor->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL));
+		cobbleFloor->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/specular.png", TEXTURE_SPECULAR));
+		cobbleFloor->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/displace.png", TEXTURE_DISPLACE));
+		cobbleFloor->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		cobbleFloor->specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		cobbleFloor->shininess = 60.0f;
+
 		Entity* defaultCube = new Entity("Default Cube");
 		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
 		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
@@ -60,6 +69,8 @@ namespace Engine
 		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		defaultPlane->AddComponent(transform);
 		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
+		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
 		entityManager->AddEntity(defaultPlane);
 
 		Entity* backpack = new Entity("Backpack");
@@ -112,6 +123,16 @@ namespace Engine
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
+
+		Entity* pointLight = new Entity("Point Light");
+		pointLight->AddComponent(new ComponentTransform(0.0f, -8.0f, -7.5f));
+		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		pointLight->AddComponent(new ComponentLight(POINT));
+		pointLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		pointLight->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
+		//dynamic_cast<ComponentLight*>(pointLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
+		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
+		entityManager->AddEntity(pointLight);
 	}
 
 	void GameScene::CreateSystems()
@@ -130,6 +151,8 @@ namespace Engine
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild3")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 1.0f, 1.0f), sin(time) * 180.0f);
 
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
+
+		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 10.0f);
 	}
 
 	void GameScene::Render()
