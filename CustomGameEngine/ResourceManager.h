@@ -9,6 +9,9 @@ namespace Engine {
 		std::unordered_map<std::string, Shader*> shaders;
 		std::unordered_map<std::string, Texture*> textures;
 
+		Mesh* defaultCube;
+		Material* defaultMaterial;
+
 		ResourceManager();
 		static ResourceManager* instance;
 	public:
@@ -24,5 +27,8 @@ namespace Engine {
 		Texture* LoadTexture(std::string filepath, TextureTypes type);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
+	
+		Mesh* DefaultCube() { return defaultCube; }
+		Material* DefaultMaterial() { return defaultMaterial; }
 	};
 }

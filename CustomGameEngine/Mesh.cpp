@@ -29,6 +29,11 @@ namespace Engine {
 		}
 	}
 
+	void Mesh::ApplyMaterial(Material* material)
+	{
+		this->material = material;
+	}
+
 	void Mesh::Draw(Shader& shader)
 	{
 		if (!pbr) {

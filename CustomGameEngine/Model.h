@@ -6,15 +6,25 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 namespace Engine {
+	enum PremadeModel {
+		MODEL_SPHERE,
+		MODEL_CUBE,
+		MODEL_PLANE
+	};
+
 	class Model
 	{
 	public:
+		Model(PremadeModel modelType);
 		Model(const char* filepath);
 		Model(const char* filepath, bool pbr);
 		~Model();
 		void Draw(Shader& shader);
 
 		bool PBR() { return pbr; }
+
+		void ApplyMaterialToAllMesh(Material* material);
+		void ApplyMaterialToMeshAtIndex(Material* material, int index);
 
 		std::vector<Mesh> meshes;
 		//std::vector<Texture> textures_loaded;

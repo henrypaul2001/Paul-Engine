@@ -92,6 +92,11 @@ namespace Engine
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
+
+		Entity* defaultCube = new Entity("Default Cube");
+		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
+		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(defaultCube);
 	}
 
 	void GameScene::CreateSystems()

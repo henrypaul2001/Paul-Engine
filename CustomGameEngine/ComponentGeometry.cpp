@@ -1,13 +1,32 @@
 #include "ComponentGeometry.h"
 #include "SceneManager.h"
 namespace Engine {
+	ComponentGeometry::ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath)
+	{
+		this->pbr = false;
+		model = new Model(modelType);
+		usingDefaultShader = false;
+		textureScale = 1.0f;
+		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
+	}
+
+	ComponentGeometry::ComponentGeometry(PremadeModel modelType)
+	{
+		this->pbr = false;
+		model = new Model(modelType);
+		usingDefaultShader = true;
+
+		shader = SceneManager::defaultLit;
+		textureScale = 1.0f;
+	}
+
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr)
 	{
 		this->pbr = pbr;
-		model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
+		//model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
 		usingDefaultShader = false;
 		textureScale = 1.0f;
-		//shader = new Shader(vShaderFilepath, fShaderFilepath); // dont do this. Use resource manager instead to avoid duplicate shaders, also do it at start instead of potentially loading shaders during gameplay
+		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
 
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr)

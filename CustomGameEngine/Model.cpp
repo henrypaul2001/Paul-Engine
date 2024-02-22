@@ -1,6 +1,19 @@
 #include "Model.h"
 #include "ResourceManager.h"
 namespace Engine {
+	Model::Model(PremadeModel modelType)
+	{
+		if (modelType == MODEL_PLANE) {
+
+		}
+		else if (modelType == MODEL_CUBE) {
+			meshes.push_back(*ResourceManager::GetInstance()->DefaultCube());
+		}
+		else if (modelType == MODEL_SPHERE) {
+
+		}
+	}
+
 	Model::Model(const char* filepath)
 	{
 		LoadModel(filepath);
@@ -22,6 +35,20 @@ namespace Engine {
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			meshes[i].Draw(shader);
+		}
+	}
+
+	void Model::ApplyMaterialToAllMesh(Material* material)
+	{
+		for (Mesh m : meshes) {
+			m.ApplyMaterial(material);
+		}
+	}
+
+	void Model::ApplyMaterialToMeshAtIndex(Material* material, int index)
+	{
+		if (index < meshes.size()) {
+			meshes[index].ApplyMaterial(material);
 		}
 	}
 

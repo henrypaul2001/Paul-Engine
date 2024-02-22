@@ -4,11 +4,159 @@ namespace Engine {
 	ResourceManager* ResourceManager::instance = nullptr;
 	ResourceManager::ResourceManager()
 	{
+		// Load defaults
+		defaultMaterial = new Material();
+		defaultMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+		defaultMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+		defaultMaterial->shininess = 35.0f;
 
+		std::vector<Vertex> vertices;
+		std::vector<unsigned int> indices;
+		Vertex vertex;
+#pragma region defaultCube
+		// Front face
+		vertex.Position = glm::vec3(-0.5f, 0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(vertex); // top left
+
+		vertex.Position = glm::vec3(0.5f, 0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(vertex); // top right
+
+		vertex.Position = glm::vec3(0.5f, -0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(vertex); // bottom right
+
+		vertex.Position = glm::vec3(-0.5f, -0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex); // bottom left
+
+		// Back face
+		vertex.Position = glm::vec3(-0.5f, 0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, -1.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(vertex); // top left
+
+		vertex.Position = glm::vec3(0.5f, 0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, -1.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(vertex); // top right
+
+		vertex.Position = glm::vec3(0.5f, -0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, -1.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex); // bottom right
+
+		vertex.Position = glm::vec3(-0.5f, -0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, 0.0f, -1.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(vertex); // bottom left
+
+		// Top face
+		vertex.Position = glm::vec3(-0.5f, 0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(vertex); // top left
+
+		vertex.Position = glm::vec3(0.5f, 0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(vertex); // top right
+
+		vertex.Position = glm::vec3(0.5f, 0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(vertex); // bottom right
+
+		vertex.Position = glm::vec3(-0.5f, 0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex); // bottom left
+
+		// Bottom face
+		vertex.Position = glm::vec3(-0.5f, -0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex); // top left
+
+		vertex.Position = glm::vec3(0.5f, -0.5f, -0.5f);
+		vertex.Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(vertex); // top right
+
+		vertex.Position = glm::vec3(0.5f, -0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(vertex); // bottom right
+
+		vertex.Position = glm::vec3(-0.5f, -0.5f, 0.5f);
+		vertex.Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(vertex); // bottom left
+
+		// Right face
+		vertex.Position = glm::vec3(0.5f, 0.5f, -0.5f);
+		vertex.Normal = glm::vec3(1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(vertex); // top left
+
+		vertex.Position = glm::vec3(0.5f, 0.5f, 0.5f);
+		vertex.Normal = glm::vec3(1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(vertex); // top right
+
+		vertex.Position = glm::vec3(0.5f, -0.5f, 0.5f);
+		vertex.Normal = glm::vec3(1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(vertex); // bottom right
+
+		vertex.Position = glm::vec3(0.5f, -0.5f, -0.5f);
+		vertex.Normal = glm::vec3(1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex); // bottom left
+
+		// Left face
+		vertex.Position = glm::vec3(-0.5f, 0.5f, -0.5f);
+		vertex.Normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		vertices.push_back(vertex); // top left
+
+		vertex.Position = glm::vec3(-0.5f, 0.5f, 0.5f);
+		vertex.Normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		vertices.push_back(vertex); // top right
+
+		vertex.Position = glm::vec3(-0.5f, -0.5f, 0.5f);
+		vertex.Normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex); // bottom right
+
+		vertex.Position = glm::vec3(-0.5f, -0.5f, -0.5f);
+		vertex.Normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		vertices.push_back(vertex); // bottom left
+
+		indices = { 0, 1, 2, 0, 2, 3,
+					4, 5, 6, 4, 6, 7,
+					8, 9, 10, 8, 10, 11,
+					12, 13, 14, 12, 14, 15,
+					16, 17, 18, 16, 18, 19,
+					20, 21, 22, 20, 22, 23
+		};
+#pragma endregion
+		defaultCube = new Mesh(vertices, indices, defaultMaterial, false);
 	}
 
 	ResourceManager::~ResourceManager()
 	{
+		// delete defaults
+		delete defaultCube;
+		delete defaultMaterial;
+
 		// delete models
 		std::unordered_map<std::string, Model*>::iterator modelsIt = models.begin();
 		while (modelsIt != models.end()) {

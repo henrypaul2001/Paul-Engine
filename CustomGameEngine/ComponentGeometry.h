@@ -6,6 +6,8 @@ namespace Engine {
 	class ComponentGeometry : public Component
 	{
 	public:
+		ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath);
+		ComponentGeometry(PremadeModel modelType);
 		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr);
 		ComponentGeometry(const char* modelFilepath, bool pbr);
 		~ComponentGeometry();

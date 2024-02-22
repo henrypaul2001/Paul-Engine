@@ -90,6 +90,8 @@ namespace Engine {
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material, bool pbr);
 		~Mesh();
 
+		void ApplyMaterial(Material* material);
+
 		bool PBR() { return pbr; }
 
 		void Draw(Shader& shader);
