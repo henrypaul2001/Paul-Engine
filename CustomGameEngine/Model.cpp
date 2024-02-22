@@ -159,6 +159,7 @@ namespace Engine {
 				meshMaterial->diffuse = diffuseColour;
 				meshMaterial->specular = specularColour;
 				meshMaterial->shininess = shine;
+				meshMaterial->height_scale = 10.0f;
 
 				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
 				meshMaterial->diffuseMaps = diffuseMaps;

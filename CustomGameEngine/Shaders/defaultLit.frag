@@ -12,9 +12,10 @@ struct Material {
     sampler2D TEXTURE_DIFFUSE1;
     sampler2D TEXTURE_SPECULAR1;
     sampler2D TEXTURE_NORMAL1;
-    // height map
+    sampler2D TEXTURE_DISPLACE1;
 
     float SHININESS;
+    float HEIGHT_SCALE;
 
     // non textured material properties
     vec3 DIFFUSE;
@@ -59,6 +60,53 @@ uniform int activeLights;
 uniform vec3 viewPos;
 uniform bool gamma;
 
+uniform float textureScale;
+
+vec2 TexCoords;
+const float minLayers = 8.0;
+const float maxLayers = 32.0;
+vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
+    // number of depth layers
+    float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), viewDir), 0.0));
+
+    // calculate size of each layer
+    float layerDepth = 1.0 / numLayers;
+
+    float currentLayerDepth = 0.0;
+
+    // amount to shift the texture coordinates per layer
+    vec2 P = viewDir.xy * material.HEIGHT_SCALE;
+    vec2 deltaTexCoords = P / numLayers;
+
+    // get initial values
+    vec2 currentTexCoords = texCoords;
+    float currentDepthMapValue = texture(material.TEXTURE_DISPLACE1, currentTexCoords).r;
+
+    while (currentLayerDepth < currentDepthMapValue) {
+        // shift coords along direction of P
+        currentTexCoords -= deltaTexCoords;
+
+        // get new depth value
+        currentDepthMapValue = texture(material.TEXTURE_DISPLACE1, currentTexCoords).r;
+
+        // get depth of next layer
+        currentLayerDepth += layerDepth;
+    }
+    
+    // get texture coordinates before collision
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    // get depth after and before collision for linear interpolation
+    float afterDepth = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = texture(material.TEXTURE_DISPLACE1, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+    // interpolation of texCoords
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+}
+
 vec3 BlinnPhongPointLight(Light light, vec3 normal, vec3 fragPos) {
     // diffuse
     vec3 lightDir = normalize(light.Position - fragPos);
@@ -68,7 +116,7 @@ vec3 BlinnPhongPointLight(Light light, vec3 normal, vec3 fragPos) {
         colour = material.DIFFUSE;
     }
     else {
-        colour = texture(material.TEXTURE_DIFFUSE1, fs_in.TexCoords).rgb;
+        colour = texture(material.TEXTURE_DIFFUSE1, TexCoords).rgb;
     }
 
     vec3 diffuse = diff * light.Colour * colour;
@@ -84,7 +132,7 @@ vec3 BlinnPhongPointLight(Light light, vec3 normal, vec3 fragPos) {
         specular = spec * light.Colour * material.SPECULAR;
     }
     else {
-        specular = spec * light.Colour * texture(material.TEXTURE_SPECULAR1, fs_in.TexCoords).rgb;
+        specular = spec * light.Colour * texture(material.TEXTURE_SPECULAR1, TexCoords).rgb;
     }
 
     // ambient
@@ -115,7 +163,7 @@ vec3 BlinnPhongSpotLight(Light light, vec3 normal, vec3 fragPos) {
         colour = material.DIFFUSE;
     }
     else {
-        colour = texture(material.TEXTURE_DIFFUSE1, fs_in.TexCoords).rgb;
+        colour = texture(material.TEXTURE_DIFFUSE1, TexCoords).rgb;
     }
     vec3 diffuse = light.Colour * diff * colour;
 
@@ -130,7 +178,7 @@ vec3 BlinnPhongSpotLight(Light light, vec3 normal, vec3 fragPos) {
         specular = spec * light.Colour * material.SPECULAR;
     }
     else {
-        specular = spec * light.Colour * texture(material.TEXTURE_SPECULAR1, fs_in.TexCoords).rgb;
+        specular = spec * light.Colour * texture(material.TEXTURE_SPECULAR1, TexCoords).rgb;
     }
     
     // ambient
@@ -162,7 +210,7 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
         colour = material.DIFFUSE;
     }
     else {
-        colour = texture(material.TEXTURE_DIFFUSE1, fs_in.TexCoords).rgb;
+        colour = texture(material.TEXTURE_DIFFUSE1, TexCoords).rgb;
     }
     vec3 diffuse = light.Colour * diff * colour;
 
@@ -176,7 +224,7 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
         specular = spec * light.Colour * material.SPECULAR;
     }
     else {
-        specular = spec * light.Colour * texture(material.TEXTURE_SPECULAR1, fs_in.TexCoords).rgb;
+        specular = spec * light.Colour * texture(material.TEXTURE_SPECULAR1, TexCoords).rgb;
     }
 
     // ambient
@@ -186,12 +234,12 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
 }
 
 vec3 GetNormalFromMap() {
-    vec3 tangentNormal = texture(material.TEXTURE_NORMAL1, fs_in.TexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(material.TEXTURE_NORMAL1, TexCoords).xyz * 2.0 - 1.0;
 
     vec3 Q1 = dFdx(fs_in.WorldPos);
     vec3 Q2  = dFdy(fs_in.WorldPos);
-    vec2 st1 = dFdx(fs_in.TexCoords);
-    vec2 st2 = dFdy(fs_in.TexCoords);
+    vec2 st1 = dFdx(TexCoords);
+    vec2 st2 = dFdy(TexCoords);
 
     vec3 N = normalize(fs_in.Normal);
     vec3 T = normalize(Q1 * st2.t - Q2 * st1.t);
@@ -203,6 +251,15 @@ vec3 GetNormalFromMap() {
 
 void main()
 {
+    TexCoords = fs_in.TexCoords;
+    if (material.useHeightMap) {
+        TexCoords = ParallaxMapping(fs_in.TexCoords, normalize(viewPos - fs_in.WorldPos));
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            discard;
+        }
+    }
+    TexCoords *= textureScale;
+
     vec3 lighting = vec3(0.0);
 
     vec3 normal = normalize(fs_in.Normal);

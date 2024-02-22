@@ -81,6 +81,7 @@ namespace Engine {
 				shader.setVec3("material.DIFFUSE", material->diffuse);
 				shader.setVec3("material.SPECULAR", material->specular);
 				shader.setFloat("material.SHININESS", material->shininess);
+				shader.setFloat("material.HEIGHT_SCALE", material->height_scale);
 
 				// diffuse maps
 				for (int i = 0; i < material->diffuseMaps.size(); i++) {
@@ -125,7 +126,7 @@ namespace Engine {
 				for (int i = 0; i < material->heightMaps.size(); i++) {
 					glActiveTexture(GL_TEXTURE0 + count);
 					name = ConvertTextureTypeToString(material->heightMaps[i]->type);
-					if (name == ConvertTextureTypeToString(TEXTURE_HEIGHT)) {
+					if (name == ConvertTextureTypeToString(TEXTURE_DISPLACE)) {
 						shader.setInt(("material." + name + std::to_string(heightNr)).c_str(), count);
 						glBindTexture(GL_TEXTURE_2D, material->heightMaps[i]->id);
 						heightNr++;

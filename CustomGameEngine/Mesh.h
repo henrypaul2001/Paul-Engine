@@ -71,6 +71,7 @@ namespace Engine {
 		std::vector<Texture*> heightMaps;
 
 		float shininess;
+		float height_scale;
 
 		glm::vec3 diffuse;
 		glm::vec3 specular;

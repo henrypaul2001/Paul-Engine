@@ -22,13 +22,11 @@ uniform mat4 model;
 
 uniform mat3 normalMatrix;
 
-uniform float textureScale;
-
 void main()
 {
     vs_out.WorldPos = vec3(model * vec4(aPos, 1.0));
     vs_out.Normal = normalMatrix * aNormal;
-    vs_out.TexCoords = aTexCoords * textureScale;
+    vs_out.TexCoords = aTexCoords;
 
     gl_Position = projection * view * vec4(vs_out.WorldPos, 1.0);
 }
