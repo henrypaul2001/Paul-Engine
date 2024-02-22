@@ -127,4 +127,17 @@ namespace Engine {
 
 		return it->second;
 	}
+
+	Material* ResourceManager::GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular)
+	{
+		Material* material = new Material();
+		material->diffuseMaps = diffuseMaps;
+		material->specularMaps = specularMaps;
+		material->normalMaps = normalMaps;
+		material->heightMaps = heightMaps;
+		material->shininess = shininess;
+		material->diffuse = diffuse;
+		material->specular = specular;
+		return material;
+	}
 }

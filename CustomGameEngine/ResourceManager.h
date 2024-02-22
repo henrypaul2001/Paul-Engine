@@ -22,5 +22,7 @@ namespace Engine {
 		Model* LoadModel(std::string filepath, bool pbr);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath);
 		Texture* LoadTexture(std::string filepath, TextureTypes type);
+
+		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	};
 }
