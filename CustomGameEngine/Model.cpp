@@ -40,7 +40,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToAllMesh(Material* material)
 	{
-		for (Mesh m : meshes) {
+		for (Mesh& m : meshes) {
 			m.ApplyMaterial(material);
 		}
 	}
