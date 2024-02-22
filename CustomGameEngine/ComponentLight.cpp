@@ -23,7 +23,7 @@ namespace Engine {
 
 	void ComponentLight::DefaultDirectional()
 	{
-		Direction = glm::vec3(0.0f, -0.5f, -1.0f);
+		Direction = glm::vec3(0.0f, -1.0f, -1.0f);
 
 		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
 		Specular = glm::vec3(0.75f, 0.75f, 0.75f);
