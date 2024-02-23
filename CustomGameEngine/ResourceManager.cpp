@@ -148,6 +148,8 @@ namespace Engine {
 			16, 17, 18, 16, 18, 19,
 			20, 21, 22, 20, 22, 23
 		};
+
+		GenerateBitangentTangentVectors(vertices, indices);
 #pragma endregion
 		defaultCube = new Mesh(vertices, indices, defaultMaterial, false);
 
@@ -158,27 +160,37 @@ namespace Engine {
 		vertex.Position = glm::vec3(-0.5f, 0.5f, 0.5f);
 		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
 		vertex.TexCoords = glm::vec2(0.0f, 1.0f);
+		// vertex.Tangent = ??
+		// vertex.Bitangent = ??
 		vertices.push_back(vertex); // top left
 
 		vertex.Position = glm::vec3(0.5f, 0.5f, 0.5f);
 		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
 		vertex.TexCoords = glm::vec2(1.0f, 1.0f);
+		// vertex.Tangent = ??
+		// vertex.Bitangent = ??
 		vertices.push_back(vertex); // top right
 
 		vertex.Position = glm::vec3(0.5f, -0.5f, 0.5f);
 		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
 		vertex.TexCoords = glm::vec2(1.0f, 0.0f);
+		// vertex.Tangent = ??
+		// vertex.Bitangent = ??
 		vertices.push_back(vertex); // bottom right
 
 		vertex.Position = glm::vec3(-0.5f, -0.5f, 0.5f);
 		vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
 		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		// vertex.Tangent = ??
+		// vertex.Bitangent = ??
 		vertices.push_back(vertex); // bottom left
 
 		indices = {
 			0, 1, 2, 0,
-			2, 3, 0
+			2, 3
 		};
+
+		GenerateBitangentTangentVectors(vertices, indices);
 #pragma endregion
 		defaultPlane = new Mesh(vertices, indices, defaultMaterial, false);
 
@@ -223,6 +235,42 @@ namespace Engine {
 			instance = new ResourceManager();
 		}
 		return instance;
+	}
+
+	void ResourceManager::GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+	{
+		// Calculate tangent and bitangent vectors
+		for (unsigned int i = 0; i < indices.size(); i += 3) {
+			Vertex& v0 = vertices[indices[i]];
+			Vertex& v1 = vertices[indices[i + 1]];
+			Vertex& v2 = vertices[indices[i + 2]];
+
+			// Edges of triangle
+			glm::vec3 deltaPos1 = v1.Position - v0.Position;
+			glm::vec3 deltaPos2 = v2.Position - v0.Position;
+
+			// UV delta
+			glm::vec2 deltaUV1 = v1.TexCoords - v0.TexCoords;
+			glm::vec2 deltaUV2 = v2.TexCoords - v0.TexCoords;
+
+			// Tangent and bitangent
+			float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+			glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+			glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+			v0.Tangent += tangent;
+			v1.Tangent += tangent;
+			v2.Tangent += tangent;
+			v0.Bitangent += bitangent;
+			v1.Bitangent += bitangent;
+			v2.Bitangent += bitangent;
+		}
+
+		// Normalize tangent and bitangent vectors
+		for (unsigned int i = 0; i < vertices.size(); ++i) {
+			vertices[i].Tangent = glm::normalize(vertices[i].Tangent);
+			vertices[i].Bitangent = glm::normalize(vertices[i].Bitangent);
+		}
 	}
 
 	Model* ResourceManager::LoadModel(std::string filepath, bool pbr)
