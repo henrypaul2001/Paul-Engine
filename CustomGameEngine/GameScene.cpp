@@ -154,6 +154,11 @@ namespace Engine
 		//dynamic_cast<ComponentLight*>(pointLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(pointLight);
+
+		Entity* testSphere = new Entity("Test Sphere");
+		testSphere->AddComponent(new ComponentTransform(-2.0f, 0.0f, 3.0f));
+		testSphere->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		entityManager->AddEntity(testSphere);
 	}
 
 	void GameScene::CreateSystems()

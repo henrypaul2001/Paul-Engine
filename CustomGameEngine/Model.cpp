@@ -10,7 +10,7 @@ namespace Engine {
 			meshes.push_back(*ResourceManager::GetInstance()->DefaultCube());
 		}
 		else if (modelType == MODEL_SPHERE) {
-
+			meshes.push_back(*ResourceManager::GetInstance()->DefaultSphere());
 		}
 	}
 

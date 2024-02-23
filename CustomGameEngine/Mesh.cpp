@@ -185,13 +185,14 @@ namespace Engine {
 
 		// draw
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+		glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		glActiveTexture(GL_TEXTURE0);
 	}
 
 	void Mesh::SetupMesh()
 	{
+		drawPrimitive = GL_TRIANGLES;
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
 		glGenBuffers(1, &EBO);

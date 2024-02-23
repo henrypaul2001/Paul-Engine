@@ -11,6 +11,7 @@ namespace Engine {
 
 		Mesh* defaultCube;
 		Mesh* defaultPlane;
+		Mesh* defaultSphere;
 		Material* defaultMaterial;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
@@ -33,6 +34,7 @@ namespace Engine {
 	
 		Mesh* DefaultCube() { return defaultCube; }
 		Mesh* DefaultPlane() { return defaultPlane; }
+		Mesh* DefaultSphere() { return defaultSphere; }
 		Material* DefaultMaterial() { return defaultMaterial; }
 	};
 }

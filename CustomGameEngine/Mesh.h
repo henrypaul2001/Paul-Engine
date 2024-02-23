@@ -92,11 +92,13 @@ namespace Engine {
 		~Mesh();
 
 		void ApplyMaterial(Material* material);
+		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
 
 		bool PBR() { return pbr; }
 
 		void Draw(Shader& shader);
 	private:
+		GLenum drawPrimitive;
 		unsigned int VBO, EBO;
 		Material* material;
 		bool pbr;
