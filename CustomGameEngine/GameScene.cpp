@@ -56,7 +56,7 @@ namespace Engine
 		cobbleFloor->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 		cobbleFloor->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		cobbleFloor->shininess = 60.0f;
-		cobbleFloor->height_scale = -0.1f;
+		cobbleFloor->height_scale = -0.05f;
 
 		Material* brickWall = new Material();
 		brickWall->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE));
@@ -71,7 +71,7 @@ namespace Engine
 		Entity* brickPlane = new Entity("Brick Wall");
 		ComponentTransform* bricktransform = new ComponentTransform(0.0f, -5.0f, 0.0f);
 		bricktransform->SetScale(glm::vec3(5.0f, 5.0f, 1.0f));
-		//bricktransform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		bricktransform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		brickPlane->AddComponent(bricktransform);
 		brickPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(brickPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
@@ -79,14 +79,15 @@ namespace Engine
 
 		Entity* defaultCube = new Entity("Default Cube");
 		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
+		dynamic_cast<ComponentTransform*>(defaultCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.5f));
 		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(newMeshMaterial);
+		dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
 		entityManager->AddEntity(defaultCube);
 
 		Entity* defaultPlane = new Entity("Default Plane");
 		ComponentTransform* transform = new ComponentTransform(-6.0f, -5.0f, 0.0f);
 		transform->SetScale(glm::vec3(5.0f, 5.0f, 1.0f));
-		//transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		defaultPlane->AddComponent(transform);
 		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
@@ -145,7 +146,7 @@ namespace Engine
 		entityManager->AddEntity(spotLight);
 
 		Entity* pointLight = new Entity("Point Light");
-		pointLight->AddComponent(new ComponentTransform(0.0f, -5.0f, 2.0f));
+		pointLight->AddComponent(new ComponentTransform(0.0f, -2.0f, 2.0f));
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		pointLight->AddComponent(new ComponentLight(POINT));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_CUBE));

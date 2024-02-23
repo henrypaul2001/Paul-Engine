@@ -41,8 +41,8 @@ namespace Engine {
 		Quadratic = 0.032f;
 
 		Direction = glm::vec3(0.0f, 0.0f, 1.0f);
-		Cutoff = glm::cos(glm::radians(12.5f));
-		OuterCutoff = glm::cos(glm::radians(17.5f));
+		Cutoff = glm::cos(glm::radians(15.5f));
+		OuterCutoff = glm::cos(glm::radians(20.5f));
 	}
 
 	void ComponentLight::DefaultPoint()

@@ -16,6 +16,7 @@ out VS_OUT {
     vec3 WorldPos;
     vec3 Normal;
     vec2 TexCoords;
+    mat3 TBN;
 } vs_out;
 
 uniform mat4 model;
@@ -25,8 +26,15 @@ uniform mat3 normalMatrix;
 void main()
 {
     vs_out.WorldPos = vec3(model * vec4(aPos, 1.0));
-    vs_out.Normal = normalMatrix * aNormal;
+    vs_out.Normal = normalize(normalMatrix * aNormal);
     vs_out.TexCoords = aTexCoords;
+
+    vec3 T = normalize(normalMatrix * aTangent);
+    vec3 N = normalize(normalMatrix * aNormal);
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
+    mat3 TBN = transpose(mat3(T, B, N)); //mat3(T, B, N);
+    vs_out.TBN = TBN;
 
     gl_Position = projection * view * vec4(vs_out.WorldPos, 1.0);
 }
