@@ -85,7 +85,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
 
     // amount to shift the texture coordinates per layer
     vec2 P = viewDir.xy * material.HEIGHT_SCALE;
-    vec2 deltaTexCoords = P / numLayers;
+    vec2 deltaTexCoords = (P / numLayers);
 
     // get initial values
     vec2 currentTexCoords = texCoords;
@@ -277,34 +277,35 @@ void main()
     TangentViewDirection = normalize(TangentViewPos - TangentFragPos);
 
     TexCoords = fs_in.TexCoords;
+    TexCoords *= textureScale;
     if (material.useHeightMap) {
-        TexCoords = ParallaxMapping(fs_in.TexCoords, TangentViewDirection); //normalize(viewPos - fs_in.WorldPos)
+        TexCoords = ParallaxMapping(TexCoords, TangentViewDirection); //normalize(viewPos - fs_in.WorldPos)
         if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
-            discard;
+            //discard;
         }
     }
-    TexCoords *= textureScale;
+    //TexCoords *= textureScale;
 
     vec3 lighting = vec3(0.0);
 
     vec3 normal = normalize(fs_in.Normal);
     if (material.useNormalMap) {
         //normal = GetNormalFromMap();
-        normal = normalize(texture(material.TEXTURE_NORMAL1, fs_in.TexCoords)).rgb;
-        normal = normalize(normal * 2.0 - 1.0); // tangent space
-        //normal = normalize(fs_in.TBN * normal);
+        normal = normalize(texture(material.TEXTURE_NORMAL1, TexCoords)).rgb;
     }
+    //normal = normalize(normal * 2.0 - 1.0); // tangent space
+    //normal = normalize(fs_in.TBN * normal);
 
     // Directional light
-    lighting += BlinnPhongDirLight(dirLight, normal, TangentViewDirection); // normalize(viewPos - fs_in.WorldPos)
+    lighting += BlinnPhongDirLight(dirLight, normalize(fs_in.TBN * normal), TangentViewDirection); // normalize(viewPos - fs_in.WorldPos)
 
     // Point and spotlights
     for (int i = 0; i < activeLights; i++) {
         if (lights[i].SpotLight) {
-            lighting += BlinnPhongSpotLight(lights[i], normal, TangentFragPos); // fs_in.WorldPos
+            lighting += BlinnPhongSpotLight(lights[i], normalize(normal * 2.0 - 1.0), TangentFragPos); // fs_in.WorldPos
         }
         else {
-            lighting += BlinnPhongPointLight(lights[i], normal, TangentFragPos); // fs_in.WorldPos
+            lighting += BlinnPhongPointLight(lights[i], normalize(fs_in.TBN * normal), TangentFragPos); // fs_in.WorldPos
         }
     }
 

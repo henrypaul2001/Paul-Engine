@@ -14,7 +14,7 @@ namespace Engine {
 		Mesh* defaultSphere;
 		Material* defaultMaterial;
 
-		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
 
 		ResourceManager();
 		static ResourceManager* instance;

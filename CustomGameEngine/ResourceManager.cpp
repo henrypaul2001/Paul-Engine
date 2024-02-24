@@ -149,7 +149,7 @@ namespace Engine {
 			20, 21, 22, 20, 22, 23
 		};
 
-		GenerateBitangentTangentVectors(vertices, indices);
+		GenerateBitangentTangentVectors(vertices, indices, 0);
 #pragma endregion
 		defaultCube = new Mesh(vertices, indices, defaultMaterial, false);
 
@@ -190,7 +190,7 @@ namespace Engine {
 			2, 3
 		};
 
-		GenerateBitangentTangentVectors(vertices, indices);
+		GenerateBitangentTangentVectors(vertices, indices, 0);
 #pragma endregion
 		defaultPlane = new Mesh(vertices, indices, defaultMaterial, false);
 
@@ -252,7 +252,7 @@ namespace Engine {
 			vertices.push_back(vertex);
 		}
 
-		//GenerateBitangentTangentVectors(vertices, indices);
+		GenerateBitangentTangentVectors(vertices, indices, 1);
 #pragma endregion
 		defaultSphere = new Mesh(vertices, indices, defaultMaterial, false);
 		defaultSphere->SetDrawPrimitive(GL_TRIANGLE_STRIP);
@@ -300,10 +300,10 @@ namespace Engine {
 		return instance;
 	}
 
-	void ResourceManager::GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+	void ResourceManager::GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset)
 	{
 		// Calculate tangent and bitangent vectors
-		for (unsigned int i = 0; i < indices.size(); i += 3) {
+		for (unsigned int i = 0; i < indices.size() - offset; i += 3) {
 			Vertex& v0 = vertices[indices[i]];
 			Vertex& v1 = vertices[indices[i + 1]];
 			Vertex& v2 = vertices[indices[i + 2]];

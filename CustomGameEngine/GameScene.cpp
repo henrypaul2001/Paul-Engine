@@ -48,6 +48,11 @@ namespace Engine
 		newMeshMaterial->specular = glm::vec3(1.0f, 0.0f, 1.0f);
 		newMeshMaterial->shininess = 100.0f;
 
+		Material* blue = new Material();
+		blue->diffuse = glm::vec3(0.0f, 0.0f, 0.8f);
+		blue->specular = glm::vec3(0.0f, 0.0f, 1.0f);
+		blue->shininess = 100.0f;
+
 		Material* cobbleFloor = new Material();
 		cobbleFloor->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE));
 		cobbleFloor->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL));
@@ -56,7 +61,7 @@ namespace Engine
 		cobbleFloor->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 		cobbleFloor->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		cobbleFloor->shininess = 60.0f;
-		cobbleFloor->height_scale = -0.05f;
+		cobbleFloor->height_scale = -0.1f;
 
 		Material* brickWall = new Material();
 		brickWall->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE));
@@ -79,9 +84,9 @@ namespace Engine
 
 		Entity* defaultCube = new Entity("Default Cube");
 		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
-		dynamic_cast<ComponentTransform*>(defaultCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.5f));
+		//dynamic_cast<ComponentTransform*>(defaultCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.5f));
 		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
+		//dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
 		entityManager->AddEntity(defaultCube);
 
 		Entity* defaultPlane = new Entity("Default Plane");
@@ -91,7 +96,7 @@ namespace Engine
 		defaultPlane->AddComponent(transform);
 		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
-		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(1.0f);
+		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 		entityManager->AddEntity(defaultPlane);
 
 		Entity* backpack = new Entity("Backpack");
@@ -139,8 +144,11 @@ namespace Engine
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");
-		spotLight->AddComponent(new ComponentTransform(0.0f, 2.0f, -7.5f));
+		spotLight->AddComponent(new ComponentTransform(0.0f, 2.0f, -10.0f));
 		spotLight->AddComponent(new ComponentLight(SPOT));
+		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(blue);
+		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
@@ -158,6 +166,8 @@ namespace Engine
 		Entity* testSphere = new Entity("Test Sphere");
 		testSphere->AddComponent(new ComponentTransform(-2.0f, 0.0f, 3.0f));
 		testSphere->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
+		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(5.0f);
 		entityManager->AddEntity(testSphere);
 	}
 
@@ -179,6 +189,8 @@ namespace Engine
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
 
 		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 10.0f);
+
+		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -60.0f);
 	}
 
 	void GameScene::Render()
