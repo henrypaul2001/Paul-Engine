@@ -21,12 +21,16 @@ namespace Engine {
 		Shader* GetShader() { return shader; }
 		float GetTextureScale() { return textureScale; }
 		
+		void CastShadows(bool shadows) { castShadows = shadows; }
+		bool CastShadows() { return castShadows; }
+
 		void SetTextureScale(float newScale) { textureScale = newScale; }
 	private:
 		Model* model;
 		Shader* shader;
 
 		float textureScale;
+		bool castShadows;
 
 		bool pbr;
 		bool usingDefaultShader;

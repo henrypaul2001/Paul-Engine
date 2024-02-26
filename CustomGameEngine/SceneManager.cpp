@@ -64,8 +64,9 @@ namespace Engine
 
 		defaultLit = ResourceManager::GetInstance()->LoadShader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
 		defaultLit->Use();
-		defaultLit->setInt("material.TEXTURE_DIFFUSE", 0);
-		defaultLit->setInt("material.TEXTURE_SPECULAR", 1);
+		defaultLit->setInt("dirLight.ShadowMap", 0);
+		//defaultLit->setInt("material.TEXTURE_DIFFUSE", 0);
+		//defaultLit->setInt("material.TEXTURE_SPECULAR", 1);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLit->GetID(), "Matrices");

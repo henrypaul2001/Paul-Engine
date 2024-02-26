@@ -1,6 +1,7 @@
 #include "LightManager.h"
 #include "ComponentLight.h"
 #include "ComponentTransform.h"
+#include "RenderManager.h"
 namespace Engine {
 	LightManager* LightManager::instance = nullptr;
 	LightManager::LightManager() {
@@ -52,6 +53,14 @@ namespace Engine {
 			shader->setVec3("dirLight.Colour", directional->Colour);
 			shader->setVec3("dirLight.Specular", directional->Specular);
 			shader->setVec3("dirLight.Ambient", directional->Ambient);
+
+			glm::vec3 lightPos = -directional->Direction; // negative of the directional light's direction
+			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 15.0f);
+			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+			shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap());
 		}
 
 		shader->setInt("activeLights", lightEntities.size());

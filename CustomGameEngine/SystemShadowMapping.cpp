@@ -43,10 +43,12 @@ namespace Engine {
 
 	void SystemShadowMapping::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
-		Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
+		if (geometry->CastShadows()) {
+			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
 
-		depthShader->setMat4("model", transform->GetWorldModelMatrix());
+			depthShader->setMat4("model", transform->GetWorldModelMatrix());
 
-		geometry->GetModel()->Draw(*depthShader);
+			geometry->GetModel()->Draw(*depthShader);
+		}
 	}
 }

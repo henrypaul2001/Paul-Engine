@@ -32,6 +32,9 @@ uniform Material material;
 struct DirLight {
     vec3 Direction;
     vec3 TangentDirection;
+    
+    mat4 LightSpaceMatrix;
+    sampler2D ShadowMap;
 
     vec3 Colour;
     vec3 Ambient;
@@ -114,6 +117,42 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
     vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
 
     return finalTexCoords;
+}
+
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos) {
+    // perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // transform to [0, 1]
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0) {
+        return 0.0;
+    }
+    
+    // get closes depth value from lights perspective
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+    // get depth of current fragment
+    float currentDepth = projCoords.z;
+
+    // check if current frag pos is in shadow
+    vec3 normal = normalize(fs_in.Normal);
+    vec3 lightDir = normalize(lightPos - fs_in.WorldPos);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+    // pcf soft shadows (simple solution but more advanced solutions out there)
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
 }
 
 vec3 BlinnPhongPointLight(Light light, vec3 normal, vec3 fragPos) {
@@ -230,7 +269,8 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     else {
         colour = texture(material.TEXTURE_DIFFUSE1, TexCoords).rgb;
     }
-    vec3 diffuse = light.Colour * diff * colour;
+    //vec3 diffuse = light.Colour * diff * colour;
+    vec3 diffuse = light.Colour * diff;
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
@@ -248,7 +288,12 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     // ambient
     vec3 ambient = light.Ambient * colour;
 
-    return diffuse + specular + ambient;
+    // Calculate shadow
+    float shadow = ShadowCalculation(dirLight.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), dirLight.ShadowMap, -dirLight.Direction);
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
+
+    //return diffuse + specular + ambient;
+    return lighting;
 }
 
 vec3 GetNormalFromMap() {

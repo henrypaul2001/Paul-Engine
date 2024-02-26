@@ -154,7 +154,7 @@ namespace Engine {
 			std::string number;
 			std::string name;
 			for (unsigned int i = 0; i < textures.size(); i++) {
-				glActiveTexture(GL_TEXTURE0 + i);
+				glActiveTexture(GL_TEXTURE0 + i + 1);
 				name = ConvertTextureTypeToString(textures[i]->type);
 				if (name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
 					number = std::to_string(albedoNr++);

@@ -47,8 +47,8 @@ namespace Engine
 			unsigned int shadowHeight = RenderManager::GetInstance()->ShadowHeight(); // <--/
 
 			ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
-			glm::vec3 lightPos = -dirLight->Direction; // negative of the directional light's direction
-			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 15.0f);
+			glm::vec3 lightPos = -dirLight->Direction * 10.0f; // negative of the directional light's direction
+			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 50.0f);
 			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
@@ -69,6 +69,7 @@ namespace Engine
 		if (renderSystem != nullptr) {
 			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glDisable(GL_CULL_FACE);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (Entity* e : entityList) {
 				renderSystem->OnAction(e);
@@ -86,10 +87,10 @@ namespace Engine
 		}
 		else if (list == RENDER_SYSTEMS) {
 			renderSystemList.push_back(system);
-			if (system->Name() && SYSTEM_RENDER) {
+			if (system->Name() == SYSTEM_RENDER) {
 				renderSystem = dynamic_cast<SystemRender*>(system);
 			}
-			else if (system->Name() && SYSTEM_SHADOWMAP) {
+			else if (system->Name() == SYSTEM_SHADOWMAP) {
 				shadowmapSystem = dynamic_cast<SystemShadowMapping*>(system);
 			}
 		}

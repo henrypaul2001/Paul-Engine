@@ -261,7 +261,7 @@ namespace Engine {
 		indices.clear();
 		vertex = Vertex();
 
-		shadowMapShader = new Shader("shadowMap.vert", "shadowMap.frag");
+		shadowMapShader = new Shader("depthMap.vert", "depthMap.frag");
 	}
 
 	ResourceManager::~ResourceManager()

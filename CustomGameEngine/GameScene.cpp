@@ -14,7 +14,7 @@ namespace Engine
 		systemManager = new SystemManager();
 		inputManager = new GameInputManager();
 		renderManager = RenderManager::GetInstance();
-		renderManager->SetupShadowMapFBO(1024, 1024);
+		renderManager->SetupShadowMapFBO(1024 * 2, 1024 * 2);
 
 		SetupScene();
 	}
@@ -30,6 +30,8 @@ namespace Engine
 	{
 		// Configure GL global state
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Set-up framebuffers
 
@@ -171,6 +173,14 @@ namespace Engine
 		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
 		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(5.0f);
 		entityManager->AddEntity(testSphere);
+
+		Entity* floor = new Entity("Floor");
+		floor->AddComponent(new ComponentTransform(0.0f, -8.0f, 0.0f));
+		floor->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(60.0f, 60.0f, 1.0f));
+		dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		entityManager->AddEntity(floor);
 	}
 
 	void GameScene::CreateSystems()

@@ -6,6 +6,7 @@ namespace Engine {
 		this->pbr = false;
 		model = new Model(modelType);
 		usingDefaultShader = false;
+		castShadows = true;
 		textureScale = 1.0f;
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
@@ -15,7 +16,7 @@ namespace Engine {
 		this->pbr = false;
 		model = new Model(modelType);
 		usingDefaultShader = true;
-
+		castShadows = true;
 		shader = SceneManager::defaultLit;
 		textureScale = 1.0f;
 	}
@@ -25,6 +26,7 @@ namespace Engine {
 		this->pbr = pbr;
 		//model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
 		usingDefaultShader = false;
+		castShadows = true;
 		textureScale = 1.0f;
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
@@ -33,6 +35,7 @@ namespace Engine {
 	{
 		this->pbr = pbr;
 		usingDefaultShader = true;
+		castShadows = true;
 		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr);
 		std::string v;
 		std::string f;
