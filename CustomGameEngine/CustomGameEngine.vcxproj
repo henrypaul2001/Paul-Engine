@@ -167,6 +167,7 @@
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
+    <ClInclude Include="SystemShadowMapping.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -197,8 +198,11 @@
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
+    <ClCompile Include="SystemShadowMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="depthMap.frag" />
+    <None Include="depthMap.vert" />
     <None Include="Shaders\defaultLit.frag" />
     <None Include="Shaders\defaultLit.vert" />
     <None Include="Shaders\defaultLit_pbr.frag" />

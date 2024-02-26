@@ -8,6 +8,7 @@
 #include "EntityManager.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
+#include "RenderManager.h"
 namespace Engine 
 {
 	class SceneManager;
@@ -19,6 +20,9 @@ namespace Engine
 		InputManager* inputManager;
 		SystemManager* systemManager;
 		EntityManager* entityManager;
+		RenderManager* renderManager;
+		int SCR_WIDTH;
+		int SCR_HEIGHT;
 	public:
 		static float dt;
 		Scene(SceneManager* sceneManager);

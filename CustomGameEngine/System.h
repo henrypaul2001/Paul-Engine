@@ -8,7 +8,8 @@ namespace Engine
 		SYSTEM_AUDIO = 1 << 0,
 		SYSTEM_PHYSICS = 1 << 1,
 		SYSTEM_RENDER = 1 << 2,
-		SYSTEM_COLLISION = 1 << 3
+		SYSTEM_COLLISION = 1 << 3,
+		SYSTEM_SHADOWMAP = 1 << 4
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }

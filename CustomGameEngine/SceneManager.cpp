@@ -114,7 +114,6 @@ namespace Engine
 
 	void SceneManager::Run()
 	{
-		// Temporary "game loop" standing in for future OpenGL game loop
 		std::cout << "Starting new game" << std::endl;
 		StartNewGame();
 

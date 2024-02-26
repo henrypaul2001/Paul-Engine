@@ -4,6 +4,7 @@
 #include "EntityManager.h"
 #include <string>
 #include "SystemRender.h"
+#include "SystemShadowMapping.h"
 namespace Engine
 {
 	enum SystemLists {
@@ -17,13 +18,15 @@ namespace Engine
 		std::vector<System*> updateSystemList;
 		std::vector<System*> renderSystemList;
 
+		SystemRender* renderSystem;
+		SystemShadowMapping* shadowmapSystem;
 	public:
 		SystemManager();
 		~SystemManager();
 
 		System* FindSystem(SystemTypes name, SystemLists list);
 		void ActionUpdateSystems(EntityManager* entityManager);
-		void ActionRenderSystems(EntityManager* entityManager);
+		void ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT);
 		void AddSystem(System* system, SystemLists list);
 	};
 }

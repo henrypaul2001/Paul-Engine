@@ -12,7 +12,10 @@ namespace Engine {
 		Mesh* defaultCube;
 		Mesh* defaultPlane;
 		Mesh* defaultSphere;
+
 		Material* defaultMaterial;
+
+		Shader* shadowMapShader;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
 
@@ -36,5 +39,6 @@ namespace Engine {
 		Mesh* DefaultPlane() { return defaultPlane; }
 		Mesh* DefaultSphere() { return defaultSphere; }
 		Material* DefaultMaterial() { return defaultMaterial; }
+		Shader* ShadowMapShader() { return shadowMapShader; }
 	};
 }

@@ -150,6 +150,9 @@
     <ClInclude Include="RenderManager.h">
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="SystemShadowMapping.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -236,6 +239,9 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="SystemShadowMapping.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -248,6 +254,12 @@
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="Shaders\defaultLit_pbr.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="depthMap.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="depthMap.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
   </ItemGroup>

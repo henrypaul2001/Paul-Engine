@@ -13,6 +13,8 @@ namespace Engine
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
 		inputManager = new GameInputManager();
+		renderManager = RenderManager::GetInstance();
+		renderManager->SetupShadowMapFBO(1024, 1024);
 
 		SetupScene();
 	}
@@ -175,6 +177,7 @@ namespace Engine
 	{
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 	}
 
 	void GameScene::Update()
@@ -196,10 +199,9 @@ namespace Engine
 	void GameScene::Render()
 	{
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Render entities
-		systemManager->ActionRenderSystems(entityManager);
+		// Render scene
+		systemManager->ActionRenderSystems(entityManager, SCR_WIDTH, SCR_HEIGHT);
 	}
 
 	void GameScene::Close()

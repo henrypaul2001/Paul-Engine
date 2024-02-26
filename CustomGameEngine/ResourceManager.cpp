@@ -260,6 +260,8 @@ namespace Engine {
 		vertices.clear();
 		indices.clear();
 		vertex = Vertex();
+
+		shadowMapShader = new Shader("shadowMap.vert", "shadowMap.frag");
 	}
 
 	ResourceManager::~ResourceManager()
