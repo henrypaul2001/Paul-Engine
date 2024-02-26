@@ -2,23 +2,34 @@
 #include <glad/glad.h>
 #include <cstddef>
 namespace Engine {
-	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight)
+	RenderManager* RenderManager::instance = nullptr;
+	RenderManager::RenderManager()
 	{
 		depthMapFBO = new unsigned int;
 		depthMap = new unsigned int;
-		this->shadowHeight = shadowHeight;
-		this->shadowWidth = shadowWidth;
-		SetupShadowMapFBO(shadowWidth, shadowHeight);
+	}
+
+	RenderManager* RenderManager::GetInstance()
+	{
+		if (instance == nullptr) {
+			instance = new RenderManager();
+		}
+		return instance;
 	}
 
 	RenderManager::~RenderManager()
 	{
 		delete depthMap;
 		delete depthMapFBO;
+
+		delete instance;
 	}
 
 	void RenderManager::SetupShadowMapFBO(unsigned int shadowWidth, unsigned int shadowHeight)
 	{
+		this->shadowHeight = shadowHeight;
+		this->shadowWidth = shadowWidth;
+
 		glGenFramebuffers(1, depthMapFBO);
 
 		glGenTextures(1, depthMap);
