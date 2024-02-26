@@ -154,7 +154,7 @@ namespace Engine
 		entityManager->AddEntity(spotLight);
 
 		Entity* pointLight = new Entity("Point Light");
-		pointLight->AddComponent(new ComponentTransform(0.0f, -2.0f, 2.0f));
+		pointLight->AddComponent(new ComponentTransform(-8.0f, -4.0f, 2.0f));
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		pointLight->AddComponent(new ComponentLight(POINT));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
@@ -188,9 +188,9 @@ namespace Engine
 
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
 
-		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 10.0f);
+		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
 
-		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -60.0f);
+		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
 	}
 
 	void GameScene::Render()

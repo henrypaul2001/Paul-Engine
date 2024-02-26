@@ -147,6 +147,9 @@
     <ClInclude Include="ComponentLight.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="ComponentLight.cpp">
       <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
