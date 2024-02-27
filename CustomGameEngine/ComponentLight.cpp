@@ -25,6 +25,9 @@ namespace Engine {
 	{
 		Direction = glm::vec3(0.0f, -0.8f, -1.0f);
 
+		OrthoSize = 15.0f;
+		Near = 0.1f;
+		Far = 50.0f;
 		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
 		Specular = glm::vec3(0.75f, 0.75f, 0.75f);
 		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -37,14 +40,17 @@ namespace Engine {
 		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 
 		Constant = 1.0f;
-		//Linear = 0.09f;
-		//Quadratic = 0.032f;
-		Linear = 0.007f;
-		Quadratic = 0.0002f;
+		Linear = 0.09f;
+		Quadratic = 0.032f;
+		//Linear = 0.007f;
+		//Quadratic = 0.0002f;
+
+		Near = 0.1f;
+		Far = 50.0f;
 
 		Direction = glm::vec3(0.0f, 0.0f, 1.0f);
-		Cutoff = glm::cos(glm::radians(7.5f));
-		OuterCutoff = glm::cos(glm::radians(9.5f));
+		Cutoff = glm::cos(glm::radians(10.5f));
+		OuterCutoff = glm::cos(glm::radians(12.5f));
 	}
 
 	void ComponentLight::DefaultPoint()

@@ -41,5 +41,8 @@ namespace Engine {
 
 		// Directional + Spot
 		glm::vec3 Direction;
+		float OrthoSize;
+		float Near;
+		float Far;
 	};
 }

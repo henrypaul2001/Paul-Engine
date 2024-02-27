@@ -35,20 +35,26 @@ namespace Engine
 	void SystemManager::ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT)
 	{
 		std::vector<Entity*> entityList = entityManager->Entities();
-
+		//glDisable(GL_CULL_FACE);
 		// shadow mapping
 		if (shadowmapSystem != nullptr) {
 			//glEnable(GL_CULL_FACE);
 			//glCullFace(GL_BACK);
-			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
 
-			unsigned int* depthMapFBO = RenderManager::GetInstance()->GetDepthFBO();
-			unsigned int shadowWidth = RenderManager::GetInstance()->ShadowWidth(); // in future, these will be stored in the light component
-			unsigned int shadowHeight = RenderManager::GetInstance()->ShadowHeight(); // <--/
+			// Directional light
+			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
+			RenderManager* renderInstance = RenderManager::GetInstance(1024, 1024);
+			renderInstance->BindShadowMapTextureToFramebuffer(-1); // bind the dir light shadowmap to framebuffer
+			unsigned int* depthMapFBO = renderInstance->GetDepthFBO();
+			unsigned int shadowWidth = renderInstance->ShadowWidth(); // in future, these will be stored in the light component
+			unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
 
 			ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
-			glm::vec3 lightPos = -dirLight->Direction * 10.0f; // negative of the directional light's direction
-			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 50.0f);
+			glm::vec3 lightPos = -dirLight->Direction * 5.0f; // negative of the directional light's direction
+			float orthoSize = dirLight->OrthoSize;
+			float near = dirLight->Near;
+			float far = dirLight->Far;
+			glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, near, far);
 			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
@@ -63,6 +69,38 @@ namespace Engine
 				shadowmapSystem->OnAction(e);
 			}
 			shadowmapSystem->AfterAction();
+
+			// Spot lights
+			float aspect = (float)shadowWidth / (float)shadowHeight;
+			std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
+			for (int i = 0; i < lightEntities.size(); i++) {
+				ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
+				ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
+
+				if (lightComponent->GetLightType() == SPOT) {
+					renderInstance->BindShadowMapTextureToFramebuffer(i);
+
+					lightPos = transformComponent->GetWorldPosition();
+					lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+					lightView = glm::lookAt(lightPos, lightPos + lightComponent->Direction, glm::vec3(0.0f, 1.0f, 0.0f));
+					lightSpaceMatrix = lightProjection * lightView;
+
+					depthShader->Use();
+					depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+					glViewport(0, 0, shadowWidth, shadowHeight);
+					glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
+					glClear(GL_DEPTH_BUFFER_BIT);
+
+					//glEnable(GL_CULL_FACE);
+					//glCullFace(GL_FRONT);
+					for (Entity* e : entityList) {
+						shadowmapSystem->OnAction(e);
+					}
+					shadowmapSystem->AfterAction();
+				}
+			}
+
 		}
 
 		// render scene

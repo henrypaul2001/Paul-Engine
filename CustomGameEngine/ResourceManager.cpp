@@ -8,7 +8,7 @@ namespace Engine {
 		defaultMaterial = new Material();
 		defaultMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 		defaultMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
-		defaultMaterial->shininess = 35.0f;
+		defaultMaterial->shininess = 105.0f;
 
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;

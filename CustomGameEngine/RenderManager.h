@@ -14,7 +14,7 @@ namespace Engine {
 		static RenderManager* GetInstance(unsigned int shadowWidth, unsigned int shadowHeight);
 		~RenderManager();
 
-		unsigned int* GetDepthMap() { return depthMap; }
+		unsigned int* GetDepthMap(int index);
 		unsigned int* GetDepthFBO() { return depthMapFBO; }
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }

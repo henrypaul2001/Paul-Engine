@@ -31,7 +31,7 @@ namespace Engine {
 		for (int i = 0; i < 8; i++) {
 			activeDepthMaps.push_back(new unsigned int);
 
-			glActiveTexture(GL_TEXTURE0 + i);
+			glActiveTexture(GL_TEXTURE0 + i + 1);
 			glGenTextures(1, activeDepthMaps[i]);
 			glBindTexture(GL_TEXTURE_2D, *activeDepthMaps[i]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -80,6 +80,19 @@ namespace Engine {
 		delete depthMapFBO;
 
 		delete instance;
+	}
+
+	unsigned int* RenderManager::GetDepthMap(int index)
+	{
+		if (index >= 8) {
+			return nullptr;
+		}
+		else if (index == -1) {
+			return depthMap;
+		}
+		else {
+			return activeDepthMaps[index];
+		}
 	}
 
 	void RenderManager::SetupShadowMapFBO()

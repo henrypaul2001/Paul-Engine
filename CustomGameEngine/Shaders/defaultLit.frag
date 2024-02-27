@@ -54,6 +54,9 @@ struct Light {
     float Quadratic; // universal
     float Constant; // universal
 
+    mat4 LightSpaceMatrix;
+    sampler2D ShadowMap; // spotlight specific
+
     bool SpotLight;
     vec3 Direction; // spotlight specific
     vec3 TangentDirection;
@@ -124,7 +127,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
     // transform to [0, 1]
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xyz = projCoords.xyz * 0.5 + 0.5;
 
     if (projCoords.z > 1.0) {
         return 0.0;
@@ -138,6 +141,11 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
 
     // check if current frag pos is in shadow
     vec3 normal = normalize(fs_in.Normal);
+    if (material.useNormalMap) {
+        normal = normalize(texture(material.TEXTURE_NORMAL1, TexCoords)).rgb;
+    }
+    normal = normalize(fs_in.TBN * normal);
+
     vec3 lightDir = normalize(lightPos - fs_in.WorldPos);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
 
@@ -220,7 +228,8 @@ vec3 BlinnPhongSpotLight(Light light, vec3 normal, vec3 fragPos) {
     else {
         colour = texture(material.TEXTURE_DIFFUSE1, TexCoords).rgb;
     }
-    vec3 diffuse = light.Colour * diff * colour;
+    //vec3 diffuse = light.Colour * diff * colour;
+    vec3 diffuse = light.Colour * diff;
 
     // specular
     //vec3 viewDir = normalize(viewPos - fragPos);
@@ -253,7 +262,12 @@ vec3 BlinnPhongSpotLight(Light light, vec3 normal, vec3 fragPos) {
     specular *= attenuation;
     ambient *= attenuation;
 
-    return diffuse + specular + ambient;
+    // Calculate shadow
+    float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), light.ShadowMap, light.Position);
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
+    
+    //return diffuse + specular + ambient;
+    return lighting;
 }
 
 vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
@@ -289,7 +303,7 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     vec3 ambient = light.Ambient * colour;
 
     // Calculate shadow
-    float shadow = ShadowCalculation(dirLight.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), dirLight.ShadowMap, -dirLight.Direction);
+    float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), light.ShadowMap, -light.Direction * 5.0);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
 
     //return diffuse + specular + ambient;
@@ -339,18 +353,18 @@ void main()
         normal = normalize(texture(material.TEXTURE_NORMAL1, TexCoords)).rgb;
     }
     //normal = normalize(normal * 2.0 - 1.0); // tangent space
-    //normal = normalize(fs_in.TBN * normal);
+    normal = normalize(fs_in.TBN * normal);
 
     // Directional light
-    lighting += BlinnPhongDirLight(dirLight, normalize(fs_in.TBN * normal), TangentViewDirection); // normalize(viewPos - fs_in.WorldPos)
+    lighting += BlinnPhongDirLight(dirLight, normal, TangentViewDirection); // normalize(viewPos - fs_in.WorldPos)
 
     // Point and spotlights
     for (int i = 0; i < activeLights; i++) {
         if (lights[i].SpotLight) {
-            lighting += BlinnPhongSpotLight(lights[i], normalize(normal * 2.0 - 1.0), TangentFragPos); // fs_in.WorldPos
+            lighting += BlinnPhongSpotLight(lights[i], normal, TangentFragPos); // fs_in.WorldPos
         }
         else {
-            lighting += BlinnPhongPointLight(lights[i], normalize(fs_in.TBN * normal), TangentFragPos); // fs_in.WorldPos
+            lighting += BlinnPhongPointLight(lights[i], normal, TangentFragPos); // fs_in.WorldPos
         }
     }
 

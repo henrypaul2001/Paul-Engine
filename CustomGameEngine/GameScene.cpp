@@ -13,8 +13,7 @@ namespace Engine
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
 		inputManager = new GameInputManager();
-		renderManager = RenderManager::GetInstance();
-		renderManager->SetupShadowMapFBO(1024 * 2, 1024 * 2);
+		renderManager = RenderManager::GetInstance(1024 * 5, 1024 * 5);
 
 		SetupScene();
 	}
@@ -104,7 +103,7 @@ namespace Engine
 		entityManager->AddEntity(defaultPlane);
 
 		Entity* backpack = new Entity("Backpack");
-		backpack->AddComponent(new ComponentTransform(0.0f, 2.0f, -5.0f));
+		backpack->AddComponent(new ComponentTransform(0.0f, 2.0f, -2.0f));
 		stbi_set_flip_vertically_on_load(true);
 		backpack->AddComponent(new ComponentGeometry("Models/backpack/backpack.obj", false));
 		stbi_set_flip_vertically_on_load(false);
@@ -145,6 +144,7 @@ namespace Engine
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
+		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, -0.8f, -1.0f);
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");
@@ -152,13 +152,17 @@ namespace Engine
 		spotLight->AddComponent(new ComponentLight(SPOT));
 		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(blue);
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
+		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Specular = glm::vec3(0.0f, 0.0f, 1.0f);
+		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Ambient = glm::vec3(0.0f, 0.0f, 0.1f);
+		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, 0.0f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
 
 		Entity* pointLight = new Entity("Point Light");
-		pointLight->AddComponent(new ComponentTransform(-8.0f, -4.0f, 2.0f));
+		pointLight->AddComponent(new ComponentTransform(-8.0f, -3.0f, 2.0f));
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		pointLight->AddComponent(new ComponentLight(POINT));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
@@ -178,9 +182,48 @@ namespace Engine
 		floor->AddComponent(new ComponentTransform(0.0f, -8.0f, 0.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
-		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(60.0f, 60.0f, 1.0f));
-		dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 100.0f, 1.0f));
+		//dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		entityManager->AddEntity(floor);
+
+		Entity* boxOne = new Entity("Box One");
+		boxOne->AddComponent(new ComponentTransform(-2.0f, -7.2f, 10.0f));
+		boxOne->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(boxOne);
+
+		Entity* boxTwo = new Entity("Box Two");
+		boxTwo->AddComponent(new ComponentTransform(-3.0f, -7.2f, 8.0f));
+		boxTwo->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(boxTwo);
+
+		Entity* boxThree = new Entity("Box Three");
+		boxThree->AddComponent(new ComponentTransform(-2.5f, -5.5f, 11.5f));
+		boxThree->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(boxThree);
+
+		Entity* wall = new Entity("Wall");
+		wall->AddComponent(new ComponentTransform(-3.0f, -6.0f, 15.0f));
+		wall->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		wall->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
+		entityManager->AddEntity(wall);
+
+		Entity* spotShadowTest = new Entity("Spot light shadow test");
+		//spotShadowTest->AddComponent(new ComponentTransform(2.5f, -7.1f, 9.5f));
+		spotShadowTest->AddComponent(new ComponentTransform(-2.75f, -6.0f, 20.0f));
+		spotShadowTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(spotShadowTest->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(spotShadowTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		ComponentLight* spot = new ComponentLight(SPOT);
+		glm::vec3 lightPos = dynamic_cast<ComponentTransform*>(spotShadowTest->GetComponent(COMPONENT_TRANSFORM))->Position();
+		glm::vec3 targetPos = dynamic_cast<ComponentTransform*>(boxTwo->GetComponent(COMPONENT_TRANSFORM))->Position();
+		//spot->Direction = glm::normalize(lightPos - targetPos);
+		spot->Direction = glm::vec3(0.0f, -0.1f, -1.0f);
+		//spot->Cutoff = glm::radians(30.0f);
+		spot->Colour = glm::vec3(0.0f, 1.0f, 0.0f);
+		spot->Specular = glm::vec3(0.0f, 1.0f, 0.0f);
+		spot->Ambient = glm::vec3(0.0f, 0.0f, 0.0f);
+		spotShadowTest->AddComponent(spot);
+		entityManager->AddEntity(spotShadowTest);
 	}
 
 	void GameScene::CreateSystems()
@@ -204,6 +247,8 @@ namespace Engine
 		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
 
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
+
+		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
 	}
 
 	void GameScene::Render()
