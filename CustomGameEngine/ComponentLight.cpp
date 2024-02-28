@@ -25,9 +25,15 @@ namespace Engine {
 	{
 		Direction = glm::vec3(0.0f, -0.8f, -1.0f);
 
-		OrthoSize = 15.0f;
+		CastShadows = true;
+		ShadowProjectionSize = 15.0f;
+		DirectionalLightDistance = 50.0f;
+		
 		Near = 0.1f;
 		Far = 100.0f;
+		MinShadowBias = 0.000005f;
+		MaxShadowBias = 0.001f;
+		
 		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
 		Specular = glm::vec3(0.75f, 0.75f, 0.75f);
 		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -48,6 +54,11 @@ namespace Engine {
 		Near = 0.1f;
 		Far = 50.0f;
 
+		CastShadows = true;
+
+		MinShadowBias = 0.000005f;
+		MaxShadowBias = 0.001f;
+
 		Direction = glm::vec3(0.0f, 0.0f, 1.0f);
 		Cutoff = glm::cos(glm::radians(10.5f));
 		OuterCutoff = glm::cos(glm::radians(12.5f));
@@ -58,6 +69,14 @@ namespace Engine {
 		Colour = glm::vec3(1.0f, 1.0f, 1.0f);
 		Specular = glm::vec3(1.0f, 1.0f, 1.0f);
 		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+
+		CastShadows = true;
+
+		MinShadowBias = 0.000005f;
+		MaxShadowBias = 0.001f;
+
+		Near = 0.1f;
+		Far = 50.0f;
 
 		Constant = 1.0f;
 		Linear = 0.09f;

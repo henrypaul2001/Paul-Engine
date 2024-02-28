@@ -35,6 +35,12 @@ struct DirLight {
     
     mat4 LightSpaceMatrix;
     sampler2D ShadowMap;
+    float LightDistance;
+
+    bool CastShadows;
+
+    float MinShadowBias;
+	float MaxShadowBias;
 
     vec3 Colour;
     vec3 Ambient;
@@ -56,6 +62,10 @@ struct Light {
 
     mat4 LightSpaceMatrix;
     sampler2D ShadowMap; // spotlight specific
+    bool CastShadows;
+
+    float MinShadowBias;
+	float MaxShadowBias;
 
     bool SpotLight;
     vec3 Direction; // spotlight specific
@@ -122,7 +132,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
     return finalTexCoords;
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos) {
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
     // perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -149,7 +159,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
     vec3 lightDir = normalize(lightPos - fs_in.WorldPos);
     //float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.0005);
     //float bias = 0.000005;
-    float bias = max(0.001000 * (1.0 - dot(normal, lightDir)), 0.000005);
+    float bias = max(maxBias * (1.0 - dot(normal, lightDir)), minBias);
 
     // pcf soft shadows (simple solution but more advanced solutions out there)
     float shadow = 0.0;
@@ -250,9 +260,6 @@ vec3 BlinnPhongSpotLight(Light light, vec3 normal, vec3 fragPos) {
     // ambient
     vec3 ambient = light.Ambient * colour;
 
-    // Calculate shadow
-    float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), light.ShadowMap, light.Position);
-
     // spotLight
     float theta = dot(lightDir, normalize(-light.TangentDirection)); // tangent
     float epsilon = light.Cutoff - light.OuterCutoff;
@@ -267,7 +274,16 @@ vec3 BlinnPhongSpotLight(Light light, vec3 normal, vec3 fragPos) {
     specular *= attenuation;
     ambient *= attenuation;
 
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
+    vec3 lighting;
+    if (light.CastShadows) {
+        // Calculate shadow
+        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), light.ShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
+    }
+    else {
+        diffuse *= colour;
+        lighting = diffuse + specular + ambient;
+    }
     
     //return diffuse + specular + ambient;
     return lighting;
@@ -305,9 +321,16 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     // ambient
     vec3 ambient = light.Ambient * colour;
 
-    // Calculate shadow
-    float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), light.ShadowMap, -light.Direction * 50.0);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
+    vec3 lighting;
+    if (light.CastShadows) {
+        // Calculate shadow
+        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(fs_in.WorldPos, 1.0), light.ShadowMap, -light.Direction * light.LightDistance, light.MinShadowBias, light.MaxShadowBias);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;
+    }
+    else {
+        diffuse = light.Colour * diff * colour;
+        lighting = diffuse + specular + ambient;
+    }
 
     //return diffuse + specular + ambient;
     return lighting;

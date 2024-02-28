@@ -221,7 +221,7 @@ namespace Engine
 		glm::vec3 lightPos = dynamic_cast<ComponentTransform*>(spotShadowTest->GetComponent(COMPONENT_TRANSFORM))->Position();
 		glm::vec3 targetPos = dynamic_cast<ComponentTransform*>(boxTwo->GetComponent(COMPONENT_TRANSFORM))->Position();
 		//spot->Direction = glm::normalize(lightPos - targetPos);
-		spot->Direction = glm::vec3(0.0f, -0.1f, -1.0f);
+		spot->Direction = glm::vec3(0.0f, 0.0f, -1.0f);
 		//spot->Cutoff = glm::radians(30.0f);
 		spot->Colour = glm::vec3(0.0f, 1.0f, 0.0f);
 		spot->Specular = glm::vec3(0.0f, 1.0f, 0.0f);

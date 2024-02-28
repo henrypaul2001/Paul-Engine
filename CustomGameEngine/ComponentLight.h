@@ -30,6 +30,12 @@ namespace Engine {
 		glm::vec3 Ambient;
 		glm::vec3 Specular;
 
+		bool CastShadows;
+		float MinShadowBias;
+		float MaxShadowBias;
+		float Near;
+		float Far;
+
 		// Spot + Point
 		float Linear;
 		float Quadratic;
@@ -41,8 +47,9 @@ namespace Engine {
 
 		// Directional + Spot
 		glm::vec3 Direction;
-		float OrthoSize;
-		float Near;
-		float Far;
+
+		// Directional
+		float ShadowProjectionSize;
+		float DirectionalLightDistance;
 	};
 }
