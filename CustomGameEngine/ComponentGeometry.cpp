@@ -5,9 +5,15 @@ namespace Engine {
 	{
 		this->pbr = false;
 		model = new Model(modelType);
+		if (modelType == MODEL_PLANE) {
+			CULL_FACE = false;
+			CULL_TYPE = GL_BACK;
+		}
 		usingDefaultShader = false;
 		castShadows = true;
 		textureScale = 1.0f;
+		CULL_FACE = true;
+		CULL_TYPE = GL_BACK;
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
 
@@ -15,6 +21,10 @@ namespace Engine {
 	{
 		this->pbr = false;
 		model = new Model(modelType);
+		if (modelType == MODEL_PLANE) {
+			CULL_FACE = false;
+			CULL_TYPE = GL_BACK;
+		}
 		usingDefaultShader = true;
 		castShadows = true;
 		shader = SceneManager::defaultLit;
@@ -28,11 +38,15 @@ namespace Engine {
 		usingDefaultShader = false;
 		castShadows = true;
 		textureScale = 1.0f;
+		CULL_FACE = true;
+		CULL_TYPE = GL_BACK;
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
 
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr)
 	{
+		CULL_FACE = true;
+		CULL_TYPE = GL_BACK;
 		this->pbr = pbr;
 		usingDefaultShader = true;
 		castShadows = true;

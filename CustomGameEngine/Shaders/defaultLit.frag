@@ -6,6 +6,7 @@ in VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     mat3 TBN;
+    vec3 viewPos;
 } fs_in;
 
 // material struct
@@ -76,8 +77,6 @@ struct Light {
 #define NR_REAL_TIME_LIGHTS 8
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
-
-uniform vec3 viewPos;
 
 vec3 TangentViewPos;
 vec3 TangentFragPos;
@@ -357,7 +356,7 @@ void main()
     // vs_out.TangentLightPos = TBN * lightPos;
     // vs_out.TangentViewPos  = TBN * viewPos;
     // vs_out.TangentFragPos  = TBN * vs_out.FragPos;
-    TangentViewPos = fs_in.TBN * viewPos;
+    TangentViewPos = fs_in.TBN * fs_in.viewPos;
     TangentFragPos = fs_in.TBN * fs_in.WorldPos;
     TangentViewDirection = normalize(TangentViewPos - TangentFragPos);
 

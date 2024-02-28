@@ -48,6 +48,20 @@ namespace Engine {
 
 			depthShader->setMat4("model", transform->GetWorldModelMatrix());
 
+			if (geometry->Cull_Face()) {
+				glEnable(GL_CULL_FACE);
+			}
+			else {
+				glDisable(GL_CULL_FACE);
+			}
+
+			if (geometry->Cull_Type() == GL_BACK) {
+				glCullFace(GL_FRONT);
+			}
+			else if (geometry->Cull_Type() == GL_FRONT) {
+				glCullFace(GL_BACK);
+			}
+
 			geometry->GetModel()->Draw(*depthShader);
 		}
 	}

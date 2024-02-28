@@ -75,6 +75,15 @@ namespace Engine {
 		shader->setFloat("textureScale", geometry->GetTextureScale());
 		//shader->setFloat("material.SHININESS", 13.72f);
 
+
+		if (geometry->Cull_Face()) {
+			glEnable(GL_CULL_FACE);
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+		}
+
+		glCullFace(geometry->Cull_Type());
 		geometry->GetModel()->Draw(*geometry->GetShader());
 	}
 }

@@ -56,7 +56,7 @@ namespace Engine {
 
 		CastShadows = true;
 
-		MinShadowBias = 0.000005f;
+		MinShadowBias = 0.000555f;
 		MaxShadowBias = 0.001f;
 
 		Direction = glm::vec3(0.0f, 0.0f, 1.0f);

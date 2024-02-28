@@ -10,6 +10,7 @@ layout (std140) uniform Matrices
 {
     mat4 projection;
     mat4 view;
+    uniform vec3 viewPos;
 };
 
 out VS_OUT {
@@ -17,6 +18,7 @@ out VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     mat3 TBN;
+    vec3 viewPos;
 } vs_out;
 
 uniform mat4 model;
@@ -35,6 +37,6 @@ void main()
     vec3 B = cross(N, T);
     mat3 TBN = transpose(mat3(T, B, N)); //mat3(T, B, N);
     vs_out.TBN = TBN;
-
+    vs_out.viewPos = viewPos;
     gl_Position = projection * view * vec4(vs_out.WorldPos, 1.0);
 }

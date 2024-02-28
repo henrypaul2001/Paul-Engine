@@ -17,6 +17,11 @@ namespace Engine {
 
 		bool PBR() { return pbr; }
 
+		void SetCulling(bool cull, GLenum cull_type) { CULL_FACE = cull, CULL_TYPE = cull_type; }
+		
+		bool Cull_Face() { return CULL_FACE; }
+		GLenum Cull_Type() { return CULL_TYPE; }
+
 		Model* GetModel() { return model; }
 		Shader* GetShader() { return shader; }
 		float GetTextureScale() { return textureScale; }
@@ -34,5 +39,8 @@ namespace Engine {
 
 		bool pbr;
 		bool usingDefaultShader;
+
+		GLenum CULL_TYPE;
+		bool CULL_FACE;
 	};
 }
