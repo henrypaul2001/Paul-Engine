@@ -38,8 +38,8 @@ namespace Engine
 		//glDisable(GL_CULL_FACE);
 		// shadow mapping
 		if (shadowmapSystem != nullptr) {
-			//glEnable(GL_CULL_FACE);
-			//glCullFace(GL_BACK);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
 
 			// Directional light
 			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
@@ -107,7 +107,7 @@ namespace Engine
 		if (renderSystem != nullptr) {
 			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glDisable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (Entity* e : entityList) {
 				renderSystem->OnAction(e);
