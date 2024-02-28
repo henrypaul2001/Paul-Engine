@@ -78,7 +78,7 @@ namespace Engine
 
 		Entity* brickPlane = new Entity("Brick Wall");
 		ComponentTransform* bricktransform = new ComponentTransform(0.0f, -5.0f, 0.0f);
-		bricktransform->SetScale(glm::vec3(5.0f, 5.0f, 1.0f));
+		bricktransform->SetScale(glm::vec3(2.0f, 2.0f, 1.0f));
 		bricktransform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		brickPlane->AddComponent(bricktransform);
 		brickPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
@@ -94,7 +94,7 @@ namespace Engine
 
 		Entity* defaultPlane = new Entity("Default Plane");
 		ComponentTransform* transform = new ComponentTransform(-6.0f, -5.0f, 0.0f);
-		transform->SetScale(glm::vec3(5.0f, 5.0f, 1.0f));
+		transform->SetScale(glm::vec3(2.0f, 2.0f, 1.0f));
 		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		defaultPlane->AddComponent(transform);
 		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
@@ -187,18 +187,22 @@ namespace Engine
 		entityManager->AddEntity(floor);
 
 		Entity* boxOne = new Entity("Box One");
-		boxOne->AddComponent(new ComponentTransform(-2.0f, -7.2f, 10.0f));
+		boxOne->AddComponent(new ComponentTransform(-2.5f, -7.5f, 10.0f));
 		boxOne->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		boxOne->AddComponent(new ComponentVelocity(glm::vec3(0.0f, 0.0f, -1.0f)));
+		dynamic_cast<ComponentTransform*>(boxOne->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		entityManager->AddEntity(boxOne);
 
 		Entity* boxTwo = new Entity("Box Two");
-		boxTwo->AddComponent(new ComponentTransform(-3.0f, -7.2f, 8.0f));
+		boxTwo->AddComponent(new ComponentTransform(-3.0f, -8.0f, 8.0f));
 		boxTwo->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(boxTwo->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		entityManager->AddEntity(boxTwo);
 
 		Entity* boxThree = new Entity("Box Three");
 		boxThree->AddComponent(new ComponentTransform(-2.5f, -5.5f, 11.5f));
 		boxThree->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(boxThree->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.75f));
 		entityManager->AddEntity(boxThree);
 
 		Entity* wall = new Entity("Wall");
@@ -209,7 +213,7 @@ namespace Engine
 
 		Entity* spotShadowTest = new Entity("Spot light shadow test");
 		//spotShadowTest->AddComponent(new ComponentTransform(2.5f, -7.1f, 9.5f));
-		spotShadowTest->AddComponent(new ComponentTransform(-2.75f, -6.0f, 20.0f));
+		spotShadowTest->AddComponent(new ComponentTransform(-2.75f, -6.5f, 17.0f));
 		spotShadowTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(spotShadowTest->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(spotShadowTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
@@ -249,6 +253,8 @@ namespace Engine
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
 
 		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
+
+		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Box One")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(0.0f, 0.0f, -1.0f) * sin(time) * 5.5f);
 	}
 
 	void GameScene::Render()

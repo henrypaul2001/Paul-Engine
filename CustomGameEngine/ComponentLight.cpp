@@ -27,7 +27,7 @@ namespace Engine {
 
 		OrthoSize = 15.0f;
 		Near = 0.1f;
-		Far = 50.0f;
+		Far = 100.0f;
 		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
 		Specular = glm::vec3(0.75f, 0.75f, 0.75f);
 		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);

@@ -54,7 +54,7 @@ namespace Engine {
 			shader->setVec3("dirLight.Specular", directional->Specular);
 			shader->setVec3("dirLight.Ambient", directional->Ambient);
 
-			glm::vec3 lightPos = -directional->Direction * 5.0f; // negative of the directional light's direction
+			glm::vec3 lightPos = -directional->Direction * 50.0f; // negative of the directional light's direction
 			float orthoSize = directional->OrthoSize;
 			float near = directional->Near;
 			float far = directional->Far;

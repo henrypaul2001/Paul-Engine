@@ -50,7 +50,7 @@ namespace Engine
 			unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
 
 			ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
-			glm::vec3 lightPos = -dirLight->Direction * 5.0f; // negative of the directional light's direction
+			glm::vec3 lightPos = -dirLight->Direction * 50.0f; // negative of the directional light's direction
 			float orthoSize = dirLight->OrthoSize;
 			float near = dirLight->Near;
 			float far = dirLight->Far;
