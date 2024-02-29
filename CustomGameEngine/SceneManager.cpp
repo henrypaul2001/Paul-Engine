@@ -68,34 +68,16 @@ namespace Engine
 		updater();
 	}
 
-	void SceneManager::OnRenderFrame(Camera* camera)
+	void SceneManager::OnRenderFrame()
 	{
-		// Configure default shaders
-		// -------------------------
-		glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 600.0f); // do this in scene class
-
-		glBindBuffer(GL_UNIFORM_BUFFER, *resources->CommonUniforms());
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix())); // do this in resource manager
-		glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera->Position));
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 		// Call scene render delegate
 		renderer();
-
-		// GL flush
-		// Swap buffers
 	}
 
 	void SceneManager::Run()
 	{
 		std::cout << "Starting new game" << std::endl;
 		StartNewGame();
-
-		// Set up camera pointers
-		Camera* camera = &scene->camera; // no need for this at all. Just have it all done in the scene class
-		scene->GetInputManager()->SetCameraPointer(camera);
-		//static_cast<SystemRender*>(scene->GetSystemManager()->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetCameraPointer(camera);
 
 		float lastFrame = 0.0f;
 		float currentFrame;
@@ -113,7 +95,7 @@ namespace Engine
 			OnUpdateFrame();
 
 			// Render scene
-			OnRenderFrame(camera);
+			OnRenderFrame();
 
 			// Swap buffers
 			glfwSwapBuffers(window);

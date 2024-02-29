@@ -17,13 +17,12 @@ namespace Engine
 
 	class SceneManager
 	{
-	private:
-		//unsigned int uboMatrices;
-		ResourceManager* resources;
 	protected:
 		void OnLoad();
 		void OnUpdateFrame();
-		void OnRenderFrame(Camera* camera);
+		void OnRenderFrame();
+
+		ResourceManager* resources;
 
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
@@ -33,7 +32,6 @@ namespace Engine
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
 
-		//static Shader* defaultLit;
 		Scene* scene;
 
 		SceneDelegate renderer;
@@ -45,8 +43,8 @@ namespace Engine
 		virtual void StartMenu() = 0;
 		virtual void ChangeScene(SceneTypes sceneType) = 0;
 
-		int* getWindowHeight() { return &SCR_HEIGHT; }
-		int* getWindowWidth() { return &SCR_WIDTH; }
+		int GetWindowHeight() { return SCR_HEIGHT; }
+		int GetWindowWidth() { return SCR_WIDTH; }
 
 		void Run();
 	};

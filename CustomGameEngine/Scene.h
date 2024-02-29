@@ -23,18 +23,20 @@ namespace Engine
 		RenderManager* renderManager;
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
+
+		Camera* camera;
 	public:
 		static float dt;
 		Scene(SceneManager* sceneManager);
 		~Scene();
 
-		virtual void Render() = 0;
-		virtual void Update() = 0;
+		virtual void Render();
+		virtual void Update();
 		virtual void Close() = 0;
 		virtual void SetupScene() = 0;
 
 		InputManager* GetInputManager();
 		SystemManager* GetSystemManager();
-		Camera camera;
+		Camera* GetCamera() { return camera; }
 	};
 }

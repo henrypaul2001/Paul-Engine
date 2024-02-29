@@ -10,11 +10,8 @@ namespace Engine
 {
 	GameScene::GameScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
-		entityManager = new EntityManager();
-		systemManager = new SystemManager();
 		inputManager = new GameInputManager();
-		renderManager = RenderManager::GetInstance(1024 * 5, 1024 * 5);
-
+		inputManager->SetCameraPointer(camera);
 		SetupScene();
 	}
 
@@ -261,6 +258,8 @@ namespace Engine
 
 	void GameScene::Render()
 	{
+		Scene::Render();
+
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 		// Render scene

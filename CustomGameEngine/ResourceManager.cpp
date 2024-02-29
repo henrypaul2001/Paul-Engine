@@ -273,13 +273,12 @@ namespace Engine {
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		// same again for pbr
 
-		uboMatrices = new unsigned int;
-		glGenBuffers(1, uboMatrices);
-		glBindBuffer(GL_UNIFORM_BUFFER, *uboMatrices);
+		glGenBuffers(1, &uboMatrices);
+		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), NULL, GL_STATIC_DRAW); // resource manager
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, *uboMatrices, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec3));
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec3));
 	}
 
 	ResourceManager::~ResourceManager()
@@ -310,8 +309,6 @@ namespace Engine {
 			delete texturesIt->second;
 			texturesIt++;
 		}
-
-		delete uboMatrices;
 
 		delete instance;
 	}

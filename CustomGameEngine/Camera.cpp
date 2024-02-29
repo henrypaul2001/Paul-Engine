@@ -2,7 +2,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 namespace Engine {
-	Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch, glm::vec3 front, float moveSpeed, float mouseSens, float zoom)
+	Camera::Camera(unsigned int scr_width, unsigned int scr_height, glm::vec3 position, glm::vec3 up, float yaw, float pitch, glm::vec3 front, float moveSpeed, float mouseSens, float zoom)
 	{
 		Position = position;
 		WorldUp = up;
@@ -12,6 +12,10 @@ namespace Engine {
 		MovementSpeed = moveSpeed;
 		MouseSensitivity = mouseSens;
 		Zoom = zoom;
+		NearClip = 0.1f;
+		FarClip = 150.0f;
+		SCR_WIDTH = scr_width;
+		SCR_HEIGHT = scr_height;
 		UpdateCameraVectors();
 	}
 
@@ -25,12 +29,12 @@ namespace Engine {
 		return glm::lookAt(Position, Position + Front, Up);
 	}
 
-	/*
+	
 	glm::mat4 Camera::GetProjection()
 	{
-		//return glm::perspective(glm::radians(Zoom), (float))
+		return glm::perspective(glm::radians(Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, NearClip, FarClip);
 	}
-	*/
+	
 
 	void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
 	{
