@@ -42,32 +42,37 @@ namespace Engine {
 		}
 	}
 
+	void LightManager::SetDirectionalLightUniforms(Shader* shader, Entity* directionalLight)
+	{
+		ComponentLight* directional = dynamic_cast<ComponentLight*>(directionalLight->GetComponent(COMPONENT_LIGHT));
+		shader->setVec3("dirLight.Direction", directional->Direction);
+		shader->setVec3("dirLight.Colour", directional->Colour);
+		shader->setVec3("dirLight.Specular", directional->Specular);
+		shader->setVec3("dirLight.Ambient", directional->Ambient);
+		shader->setFloat("dirLight.LightDistance", directional->DirectionalLightDistance);
+		shader->setBool("dirLight.CastShadows", directional->CastShadows);
+		shader->setFloat("dirLight.MinShadowBias", directional->MinShadowBias);
+		shader->setFloat("dirLight.MaxShadowBias", directional->MaxShadowBias);
+
+		glm::vec3 lightPos = -directional->Direction * directional->DirectionalLightDistance; // negative of the directional light's direction
+
+		glm::mat4 lightProjection = glm::ortho(-directional->ShadowProjectionSize, directional->ShadowProjectionSize, -directional->ShadowProjectionSize, directional->ShadowProjectionSize, directional->Near, directional->Far);
+		glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+		shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(-1));
+	}
+
 	void LightManager::SetShaderUniforms(Shader* shader)
 	{
 		shader->Use();
 
 		// First set directional light
 		if (directionalLight != nullptr) {
-			ComponentLight* directional = dynamic_cast<ComponentLight*>(directionalLight->GetComponent(COMPONENT_LIGHT));
-			shader->setVec3("dirLight.Direction", directional->Direction);
-			shader->setVec3("dirLight.Colour", directional->Colour);
-			shader->setVec3("dirLight.Specular", directional->Specular);
-			shader->setVec3("dirLight.Ambient", directional->Ambient);
-
-			glm::vec3 lightPos = -directional->Direction * directional->DirectionalLightDistance; // negative of the directional light's direction
-			float orthoSize = directional->ShadowProjectionSize;
-			float near = directional->Near;
-			float far = directional->Far;
-			glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, near, far);
-			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-			shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
-			shader->setFloat("dirLight.LightDistance", directional->DirectionalLightDistance);
-			shader->setBool("dirLight.CastShadows", directional->CastShadows);
-			shader->setFloat("dirLight.MinShadowBias", directional->MinShadowBias);
-			shader->setFloat("dirLight.MaxShadowBias", directional->MaxShadowBias);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(-1));
+			SetDirectionalLightUniforms(shader, directionalLight);
 		}
 
 		shader->setInt("activeLights", lightEntities.size());

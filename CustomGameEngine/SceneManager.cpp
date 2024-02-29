@@ -62,29 +62,30 @@ namespace Engine
 		// Configure default shaders
 		// -------------------------
 
-		defaultLit = ResourceManager::GetInstance()->LoadShader("Shaders/defaultLit.vert", "Shaders/defaultLit.frag");
+		defaultLit = ResourceManager::GetInstance()->LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
 		defaultLit->Use();
 		defaultLit->setInt("dirLight.ShadowMap", 0);
 		for (int i = 0; i <= 8; i++) {
 			defaultLit->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
 		}
+
 		defaultLit->setInt("material.TEXTURE_DIFFUSE1", 10);
 		defaultLit->setInt("material.TEXTURE_SPECULAR1", 11);
 		defaultLit->setInt("material.TEXTURE_NORMAL1", 12);
 		defaultLit->setInt("material.TEXTURE_DISPLACE1", 13);
 
 		// Uniform blocks
-		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLit->GetID(), "Matrices");
+		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLit->GetID(), "Common");
 		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
 		glUniformBlockBinding(defaultLit->GetID(), defaultLitBlockLocation, 0);
 		// same again for pbr
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), NULL, GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec3));
 
 		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
@@ -107,9 +108,8 @@ namespace Engine
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
+		glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera->Position));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		defaultLit->setVec3("viewPos", camera->Position);
 
 		// Call scene render delegate
 		renderer();
@@ -124,7 +124,7 @@ namespace Engine
 		StartNewGame();
 
 		// Set up camera pointers
-		Camera* camera = &scene->camera;
+		Camera* camera = &scene->camera; // no need for this at all. Just have it all done in the scene class
 		scene->GetInputManager()->SetCameraPointer(camera);
 		//static_cast<SystemRender*>(scene->GetSystemManager()->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetCameraPointer(camera);
 

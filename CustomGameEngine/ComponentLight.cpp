@@ -31,7 +31,7 @@ namespace Engine {
 		
 		Near = 0.1f;
 		Far = 100.0f;
-		MinShadowBias = 0.000005f;
+		MinShadowBias = 0.00005f;
 		MaxShadowBias = 0.001f;
 		
 		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
@@ -56,7 +56,7 @@ namespace Engine {
 
 		CastShadows = true;
 
-		MinShadowBias = 0.000555f;
+		MinShadowBias = 0.000055f;
 		MaxShadowBias = 0.001f;
 
 		Direction = glm::vec3(0.0f, 0.0f, 1.0f);

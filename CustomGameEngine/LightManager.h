@@ -11,6 +11,8 @@ namespace Engine {
 
 		std::vector<Entity*> lightEntities;
 		Entity* directionalLight;
+
+		void SetDirectionalLightUniforms(Shader* shader, Entity* directionalLight);
 	public:
 		LightManager(LightManager& other) = delete; // singleton should not be cloneable
 		void operator=(const LightManager&) = delete; // singleton should not be assignable

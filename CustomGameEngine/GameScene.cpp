@@ -95,7 +95,7 @@ namespace Engine
 		Entity* defaultPlane = new Entity("Default Plane");
 		ComponentTransform* transform = new ComponentTransform(-6.0f, -5.0f, 0.0f);
 		transform->SetScale(glm::vec3(2.0f, 2.0f, 1.0f));
-		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -25.0f);
 		defaultPlane->AddComponent(transform);
 		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
@@ -144,7 +144,7 @@ namespace Engine
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
-		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, -0.8f, -1.0f);
+		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, -0.85f, -1.0f);
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");
@@ -183,7 +183,7 @@ namespace Engine
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 100.0f, 1.0f));
-		//dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		entityManager->AddEntity(floor);
 
 		Entity* boxOne = new Entity("Box One");
@@ -226,6 +226,8 @@ namespace Engine
 		spot->Colour = glm::vec3(0.0f, 1.0f, 0.0f);
 		spot->Specular = glm::vec3(0.0f, 1.0f, 0.0f);
 		spot->Ambient = glm::vec3(0.0f, 0.0f, 0.0f);
+		spot->Linear = 0.045f;
+		spot->Quadratic = 0.0075f;
 		spotShadowTest->AddComponent(spot);
 		entityManager->AddEntity(spotShadowTest);
 	}

@@ -1,5 +1,6 @@
 #include "GameSceneManager.h"
 #include "GameScene.h"
+#include "SponzaScene.h"
 #include <iostream>
 namespace Engine
 {
