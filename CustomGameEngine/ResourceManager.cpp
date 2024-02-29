@@ -253,13 +253,41 @@ namespace Engine {
 		indices.clear();
 		vertex = Vertex();
 
-		shadowMapShader = new Shader("Shaders/depthMap.vert", "Shaders/depthMap.frag");
+		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");
+		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
+
+		defaultLitShader->Use();
+		defaultLitShader->setInt("dirLight.ShadowMap", 0);
+		for (int i = 0; i <= 8; i++) {
+			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+		}
+
+		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", 10);
+		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", 11);
+		defaultLitShader->setInt("material.TEXTURE_NORMAL1", 12);
+		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", 13);
+
+		// Uniform blocks
+		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
+		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
+		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
+		// same again for pbr
+
+		uboMatrices = new unsigned int;
+		glGenBuffers(1, uboMatrices);
+		glBindBuffer(GL_UNIFORM_BUFFER, *uboMatrices);
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), NULL, GL_STATIC_DRAW); // resource manager
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, *uboMatrices, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec3));
 	}
 
 	ResourceManager::~ResourceManager()
 	{
 		// delete defaults
 		delete defaultCube;
+		delete defaultPlane;
+		delete defaultSphere;
 		delete defaultMaterial;
 
 		// delete models
@@ -282,6 +310,8 @@ namespace Engine {
 			delete texturesIt->second;
 			texturesIt++;
 		}
+
+		delete uboMatrices;
 
 		delete instance;
 	}

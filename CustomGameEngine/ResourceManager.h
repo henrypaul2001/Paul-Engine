@@ -15,7 +15,10 @@ namespace Engine {
 
 		Material* defaultMaterial;
 
+		Shader* defaultLitShader;
 		Shader* shadowMapShader;
+
+		unsigned int* uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
 
@@ -40,5 +43,7 @@ namespace Engine {
 		Mesh* DefaultSphere() { return defaultSphere; }
 		Material* DefaultMaterial() { return defaultMaterial; }
 		Shader* ShadowMapShader() { return shadowMapShader; }
+		Shader* DefaultLitShader() { return defaultLitShader; }
+		unsigned int* CommonUniforms() { return uboMatrices; }
 	};
 }

@@ -27,7 +27,7 @@ namespace Engine {
 		}
 		usingDefaultShader = true;
 		castShadows = true;
-		shader = SceneManager::defaultLit;
+		shader = ResourceManager::GetInstance()->DefaultLitShader();
 		textureScale = 1.0f;
 	}
 
@@ -61,7 +61,7 @@ namespace Engine {
 		else {
 			//v = "Shaders/defaultLit.vert";
 			//f = "Shaders/defaultLit.frag";
-			shader = SceneManager::defaultLit;
+			shader = ResourceManager::GetInstance()->DefaultLitShader();
 		}
 
 		textureScale = 1.0f;

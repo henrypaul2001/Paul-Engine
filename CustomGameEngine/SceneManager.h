@@ -18,7 +18,8 @@ namespace Engine
 	class SceneManager
 	{
 	private:
-		unsigned int uboMatrices;
+		//unsigned int uboMatrices;
+		ResourceManager* resources;
 	protected:
 		void OnLoad();
 		void OnUpdateFrame();
@@ -32,7 +33,7 @@ namespace Engine
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
 
-		static Shader* defaultLit;
+		//static Shader* defaultLit;
 		Scene* scene;
 
 		SceneDelegate renderer;
