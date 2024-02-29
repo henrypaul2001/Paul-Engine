@@ -162,6 +162,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SponzaScene.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SponzaScene.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemManager.cpp" />
@@ -201,12 +203,14 @@
     <ClCompile Include="SystemShadowMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="depthMap.frag" />
-    <None Include="depthMap.vert" />
     <None Include="Shaders\defaultLit.frag" />
     <None Include="Shaders\defaultLit.vert" />
+    <None Include="Shaders\defaultLitNew.frag" />
+    <None Include="Shaders\defaultLitNew.vert" />
     <None Include="Shaders\defaultLit_pbr.frag" />
     <None Include="Shaders\defaultLit_pbr.vert" />
+    <None Include="Shaders\depthMap.frag" />
+    <None Include="Shaders\depthMap.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
