@@ -253,19 +253,23 @@ namespace Engine {
 		indices.clear();
 		vertex = Vertex();
 
+		int textureOffset = 17;
+
 		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");
+		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom");
 		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
 
 		defaultLitShader->Use();
 		defaultLitShader->setInt("dirLight.ShadowMap", 0);
 		for (int i = 0; i <= 8; i++) {
 			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 9 + 1);
 		}
 
-		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", 10);
-		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", 11);
-		defaultLitShader->setInt("material.TEXTURE_NORMAL1", 12);
-		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", 13);
+		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
+		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
+		defaultLitShader->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
+		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
@@ -380,6 +384,21 @@ namespace Engine {
 	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath)
 	{		
 		std::string combinedPath = vertexPath + "|" + fragmentPath;
+
+		std::unordered_map<std::string, Shader*>::iterator it = shaders.find(combinedPath);
+
+		if (it == shaders.end()) {
+			// Shader not currently loaded
+			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
+			return shaders[combinedPath];
+		}
+
+		return it->second;
+	}
+
+	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath)
+	{
+		std::string combinedPath = vertexPath + "|" + fragmentPath + "|" + geometryPath;
 
 		std::unordered_map<std::string, Shader*>::iterator it = shaders.find(combinedPath);
 

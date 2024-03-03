@@ -63,6 +63,7 @@ struct Light {
 
     mat4 LightSpaceMatrix;
     sampler2D ShadowMap; // spotlight specific
+    samplerCube CubeShadowMap; // point light specific
     bool CastShadows;
 
     float MinShadowBias;
