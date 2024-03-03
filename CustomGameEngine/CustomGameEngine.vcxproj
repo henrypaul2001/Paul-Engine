@@ -203,6 +203,9 @@
     <ClCompile Include="SystemShadowMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\cubeDepthMap.frag" />
+    <None Include="Shaders\cubeDepthMap.geom" />
+    <None Include="Shaders\cubeDepthMap.vert" />
     <None Include="Shaders\defaultLit.frag" />
     <None Include="Shaders\defaultLit.vert" />
     <None Include="Shaders\defaultLitNew.frag" />

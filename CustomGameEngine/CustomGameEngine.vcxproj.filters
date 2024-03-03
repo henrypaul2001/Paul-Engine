@@ -274,5 +274,14 @@
     <None Include="Shaders\defaultLitNew.vert">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="Shaders\cubeDepthMap.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\cubeDepthMap.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\cubeDepthMap.geom">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
