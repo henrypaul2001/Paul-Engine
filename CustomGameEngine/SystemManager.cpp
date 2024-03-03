@@ -44,8 +44,8 @@ namespace Engine
 			// Directional light
 			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
 			RenderManager* renderInstance = RenderManager::GetInstance(1024, 1024);
-			renderInstance->BindShadowMapTextureToFramebuffer(-1); // bind the dir light shadowmap to framebuffer
-			unsigned int* depthMapFBO = renderInstance->GetDepthFBO();
+			renderInstance->BindShadowMapTextureToFramebuffer(-1, MAP_2D); // bind the dir light shadowmap to framebuffer
+			unsigned int* depthMapFBO = renderInstance->GetFlatDepthFBO();
 			unsigned int shadowWidth = renderInstance->ShadowWidth(); // in future, these will be stored in the light component
 			unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
 
@@ -78,7 +78,7 @@ namespace Engine
 				ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
 
 				if (lightComponent->GetLightType() == SPOT) {
-					renderInstance->BindShadowMapTextureToFramebuffer(i);
+					renderInstance->BindShadowMapTextureToFramebuffer(i, MAP_2D);
 
 					lightPos = transformComponent->GetWorldPosition();
 					lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);

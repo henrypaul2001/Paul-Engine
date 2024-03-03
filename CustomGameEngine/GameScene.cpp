@@ -142,6 +142,7 @@ namespace Engine
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
 		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, -0.85f, -1.0f);
+		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->ShadowProjectionSize = 50.0f;
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");

@@ -63,7 +63,7 @@ namespace Engine {
 		shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(-1));
+		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(-1, MAP_2D));
 	}
 
 	void LightManager::SetShaderUniforms(Shader* shader)
@@ -83,7 +83,7 @@ namespace Engine {
 			ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
 
 			glActiveTexture(GL_TEXTURE0 + i + 1);
-			glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i));
+			glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i, MAP_2D));
 
 			float aspect = (float)RenderManager::GetInstance(1024, 1024)->ShadowWidth() / (float)RenderManager::GetInstance(1024, 1024)->ShadowHeight();
 			glm::vec3 lightPos = transformComponent->GetWorldPosition();
