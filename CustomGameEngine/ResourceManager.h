@@ -45,6 +45,7 @@ namespace Engine {
 		Mesh* DefaultSphere() { return defaultSphere; }
 		Material* DefaultMaterial() { return defaultMaterial; }
 		Shader* ShadowMapShader() { return shadowMapShader; }
+		Shader* CubeShadowMapShader() { return cubeShadowMapShader; }
 		Shader* DefaultLitShader() { return defaultLitShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};

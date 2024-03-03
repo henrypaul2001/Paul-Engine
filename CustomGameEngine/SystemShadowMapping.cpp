@@ -3,7 +3,7 @@
 namespace Engine {
 	SystemShadowMapping::SystemShadowMapping()
 	{
-
+		type = MAP_2D;
 	}
 
 	SystemShadowMapping::~SystemShadowMapping()
@@ -44,7 +44,13 @@ namespace Engine {
 	void SystemShadowMapping::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
 		if (geometry->CastShadows()) {
-			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
+			Shader* depthShader = nullptr;
+			if (type == MAP_2D) {
+				depthShader = ResourceManager::GetInstance()->ShadowMapShader();
+			}
+			else {
+				depthShader = ResourceManager::GetInstance()->CubeShadowMapShader();
+			}
 
 			depthShader->setMat4("model", transform->GetWorldModelMatrix());
 

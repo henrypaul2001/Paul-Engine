@@ -38,14 +38,17 @@ namespace Engine
 		//glDisable(GL_CULL_FACE);
 		// shadow mapping
 		if (shadowmapSystem != nullptr) {
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
+			//glEnable(GL_CULL_FACE);
+			//glCullFace(GL_FRONT);
+
+			RenderManager* renderInstance = RenderManager::GetInstance(1024, 1024);
+			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
+			Shader* cubeDepthShader = ResourceManager::GetInstance()->CubeShadowMapShader();
+			unsigned int* depthMapFBO = renderInstance->GetFlatDepthFBO();
+			unsigned int* cubeDepthMapFBO = renderInstance->GetCubeDepthFBO();
 
 			// Directional light
-			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
-			RenderManager* renderInstance = RenderManager::GetInstance(1024, 1024);
 			renderInstance->BindShadowMapTextureToFramebuffer(-1, MAP_2D); // bind the dir light shadowmap to framebuffer
-			unsigned int* depthMapFBO = renderInstance->GetFlatDepthFBO();
 			unsigned int shadowWidth = renderInstance->ShadowWidth(); // in future, these will be stored in the light component
 			unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
 
@@ -70,7 +73,8 @@ namespace Engine
 			}
 			shadowmapSystem->AfterAction();
 
-			// Spot lights
+			// Spot and point lights
+			std::vector<glm::mat4> shadowTransforms;
 			float aspect = (float)shadowWidth / (float)shadowHeight;
 			std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
 			for (int i = 0; i < lightEntities.size(); i++) {
@@ -94,20 +98,49 @@ namespace Engine
 
 					//glEnable(GL_CULL_FACE);
 					//glCullFace(GL_FRONT);
+					shadowmapSystem->SetDepthMapType(MAP_2D);
+					for (Entity* e : entityList) {
+						shadowmapSystem->OnAction(e);
+					}
+					shadowmapSystem->AfterAction();
+				}
+				else if (lightComponent->GetLightType() == POINT) {
+					lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+					glm::vec3 lightPos = transformComponent->GetWorldPosition();
+
+					shadowTransforms.clear();
+					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+					cubeDepthShader->Use();
+					for (unsigned int i = 0; i < 6; ++i) {
+						cubeDepthShader->setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+						cubeDepthShader->setFloat("far_plane", lightComponent->Far);
+						cubeDepthShader->setVec3("lightPos", lightPos);
+					}
+
+					renderInstance->BindShadowMapTextureToFramebuffer(i, MAP_CUBE);
+					glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
+					glClear(GL_DEPTH_BUFFER_BIT);
+
+					shadowmapSystem->SetDepthMapType(MAP_CUBE);
 					for (Entity* e : entityList) {
 						shadowmapSystem->OnAction(e);
 					}
 					shadowmapSystem->AfterAction();
 				}
 			}
-
 		}
 
 		// render scene
 		if (renderSystem != nullptr) {
 			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glCullFace(GL_BACK);
+			//glCullFace(GL_BACK);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (Entity* e : entityList) {
 				renderSystem->OnAction(e);

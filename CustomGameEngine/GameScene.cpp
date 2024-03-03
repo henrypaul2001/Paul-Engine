@@ -252,7 +252,7 @@ namespace Engine
 
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
 
-		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
+		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 3.5f);
 
 		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Box One")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(0.0f, 0.0f, -1.0f) * sin(time) * 5.5f);
 	}
