@@ -37,8 +37,10 @@ struct Light {
 
     float MinShadowBias;
 	float MaxShadowBias;
+    float ShadowFarPlane; // point light specific
 
-    sampler2D ShadowMap;
+    sampler2D ShadowMap; // spot light specific
+    samplerCube CubeShadowMap; // point light specific
 
     bool SpotLight;
     vec3 Direction; // spotlight specific
@@ -54,6 +56,7 @@ uniform int activeLights;
 
 in VIEW_DATA {
     flat vec3 TangentViewPos;
+    flat vec3 ViewPos;
 } view_data;
 
 in VERTEX_DATA {
@@ -174,6 +177,42 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
     return shadow;
 }
 
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+float CubeShadowCalculation(vec3 fragPos, samplerCube shadowMap, vec3 lightPos, float minBias, float maxBias, float far_plane) {
+    vec3 fragToLight = fragPos - lightPos;
+
+    float currentDepth = length(fragToLight);
+
+    float shadow = 0.0;
+    float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
+    //float bias = 0.15;
+    int samples = 20;
+    
+    float viewDistance = length(view_data.ViewPos - fragPos);
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
+
+    for (int i = 0; i < samples; i++) {
+        float closestDepth = texture(shadowMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        closestDepth *= far_plane;
+
+        if (currentDepth - bias > closestDepth) {
+            shadow += 1.0;
+        }
+    }
+
+    shadow /= float(samples);
+
+    return shadow;
+}
+
 vec3 BlinnPhongDirLight(DirLight light, vec3 viewDir) {
     light.TangentDirection = vertex_data.TBN * light.Direction;
     vec3 lightDir = normalize(-light.TangentDirection);
@@ -264,7 +303,7 @@ vec3 BlinnPhongPointLight(Light light) {
     // diffuse
     float diff = max(dot(lightDir, Normal), 0.0);
 
-    vec3 diffuse = diff * light.Colour * Colour;
+    vec3 diffuse = diff * light.Colour;
 
     // specular
     vec3 reflectDir = reflect(-lightDir, Normal);
@@ -284,7 +323,18 @@ vec3 BlinnPhongPointLight(Light light) {
     specular *= attenuation;
     ambient *= attenuation;
     
-    return diffuse + specular + ambient;
+    vec3 lighting;
+    if (light.CastShadows) {
+        // Calculate shadow
+        float shadow = CubeShadowCalculation(vertex_data.WorldPos, light.CubeShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias, light.ShadowFarPlane);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
+    }
+    else {
+        diffuse *= Colour;
+        lighting = diffuse + specular + ambient;
+    }
+
+    return lighting;
 }
 
 void main() {

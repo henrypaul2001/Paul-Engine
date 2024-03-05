@@ -73,6 +73,13 @@ namespace Engine
 		brickWall->shininess = 60.0f;
 		brickWall->height_scale = 0.1f;
 
+		Entity* defaultCube = new Entity("Default Cube");
+		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
+		//dynamic_cast<ComponentTransform*>(defaultCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.5f));
+		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		//dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
+		entityManager->AddEntity(defaultCube);
+
 		Entity* brickPlane = new Entity("Brick Wall");
 		ComponentTransform* bricktransform = new ComponentTransform(0.0f, -5.0f, 0.0f);
 		bricktransform->SetScale(glm::vec3(2.0f, 2.0f, 1.0f));
@@ -81,13 +88,6 @@ namespace Engine
 		brickPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(brickPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
 		entityManager->AddEntity(brickPlane);
-
-		Entity* defaultCube = new Entity("Default Cube");
-		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
-		//dynamic_cast<ComponentTransform*>(defaultCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.5f));
-		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		//dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
-		entityManager->AddEntity(defaultCube);
 
 		Entity* defaultPlane = new Entity("Default Plane");
 		ComponentTransform* transform = new ComponentTransform(-6.0f, -5.0f, 0.0f);
@@ -164,6 +164,7 @@ namespace Engine
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		pointLight->AddComponent(new ComponentLight(POINT));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		pointLight->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
 		//dynamic_cast<ComponentLight*>(pointLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);

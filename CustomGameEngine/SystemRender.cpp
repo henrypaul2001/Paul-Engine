@@ -48,7 +48,7 @@ namespace Engine {
 		Shader* shader = geometry->GetShader();
 		if (shadersUsedThisFrame.size() > 0) {
 			for (Shader* s : shadersUsedThisFrame) {
-				if (&s == &shader) {
+				if (s->GetID() == shader->GetID()) {
 					// lighting uniforms already set
 				}
 				else {
@@ -61,6 +61,7 @@ namespace Engine {
 			}
 		}
 		else {
+			shadersUsedThisFrame.push_back(shader);
 			shader->Use();
 			LightManager::GetInstance()->SetShaderUniforms(shader);
 		}
@@ -83,7 +84,16 @@ namespace Engine {
 			glDisable(GL_CULL_FACE);
 		}
 
-		glCullFace(geometry->Cull_Type());
+		if (geometry->Cull_Type() == GL_BACK) {
+			glCullFace(GL_BACK);
+		}
+		else if (geometry->Cull_Type() == GL_FRONT) {
+			glCullFace(GL_FRONT);
+		}
+		else {
+			glCullFace(GL_FRONT);
+		}
+
 		geometry->GetModel()->Draw(*geometry->GetShader());
 	}
 }

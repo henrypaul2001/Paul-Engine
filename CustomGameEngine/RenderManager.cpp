@@ -30,6 +30,11 @@ namespace Engine {
 		float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
 
+		// Solution
+		// use hashmap for textures
+		// key = light index, 8 maximum
+		// value = unsigned int, texture, can be either cube or 2d
+
 		// Generate 2D textures for spot lights
 		for (int i = 0; i < 8; i++) {
 			flatDepthMaps.push_back(new unsigned int);
@@ -160,5 +165,12 @@ namespace Engine {
 
 	void RenderManager::SetupCubeShadowMapFBO() {
 		glGenFramebuffers(1, cubeDepthMapFBO);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *cubeDepthMaps[0], 0);
+
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

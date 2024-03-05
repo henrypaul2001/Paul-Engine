@@ -15,6 +15,7 @@ layout (std140) uniform Common
 
 out VIEW_DATA {
     flat vec3 TangentViewPos;
+    flat vec3 ViewPos;
 } view_data;
 
 out VERTEX_DATA {
@@ -45,6 +46,7 @@ void main() {
     vertex_data.TangentFragPos = TBN * vertex_data.WorldPos;
 
     view_data.TangentViewPos = TBN * viewPos;
+    view_data.ViewPos = viewPos;
 
     vertex_data.TBN = TBN;
 

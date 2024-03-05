@@ -114,6 +114,7 @@ namespace Engine
 		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
 			glEnable(GL_DEBUG_OUTPUT);
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 			glDebugMessageCallback(glDebugOutput, nullptr);
 			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 			//glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "error message here"); // example of custom error message

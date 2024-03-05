@@ -68,6 +68,7 @@ namespace Engine
 			glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
 			glClear(GL_DEPTH_BUFFER_BIT);
 
+			shadowmapSystem->SetDepthMapType(MAP_2D);
 			for (Entity* e : entityList) {
 				shadowmapSystem->OnAction(e);
 			}

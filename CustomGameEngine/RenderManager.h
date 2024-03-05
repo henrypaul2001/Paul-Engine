@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 namespace Engine {
 	enum DepthMapType {
 		MAP_2D,
@@ -35,7 +36,7 @@ namespace Engine {
 
 		unsigned int* depthMap;
 		std::vector<unsigned int*> flatDepthMaps;
-		std::vector<unsigned int*> cubeDepthMaps;
+		std::vector<unsigned int*> cubeDepthMaps; // consider using hashmap <mapIndex, texture pointer*> in future. That way, a single collection can hold both types of shadow map
 
 		unsigned int* flatDepthMapFBO;
 		unsigned int* cubeDepthMapFBO;

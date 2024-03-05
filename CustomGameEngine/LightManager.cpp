@@ -24,7 +24,10 @@ namespace Engine {
 
 	void LightManager::AddLightEntity(Entity* entity)
 	{
+		//ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(entity->GetComponent(COMPONENT_LIGHT));
 		lightEntities.push_back(entity);
+		//DepthMapType type = lightComponent->GetLightType() == POINT ? MAP_CUBE : MAP_2D;
+		//RenderManager::GetInstance(1024, 1024)->AssignLightToShadowMap(lightEntities.size() - 1, type);
 	}
 
 	void LightManager::SetDirectionalLightEntity(Entity* entity)
@@ -82,15 +85,6 @@ namespace Engine {
 			ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
 			ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
 
-			glActiveTexture(GL_TEXTURE0 + i + 1);
-			glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i, MAP_2D));
-
-			float aspect = (float)RenderManager::GetInstance(1024, 1024)->ShadowWidth() / (float)RenderManager::GetInstance(1024, 1024)->ShadowHeight();
-			glm::vec3 lightPos = transformComponent->GetWorldPosition();
-			glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
-			glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->Direction, glm::vec3(0.0f, 1.0f, 0.0f));
-			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
 			shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Position")), transformComponent->GetWorldPosition()); // this should be transformed by the world space model matrix
 			shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Colour")), lightComponent->Colour);
 			shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Specular")), lightComponent->Specular);
@@ -103,11 +97,21 @@ namespace Engine {
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].MaxShadowBias")), lightComponent->MaxShadowBias);
 
 			if (lightComponent->GetLightType() == POINT) {
-
+				glActiveTexture(GL_TEXTURE0 + i + 9);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i, MAP_CUBE));
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
-				//shader->setMat4(std::string("lights[" + std::string(std::to_string(i)) + std::string("].LightSpaceMatrix")), lightSpaceMatrix);
+				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);
 			}
 			else if (lightComponent->GetLightType() == SPOT) {
+				glActiveTexture(GL_TEXTURE0 + i + 1);
+				glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i, MAP_2D));
+				
+				float aspect = (float)RenderManager::GetInstance(1024, 1024)->ShadowWidth() / (float)RenderManager::GetInstance(1024, 1024)->ShadowHeight();
+				glm::vec3 lightPos = transformComponent->GetWorldPosition();
+				glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+				glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->Direction, glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), true);
 				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Direction")), lightComponent->Direction); // so should this
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Cutoff")), lightComponent->Cutoff);

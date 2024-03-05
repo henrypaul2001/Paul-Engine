@@ -13,7 +13,7 @@ namespace Engine
 
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
-		renderManager = RenderManager::GetInstance(1024 * 7, 1024 * 7);
+		renderManager = RenderManager::GetInstance(1024 * 4, 1024 * 4);
 
 		SCR_WIDTH = this->sceneManager->GetWindowWidth();
 		SCR_HEIGHT = this->sceneManager->GetWindowHeight();

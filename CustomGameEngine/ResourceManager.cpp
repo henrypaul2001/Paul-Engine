@@ -253,7 +253,7 @@ namespace Engine {
 		indices.clear();
 		vertex = Vertex();
 
-		int textureOffset = 17;
+		int textureOffset = 18;
 
 		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");
 		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom");
@@ -263,7 +263,7 @@ namespace Engine {
 		defaultLitShader->setInt("dirLight.ShadowMap", 0);
 		for (int i = 0; i <= 8; i++) {
 			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 9 + 1);
+			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 
 		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
@@ -404,7 +404,7 @@ namespace Engine {
 
 		if (it == shaders.end()) {
 			// Shader not currently loaded
-			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
+			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
 			return shaders[combinedPath];
 		}
 
