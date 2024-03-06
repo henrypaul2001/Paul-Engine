@@ -1,10 +1,11 @@
 #pragma once
 #include "InputManager.h"
+#include "GameScene.h"
 namespace Engine {
 	class GameInputManager : public InputManager
 	{
 	public:
-		GameInputManager();
+		GameInputManager(GameScene* owner);
 		~GameInputManager();
 		void ProcessInputs() override;
 		void Close() override;
@@ -12,5 +13,7 @@ namespace Engine {
 	protected:
 		void keyUp(int key) override;
 		void keyDown(int key) override;
+
+		GameScene* owner;
 	};
 }

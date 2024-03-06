@@ -88,8 +88,40 @@ vec4 KernelEffect(float[9] kernel) {
 	return vec4(col, 1.0);
 }
 
+uniform unsigned int postProcess;
+uniform float[9] customKernel;
+
 void main() {
-	FragColor = NoEffect();
+	if (postProcess == 0u) {
+		FragColor = NoEffect();
+	}
+	else if (postProcess == 1u) {
+		FragColor = Inversion();
+	}
+	else if (postProcess == 2u) {
+		FragColor = Grayscale();
+	}
+	else if (postProcess == 3u) {
+		FragColor = KernelEffect(HardSharpen);
+	}
+	else if (postProcess == 4u) {
+		FragColor = KernelEffect(SubtleSharpen);
+	}
+	else if (postProcess == 5u) {
+		FragColor = KernelEffect(Blur);
+	}
+	else if (postProcess == 6u) {
+		FragColor = KernelEffect(EdgeDetect);
+	}
+	else if (postProcess == 7u) {
+		FragColor = KernelEffect(Emboss);
+	}
+	else if (postProcess == 8u) {
+		FragColor = KernelEffect(Sobel);
+	}
+	else if (postProcess == 9u) {
+		FragColor = KernelEffect(customKernel);
+	}
 
 	// gamma correction
 	// FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / gamma));

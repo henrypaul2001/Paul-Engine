@@ -6,7 +6,7 @@ namespace Engine {
 	{
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
-		inputManager = new GameInputManager();
+		inputManager = new GameInputManager(nullptr);
 		renderManager = RenderManager::GetInstance(1024 * 5, 1024 * 5, SCR_WIDTH, SCR_HEIGHT);
 
 		SetupScene();

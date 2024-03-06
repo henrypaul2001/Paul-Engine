@@ -10,7 +10,7 @@ namespace Engine
 {
 	GameScene::GameScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
-		inputManager = new GameInputManager();
+		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
 	}
@@ -304,8 +304,25 @@ namespace Engine
 	void GameScene::CreateSystems()
 	{
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemRender(), RENDER_SYSTEMS);
+		SystemRender* renderSystem = new SystemRender();
+		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
+		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+	}
+
+	void GameScene::ChangePostProcessEffect()
+	{
+		SystemRender* renderSystem = dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS));
+		unsigned int currentEffect = renderSystem->GetPostProcess();
+		unsigned int nextEffect;
+		if (currentEffect == 8u) {
+			nextEffect = 0u;
+		}
+		else {
+			nextEffect = currentEffect + 1;
+		}
+
+		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
 	}
 
 	void GameScene::Update()

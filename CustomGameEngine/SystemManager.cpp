@@ -151,21 +151,34 @@ namespace Engine
 				renderSystem->OnAction(e);
 			}
 			renderSystem->AfterAction();
+
+			// render final scene texture on screen quad
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			Shader* screenQuadShader = ResourceManager::GetInstance()->ScreenQuadShader();
+			screenQuadShader->Use();
+
+			screenQuadShader->setUInt("postProcess", renderSystem->GetPostProcess());
+
+			screenQuadShader->setFloat("customKernel[0]", renderSystem->PostProcessKernel[0]);
+			screenQuadShader->setFloat("customKernel[1]", renderSystem->PostProcessKernel[1]);
+			screenQuadShader->setFloat("customKernel[2]", renderSystem->PostProcessKernel[2]);
+			screenQuadShader->setFloat("customKernel[3]", renderSystem->PostProcessKernel[3]);
+			screenQuadShader->setFloat("customKernel[4]", renderSystem->PostProcessKernel[4]);
+			screenQuadShader->setFloat("customKernel[5]", renderSystem->PostProcessKernel[5]);
+			screenQuadShader->setFloat("customKernel[6]", renderSystem->PostProcessKernel[6]);
+			screenQuadShader->setFloat("customKernel[7]", renderSystem->PostProcessKernel[7]);
+			screenQuadShader->setFloat("customKernel[8]", renderSystem->PostProcessKernel[8]);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+			ResourceManager::GetInstance()->DefaultPlane()->Draw(*screenQuadShader);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
 		}
-
-		// render final scene texture on screen quad
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		Shader* screenQuadShader = ResourceManager::GetInstance()->ScreenQuadShader();
-		screenQuadShader->Use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-		ResourceManager::GetInstance()->DefaultPlane()->Draw(*screenQuadShader);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
 	}
 
 	void SystemManager::AddSystem(System* system, SystemLists list)

@@ -6,6 +6,16 @@ namespace Engine {
 	{
 		//camera = nullptr;
 		shadersUsedThisFrame = std::vector<Shader*>();
+		postProcess = NONE;
+		PostProcessKernel[0] = 0.0;
+		PostProcessKernel[1] = 0.0;
+		PostProcessKernel[2] = 0.0;
+		PostProcessKernel[3] = 0.0;
+		PostProcessKernel[4] = 1.0;
+		PostProcessKernel[5] = 0.0;
+		PostProcessKernel[6] = 0.0;
+		PostProcessKernel[7] = 0.0;
+		PostProcessKernel[8] = 0.0;
 	}
 
 	SystemRender::~SystemRender()

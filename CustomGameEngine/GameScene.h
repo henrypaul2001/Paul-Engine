@@ -14,6 +14,8 @@ namespace Engine
 		GameScene(SceneManager* sceneManager);
 		~GameScene();
 
+		void ChangePostProcessEffect();
+
 		void Update() override;
 		void Render() override;
 		void Close() override;

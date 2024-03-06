@@ -1,9 +1,9 @@
 #include "GameInputManager.h"
 #include "Scene.h"
 namespace Engine {
-	GameInputManager::GameInputManager()
+	GameInputManager::GameInputManager(GameScene* owner)
 	{
-
+		this->owner = owner;
 	}
 
 	GameInputManager::~GameInputManager()
@@ -53,6 +53,9 @@ namespace Engine {
 	void GameInputManager::keyUp(int key)
 	{
 		std::cout << "Key num: " << key << "| UP" << std::endl;
+		if (key == GLFW_KEY_SLASH) {
+			owner->ChangePostProcessEffect();
+		}
 	}
 
 	void GameInputManager::keyDown(int key)
