@@ -31,8 +31,8 @@ namespace Engine {
 		
 		Near = 0.1f;
 		Far = 100.0f;
-		MinShadowBias = 0.00005f;
-		MaxShadowBias = 0.001f;
+		MinShadowBias = 0.0055f;
+		MaxShadowBias = 0.016f;
 		
 		Colour = glm::vec3(0.75f, 0.75f, 0.75f);
 		Specular = glm::vec3(0.75f, 0.75f, 0.75f);
@@ -43,7 +43,7 @@ namespace Engine {
 	{
 		Colour = glm::vec3(1.0f, 1.0f, 1.0f);
 		Specular = glm::vec3(1.0f, 1.0f, 1.0f);
-		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		Ambient = glm::vec3(0.0f, 0.0f, 0.0f);
 
 		Constant = 1.0f;
 		Linear = 0.09f;
@@ -68,12 +68,12 @@ namespace Engine {
 	{
 		Colour = glm::vec3(1.0f, 1.0f, 1.0f);
 		Specular = glm::vec3(1.0f, 1.0f, 1.0f);
-		Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		Ambient = glm::vec3(0.0f, 0.0f, 0.0f);
 
 		CastShadows = true;
 
-		MinShadowBias = 0.000005f;
-		MaxShadowBias = 0.001f;
+		MinShadowBias = 0.15f;
+		MaxShadowBias = 0.16f;
 
 		Near = 0.1f;
 		Far = 50.0f;
