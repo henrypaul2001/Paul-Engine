@@ -3,13 +3,43 @@
 #include <cstddef>
 namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
-	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight)
+	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
+		texturedFBO = new unsigned int;
 		SetupShadowMapTextures(shadowWidth, shadowHeight);
 		SetupFlatShadowMapFBO();
 		SetupCubeShadowMapFBO();
+		SetupTexturedFBO(screenWidth, screenHeight);
+	}
+
+	RenderManager* RenderManager::GetInstance()
+	{
+		return instance;
+	}
+
+	RenderManager* RenderManager::GetInstance(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
+	{
+		if (instance == nullptr) {
+			instance = new RenderManager(shadowWidth, shadowHeight, screenWidth, screenHeight);
+		}
+		return instance;
+	}
+
+	RenderManager::~RenderManager()
+	{
+		delete depthMap;
+		delete flatDepthMapFBO;
+		delete cubeDepthMapFBO;
+		delete texturedFBO;
+
+		for (int i = 0; i < 8; i++) {
+			delete flatDepthMaps[i];
+			delete cubeDepthMaps[i];
+		}
+
+		delete instance;
 	}
 
 	void RenderManager::SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight)
@@ -111,28 +141,6 @@ namespace Engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	RenderManager* RenderManager::GetInstance(unsigned int shadowWidth, unsigned int shadowHeight)
-	{
-		if (instance == nullptr) {
-			instance = new RenderManager(shadowWidth, shadowHeight);
-		}
-		return instance;
-	}
-
-	RenderManager::~RenderManager()
-	{
-		delete depthMap;
-		delete flatDepthMapFBO;
-		delete cubeDepthMapFBO;
-
-		for (int i = 0; i < 8; i++) {
-			delete flatDepthMaps[i];
-			delete cubeDepthMaps[i];
-		}
-
-		delete instance;
-	}
-
 	unsigned int* RenderManager::GetDepthMap(int index, DepthMapType type)
 	{
 		if (index >= 8) {
@@ -171,6 +179,34 @@ namespace Engine {
 
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void RenderManager::SetupTexturedFBO(unsigned int screenWidth, unsigned int screenHeight)
+	{
+		glGenFramebuffers(1, texturedFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, *texturedFBO);
+
+		// Generate screen texture
+		screenTexture = new unsigned int;
+		glGenTextures(1, screenTexture);
+		glBindTexture(GL_TEXTURE_2D, *screenTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		// Attach texture to fbo
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *screenTexture, 0);
+		
+		// Generate render buffer object for depth and stencil testing that won't be sampled
+		unsigned int rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
