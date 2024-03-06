@@ -377,7 +377,7 @@ void main() {
     Lighting += BlinnPhongDirLight(dirLight, TangentViewDirection);
 
     // Point and spot lights
-    for (int i = 0; i < activeLights; i++) {
+    for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
         if (lights[i].SpotLight) {
             Lighting += BlinnPhongSpotLight(lights[i]);
         }

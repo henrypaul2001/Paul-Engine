@@ -78,7 +78,7 @@ namespace Engine
 			std::vector<glm::mat4> shadowTransforms;
 			float aspect = (float)shadowWidth / (float)shadowHeight;
 			std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
-			for (int i = 0; i < lightEntities.size(); i++) {
+			for (int i = 0; i < lightEntities.size() && i < 8; i++) {
 				ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
 				ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
 

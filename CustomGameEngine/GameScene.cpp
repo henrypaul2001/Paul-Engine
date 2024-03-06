@@ -146,7 +146,7 @@ namespace Engine
 		entityManager->AddEntity(dirLight);
 
 		Entity* spotLight = new Entity("Spot Light");
-		spotLight->AddComponent(new ComponentTransform(0.0f, 2.0f, -10.0f));
+		spotLight->AddComponent(new ComponentTransform(0.0f, 3.0f, -9.0f));
 		spotLight->AddComponent(new ComponentLight(SPOT));
 		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(blue);
@@ -155,7 +155,7 @@ namespace Engine
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Specular = glm::vec3(0.0f, 0.0f, 1.0f);
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Ambient = glm::vec3(0.0f, 0.0f, 0.1f);
-		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, 0.0f, 1.0f);
+		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, -0.5f, 1.0f);
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(backpack);
 		entityManager->AddEntity(spotLight);
 
@@ -229,6 +229,76 @@ namespace Engine
 		spot->Quadratic = 0.0075f;
 		spotShadowTest->AddComponent(spot);
 		entityManager->AddEntity(spotShadowTest);
+
+		Entity* pointLightStressTest1 = new Entity("Point Light Stress Test 1");
+		pointLightStressTest1->AddComponent(new ComponentTransform(-15.0f, -6.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressTest1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.35f));
+		pointLightStressTest1->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(pointLightStressTest1->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		pointLightStressTest1->AddComponent(new ComponentLight(POINT));
+		entityManager->AddEntity(pointLightStressTest1);
+
+		Entity* pointLightStressShadowCaster1 = new Entity("Point Light Stress Shadow Caster 1");
+		pointLightStressShadowCaster1->AddComponent(new ComponentTransform(-15.0f, -6.0f, 12.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressShadowCaster1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
+		pointLightStressShadowCaster1->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(pointLightStressShadowCaster1);
+
+		Entity* pointLightStressTest2 = new Entity("Point Light Stress Test 2");
+		pointLightStressTest2->AddComponent(new ComponentTransform(25.0f, -5.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressTest2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.35f));
+		pointLightStressTest2->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(pointLightStressTest2->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		pointLightStressTest2->AddComponent(new ComponentLight(POINT));
+		entityManager->AddEntity(pointLightStressTest2);
+
+		Entity* pointLightStressShadowCaster2 = new Entity("Point Light Stress Shadow Caster 2");
+		pointLightStressShadowCaster2->AddComponent(new ComponentTransform(25.0f, -5.0f, 12.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressShadowCaster2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
+		pointLightStressShadowCaster2->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(pointLightStressShadowCaster2);
+
+		Entity* pointLightStressTest3 = new Entity("Point Light Stress Test 3");
+		pointLightStressTest3->AddComponent(new ComponentTransform(6.0f, -5.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressTest3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.35f));
+		pointLightStressTest3->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(pointLightStressTest3->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		pointLightStressTest3->AddComponent(new ComponentLight(POINT));
+		entityManager->AddEntity(pointLightStressTest3);
+
+		Entity* pointLightStressShadowCaster3 = new Entity("Point Light Stress Shadow Caster 3");
+		pointLightStressShadowCaster3->AddComponent(new ComponentTransform(6.0f, -5.0f, 12.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressShadowCaster3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
+		pointLightStressShadowCaster3->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(pointLightStressShadowCaster3);
+
+		Entity* pointLightStressTest4 = new Entity("Point Light Stress Test 4");
+		pointLightStressTest4->AddComponent(new ComponentTransform(16.0f, -6.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressTest4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.35f));
+		pointLightStressTest4->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(pointLightStressTest4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		pointLightStressTest4->AddComponent(new ComponentLight(POINT));
+		entityManager->AddEntity(pointLightStressTest4);
+
+		Entity* pointLightStressShadowCaster4 = new Entity("Point Light Stress Shadow Caster 4");
+		pointLightStressShadowCaster4->AddComponent(new ComponentTransform(16.0f, -6.0f, 12.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressShadowCaster4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
+		pointLightStressShadowCaster4->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(pointLightStressShadowCaster4);
+
+		Entity* pointLightStressTest5 = new Entity("Point Light Stress Test 5");
+		pointLightStressTest5->AddComponent(new ComponentTransform(-26.0f, -6.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressTest5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.35f));
+		pointLightStressTest5->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(pointLightStressTest5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		pointLightStressTest5->AddComponent(new ComponentLight(POINT));
+		entityManager->AddEntity(pointLightStressTest5);
+
+		Entity* pointLightStressShadowCaster5 = new Entity("Point Light Stress Shadow Caster 5");
+		pointLightStressShadowCaster5->AddComponent(new ComponentTransform(-26.0f, -6.0f, 12.0f));
+		dynamic_cast<ComponentTransform*>(pointLightStressShadowCaster5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
+		pointLightStressShadowCaster5->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(pointLightStressShadowCaster5);
 	}
 
 	void GameScene::CreateSystems()
