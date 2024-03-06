@@ -5,6 +5,8 @@ namespace Engine {
 	{
 		this->pbr = false;
 		model = new Model(modelType);
+		CULL_FACE = true;
+		CULL_TYPE = GL_BACK;
 		if (modelType == MODEL_PLANE) {
 			CULL_FACE = false;
 			CULL_TYPE = GL_BACK;
@@ -12,8 +14,6 @@ namespace Engine {
 		usingDefaultShader = false;
 		castShadows = true;
 		textureScale = 1.0f;
-		CULL_FACE = true;
-		CULL_TYPE = GL_BACK;
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
 
@@ -21,6 +21,8 @@ namespace Engine {
 	{
 		this->pbr = false;
 		model = new Model(modelType);
+		CULL_FACE = true;
+		CULL_TYPE = GL_BACK;
 		if (modelType == MODEL_PLANE) {
 			CULL_FACE = false;
 			CULL_TYPE = GL_BACK;

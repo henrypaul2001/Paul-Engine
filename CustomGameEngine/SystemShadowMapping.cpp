@@ -62,10 +62,12 @@ namespace Engine {
 			}
 
 			if (geometry->Cull_Type() == GL_BACK) {
-				glCullFace(GL_FRONT);
+				///glCullFace(GL_FRONT);
+				glCullFace(GL_BACK);
 			}
 			else if (geometry->Cull_Type() == GL_FRONT) {
-				glCullFace(GL_BACK);
+				//glCullFace(GL_BACK);
+				glCullFace(GL_FRONT);
 			}
 
 			geometry->GetModel()->Draw(*depthShader);
