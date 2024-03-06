@@ -66,7 +66,7 @@ namespace Engine {
 		shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(-1, MAP_2D));
+		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap(-1, MAP_2D));
 	}
 
 	void LightManager::SetShaderUniforms(Shader* shader)
@@ -98,15 +98,15 @@ namespace Engine {
 
 			if (lightComponent->GetLightType() == POINT) {
 				glActiveTexture(GL_TEXTURE0 + i + 9);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i, MAP_CUBE));
+				glBindTexture(GL_TEXTURE_CUBE_MAP, *RenderManager::GetInstance()->GetDepthMap(i, MAP_CUBE));
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);
 			}
 			else if (lightComponent->GetLightType() == SPOT) {
 				glActiveTexture(GL_TEXTURE0 + i + 1);
-				glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance(1024, 1024)->GetDepthMap(i, MAP_2D));
+				glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap(i, MAP_2D));
 				
-				float aspect = (float)RenderManager::GetInstance(1024, 1024)->ShadowWidth() / (float)RenderManager::GetInstance(1024, 1024)->ShadowHeight();
+				float aspect = (float)RenderManager::GetInstance()->ShadowWidth() / (float)RenderManager::GetInstance()->ShadowHeight();
 				glm::vec3 lightPos = transformComponent->GetWorldPosition();
 				glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
 				glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->Direction, glm::vec3(0.0f, 1.0f, 0.0f));

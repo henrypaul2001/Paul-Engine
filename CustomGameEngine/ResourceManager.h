@@ -18,6 +18,7 @@ namespace Engine {
 		Shader* defaultLitShader;
 		Shader* shadowMapShader;
 		Shader* cubeShadowMapShader;
+		Shader* screenQuadShader;
 
 		unsigned int uboMatrices;
 
@@ -47,6 +48,7 @@ namespace Engine {
 		Shader* ShadowMapShader() { return shadowMapShader; }
 		Shader* CubeShadowMapShader() { return cubeShadowMapShader; }
 		Shader* DefaultLitShader() { return defaultLitShader; }
+		Shader* ScreenQuadShader() { return screenQuadShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }

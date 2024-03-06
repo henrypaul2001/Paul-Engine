@@ -214,6 +214,8 @@
     <None Include="Shaders\defaultLit_pbr.vert" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
+    <None Include="Shaders\screenQuad.frag" />
+    <None Include="Shaders\screenQuad.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

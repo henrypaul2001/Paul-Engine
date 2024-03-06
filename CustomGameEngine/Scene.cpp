@@ -11,12 +11,13 @@ namespace Engine
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
 
-		entityManager = new EntityManager();
-		systemManager = new SystemManager();
-		renderManager = RenderManager::GetInstance(1024 * 4, 1024 * 4);
-
 		SCR_WIDTH = this->sceneManager->GetWindowWidth();
 		SCR_HEIGHT = this->sceneManager->GetWindowHeight();
+
+		entityManager = new EntityManager();
+		systemManager = new SystemManager();
+		renderManager = RenderManager::GetInstance(1024 * 4, 1024 * 4, SCR_WIDTH, SCR_HEIGHT);
+
 		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
 	}

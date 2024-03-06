@@ -258,6 +258,10 @@ namespace Engine {
 		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");
 		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom");
 		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
+		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
+
+		screenQuadShader->Use();
+		screenQuadShader->setInt("screenTexture", 0);
 
 		defaultLitShader->Use();
 		defaultLitShader->setInt("dirLight.ShadowMap", 0);

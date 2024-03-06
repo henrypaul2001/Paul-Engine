@@ -34,6 +34,8 @@ namespace Engine
 
 	void SystemManager::ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT)
 	{
+		RenderManager* renderInstance = RenderManager::GetInstance();
+
 		std::vector<Entity*> entityList = entityManager->Entities();
 		//glDisable(GL_CULL_FACE);
 		// shadow mapping
@@ -41,7 +43,6 @@ namespace Engine
 			//glEnable(GL_CULL_FACE);
 			//glCullFace(GL_FRONT);
 
-			RenderManager* renderInstance = RenderManager::GetInstance(1024, 1024);
 			Shader* depthShader = ResourceManager::GetInstance()->ShadowMapShader();
 			Shader* cubeDepthShader = ResourceManager::GetInstance()->CubeShadowMapShader();
 			unsigned int* depthMapFBO = renderInstance->GetFlatDepthFBO();
@@ -137,17 +138,34 @@ namespace Engine
 			}
 		}
 
-		// render scene
+		// render scene to textured framebuffer
 		if (renderSystem != nullptr) {
 			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+			// Render to textured framebuffer
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+
 			//glCullFace(GL_BACK);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			for (Entity* e : entityList) {
 				renderSystem->OnAction(e);
 			}
 			renderSystem->AfterAction();
 		}
+
+		// render final scene texture on screen quad
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		Shader* screenQuadShader = ResourceManager::GetInstance()->ScreenQuadShader();
+		screenQuadShader->Use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		ResourceManager::GetInstance()->DefaultPlane()->Draw(*screenQuadShader);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 	}
 
 	void SystemManager::AddSystem(System* system, SystemLists list)
