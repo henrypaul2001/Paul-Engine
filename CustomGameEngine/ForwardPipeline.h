@@ -11,6 +11,7 @@ namespace Engine {
 		ForwardPipeline();
 		~ForwardPipeline();
 
+		RENDER_PIPELINE Name() override { return FORWARD_PIPELINE; }
 		void Run(std::vector<System*> renderSystems, std::vector<Entity*> entities) override;
 	private:
 		void DirLightShadowStep();
