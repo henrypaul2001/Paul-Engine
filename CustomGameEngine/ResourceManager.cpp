@@ -259,6 +259,7 @@ namespace Engine {
 		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom");
 		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
 		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
+		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
@@ -275,10 +276,18 @@ namespace Engine {
 		defaultLitShader->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
 		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 
+		deferredGeometryPass->Use();
+		deferredGeometryPass->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
+
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
+		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
 		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
+		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		// same again for pbr
 
 		glGenBuffers(1, &uboMatrices);

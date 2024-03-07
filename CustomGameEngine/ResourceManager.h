@@ -20,6 +20,8 @@ namespace Engine {
 		Shader* cubeShadowMapShader;
 		Shader* screenQuadShader;
 
+		Shader* deferredGeometryPass;
+
 		unsigned int uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
@@ -49,6 +51,7 @@ namespace Engine {
 		Shader* CubeShadowMapShader() { return cubeShadowMapShader; }
 		Shader* DefaultLitShader() { return defaultLitShader; }
 		Shader* ScreenQuadShader() { return screenQuadShader; }
+		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }
