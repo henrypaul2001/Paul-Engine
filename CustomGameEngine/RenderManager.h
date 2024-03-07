@@ -25,6 +25,7 @@ namespace Engine {
 		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
 		unsigned int* GetCubeDepthFBO() { return cubeDepthMapFBO; }
 		unsigned int* GetTexturedFBO() { return texturedFBO; }
+		unsigned int* GetGBuffer() { return gBuffer; }
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
 		unsigned int ScreenWidth() { return screenWidth; }
@@ -41,6 +42,8 @@ namespace Engine {
 		void SetupTexturedFBO(unsigned int screenWidth, unsigned int screenHeight);
 		void SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight);
 
+		void SetupGBuffer();
+
 		void Bind2DMap(unsigned int* map);
 		void BindCubeMap(unsigned int* map);
 
@@ -53,7 +56,12 @@ namespace Engine {
 
 		unsigned int* flatDepthMapFBO;
 		unsigned int* cubeDepthMapFBO;
+
+		// Forward rendering
 		unsigned int* texturedFBO;
+
+		// Deferred rendering
+		unsigned int* gBuffer;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;
