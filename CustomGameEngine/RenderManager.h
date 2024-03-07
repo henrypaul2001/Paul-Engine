@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#include "RenderPipeline.h"
 namespace Engine {
 	enum DepthMapType {
 		MAP_2D,
@@ -26,6 +27,11 @@ namespace Engine {
 		unsigned int* GetTexturedFBO() { return texturedFBO; }
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
+		unsigned int ScreenWidth() { return screenWidth; }
+		unsigned int ScreenHeight() { return screenHeight; }
+
+		const RenderPipeline* GetRenderPipeline() { return renderPipeline; }
+		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
 	private:
 		static RenderManager* instance;
 		RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight);
@@ -43,11 +49,16 @@ namespace Engine {
 		std::vector<unsigned int*> cubeDepthMaps; // consider using hashmap <mapIndex, texture pointer*> in future. That way, a single collection can hold both types of shadow map
 		unsigned int* screenTexture;
 
+		RenderPipeline* renderPipeline;
+
 		unsigned int* flatDepthMapFBO;
 		unsigned int* cubeDepthMapFBO;
 		unsigned int* texturedFBO;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;
+
+		unsigned int screenWidth;
+		unsigned int screenHeight;
 	};
 }

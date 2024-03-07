@@ -2,13 +2,17 @@
 #include <glad/glad.h>
 #include <cstddef>
 #include <iostream>
+#include "ForwardPipeline.h"
 namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
+		renderPipeline = new ForwardPipeline();
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
+		this->screenWidth = screenWidth;
+		this->screenHeight = screenHeight;
 		SetupShadowMapTextures(shadowWidth, shadowHeight);
 		SetupFlatShadowMapFBO();
 		SetupCubeShadowMapFBO();
@@ -30,6 +34,8 @@ namespace Engine {
 
 	RenderManager::~RenderManager()
 	{
+		delete renderPipeline;
+
 		delete depthMap;
 		delete flatDepthMapFBO;
 		delete cubeDepthMapFBO;
@@ -41,6 +47,11 @@ namespace Engine {
 		}
 
 		delete instance;
+	}
+
+	void RenderManager::RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities)
+	{
+		renderPipeline->Run(renderSystems, entities);
 	}
 
 	void RenderManager::SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight)
