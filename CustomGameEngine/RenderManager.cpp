@@ -3,11 +3,12 @@
 #include <cstddef>
 #include <iostream>
 #include "ForwardPipeline.h"
+#include "DeferredPipeline.h"
 namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
-		renderPipeline = new ForwardPipeline();
+		renderPipeline = new DeferredPipeline();
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
@@ -17,6 +18,7 @@ namespace Engine {
 		SetupFlatShadowMapFBO();
 		SetupCubeShadowMapFBO();
 		SetupTexturedFBO(screenWidth, screenHeight);
+		SetupGBuffer();
 	}
 
 	RenderManager* RenderManager::GetInstance()
@@ -40,7 +42,11 @@ namespace Engine {
 		delete flatDepthMapFBO;
 		delete cubeDepthMapFBO;
 		delete texturedFBO;
+		
 		delete gBuffer;
+		delete gPosition;
+		delete gNormal;
+		delete gAlbedoSpec;
 
 		for (int i = 0; i < 8; i++) {
 			delete flatDepthMaps[i];
@@ -121,29 +127,32 @@ namespace Engine {
 		gBuffer = new unsigned int;
 		glGenFramebuffers(1, gBuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, *gBuffer);
-		unsigned int gPosition, gNormal, gAlbedoSpec;
+
+		gPosition = new unsigned int;
+		gNormal = new unsigned int;
+		gAlbedoSpec = new unsigned int;
 
 		// position colour buffer
-		glGenTextures(1, &gPosition);
-		glBindTexture(GL_TEXTURE_2D, gPosition);
+		glGenTextures(1, gPosition);
+		glBindTexture(GL_TEXTURE_2D, *gPosition);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *gPosition, 0);
 		// normal colour buffer
-		glGenTextures(1, &gNormal);
-		glBindTexture(GL_TEXTURE_2D, gNormal);
+		glGenTextures(1, gNormal);
+		glBindTexture(GL_TEXTURE_2D, *gNormal);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *gNormal, 0);
 		// colour + specular colour buffer
-		glGenTextures(1, &gAlbedoSpec);
-		glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+		glGenTextures(1, gAlbedoSpec);
+		glBindTexture(GL_TEXTURE_2D, *gAlbedoSpec);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, *gAlbedoSpec, 0);
 
 		unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 		glDrawBuffers(3, attachments);

@@ -66,9 +66,10 @@ vec3 FragPos;
 vec3 Colour;
 vec3 Normal;
 vec3 Lighting;
-float Shininess;
+vec3 ViewDir;
+float SpecularSample;
 
-vec3 BlinnPhongDirLight(DirLight light, vec3 viewDir) {
+vec3 BlinnPhongDirLight(DirLight light) {
     vec3 lightDir = normalize(-light.Direction);
 
     // diffuse
@@ -79,10 +80,10 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 viewDir) {
 
     // specular
     vec3 reflectDir = reflect(-lightDir, Normal);
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), Shininess);
+    vec3 halfwayDir = normalize(lightDir + ViewDir);
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
 
-    vec3 specular = spec * light.Colour * Shininess;
+    vec3 specular = spec * light.Colour * SpecularSample;
 
     // ambient
     vec3 ambient = light.Ambient * Colour;
@@ -104,28 +105,118 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 viewDir) {
     return lighting;
 }
 
+vec3 BlinnPhongSpotLight(Light light) {
+    vec3 lightDir = normalize(light.Position - FragPos);
+    
+    // diffuse
+    float diff = max(dot(Normal, lightDir), 0.0);
+
+    vec3 diffuse = light.Colour * diff;
+
+    // specular
+    vec3 reflectDir = reflect(-lightDir, Normal);
+    vec3 halfwayDir = normalize(lightDir + ViewDir);
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0); // temp shininess 16.0
+
+    vec3 specular = spec * light.Colour * SpecularSample;
+    
+    // ambient
+    vec3 ambient = light.Ambient * Colour;
+
+    // spotLight
+    float theta = dot(lightDir, normalize(-light.Direction));
+    float epsilon = light.Cutoff - light.OuterCutoff;
+    float intensity = clamp((theta - light.OuterCutoff) / epsilon, 0.0, 1.0);
+    diffuse *= intensity;
+    specular *= intensity;
+
+    // attenuation
+    float dist = length(light.Position - FragPos);
+    float attenuation = 1.0 / (light.Constant + light.Linear * dist + light.Quadratic * (dist * dist));
+    diffuse *= attenuation;
+    specular *= attenuation;
+    ambient *= attenuation;
+
+    vec3 lighting;
+    diffuse *= Colour; // temp
+    lighting = diffuse + specular + ambient; // temp
+    if (light.CastShadows) {
+        // Calculate shadow
+        //float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), light.ShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias);
+        //lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
+    }
+    else {
+        //diffuse *= Colour;
+        //lighting = diffuse + specular + ambient;
+    }
+
+    return lighting;
+}
+
+vec3 BlinnPhongPointLight(Light light) {
+    vec3 lightDir = normalize(light.Position - FragPos);
+    
+    // diffuse
+    float diff = max(dot(lightDir, Normal), 0.0);
+
+    vec3 diffuse = diff * light.Colour;
+
+    // specular
+    vec3 reflectDir = reflect(-lightDir, Normal);
+    vec3 halfwayDir = normalize(lightDir + ViewDir);
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+
+    vec3 specular = spec * light.Colour * SpecularSample;
+
+    // ambient
+    vec3 ambient = light.Ambient * Colour;
+
+    // attenuation
+    float dist = length(light.Position - FragPos);
+    float attenuation = 1.0 / (light.Constant + light.Linear * dist + light.Quadratic * (dist * dist));
+    
+    diffuse *= attenuation;
+    specular *= attenuation;
+    ambient *= attenuation;
+    
+    vec3 lighting;
+    diffuse *= Colour; // temp
+    lighting = diffuse + specular + ambient; // temp
+    if (light.CastShadows) {
+        // Calculate shadow
+        //float shadow = CubeShadowCalculation(vertex_data.WorldPos, light.CubeShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias, light.ShadowFarPlane);
+        //lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
+    }
+    else {
+        //diffuse *= Colour;
+        //lighting = diffuse + specular + ambient;
+    }
+
+    return lighting;
+}
+
 void main() {
     // Retrieve data from gBuffer
     FragPos = texture(gPosition, TexCoords).rgb;
     Normal = texture(gNormal, TexCoords).rgb;
     Colour = texture(gAlbedoSpec, TexCoords).rgb;
-    Shininess = texture(gAlbedoSpec, TexCoords).a;
+    SpecularSample = texture(gAlbedoSpec, TexCoords).a;
 
-    vec3 viewDir = normalize(viewPos - FragPos);
+    ViewDir = normalize(viewPos - FragPos);
 
     // Calculate lighting as normal
     Lighting = vec3(0.0);
 
     // Directional Light
-    Lighting += BlinnPhongDirLight(dirLight, viewDir);
+    Lighting += BlinnPhongDirLight(dirLight);
 
     // Point and spot lights
     for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
         if (lights[i].SpotLight) {
-            //Lighting += BlinnPhongSpotLight(lights[i]);
+            Lighting += BlinnPhongSpotLight(lights[i]);
         }
         else {
-            //Lighting += BlinnPhongPointLight(lights[i]);
+            Lighting += BlinnPhongPointLight(lights[i]);
         }
     }
 

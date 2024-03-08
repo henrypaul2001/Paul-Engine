@@ -32,7 +32,7 @@ uniform mat4 model;
 uniform mat3 normalMatrix;
 
 void main() {
-    vertex_data.WorldPos = (model * vec4(aPos, 1.0)).xyz;
+    vertex_data.WorldPos = vec3(model * vec4(aPos, 1.0));
     vertex_data.TexCoords = aTexCoords;
     vertex_data.Normal = normalMatrix * aNormal;
     

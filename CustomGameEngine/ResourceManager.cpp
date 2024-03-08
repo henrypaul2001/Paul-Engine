@@ -284,9 +284,9 @@ namespace Engine {
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 
 		deferredLightingPass->Use();
-		deferredLightingPass->setInt("gPosition", 0);
-		deferredLightingPass->setInt("gNormal", 1);
-		deferredLightingPass->setInt("gAlbedoSpec", 2);
+		deferredLightingPass->setInt("gPosition", 18);
+		deferredLightingPass->setInt("gNormal", 19);
+		deferredLightingPass->setInt("gAlbedoSpec", 20);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");

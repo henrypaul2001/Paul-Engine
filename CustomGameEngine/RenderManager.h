@@ -25,13 +25,18 @@ namespace Engine {
 		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
 		unsigned int* GetCubeDepthFBO() { return cubeDepthMapFBO; }
 		unsigned int* GetTexturedFBO() { return texturedFBO; }
+
 		unsigned int* GetGBuffer() { return gBuffer; }
+		unsigned int* GPosition() { return gPosition; }
+		unsigned int* GNormal() { return gNormal; }
+		unsigned int* GAlbedoSpec() { return gAlbedoSpec; }
+
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
 		unsigned int ScreenWidth() { return screenWidth; }
 		unsigned int ScreenHeight() { return screenHeight; }
 
-		const RenderPipeline* GetRenderPipeline() { return renderPipeline; }
+		RenderPipeline* GetRenderPipeline() { return renderPipeline; }
 		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
 	private:
 		static RenderManager* instance;
@@ -62,6 +67,7 @@ namespace Engine {
 
 		// Deferred rendering
 		unsigned int* gBuffer;
+		unsigned int* gPosition, *gNormal, *gAlbedoSpec;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;

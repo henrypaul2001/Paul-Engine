@@ -29,7 +29,14 @@ namespace Engine {
 		}
 		usingDefaultShader = true;
 		castShadows = true;
-		shader = ResourceManager::GetInstance()->DefaultLitShader();
+
+		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+			shader = ResourceManager::GetInstance()->DefaultLitShader();
+		}
+		else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+			shader = ResourceManager::GetInstance()->DeferredGeometryPass();
+		}
+
 		textureScale = 1.0f;
 	}
 
@@ -63,7 +70,12 @@ namespace Engine {
 		else {
 			//v = "Shaders/defaultLit.vert";
 			//f = "Shaders/defaultLit.frag";
-			shader = ResourceManager::GetInstance()->DefaultLitShader();
+			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+				shader = ResourceManager::GetInstance()->DefaultLitShader();
+			}
+			else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+				shader = ResourceManager::GetInstance()->DeferredGeometryPass();
+			}
 		}
 
 		textureScale = 1.0f;

@@ -39,12 +39,66 @@ struct Material {
 uniform Material material;
 uniform float textureScale;
 
+const float minLayers = 8.0;
+const float maxLayers = 32.0;
+vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
+    // number of depth layers
+    float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), viewDir), 0.0));
+
+    // calculate size of each layer
+    float layerDepth = 1.0 / numLayers;
+
+    float currentLayerDepth = 0.0;
+
+    // amount to shift the texture coordinates per layer
+    vec2 P = viewDir.xy * material.HEIGHT_SCALE;
+    vec2 deltaTexCoords = (P / numLayers);
+
+    // get initial values
+    vec2 currentTexCoords = texCoords;
+    float currentDepthMapValue = texture(material.TEXTURE_DISPLACE1, currentTexCoords).r;
+
+    while (currentLayerDepth < currentDepthMapValue) {
+        // shift coords along direction of P
+        currentTexCoords -= deltaTexCoords;
+
+        // get new depth value
+        currentDepthMapValue = texture(material.TEXTURE_DISPLACE1, currentTexCoords).r;
+
+        // get depth of next layer
+        currentLayerDepth += layerDepth;
+    }
+    
+    // get texture coordinates before collision
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    // get depth after and before collision for linear interpolation
+    float afterDepth = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = texture(material.TEXTURE_DISPLACE1, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+    // interpolation of texCoords
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+}
+
 void main() {
     vec2 TexCoords = vertex_data.TexCoords;
     TexCoords *= textureScale;
 
+    vec3 viewDir = normalize(view_data.ViewPos - vertex_data.WorldPos);
+
+    // Apply parallax mapping to tex coords if material has height map
+    if (material.useHeightMap) {
+        TexCoords = ParallaxMapping(TexCoords, viewDir);
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            //discard;
+        }
+    }
+
     // Position
-    gPosition = vertex_data.WorldPos;
+    gPosition.xyz = vertex_data.WorldPos;
 
     // Normal
     vec3 Normal = vertex_data.Normal;
@@ -52,8 +106,7 @@ void main() {
         Normal = texture(material.TEXTURE_NORMAL1, TexCoords).rgb;
         Normal = normalize(vertex_data.TBN * Normal);
     }
-    
-    gNormal = normalize(Normal);
+    gNormal.xyz = normalize(Normal);
 
     // Albedo
     vec3 Albedo = material.DIFFUSE;
@@ -67,4 +120,5 @@ void main() {
     if (material.useSpecularMap) {
         Specular = texture(material.TEXTURE_SPECULAR1, TexCoords).r;
     }
+    gAlbedoSpec.a = Specular;
 }
