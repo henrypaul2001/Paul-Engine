@@ -12,6 +12,6 @@ namespace Engine {
 
 	void DeferredPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
-
+		
 	}
 }

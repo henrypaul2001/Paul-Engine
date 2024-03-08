@@ -328,6 +328,8 @@ namespace Engine
 
 	void GameScene::Update()
 	{
+		Scene::Update();
+
 		systemManager->ActionUpdateSystems(entityManager);
 		float time = (float)glfwGetTime();
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Rock")->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(sin(time) * 1.0f, sin(time) * 1.0f, sin(time) * 1.0f));

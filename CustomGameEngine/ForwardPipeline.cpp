@@ -1,9 +1,10 @@
 #include "ForwardPipeline.h"
-#include "SystemShadowMapping.h"
-#include "SystemRender.h"
 #include "ResourceManager.h"
 #include "ComponentLight.h"
 #include "LightManager.h"
+
+#include "SystemRender.h"'
+#include "SystemShadowMapping.h"
 namespace Engine {
 	ForwardPipeline::ForwardPipeline()
 	{
@@ -17,27 +18,9 @@ namespace Engine {
 
 	void ForwardPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
-		this->entities = entities;
+		RenderPipeline::Run(renderSystems, entities);
 
-		shadowmapSystem = nullptr;
-		renderSystem = nullptr;
-		renderInstance = RenderManager::GetInstance();
-
-		shadowWidth = renderInstance->ShadowWidth();
-		shadowHeight = renderInstance->ShadowHeight();
-
-		screenWidth = renderInstance->ScreenWidth();
-		screenHeight = renderInstance->ScreenHeight();
-
-		for (System* s : renderSystems) {
-			if (s->Name() == SYSTEM_RENDER) {
-				renderSystem = dynamic_cast<SystemRender*>(s);
-			}
-			else if (s->Name() == SYSTEM_SHADOWMAP) {
-				shadowmapSystem = dynamic_cast<SystemShadowMapping*>(s);
-			}
-		}
-
+		// shadow map steps
 		if (shadowmapSystem != nullptr) {
 			depthShader = ResourceManager::GetInstance()->ShadowMapShader();
 			cubeDepthShader = ResourceManager::GetInstance()->CubeShadowMapShader();
