@@ -21,6 +21,7 @@ namespace Engine {
 		Shader* screenQuadShader;
 
 		Shader* deferredGeometryPass;
+		Shader* deferredLightingPass;
 
 		unsigned int uboMatrices;
 
@@ -52,6 +53,7 @@ namespace Engine {
 		Shader* DefaultLitShader() { return defaultLitShader; }
 		Shader* ScreenQuadShader() { return screenQuadShader; }
 		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
+		Shader* DeferredLightingPass() { return deferredLightingPass; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }

@@ -146,6 +146,7 @@
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentVelocity.h" />
     <ClInclude Include="ComponentTransform.h" />
+    <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Component.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentVelocity.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
+    <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -210,6 +212,8 @@
     <None Include="Shaders\cubeDepthMap.frag" />
     <None Include="Shaders\cubeDepthMap.geom" />
     <None Include="Shaders\cubeDepthMap.vert" />
+    <None Include="Shaders\defaultDeferred.frag" />
+    <None Include="Shaders\defaultDeferred.vert" />
     <None Include="Shaders\defaultLit.frag" />
     <None Include="Shaders\defaultLit.vert" />
     <None Include="Shaders\defaultLitNew.frag" />
@@ -218,6 +222,8 @@
     <None Include="Shaders\defaultLit_pbr.vert" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
+    <None Include="Shaders\g_buffer.frag" />
+    <None Include="Shaders\g_buffer.vert" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />
   </ItemGroup>

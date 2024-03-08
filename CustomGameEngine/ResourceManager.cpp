@@ -260,6 +260,7 @@ namespace Engine {
 		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
 		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
 		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
+		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
@@ -281,6 +282,11 @@ namespace Engine {
 		deferredGeometryPass->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
+
+		deferredLightingPass->Use();
+		deferredLightingPass->setInt("gPosition", 0);
+		deferredLightingPass->setInt("gNormal", 1);
+		deferredLightingPass->setInt("gAlbedoSpec", 2);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");

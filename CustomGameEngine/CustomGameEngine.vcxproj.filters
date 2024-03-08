@@ -162,6 +162,9 @@
     <ClInclude Include="ForwardPipeline.h">
       <Filter>Header Files\Engine\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredPipeline.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -260,6 +263,9 @@
     <ClCompile Include="ForwardPipeline.cpp">
       <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="DeferredPipeline.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -299,6 +305,18 @@
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="Shaders\screenQuad.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\g_buffer.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\g_buffer.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultDeferred.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultDeferred.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
   </ItemGroup>
