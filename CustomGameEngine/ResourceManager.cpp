@@ -285,6 +285,13 @@ namespace Engine {
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 
 		deferredLightingPass->Use();
+
+		deferredLightingPass->setInt("dirLight.ShadowMap", 0);
+		for (int i = 0; i <= 8; i++) {
+			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+		}
+
 		deferredLightingPass->setInt("gPosition", 18);
 		deferredLightingPass->setInt("gNormal", 19);
 		deferredLightingPass->setInt("gAlbedo", 20);

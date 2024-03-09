@@ -173,16 +173,14 @@ vec3 BlinnPhongSpotLight(Light light) {
     ambient *= attenuation;
 
     vec3 lighting;
-    diffuse *= Colour; // temp
-    lighting = diffuse + specular + ambient; // temp
     if (light.CastShadows) {
         // Calculate shadow
-        //float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), light.ShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias);
-        //lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
+        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(FragPos, 1.0), light.ShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
     }
     else {
-        //diffuse *= Colour;
-        //lighting = diffuse + specular + ambient;
+        diffuse *= Colour;
+        lighting = diffuse + specular + ambient;
     }
 
     return lighting;
