@@ -83,7 +83,7 @@ vec3 BlinnPhongDirLight(DirLight light) {
     // specular
     vec3 reflectDir = reflect(-lightDir, Normal);
     vec3 halfwayDir = normalize(lightDir + ViewDir);
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), Shininess);
 
     vec3 specular = spec * light.Colour * SpecularSample;
 
@@ -118,7 +118,7 @@ vec3 BlinnPhongSpotLight(Light light) {
     // specular
     vec3 reflectDir = reflect(-lightDir, Normal);
     vec3 halfwayDir = normalize(lightDir + ViewDir);
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0); // temp shininess 16.0
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), Shininess); // temp shininess 16.0
 
     vec3 specular = spec * light.Colour * SpecularSample;
     
@@ -166,7 +166,7 @@ vec3 BlinnPhongPointLight(Light light) {
     // specular
     vec3 reflectDir = reflect(-lightDir, Normal);
     vec3 halfwayDir = normalize(lightDir + ViewDir);
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), Shininess);
 
     vec3 specular = spec * light.Colour * SpecularSample;
 

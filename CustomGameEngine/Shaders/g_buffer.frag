@@ -88,11 +88,11 @@ void main() {
     vec2 TexCoords = vertex_data.TexCoords;
     TexCoords *= textureScale;
 
-    vec3 viewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
+    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
 
     // Apply parallax mapping to tex coords if material has height map
     if (material.useHeightMap) {
-        TexCoords = ParallaxMapping(TexCoords, viewDir);
+        TexCoords = ParallaxMapping(TexCoords, tangentViewDir);
         if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
             //discard;
         }
@@ -116,7 +116,7 @@ void main() {
     }
     gAlbedo.rgb = Albedo;
 
-    // Specular intensity only, no specular colour yet
+    // Specular
     vec3 Specular = material.SPECULAR;
     if (material.useSpecularMap) {
         Specular = texture(material.TEXTURE_SPECULAR1, TexCoords).rgb;
