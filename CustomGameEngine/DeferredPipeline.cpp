@@ -61,6 +61,10 @@ namespace Engine {
 			ResourceManager::GetInstance()->DefaultPlane()->Draw(*lightingPass);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
+
+			// SSAO
+			//ssaoShader->setInt("scr_width", screenWidth);
+			//ssaoShader->setInt("scr_height", screenHeight);
 		}
 	}
 }

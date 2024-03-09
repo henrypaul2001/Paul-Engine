@@ -262,6 +262,7 @@ namespace Engine {
 		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
 		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
 		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
+		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
@@ -285,7 +286,6 @@ namespace Engine {
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 
 		deferredLightingPass->Use();
-
 		deferredLightingPass->setInt("dirLight.ShadowMap", 0);
 		for (int i = 0; i <= 8; i++) {
 			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
@@ -297,14 +297,21 @@ namespace Engine {
 		deferredLightingPass->setInt("gAlbedo", 20);
 		deferredLightingPass->setInt("gSpecular", 21);
 
+		ssaoShader->Use();
+		ssaoShader->setInt("gPosition", 0);
+		ssaoShader->setInt("gNormal", 1);
+		ssaoShader->setInt("texNoise", 2);
+
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
 		unsigned int deferredLightingPassLocation = glGetUniformBlockIndex(deferredLightingPass->GetID(), "Common");
+		unsigned int ssaoShaderLocation = glGetUniformBlockIndex(ssaoShader->GetID(), "Common");
 		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredLightingPass->GetID(), deferredLightingPassLocation, 0);
+		glUniformBlockBinding(ssaoShader->GetID(), ssaoShaderLocation, 0);
 		// same again for pbr
 
 		glGenBuffers(1, &uboMatrices);

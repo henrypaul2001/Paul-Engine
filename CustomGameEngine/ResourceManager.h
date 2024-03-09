@@ -23,6 +23,9 @@ namespace Engine {
 		Shader* deferredGeometryPass;
 		Shader* deferredLightingPass;
 
+		Shader* ssaoShader;
+		Shader* ssaoBlur;
+
 		unsigned int uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
@@ -54,6 +57,8 @@ namespace Engine {
 		Shader* ScreenQuadShader() { return screenQuadShader; }
 		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
 		Shader* DeferredLightingPass() { return deferredLightingPass; }
+		Shader* SSAOShader() { return ssaoShader; }
+		Shader* SSABlur() { return ssaoBlur; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }
