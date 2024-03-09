@@ -9,7 +9,7 @@ namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
-		renderPipeline = new ForwardPipeline();
+		renderPipeline = new DeferredPipeline();
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
@@ -20,6 +20,7 @@ namespace Engine {
 		SetupCubeShadowMapFBO();
 		SetupTexturedFBO(screenWidth, screenHeight);
 		SetupGBuffer();
+		SetupSSAOBuffers();
 	}
 
 	RenderManager* RenderManager::GetInstance()
@@ -206,7 +207,7 @@ namespace Engine {
 
 		// SSAO colour buffer
 		glGenTextures(1, ssaoColourBuffer);
-		glBindTextures(GL_TEXTURE_2D, *ssaoColourBuffer);
+		glBindTexture(GL_TEXTURE_2D, *ssaoColourBuffer);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, screenWidth, screenHeight, 0, GL_RED, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

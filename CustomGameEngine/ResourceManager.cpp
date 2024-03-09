@@ -297,6 +297,7 @@ namespace Engine {
 		deferredLightingPass->setInt("gNormal", 19);
 		deferredLightingPass->setInt("gAlbedo", 20);
 		deferredLightingPass->setInt("gSpecular", 21);
+		deferredLightingPass->setInt("SSAO", 22);
 
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);

@@ -16,7 +16,7 @@ in VERTEX_DATA {
 
     mat3 TBN;
 
-    vec3 TangentFragPos;
+    vec3 TangentWorldPos;
 } vertex_data;
 
 struct Material {
@@ -88,7 +88,7 @@ void main() {
     vec2 TexCoords = vertex_data.TexCoords;
     TexCoords *= textureScale;
 
-    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
+    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentWorldPos);
 
     // Apply parallax mapping to tex coords if material has height map
     if (material.useHeightMap) {

@@ -37,6 +37,39 @@ namespace Engine {
 			}
 			renderSystem->AfterAction();
 
+			// SSAO Pass
+			// ---------
+			// SSAO Texture
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOFBO());
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			Shader* ssaoShader = ResourceManager::GetInstance()->SSAOShader();
+			ssaoShader->Use();
+			ssaoShader->setInt("scr_width", screenWidth);
+			ssaoShader->setInt("scr_height", screenHeight);
+
+			// Send kernel + rotation
+			std::vector<glm::vec3*> ssaoKernel = renderInstance->SSAOKernel();
+			for (unsigned int i = 0; i < 64; i++) {
+				ssaoShader->setVec3("samples[" + std::to_string(i) + "]", *ssaoKernel[i]);
+			}
+
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAONoiseTexture());
+			ResourceManager::GetInstance()->DefaultPlane()->Draw(*ssaoShader);
+
+			// Blur SSAO texture to remove noise
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOBlurFBO());
+			glClear(GL_COLOR_BUFFER_BIT);
+			Shader* ssaoBlur = ResourceManager::GetInstance()->SSABlur();
+			ssaoBlur->Use();
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOColour());
+			ResourceManager::GetInstance()->DefaultPlane()->Draw(*ssaoBlur);
+
 			// Lighting pass
 			// -------------
 			glViewport(0, 0, screenWidth, screenHeight);
@@ -54,6 +87,8 @@ namespace Engine {
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
 			glActiveTexture(GL_TEXTURE21);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
+			glActiveTexture(GL_TEXTURE22);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
@@ -61,10 +96,6 @@ namespace Engine {
 			ResourceManager::GetInstance()->DefaultPlane()->Draw(*lightingPass);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
-
-			// SSAO
-			//ssaoShader->setInt("scr_width", screenWidth);
-			//ssaoShader->setInt("scr_height", screenHeight);
 		}
 	}
 }

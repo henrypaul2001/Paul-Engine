@@ -5,6 +5,7 @@ layout (location = 2) in vec2 aTexCoords;
 out vec2 TexCoords;
 out vec3 ViewPos;
 
+
 // uniform block
 layout (std140) uniform Common
 {

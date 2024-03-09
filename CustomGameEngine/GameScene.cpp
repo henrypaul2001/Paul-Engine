@@ -12,7 +12,10 @@ namespace Engine
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
+		SSAO = true;
 		SetupScene();
+		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
+		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 	}
 
 	GameScene::~GameScene()
@@ -274,7 +277,8 @@ namespace Engine
 		entityManager->AddEntity(pointLightStressShadowCaster3);
 
 		Entity* pointLightStressTest4 = new Entity("Point Light Stress Test 4");
-		pointLightStressTest4->AddComponent(new ComponentTransform(16.0f, -6.0f, 10.0f));
+		//pointLightStressTest4->AddComponent(new ComponentTransform(16.0f, -6.0f, 10.0f));
+		pointLightStressTest4->AddComponent(new ComponentTransform(3.5f, -6.5f, 21.0f));
 		dynamic_cast<ComponentTransform*>(pointLightStressTest4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.35f));
 		pointLightStressTest4->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(pointLightStressTest4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
@@ -300,6 +304,18 @@ namespace Engine
 		dynamic_cast<ComponentTransform*>(pointLightStressShadowCaster5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
 		pointLightStressShadowCaster5->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		entityManager->AddEntity(pointLightStressShadowCaster5);
+
+		Entity* ssaoCubeTest = new Entity("SSAO Cube Test");
+		ssaoCubeTest->AddComponent(new ComponentTransform(1.75f, -7.0f, 20.75f));
+		ssaoCubeTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(ssaoCubeTest->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		entityManager->AddEntity(ssaoCubeTest);
+
+		Entity* ssaoCubeTest1 = new Entity("SSAO Cube Test 1");
+		ssaoCubeTest1->AddComponent(new ComponentTransform(3.5f, -6.95f, 19.25f));
+		ssaoCubeTest1->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(ssaoCubeTest1->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		entityManager->AddEntity(ssaoCubeTest1);
 	}
 
 	void GameScene::CreateSystems()
@@ -324,6 +340,14 @@ namespace Engine
 		}
 
 		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
+	}
+
+	void GameScene::ToggleSSAO()
+	{
+		SSAO = !SSAO;
+		std::cout << "SSAO: " << SSAO << std::endl;
+		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
+		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 	}
 
 	void GameScene::Update()

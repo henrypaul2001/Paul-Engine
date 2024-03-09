@@ -2,14 +2,8 @@
 out float FragColor;
 
 in vec2 TexCoords;
-
-// uniform block
-layout (std140) uniform Common
-{
-    mat4 projection;
-    mat4 view;
-    vec3 viewPos;
-};
+in mat4 Projection;
+in mat4 View;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
@@ -30,14 +24,16 @@ vec2 noiseScale = vec2(scr_width / 4.0, scr_height / 4.0);
 
 void main() {
     // Get input for SSAO algorithms
-    vec3 fragPos = texture(gPosition, TexCoords).xyz;
-    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
+    vec3 fragPos = vec3(View * vec4(texture(gPosition, TexCoords).xyz, 1.0));
+
+    vec3 normal = mat3(View) * texture(gNormal, TexCoords).rgb;
+
     vec3 randomVec = normalize(texture(texNoise, TexCoords * noiseScale).xyz);
 
     // Create TBN matrix
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 bitangent = cross(normal, tangent);
-    mat3 TBN = mat3(tangent, bitangent, normal);
+    mat3 TBN = mat3(tangent, bitangent, normal); // tangent to view space
 
     // iterate over sample kernel and calculate occlusion factor
     float occlusion = 0.0;
@@ -48,12 +44,12 @@ void main() {
 
         // project sample position
         vec4 offset = vec4(samplePos, 1.0);
-        offset = projection * offset; // view to clip space
+        offset = Projection * offset; // view to clip space
         offset.xyz /= offset.w; // perspective divide
         offset.xyz = offset.xyz * 0.5 + 0.5; // to range 0.0, 1.0
 
-        // get sample depth
-        float sampleDepth = texture(gPosition, offset.xy).z;
+        vec3 sampleFragPos = vec3(View * vec4(texture(gPosition, offset.xy).xyz, 1.0));
+        float sampleDepth = sampleFragPos.z;
 
         // range check and accumulate occlusion factor
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));

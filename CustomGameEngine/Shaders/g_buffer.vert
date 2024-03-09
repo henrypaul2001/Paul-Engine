@@ -25,7 +25,7 @@ out VERTEX_DATA {
 
     mat3 TBN;
 
-    vec3 TangentFragPos;
+    vec3 TangentWorldPos;
 } vertex_data;
 
 uniform mat4 model;
@@ -41,10 +41,11 @@ void main() {
     vec3 N = normalize(vec3(model * vec4(aNormal,    0.0)));
     vertex_data.TBN = transpose(mat3(T, B, N));
 
-    vertex_data.TangentFragPos = vertex_data.TBN * vertex_data.WorldPos;
+    vertex_data.TangentWorldPos = vertex_data.TBN * vertex_data.WorldPos;
 
     view_data.TangentViewPos = vertex_data.TBN * viewPos;
     view_data.ViewPos = viewPos;
     
     gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
+    //gl_Position = projection * viewModelPos;
 }

@@ -7,6 +7,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gSpecular;
+uniform sampler2D SSAO;
 
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
@@ -70,6 +71,7 @@ vec3 Lighting;
 vec3 ViewDir;
 vec3 SpecularSample;
 float Shininess;
+float AmbientOcclusion;
 
 float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
     // perspective divide
@@ -159,7 +161,7 @@ vec3 BlinnPhongDirLight(DirLight light) {
     vec3 specular = spec * light.Colour * SpecularSample;
 
     // ambient
-    vec3 ambient = light.Ambient * Colour;
+    vec3 ambient = light.Ambient * Colour * AmbientOcclusion;
 
     vec3 lighting;
     if (light.CastShadows) {
@@ -192,7 +194,7 @@ vec3 BlinnPhongSpotLight(Light light) {
     vec3 specular = spec * light.Colour * SpecularSample;
     
     // ambient
-    vec3 ambient = light.Ambient * Colour;
+    vec3 ambient = light.Ambient * Colour * AmbientOcclusion;
 
     // spotLight
     float theta = dot(lightDir, normalize(-light.Direction));
@@ -238,7 +240,7 @@ vec3 BlinnPhongPointLight(Light light) {
     vec3 specular = spec * light.Colour * SpecularSample;
 
     // ambient
-    vec3 ambient = light.Ambient * Colour;
+    vec3 ambient = light.Ambient * Colour * AmbientOcclusion;
 
     // attenuation
     float dist = length(light.Position - FragPos);
@@ -262,6 +264,8 @@ vec3 BlinnPhongPointLight(Light light) {
     return lighting;
 }
 
+uniform bool useSSAO;
+
 void main() {
     // Retrieve data from gBuffer
     FragPos = texture(gPosition, TexCoords).rgb;
@@ -269,8 +273,12 @@ void main() {
     Colour = texture(gAlbedo, TexCoords).rgb;
     SpecularSample = texture(gSpecular, TexCoords).rgb;
     Shininess = texture(gSpecular, TexCoords).a;
-
+    AmbientOcclusion = texture(SSAO, TexCoords).r;
     ViewDir = normalize(ViewPos - FragPos);
+
+    if (!useSSAO) {
+        AmbientOcclusion = 1.0;
+    }
 
     // Calculate lighting as normal
     Lighting = vec3(0.0);

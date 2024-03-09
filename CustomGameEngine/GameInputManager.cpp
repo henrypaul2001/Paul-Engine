@@ -56,6 +56,9 @@ namespace Engine {
 		if (key == GLFW_KEY_SLASH) {
 			owner->ChangePostProcessEffect();
 		}
+		else if (key == GLFW_KEY_P) {
+			owner->ToggleSSAO();
+		}
 	}
 
 	void GameInputManager::keyDown(int key)
