@@ -5,7 +5,8 @@ in vec2 TexCoords;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D gAlbedoSpec;
+uniform sampler2D gAlbedo;
+uniform sampler2D gSpecular;
 
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
@@ -60,14 +61,15 @@ uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
 
-uniform vec3 viewPos;
+in vec3 ViewPos;
 
 vec3 FragPos;
 vec3 Colour;
 vec3 Normal;
 vec3 Lighting;
 vec3 ViewDir;
-float SpecularSample;
+vec3 SpecularSample;
+float Shininess;
 
 vec3 BlinnPhongDirLight(DirLight light) {
     vec3 lightDir = normalize(-light.Direction);
@@ -199,10 +201,11 @@ void main() {
     // Retrieve data from gBuffer
     FragPos = texture(gPosition, TexCoords).rgb;
     Normal = texture(gNormal, TexCoords).rgb;
-    Colour = texture(gAlbedoSpec, TexCoords).rgb;
-    SpecularSample = texture(gAlbedoSpec, TexCoords).a;
+    Colour = texture(gAlbedo, TexCoords).rgb;
+    SpecularSample = texture(gSpecular, TexCoords).rgb;
+    Shininess = texture(gSpecular, TexCoords).a;
 
-    ViewDir = normalize(viewPos - FragPos);
+    ViewDir = normalize(ViewPos - FragPos);
 
     // Calculate lighting as normal
     Lighting = vec3(0.0);

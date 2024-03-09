@@ -1,7 +1,8 @@
 #version 330 core
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec4 gAlbedoSpec;
+layout (location = 2) out vec3 gAlbedo;
+layout (location = 3) out vec4 gSpecular;
 
 in VIEW_DATA {
     flat vec3 TangentViewPos;
@@ -113,12 +114,13 @@ void main() {
     if (material.useDiffuseMap) {
         Albedo = texture(material.TEXTURE_DIFFUSE1, TexCoords).rgb;
     }
-    gAlbedoSpec.rgb = Albedo;
+    gAlbedo.rgb = Albedo;
 
     // Specular intensity only, no specular colour yet
-    float Specular = material.SHININESS;
+    vec3 Specular = material.SPECULAR;
     if (material.useSpecularMap) {
-        Specular = texture(material.TEXTURE_SPECULAR1, TexCoords).r;
+        Specular = texture(material.TEXTURE_SPECULAR1, TexCoords).rgb;
     }
-    gAlbedoSpec.a = Specular;
+    gSpecular.rgb = Specular;
+    gSpecular.a = material.SHININESS;
 }

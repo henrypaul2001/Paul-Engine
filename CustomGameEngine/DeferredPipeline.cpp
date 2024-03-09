@@ -46,7 +46,9 @@ namespace Engine {
 		glActiveTexture(GL_TEXTURE19);
 		glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
 		glActiveTexture(GL_TEXTURE20);
-		glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedoSpec());
+		glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
+		glActiveTexture(GL_TEXTURE21);
+		glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
 
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);

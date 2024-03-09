@@ -286,14 +286,17 @@ namespace Engine {
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("gPosition", 18);
 		deferredLightingPass->setInt("gNormal", 19);
-		deferredLightingPass->setInt("gAlbedoSpec", 20);
+		deferredLightingPass->setInt("gAlbedo", 20);
+		deferredLightingPass->setInt("gSpecular", 21);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
+		unsigned int deferredLightingPassLocation = glGetUniformBlockIndex(deferredLightingPass->GetID(), "Common");
 		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
+		glUniformBlockBinding(deferredLightingPass->GetID(), deferredLightingPassLocation, 0);
 		// same again for pbr
 
 		glGenBuffers(1, &uboMatrices);

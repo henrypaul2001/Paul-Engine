@@ -46,7 +46,8 @@ namespace Engine {
 		delete gBuffer;
 		delete gPosition;
 		delete gNormal;
-		delete gAlbedoSpec;
+		delete gAlbedo;
+		delete gSpecular;
 
 		for (int i = 0; i < 8; i++) {
 			delete flatDepthMaps[i];
@@ -130,7 +131,8 @@ namespace Engine {
 
 		gPosition = new unsigned int;
 		gNormal = new unsigned int;
-		gAlbedoSpec = new unsigned int;
+		gAlbedo = new unsigned int;
+		gSpecular = new unsigned int;
 
 		// position colour buffer
 		glGenTextures(1, gPosition);
@@ -146,16 +148,23 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *gNormal, 0);
-		// colour + specular colour buffer
-		glGenTextures(1, gAlbedoSpec);
-		glBindTexture(GL_TEXTURE_2D, *gAlbedoSpec);
+		// colour buffer
+		glGenTextures(1, gAlbedo);
+		glBindTexture(GL_TEXTURE_2D, *gAlbedo);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, *gAlbedo, 0);
+		// specular buffer
+		glGenTextures(1, gSpecular);
+		glBindTexture(GL_TEXTURE_2D, *gSpecular);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, *gAlbedoSpec, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, *gSpecular, 0);
 
-		unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-		glDrawBuffers(3, attachments);
+		unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+		glDrawBuffers(4, attachments);
 
 		// create and attach depth buffer
 		unsigned int rboDepth;

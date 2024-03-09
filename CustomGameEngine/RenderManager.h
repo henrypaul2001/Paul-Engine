@@ -29,7 +29,8 @@ namespace Engine {
 		unsigned int* GetGBuffer() { return gBuffer; }
 		unsigned int* GPosition() { return gPosition; }
 		unsigned int* GNormal() { return gNormal; }
-		unsigned int* GAlbedoSpec() { return gAlbedoSpec; }
+		unsigned int* GAlbedo() { return gAlbedo; }
+		unsigned int* GSpecular() { return gSpecular; }
 
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
@@ -67,7 +68,7 @@ namespace Engine {
 
 		// Deferred rendering
 		unsigned int* gBuffer;
-		unsigned int* gPosition, *gNormal, *gAlbedoSpec;
+		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;
