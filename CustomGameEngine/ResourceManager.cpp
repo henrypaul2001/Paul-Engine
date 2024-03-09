@@ -263,6 +263,7 @@ namespace Engine {
 		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
 		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
 		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
+		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
@@ -301,6 +302,9 @@ namespace Engine {
 		ssaoShader->setInt("gPosition", 0);
 		ssaoShader->setInt("gNormal", 1);
 		ssaoShader->setInt("texNoise", 2);
+		
+		ssaoBlur->Use();
+		ssaoBlur->setInt("ssaoInput", 0);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");

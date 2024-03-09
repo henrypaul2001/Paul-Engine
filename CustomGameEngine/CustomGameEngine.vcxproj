@@ -229,7 +229,6 @@
     <None Include="Shaders\ssao.frag" />
     <None Include="Shaders\ssao.vert" />
     <None Include="Shaders\ssaoBlur.frag" />
-    <None Include="Shaders\ssaoBlur.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -325,9 +325,6 @@
     <None Include="Shaders\ssao.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
-    <None Include="Shaders\ssaoBlur.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
     <None Include="Shaders\ssaoBlur.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
