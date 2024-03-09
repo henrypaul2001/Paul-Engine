@@ -88,7 +88,7 @@ void main() {
     vec2 TexCoords = vertex_data.TexCoords;
     TexCoords *= textureScale;
 
-    vec3 viewDir = normalize(view_data.ViewPos - vertex_data.WorldPos);
+    vec3 viewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
 
     // Apply parallax mapping to tex coords if material has height map
     if (material.useHeightMap) {

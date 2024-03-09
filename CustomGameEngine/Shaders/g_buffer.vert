@@ -39,7 +39,12 @@ void main() {
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
     vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
     vec3 N = normalize(vec3(model * vec4(aNormal,    0.0)));
-    vertex_data.TBN = mat3(T, B, N);
+    vertex_data.TBN = transpose(mat3(T, B, N));
+
+    vertex_data.TangentFragPos = vertex_data.TBN * vertex_data.WorldPos;
+
+    view_data.TangentViewPos = vertex_data.TBN * viewPos;
+    view_data.ViewPos = viewPos;
     
     gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
 }
