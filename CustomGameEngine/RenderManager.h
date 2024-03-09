@@ -32,6 +32,13 @@ namespace Engine {
 		unsigned int* GAlbedo() { return gAlbedo; }
 		unsigned int* GSpecular() { return gSpecular; }
 
+		unsigned int* GetSSAOFBO() { return ssaoFBO; }
+		unsigned int* GetSSAOBlurFBO() { return ssaoBlurFBO; }
+		unsigned int* SSAOColour() { return ssaoColourBuffer; }
+		unsigned int* SSAOBlurColour() { return ssaoBlurColourBuffer; }
+		unsigned int* SSAONoiseTexture() { return noiseTexture; }
+		std::vector<glm::vec3*> SSAOKernel() { return ssaoKernel; }
+
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
 		unsigned int ScreenWidth() { return screenWidth; }
@@ -49,6 +56,8 @@ namespace Engine {
 		void SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight);
 
 		void SetupGBuffer();
+
+		void SetupSSAOBuffers();
 
 		void Bind2DMap(unsigned int* map);
 		void BindCubeMap(unsigned int* map);
@@ -69,6 +78,14 @@ namespace Engine {
 		// Deferred rendering
 		unsigned int* gBuffer;
 		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular;
+
+		// SSAO
+		unsigned int* ssaoFBO;
+		unsigned int* ssaoBlurFBO;
+		unsigned int* ssaoColourBuffer, *ssaoBlurColourBuffer;
+		unsigned int* noiseTexture;
+		std::vector<glm::vec3*> ssaoKernel;
+
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;

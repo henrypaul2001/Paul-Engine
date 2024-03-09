@@ -4,11 +4,12 @@
 #include <iostream>
 #include "ForwardPipeline.h"
 #include "DeferredPipeline.h"
+#include <random>
 namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
-		renderPipeline = new DeferredPipeline();
+		renderPipeline = new ForwardPipeline();
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
@@ -48,6 +49,16 @@ namespace Engine {
 		delete gNormal;
 		delete gAlbedo;
 		delete gSpecular;
+
+		delete ssaoFBO;
+		delete ssaoBlurFBO;
+		delete ssaoColourBuffer;
+		delete ssaoBlurColourBuffer;
+		delete noiseTexture;
+		
+		for (glm::vec3* v : ssaoKernel) {
+			delete v;
+		}
 
 		for (int i = 0; i < 8; i++) {
 			delete flatDepthMaps[i];
@@ -174,6 +185,73 @@ namespace Engine {
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	float lerp(float a, float b, float f)
+	{
+		return a + f * (b - a);
+	}
+
+	void RenderManager::SetupSSAOBuffers()
+	{
+		ssaoFBO = new unsigned int;
+		ssaoBlurFBO = new unsigned int;
+		ssaoColourBuffer = new unsigned int;
+		ssaoBlurColourBuffer = new unsigned int;
+		noiseTexture = new unsigned int;
+
+		glGenFramebuffers(1, ssaoFBO);
+		glGenFramebuffers(1, ssaoBlurFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, *ssaoFBO);
+
+		// SSAO colour buffer
+		glGenTextures(1, ssaoColourBuffer);
+		glBindTextures(GL_TEXTURE_2D, *ssaoColourBuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, screenWidth, screenHeight, 0, GL_RED, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *ssaoColourBuffer, 0);
+
+		// Blur stage
+		glBindFramebuffer(GL_FRAMEBUFFER, *ssaoBlurFBO);
+		glGenTextures(1, ssaoBlurColourBuffer);
+		glBindTexture(GL_TEXTURE_2D, *ssaoBlurColourBuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, screenWidth, screenHeight, 0, GL_RED, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *ssaoBlurColourBuffer, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// Generate sample kernel
+		std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0 and 1
+		std::default_random_engine generator;
+		for (unsigned int i = 0; i < 64; i++) {
+			glm::vec3* sample = new glm::vec3(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+			*sample = glm::normalize(*sample);
+			*sample *= randomFloats(generator);
+			float scale = (float)i / 64.0f;
+			
+			// scale samples to align with center of kernel
+			scale = lerp(0.1f, 1.0f, scale * scale);
+			*sample *= scale;
+			ssaoKernel.push_back(sample);
+		}
+
+		// Generate noise texture
+		std::vector<glm::vec3> ssaoNoise;
+		for (unsigned int i = 0; i < 16; i++) {
+			glm::vec3 noise(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, 0.0f);
+			ssaoNoise.push_back(noise);
+		}
+
+		glGenTextures(1, noiseTexture);
+		glBindTexture(GL_TEXTURE_2D, *noiseTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
 	void RenderManager::BindShadowMapTextureToFramebuffer(int mapIndex, DepthMapType type)
