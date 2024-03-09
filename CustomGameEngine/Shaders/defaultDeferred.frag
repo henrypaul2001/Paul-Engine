@@ -106,6 +106,42 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
     return shadow;
 }
 
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+float CubeShadowCalculation(samplerCube shadowMap, vec3 lightPos, float minBias, float maxBias, float far_plane) {
+    vec3 fragToLight = FragPos - lightPos;
+
+    float currentDepth = length(fragToLight);
+
+    float shadow = 0.0;
+    float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
+    //float bias = 0.15;
+    int samples = 20;
+    
+    float viewDistance = length(ViewPos - FragPos);
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
+
+    for (int i = 0; i < samples; i++) {
+        float closestDepth = texture(shadowMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        closestDepth *= far_plane;
+
+        if (currentDepth - bias > closestDepth) {
+            shadow += 1.0;
+        }
+    }
+
+    shadow /= float(samples);
+
+    return shadow;
+}
+
 vec3 BlinnPhongDirLight(DirLight light) {
     vec3 lightDir = normalize(-light.Direction);
 
@@ -213,16 +249,14 @@ vec3 BlinnPhongPointLight(Light light) {
     ambient *= attenuation;
     
     vec3 lighting;
-    diffuse *= Colour; // temp
-    lighting = diffuse + specular + ambient; // temp
     if (light.CastShadows) {
         // Calculate shadow
-        //float shadow = CubeShadowCalculation(vertex_data.WorldPos, light.CubeShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias, light.ShadowFarPlane);
-        //lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
+        float shadow = CubeShadowCalculation(light.CubeShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias, light.ShadowFarPlane);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
     }
     else {
-        //diffuse *= Colour;
-        //lighting = diffuse + specular + ambient;
+        diffuse *= Colour;
+        lighting = diffuse + specular + ambient;
     }
 
     return lighting;
