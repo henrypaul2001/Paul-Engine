@@ -71,6 +71,41 @@ vec3 ViewDir;
 vec3 SpecularSample;
 float Shininess;
 
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
+    // perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // transform to [0, 1]
+    projCoords.xyz = projCoords.xyz * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0) {
+        return 0.0;
+    }
+    
+    // get closes depth value from lights perspective
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+    // get depth of current fragment
+    float currentDepth = projCoords.z;
+
+    // check if current frag pos is in shadow
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
+
+    // pcf soft shadows (simple solution but more advanced solutions out there)
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
+
 vec3 BlinnPhongDirLight(DirLight light) {
     vec3 lightDir = normalize(-light.Direction);
 
@@ -91,16 +126,14 @@ vec3 BlinnPhongDirLight(DirLight light) {
     vec3 ambient = light.Ambient * Colour;
 
     vec3 lighting;
-    diffuse = light.Colour * diff * Colour; // temp
-    lighting = diffuse + specular + ambient; // temp
     if (light.CastShadows) {
         // Calculate shadow
-        //float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), light.ShadowMap, -light.Direction * light.LightDistance, light.MinShadowBias, light.MaxShadowBias);
-        //lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
+        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(FragPos, 1.0), light.ShadowMap, -light.Direction * light.LightDistance, light.MinShadowBias, light.MaxShadowBias);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
     }
     else {
-        //diffuse = light.Colour * diff * Colour;
-        //lighting = diffuse + specular + ambient;
+        diffuse = light.Colour * diff * Colour;
+        lighting = diffuse + specular + ambient;
     }
 
     //return diffuse + specular + ambient;
