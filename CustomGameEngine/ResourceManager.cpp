@@ -525,10 +525,10 @@ namespace Engine {
 
 			std::string faces[6] =
 			{
+				rootFilepath + "/right.png",
+				rootFilepath + "/left.png",
 				rootFilepath + "/top.png",
 				rootFilepath + "/bottom.png",
-				rootFilepath + "/left.png",
-				rootFilepath + "/right.png",
 				rootFilepath + "/front.png",
 				rootFilepath + "/back.png"
 			};
