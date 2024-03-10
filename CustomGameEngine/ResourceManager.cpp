@@ -356,6 +356,13 @@ namespace Engine {
 			texturesIt++;
 		}
 
+		// delete cubemaps
+		std::unordered_map<std::string, Cubemap*>::iterator cubemapsIt = cubemaps.begin();
+		while (cubemapsIt != cubemaps.end()) {
+			delete cubemapsIt->second;
+			cubemapsIt++;
+		}
+
 		delete instance;
 	}
 
@@ -500,6 +507,55 @@ namespace Engine {
 
 			textures[filepath] = texture;
 			return textures[filepath];
+		}
+
+		return it->second;
+	}
+
+	Cubemap* ResourceManager::LoadCubemap(std::string rootFilepath)
+	{
+		// First check if already loaded
+		std::unordered_map<std::string, Cubemap*>::iterator it = cubemaps.find(rootFilepath);
+
+		if (it == cubemaps.end()) {
+			// Load cubemap
+			unsigned int textureID;
+			glGenTextures(1, &textureID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+			std::string faces[6] =
+			{
+				rootFilepath + "/top.png",
+				rootFilepath + "/bottom.png",
+				rootFilepath + "/left.png",
+				rootFilepath + "/right.png",
+				rootFilepath + "/front.png",
+				rootFilepath + "/back.png"
+			};
+
+			int width, height, nrChannels;
+			for (unsigned int i = 0; i < faces->size(); i++) {
+				unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+
+				if (data) {
+					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				}
+				else {
+					std::cout << "Cubemap failed to load at path: " << faces[i] << std::endl;
+				}
+				stbi_image_free(data);
+			}
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+			Cubemap* cubemap = new Cubemap();
+			cubemap->id = textureID;
+			cubemap->rootFilepath = rootFilepath;
+			cubemaps[rootFilepath] = cubemap;
+			return cubemaps[rootFilepath];
 		}
 
 		return it->second;
