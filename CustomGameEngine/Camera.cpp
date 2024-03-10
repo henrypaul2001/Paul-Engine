@@ -17,7 +17,7 @@ namespace Engine {
 		SCR_WIDTH = scr_width;
 		SCR_HEIGHT = scr_height;
 
-		skybox = ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/DefaultSkybox");
+		skybox = ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space");
 
 		UpdateCameraVectors();
 	}
