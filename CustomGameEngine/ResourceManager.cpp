@@ -264,6 +264,7 @@ namespace Engine {
 		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
 		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
 		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
+		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag");
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
@@ -307,21 +308,26 @@ namespace Engine {
 		ssaoBlur->Use();
 		ssaoBlur->setInt("ssaoInput", 0);
 
+		skyboxShader->Use();
+		skyboxShader->setInt("cubemap", 0);
+
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
 		unsigned int deferredLightingPassLocation = glGetUniformBlockIndex(deferredLightingPass->GetID(), "Common");
 		unsigned int ssaoShaderLocation = glGetUniformBlockIndex(ssaoShader->GetID(), "Common");
+		unsigned int skyboxShaderLocation = glGetUniformBlockIndex(skyboxShader->GetID(), "Common");
 		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredLightingPass->GetID(), deferredLightingPassLocation, 0);
 		glUniformBlockBinding(ssaoShader->GetID(), ssaoShaderLocation, 0);
+		glUniformBlockBinding(skyboxShader->GetID(), skyboxShaderLocation, 0);
 		// same again for pbr
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), NULL, GL_STATIC_DRAW); // resource manager
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), NULL, GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec3));

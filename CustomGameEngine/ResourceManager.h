@@ -32,6 +32,8 @@ namespace Engine {
 		Shader* ssaoShader;
 		Shader* ssaoBlur;
 
+		Shader* skyboxShader;
+
 		unsigned int uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
@@ -66,6 +68,7 @@ namespace Engine {
 		Shader* DeferredLightingPass() { return deferredLightingPass; }
 		Shader* SSAOShader() { return ssaoShader; }
 		Shader* SSABlur() { return ssaoBlur; }
+		Shader* SkyboxShader() { return skyboxShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }
