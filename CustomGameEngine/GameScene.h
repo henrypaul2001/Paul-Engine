@@ -22,5 +22,8 @@ namespace Engine
 		void Render() override;
 		void Close() override;
 		void SetupScene() override;
+
+		void keyUp(int key) override;
+		void keyDown(int key) override;
 	};
 }

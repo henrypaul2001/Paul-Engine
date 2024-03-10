@@ -1,6 +1,7 @@
 #include "GameSceneManager.h"
 #include "GameScene.h"
 #include "SponzaScene.h"
+#include "AOScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -16,7 +17,10 @@ namespace Engine
 	void GameSceneManager::ChangeScene(SceneTypes sceneType)
 	{
 		std::cout << "Checking if current scene exists" << std::endl;
-		if (this->scene != nullptr) { scene->Close(); }
+		if (this->scene != nullptr) { 
+			scene->Close(); 
+			delete scene;
+		}
 
 		std::cout << "Attempting to create scene" << std::endl;
 		Scene* newScene{};
@@ -30,6 +34,12 @@ namespace Engine
 		case SCENE_GAME_OVER:
 			break;
 		case SCENE_WIN:
+			break;
+		case SCENE_SPONZA:
+			newScene = new SponzaScene(this);
+			break;
+		case SCENE_AO:
+			newScene = new AOScene(this);
 			break;
 		case SCENE_NONE:
 			newScene = nullptr;
@@ -46,6 +56,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_GAME);
+		ChangeScene(SCENE_AO);
 	}
 }

@@ -8,7 +8,7 @@ namespace Engine {
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
 		if (modelType == MODEL_PLANE) {
-			CULL_FACE = false;
+			//CULL_FACE = false;
 			CULL_TYPE = GL_BACK;
 		}
 		usingDefaultShader = false;
@@ -24,7 +24,7 @@ namespace Engine {
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
 		if (modelType == MODEL_PLANE) {
-			CULL_FACE = false;
+			//CULL_FACE = false;
 			CULL_TYPE = GL_BACK;
 		}
 		usingDefaultShader = true;

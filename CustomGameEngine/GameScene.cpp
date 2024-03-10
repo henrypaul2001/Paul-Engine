@@ -33,16 +33,23 @@ namespace Engine
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		// Set-up framebuffers
-
-		// Compile shaders
-
-		// Configure shaders
-
-		// Prepare scene
-
 		CreateSystems();
 		CreateEntities();
+	}
+
+	void GameScene::keyUp(int key)
+	{
+		if (key == GLFW_KEY_SLASH) {
+			ChangePostProcessEffect();
+		}
+		else if (key == GLFW_KEY_P) {
+			ToggleSSAO();
+		}
+	}
+
+	void GameScene::keyDown(int key)
+	{
+
 	}
 
 	void GameScene::CreateEntities()
@@ -308,13 +315,13 @@ namespace Engine
 		Entity* ssaoCubeTest = new Entity("SSAO Cube Test");
 		ssaoCubeTest->AddComponent(new ComponentTransform(1.75f, -7.0f, 20.75f));
 		ssaoCubeTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentGeometry*>(ssaoCubeTest->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentGeometry*>(ssaoCubeTest->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		entityManager->AddEntity(ssaoCubeTest);
 
 		Entity* ssaoCubeTest1 = new Entity("SSAO Cube Test 1");
 		ssaoCubeTest1->AddComponent(new ComponentTransform(3.5f, -6.95f, 19.25f));
 		ssaoCubeTest1->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentGeometry*>(ssaoCubeTest1->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentGeometry*>(ssaoCubeTest1->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		entityManager->AddEntity(ssaoCubeTest1);
 	}
 

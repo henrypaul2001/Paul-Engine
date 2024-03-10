@@ -6,7 +6,7 @@ namespace Engine {
 	{
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
-		inputManager = new GameInputManager(nullptr);
+		inputManager = new GameInputManager(this);
 		renderManager = RenderManager::GetInstance(1024 * 5, 1024 * 5, SCR_WIDTH, SCR_HEIGHT);
 
 		SetupScene();
@@ -36,6 +36,16 @@ namespace Engine {
 
 		CreateSystems();
 		CreateEntities();
+	}
+
+	void SponzaScene::keyUp(int key)
+	{
+
+	}
+
+	void SponzaScene::keyDown(int key)
+	{
+
 	}
 
 	void SponzaScene::CreateEntities()

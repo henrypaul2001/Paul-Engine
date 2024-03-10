@@ -5,7 +5,7 @@ namespace Engine {
 	class GameInputManager : public InputManager
 	{
 	public:
-		GameInputManager(GameScene* owner);
+		GameInputManager(Scene* owner);
 		~GameInputManager();
 		void ProcessInputs() override;
 		void Close() override;
@@ -14,6 +14,6 @@ namespace Engine {
 		void keyUp(int key) override;
 		void keyDown(int key) override;
 
-		GameScene* owner;
+		Scene* owner;
 	};
 }

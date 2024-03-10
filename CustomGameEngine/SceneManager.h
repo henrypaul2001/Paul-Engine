@@ -10,7 +10,9 @@ namespace Engine
 		SCENE_MAIN_MENU,
 		SCENE_GAME,
 		SCENE_GAME_OVER,
-		SCENE_WIN
+		SCENE_WIN,
+		SCENE_SPONZA,
+		SCENE_AO
 	};
 
 	using SceneDelegate = std::function<void()>;

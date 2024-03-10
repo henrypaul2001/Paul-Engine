@@ -41,32 +41,34 @@ namespace Engine {
 
 	void RenderPipeline::DirLightShadowStep()
 	{
-		// Directional light
-		renderInstance->BindShadowMapTextureToFramebuffer(-1, MAP_2D); // bind the dir light shadowmap to framebuffer
-		unsigned int shadowWidth = renderInstance->ShadowWidth(); // in future, these will be stored in the light component
-		unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
+		if (LightManager::GetInstance()->GetDirectionalLightEntity() != nullptr) {
+			// Directional light
+			renderInstance->BindShadowMapTextureToFramebuffer(-1, MAP_2D); // bind the dir light shadowmap to framebuffer
+			unsigned int shadowWidth = renderInstance->ShadowWidth(); // in future, these will be stored in the light component
+			unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
 
-		ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
-		glm::vec3 lightPos = -dirLight->Direction * dirLight->DirectionalLightDistance; // negative of the directional light's direction
-		float orthoSize = dirLight->ShadowProjectionSize;
-		float near = dirLight->Near;
-		float far = dirLight->Far;
-		glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, near, far);
-		glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+			ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
+			glm::vec3 lightPos = -dirLight->Direction * dirLight->DirectionalLightDistance; // negative of the directional light's direction
+			float orthoSize = dirLight->ShadowProjectionSize;
+			float near = dirLight->Near;
+			float far = dirLight->Far;
+			glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, near, far);
+			glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-		depthShader->Use();
-		depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+			depthShader->Use();
+			depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		glViewport(0, 0, shadowWidth, shadowHeight);
-		glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
+			glViewport(0, 0, shadowWidth, shadowHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
+			glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowmapSystem->SetDepthMapType(MAP_2D);
-		for (Entity* e : entities) {
-			shadowmapSystem->OnAction(e);
+			shadowmapSystem->SetDepthMapType(MAP_2D);
+			for (Entity* e : entities) {
+				shadowmapSystem->OnAction(e);
+			}
+			shadowmapSystem->AfterAction();
 		}
-		shadowmapSystem->AfterAction();
 	}
 
 	void RenderPipeline::ActiveLightsShadowStep()

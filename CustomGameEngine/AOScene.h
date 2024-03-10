@@ -1,14 +1,21 @@
 #pragma once
 #include "Scene.h"
 namespace Engine {
-	class SponzaScene : public Scene
+	class AOScene : public Scene
 	{
 	private:
+		//EntityManager entityManager;
+		//SystemManager systemManager;
+
+		bool SSAO;
 		void CreateEntities();
 		void CreateSystems();
 	public:
-		SponzaScene(SceneManager* sceneManager);
-		~SponzaScene();
+		AOScene(SceneManager* sceneManager);
+		~AOScene();
+
+		void ChangePostProcessEffect();
+		void ToggleSSAO();
 
 		void Update() override;
 		void Render() override;

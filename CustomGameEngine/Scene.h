@@ -35,6 +35,9 @@ namespace Engine
 		virtual void Close() = 0;
 		virtual void SetupScene() = 0;
 
+		virtual void keyUp(int key) = 0;
+		virtual void keyDown(int key) = 0;
+
 		InputManager* GetInputManager();
 		SystemManager* GetSystemManager();
 		Camera* GetCamera() { return camera; }
