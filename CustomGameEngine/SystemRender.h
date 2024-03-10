@@ -32,7 +32,8 @@ namespace Engine {
 
 		float PostProcessKernel[9];
 
-		//void SetCameraPointer(Camera* cam) { camera = cam; }
+		Camera* GetActiveCamera() { return activeCamera; }
+		void SetActiveCamera(Camera* camera) { activeCamera = camera; }
 	private:
 		//Camera* camera;
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
@@ -40,5 +41,7 @@ namespace Engine {
 		std::vector<Shader*> shadersUsedThisFrame;
 
 		PostProcessingEffect postProcess;
+
+		Camera* activeCamera;
 	};
 }

@@ -228,6 +228,8 @@
     <None Include="Shaders\g_buffer.vert" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />
+    <None Include="Shaders\skybox.frag" />
+    <None Include="Shaders\skybox.vert" />
     <None Include="Shaders\ssao.frag" />
     <None Include="Shaders\ssao.vert" />
     <None Include="Shaders\ssaoBlur.frag" />

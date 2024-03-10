@@ -12,6 +12,7 @@ namespace Engine
 
 	GameSceneManager::~GameSceneManager()
 	{
+
 	}
 
 	void GameSceneManager::ChangeScene(SceneTypes sceneType)
@@ -56,6 +57,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_AO);
+		ChangeScene(SCENE_GAME);
 	}
 }

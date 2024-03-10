@@ -47,6 +47,29 @@ namespace Engine {
 			renderSystem->OnAction(e);
 		}
 		renderSystem->AfterAction();
+
+		// Render skybox
+		Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+		skyShader->Use();
+
+		Camera* activeCamera = renderSystem->GetActiveCamera();
+
+		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		glDepthFunc(GL_LEQUAL);
+		glCullFace(GL_FRONT);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
+		ResourceManager::GetInstance()->DefaultCube()->Draw(*skyShader);
+		glCullFace(GL_BACK);
+		glDepthFunc(GL_LESS);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
 	void ForwardPipeline::ScreenTextureStep()

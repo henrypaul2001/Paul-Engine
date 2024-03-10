@@ -16,6 +16,9 @@ namespace Engine {
 		FarClip = 150.0f;
 		SCR_WIDTH = scr_width;
 		SCR_HEIGHT = scr_height;
+
+		skybox = ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/DefaultSkybox");
+
 		UpdateCameraVectors();
 	}
 

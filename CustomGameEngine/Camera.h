@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
+#include "ResourceManager.h"
 namespace Engine {
 	enum CameraMovement {
 		FORWARD,
@@ -39,11 +40,16 @@ namespace Engine {
 		glm::mat4 GetViewMatrix();
 		glm::mat4 GetProjection();
 
+		void SetSkyboxTexture(Cubemap* newSkybox) { skybox = newSkybox; }
+		Cubemap* GetSkybox() { return skybox; }
+
 		void ProcessKeyboard(CameraMovement direction, float deltaTime);
 		void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 		void ProcessMouseScroll(float yoffset);
 	private:
 		void UpdateCameraVectors();
+
+		Cubemap* skybox;
 
 		unsigned int SCR_WIDTH;
 		unsigned int SCR_HEIGHT;

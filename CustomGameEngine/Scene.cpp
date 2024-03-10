@@ -16,7 +16,7 @@ namespace Engine
 
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
-		renderManager = RenderManager::GetInstance(1024 * 4, 1024 * 4, SCR_WIDTH, SCR_HEIGHT);
+		renderManager = RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
 
 		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;

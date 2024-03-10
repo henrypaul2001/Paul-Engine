@@ -330,6 +330,7 @@ namespace Engine
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		SystemRender* renderSystem = new SystemRender();
 		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
+		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 	}
