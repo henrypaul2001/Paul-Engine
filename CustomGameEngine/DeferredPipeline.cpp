@@ -96,6 +96,37 @@ namespace Engine {
 			ResourceManager::GetInstance()->DefaultPlane()->Draw(*lightingPass);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
+
+			// Skybox
+			// ------
+
+			// Retrieve depth and stencil information from gBuffer
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+			Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+			skyShader->Use();
+
+			Camera* activeCamera = renderSystem->GetActiveCamera();
+
+			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+			glDepthFunc(GL_LEQUAL);
+			glCullFace(GL_FRONT);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
+			ResourceManager::GetInstance()->DefaultCube()->Draw(*skyShader);
+			glCullFace(GL_BACK);
+			glDepthFunc(GL_LESS);
+
+			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 	}
 }
