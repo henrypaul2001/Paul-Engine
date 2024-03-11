@@ -4,19 +4,18 @@
 #include <vector>
 namespace Engine {
 	enum TextureTypes {
-		TEXTURE_NONE = 0,
-		TEXTURE_DIFFUSE = 1 << 0,
-		TEXTURE_NORMAL = 1 << 1,
-		TEXTURE_METAL = 1 << 2,
-		TEXTURE_DISPLACE = 1 << 3,
-		TEXTURE_AO = 1 << 4,
-		TEXTURE_SPECULAR = 1 << 5,
-		TEXTURE_HEIGHT = 1 << 6,
-		TEXTURE_ALBEDO = 1 << 7,
-		TEXTURE_ROUGHNESS = 1 << 8
+		TEXTURE_NONE,
+		TEXTURE_DIFFUSE,
+		TEXTURE_NORMAL,
+		TEXTURE_METAL,
+		TEXTURE_DISPLACE,
+		TEXTURE_AO,
+		TEXTURE_SPECULAR,
+		TEXTURE_HEIGHT,
+		TEXTURE_ALBEDO,
+		TEXTURE_ROUGHNESS,
+		TEXTURE_OPACITY
 	};
-	inline TextureTypes operator| (TextureTypes a, TextureTypes b) { return (TextureTypes)((int)a | (int)b); }
-	inline TextureTypes operator|= (TextureTypes a, TextureTypes b) { return (TextureTypes)((int&)a |= (int)b); }
 
 	static std::string ConvertTextureTypeToString(TextureTypes type) {
 		switch (type) {
@@ -40,6 +39,8 @@ namespace Engine {
 			return "TEXTURE_ALBEDO";
 		case TEXTURE_ROUGHNESS:
 			return "TEXTURE_ROUGHNESS";
+		case TEXTURE_OPACITY:
+			return "TEXTURE_OPACITY";
 		}
 		return "NULL";
 	}
@@ -69,6 +70,7 @@ namespace Engine {
 		std::vector<Texture*> specularMaps;
 		std::vector<Texture*> normalMaps;
 		std::vector<Texture*> heightMaps;
+		std::vector<Texture*> opacityMaps;
 
 		float shininess;
 		float height_scale;
@@ -76,6 +78,7 @@ namespace Engine {
 		glm::vec3 diffuse;
 		glm::vec3 specular;
 
+		bool isTransparent;
 		// I have no idea how to delete this properly without causing an error. Come back later
 	};
 
@@ -84,7 +87,6 @@ namespace Engine {
 	public:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
-		std::vector<Texture*> textures;
 		unsigned int VAO;
 
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, bool pbr);

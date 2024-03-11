@@ -177,6 +177,13 @@ namespace Engine {
 				meshMaterial->heightMaps = heightMaps;
 				//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
+				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY);
+				meshMaterial->opacityMaps = opacityMaps;
+
+				if (opacityMaps.size() > 0) {
+					meshMaterial->isTransparent = true;
+				}
+
 				return Mesh(vertices, indices, meshMaterial, pbr);
 			}
 			else {
