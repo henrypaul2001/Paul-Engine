@@ -59,7 +59,7 @@ namespace Engine {
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAONoiseTexture());
-			ResourceManager::GetInstance()->DefaultPlane()->Draw(*ssaoShader);
+			ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoShader);
 
 			// Blur SSAO texture to remove noise
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOBlurFBO());
@@ -68,7 +68,7 @@ namespace Engine {
 			ssaoBlur->Use();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOColour());
-			ResourceManager::GetInstance()->DefaultPlane()->Draw(*ssaoBlur);
+			ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoBlur);
 
 			// Lighting pass
 			// -------------
@@ -93,7 +93,7 @@ namespace Engine {
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass);
-			ResourceManager::GetInstance()->DefaultPlane()->Draw(*lightingPass);
+			ResourceManager::GetInstance()->DefaultPlane().Draw(*lightingPass);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 
@@ -120,7 +120,7 @@ namespace Engine {
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
-			ResourceManager::GetInstance()->DefaultCube()->Draw(*skyShader);
+			ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
 			glCullFace(GL_BACK);
 			glDepthFunc(GL_LESS);
 

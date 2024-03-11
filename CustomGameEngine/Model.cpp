@@ -4,26 +4,29 @@ namespace Engine {
 	Model::Model(PremadeModel modelType)
 	{
 		if (modelType == MODEL_PLANE) {
-			meshes.push_back(*ResourceManager::GetInstance()->DefaultPlane());
+			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultPlane()));
 		}
 		else if (modelType == MODEL_CUBE) {
-			meshes.push_back(*ResourceManager::GetInstance()->DefaultCube());
+			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultCube()));
 		}
 		else if (modelType == MODEL_SPHERE) {
-			meshes.push_back(*ResourceManager::GetInstance()->DefaultSphere());
+			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultSphere()));
 		}
+		containsTransparentMeshes = false;
 	}
 
 	Model::Model(const char* filepath)
 	{
 		LoadModel(filepath);
 		pbr = false;
+		containsTransparentMeshes = false;
 	}
 
 	Model::Model(const char* filepath, bool pbr)
 	{
 		LoadModel(filepath);
 		this->pbr = pbr;
+		containsTransparentMeshes = false;
 	}
 
 	Model::~Model()
@@ -34,21 +37,32 @@ namespace Engine {
 	void Model::Draw(Shader& shader)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			meshes[i].Draw(shader);
+			if (!meshes[i]->GetMaterial()->isTransparent) {
+				meshes[i]->Draw(shader);
+			}
+		}
+	}
+
+	void Model::DrawTransparentMeshes(Shader& shader)
+	{
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			if (meshes[i]->GetMaterial()->isTransparent) {
+				meshes[i]->Draw(shader);
+			}
 		}
 	}
 
 	void Model::ApplyMaterialToAllMesh(Material* material)
 	{
-		for (Mesh& m : meshes) {
-			m.ApplyMaterial(material);
+		for (Mesh* m : meshes) {
+			m->ApplyMaterial(material);
 		}
 	}
 
 	void Model::ApplyMaterialToMeshAtIndex(Material* material, int index)
 	{
 		if (index < meshes.size()) {
-			meshes[index].ApplyMaterial(material);
+			meshes[index]->ApplyMaterial(material);
 		}
 	}
 
@@ -70,7 +84,12 @@ namespace Engine {
 	{
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			meshes.push_back(ProcessMesh(mesh, scene));
+			
+			Mesh* newMesh = ProcessMesh(mesh, scene);
+			meshes.push_back(newMesh);
+			if (newMesh->GetMaterial()->isTransparent) {
+				containsTransparentMeshes = true;
+			}
 		}
 
 		for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -78,7 +97,7 @@ namespace Engine {
 		}
 	}
 
-	Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+	Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
@@ -184,7 +203,7 @@ namespace Engine {
 					meshMaterial->isTransparent = true;
 				}
 
-				return Mesh(vertices, indices, meshMaterial, pbr);
+				return new Mesh(vertices, indices, meshMaterial, pbr);
 			}
 			else {
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
@@ -202,7 +221,7 @@ namespace Engine {
 				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
 				textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
 
-				return Mesh(vertices, indices, textures, pbr);
+				return new Mesh(vertices, indices, textures, pbr);
 			}
 		}
 	}

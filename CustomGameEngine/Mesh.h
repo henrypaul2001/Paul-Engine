@@ -95,6 +95,7 @@ namespace Engine {
 
 		void ApplyMaterial(Material* material);
 		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
+		Material* GetMaterial() { return material; }
 
 		bool PBR() { return pbr; }
 

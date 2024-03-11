@@ -19,22 +19,28 @@ namespace Engine {
 		Model(const char* filepath);
 		Model(const char* filepath, bool pbr);
 		~Model();
+
 		void Draw(Shader& shader);
+		void DrawTransparentMeshes(Shader& shader);
 
 		bool PBR() { return pbr; }
 
 		void ApplyMaterialToAllMesh(Material* material);
 		void ApplyMaterialToMeshAtIndex(Material* material, int index);
 
-		std::vector<Mesh> meshes;
+		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
+
+		std::vector<Mesh*> meshes;
 		//std::vector<Texture> textures_loaded;
 	private:
 		std::string directory;
 		bool pbr;
 
+		bool containsTransparentMeshes;
+
 		void LoadModel(std::string filepath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
-		Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name);
 	};
 }

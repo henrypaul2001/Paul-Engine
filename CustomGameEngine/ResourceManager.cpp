@@ -280,12 +280,14 @@ namespace Engine {
 		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
 		defaultLitShader->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
 		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
+		defaultLitShader->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
 
 		deferredGeometryPass->Use();
 		deferredGeometryPass->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
 
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("dirLight.ShadowMap", 0);

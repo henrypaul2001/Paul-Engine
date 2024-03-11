@@ -50,7 +50,9 @@ namespace Engine {
 
 	void SystemRender::AfterAction()
 	{
+		DrawTransparentGeometry();
 		shadersUsedThisFrame.clear();
+		transparentGeometry.clear();
 	}
 
 	void SystemRender::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
@@ -86,7 +88,6 @@ namespace Engine {
 		shader->setFloat("textureScale", geometry->GetTextureScale());
 		//shader->setFloat("material.SHININESS", 13.72f);
 
-
 		if (geometry->Cull_Face()) {
 			glEnable(GL_CULL_FACE);
 		}
@@ -105,5 +106,50 @@ namespace Engine {
 		}
 
 		geometry->GetModel()->Draw(*geometry->GetShader());
+
+		if (geometry->GetModel()->ContainsTransparentMeshes()) {
+			float distanceToCamera = glm::length(activeCamera->Position - transform->GetWorldPosition());
+
+			if (transparentGeometry.find(distanceToCamera) != transparentGeometry.end()) {
+				// Distance already exists, increment slightly
+				distanceToCamera += 0.00001f;
+			}
+			transparentGeometry[distanceToCamera] = geometry;
+		}
+	}
+
+	void SystemRender::DrawTransparentGeometry()
+	{
+		// Geometry is already sorted in ascending order
+		for (std::map<float, ComponentGeometry*>::reverse_iterator it = transparentGeometry.rbegin(); it != transparentGeometry.rend(); ++it) {
+			ComponentGeometry* geometry = it->second;
+			Shader* shader = geometry->GetShader();
+			shader->Use();
+
+			ComponentTransform* transform = dynamic_cast<ComponentTransform*>(geometry->GetOwner()->GetComponent(COMPONENT_TRANSFORM));
+			glm::mat4 model = transform->GetWorldModelMatrix();
+			shader->setMat4("model", model);
+			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			shader->setFloat("textureScale", geometry->GetTextureScale());
+
+			if (geometry->Cull_Face()) {
+				glEnable(GL_CULL_FACE);
+			}
+			else {
+				glDisable(GL_CULL_FACE);
+			}
+
+			if (geometry->Cull_Type() == GL_BACK) {
+				glCullFace(GL_BACK);
+			}
+			else if (geometry->Cull_Type() == GL_FRONT) {
+				glCullFace(GL_FRONT);
+			}
+			else {
+				glCullFace(GL_FRONT);
+			}
+
+			geometry->GetModel()->Draw(*geometry->GetShader());
+		}
 	}
 }

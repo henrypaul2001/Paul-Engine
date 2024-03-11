@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "ComponentGeometry.h"
 #include "ComponentTransform.h"
+#include <map>
 namespace Engine {
 	enum PostProcessingEffect {
 		NONE = 0u,
@@ -38,7 +39,10 @@ namespace Engine {
 		//Camera* camera;
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
+		void DrawTransparentGeometry();
 		std::vector<Shader*> shadersUsedThisFrame;
+
+		std::map<float, ComponentGeometry*> transparentGeometry;
 
 		PostProcessingEffect postProcess;
 

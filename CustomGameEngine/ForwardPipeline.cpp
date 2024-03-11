@@ -63,7 +63,7 @@ namespace Engine {
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
-		ResourceManager::GetInstance()->DefaultCube()->Draw(*skyShader);
+		ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
 		glCullFace(GL_BACK);
 		glDepthFunc(GL_LESS);
 
@@ -100,7 +100,7 @@ namespace Engine {
 		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
-		ResourceManager::GetInstance()->DefaultPlane()->Draw(*screenQuadShader);
+		ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 	}

@@ -56,9 +56,10 @@ namespace Engine {
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
-		Mesh* DefaultCube() { return defaultCube; }
-		Mesh* DefaultPlane() { return defaultPlane; }
-		Mesh* DefaultSphere() { return defaultSphere; }
+		Mesh DefaultCube() { return *defaultCube; }
+		Mesh DefaultPlane() { return *defaultPlane; }
+		Mesh DefaultSphere() { return *defaultSphere; }
+
 		Material* DefaultMaterial() { return defaultMaterial; }
 		Shader* ShadowMapShader() { return shadowMapShader; }
 		Shader* CubeShadowMapShader() { return cubeShadowMapShader; }
