@@ -50,9 +50,7 @@ namespace Engine {
 
 	void SystemRender::AfterAction()
 	{
-		DrawTransparentGeometry();
 		shadersUsedThisFrame.clear();
-		transparentGeometry.clear();
 	}
 
 	void SystemRender::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
@@ -149,7 +147,9 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->Draw(*geometry->GetShader());
+			geometry->GetModel()->DrawTransparentMeshes(*geometry->GetShader());
 		}
+
+		transparentGeometry.clear();
 	}
 }

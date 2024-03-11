@@ -70,6 +70,9 @@ namespace Engine {
 		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		// Render transparent objects
+		renderSystem->DrawTransparentGeometry();
 	}
 
 	void ForwardPipeline::ScreenTextureStep()

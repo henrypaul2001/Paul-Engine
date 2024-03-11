@@ -31,6 +31,8 @@ namespace Engine {
 		void SetPostProcess(PostProcessingEffect effect) { postProcess = effect; }
 		PostProcessingEffect GetPostProcess() { return postProcess; }
 
+		void DrawTransparentGeometry();
+
 		float PostProcessKernel[9];
 
 		Camera* GetActiveCamera() { return activeCamera; }
@@ -39,7 +41,6 @@ namespace Engine {
 		//Camera* camera;
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
-		void DrawTransparentGeometry();
 		std::vector<Shader*> shadersUsedThisFrame;
 
 		std::map<float, ComponentGeometry*> transparentGeometry;

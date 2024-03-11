@@ -65,6 +65,14 @@ namespace Engine
 		blue->specular = glm::vec3(0.0f, 0.0f, 1.0f);
 		blue->shininess = 100.0f;
 
+		Material* window = new Material();
+		window->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		window->specular = glm::vec3(0.8f, 0.0f, 0.0f);
+		window->shininess = 60.0f;
+		window->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE));
+		window->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY));
+		window->isTransparent = true;
+
 		Material* cobbleFloor = new Material();
 		cobbleFloor->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE));
 		cobbleFloor->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL));
@@ -89,7 +97,7 @@ namespace Engine
 		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));
 		//dynamic_cast<ComponentTransform*>(defaultCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.5f));
 		defaultCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		//dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
+		//dynamic_cast<ComponentGeometry*>(defaultCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
 		entityManager->AddEntity(defaultCube);
 
 		Entity* brickPlane = new Entity("Brick Wall");
@@ -185,7 +193,7 @@ namespace Engine
 		Entity* testSphere = new Entity("Test Sphere");
 		testSphere->AddComponent(new ComponentTransform(-2.0f, 0.0f, 3.0f));
 		testSphere->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
+		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
 		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(5.0f);
 		entityManager->AddEntity(testSphere);
 
@@ -324,6 +332,30 @@ namespace Engine
 		ssaoCubeTest1->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(ssaoCubeTest1->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		entityManager->AddEntity(ssaoCubeTest1);
+
+		Entity* window1 = new Entity("Window 1");
+		window1->AddComponent(new ComponentTransform(10.0f, 3.0f, 2.5f));
+		window1->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		dynamic_cast<ComponentGeometry*>(window1->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		entityManager->AddEntity(window1);
+
+		Entity* window2 = new Entity("Window 2");
+		window2->AddComponent(new ComponentTransform(9.0f, 3.0f, 1.5f));
+		window2->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		dynamic_cast<ComponentGeometry*>(window2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		entityManager->AddEntity(window2);
+
+		Entity* window3 = new Entity("Window 3");
+		window3->AddComponent(new ComponentTransform(10.0f, 3.0f, 0.5f));
+		window3->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		dynamic_cast<ComponentGeometry*>(window3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		entityManager->AddEntity(window3);
+
+		Entity* window4 = new Entity("Window 4");
+		window4->AddComponent(new ComponentTransform(9.5f, 2.5f, -0.5f));
+		window4->AddComponent(new ComponentGeometry(MODEL_PLANE));
+		dynamic_cast<ComponentGeometry*>(window4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		entityManager->AddEntity(window4);
 	}
 
 	void GameScene::CreateSystems()

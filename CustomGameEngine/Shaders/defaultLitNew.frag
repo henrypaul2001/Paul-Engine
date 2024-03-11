@@ -99,6 +99,7 @@ vec3 Normal;
 vec3 Lighting;
 vec3 SpecularSample;
 vec3 TangentViewDirection;
+float Alpha;
 
 const float minLayers = 8.0;
 const float maxLayers = 32.0;
@@ -353,6 +354,12 @@ void main() {
         }
     }
 
+    // Get alpha
+    Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
+
     // Get base colour
     Colour = material.DIFFUSE;
     if (material.useDiffuseMap) {
@@ -388,5 +395,5 @@ void main() {
         }
     }
 
-    FragColor = vec4(Lighting, 1.0);
+    FragColor = vec4(Lighting, Alpha);
 }
