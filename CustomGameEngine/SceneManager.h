@@ -12,7 +12,8 @@ namespace Engine
 		SCENE_GAME_OVER,
 		SCENE_WIN,
 		SCENE_SPONZA,
-		SCENE_AO
+		SCENE_AO,
+		SCENE_PBR
 	};
 
 	using SceneDelegate = std::function<void()>;

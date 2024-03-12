@@ -168,6 +168,9 @@
     <ClInclude Include="AOScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="PBRScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -270,6 +273,9 @@
       <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
     <ClCompile Include="AOScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>

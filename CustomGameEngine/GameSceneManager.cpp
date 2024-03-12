@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "SponzaScene.h"
 #include "AOScene.h"
+#include "PBRScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -23,7 +24,7 @@ namespace Engine
 			delete scene;
 		}
 
-		std::cout << "Attempting to create scene" << std::endl;
+		std::cout << "Attempting to create scene '" << sceneType << "'" << std::endl;
 		Scene* newScene{};
 		switch (sceneType) {
 		case SCENE_MAIN_MENU:
@@ -42,6 +43,9 @@ namespace Engine
 		case SCENE_AO:
 			newScene = new AOScene(this);
 			break;
+		case SCENE_PBR:
+			newScene = new PBRScene(this);
+			break;
 		case SCENE_NONE:
 			newScene = nullptr;
 			break;
@@ -57,6 +61,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_GAME);
+		ChangeScene(SCENE_PBR);
 	}
 }

@@ -160,6 +160,7 @@
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PBRScene.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="RenderPipeline.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -196,6 +197,7 @@
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PBRScene.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="RenderPipeline.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
