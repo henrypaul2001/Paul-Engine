@@ -31,7 +31,7 @@ namespace Engine {
 		void SetPostProcess(PostProcessingEffect effect) { postProcess = effect; }
 		PostProcessingEffect GetPostProcess() { return postProcess; }
 
-		void DrawTransparentGeometry();
+		void DrawTransparentGeometry(bool useDefaultForwardShader);
 
 		float PostProcessKernel[9];
 

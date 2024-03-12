@@ -7,7 +7,8 @@ namespace Engine {
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
 		inputManager = new GameInputManager(this);
-		renderManager = RenderManager::GetInstance(1024 * 5, 1024 * 5, SCR_WIDTH, SCR_HEIGHT);
+		inputManager->SetCameraPointer(camera);
+		renderManager = RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
 
 		SetupScene();
 	}
@@ -81,7 +82,10 @@ namespace Engine {
 	void SponzaScene::CreateSystems()
 	{
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemRender(), RENDER_SYSTEMS);
+		SystemRender* renderSystem = new SystemRender();
+		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
+		renderSystem->SetActiveCamera(camera);
+		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 	}
 

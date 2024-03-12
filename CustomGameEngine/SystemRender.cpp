@@ -116,12 +116,20 @@ namespace Engine {
 		}
 	}
 
-	void SystemRender::DrawTransparentGeometry()
+	void SystemRender::DrawTransparentGeometry(bool useDefaultForwardShader)
 	{
 		// Geometry is already sorted in ascending order
 		for (std::map<float, ComponentGeometry*>::reverse_iterator it = transparentGeometry.rbegin(); it != transparentGeometry.rend(); ++it) {
 			ComponentGeometry* geometry = it->second;
-			Shader* shader = geometry->GetShader();
+
+			Shader* shader;
+			if (useDefaultForwardShader) {
+				shader = ResourceManager::GetInstance()->DefaultLitShader();
+			}
+			else {
+				shader = geometry->GetShader();
+			}
+
 			shader->Use();
 
 			ComponentTransform* transform = dynamic_cast<ComponentTransform*>(geometry->GetOwner()->GetComponent(COMPONENT_TRANSFORM));
@@ -147,7 +155,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->DrawTransparentMeshes(*geometry->GetShader());
+			geometry->GetModel()->DrawTransparentMeshes(*shader);
 		}
 
 		transparentGeometry.clear();

@@ -24,6 +24,7 @@ struct Material {
     sampler2D TEXTURE_SPECULAR1;
     sampler2D TEXTURE_NORMAL1;
     sampler2D TEXTURE_DISPLACE1;
+    sampler2D TEXTURE_OPACITY1;
 
     float SHININESS;
     float HEIGHT_SCALE;
@@ -36,6 +37,7 @@ struct Material {
     bool useSpecularMap;
     bool useNormalMap;
     bool useHeightMap;
+    bool useOpacityMap;
 };
 uniform Material material;
 uniform float textureScale;

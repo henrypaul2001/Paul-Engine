@@ -72,7 +72,7 @@ namespace Engine {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Render transparent objects
-		renderSystem->DrawTransparentGeometry();
+		renderSystem->DrawTransparentGeometry(false);
 	}
 
 	void ForwardPipeline::ScreenTextureStep()

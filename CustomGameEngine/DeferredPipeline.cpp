@@ -42,7 +42,6 @@ namespace Engine {
 			// SSAO Texture
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOFBO());
 			glClear(GL_COLOR_BUFFER_BIT);
-
 			Shader* ssaoShader = ResourceManager::GetInstance()->SSAOShader();
 			ssaoShader->Use();
 			ssaoShader->setInt("scr_width", screenWidth);
@@ -127,6 +126,13 @@ namespace Engine {
 			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
 			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+			// Transparency using forward rendering
+			// ------------------------------------
+			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader());
+			glEnable(GL_BLEND);
+			renderSystem->DrawTransparentGeometry(true);
+			glDisable(GL_BLEND);
 		}
 	}
 }
