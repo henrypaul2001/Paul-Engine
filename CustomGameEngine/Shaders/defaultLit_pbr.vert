@@ -2,23 +2,39 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
+layout (location = 3) in vec3 aTangent;
+layout (location = 4) in vec3 aBitangent;
 
-out vec2 TexCoords;
-out vec3 WorldPos;
-out vec3 Normal;
+// uniform block
+layout (std140) uniform Common
+{
+    mat4 projection;
+    mat4 view;
+    vec3 viewPos;
+};
 
-uniform mat4 projection;
-uniform mat4 view;
+out VIEW_DATA {
+    flat vec3 TangentViewPos;
+    flat vec3 ViewPos;
+} view_data;
+
+out VERTEX_DATA {
+    vec3 WorldPos;
+    vec3 Normal;
+    vec2 TexCoords;
+
+    mat3 TBN;
+
+    vec3 TangentFragPos;
+} vertex_data;
+
 uniform mat4 model;
 uniform mat3 normalMatrix;
 
-uniform float textureScale;
+void main() {
+    vertex_data.TexCoords = aTexCoords;
+    vertex_data.WorldPos = vec3(model * vec4(aPos, 1.0));
+    vertex_data.Normal = normalMatrix * aNormal;
 
-void main()
-{
-    TexCoords = aTexCoords * textureScale;
-    WorldPos = vec3(model * vec4(aPos, 1.0));
-    Normal = normalMatrix * aNormal;
-    
-    gl_Position =  projection * view * vec4(WorldPos, 1.0);
+    gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
 }
