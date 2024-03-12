@@ -265,6 +265,7 @@ namespace Engine {
 		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
 		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
 		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag");
+		defaultLitPBRShader = LoadShader("Shaders/defaultLit_pbr.vert", "Shaders/defaultLit_pbr.frag");
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
@@ -313,19 +314,33 @@ namespace Engine {
 		skyboxShader->Use();
 		skyboxShader->setInt("cubemap", 0);
 
+		defaultLitPBRShader->Use();
+
+		defaultLitPBRShader->setInt("dirLight.ShadowMap", 0);
+		for (int i = 0; i <= 8; i++) {
+			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+		}
+
+		defaultLitPBRShader->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
+
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
 		unsigned int deferredLightingPassLocation = glGetUniformBlockIndex(deferredLightingPass->GetID(), "Common");
 		unsigned int ssaoShaderLocation = glGetUniformBlockIndex(ssaoShader->GetID(), "Common");
 		unsigned int skyboxShaderLocation = glGetUniformBlockIndex(skyboxShader->GetID(), "Common");
-		// unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLit_pbr.GetID(), "Matrices");
+		unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLitPBRShader->GetID(), "Matrices");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredLightingPass->GetID(), deferredLightingPassLocation, 0);
 		glUniformBlockBinding(ssaoShader->GetID(), ssaoShaderLocation, 0);
 		glUniformBlockBinding(skyboxShader->GetID(), skyboxShaderLocation, 0);
-		// same again for pbr
+		glUniformBlockBinding(defaultLitPBRShader->GetID(), defaultLitPBRBlockLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);

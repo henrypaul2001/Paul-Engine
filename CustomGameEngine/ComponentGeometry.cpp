@@ -5,15 +5,21 @@ namespace Engine {
 	{
 		this->pbr = false;
 		model = new Model(modelType);
+
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
+
 		if (modelType == MODEL_PLANE) {
 			//CULL_FACE = false;
 			CULL_TYPE = GL_BACK;
 		}
+
 		usingDefaultShader = false;
+
 		castShadows = true;
+
 		textureScale = 1.0f;
+
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
 
@@ -21,15 +27,20 @@ namespace Engine {
 	{
 		this->pbr = false;
 		model = new Model(modelType);
+
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
+
 		if (modelType == MODEL_PLANE) {
 			//CULL_FACE = false;
 			CULL_TYPE = GL_BACK;
 		}
+
 		usingDefaultShader = true;
+
 		castShadows = true;
 
+		shader = nullptr;
 		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
 			shader = ResourceManager::GetInstance()->DefaultLitShader();
 		}
@@ -43,12 +54,18 @@ namespace Engine {
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr)
 	{
 		this->pbr = pbr;
-		//model = new Model(modelFilepath, pbr); // dont do this. Use resource manager to avoid duplicates and loading models during gameplay
+
+		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr);
+
 		usingDefaultShader = false;
+
 		castShadows = true;
+
 		textureScale = 1.0f;
+
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
+
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 	}
 
@@ -56,20 +73,20 @@ namespace Engine {
 	{
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
+
 		this->pbr = pbr;
+
 		usingDefaultShader = true;
+
 		castShadows = true;
+
 		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr);
-		std::string v;
-		std::string f;
+
+		shader = nullptr;
 		if (pbr) {
-			v = "Shaders/defaultLit_pbr.vert";
-			f = "Shaders/defaultLit_pbr.frag";
-			//shader = new Shader(v.c_str(), f.c_str()); // dont do this. Use resource manager instead to avoid duplicate shaders, also do it at start instead of potentially loading shaders during gameplay
+			shader = ResourceManager::GetInstance()->DefaultLitPBR();
 		}
 		else {
-			//v = "Shaders/defaultLit.vert";
-			//f = "Shaders/defaultLit.frag";
 			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
 				shader = ResourceManager::GetInstance()->DefaultLitShader();
 			}
@@ -79,14 +96,11 @@ namespace Engine {
 		}
 
 		textureScale = 1.0f;
-		
-		// configure shader uniforms
 	}
 
 	ComponentGeometry::~ComponentGeometry()
 	{
-		//delete shader;
-		//delete model;
+
 	}
 
 	void ComponentGeometry::Close()

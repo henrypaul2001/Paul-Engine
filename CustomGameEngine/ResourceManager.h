@@ -21,6 +21,8 @@ namespace Engine {
 
 		Material* defaultMaterial;
 
+		Shader* defaultLitPBRShader;
+
 		Shader* defaultLitShader;
 		Shader* shadowMapShader;
 		Shader* cubeShadowMapShader;
@@ -70,6 +72,7 @@ namespace Engine {
 		Shader* SSAOShader() { return ssaoShader; }
 		Shader* SSABlur() { return ssaoBlur; }
 		Shader* SkyboxShader() { return skyboxShader; }
+		Shader* DefaultLitPBR() { return defaultLitPBRShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }
