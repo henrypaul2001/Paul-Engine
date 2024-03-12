@@ -82,6 +82,21 @@ namespace Engine {
 		// I have no idea how to delete this properly without causing an error. Come back later
 	};
 
+	struct PBRMaterial {
+		std::vector<Texture*> albedoMaps;
+		std::vector<Texture*> normalMaps;
+		std::vector<Texture*> metallicMaps;
+		std::vector<Texture*> roughnessMaps;
+		std::vector<Texture*> aoMaps;
+
+		float shininess;
+
+		glm::vec3 albedo;
+		float metallic;
+		float roughness;
+		float ao;
+	};
+
 	class Mesh
 	{
 	public:
@@ -89,8 +104,8 @@ namespace Engine {
 		std::vector<unsigned int> indices;
 		unsigned int VAO;
 
-		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, bool pbr);
-		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material, bool pbr);
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial);
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material);
 		~Mesh();
 
 		void ApplyMaterial(Material* material);
@@ -104,6 +119,7 @@ namespace Engine {
 		GLenum drawPrimitive;
 		unsigned int VBO, EBO;
 		Material* material;
+		PBRMaterial* PBRmaterial;
 		bool pbr;
 
 		void SetupMesh();

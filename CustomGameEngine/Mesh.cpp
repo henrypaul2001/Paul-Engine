@@ -1,20 +1,20 @@
 #include "Mesh.h"
 
 namespace Engine {
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures, bool pbr)
+	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
-		this->pbr = pbr;
-		this->material = nullptr;
+		this->pbr = true;
+		this->PBRmaterial = pbrMaterial;
 		SetupMesh();
 	}
 
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material, bool pbr)
+	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
-		this->pbr = pbr;
+		this->pbr = false;
 		this->material = material;
 		SetupMesh();
 	}
@@ -131,48 +131,91 @@ namespace Engine {
 			shader.setBool("material.useMetallicMap", false);
 			shader.setBool("material.useRoughnessMap", false);
 			shader.setBool("material.useAoMap", false);
-			shader.setBool("material.useOpacityMap", false);
+			//shader.setBool("material.useOpacityMap", false);
 
 			unsigned int albedoNr = 1;
 			unsigned int normalNr = 1;
 			unsigned int metallicNr = 1;
 			unsigned int roughnessNr = 1;
 			unsigned int aoNr = 1;
-			unsigned int opacityNr = 1;
+			//unsigned int opacityNr = 1;
 
 			std::string number;
 			std::string name;
-			/*
-			for (unsigned int i = 0; i < textures.size(); i++) {
-				glActiveTexture(GL_TEXTURE0 + i + offset);
-				name = ConvertTextureTypeToString(textures[i]->type);
+			
+			shader.setVec3("material.ALBEDO", PBRmaterial->albedo);
+			shader.setFloat("material.METALNESS", PBRmaterial->metallic);
+			shader.setFloat("material.ROUGHNESS", PBRmaterial->roughness);
+			shader.setFloat("material.AO", PBRmaterial->ao);
+
+			int count = 0;
+
+			// albedo maps
+			for (int i = 0; i < PBRmaterial->albedoMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->albedoMaps[i]->type);
 				if (name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
-					number = std::to_string(albedoNr++);
+					shader.setInt(("material." + name + std::to_string(albedoNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->albedoMaps[i]->id);
+					albedoNr++;
 					shader.setBool("material.useAlbedoMap", true);
 				}
-				else if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
-					number = std::to_string(normalNr++);
+				count++;
+			}
+
+			// normal maps
+			for (int i = 0; i < PBRmaterial->normalMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->normalMaps[i]->type);
+				if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
+					shader.setInt(("material." + name + std::to_string(normalNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->normalMaps[i]->id);
+					normalNr++;
 					shader.setBool("material.useNormalMap", true);
 				}
-				else if (name == ConvertTextureTypeToString(TEXTURE_METAL)) {
-					number = std::to_string(metallicNr++);
+				count++;
+			}
+
+			// metallic maps
+			for (int i = 0; i < PBRmaterial->metallicMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->metallicMaps[i]->type);
+				if (name == ConvertTextureTypeToString(TEXTURE_METAL)) {
+					shader.setInt(("material." + name + std::to_string(metallicNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->metallicMaps[i]->id);
+					metallicNr++;
 					shader.setBool("material.useMetallicMap", true);
 				}
-				else if (name == ConvertTextureTypeToString(TEXTURE_ROUGHNESS)) {
-					number = std::to_string(roughnessNr++);
+				count++;
+			}
+
+			// roughness maps
+			for (int i = 0; i < PBRmaterial->roughnessMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->roughnessMaps[i]->type);
+				if (name == ConvertTextureTypeToString(TEXTURE_ROUGHNESS)) {
+					shader.setInt(("material." + name + std::to_string(roughnessNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->roughnessMaps[i]->id);
+					roughnessNr++;
 					shader.setBool("material.useRoughnessMap", true);
 				}
-				else if (name == ConvertTextureTypeToString(TEXTURE_AO)) {
-					number = std::to_string(aoNr++);
+				count++;
+			}
+			
+			// ao maps
+			for (int i = 0; i < PBRmaterial->aoMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->aoMaps[i]->type);
+				if (name == ConvertTextureTypeToString(TEXTURE_AO)) {
+					shader.setInt(("material." + name + std::to_string(aoNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->aoMaps[i]->id);
+					aoNr++;
 					shader.setBool("material.useAoMap", true);
 				}
-				// opacity
-
-				shader.setInt(("material." + name + number).c_str(), i + offset);
-				glBindTexture(GL_TEXTURE_2D, textures[i]->id);
+				count++;
 			}
+
 			glActiveTexture(GL_TEXTURE0);
-			*/
 		}
 
 		// draw
