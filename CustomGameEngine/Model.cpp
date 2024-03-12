@@ -13,6 +13,7 @@ namespace Engine {
 			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultSphere()));
 		}
 		containsTransparentMeshes = false;
+		pbr = false;
 	}
 
 	Model::Model(const char* filepath)
@@ -105,6 +106,7 @@ namespace Engine {
 		std::vector<unsigned int> indices;
 		std::vector<Texture*> textures;
 		Material* meshMaterial = new Material();
+		PBRMaterial* pbrMaterial = new PBRMaterial();
 
 		// retrieve vertices
 		Vertex vertex;
@@ -156,7 +158,7 @@ namespace Engine {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 			if (!pbr) {
-
+				delete pbrMaterial;
 				float shine;
 				if (AI_SUCCESS != aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shine)) {
 					// default
@@ -180,23 +182,19 @@ namespace Engine {
 				meshMaterial->diffuse = diffuseColour;
 				meshMaterial->specular = specularColour;
 				meshMaterial->shininess = shine;
-				meshMaterial->height_scale = 10.0f;
+				meshMaterial->height_scale = 10.0f; // this should be read from the material import instead
 
 				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
 				meshMaterial->diffuseMaps = diffuseMaps;
-				//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR);
 				meshMaterial->specularMaps = specularMaps;
-				//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
 				meshMaterial->normalMaps = normalMaps;
-				//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
 				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
 				meshMaterial->heightMaps = heightMaps;
-				//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY);
 				meshMaterial->opacityMaps = opacityMaps;
@@ -205,25 +203,51 @@ namespace Engine {
 					meshMaterial->isTransparent = true;
 				}
 
-				return new Mesh(vertices, indices, meshMaterial, pbr);
+				return new Mesh(vertices, indices, meshMaterial);
 			}
 			else {
+				delete meshMaterial;
+
+				aiColor4D baseColour;
+				if (AI_SUCCESS != aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &baseColour)) {
+					// default
+					baseColour = aiColor4D(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+				glm::vec3 baseAlbedo = glm::vec3(baseColour.r, baseColour.b, baseColour.g);
+
+				float metal;
+				if (AI_SUCCESS != aiGetMaterialFloat(material, AI_MATKEY_METALLIC_FACTOR, &metal)) {
+					// default
+					metal = 1.0f;
+				}
+
+				float rough;
+				if (AI_SUCCESS != aiGetMaterialFloat(material, AI_MATKEY_ROUGHNESS_FACTOR, &rough)) {
+					// default
+					rough = 1.0f;
+				}
+
+				pbrMaterial->albedo = baseAlbedo;
+				pbrMaterial->metallic = metal;
+				pbrMaterial->roughness = rough;
+				pbrMaterial->ao = 1.0f;
+
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
-				textures.insert(textures.end(), albedoMaps.begin(), albedoMaps.end());
+				pbrMaterial->albedoMaps = albedoMaps;
 
 				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
-				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+				pbrMaterial->normalMaps;
 
 				std::vector<Texture*> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, TEXTURE_METAL);
-				textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
+				pbrMaterial->metallicMaps = metallicMaps;
 
 				std::vector<Texture*> roughnessMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_ROUGHNESS);
-				textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
+				pbrMaterial->roughnessMaps = roughnessMaps;
 
 				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
-				textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
+				pbrMaterial->aoMaps = aoMaps;
 
-				return new Mesh(vertices, indices, textures, pbr);
+				return new Mesh(vertices, indices, pbrMaterial);
 			}
 		}
 	}

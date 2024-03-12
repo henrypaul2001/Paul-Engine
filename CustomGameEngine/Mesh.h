@@ -89,8 +89,6 @@ namespace Engine {
 		std::vector<Texture*> roughnessMaps;
 		std::vector<Texture*> aoMaps;
 
-		float shininess;
-
 		glm::vec3 albedo;
 		float metallic;
 		float roughness;

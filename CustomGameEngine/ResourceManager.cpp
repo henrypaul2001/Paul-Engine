@@ -152,7 +152,7 @@ namespace Engine {
 
 		GenerateBitangentTangentVectors(vertices, indices, 0);
 #pragma endregion
-		defaultCube = new Mesh(vertices, indices, defaultMaterial, false);
+		defaultCube = new Mesh(vertices, indices, defaultMaterial);
 		defaultCube->SetDrawPrimitive(GL_TRIANGLES);
 		vertices.clear();
 		indices.clear();
@@ -185,7 +185,7 @@ namespace Engine {
 
 		GenerateBitangentTangentVectors(vertices, indices, 0);
 #pragma endregion
-		defaultPlane = new Mesh(vertices, indices, defaultMaterial, false);
+		defaultPlane = new Mesh(vertices, indices, defaultMaterial);
 		defaultPlane->SetDrawPrimitive(GL_TRIANGLES);
 		vertices.clear();
 		indices.clear();
@@ -247,7 +247,7 @@ namespace Engine {
 
 		GenerateBitangentTangentVectors(vertices, indices, 1);
 #pragma endregion
-		defaultSphere = new Mesh(vertices, indices, defaultMaterial, false);
+		defaultSphere = new Mesh(vertices, indices, defaultMaterial);
 		defaultSphere->SetDrawPrimitive(GL_TRIANGLE_STRIP);
 
 		vertices.clear();
