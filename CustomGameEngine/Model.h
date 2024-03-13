@@ -28,6 +28,9 @@ namespace Engine {
 		void ApplyMaterialToAllMesh(Material* material);
 		void ApplyMaterialToMeshAtIndex(Material* material, int index);
 
+		void ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial);
+		void ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index);
+
 		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
 
 		std::vector<Mesh*> meshes;

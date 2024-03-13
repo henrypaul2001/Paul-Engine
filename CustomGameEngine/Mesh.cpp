@@ -29,7 +29,14 @@ namespace Engine {
 
 	void Mesh::ApplyMaterial(Material* material)
 	{
+		pbr = false;
 		this->material = material;
+	}
+
+	void Mesh::ApplyMaterial(PBRMaterial* pbrMaterial)
+	{
+		pbr = true;
+		this->PBRmaterial = pbrMaterial;
 	}
 
 	void Mesh::Draw(Shader& shader)

@@ -69,6 +69,20 @@ namespace Engine {
 		}
 	}
 
+	void Model::ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial)
+	{
+		for (Mesh* m : meshes) {
+			m->ApplyMaterial(pbrMaterial);
+		}
+	}
+
+	void Model::ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index)
+	{
+		if (index < meshes.size()) {
+			meshes[index]->ApplyMaterial(pbrMaterial);
+		}
+	}
+
 	void Model::LoadModel(std::string filepath)
 	{
 		Assimp::Importer importer;

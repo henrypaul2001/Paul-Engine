@@ -38,7 +38,7 @@ namespace Engine {
 		directional->Colour = glm::vec3(0.0f);
 		directional->Specular = glm::vec3(0.0f);
 		dirLight->AddComponent(directional);
-		entityManager->AddEntity(dirLight);
+		//entityManager->AddEntity(dirLight);
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));

@@ -107,6 +107,8 @@ namespace Engine {
 		~Mesh();
 
 		void ApplyMaterial(Material* material);
+		void ApplyMaterial(PBRMaterial* pbrMaterial);
+
 		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
 		Material* GetMaterial() { return material; }
 
