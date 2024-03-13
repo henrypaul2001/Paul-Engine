@@ -75,7 +75,9 @@ struct PBRMaterial {
     sampler2D TEXTURE_METALLIC1;
     sampler2D TEXTURE_ROUGHNESS1;
     sampler2D TEXTURE_AO1;
+    sampler2D TEXTURE_DISPLACE1;
 
+    float HEIGHT_SCALE;
 
     // non textured material properties
     vec3 ALBEDO;
@@ -88,6 +90,7 @@ struct PBRMaterial {
     bool useMetallicMap;
     bool useRoughnessMap;
     bool useAoMap;
+    bool useHeightMap;
 };
 uniform PBRMaterial material;
 
@@ -96,6 +99,7 @@ vec3 Normal;
 float Metallic;
 float Roughness;
 float AO;
+vec2 TexCoords;
 
 vec3 N;
 vec3 V;
@@ -103,6 +107,50 @@ vec3 R;
 vec3 F0;
 
 const float PI = 3.14159265359;
+
+const float minLayers = 8.0;
+const float maxLayers = 32.0;
+vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
+    // number of depth layers
+    float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), viewDir), 0.0));
+
+    // calculate size of each layer
+    float layerDepth = 1.0 / numLayers;
+
+    float currentLayerDepth = 0.0;
+
+    // amount to shift the texture coordinates per layer
+    vec2 P = viewDir.xy * material.HEIGHT_SCALE;
+    vec2 deltaTexCoords = (P / numLayers);
+
+    // get initial values
+    vec2 currentTexCoords = texCoords;
+    float currentDepthMapValue = texture(material.TEXTURE_DISPLACE1, currentTexCoords).r;
+
+    while (currentLayerDepth < currentDepthMapValue) {
+        // shift coords along direction of P
+        currentTexCoords -= deltaTexCoords;
+
+        // get new depth value
+        currentDepthMapValue = texture(material.TEXTURE_DISPLACE1, currentTexCoords).r;
+
+        // get depth of next layer
+        currentLayerDepth += layerDepth;
+    }
+    
+    // get texture coordinates before collision
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    // get depth after and before collision for linear interpolation
+    float afterDepth = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = texture(material.TEXTURE_DISPLACE1, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+    // interpolation of texCoords
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+}
 
 float DistrubitionGGX(vec3 H) {
     float a = Roughness * Roughness;
@@ -177,12 +225,12 @@ vec3 PerLightReflectance_PointLight(int lightIndex) {
 }
 
 vec3 GetNormalFromMap() {
-    vec3 tangentNormal = texture(material.TEXTURE_NORMAL1, vertex_data.TexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(material.TEXTURE_NORMAL1, TexCoords).xyz * 2.0 - 1.0;
 
     vec3 Q1 = dFdx(vertex_data.WorldPos);
     vec3 Q2 = dFdy(vertex_data.WorldPos);
-    vec2 st1 = dFdx(vertex_data.TexCoords);
-    vec2 st2 = dFdy(vertex_data.TexCoords);
+    vec2 st1 = dFdx(TexCoords);
+    vec2 st2 = dFdy(TexCoords);
 
     vec3 N = normalize(Normal);
     vec3 T = normalize(Q1 * st2.t - Q2 * st1.t);
@@ -193,11 +241,22 @@ vec3 GetNormalFromMap() {
 }
 
 void main() {
+
+    TexCoords = vertex_data.TexCoords;
+    // Apply parallax mapping to tex coords if material has height map
+    if (material.useHeightMap) {
+        vec3 viewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
+        TexCoords = ParallaxMapping(TexCoords, viewDir);
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            //discard;
+        }
+    }
+
 	// Get material colour
     Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {
-        Albedo = texture(material.TEXTURE_ALBEDO1, vertex_data.TexCoords).rgb;
-        //Albedo = pow(texture(material.TEXTURE_ALBEDO1, vertex_data.TexCoords).rgb, vec3(2.2)); // tone mapped version
+        Albedo = texture(material.TEXTURE_ALBEDO1, TexCoords).rgb;
+        //Albedo = pow(texture(material.TEXTURE_ALBEDO1, TexCoords).rgb, vec3(2.2)); // tone mapped version
     }
 
     // Get fragment normal
@@ -209,19 +268,19 @@ void main() {
     // Get material metalness value
     Metallic = material.METALNESS;
     if (material.useMetallicMap) {
-        Metallic = texture(material.TEXTURE_METALLIC1, vertex_data.TexCoords).r;
+        Metallic = texture(material.TEXTURE_METALLIC1, TexCoords).r;
     }
 
     // Get material roughness value
     Roughness = material.ROUGHNESS;
     if (material.useRoughnessMap) {
-        Roughness = texture(material.TEXTURE_ROUGHNESS1, vertex_data.TexCoords).r;
+        Roughness = texture(material.TEXTURE_ROUGHNESS1, TexCoords).r;
     }
 
     // Get fragment ambient occlusion factor
     AO = material.AO;
     if (material.useAoMap) {
-        AO = texture(material.TEXTURE_AO1, vertex_data.TexCoords).r;
+        AO = texture(material.TEXTURE_AO1, TexCoords).r;
     }
 
     N = normalize(Normal);

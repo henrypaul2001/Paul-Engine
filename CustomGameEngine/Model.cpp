@@ -260,6 +260,7 @@ namespace Engine {
 				pbrMaterial->metallic = metal;
 				pbrMaterial->roughness = rough;
 				pbrMaterial->ao = 1.0f;
+				pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
 
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
 				pbrMaterial->albedoMaps = albedoMaps;
@@ -275,6 +276,9 @@ namespace Engine {
 
 				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
 				pbrMaterial->aoMaps = aoMaps;
+
+				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
+				pbrMaterial->heightMaps = heightMaps;
 
 				return new Mesh(vertices, indices, pbrMaterial);
 			}

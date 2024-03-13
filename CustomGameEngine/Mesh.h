@@ -88,6 +88,9 @@ namespace Engine {
 		std::vector<Texture*> metallicMaps;
 		std::vector<Texture*> roughnessMaps;
 		std::vector<Texture*> aoMaps;
+		std::vector<Texture*> heightMaps;
+
+		float height_scale;
 
 		glm::vec3 albedo;
 		float metallic;

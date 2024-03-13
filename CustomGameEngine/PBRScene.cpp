@@ -67,6 +67,8 @@ namespace Engine {
 		bricks->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/specular.png", TEXTURE_METALLIC));
 		bricks->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/roughness.png", TEXTURE_ROUGHNESS));
 		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO));
+		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE));
+		bricks->height_scale = -0.1;
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
@@ -196,17 +198,17 @@ namespace Engine {
 		pointLight5->AddComponent(light5);
 		entityManager->AddEntity(pointLight5);
 
-		Entity* goblet = new Entity("Goblet");
-		goblet->AddComponent(new ComponentTransform(0.0f, 0.35f, 0.0f));
-		dynamic_cast<ComponentTransform*>(goblet->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(4.0f));
-		goblet->AddComponent(new ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
-		entityManager->AddEntity(goblet);
+		//Entity* goblet = new Entity("Goblet");
+		//goblet->AddComponent(new ComponentTransform(0.0f, 0.35f, 0.0f));
+		//dynamic_cast<ComponentTransform*>(goblet->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(4.0f));
+		//goblet->AddComponent(new ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
+		//entityManager->AddEntity(goblet);
 
-		Entity* cart = new Entity("Cart");
-		cart->AddComponent(new ComponentTransform(5.0f, -1.0f, 2.0f));
-		dynamic_cast<ComponentTransform*>(cart->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.0f));
-		cart->AddComponent(new ComponentGeometry("Models/PBR/cart/cart.obj", true));
-		entityManager->AddEntity(cart);
+		//Entity* cart = new Entity("Cart");
+		//cart->AddComponent(new ComponentTransform(5.0f, -1.0f, 2.0f));
+		//dynamic_cast<ComponentTransform*>(cart->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.0f));
+		//cart->AddComponent(new ComponentGeometry("Models/PBR/cart/cart.obj", true));
+		//entityManager->AddEntity(cart);
 	}
 
 	void PBRScene::CreateSystems()

@@ -138,6 +138,7 @@ namespace Engine {
 			shader.setBool("material.useMetallicMap", false);
 			shader.setBool("material.useRoughnessMap", false);
 			shader.setBool("material.useAoMap", false);
+			shader.setBool("material.useHeightMap", false);
 			//shader.setBool("material.useOpacityMap", false);
 
 			unsigned int albedoNr = 1;
@@ -145,6 +146,7 @@ namespace Engine {
 			unsigned int metallicNr = 1;
 			unsigned int roughnessNr = 1;
 			unsigned int aoNr = 1;
+			unsigned int heightNr = 1;
 			//unsigned int opacityNr = 1;
 
 			std::string number;
@@ -154,6 +156,7 @@ namespace Engine {
 			shader.setFloat("material.METALNESS", PBRmaterial->metallic);
 			shader.setFloat("material.ROUGHNESS", PBRmaterial->roughness);
 			shader.setFloat("material.AO", PBRmaterial->ao);
+			shader.setFloat("material.HEIGHT_SCALE", PBRmaterial->height_scale);
 
 			int count = 0;
 
@@ -218,6 +221,19 @@ namespace Engine {
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->aoMaps[i]->id);
 					aoNr++;
 					shader.setBool("material.useAoMap", true);
+				}
+				count++;
+			}
+
+			// height maps
+			for (int i = 0; i < PBRmaterial->heightMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->heightMaps[i]->type);
+				if (name == ConvertTextureTypeToString(TEXTURE_DISPLACE)) {
+					shader.setInt(("material." + name + std::to_string(heightNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->heightMaps[i]->id);
+					heightNr++;
+					shader.setBool("material.useHeightMap", true);
 				}
 				count++;
 			}

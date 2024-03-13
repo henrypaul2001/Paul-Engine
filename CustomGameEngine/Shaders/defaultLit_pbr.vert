@@ -39,6 +39,17 @@ void main() {
     vertex_data.WorldPos = vec3(model * vec4(aPos, 1.0));
     vertex_data.Normal = normalMatrix * aNormal;
 
+    // Tangent space
+    vec3 T = normalize(normalMatrix * aTangent);
+    vec3 N = normalize(normalMatrix * aNormal);
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
+    mat3 TBN = transpose(mat3(T, B, N));
+
+    vertex_data.TangentFragPos = TBN * vertex_data.WorldPos;
+
+    view_data.TangentViewPos = TBN * viewPos;
+
     view_data.ViewPos = viewPos;
 
     gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
