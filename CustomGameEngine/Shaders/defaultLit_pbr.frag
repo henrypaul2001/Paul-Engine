@@ -85,7 +85,7 @@ struct PBRMaterial {
 
     bool useAlbedoMap;
     bool useNormalMap;
-    bool useMetalllicMap;
+    bool useMetallicMap;
     bool useRoughnessMap;
     bool useAoMap;
 };
@@ -155,7 +155,7 @@ vec3 PerLightReflectance_PointLight(int lightIndex) {
     // Cook-Torrance BRDF
     float NDF = DistrubitionGGX(H);
     float G = GeometrySmith(L);
-    vec3 F = FresnelSchlick(max(dot(H, V), 1.0), F0);
+    vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
 
     vec3 numerator = NDF * G * F;
     float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
@@ -199,7 +199,7 @@ void main() {
     Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {
         Albedo = texture(material.TEXTURE_ALBEDO1, vertex_data.TexCoords).rgb;
-        //pow(texture(albedoMap1, TexCoords).rgb, vec3(2.2)) // tone mapped version
+        //Albedo = pow(texture(material.TEXTURE_ALBEDO1, vertex_data.TexCoords).rgb, vec3(2.2)); // tone mapped version
     }
 
     // Get fragment normal
@@ -210,7 +210,7 @@ void main() {
 
     // Get material metalness value
     Metallic = material.METALNESS;
-    if (material.useMetalllicMap) {
+    if (material.useMetallicMap) {
         Metallic = texture(material.TEXTURE_METALLIC1, vertex_data.TexCoords).r;
     }
 

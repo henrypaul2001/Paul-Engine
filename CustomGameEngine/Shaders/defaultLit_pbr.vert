@@ -36,5 +36,7 @@ void main() {
     vertex_data.WorldPos = vec3(model * vec4(aPos, 1.0));
     vertex_data.Normal = normalMatrix * aNormal;
 
+    view_data.ViewPos = viewPos;
+
     gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
 }
