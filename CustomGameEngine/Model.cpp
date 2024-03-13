@@ -293,7 +293,8 @@ namespace Engine {
 			aiString str;
 			mat->GetTexture(type, i, &str);
 
-			textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name));
+			//textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name));
+			textures.push_back(ResourceManager::GetInstance()->LoadTexture(str.C_Str(), name));
 		}
 
 		return textures;

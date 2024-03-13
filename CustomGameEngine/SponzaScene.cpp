@@ -51,22 +51,58 @@ namespace Engine {
 
 	void SponzaScene::CreateEntities()
 	{
+		PBRMaterial* gold = new PBRMaterial();
+		gold->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO));
+		gold->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/normal.png", TEXTURE_NORMAL));
+		gold->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/metallic.png", TEXTURE_METALLIC));
+		gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS));
+		gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO));
+
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
 		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.35f, -1.0f, 0.0f);
+		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
 		entityManager->AddEntity(dirLight);
 
 		Entity* sponza = new Entity("Sponza");
 		sponza->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		sponza->AddComponent(new ComponentGeometry("Models/sponza/sponza.obj", false));
+		sponza->AddComponent(new ComponentGeometry("Models/sponza/sponza.obj", true));
 		dynamic_cast<ComponentGeometry*>(sponza->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 		entityManager->AddEntity(sponza);
 		
 		Entity* light = new Entity("Light");
-		light->AddComponent(new ComponentTransform(0.0f, 10.0f, 0.0f));
+		light->AddComponent(new ComponentTransform(0.0f, 15.0f, 0.0f));
 		light->AddComponent(new ComponentLight(POINT));
+		light->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		dynamic_cast<ComponentLight*>(light->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(100.0f, 100.0f, 100.0f);
+		dynamic_cast<ComponentGeometry*>(light->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+		dynamic_cast<ComponentGeometry*>(light->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		dynamic_cast<ComponentGeometry*>(light->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(light->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		entityManager->AddEntity(light);
+
+		Entity* light2 = new Entity("Light 2");
+		light2->AddComponent(new ComponentTransform(0.0f, 10.0f, 0.0f));
+		light2->AddComponent(new ComponentLight(POINT));
+		light2->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		dynamic_cast<ComponentLight*>(light2->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(100.0f, 100.0f, 100.0f);
+		dynamic_cast<ComponentGeometry*>(light2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+		dynamic_cast<ComponentGeometry*>(light2->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		dynamic_cast<ComponentGeometry*>(light2->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(light2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
+		entityManager->AddEntity(light2);
+
+		Entity* light3 = new Entity("Light 3");
+		light3->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
+		light3->AddComponent(new ComponentLight(POINT));
+		dynamic_cast<ComponentLight*>(light3->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(100.0f, 100.0f, 100.0f);
+		light3->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		dynamic_cast<ComponentGeometry*>(light3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+		dynamic_cast<ComponentGeometry*>(light3->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		dynamic_cast<ComponentGeometry*>(light3->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(light3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
+		entityManager->AddEntity(light3);
 
 		Entity* spotLight = new Entity("Spot Light");
 		spotLight->AddComponent(new ComponentTransform(0.0f, 6.5f, 0.0f));
@@ -91,6 +127,7 @@ namespace Engine {
 
 	void SponzaScene::Update()
 	{
+		Scene::Update();
 		systemManager->ActionUpdateSystems(entityManager);
 		float time = (float)glfwGetTime();
 
@@ -102,6 +139,7 @@ namespace Engine {
 
 	void SponzaScene::Render()
 	{
+		Scene::Render();
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 		// Render scene

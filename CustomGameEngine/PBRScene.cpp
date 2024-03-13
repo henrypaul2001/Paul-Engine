@@ -232,7 +232,7 @@ namespace Engine {
 		entityManager->AddEntity(pointLight3);
 
 		Entity* pointLight4 = new Entity("Point Light4");
-		pointLight4->AddComponent(new ComponentTransform(-6.5f, 4.0f, -6.5f));
+		pointLight4->AddComponent(new ComponentTransform(-6.5f, 2.0f, -6.5f));
 		pointLight4->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
 		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
