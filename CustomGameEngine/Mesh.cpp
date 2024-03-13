@@ -187,7 +187,7 @@ namespace Engine {
 			for (int i = 0; i < PBRmaterial->metallicMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
 				name = ConvertTextureTypeToString(PBRmaterial->metallicMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_METAL)) {
+				if (name == ConvertTextureTypeToString(TEXTURE_METALLIC)) {
 					shader.setInt(("material." + name + std::to_string(metallicNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->metallicMaps[i]->id);
 					metallicNr++;

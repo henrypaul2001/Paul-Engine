@@ -322,11 +322,11 @@ namespace Engine {
 			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 
-		defaultLitPBRShader->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_AO1", 5 + textureOffset);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
