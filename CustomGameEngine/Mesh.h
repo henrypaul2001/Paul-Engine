@@ -111,7 +111,7 @@ namespace Engine {
 
 		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
 		Material* GetMaterial() { return material; }
-
+		PBRMaterial* GetPBRMaterial() { return PBRmaterial; }
 		bool PBR() { return pbr; }
 
 		void Draw(Shader& shader);

@@ -38,7 +38,12 @@ namespace Engine {
 	void Model::Draw(Shader& shader)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			if (!meshes[i]->GetMaterial()->isTransparent) {
+			if (!pbr) {
+				if (!meshes[i]->GetMaterial()->isTransparent) {
+					meshes[i]->Draw(shader);
+				}
+			}
+			else {
 				meshes[i]->Draw(shader);
 			}
 		}
@@ -47,7 +52,12 @@ namespace Engine {
 	void Model::DrawTransparentMeshes(Shader& shader)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			if (meshes[i]->GetMaterial()->isTransparent) {
+			if (!pbr) {
+				if (meshes[i]->GetMaterial()->isTransparent) {
+					meshes[i]->Draw(shader);
+				}
+			}
+			else {
 				meshes[i]->Draw(shader);
 			}
 		}
@@ -104,8 +114,13 @@ namespace Engine {
 			
 			Mesh* newMesh = ProcessMesh(mesh, scene);
 			meshes.push_back(newMesh);
-			if (newMesh->GetMaterial()->isTransparent) {
-				containsTransparentMeshes = true;
+			if (!pbr) {
+				if (newMesh->GetMaterial()->isTransparent) {
+					containsTransparentMeshes = true;
+				}
+			}
+			else {
+				// PBR transparency check will go here in future
 			}
 		}
 

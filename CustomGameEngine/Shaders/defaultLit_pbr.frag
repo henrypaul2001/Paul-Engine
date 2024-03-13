@@ -91,8 +91,6 @@ struct PBRMaterial {
 };
 uniform PBRMaterial material;
 
-uniform float textureScale;
-
 vec3 Albedo;
 vec3 Normal;
 float Metallic;

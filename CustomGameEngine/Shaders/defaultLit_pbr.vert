@@ -31,8 +31,11 @@ out VERTEX_DATA {
 uniform mat4 model;
 uniform mat3 normalMatrix;
 
+
+uniform float textureScale;
+
 void main() {
-    vertex_data.TexCoords = aTexCoords;
+    vertex_data.TexCoords = aTexCoords * textureScale;
     vertex_data.WorldPos = vec3(model * vec4(aPos, 1.0));
     vertex_data.Normal = normalMatrix * aNormal;
 
