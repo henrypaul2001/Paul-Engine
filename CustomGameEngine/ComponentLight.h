@@ -50,6 +50,9 @@ namespace Engine {
 		// Directional + Spot
 		glm::vec3 Direction;
 
+		// Spot
+		glm::vec3 WorldDirection;
+
 		// Directional
 		float ShadowProjectionSize;
 		float DirectionalLightDistance;

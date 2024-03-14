@@ -61,6 +61,7 @@ namespace Engine {
 		MaxShadowBias = 0.001f;
 
 		Direction = glm::vec3(0.0f, 0.0f, 1.0f);
+		WorldDirection = Direction;
 		Cutoff = glm::cos(glm::radians(10.5f));
 		OuterCutoff = glm::cos(glm::radians(12.5f));
 	}
