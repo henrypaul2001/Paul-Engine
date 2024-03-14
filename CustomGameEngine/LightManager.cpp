@@ -56,6 +56,7 @@ namespace Engine {
 		shader->setBool("dirLight.CastShadows", directional->CastShadows);
 		shader->setFloat("dirLight.MinShadowBias", directional->MinShadowBias);
 		shader->setFloat("dirLight.MaxShadowBias", directional->MaxShadowBias);
+		shader->setBool("dirLight.Active", directional->Active);
 
 		glm::vec3 lightPos = -directional->Direction * directional->DirectionalLightDistance; // negative of the directional light's direction
 
@@ -77,6 +78,9 @@ namespace Engine {
 		if (directionalLight != nullptr) {
 			SetDirectionalLightUniforms(shader, directionalLight);
 		}
+		else {
+			shader->setBool("dirLight.Active", false);
+		}
 
 		shader->setInt("activeLights", lightEntities.size());
 
@@ -95,6 +99,7 @@ namespace Engine {
 			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].CastShadows")), lightComponent->CastShadows);
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].MinShadowBias")), lightComponent->MinShadowBias);
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].MaxShadowBias")), lightComponent->MaxShadowBias);
+			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Active")), lightComponent->Active);
 
 			if (lightComponent->GetLightType() == POINT) {
 				glActiveTexture(GL_TEXTURE0 + i + 9);

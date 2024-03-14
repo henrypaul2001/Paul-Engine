@@ -10,6 +10,7 @@ struct DirLight {
     float LightDistance;
 
     bool CastShadows;
+    bool Active;
 
     float MinShadowBias;
 	float MaxShadowBias;
@@ -33,7 +34,9 @@ struct Light {
     float Constant; // universal
 
     mat4 LightSpaceMatrix;
+    
     bool CastShadows;
+    bool Active;
 
     float MinShadowBias;
 	float MaxShadowBias;
@@ -189,6 +192,44 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+vec3 PerLightReflectance_DirLight() {
+    // Radiance
+    vec3 L = normalize(-dirLight.Direction);
+    vec3 H = normalize(V + L);
+
+    //float dist = dirLight.LightDistance;
+    //float attenuation = 1.0 / (dist * dist);
+    //vec3 radiance = dirLight.Colour * attenuation;
+    vec3 radiance = dirLight.Colour;
+
+    // Cook-Torrance BRDF
+    float NDF = DistrubitionGGX(H);
+    float G = GeometrySmith(L);
+    vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+    vec3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+    vec3 specular = numerator / denominator;
+
+    // kS is equal to fresnel
+    vec3 kS = F;
+
+    // For energy conservation, the diffuse and specular light can't be above 1.0 (unless the surface emits light)
+	// To preserve this relationship the diffuse component (kD) should equal 1.0 - kS
+	vec3 kD = vec3(1.0) - kS;
+
+    // Multiply kD by inverse metalness such that only non-metals have diffuse lighting , or linear blend if partly metal
+	kD *= 1.0 - Metallic;
+
+    // Scale light by NdotL
+	float NdotL = max(dot(N, L), 0.0);
+
+    // Add to outgoing radiance Lo
+    return (kD * Albedo / PI + specular) * radiance * NdotL;
+    
+    return vec3(1.0);
+}
+
 vec3 PerLightReflectance_PointLight(int lightIndex) {
     // Radiance
     vec3 L = normalize(lights[lightIndex].Position - vertex_data.WorldPos);
@@ -296,18 +337,29 @@ void main() {
     // per-light reflectance equation
     vec3 Lo = vec3(0.0);
 
-    // Lo += DirLightReflectanceLO();
+    if (dirLight.Active) {
+        Lo += PerLightReflectance_DirLight();
+    }
     for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
-        if (lights[i].SpotLight) {
-            //Lo += BlinnPhongSpotLight(lights[i]);
-        }
-        else {
-            Lo += PerLightReflectance_PointLight(i);
+        if (lights[i].Active) {
+            if (lights[i].SpotLight) {
+                //Lo += BlinnPhongSpotLight(lights[i]);
+            }
+            else {
+                Lo += PerLightReflectance_PointLight(i);
+            }
         }
     }
 
     // Ambient lighting
-    vec3 ambient = vec3(0.01) * Albedo * AO;
+    vec3 ambient;
+
+    if (dirLight.Active) {
+        ambient = dirLight.Ambient * Albedo * AO;
+    }
+    else {
+        ambient = vec3(0.01) * Albedo * AO;
+    }
     /*
     if (useIBL) {
         // Image based lighting goes here

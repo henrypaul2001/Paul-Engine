@@ -5,6 +5,7 @@ namespace Engine {
 	ComponentLight::ComponentLight(LightTypes type)
 	{
 		this->type = type;
+		Active = true;
 		if (type == DIRECTIONAL) {
 			DefaultDirectional();
 		}

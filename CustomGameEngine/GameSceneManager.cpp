@@ -61,6 +61,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_SPONZA);
+		ChangeScene(SCENE_PBR);
 	}
 }

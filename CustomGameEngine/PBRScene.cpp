@@ -34,11 +34,11 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = false;
-		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-		directional->Colour = glm::vec3(0.0f);
-		directional->Specular = glm::vec3(0.0f);
+		directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
+		directional->Colour = glm::vec3(2.0f, 2.0f, 2.5f);
+		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		dirLight->AddComponent(directional);
-		//entityManager->AddEntity(dirLight);
+		entityManager->AddEntity(dirLight);
 
 		PBRMaterial* gold = new PBRMaterial();
 		gold->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO));
@@ -202,6 +202,7 @@ namespace Engine {
 		ComponentLight* light = new ComponentLight(POINT);
 		light->Colour = glm::vec3(50.0, 50.0, 50.0);
 		light->CastShadows = false;
+		light->Active = true;
 		pointLight->AddComponent(light);
 		entityManager->AddEntity(pointLight);
 
@@ -215,6 +216,7 @@ namespace Engine {
 		ComponentLight* light2 = new ComponentLight(POINT);
 		light2->Colour = glm::vec3(50.0, 50.0, 50.0);
 		light2->CastShadows = false;
+		light2->Active = true;
 		pointLight2->AddComponent(light2);
 		entityManager->AddEntity(pointLight2);
 
@@ -228,6 +230,7 @@ namespace Engine {
 		ComponentLight* light3 = new ComponentLight(POINT);
 		light3->Colour = glm::vec3(50.0, 50.0, 50.0);
 		light3->CastShadows = false;
+		light3->Active = true;
 		pointLight3->AddComponent(light3);
 		entityManager->AddEntity(pointLight3);
 
@@ -241,6 +244,7 @@ namespace Engine {
 		ComponentLight* light4 = new ComponentLight(POINT);
 		light4->Colour = glm::vec3(50.0, 50.0, 50.0);
 		light4->CastShadows = false;
+		light4->Active = true;
 		pointLight4->AddComponent(light4);
 		entityManager->AddEntity(pointLight4);
 
@@ -256,6 +260,7 @@ namespace Engine {
 		light5->Linear = 0.027f;
 		light5->Quadratic = 0.0028f;
 		light5->CastShadows = false;
+		light5->Active = true;
 		pointLight5->AddComponent(light5);
 		entityManager->AddEntity(pointLight5);
 

@@ -31,6 +31,8 @@ namespace Engine {
 		glm::vec3 Specular;
 
 		bool CastShadows;
+		bool Active;
+
 		float MinShadowBias;
 		float MaxShadowBias;
 		float Near;
