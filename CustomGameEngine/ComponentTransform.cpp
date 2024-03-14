@@ -94,10 +94,13 @@ namespace Engine
 	glm::vec3 ComponentTransform::GetWorldPosition()
 	{
 		glm::vec3 worldPos = Position();
+		worldPos = GetWorldModelMatrix() * glm::vec4(worldPos, 1.0);
+
+		/*
 		if (parent != nullptr) {
 			worldPos += dynamic_cast<ComponentTransform*>(parent->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
 		}
-
+		*/
 		return worldPos;
 	}
 
