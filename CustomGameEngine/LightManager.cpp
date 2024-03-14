@@ -117,8 +117,15 @@ namespace Engine {
 				glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->Direction, glm::vec3(0.0f, 1.0f, 0.0f));
 				glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
+
+				glm::mat3 rotationMatrix = glm::mat3(transformComponent->GetWorldModelMatrix()); // Extract upper-left 3x3 part
+				glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
+				glm::quat directionQuat(0, lightComponent->Direction);
+				glm::quat rotatedDirectionQuat = rotationQuat * directionQuat * glm::conjugate(rotationQuat);
+				glm::vec3 rotatedDirection(rotatedDirectionQuat.x, rotatedDirectionQuat.y, rotatedDirectionQuat.z);
+
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), true);
-				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Direction")), lightComponent->Direction); // so should this
+				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Direction")), rotatedDirection); // so should this
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Cutoff")), lightComponent->Cutoff);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].OuterCutoff")), lightComponent->OuterCutoff);
 				shader->setMat4(std::string("lights[" + std::string(std::to_string(i)) + std::string("].LightSpaceMatrix")), lightSpaceMatrix);
