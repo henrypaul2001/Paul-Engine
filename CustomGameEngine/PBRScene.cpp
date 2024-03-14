@@ -35,7 +35,7 @@ namespace Engine {
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = false;
 		directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
-		directional->Colour = glm::vec3(2.0f, 2.0f, 2.5f);
+		directional->Colour = glm::vec3(1.9f, 2.1f, 2.5f);
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
@@ -264,6 +264,32 @@ namespace Engine {
 		pointLight5->AddComponent(light5);
 		entityManager->AddEntity(pointLight5);
 
+		Entity* spotParent = new Entity("Spot Parent");
+		spotParent->AddComponent(new ComponentTransform(1.0f, 0.0f, 4.6f));
+		spotParent->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(spotParent->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f));
+		entityManager->AddEntity(spotParent);
+
+		Entity* spotLight = new Entity("Spot Light");
+		spotLight->AddComponent(new ComponentTransform(-5.5f, 1.0f, 0.0f));
+		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
+		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(spotParent);
+		ComponentLight* spot = new ComponentLight(SPOT);
+		spot->Colour = glm::vec3(10.0f, 3.0f, 5.0f);
+		spot->CastShadows = false;
+		spot->Direction = glm::vec3(-1.0f, 0.0f, 0.0f);
+		spot->Cutoff = glm::cos(glm::radians(20.0f));
+		spot->OuterCutoff = glm::cos(glm::radians(32.0f));
+		spotLight->AddComponent(spot);
+		entityManager->AddEntity(spotLight);
+
 		/*
 		Entity* backpack = new Entity("Backpack"); // non pbr materials can be rendered in pbr scenes. However, the higher light values of pbr lighting look horrendous on them
 		backpack->AddComponent(new ComponentTransform(0.0f, 0.0f, -4.0f));
@@ -300,6 +326,17 @@ namespace Engine {
 	{
 		Scene::Update();
 		systemManager->ActionUpdateSystems(entityManager);
+	
+		float time = (float)glfwGetTime();
+
+		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Spot Parent")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 25.0f);
+
+		glm::vec3 axis = dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Spot Light")->GetComponent(COMPONENT_TRANSFORM))->RotationAxis();
+		//axis.x += 0.3 * Scene::dt * sin(time);
+		//axis.y *= 0.3 * Scene::dt * sin(time);
+		//axis.z += 0.3 * Scene::dt * cos(time);
+		axis = glm::normalize(axis);
+		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Spot Light")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 50.0f);
 	}
 
 	void PBRScene::Render()
