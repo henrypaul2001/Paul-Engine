@@ -190,6 +190,42 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
     return shadow;
 }
 
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+float CubeShadowCalculation(int lightIndex) {
+    vec3 fragToLight = vertex_data.WorldPos - lights[lightIndex].Position;
+
+    float currentDepth = length(fragToLight);
+
+    float shadow = 0.0;
+    float bias = max(lights[lightIndex].MaxShadowBias * (1.0 - dot(Normal, fragToLight)), lights[lightIndex].MinShadowBias);
+    //float bias = 0.15;
+    int samples = 20;
+    
+    float viewDistance = length(view_data.ViewPos - vertex_data.WorldPos);
+    float diskRadius = (1.0 + (viewDistance / lights[lightIndex].ShadowFarPlane)) / 25.0;
+
+    for (int i = 0; i < samples; i++) {
+        float closestDepth = texture(lights[lightIndex].CubeShadowMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        closestDepth *= lights[lightIndex].ShadowFarPlane;
+
+        if (currentDepth - bias > closestDepth) {
+            shadow += 1.0;
+        }
+    }
+
+    shadow /= float(samples);
+
+    return shadow;
+}
+
 float DistrubitionGGX(vec3 H) {
     float a = Roughness * Roughness;
     float a2 = a * a;
@@ -357,6 +393,15 @@ vec3 PerLightReflectance_PointLight(int lightIndex) {
     // Scale light by NdotL
 	float NdotL = max(dot(N, L), 0.0);
 
+    if (lights[lightIndex].CastShadows) {
+        // Calculate shadow
+        float shadow = CubeShadowCalculation(lightIndex);
+        kD *= (1.0 - shadow);
+        specular *= (1.0 - shadow);
+        radiance *= (1.0 - shadow);
+        NdotL *= (1.0 - shadow);
+    }
+
     // Add to outgoing radiance Lo
     return (kD * Albedo / PI + specular) * radiance * NdotL;
 }
@@ -442,7 +487,7 @@ void main() {
                 Lo += PerLightReflectance_SpotLight(i);
             }
             else {
-                //Lo += PerLightReflectance_PointLight(i);
+                Lo += PerLightReflectance_PointLight(i);
             }
         }
     }

@@ -37,7 +37,7 @@ namespace Engine {
 		//directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
 		directional->Ambient = glm::vec3(0.035f, 0.035f, 0.08f);
 		directional->Colour = glm::vec3(1.9f, 2.1f, 2.5f);
-		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
+		directional->Direction = glm::vec3(-1.0f, -0.9f, 0.2f);
 		directional->MinShadowBias = 0.0f;
 		directional->MaxShadowBias = 0.003f;
 		dirLight->AddComponent(directional);
@@ -209,7 +209,7 @@ namespace Engine {
 		ComponentLight* light = new ComponentLight(POINT);
 		light->Colour = glm::vec3(50.0, 50.0, 50.0);
 		//light->Colour = glm::vec3(1.0, 1.0, 1.0);
-		light->CastShadows = false;
+		light->CastShadows = true;
 		light->Active = true;
 		pointLight->AddComponent(light);
 		entityManager->AddEntity(pointLight);
@@ -224,7 +224,7 @@ namespace Engine {
 		ComponentLight* light2 = new ComponentLight(POINT);
 		light2->Colour = glm::vec3(50.0, 50.0, 50.0);
 		//light2->Colour = glm::vec3(1.0, 1.0, 1.0);
-		light2->CastShadows = false;
+		light2->CastShadows = true;
 		light2->Active = true;
 		pointLight2->AddComponent(light2);
 		entityManager->AddEntity(pointLight2);
@@ -239,7 +239,7 @@ namespace Engine {
 		ComponentLight* light3 = new ComponentLight(POINT);
 		light3->Colour = glm::vec3(50.0, 50.0, 50.0);
 		//light3->Colour = glm::vec3(1.0, 1.0, 1.0);
-		light3->CastShadows = false;
+		light3->CastShadows = true;
 		light3->Active = true;
 		pointLight3->AddComponent(light3);
 		entityManager->AddEntity(pointLight3);
@@ -254,7 +254,7 @@ namespace Engine {
 		ComponentLight* light4 = new ComponentLight(POINT);
 		light4->Colour = glm::vec3(50.0, 50.0, 50.0);
 		//light4->Colour = glm::vec3(1.0, 1.0, 1.0);
-		light4->CastShadows = false;
+		light4->CastShadows = true;
 		light4->Active = true;
 		pointLight4->AddComponent(light4);
 		entityManager->AddEntity(pointLight4);
@@ -271,7 +271,7 @@ namespace Engine {
 		//light5->Colour = glm::vec3(0.5, 0.5, 0.5);
 		light5->Linear = 0.027f;
 		light5->Quadratic = 0.0028f;
-		light5->CastShadows = false;
+		light5->CastShadows = true;
 		light5->Active = true;
 		pointLight5->AddComponent(light5);
 		entityManager->AddEntity(pointLight5);
@@ -290,7 +290,7 @@ namespace Engine {
 		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
 		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
-		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(spotParent);
 		ComponentLight* spot = new ComponentLight(SPOT);
