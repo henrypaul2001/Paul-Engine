@@ -69,25 +69,25 @@ namespace Engine
 		window->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 		window->specular = glm::vec3(0.8f, 0.0f, 0.0f);
 		window->shininess = 60.0f;
-		window->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE));
-		window->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY));
+		window->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
+		window->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
 		window->isTransparent = true;
 
 		Material* cobbleFloor = new Material();
-		cobbleFloor->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE));
-		cobbleFloor->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL));
-		cobbleFloor->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/specular.png", TEXTURE_SPECULAR));
-		cobbleFloor->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/displace.png", TEXTURE_DISPLACE));
+		cobbleFloor->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE, true));
+		cobbleFloor->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL, false));
+		cobbleFloor->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/specular.png", TEXTURE_SPECULAR, false));
+		cobbleFloor->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/displace.png", TEXTURE_DISPLACE, false));
 		cobbleFloor->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 		cobbleFloor->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		cobbleFloor->shininess = 60.0f;
 		cobbleFloor->height_scale = -0.1f;
 
 		Material* brickWall = new Material();
-		brickWall->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE));
-		brickWall->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/normal.jpg", TEXTURE_NORMAL));
+		brickWall->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE, true));
+		brickWall->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/normal.jpg", TEXTURE_NORMAL, false));
 		//brickWall->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/specular.jpg", TEXTURE_SPECULAR));
-		brickWall->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/displace.jpg", TEXTURE_DISPLACE));
+		brickWall->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/displace.jpg", TEXTURE_DISPLACE, false));
 		brickWall->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 		brickWall->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		brickWall->shininess = 60.0f;

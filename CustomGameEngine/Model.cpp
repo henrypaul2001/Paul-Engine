@@ -293,7 +293,11 @@ namespace Engine {
 			aiString str;
 			mat->GetTexture(type, i, &str);
 
-			textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name));
+			bool srgb = false;
+			if (name == TEXTURE_ALBEDO || name == TEXTURE_DIFFUSE) {
+				srgb = true;
+			}
+			textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name, srgb));
 			//textures.push_back(ResourceManager::GetInstance()->LoadTexture(str.C_Str(), name));
 		}
 
