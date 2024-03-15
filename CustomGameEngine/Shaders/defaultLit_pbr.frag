@@ -268,6 +268,15 @@ vec3 PerLightReflectance_SpotLight(int lightIndex) {
     specular *= intensity;
     radiance *= intensity;
 
+    if (lights[lightIndex].CastShadows) {
+        // Calculate shadow
+        float shadow = ShadowCalculation(lights[lightIndex].LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), lights[lightIndex].ShadowMap, lights[lightIndex].Position, lights[lightIndex].MinShadowBias, lights[lightIndex].MaxShadowBias);
+        kD *= (1.0 - shadow);
+        specular *= (1.0 - shadow);
+        radiance *= (1.0 - shadow);
+        NdotL *= (1.0 - shadow);
+    }
+
     // Add to outgoing radiance Lo
     vec3 Lo = (kD * Albedo / PI + specular) * radiance * NdotL;
     return Lo;
@@ -433,7 +442,7 @@ void main() {
                 Lo += PerLightReflectance_SpotLight(i);
             }
             else {
-                Lo += PerLightReflectance_PointLight(i);
+                //Lo += PerLightReflectance_PointLight(i);
             }
         }
     }

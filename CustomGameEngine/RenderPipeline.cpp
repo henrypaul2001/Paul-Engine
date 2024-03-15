@@ -89,7 +89,7 @@ namespace Engine {
 
 					glm::vec3 lightPos = transformComponent->GetWorldPosition();
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
-					glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->Direction, glm::vec3(0.0f, 1.0f, 0.0f));
+					glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
 					glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 					depthShader->Use();
