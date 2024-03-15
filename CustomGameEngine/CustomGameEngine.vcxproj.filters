@@ -346,5 +346,8 @@
     <None Include="Shaders\skybox.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="Shaders\hdrTonemapping.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

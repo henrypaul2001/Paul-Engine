@@ -77,7 +77,30 @@ namespace Engine {
 
 	void ForwardPipeline::ScreenTextureStep()
 	{
-		// render final scene texture on screen quad
+		// HDR tonemapping step
+		glViewport(0, 0, screenWidth, screenHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+		//glClear(GL_COLOR_BUFFER_BIT);
+
+		Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
+		hdrShader->Use();
+		hdrShader->setFloat("gamma", 1.2);
+		hdrShader->setFloat("exposure", 1.0);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+
+		glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_STENCIL_TEST);
+		ResourceManager::GetInstance()->DefaultPlane().Draw(*hdrShader);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_STENCIL_TEST);
+
+		// Post processing step
 		glViewport(0, 0, screenWidth, screenHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT);

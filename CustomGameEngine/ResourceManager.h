@@ -27,6 +27,7 @@ namespace Engine {
 		Shader* shadowMapShader;
 		Shader* cubeShadowMapShader;
 		Shader* screenQuadShader;
+		Shader* hdrTonemappingShader;
 
 		Shader* deferredGeometryPass;
 		Shader* deferredLightingPass;
@@ -67,6 +68,7 @@ namespace Engine {
 		Shader* CubeShadowMapShader() { return cubeShadowMapShader; }
 		Shader* DefaultLitShader() { return defaultLitShader; }
 		Shader* ScreenQuadShader() { return screenQuadShader; }
+		Shader* HDRTonemappingShader() { return hdrTonemappingShader; }
 		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
 		Shader* DeferredLightingPass() { return deferredLightingPass; }
 		Shader* SSAOShader() { return ssaoShader; }

@@ -260,6 +260,7 @@ namespace Engine {
 		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom");
 		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
 		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
+		hdrTonemappingShader = LoadShader("Shaders/screenQuad.vert", "Shaders/hdrTonemapping.frag");
 		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
 		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
 		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
@@ -269,6 +270,9 @@ namespace Engine {
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);
+
+		hdrTonemappingShader->Use();
+		hdrTonemappingShader->setInt("screenTexture", 0);
 
 		defaultLitShader->Use();
 		defaultLitShader->setInt("dirLight.ShadowMap", 0);
