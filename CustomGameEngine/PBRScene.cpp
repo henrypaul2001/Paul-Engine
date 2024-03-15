@@ -208,6 +208,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light = new ComponentLight(POINT);
 		light->Colour = glm::vec3(50.0, 50.0, 50.0);
+		//light->Colour = glm::vec3(1.0, 1.0, 1.0);
 		light->CastShadows = false;
 		light->Active = true;
 		pointLight->AddComponent(light);
@@ -222,6 +223,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(pointLight2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light2 = new ComponentLight(POINT);
 		light2->Colour = glm::vec3(50.0, 50.0, 50.0);
+		//light2->Colour = glm::vec3(1.0, 1.0, 1.0);
 		light2->CastShadows = false;
 		light2->Active = true;
 		pointLight2->AddComponent(light2);
@@ -236,6 +238,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(pointLight3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light3 = new ComponentLight(POINT);
 		light3->Colour = glm::vec3(50.0, 50.0, 50.0);
+		//light3->Colour = glm::vec3(1.0, 1.0, 1.0);
 		light3->CastShadows = false;
 		light3->Active = true;
 		pointLight3->AddComponent(light3);
@@ -250,6 +253,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(pointLight4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light4 = new ComponentLight(POINT);
 		light4->Colour = glm::vec3(50.0, 50.0, 50.0);
+		//light4->Colour = glm::vec3(1.0, 1.0, 1.0);
 		light4->CastShadows = false;
 		light4->Active = true;
 		pointLight4->AddComponent(light4);
@@ -264,6 +268,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light5 = new ComponentLight(POINT);
 		light5->Colour = glm::vec3(25.0f, 25.0f, 25.0f);
+		//light5->Colour = glm::vec3(0.5, 0.5, 0.5);
 		light5->Linear = 0.027f;
 		light5->Quadratic = 0.0028f;
 		light5->CastShadows = false;

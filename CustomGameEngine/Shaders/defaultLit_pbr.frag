@@ -301,13 +301,16 @@ vec3 PerLightReflectance_DirLight() {
 
     // Scale light by NdotL
 	float NdotL = max(dot(N, L), 0.0);
-    vec3 Lo = (kD * Albedo / PI + specular) * radiance * NdotL;
 
     if (dirLight.CastShadows) {
         // Calculate shadow
         float shadow = ShadowCalculation(dirLight.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), dirLight.ShadowMap, -dirLight.Direction * dirLight.LightDistance, dirLight.MinShadowBias, dirLight.MaxShadowBias);
-        Lo *= (1.0 - shadow);
+        kD *= (1.0 - shadow);
+        specular *= (1.0 - shadow);
+        radiance *= (1.0 - shadow);
     }
+
+    vec3 Lo = (kD * Albedo / PI + specular) * radiance * NdotL;
 
     // Add to outgoing radiance Lo
     return Lo;
@@ -320,6 +323,7 @@ vec3 PerLightReflectance_PointLight(int lightIndex) {
 
     float dist = length(lights[lightIndex].Position - vertex_data.WorldPos);
     float attenuation = 1.0 / (dist * dist);
+    //float attenuation = 1.0 / (lights[lightIndex].Constant + lights[lightIndex].Linear * dist + lights[lightIndex].Quadratic * (dist * dist));
     vec3 radiance = lights[lightIndex].Colour * attenuation;
 
     // Cook-Torrance BRDF
@@ -426,10 +430,10 @@ void main() {
     for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
         if (lights[i].Active) {
             if (lights[i].SpotLight) {
-                //Lo += PerLightReflectance_SpotLight(i);
+                Lo += PerLightReflectance_SpotLight(i);
             }
             else {
-                //Lo += PerLightReflectance_PointLight(i);
+                Lo += PerLightReflectance_PointLight(i);
             }
         }
     }
