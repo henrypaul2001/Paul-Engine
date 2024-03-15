@@ -155,6 +155,41 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
     return finalTexCoords;
 }
 
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
+    // perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // transform to [0, 1]
+    projCoords.xyz = projCoords.xyz * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0) {
+        return 0.0;
+    }
+    
+    // get closes depth value from lights perspective
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+    // get depth of current fragment
+    float currentDepth = projCoords.z;
+
+    // check if current frag pos is in shadow
+    vec3 lightDir = normalize(lightPos - vertex_data.WorldPos);
+    float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
+
+    // pcf soft shadows (simple solution but more advanced solutions out there)
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
+
 float DistrubitionGGX(vec3 H) {
     float a = Roughness * Roughness;
     float a2 = a * a;
@@ -266,9 +301,16 @@ vec3 PerLightReflectance_DirLight() {
 
     // Scale light by NdotL
 	float NdotL = max(dot(N, L), 0.0);
+    vec3 Lo = (kD * Albedo / PI + specular) * radiance * NdotL;
+
+    if (dirLight.CastShadows) {
+        // Calculate shadow
+        float shadow = ShadowCalculation(dirLight.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), dirLight.ShadowMap, -dirLight.Direction * dirLight.LightDistance, dirLight.MinShadowBias, dirLight.MaxShadowBias);
+        Lo *= (1.0 - shadow);
+    }
 
     // Add to outgoing radiance Lo
-    return (kD * Albedo / PI + specular) * radiance * NdotL;
+    return Lo;
 }
 
 vec3 PerLightReflectance_PointLight(int lightIndex) {
@@ -384,10 +426,10 @@ void main() {
     for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
         if (lights[i].Active) {
             if (lights[i].SpotLight) {
-                Lo += PerLightReflectance_SpotLight(i);
+                //Lo += PerLightReflectance_SpotLight(i);
             }
             else {
-                Lo += PerLightReflectance_PointLight(i);
+                //Lo += PerLightReflectance_PointLight(i);
             }
         }
     }

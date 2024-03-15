@@ -14,7 +14,7 @@ namespace Engine
 		glm::vec3 rotationAxis;
 		float rotationAngle;
 		glm::vec3 scale;
-		
+
 		glm::mat4 worldModelMatrix;
 
 		Entity* parent;
@@ -38,7 +38,7 @@ namespace Engine
 		glm::vec3 RotationAxis() { return rotationAxis; }
 		float RotationAngle() { return rotationAngle; }
 		glm::vec3 Scale() { return scale; }
-		glm::mat4 GetWorldModelMatrix() { return worldModelMatrix; }
+		glm::mat4 GetWorldModelMatrix();
 
 		glm::vec3 GetWorldPosition();
 

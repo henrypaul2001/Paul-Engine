@@ -1,5 +1,6 @@
 #include "GameInputManager.h"
 #include "Scene.h"
+#include "LightManager.h"
 namespace Engine {
 	GameInputManager::GameInputManager(Scene* owner)
 	{
@@ -42,6 +43,28 @@ namespace Engine {
 		}
 		else if (keysPressed[GLFW_KEY_LEFT_SHIFT]) {
 			camera->ProcessKeyboard(DOWN_WORLD, Scene::dt);
+		}
+
+		if (keysPressed[GLFW_KEY_LEFT]) {
+			// Min shadow bias decrease
+			dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias -= 0.00005;
+			std::cout << "Min shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias << std::endl;
+		}
+		else if (keysPressed[GLFW_KEY_RIGHT]) {
+			// Min shadow bias increase
+			dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias += 0.00005;
+			std::cout << "Min shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias << std::endl;
+		}
+
+		if (keysPressed[GLFW_KEY_UP]) {
+			// Max shadow bias increase
+			dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias += 0.00005;
+			std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
+		}
+		else if (keysPressed[GLFW_KEY_DOWN]) {
+			// Max shadow bias decrease
+			dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias -= 0.00005;
+			std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
 		}
 	}
 
