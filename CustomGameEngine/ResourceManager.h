@@ -53,7 +53,7 @@ namespace Engine {
 		Model* LoadModel(std::string filepath, bool pbr);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath);
-		Texture* LoadTexture(std::string filepath, TextureTypes type);
+		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb);
 		Cubemap* LoadCubemap(std::string rootFilepath);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
