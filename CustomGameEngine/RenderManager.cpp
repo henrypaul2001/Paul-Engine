@@ -59,6 +59,11 @@ namespace Engine {
 		
 		delete bloomBrightnessBuffer;
 
+		delete pingPongFBO[0];
+		delete pingPongFBO[1];
+		delete pingPongColourBuffers[0];
+		delete pingPongColourBuffers[1];
+
 		for (glm::vec3* v : ssaoKernel) {
 			delete v;
 		}
@@ -349,7 +354,7 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
-		// Generate bloom texturer
+		// Generate bloom texture
 		bloomBrightnessBuffer = new unsigned int;
 		glGenTextures(1, bloomBrightnessBuffer);
 		glBindTexture(GL_TEXTURE_2D, *bloomBrightnessBuffer);
@@ -377,5 +382,28 @@ namespace Engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		SetupBloomPingPongFBO();
+	}
+
+	void RenderManager::SetupBloomPingPongFBO()
+	{
+		pingPongFBO[0] = new unsigned int;
+		pingPongFBO[1] = new unsigned int;
+		pingPongColourBuffers[0] = new unsigned int;
+		pingPongColourBuffers[1] = new unsigned int;
+
+		glGenFramebuffers(2, *pingPongFBO);
+		glGenTextures(2, *pingPongColourBuffers);
+		for (unsigned int i = 0; i < 2; i++) {
+			glBindFramebuffer(GL_FRAMEBUFFER, *pingPongFBO[i]);
+			glBindTexture(GL_TEXTURE_2D, *pingPongColourBuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // clamp to the edge as the blur filter would otherwise sample repeated texture values
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *pingPongColourBuffers[i], 0);
+		}
 	}
 }

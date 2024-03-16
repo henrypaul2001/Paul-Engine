@@ -41,6 +41,10 @@ namespace Engine {
 		unsigned int* SSAONoiseTexture() { return noiseTexture; }
 		std::vector<glm::vec3*> SSAOKernel() { return ssaoKernel; }
 
+		// Bloom
+		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
+		unsigned int* GetBloomPingPongColourBuffer(int index) { return pingPongColourBuffers[index]; }
+
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
 		unsigned int ScreenWidth() { return screenWidth; }
@@ -56,6 +60,7 @@ namespace Engine {
 		void SetupCubeShadowMapFBO();
 		void SetupTexturedFBO(unsigned int screenWidth, unsigned int screenHeight);
 		void SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight);
+		void SetupBloomPingPongFBO();
 
 		void SetupGBuffer();
 
@@ -91,6 +96,8 @@ namespace Engine {
 
 		// Bloom
 		unsigned int* bloomBrightnessBuffer;
+		unsigned int* pingPongFBO[2];
+		unsigned int* pingPongColourBuffers[2];
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;
