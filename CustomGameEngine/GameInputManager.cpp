@@ -96,6 +96,10 @@ namespace Engine {
 	{
 		std::cout << "Key num: " << key << "| UP" << std::endl;
 		owner->keyUp(key);
+
+		if (key == GLFW_KEY_B) {
+			RenderManager::GetInstance()->bloom = !RenderManager::GetInstance()->bloom;
+		}
 	}
 
 	void GameInputManager::keyDown(int key)

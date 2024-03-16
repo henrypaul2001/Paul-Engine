@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColour;
+layout (location = 1) out vec4 BrightColour;
 
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
@@ -100,6 +101,8 @@ vec3 Lighting;
 vec3 SpecularSample;
 vec3 TangentViewDirection;
 float Alpha;
+
+uniform float BloomThreshold;
 
 const float minLayers = 8.0;
 const float maxLayers = 32.0;
@@ -395,5 +398,14 @@ void main() {
         }
     }
 
-    FragColor = vec4(Lighting, Alpha);
+    // Check whether result is higher than bloom threshold and output bloom colour accordingly
+    float brightness = dot(Lighting, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > BloomThreshold) {
+        BrightColour = vec4(Lighting, 1.0);
+    }
+    else {
+        BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+
+    FragColour = vec4(Lighting, Alpha);
 }

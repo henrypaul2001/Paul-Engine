@@ -441,7 +441,6 @@ void main() {
     Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {
         Albedo = texture(material.TEXTURE_ALBEDO1, TexCoords).rgb;
-        //Albedo = pow(texture(material.TEXTURE_ALBEDO1, TexCoords).rgb, vec3(2.2)); // tone mapped version
     }
 
     // Get fragment normal
@@ -514,10 +513,8 @@ void main() {
 
     // Check whether result is higher than bloom threshold and output bloom colour accordingly
     float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
-    //float brightness = dot(Colour, vec3(100.2126, 100.7152, 100.0722));
     if (brightness > BloomThreshold) {
         BrightColour = vec4(Colour, 1.0);
-        //BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
     }
     else {
         BrightColour = vec4(0.0, 0.0, 0.0, 1.0);

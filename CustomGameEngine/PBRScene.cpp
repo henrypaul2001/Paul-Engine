@@ -380,9 +380,6 @@ namespace Engine {
 		else if (key == GLFW_KEY_P) {
 			ToggleSSAO();
 		}
-		else if (key == GLFW_KEY_B) {
-			RenderManager::GetInstance()->bloom = !RenderManager::GetInstance()->bloom;
-		}
 	}
 
 	void PBRScene::keyDown(int key)
