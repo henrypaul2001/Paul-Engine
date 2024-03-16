@@ -1,6 +1,7 @@
 #include "GameInputManager.h"
 #include "Scene.h"
 #include "LightManager.h"
+//#include "RenderManager.h"
 namespace Engine {
 	GameInputManager::GameInputManager(Scene* owner)
 	{
@@ -66,6 +67,16 @@ namespace Engine {
 			dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias -= 0.00005;
 			std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
 		}
+
+		if (keysPressed[GLFW_KEY_E] && keysPressed[GLFW_KEY_LEFT_CONTROL]) {
+			RenderManager::GetInstance()->exposure -= 0.01f;
+			std::cout << "Exposure: " << RenderManager::GetInstance()->exposure << std::endl;
+		}
+		else if (keysPressed[GLFW_KEY_E]) {
+			RenderManager::GetInstance()->exposure += 0.01f;
+			std::cout << "Exposure: " << RenderManager::GetInstance()->exposure << std::endl;
+		}
+
 	}
 
 	void GameInputManager::Close()
