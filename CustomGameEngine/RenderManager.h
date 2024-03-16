@@ -21,7 +21,6 @@ namespace Engine {
 		~RenderManager();
 
 		unsigned int* GetDepthMap(int index, DepthMapType type);
-		unsigned int* GetScreenTexture() { return screenTexture; }
 		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
 		unsigned int* GetCubeDepthFBO() { return cubeDepthMapFBO; }
 		unsigned int* GetTexturedFBO() { return texturedFBO; }
@@ -31,6 +30,9 @@ namespace Engine {
 		unsigned int* GNormal() { return gNormal; }
 		unsigned int* GAlbedo() { return gAlbedo; }
 		unsigned int* GSpecular() { return gSpecular; }
+
+		unsigned int* GetScreenTexture() { return screenTexture; }
+		unsigned int* GetBloomBrightnessTexture() { return bloomBrightnessBuffer; }
 
 		unsigned int* GetSSAOFBO() { return ssaoFBO; }
 		unsigned int* GetSSAOBlurFBO() { return ssaoBlurFBO; }
@@ -65,12 +67,13 @@ namespace Engine {
 		unsigned int* depthMap;
 		std::vector<unsigned int*> flatDepthMaps;
 		std::vector<unsigned int*> cubeDepthMaps; // consider using hashmap <mapIndex, texture pointer*> in future. That way, a single collection can hold both types of shadow map
-		unsigned int* screenTexture;
 
 		RenderPipeline* renderPipeline;
 
 		unsigned int* flatDepthMapFBO;
 		unsigned int* cubeDepthMapFBO;
+
+		unsigned int* screenTexture;
 
 		// Forward rendering
 		unsigned int* texturedFBO;
@@ -86,6 +89,8 @@ namespace Engine {
 		unsigned int* noiseTexture;
 		std::vector<glm::vec3*> ssaoKernel;
 
+		// Bloom
+		unsigned int* bloomBrightnessBuffer;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;
