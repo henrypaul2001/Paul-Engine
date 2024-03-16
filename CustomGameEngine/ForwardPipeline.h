@@ -12,5 +12,6 @@ namespace Engine {
 	private:
 		void SceneRenderStep();
 		void ScreenTextureStep();
+		void BloomBlurStep();
 	};
 }

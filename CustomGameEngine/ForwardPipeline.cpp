@@ -30,6 +30,8 @@ namespace Engine {
 
 			SceneRenderStep();
 
+			BloomBlurStep();
+
 			ScreenTextureStep();
 		}
 	}
@@ -80,8 +82,39 @@ namespace Engine {
 		renderSystem->DrawTransparentGeometry(false);
 	}
 
+	void ForwardPipeline::BloomBlurStep()
+	{
+		bool horizontal = true;
+		bool first_iteration = true;
+		int bloomPasses = 5;
+		Shader* blurShader = ResourceManager::GetInstance()->BloomBlurShader();
+		blurShader->Use();
+
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glActiveTexture(GL_TEXTURE0);
+		for (unsigned int i = 0; i < bloomPasses; i++) {
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetBloomPingPongFBO(horizontal));
+			blurShader->setInt("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, first_iteration ? *renderInstance->GetBloomBrightnessTexture() : *renderInstance->GetBloomPingPongColourBuffer(!horizontal));
+
+			ResourceManager::GetInstance()->DefaultPlane().Draw(*blurShader);
+
+			horizontal = !horizontal;
+			if (first_iteration) {
+				first_iteration = false;
+			}
+		}
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 	void ForwardPipeline::ScreenTextureStep()
 	{
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
 		// HDR tonemapping step
 		glViewport(0, 0, screenWidth, screenHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());

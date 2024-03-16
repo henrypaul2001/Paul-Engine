@@ -213,6 +213,8 @@
     <ClCompile Include="SystemShadowMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\bloomBlur.frag" />
+    <None Include="Shaders\bloomBlur.vert" />
     <None Include="Shaders\cubeDepthMap.frag" />
     <None Include="Shaders\cubeDepthMap.geom" />
     <None Include="Shaders\cubeDepthMap.vert" />
