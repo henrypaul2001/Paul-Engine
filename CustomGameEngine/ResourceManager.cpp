@@ -267,6 +267,10 @@ namespace Engine {
 		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
 		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag");
 		defaultLitPBRShader = LoadShader("Shaders/defaultLit_pbr.vert", "Shaders/defaultLit_pbr.frag");
+		bloomBlur = LoadShader("Shaders/bloomBlur.vert", "Shaders/bloomBlur.frag");
+
+		bloomBlur->Use();
+		bloomBlur->setInt("image", 0);
 
 		screenQuadShader->Use();
 		screenQuadShader->setInt("screenTexture", 0);

@@ -35,6 +35,8 @@ namespace Engine {
 		Shader* ssaoShader;
 		Shader* ssaoBlur;
 
+		Shader* bloomBlur;
+
 		Shader* skyboxShader;
 
 		unsigned int uboMatrices;
@@ -75,6 +77,7 @@ namespace Engine {
 		Shader* SSABlur() { return ssaoBlur; }
 		Shader* SkyboxShader() { return skyboxShader; }
 		Shader* DefaultLitPBR() { return defaultLitPBRShader; }
+		Shader* BloomBlurShader() { return bloomBlur; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }
