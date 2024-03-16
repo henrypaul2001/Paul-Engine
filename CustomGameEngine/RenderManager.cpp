@@ -393,8 +393,10 @@ namespace Engine {
 		pingPongColourBuffers[0] = new unsigned int;
 		pingPongColourBuffers[1] = new unsigned int;
 
-		glGenFramebuffers(2, *pingPongFBO);
-		glGenTextures(2, *pingPongColourBuffers);
+		glGenFramebuffers(1, pingPongFBO[0]);
+		glGenFramebuffers(1, pingPongFBO[1]);
+		glGenTextures(1, pingPongColourBuffers[0]);
+		glGenTextures(1, pingPongColourBuffers[1]);
 		for (unsigned int i = 0; i < 2; i++) {
 			glBindFramebuffer(GL_FRAMEBUFFER, *pingPongFBO[i]);
 			glBindTexture(GL_TEXTURE_2D, *pingPongColourBuffers[i]);

@@ -1,5 +1,5 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColour;
 
 in vec2 TexCoords;
 
@@ -19,5 +19,5 @@ void main() {
 	// Gamma correction
 	mapped = pow(mapped, vec3(1.0 / gamma));
 
-	FragColor = vec4(mapped, 1.0);
+	FragColour = vec4(mapped, 1.0);
 }

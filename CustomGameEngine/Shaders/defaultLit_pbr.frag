@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColour;
+layout (location = 1) out vec4 BrightColour;
 
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
@@ -509,11 +510,16 @@ void main() {
 
     vec3 Colour = ambient + Lo;
 
-    // Tone mapping
-    //Colour = Colour / (Colour + vec3(1.0));
+    // Check whether result is higher than bloom threshold and output bloom colour accordingly
+    float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
+    //float brightness = dot(Colour, vec3(100.2126, 100.7152, 100.0722));
+    if (brightness > 5.0) {
+        BrightColour = vec4(Colour, 1.0);
+        //BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    else {
+        BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+    }
 
-    // Gamma correction
-    //Colour = pow(Colour, vec3(1.0 / 2.2));
-
-    FragColor = vec4(Colour, 1.0);
+    FragColour = vec4(Colour, 1.0);
 }

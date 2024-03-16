@@ -1,10 +1,10 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColour;
 
 in vec3 TexCoords;
 
 uniform samplerCube cubemap;
 
 void main() {
-	FragColor = texture(cubemap, TexCoords);
+	FragColour = texture(cubemap, TexCoords);
 }
