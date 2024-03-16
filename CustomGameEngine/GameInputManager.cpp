@@ -77,6 +77,14 @@ namespace Engine {
 			std::cout << "Exposure: " << RenderManager::GetInstance()->exposure << std::endl;
 		}
 
+		if (keysPressed[GLFW_KEY_T] && keysPressed[GLFW_KEY_LEFT_CONTROL]) {
+			RenderManager::GetInstance()->bloomThreshold -= 0.1f;
+			std::cout << "Bloom threshold: " << RenderManager::GetInstance()->bloomThreshold << std::endl;
+		}
+		else if (keysPressed[GLFW_KEY_T] && keysPressed[GLFW_KEY_RIGHT_CONTROL]) {
+			RenderManager::GetInstance()->bloomThreshold += 0.1f;
+			std::cout << "Bloom threshold: " << RenderManager::GetInstance()->bloomThreshold << std::endl;
+		}
 	}
 
 	void GameInputManager::Close()

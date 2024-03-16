@@ -277,6 +277,7 @@ namespace Engine {
 
 		hdrTonemappingShader->Use();
 		hdrTonemappingShader->setInt("screenTexture", 0);
+		hdrTonemappingShader->setInt("bloomTexture", 1);
 
 		defaultLitShader->Use();
 		defaultLitShader->setInt("dirLight.ShadowMap", 0);

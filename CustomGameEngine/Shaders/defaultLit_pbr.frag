@@ -110,6 +110,8 @@ vec3 V;
 vec3 R;
 vec3 F0;
 
+uniform float BloomThreshold;
+
 const float PI = 3.14159265359;
 
 const float minLayers = 8.0;
@@ -513,7 +515,7 @@ void main() {
     // Check whether result is higher than bloom threshold and output bloom colour accordingly
     float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
     //float brightness = dot(Colour, vec3(100.2126, 100.7152, 100.0722));
-    if (brightness > 5.0) {
+    if (brightness > BloomThreshold) {
         BrightColour = vec4(Colour, 1.0);
         //BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
     }

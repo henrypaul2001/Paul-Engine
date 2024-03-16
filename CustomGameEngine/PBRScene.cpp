@@ -44,6 +44,12 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
+		PBRMaterial* bloomTest = new PBRMaterial();
+		bloomTest->albedo = glm::vec3(25.0f, 25.0f, 25.0f);
+		bloomTest->metallic = 0.0f;
+		bloomTest->roughness = 0.0f;
+		bloomTest->ao = 0.0f;
+
 		PBRMaterial* gold = new PBRMaterial();
 		gold->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
 		gold->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/normal.png", TEXTURE_NORMAL, false));
@@ -314,6 +320,18 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(cart->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.0f));
 		cart->AddComponent(new ComponentGeometry("Models/PBR/cart/cart.obj", true));
 		entityManager->AddEntity(cart);
+
+		Entity* bloomCube = new Entity("Bloom Cube");
+		bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
+		dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		ComponentLight* bloomLight = new ComponentLight(POINT);
+		bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
+		bloomLight->CastShadows = false;
+		bloomCube->AddComponent(bloomLight);
+		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
+		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		entityManager->AddEntity(bloomCube);
 	}
 
 	void PBRScene::CreateSystems()
@@ -361,6 +379,9 @@ namespace Engine {
 		}
 		else if (key == GLFW_KEY_P) {
 			ToggleSSAO();
+		}
+		else if (key == GLFW_KEY_B) {
+			RenderManager::GetInstance()->bloom = !RenderManager::GetInstance()->bloom;
 		}
 	}
 

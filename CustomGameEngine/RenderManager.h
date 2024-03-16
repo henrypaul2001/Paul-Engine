@@ -41,9 +41,13 @@ namespace Engine {
 		unsigned int* SSAONoiseTexture() { return noiseTexture; }
 		std::vector<glm::vec3*> SSAOKernel() { return ssaoKernel; }
 
+		float exposure;
+
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
 		unsigned int* GetBloomPingPongColourBuffer(int index) { return pingPongColourBuffers[index]; }
+		bool bloom;
+		float bloomThreshold;
 
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }

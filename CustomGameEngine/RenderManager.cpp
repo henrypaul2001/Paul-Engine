@@ -21,6 +21,10 @@ namespace Engine {
 		SetupTexturedFBO(screenWidth, screenHeight);
 		SetupGBuffer();
 		SetupSSAOBuffers();
+
+		exposure = 1.0f;
+		bloom = true;
+		bloomThreshold = 15.0;
 	}
 
 	RenderManager* RenderManager::GetInstance()

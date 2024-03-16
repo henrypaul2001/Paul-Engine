@@ -13,5 +13,7 @@ namespace Engine {
 		void SceneRenderStep();
 		void ScreenTextureStep();
 		void BloomBlurStep();
+
+		unsigned int finalBloomTexture;
 	};
 }

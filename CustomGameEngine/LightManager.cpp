@@ -84,6 +84,8 @@ namespace Engine {
 
 		shader->setInt("activeLights", lightEntities.size());
 
+		shader->setFloat("BloomThreshold", RenderManager::GetInstance()->bloomThreshold);
+
 		// Now spot and point lights
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
 			ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
