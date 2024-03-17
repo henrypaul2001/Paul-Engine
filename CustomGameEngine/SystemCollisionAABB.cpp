@@ -92,9 +92,16 @@ namespace Engine {
 		AABBPoints worldBounds1 = collider->GetWorldSpaceBounds(transform->GetWorldModelMatrix());
 		AABBPoints worldBounds2 = collider2->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
 
-		if (intersect(worldBounds1, worldBounds2)) {
-			if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
+		if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
+			if (intersect(worldBounds1, worldBounds2)) {
 				SystemCollision::DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
+
+				collider->AddToCollisions(collider2->GetOwner());
+				collider2->AddToCollisions(collider->GetOwner());
+			}
+			else {
+				collider->RemoveFromCollisions(collider2->GetOwner());
+				collider2->RemoveFromCollisions(collider->GetOwner());
 			}
 		}
 	}

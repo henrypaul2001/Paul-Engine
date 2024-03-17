@@ -46,6 +46,12 @@ namespace Engine {
 	{
 		Scene::Update();
 		systemManager->ActionUpdateSystems(entityManager);
+
+		Entity* left = entityManager->FindEntity("Collision Test Left");
+		Entity* right = entityManager->FindEntity("Collision Test Right");
+		if (dynamic_cast<ComponentCollision*>(left->GetComponent(COMPONENT_COLLISION_AABB))->IsCollidingWithEntity(right)) {
+			dynamic_cast<ComponentVelocity*>(left->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(left->GetComponent(COMPONENT_VELOCITY))->Velocity());
+		}
 	}
 
 	void CollisionScene::Render()
