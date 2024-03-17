@@ -173,6 +173,7 @@
     <ClInclude Include="SponzaScene.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="SystemCollision.h" />
     <ClInclude Include="SystemCollisionAABB.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemPhysics.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="SponzaScene.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="System.cpp" />
+    <ClCompile Include="SystemCollision.cpp" />
     <ClCompile Include="SystemCollisionAABB.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />

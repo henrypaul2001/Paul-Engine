@@ -16,7 +16,7 @@ namespace Engine {
 	private:
 		AABBPoints localBounds;
 	public:
-		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool defaultCollisionResponse);
 		~ComponentCollisionAABB();
 
 		AABBPoints GetBoundary() { return localBounds; }

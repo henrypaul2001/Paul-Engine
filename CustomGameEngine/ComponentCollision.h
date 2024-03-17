@@ -13,6 +13,8 @@ namespace Engine {
 		void ClearEntitiesCheckedThisFrame() { EntitiesCheckedThisFrame.clear(); }
 		void AddToEntitiesCheckedThisFrame(Entity* e) { EntitiesCheckedThisFrame[e] = e->Name(); }
 
+		bool useDefaultCollisionResponse;
+
 		bool HasEntityAlreadyBeenChecked(Entity* e) { return EntitiesCheckedThisFrame.find(e) != EntitiesCheckedThisFrame.end(); }
 	};
 }

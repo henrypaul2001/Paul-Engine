@@ -1,10 +1,11 @@
 #pragma once
 #include "System.h"
+#include "SystemCollision.h"
 #include "ComponentTransform.h"
 #include "ComponentCollisionAABB.h"
 #include "EntityManager.h"
 namespace Engine{
-	class SystemCollisionAABB : public System
+	class SystemCollisionAABB : public SystemCollision
 	{
 	private:
 		EntityManager* entityManager;

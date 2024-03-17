@@ -108,13 +108,13 @@ namespace Engine {
 		collisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 0.5f, 0.0f));
 		collisionTestLeft->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		collisionTestLeft->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
-		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0));
+		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(collisionTestLeft);
 
 		Entity* collisionTestRight = new Entity("Collision Test Right");
 		collisionTestRight->AddComponent(new ComponentTransform(4.0f, 0.5f, 0.0f));
 		collisionTestRight->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		collisionTestRight->AddComponent(new ComponentCollisionAABB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0));
+		collisionTestRight->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(collisionTestRight);
 	}
 

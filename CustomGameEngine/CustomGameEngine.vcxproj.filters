@@ -183,6 +183,9 @@
     <ClInclude Include="SystemCollisionAABB.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="SystemCollision.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -300,6 +303,9 @@
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="SystemCollisionAABB.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemCollision.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>

@@ -93,7 +93,9 @@ namespace Engine {
 		AABBPoints worldBounds2 = collider2->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
 
 		if (intersect(worldBounds1, worldBounds2)) {
-			std::cout << "Entity '" << transform->GetOwner()->Name() << "' collided with Entity '" << transform2->GetOwner()->Name() << "'" << std::endl;
+			if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
+				SystemCollision::DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
+			}
 		}
 	}
 }

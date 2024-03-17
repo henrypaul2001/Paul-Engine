@@ -1,6 +1,6 @@
 #include "ComponentCollisionAABB.h"
 namespace Engine {
-	ComponentCollisionAABB::ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+	ComponentCollisionAABB::ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool defaultCollisionResponse)
 	{
 		localBounds = AABBPoints();
 		localBounds.minX = minX;
@@ -9,6 +9,8 @@ namespace Engine {
 		localBounds.maxX = maxX;
 		localBounds.maxY = maxY;
 		localBounds.maxZ = maxZ;
+
+		useDefaultCollisionResponse = defaultCollisionResponse;
 	}
 
 	ComponentCollisionAABB::~ComponentCollisionAABB()
