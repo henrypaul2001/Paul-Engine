@@ -96,7 +96,7 @@ namespace Engine {
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
-		directional->CastShadows = false;
+		directional->CastShadows = true;
 		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		directional->Colour = glm::vec3(1.0f);
 		directional->Specular = glm::vec3(0.0f);
@@ -111,7 +111,8 @@ namespace Engine {
 		entityManager->AddEntity(floor);
 
 		Entity* collisionTestLeft = new Entity("Collision Test Left");
-		collisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 0.5f, 0.0f));
+		collisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 1.99f, 0.0f));
+		dynamic_cast<ComponentTransform*>(collisionTestLeft->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		collisionTestLeft->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		collisionTestLeft->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
 		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
