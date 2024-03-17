@@ -1,6 +1,7 @@
 #include "CollisionScene.h"
 #include "GameInputManager.h"
 #include "SystemPhysics.h"
+#include "SystemCollisionAABB.h"
 namespace Engine {
 	CollisionScene::CollisionScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -102,6 +103,19 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
+
+		Entity* collisionTestLeft = new Entity("Collision Test Left");
+		collisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 0.5f, 0.0f));
+		collisionTestLeft->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		collisionTestLeft->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
+		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0));
+		entityManager->AddEntity(collisionTestLeft);
+
+		Entity* collisionTestRight = new Entity("Collision Test Right");
+		collisionTestRight->AddComponent(new ComponentTransform(4.0f, 0.5f, 0.0f));
+		collisionTestRight->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		collisionTestRight->AddComponent(new ComponentCollisionAABB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0));
+		entityManager->AddEntity(collisionTestRight);
 	}
 
 	void CollisionScene::CreateSystems()
@@ -112,5 +126,6 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionAABB(entityManager), UPDATE_SYSTEMS);
 	}
 }

@@ -8,7 +8,6 @@ namespace Engine
 
 	SystemPhysics::~SystemPhysics()
 	{
-		delete& MASK;
 	}
 
 	void SystemPhysics::OnAction(Entity* entity)
