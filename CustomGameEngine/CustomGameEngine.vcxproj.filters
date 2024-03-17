@@ -171,6 +171,9 @@
     <ClInclude Include="PBRScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -276,6 +279,9 @@
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="PBRScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>

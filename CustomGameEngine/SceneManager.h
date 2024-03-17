@@ -13,7 +13,8 @@ namespace Engine
 		SCENE_WIN,
 		SCENE_SPONZA,
 		SCENE_AO,
-		SCENE_PBR
+		SCENE_PBR,
+		SCENE_COLLISIONS
 	};
 
 	using SceneDelegate = std::function<void()>;
