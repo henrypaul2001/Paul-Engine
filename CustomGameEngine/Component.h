@@ -8,7 +8,9 @@ namespace Engine
 		COMPONENT_TRANSFORM = 1 << 0,
 		COMPONENT_VELOCITY = 1 << 1,
 		COMPONENT_GEOMETRY = 1 << 2,
-		COMPONENT_LIGHT = 1 << 3
+		COMPONENT_LIGHT = 1 << 3,
+		COMPONENT_COLLISION_AABB = 1 << 4,
+		COMPONENT_COLLISION_SPHERE = 1 << 5,
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }
