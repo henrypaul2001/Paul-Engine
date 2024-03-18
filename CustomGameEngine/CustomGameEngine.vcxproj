@@ -146,6 +146,7 @@
     <ClInclude Include="CollisionScene.h" />
     <ClInclude Include="ComponentCollision.h" />
     <ClInclude Include="ComponentCollisionAABB.h" />
+    <ClInclude Include="ComponentCollisionBox.h" />
     <ClInclude Include="ComponentCollisionSphere.h" />
     <ClInclude Include="ComponentGeometry.h" />
     <ClInclude Include="ComponentLight.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="CollisionScene.cpp" />
     <ClCompile Include="ComponentCollision.cpp" />
     <ClCompile Include="ComponentCollisionAABB.cpp" />
+    <ClCompile Include="ComponentCollisionBox.cpp" />
     <ClCompile Include="ComponentCollisionSphere.cpp" />
     <ClCompile Include="ComponentGeometry.cpp" />
     <ClCompile Include="ComponentLight.cpp" />

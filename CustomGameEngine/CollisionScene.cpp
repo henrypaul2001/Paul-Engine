@@ -55,6 +55,11 @@ namespace Engine {
 			dynamic_cast<ComponentVelocity*>(left->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(left->GetComponent(COMPONENT_VELOCITY))->Velocity());
 		}
 
+		Entity* wall = entityManager->FindEntity("Box Sphere Collision Test");
+		if (dynamic_cast<ComponentCollision*>(left->GetComponent(COMPONENT_COLLISION_AABB))->IsCollidingWithEntity(wall)) {
+			dynamic_cast<ComponentVelocity*>(left->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(left->GetComponent(COMPONENT_VELOCITY))->Velocity());
+		}
+
 		Entity* leftSphere = entityManager->FindEntity("Sphere Collision Test Left");
 		Entity* rightSphere = entityManager->FindEntity("Sphere Collision Test Right");
 
@@ -120,10 +125,10 @@ namespace Engine {
 		entityManager->AddEntity(floor);
 
 		Entity* collisionTestLeft = new Entity("Collision Test Left");
-		collisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 1.99f, 0.0f));
+		collisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 0.5f, 0.0f));
 		dynamic_cast<ComponentTransform*>(collisionTestLeft->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		collisionTestLeft->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		collisionTestLeft->AddComponent(new ComponentVelocity(glm::vec3(1.0f, 0.0f, 0.0f)));
+		collisionTestLeft->AddComponent(new ComponentVelocity(glm::vec3(13.45f, 0.0f, 0.0f)));
 		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(collisionTestLeft);
 
@@ -149,7 +154,7 @@ namespace Engine {
 
 		Entity* boxSphereCollisionTest = new Entity("Box Sphere Collision Test");
 		boxSphereCollisionTest->AddComponent(new ComponentTransform(-7.0f, 0.25f, -2.0f));
-		dynamic_cast<ComponentTransform*>(boxSphereCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f, 1.0f, 4.0f));
+		dynamic_cast<ComponentTransform*>(boxSphereCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f, 2.0f, 4.0f));
 		boxSphereCollisionTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		boxSphereCollisionTest->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(boxSphereCollisionTest);

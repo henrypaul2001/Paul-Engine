@@ -11,6 +11,7 @@ namespace Engine
 		COMPONENT_LIGHT = 1 << 3,
 		COMPONENT_COLLISION_AABB = 1 << 4,
 		COMPONENT_COLLISION_SPHERE = 1 << 5,
+		COMPONENT_COLLISION_BOX = 1 << 6,
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }
