@@ -10,6 +10,7 @@ namespace Engine
 		SYSTEM_RENDER = 1 << 2,
 		SYSTEM_SHADOWMAP = 1 << 3,
 		SYSTEM_COLLISION_AABB = 1 << 4,
+		SYSTEM_COLLISION_SPHERE = 1 << 5,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }

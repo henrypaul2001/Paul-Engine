@@ -2,6 +2,7 @@
 #include "GameInputManager.h"
 #include "SystemPhysics.h"
 #include "SystemCollisionAABB.h"
+#include "SystemCollisionSphere.h"
 namespace Engine {
 	CollisionScene::CollisionScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -11,7 +12,7 @@ namespace Engine {
 		SetupScene();
 		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
 		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
-		RenderManager::GetInstance()->bloomThreshold = 1.0f;
+		RenderManager::GetInstance()->bloomThreshold = 10.0f;
 	}
 
 	CollisionScene::~CollisionScene()
@@ -123,6 +124,20 @@ namespace Engine {
 		collisionTestRight->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		collisionTestRight->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(collisionTestRight);
+
+		Entity* sphereCollisionTestLeft = new Entity("Sphere Collision Test Left");
+		sphereCollisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 1.5f, -2.0f));
+		dynamic_cast<ComponentTransform*>(sphereCollisionTestLeft->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		sphereCollisionTestLeft->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		sphereCollisionTestLeft->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		sphereCollisionTestLeft->AddComponent(new ComponentVelocity(1.0f, 0.0f, 0.0f));
+		entityManager->AddEntity(sphereCollisionTestLeft);
+
+		Entity* sphereCollisionTestRight = new Entity("Sphere Collision Test Right");
+		sphereCollisionTestRight->AddComponent(new ComponentTransform(4.0f, 0.5f, -2.0f));
+		sphereCollisionTestRight->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		sphereCollisionTestRight->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		entityManager->AddEntity(sphereCollisionTestRight);
 	}
 
 	void CollisionScene::CreateSystems()
@@ -134,5 +149,6 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionAABB(entityManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphere(entityManager), UPDATE_SYSTEMS);
 	}
 }
