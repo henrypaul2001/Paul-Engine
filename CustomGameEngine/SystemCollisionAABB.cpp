@@ -56,7 +56,7 @@ namespace Engine {
 						}
 
 						// Check for collision
-						AABBCollision(transform, collider, transform2, collider2);
+						Collision(transform, collider, transform2, collider2);
 					}
 				}
 			}
@@ -73,7 +73,11 @@ namespace Engine {
 		}
 	}
 
-	bool intersect(AABBPoints bounds1, AABBPoints bounds2) {
+	bool SystemCollisionAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	{
+		AABBPoints bounds1 = dynamic_cast<ComponentCollisionAABB*>(collider)->GetWorldSpaceBounds(transform->GetWorldModelMatrix());
+		AABBPoints bounds2 = dynamic_cast<ComponentCollisionAABB*>(collider2)->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
+
 		return (
 			bounds1.minX <= bounds2.maxX &&
 			bounds1.maxX >= bounds2.minX &&
@@ -82,27 +86,5 @@ namespace Engine {
 			bounds1.minZ <= bounds2.maxZ &&
 			bounds1.maxZ >= bounds2.minZ
 		);
-	}
-
-	void SystemCollisionAABB::AABBCollision(ComponentTransform* transform, ComponentCollisionAABB* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2)
-	{
-		collider->AddToEntitiesCheckedThisFrame(collider2->GetOwner());
-		collider2->AddToEntitiesCheckedThisFrame(collider->GetOwner());
-
-		AABBPoints worldBounds1 = collider->GetWorldSpaceBounds(transform->GetWorldModelMatrix());
-		AABBPoints worldBounds2 = collider2->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
-
-		if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
-			if (intersect(worldBounds1, worldBounds2)) {
-				SystemCollision::DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
-
-				collider->AddToCollisions(collider2->GetOwner());
-				collider2->AddToCollisions(collider->GetOwner());
-			}
-			else {
-				collider->RemoveFromCollisions(collider2->GetOwner());
-				collider2->RemoveFromCollisions(collider->GetOwner());
-			}
-		}
 	}
 }

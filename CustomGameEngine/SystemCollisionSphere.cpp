@@ -56,7 +56,7 @@ namespace Engine {
 						}
 
 						// Check for collision
-						SphereCollision(transform, collider, transform2, collider2);
+						Collision(transform, collider, transform2, collider2);
 					}
 				}
 			}
@@ -73,14 +73,6 @@ namespace Engine {
 		}
 	}
 
-	bool intersect(float scaledRadius1, float scaledRadius2, glm::vec3 position1, glm::vec3 position2) {
-		float distance = glm::distance(position1, position2);
-
-		float combinedRadius = scaledRadius1 + scaledRadius2;
-
-		return (distance <= combinedRadius);
-	}
-
 	float getBiggestScaleFactorFromTransform(ComponentTransform* transform) {
 		float biggestScale = transform->Scale().x;
 		if (transform->Scale().y > biggestScale) {
@@ -93,25 +85,15 @@ namespace Engine {
 		return biggestScale;
 	}
 
-	void SystemCollisionSphere::SphereCollision(ComponentTransform* transform, ComponentCollisionSphere* collider, ComponentTransform* transform2, ComponentCollisionSphere* collider2)
+	bool SystemCollisionSphere::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
-		collider->AddToEntitiesCheckedThisFrame(collider2->GetOwner());
-		collider2->AddToEntitiesCheckedThisFrame(collider->GetOwner());
+		float scaledRadius1 = dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius() * getBiggestScaleFactorFromTransform(transform);
+		float scaledRadius2 = dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius() * getBiggestScaleFactorFromTransform(transform2);
 
-		if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
-			float scaledRadius1 = collider->CollisionRadius() * getBiggestScaleFactorFromTransform(transform);
-			float scaledRadius2 = collider2->CollisionRadius() * getBiggestScaleFactorFromTransform(transform2);
+		float distance = glm::distance(transform->GetWorldPosition(), transform2->GetWorldPosition());
 
-			if (intersect(scaledRadius1, scaledRadius2, transform->GetWorldPosition(), transform2->GetWorldPosition())) {
-				SystemCollision::DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
+		float combinedRadius = scaledRadius1 + scaledRadius2;
 
-				collider->AddToCollisions(collider2->GetOwner());
-				collider2->AddToCollisions(collider->GetOwner());
-			}
-			else {
-				collider->RemoveFromCollisions(collider2->GetOwner());
-				collider2->RemoveFromCollisions(collider->GetOwner());
-			}
-		}
+		return (distance <= combinedRadius);
 	}
 }

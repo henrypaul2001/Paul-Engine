@@ -10,6 +10,8 @@ namespace Engine{
 	private:
 		EntityManager* entityManager;
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_AABB);
+
+		bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
 		SystemCollisionAABB(EntityManager* entityManager);
 		~SystemCollisionAABB();
@@ -17,7 +19,5 @@ namespace Engine{
 		SystemTypes Name() override { return SYSTEM_COLLISION_AABB; }
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
-
-		void AABBCollision(ComponentTransform* transform, ComponentCollisionAABB* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2);
 	};
 }
