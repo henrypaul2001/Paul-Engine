@@ -42,6 +42,8 @@ namespace Engine
 
 		glm::vec3 GetWorldPosition();
 
+		float GetBiggestScaleFactor();
+
 		std::vector<Entity*> GetChildren() { return children; }
 		Entity* FindChildWithName(std::string name);
 		Entity* GetParent() { return parent; }

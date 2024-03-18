@@ -3,12 +3,10 @@
 #include "SystemCollision.h"
 #include "ComponentTransform.h"
 #include "ComponentCollisionAABB.h"
-#include "EntityManager.h"
 namespace Engine{
 	class SystemCollisionAABB : public SystemCollision
 	{
 	private:
-		EntityManager* entityManager;
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_AABB);
 
 		bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;

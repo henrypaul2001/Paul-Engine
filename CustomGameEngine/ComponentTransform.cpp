@@ -108,6 +108,19 @@ namespace Engine
 		return worldPos;
 	}
 
+	float ComponentTransform::GetBiggestScaleFactor()
+	{
+		float biggestScale = scale.x;
+		if (scale.y > biggestScale) {
+			biggestScale = scale.y;
+		}
+		else if (scale.z > biggestScale) {
+			biggestScale = scale.z;
+		}
+
+		return biggestScale;
+	}
+
 	Entity* ComponentTransform::FindChildWithName(std::string name)
 	{
 		for (Entity* e : children) {

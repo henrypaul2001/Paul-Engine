@@ -3,6 +3,7 @@
 #include "SystemPhysics.h"
 #include "SystemCollisionAABB.h"
 #include "SystemCollisionSphere.h"
+#include "SystemCollisionSphereAABB.h"
 namespace Engine {
 	CollisionScene::CollisionScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -145,6 +146,13 @@ namespace Engine {
 		sphereCollisionTestRight->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		sphereCollisionTestRight->AddComponent(new ComponentCollisionSphere(1.0f, true));
 		entityManager->AddEntity(sphereCollisionTestRight);
+
+		Entity* boxSphereCollisionTest = new Entity("Box Sphere Collision Test");
+		boxSphereCollisionTest->AddComponent(new ComponentTransform(-7.0f, 0.25f, -2.0f));
+		dynamic_cast<ComponentTransform*>(boxSphereCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f, 1.0f, 4.0f));
+		boxSphereCollisionTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		boxSphereCollisionTest->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		entityManager->AddEntity(boxSphereCollisionTest);
 	}
 
 	void CollisionScene::CreateSystems()
@@ -157,5 +165,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionAABB(entityManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphere(entityManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager), UPDATE_SYSTEMS);
 	}
 }

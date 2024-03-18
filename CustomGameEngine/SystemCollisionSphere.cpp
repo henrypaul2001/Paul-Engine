@@ -1,8 +1,7 @@
 #include "SystemCollisionSphere.h"
 namespace Engine {
-	SystemCollisionSphere::SystemCollisionSphere(EntityManager* entityManager)
+	SystemCollisionSphere::SystemCollisionSphere(EntityManager* entityManager) : SystemCollision(entityManager)
 	{
-		this->entityManager = entityManager;
 	}
 
 	SystemCollisionSphere::~SystemCollisionSphere()
@@ -73,22 +72,10 @@ namespace Engine {
 		}
 	}
 
-	float getBiggestScaleFactorFromTransform(ComponentTransform* transform) {
-		float biggestScale = transform->Scale().x;
-		if (transform->Scale().y > biggestScale) {
-			biggestScale = transform->Scale().y;
-		}
-		else if (transform->Scale().z > biggestScale) {
-			biggestScale = transform->Scale().z;
-		}
-
-		return biggestScale;
-	}
-
 	bool SystemCollisionSphere::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
-		float scaledRadius1 = dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius() * getBiggestScaleFactorFromTransform(transform);
-		float scaledRadius2 = dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius() * getBiggestScaleFactorFromTransform(transform2);
+		float scaledRadius1 = dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius() * transform->GetBiggestScaleFactor();
+		float scaledRadius2 = dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius() * transform2->GetBiggestScaleFactor();
 
 		float distance = glm::distance(transform->GetWorldPosition(), transform2->GetWorldPosition());
 

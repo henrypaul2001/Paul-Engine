@@ -1,6 +1,16 @@
 #include "SystemCollision.h"
 #include "ComponentTransform.h"
 namespace Engine {
+	SystemCollision::SystemCollision(EntityManager* entityManager)
+	{
+		this->entityManager = entityManager;
+	}
+
+	SystemCollision::~SystemCollision()
+	{
+
+	}
+
 	void SystemCollision::Collision(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		collider->AddToEntitiesCheckedThisFrame(collider2->GetOwner());
@@ -8,7 +18,7 @@ namespace Engine {
 
 		if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
 			if (Intersect(transform, collider, transform2, collider2)) {
-				SystemCollision::DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
+				DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
 
 				collider->AddToCollisions(collider2->GetOwner());
 				collider2->AddToCollisions(collider->GetOwner());
