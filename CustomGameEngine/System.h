@@ -12,6 +12,7 @@ namespace Engine
 		SYSTEM_COLLISION_AABB = 1 << 4,
 		SYSTEM_COLLISION_SPHERE = 1 << 5,
 		SYSTEM_COLLISION_SPHERE_AABB = 1 << 6,
+		SYSTEM_COLLISION_BOX = 1 << 7,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }
