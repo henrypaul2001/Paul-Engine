@@ -33,6 +33,32 @@ namespace Engine {
 		return worldSpacePoints;
 	}
 
+	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(ComponentTransform* transform)
+	{
+		glm::mat4 modelMatrix = transform->GetWorldModelMatrix();
+		glm::vec3 scale = glm::vec3(glm::length(modelMatrix[0]), glm::length(modelMatrix[1]), glm::length(modelMatrix[2]));
+		glm::mat3 rotation = glm::mat3(modelMatrix);
+
+		glm::vec3 worldPos = transform->GetWorldPosition();
+		std::vector<glm::vec3> cubePoints = {
+			glm::vec3(worldPos + glm::vec3(localPoints.minX, localPoints.minY, localPoints.maxZ)), // front, bottom left point
+			glm::vec3(worldPos + glm::vec3(localPoints.maxX, localPoints.minY, localPoints.maxZ)), // front, bottom right point
+			glm::vec3(worldPos + glm::vec3(localPoints.maxX, localPoints.maxY, localPoints.maxZ)), // front, top right point
+			glm::vec3(worldPos + glm::vec3(localPoints.minX, localPoints.maxY, localPoints.maxZ)), // front, top left point
+
+			glm::vec3(worldPos + glm::vec3(localPoints.minX, localPoints.minY, localPoints.minZ)), // back, bottom left point
+			glm::vec3(worldPos + glm::vec3(localPoints.maxX, localPoints.minY, localPoints.minZ)), // back, bottom right point
+			glm::vec3(worldPos + glm::vec3(localPoints.maxX, localPoints.maxY, localPoints.minZ)), // back, top right point
+			glm::vec3(worldPos + glm::vec3(localPoints.minX, localPoints.maxY, localPoints.minZ)), // back, top left point
+		};
+
+		for (glm::vec3 point : cubePoints) {
+			point = rotation * (point * scale);
+		}
+
+		return cubePoints;
+	}
+
 	void ComponentCollisionBox::Close()
 	{
 

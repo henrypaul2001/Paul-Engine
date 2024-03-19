@@ -1,6 +1,7 @@
 #pragma once
 #include "ComponentCollision.h"
 #include <glm/ext/matrix_float4x4.hpp>
+#include "ComponentTransform.h"
 namespace Engine {
     struct BoxPoints {
         float minX;
@@ -30,6 +31,7 @@ namespace Engine {
         void SetMaxZ(float maxZ) { localPoints.maxZ = maxZ; }
 
         BoxPoints GetWorldSpacePoints(glm::mat4 modelMatrix);
+        std::vector<glm::vec3> WorldSpacePoints(ComponentTransform* transform);
 
         ComponentTypes ComponentType() override { return COMPONENT_COLLISION_BOX; }
         void Close() override;
