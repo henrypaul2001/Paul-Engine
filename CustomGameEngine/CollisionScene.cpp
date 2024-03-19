@@ -51,6 +51,8 @@ namespace Engine {
 		Scene::Update();
 		systemManager->ActionUpdateSystems(entityManager);
 
+		float time = (float)glfwGetTime();
+
 		Entity* left = entityManager->FindEntity("Collision Test Left");
 		Entity* right = entityManager->FindEntity("Collision Test Right");
 		if (dynamic_cast<ComponentCollision*>(left->GetComponent(COMPONENT_COLLISION_AABB))->IsCollidingWithEntity(right)) {
@@ -68,6 +70,9 @@ namespace Engine {
 		if (dynamic_cast<ComponentCollisionSphere*>(leftSphere->GetComponent(COMPONENT_COLLISION_SPHERE))->IsCollidingWithEntity(rightSphere)) {
 			dynamic_cast<ComponentVelocity*>(leftSphere->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(leftSphere->GetComponent(COMPONENT_VELOCITY))->Velocity());
 		}
+
+		float rotation = dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Rotated Box")->GetComponent(COMPONENT_TRANSFORM))->RotationAngle();
+		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Rotated Box")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
 	}
 
 	void CollisionScene::Render()
@@ -167,7 +172,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(rotatedBoxCollider1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		rotatedBoxCollider1->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		rotatedBoxCollider1->AddComponent(new ComponentCollisionBox(-1.0f, -1.0, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		rotatedBoxCollider1->AddComponent(new ComponentVelocity(2.0f, 0.0f, 0.0f));
+		rotatedBoxCollider1->AddComponent(new ComponentVelocity(1.0f, 0.0f, 0.0f));
 		entityManager->AddEntity(rotatedBoxCollider1);
 
 		Entity* rotatedBoxCollider2 = new Entity("Rotated Box 2");
