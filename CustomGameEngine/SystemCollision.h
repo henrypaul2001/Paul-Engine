@@ -4,6 +4,7 @@
 #include "ComponentCollision.h"
 #include "ComponentCollisionAABB.h"
 #include "ComponentCollisionBox.h"
+#include "ComponentCollisionSphere.h"
 #include "EntityManager.h"
 namespace Engine {
 	class SystemCollision : public System

@@ -181,6 +181,7 @@
     <ClInclude Include="SystemCollisionBoxAABB.h" />
     <ClInclude Include="SystemCollisionSphere.h" />
     <ClInclude Include="SystemCollisionSphereAABB.h" />
+    <ClInclude Include="SystemCollisionSphereBox.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
@@ -229,6 +230,7 @@
     <ClCompile Include="SystemCollisionBoxAABB.cpp" />
     <ClCompile Include="SystemCollisionSphere.cpp" />
     <ClCompile Include="SystemCollisionSphereAABB.cpp" />
+    <ClCompile Include="SystemCollisionSphereBox.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />

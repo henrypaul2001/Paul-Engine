@@ -204,6 +204,9 @@
     <ClInclude Include="SystemCollisionBoxAABB.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="SystemCollisionSphereBox.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -342,6 +345,9 @@
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="SystemCollisionBoxAABB.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemCollisionSphereBox.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
