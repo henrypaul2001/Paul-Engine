@@ -146,7 +146,7 @@ namespace Engine
 		std::cout << "Starting new game" << std::endl;
 		StartNewGame();
 
-		float lastFrame = 0.0f;
+		float lastFrame = static_cast<float>(glfwGetTime());
 		float currentFrame;
 		while (!glfwWindowShouldClose(window))
 		{
