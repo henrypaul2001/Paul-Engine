@@ -86,6 +86,10 @@ namespace Engine {
 		else if (key == GLFW_KEY_P) {
 			ToggleSSAO();
 		}
+		else if (key == GLFW_KEY_KP_8) {
+			Entity* cube = entityManager->FindEntity("Physics Cube");
+			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(0.0f, 100.0f, 0.0f));
+		}
 	}
 
 	void PhysicsScene::keyDown(int key)
@@ -106,21 +110,23 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(0.0f, -1.1f, 0.0f));
+		floor->AddComponent(new ComponentTransform(0.0f, -1.1f, -30.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 0.1f));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(floor);
 
 		Entity* physicsCube = new Entity("Physics Cube");
-		physicsCube->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		physicsCube->AddComponent(new ComponentTransform(0.0f, 20.0f, -30.0f));
 		physicsCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		physicsCube->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		physicsCube->AddComponent(new ComponentPhysics(10.0f));
 		entityManager->AddEntity(physicsCube);
 	}
 
 	void PhysicsScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		SystemRender* renderSystem = new SystemRender();
 		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
 		renderSystem->SetActiveCamera(camera);
@@ -132,5 +138,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBox(entityManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager), UPDATE_SYSTEMS);
+
+		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }

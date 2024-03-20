@@ -4,10 +4,14 @@
 #include <iostream>
 namespace Engine 
 {
-	SystemPhysics::SystemPhysics() {}
+	SystemPhysics::SystemPhysics()
+	{
+		gravity = 9.8f;
+	}
 
 	SystemPhysics::~SystemPhysics()
 	{
+
 	}
 
 	void SystemPhysics::OnAction(Entity* entity)
@@ -23,16 +27,15 @@ namespace Engine
 				}
 			}
 
-			ComponentVelocity* velocity = nullptr;
+			ComponentPhysics* physics = nullptr;
 			for (Component* c : components) {
-				velocity = dynamic_cast<ComponentVelocity*>(c);
-				if (velocity != nullptr) {
+				physics = dynamic_cast<ComponentPhysics*>(c);
+				if (physics != nullptr) {
 					break;
 				}
 			}
 
-			//std::cout << entity->Name();
-			Motion(transform, velocity);
+			Physics(transform, physics);
 		}
 	}
 
@@ -41,10 +44,40 @@ namespace Engine
 
 	}
 
-	void SystemPhysics::Motion(ComponentTransform* transform, ComponentVelocity* velocity)
+	void SystemPhysics::Acceleration(ComponentPhysics* physics)
 	{
-		transform->SetLastPosition(transform->Position());
-		transform->SetPosition(transform->Position() + velocity->Velocity() * Scene::dt);
+		float inverseMass = physics->InverseMass();
+		glm::vec3 velocity = physics->Velocity();
+		glm::vec3 acceleration = physics->Force() * inverseMass;
+
+		// Apply gravity if component enables it and is not an immovable object
+		if (physics->Gravity() && inverseMass > 0) {
+			acceleration.y -= gravity * Scene::dt;
+		}
+
+		velocity += acceleration * Scene::dt;
+		physics->SetVelocity(velocity);
+	}
+
+	void SystemPhysics::Physics(ComponentTransform* transform, ComponentPhysics* physics)
+	{
+		Acceleration(physics);
+
+		glm::vec3 position = transform->Position();
+		glm::vec3 velocity = physics->Velocity();
+		transform->SetLastPosition(position);
+
+		position += velocity * Scene::dt;
+
+		transform->SetPosition(position + velocity);
+
+		// Fake drag
+		//float damping = 0.75f * Scene::dt;
+		//physics->SetVelocity(physics->Velocity() * damping);
+
+		physics->ClearForces();
+		//transform->SetLastPosition(transform->Position());
+		//transform->SetPosition(transform->Position() + physics->Velocity() * Scene::dt);
 		//std::cout << " position: " << transform->Position().x << ", " << transform->Position().y << ", " << transform->Position().z << ". last position: " << transform->LastPosition().x << ", " << transform->LastPosition().y << ", " << transform->LastPosition().z << std::endl;
 	}
 }

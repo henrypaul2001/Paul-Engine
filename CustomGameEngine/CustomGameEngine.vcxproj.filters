@@ -210,6 +210,9 @@
     <ClInclude Include="ComponentPhysics.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -355,6 +358,9 @@
     </ClCompile>
     <ClCompile Include="ComponentPhysics.cpp">
       <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

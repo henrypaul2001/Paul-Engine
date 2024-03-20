@@ -14,7 +14,7 @@ namespace Engine {
 
 		glm::vec3 Velocity() { return velocity; }
 		glm::vec3 Force() { return force; }
-		float InverseMass() { inverseMass; }
+		float InverseMass() { return inverseMass; }
 		float RawMass() { return mass; }
 
 		void SetMass(float newMass) {
@@ -22,13 +22,15 @@ namespace Engine {
 			UpdateInverseMass();
 		}
 
+		void SetVelocity(glm::vec3 newVelocity) { velocity = newVelocity; }
+
 		bool Gravity() { return gravity; }
 		void Gravity(bool gravity) { this->gravity = gravity; }
 
 		ComponentTypes ComponentType() override { return COMPONENT_PHYSICS; }
 		void Close() override;
 	private:
-		void UpdateInverseMass() { 1.0f / mass; }
+		void UpdateInverseMass() { inverseMass = 1.0f / mass; }
 
 		bool gravity;
 
