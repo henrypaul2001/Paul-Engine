@@ -150,6 +150,7 @@
     <ClInclude Include="ComponentCollisionSphere.h" />
     <ClInclude Include="ComponentGeometry.h" />
     <ClInclude Include="ComponentLight.h" />
+    <ClInclude Include="ComponentPhysics.h" />
     <ClInclude Include="ComponentVelocity.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="DeferredPipeline.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="ComponentCollisionSphere.cpp" />
     <ClCompile Include="ComponentGeometry.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
+    <ClCompile Include="ComponentPhysics.cpp" />
     <ClCompile Include="ComponentVelocity.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
