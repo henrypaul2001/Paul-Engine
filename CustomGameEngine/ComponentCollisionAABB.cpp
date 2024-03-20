@@ -43,6 +43,27 @@ namespace Engine {
 		return worldBounds;
 	}
 
+	std::vector<glm::vec3> ComponentCollisionAABB::WorldSpacePoints(glm::mat4 modelMatrix)
+	{
+		std::vector<glm::vec3> cubePoints = {
+			glm::vec3(localBounds.minX, localBounds.minY, localBounds.maxZ), // front, bottom left point
+			glm::vec3(localBounds.maxX, localBounds.minY, localBounds.maxZ), // front, bottom right point
+			glm::vec3(localBounds.maxX, localBounds.maxY, localBounds.maxZ), // front, top right point
+			glm::vec3(localBounds.minX, localBounds.maxY, localBounds.maxZ), // front, top left point
+
+			glm::vec3(localBounds.minX, localBounds.minY, localBounds.minZ), // back, bottom left point
+			glm::vec3(localBounds.maxX, localBounds.minY, localBounds.minZ), // back, bottom right point
+			glm::vec3(localBounds.maxX, localBounds.maxY, localBounds.minZ), // back, top right point
+			glm::vec3(localBounds.minX, localBounds.maxY, localBounds.minZ), // back, top left point
+		};
+
+		for (glm::vec3& point : cubePoints) {
+			point = glm::vec3(modelMatrix * glm::vec4(point, 1.0f));
+		}
+
+		return cubePoints;
+	}
+
 	void ComponentCollisionAABB::Close()
 	{
 	}

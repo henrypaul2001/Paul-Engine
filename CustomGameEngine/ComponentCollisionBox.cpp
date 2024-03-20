@@ -33,11 +33,8 @@ namespace Engine {
 		return worldSpacePoints;
 	}
 
-	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(ComponentTransform* transform)
+	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(glm::mat4 modelMatrix)
 	{
-		glm::mat4 modelMatrix = transform->GetWorldModelMatrix();
-
-		glm::vec3 worldPos = transform->GetWorldPosition();
 		std::vector<glm::vec3> cubePoints = {
 			glm::vec3(localPoints.minX, localPoints.minY, localPoints.maxZ), // front, bottom left point
 			glm::vec3(localPoints.maxX, localPoints.minY, localPoints.maxZ), // front, bottom right point

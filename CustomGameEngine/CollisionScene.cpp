@@ -6,6 +6,7 @@
 #include "SystemCollisionSphereAABB.h"
 #include "ComponentCollisionBox.h"
 #include "SystemCollisionBox.h"
+#include "SystemCollisionBoxAABB.h"
 namespace Engine {
 	CollisionScene::CollisionScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -71,8 +72,19 @@ namespace Engine {
 			dynamic_cast<ComponentVelocity*>(leftSphere->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(leftSphere->GetComponent(COMPONENT_VELOCITY))->Velocity());
 		}
 
-		float rotation = dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Rotated Box")->GetComponent(COMPONENT_TRANSFORM))->RotationAngle();
-		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Rotated Box")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
+		Entity* rotatingBox = entityManager->FindEntity("Rotated Box");
+		Entity* rotatedBox = entityManager->FindEntity("Rotated Box 2");
+
+		float rotation = dynamic_cast<ComponentTransform*>(rotatingBox->GetComponent(COMPONENT_TRANSFORM))->RotationAngle();
+		dynamic_cast<ComponentTransform*>(rotatingBox->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
+
+		if (dynamic_cast<ComponentCollisionBox*>(rotatingBox->GetComponent(COMPONENT_COLLISION_BOX))->IsCollidingWithEntity(rotatedBox)) {
+			dynamic_cast<ComponentVelocity*>(rotatingBox->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(rotatingBox->GetComponent(COMPONENT_VELOCITY))->Velocity());
+		}
+
+		if (dynamic_cast<ComponentCollisionBox*>(rotatingBox->GetComponent(COMPONENT_COLLISION_BOX))->IsCollidingWithEntity(wall)) {
+			dynamic_cast<ComponentVelocity*>(rotatingBox->GetComponent(COMPONENT_VELOCITY))->SetVelocity(-dynamic_cast<ComponentVelocity*>(rotatingBox->GetComponent(COMPONENT_VELOCITY))->Velocity());
+		}
 	}
 
 	void CollisionScene::Render()
@@ -161,18 +173,18 @@ namespace Engine {
 
 		Entity* boxSphereCollisionTest = new Entity("Box Sphere Collision Test");
 		boxSphereCollisionTest->AddComponent(new ComponentTransform(-7.0f, 0.25f, -2.0f));
-		dynamic_cast<ComponentTransform*>(boxSphereCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f, 2.0f, 4.0f));
+		dynamic_cast<ComponentTransform*>(boxSphereCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f, 2.0f, 8.0f));
 		boxSphereCollisionTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		boxSphereCollisionTest->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(boxSphereCollisionTest);
 
 		Entity* rotatedBoxCollider1 = new Entity("Rotated Box");
-		rotatedBoxCollider1->AddComponent(new ComponentTransform(-4.0f, 1.5f, 4.75f));
+		rotatedBoxCollider1->AddComponent(new ComponentTransform(-4.0f, 1.5f, 3.75f));
 		dynamic_cast<ComponentTransform*>(rotatedBoxCollider1->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), 45.0f);
-		dynamic_cast<ComponentTransform*>(rotatedBoxCollider1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		dynamic_cast<ComponentTransform*>(rotatedBoxCollider1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
 		rotatedBoxCollider1->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		rotatedBoxCollider1->AddComponent(new ComponentCollisionBox(-1.0f, -1.0, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		rotatedBoxCollider1->AddComponent(new ComponentVelocity(1.0f, 0.0f, 0.0f));
+		rotatedBoxCollider1->AddComponent(new ComponentVelocity(2.0f, 0.0f, 0.0f));
 		entityManager->AddEntity(rotatedBoxCollider1);
 
 		Entity* rotatedBoxCollider2 = new Entity("Rotated Box 2");
@@ -196,5 +208,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionSphere(entityManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionBox(entityManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager), UPDATE_SYSTEMS);
 	}
 }

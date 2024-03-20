@@ -31,7 +31,7 @@ namespace Engine {
         void SetMaxZ(float maxZ) { localPoints.maxZ = maxZ; }
 
         BoxPoints GetWorldSpacePoints(glm::mat4 modelMatrix);
-        std::vector<glm::vec3> WorldSpacePoints(ComponentTransform* transform);
+        std::vector<glm::vec3> WorldSpacePoints(glm::mat4 modelMatrix);
 
         ComponentTypes ComponentType() override { return COMPONENT_COLLISION_BOX; }
         void Close() override;

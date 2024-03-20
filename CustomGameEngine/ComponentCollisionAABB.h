@@ -30,6 +30,7 @@ namespace Engine {
 		void SetMaxZ(float maxZ) { localBounds.maxZ = maxZ; }
 
 		AABBPoints GetWorldSpaceBounds(glm::mat4 modelMatrix);
+		std::vector<glm::vec3> WorldSpacePoints(glm::mat4 modelMatrix);
 
 		ComponentTypes ComponentType() override { return COMPONENT_COLLISION_AABB; }
 		void Close() override;
