@@ -1,9 +1,15 @@
 #include "ComponentPhysics.h"
 namespace Engine {
+	ComponentPhysics::ComponentPhysics(float mass, bool gravity)
+	{
+		SetMass(mass);
+		this->gravity = gravity;
+	}
+
 	ComponentPhysics::ComponentPhysics(float mass)
 	{
-		this->mass = mass;
-		inverseMass = 1.0f / mass;
+		SetMass(mass);
+		gravity = true;
 	}
 
 	ComponentPhysics::~ComponentPhysics()
