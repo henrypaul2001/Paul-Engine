@@ -2,6 +2,8 @@
 #include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentCollision.h"
+#include "ComponentCollisionAABB.h"
+#include "ComponentCollisionBox.h"
 #include "EntityManager.h"
 namespace Engine {
 	class SystemCollision : public System
@@ -11,6 +13,12 @@ namespace Engine {
 		void Collision(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2);
 		virtual bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) = 0;
 		void DefaultCollisionResponse(Entity* entity1, Entity* entity2);
+
+		bool CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2);
+		bool CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2);
+		std::vector<glm::vec3> GetCubeNormals(ComponentTransform* transform);
+		std::vector<glm::vec3> GetEdgeVectors(ComponentTransform* transform);
+		std::vector<glm::vec3> GetAllCollisionAxis(ComponentTransform* transform, ComponentTransform* transform2);
 	public:
 		SystemCollision(EntityManager* entityManager);
 		~SystemCollision();
