@@ -118,17 +118,23 @@ namespace Engine {
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.1f, -30.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 10.0f, 0.1f));
-		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 0.1f, 10.0f));
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(floor);
 
 		Entity* physicsCube = new Entity("Physics Cube");
-		physicsCube->AddComponent(new ComponentTransform(0.0f, 20.0f, -30.0f));
+		physicsCube->AddComponent(new ComponentTransform(0.0f, 50.0f, -30.0f));
 		physicsCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		physicsCube->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		physicsCube->AddComponent(new ComponentPhysics(10.0f));
+		physicsCube->AddComponent(new ComponentPhysics(10.0f, 1.05f, 1.0f)); // drag coefficient of a cube, surface area = 1.0
 		entityManager->AddEntity(physicsCube);
+
+		Entity* physicsBall = new Entity("Physics Ball");
+		physicsBall->AddComponent(new ComponentTransform(5.0f, 50.0f, -30.0f));
+		physicsBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		physicsBall->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		physicsBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f)); // drag coefficient of a sphere, surface area = 0.5
+		entityManager->AddEntity(physicsBall);
 	}
 
 	void PhysicsScene::CreateSystems()

@@ -56,6 +56,17 @@ namespace Engine
 			acceleration -= glm::vec3(gravityAxis.x * gravity, gravityAxis.y * gravity, gravityAxis.z * gravity) * Scene::dt;
 		}
 
+		float vMagnitude = glm::length(velocity); //m/s
+
+		if (vMagnitude > 0) {
+			float airDensity = 1.225f; //kg/m3
+			float surfaceArea = physics->SurfaceArea(); // m2
+			float dragMagnitude = physics->DragCoefficient() * airDensity * ((vMagnitude * vMagnitude) / 2.0f) * surfaceArea;
+			glm::vec3 dragDirection = -glm::normalize(velocity);
+
+			acceleration += dragMagnitude * dragDirection;
+		}
+
 		velocity += acceleration * Scene::dt;
 		physics->SetVelocity(velocity);
 	}
