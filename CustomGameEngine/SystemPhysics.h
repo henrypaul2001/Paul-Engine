@@ -35,7 +35,7 @@ namespace Engine
 		glm::vec3 gravityAxis;
 		float gravity; // represented as acceleration m/s^2
 
-		void Acceleration(ComponentPhysics* physics);
+		void Acceleration(ComponentTransform* transform, ComponentPhysics* physics);
 
 		void Physics(ComponentTransform* transform, ComponentPhysics* physics);
 	};

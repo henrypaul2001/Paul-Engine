@@ -88,7 +88,8 @@ namespace Engine {
 		}
 		else if (key == GLFW_KEY_KP_8) {
 			Entity* cube = entityManager->FindEntity("Physics Cube");
-			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(5.0f, 100.0f, 0.0f));
+			//dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(5.0f, 100.0f, 0.0f));
+			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.8f, -0.9f));
 		}
 		else if (key == GLFW_KEY_G) {
 			SystemPhysics* physics = dynamic_cast<SystemPhysics*>(systemManager->FindSystem(SYSTEM_PHYSICS, UPDATE_SYSTEMS));
@@ -123,10 +124,10 @@ namespace Engine {
 		entityManager->AddEntity(floor);
 
 		Entity* physicsCube = new Entity("Physics Cube");
-		physicsCube->AddComponent(new ComponentTransform(0.0f, 50.0f, -30.0f));
+		physicsCube->AddComponent(new ComponentTransform(0.0f, 10.0f, -30.0f));
 		physicsCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		physicsCube->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		physicsCube->AddComponent(new ComponentPhysics(10.0f, 1.05f, 1.0f)); // drag coefficient of a cube, surface area = 1.0
+		physicsCube->AddComponent(new ComponentPhysics(10.0f, 1.05f, 1.0f, false)); // drag coefficient of a cube, surface area = 1.0
 		entityManager->AddEntity(physicsCube);
 
 		Entity* physicsBall = new Entity("Physics Ball");

@@ -53,6 +53,12 @@ namespace Engine
 		UpdateModelMatrix();
 	}
 
+	void ComponentTransform::SetOrientation(glm::quat newOrientation)
+	{
+		orientation = newOrientation;
+		UpdateModelMatrix();
+	}
+
 	void ComponentTransform::SetParent(Entity* parent)
 	{
 		if (this->parent != nullptr) {
@@ -129,12 +135,6 @@ namespace Engine
 		}
 
 		return biggestScale;
-	}
-
-	void ComponentTransform::SetOrientation(glm::quat newOrientation)
-	{
-		orientation = newOrientation;
-		UpdateModelMatrix();
 	}
 
 	Entity* ComponentTransform::FindChildWithName(std::string name)

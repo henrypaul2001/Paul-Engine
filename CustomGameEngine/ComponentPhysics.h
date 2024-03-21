@@ -1,10 +1,13 @@
 #pragma once
 #include "Component.h"
 #include <glm/ext/vector_float3.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/quaternion_float.hpp>
 namespace Engine {
     class ComponentPhysics : public Component
     {
 	public:
+		ComponentPhysics(float mass, float drag, float surfaceArea, bool gravity);
 		ComponentPhysics(float mass, float drag, float surfaceArea);
 		ComponentPhysics(float mass, float drag);
 		ComponentPhysics(float mass, bool gravity);
@@ -13,6 +16,10 @@ namespace Engine {
 
 		void ClearForces() { force = glm::vec3(0.0f); }
 		void AddForce(glm::vec3 force) { this->force += force; }
+		void AddForce(glm::vec3 force, glm::vec3 forcePositionLocal) {
+			this->force += force;
+			torque += glm::cross(forcePositionLocal, force);
+		}
 
 		glm::vec3 Velocity() { return velocity; }
 		glm::vec3 Force() { return force; }
@@ -25,9 +32,18 @@ namespace Engine {
 		}
 
 		void SetVelocity(glm::vec3 newVelocity) { velocity = newVelocity; }
+		void SetAngularVelocity(glm::vec3 newVelocity) { angularVelocity = newVelocity; }
+
+		void SetTorque(glm::vec3 newTorque) { torque = newTorque; }
 
 		bool Gravity() { return gravity; }
 		void Gravity(bool gravity) { this->gravity = gravity; }
+
+		glm::mat3 InertiaTensor() { return inertiaTensor; }
+		glm::vec3 Torque() { return torque; }
+		glm::vec3 AngularVelocity() { return angularVelocity; }
+
+		void UpdateInertiaTensor(glm::quat orientation);
 
 		float DragCoefficient() { return dragCoefficient; }
 		void DrafCoefficient(float newDrag) { dragCoefficient = newDrag; }
@@ -46,7 +62,13 @@ namespace Engine {
 		float dragCoefficient;
 		float inverseMass;
 		float mass;
+		
 		glm::vec3 velocity;
+		
+		glm::vec3 angularVelocity;
+		glm::vec3 torque;
+		glm::mat3 inertiaTensor;
+
 		glm::vec3 force;
     };
 }

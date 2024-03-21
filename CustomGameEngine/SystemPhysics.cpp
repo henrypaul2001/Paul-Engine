@@ -46,7 +46,7 @@ namespace Engine
 
 	}
 
-	void SystemPhysics::Acceleration(ComponentPhysics* physics)
+	void SystemPhysics::Acceleration(ComponentTransform* transform, ComponentPhysics* physics)
 	{
 		float inverseMass = physics->InverseMass();
 		glm::vec3 velocity = physics->Velocity();
@@ -69,12 +69,22 @@ namespace Engine
 
 		velocity += acceleration * Scene::dt;
 		physics->SetVelocity(velocity);
+
+		// Angular
+		physics->UpdateInertiaTensor(transform->GetOrientation());
+
+		glm::vec3 angularAcceleration = physics->InertiaTensor() * physics->Torque();
+		glm::vec3 angularVelocity = physics->AngularVelocity();
+
+		angularVelocity += angularAcceleration * Scene::dt;
+		physics->SetAngularVelocity(angularVelocity);
 	}
 
 	void SystemPhysics::Physics(ComponentTransform* transform, ComponentPhysics* physics)
 	{
-		Acceleration(physics);
+		Acceleration(transform, physics);
 
+		// Linear velocity
 		glm::vec3 position = transform->Position();
 		glm::vec3 velocity = physics->Velocity();
 		transform->SetLastPosition(position);
@@ -83,11 +93,17 @@ namespace Engine
 
 		transform->SetPosition(position + velocity);
 
-		// Fake drag
-		//float damping = 0.75f * Scene::dt;
-		//physics->SetVelocity(physics->Velocity() * damping);
+		// Angular velocity
+		glm::quat orientation = transform->GetOrientation();
+		glm::vec3 angularVelocity = physics->AngularVelocity();
+
+		orientation = orientation + (glm::quat(glm::vec3(angularVelocity * Scene::dt * 0.5f)) * orientation);
+		orientation = glm::normalize(orientation);
+
+		transform->SetOrientation(orientation);
 
 		physics->ClearForces();
+		physics->SetTorque(glm::vec3(0.0f));
 		//transform->SetLastPosition(transform->Position());
 		//transform->SetPosition(transform->Position() + physics->Velocity() * Scene::dt);
 		//std::cout << " position: " << transform->Position().x << ", " << transform->Position().y << ", " << transform->Position().z << ". last position: " << transform->LastPosition().x << ", " << transform->LastPosition().y << ", " << transform->LastPosition().z << std::endl;
