@@ -21,6 +21,9 @@ namespace Engine
 			this->gravityAxis = gravityAxis;
 		}
 
+		float AirDensity() { return airDensity; }
+		void AirDensity(float airDensity) { this->airDensity = airDensity; }
+
 		SystemTypes Name() override { return SYSTEM_PHYSICS; }
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
@@ -28,6 +31,7 @@ namespace Engine
 	private:
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_PHYSICS);
 
+		float airDensity; // kg/m3
 		glm::vec3 gravityAxis;
 		float gravity; // represented as acceleration m/s^2
 

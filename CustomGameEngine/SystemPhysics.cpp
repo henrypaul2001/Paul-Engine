@@ -8,6 +8,7 @@ namespace Engine
 	{
 		gravity = 9.8f;
 		gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+		airDensity = 1.225f;
 	}
 
 	SystemPhysics::~SystemPhysics()
@@ -59,7 +60,6 @@ namespace Engine
 		float vMagnitude = glm::length(velocity); //m/s
 
 		if (vMagnitude > 0) {
-			float airDensity = 1.225f; //kg/m3
 			float surfaceArea = physics->SurfaceArea(); // m2
 			float dragMagnitude = physics->DragCoefficient() * airDensity * ((vMagnitude * vMagnitude) / 2.0f) * surfaceArea;
 			glm::vec3 dragDirection = -glm::normalize(velocity);
