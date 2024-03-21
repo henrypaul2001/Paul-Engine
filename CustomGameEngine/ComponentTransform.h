@@ -2,6 +2,7 @@
 #include "Component.h"
 #include <glm/vec3.hpp>
 #include <glm/glm.hpp>
+#include "glm/gtx/quaternion.hpp"
 namespace Engine
 {
 	class Entity; // forward declaration
@@ -14,6 +15,8 @@ namespace Engine
 		glm::vec3 rotationAxis;
 		float rotationAngle;
 		glm::vec3 scale;
+
+		glm::quat orientation;
 
 		glm::mat4 worldModelMatrix;
 
@@ -43,6 +46,9 @@ namespace Engine
 		glm::vec3 GetWorldPosition();
 
 		float GetBiggestScaleFactor();
+
+		void SetOrientation(glm::quat newOrientation);
+		glm::quat GetOrientation() { return orientation; }
 
 		std::vector<Entity*> GetChildren() { return children; }
 		Entity* FindChildWithName(std::string name);

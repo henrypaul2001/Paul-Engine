@@ -11,6 +11,8 @@ namespace Engine
 		this->rotationAngle = rotationAngle;
 		this->scale = scale;
 		
+		orientation = glm::angleAxis(glm::radians(rotationAngle), rotationAxis);
+
 		UpdateModelMatrix();
 	}
 
@@ -20,6 +22,8 @@ namespace Engine
 		this->rotationAxis = glm::vec3(1.0, 1.0, 1.0);
 		this->rotationAngle = 0.0f;
 		this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		orientation = glm::angleAxis(glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		UpdateModelMatrix();
 	}
@@ -70,11 +74,17 @@ namespace Engine
 
 	void ComponentTransform::UpdateModelMatrix()
 	{
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, position);
-		model = glm::rotate(model, glm::radians(rotationAngle), rotationAxis);
-		model = glm::scale(model, scale);
-		worldModelMatrix = model;
+		//glm::mat4 model(1.0f);
+		//model = glm::translate(model, position);
+		//model = glm::rotate(model, glm::radians(rotationAngle), rotationAxis);
+		//model = glm::rotate(model, );
+		//model = glm::scale(model, scale);
+		//worldModelMatrix = model;
+
+		glm::mat4 translate = glm::translate(glm::mat4(1.0f), position);
+		glm::mat4 rotate = glm::mat4_cast(orientation);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), this->scale);
+		worldModelMatrix = translate * rotate * scale;
 
 		if (parent != nullptr) {
 			ComponentTransform* parentTransform = dynamic_cast<ComponentTransform*>(parent->GetComponent(COMPONENT_TRANSFORM));
@@ -119,6 +129,12 @@ namespace Engine
 		}
 
 		return biggestScale;
+	}
+
+	void ComponentTransform::SetOrientation(glm::quat newOrientation)
+	{
+		orientation = newOrientation;
+		UpdateModelMatrix();
 	}
 
 	Entity* ComponentTransform::FindChildWithName(std::string name)
