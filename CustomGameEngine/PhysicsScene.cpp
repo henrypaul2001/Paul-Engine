@@ -88,7 +88,13 @@ namespace Engine {
 		}
 		else if (key == GLFW_KEY_KP_8) {
 			Entity* cube = entityManager->FindEntity("Physics Cube");
-			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(0.0f, 100.0f, 0.0f));
+			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(5.0f, 100.0f, 0.0f));
+		}
+		else if (key == GLFW_KEY_G) {
+			SystemPhysics* physics = dynamic_cast<SystemPhysics*>(systemManager->FindSystem(SYSTEM_PHYSICS, UPDATE_SYSTEMS));
+			glm::vec3 axis = physics->GravityAxis();
+
+			physics->Gravity(-axis);
 		}
 	}
 
@@ -112,7 +118,7 @@ namespace Engine {
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.1f, -30.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 0.1f));
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 10.0f, 0.1f));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		entityManager->AddEntity(floor);

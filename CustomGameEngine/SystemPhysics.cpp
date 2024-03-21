@@ -7,6 +7,7 @@ namespace Engine
 	SystemPhysics::SystemPhysics()
 	{
 		gravity = 9.8f;
+		gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 	}
 
 	SystemPhysics::~SystemPhysics()
@@ -52,7 +53,7 @@ namespace Engine
 
 		// Apply gravity if component enables it and is not an immovable object
 		if (physics->Gravity() && inverseMass > 0) {
-			acceleration.y -= gravity * Scene::dt;
+			acceleration -= glm::vec3(gravityAxis.x * gravity, gravityAxis.y * gravity, gravityAxis.z * gravity) * Scene::dt;
 		}
 
 		velocity += acceleration * Scene::dt;
