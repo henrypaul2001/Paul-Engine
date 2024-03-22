@@ -10,7 +10,7 @@ namespace Engine {
 		const ComponentTypes SPHERE_MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_SPHERE);
 		const ComponentTypes AABB_MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_AABB);
 
-		bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
+		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
 		SystemCollisionSphereAABB(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollisionSphereAABB();

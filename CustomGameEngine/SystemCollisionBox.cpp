@@ -73,16 +73,28 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollisionBox::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionBox::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		std::vector<glm::vec3> axes = GetAllCollisionAxis(transform, transform2);
 
+		CollisionData collision;
+
+		CollisionData bestCollision;
+		bestCollision.collisionPenetration = -FLT_MAX;
 		for (glm::vec3 axis : axes) {
-			if (!CheckForCollisionOnAxis(axis, transform, dynamic_cast<ComponentCollisionBox*>(collider), transform2, dynamic_cast<ComponentCollisionBox*>(collider2))) {
-				return false;
+			if (!CheckForCollisionOnAxis(axis, transform, dynamic_cast<ComponentCollisionBox*>(collider), transform2, dynamic_cast<ComponentCollisionBox*>(collider2), collision)) {
+				collision.isColliding = false;
+				return collision;
 			}
+
+			if (collision.collisionPenetration >= bestCollision.collisionPenetration) {
+				bestCollision = collision;
+			}
+			collision = CollisionData();
 		}
 
-		return true;
+		bestCollision.isColliding = true;
+
+		return bestCollision;
 	}
 }

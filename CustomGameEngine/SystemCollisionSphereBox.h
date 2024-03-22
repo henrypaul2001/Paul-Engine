@@ -7,7 +7,7 @@ namespace Engine {
 		const ComponentTypes BOX_MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_BOX);
 		const ComponentTypes SPHERE_MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_SPHERE);
 
-		bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
+		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
 		SystemCollisionSphereBox(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollisionSphereBox();

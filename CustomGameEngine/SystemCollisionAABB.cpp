@@ -72,18 +72,52 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollisionAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		AABBPoints bounds1 = dynamic_cast<ComponentCollisionAABB*>(collider)->GetWorldSpaceBounds(transform->GetWorldModelMatrix());
 		AABBPoints bounds2 = dynamic_cast<ComponentCollisionAABB*>(collider2)->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
 
-		return (
-			bounds1.minX <= bounds2.maxX &&
-			bounds1.maxX >= bounds2.minX &&
-			bounds1.minY <= bounds2.maxY &&
-			bounds1.maxY >= bounds2.minY &&
-			bounds1.minZ <= bounds2.maxZ &&
-			bounds1.maxZ >= bounds2.minZ
-		);
+		CollisionData collision;
+		if (bounds1.minX <= bounds2.maxX && bounds1.maxX >= bounds2.minX && bounds1.minY <= bounds2.maxY && bounds1.maxY >= bounds2.minY && bounds1.minZ <= bounds2.maxZ && bounds1.maxZ >= bounds2.minZ) {
+			const glm::vec3 faces[6] = {
+				glm::vec3(-1.0f, 0.0f, 0.0f),
+				glm::vec3(1.0f, 0.0f, 0.0f),
+				glm::vec3(0.0f, -1.0f, 0.0f),
+				glm::vec3(0.0f, 1.0f, 0.0f),
+				glm::vec3(0.0f, 0.0f, -1.0f),
+				glm::vec3(0.0f, 0.0f, 1.0f)
+			};
+			
+			float distances[6] = {
+				(bounds2.maxX - bounds1.minX),
+				(bounds1.maxX - bounds2.minX),
+				(bounds2.maxY - bounds1.minY),
+				(bounds1.maxY - bounds2.minY),
+				(bounds2.maxZ - bounds1.minZ),
+				(bounds1.maxZ - bounds2.minZ)
+			};
+
+			float penetration = FLT_MAX;
+			glm::vec3 bestAxis;
+			for (int i = 0; i < 6; i++) {
+				if (distances[i] < penetration) {
+					penetration = distances[i];
+					bestAxis = faces[i];
+				}
+			}
+
+			collision.isColliding = true;
+			collision.collisionPenetration = penetration;
+			collision.collisionNormal = bestAxis;
+			collision.localCollisionPoint = glm::vec3();
+			collision.otherLocalCollisionPoint = glm::vec3();
+			collision.collidingObject = transform->GetOwner();
+			collision.otherCollidingObject = transform2->GetOwner();
+		}
+		else {
+			collision.isColliding = false;
+		}
+
+		return collision;
 	}
 }

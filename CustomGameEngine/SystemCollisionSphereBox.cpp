@@ -76,7 +76,7 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollisionSphereBox::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionSphereBox::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		// Transform sphere into oriented box's local space
 		glm::vec3 worldSpaceSpherePosition = transform2->GetWorldPosition();
@@ -97,6 +97,23 @@ namespace Engine {
 		float distance = glm::distance(closestPointWorldSpace, worldSpaceSpherePosition);
 
 		float scaledRadius = dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius() * transform2->GetBiggestScaleFactor();
-		return distance <= scaledRadius;
+
+		glm::vec3 localPoint = (transform2->GetWorldPosition() - transform->GetWorldPosition()) - closestPoint;
+
+		CollisionData collision;
+		if (distance <= scaledRadius) {
+			collision.isColliding = true;
+			collision.collisionPenetration = scaledRadius - distance;
+			collision.collisionNormal = glm::normalize(localPoint);
+			collision.localCollisionPoint = closestPoint;
+			collision.otherLocalCollisionPoint -collision.collisionNormal * scaledRadius;
+			collision.collidingObject = transform->GetOwner();
+			collision.otherCollidingObject = transform2->GetOwner();
+		}
+		else {
+			collision.isColliding = false;
+		}
+
+		return collision;
 	}
 }

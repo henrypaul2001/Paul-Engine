@@ -2,7 +2,7 @@
 #include "Entity.h"
 #include <glm/ext/vector_float3.hpp>
 namespace Engine {
-	struct Collision {
+	struct CollisionData {
 		Entity* collidingObject;
 		Entity* otherCollidingObject;
 
@@ -12,6 +12,8 @@ namespace Engine {
 		glm::vec3 collisionNormal;
 
 		float collisionPenetration;
+
+		bool isColliding;
 	};
 
 	class CollisionManager
@@ -20,11 +22,11 @@ namespace Engine {
 		CollisionManager();
 		~CollisionManager();
 
-		std::vector<Collision> GetUnresolvedCollisions() { return unresolvedCollisions; }
+		std::vector<CollisionData> GetUnresolvedCollisions() { return unresolvedCollisions; }
 		void ClearUnresolvedCollisions() { unresolvedCollisions.clear(); }
 
-		void AddToCollisionList(Collision newCollision) { unresolvedCollisions.push_back(newCollision); }
+		void AddToCollisionList(CollisionData newCollision) { unresolvedCollisions.push_back(newCollision); }
 	private:
-		std::vector<Collision> unresolvedCollisions;
+		std::vector<CollisionData> unresolvedCollisions;
 	};
 }

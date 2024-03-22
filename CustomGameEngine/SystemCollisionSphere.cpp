@@ -72,7 +72,7 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollisionSphere::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionSphere::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		float scaledRadius1 = dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius() * transform->GetBiggestScaleFactor();
 		float scaledRadius2 = dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius() * transform2->GetBiggestScaleFactor();
@@ -80,7 +80,21 @@ namespace Engine {
 		float distance = glm::distance(transform->GetWorldPosition(), transform2->GetWorldPosition());
 
 		float combinedRadius = scaledRadius1 + scaledRadius2;
+		
+		CollisionData collision;
+		if (distance <= combinedRadius) {
+			collision.isColliding = true;
+			collision.collisionPenetration = combinedRadius - distance;
+			collision.collisionNormal = glm::normalize(transform2->GetWorldPosition() - transform->GetWorldPosition());
+			collision.localCollisionPoint = collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius();
+			collision.otherLocalCollisionPoint = collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius();
+			collision.collidingObject = transform->GetOwner();
+			collision.otherCollidingObject = transform2->GetOwner();
+		}
+		else {
+			collision.isColliding = false;
+		}
 
-		return (distance <= combinedRadius);
+		return collision;
 	}
 }

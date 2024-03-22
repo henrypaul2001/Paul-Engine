@@ -76,7 +76,7 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollisionSphereAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionSphereAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		// collider = sphere
 		// collider2 = AABB
@@ -91,6 +91,24 @@ namespace Engine {
 
 		float distance = glm::distance(closestPoint, transform->GetWorldPosition());
 
-		return distance <= scaledRadius;
+		glm::vec3 delta = transform->GetWorldPosition() - transform2->GetWorldPosition();
+		glm::vec3 localPoint = delta - closestPoint;
+		localPoint = glm::inverse(transform2->GetWorldModelMatrix()) * glm::vec4(localPoint, 1.0f);
+
+		CollisionData collision;
+		if (distance <= scaledRadius) {
+			collision.isColliding = true;
+			collision.collisionPenetration = scaledRadius - distance;
+			collision.collisionNormal = glm::normalize(localPoint);
+			collision.localCollisionPoint = -collision.collisionNormal * scaledRadius;
+			collision.otherLocalCollisionPoint = glm::vec3();
+			collision.collidingObject = transform->GetOwner();
+			collision.otherCollidingObject = transform2->GetOwner();
+		}
+		else {
+			collision.isColliding = false;
+		}
+
+		return collision;
 	}
 }

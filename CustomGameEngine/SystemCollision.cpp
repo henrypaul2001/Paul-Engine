@@ -18,8 +18,10 @@ namespace Engine {
 		collider2->AddToEntitiesCheckedThisFrame(collider->GetOwner());
 
 		if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
-			if (Intersect(transform, collider, transform2, collider2)) {
+			CollisionData collision = Intersect(transform, collider, transform2, collider2);
+			if (collision.isColliding) {
 				DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
+				collisionManager->AddToCollisionList(collision);
 
 				collider->AddToCollisions(collider2->GetOwner());
 				collider2->AddToCollisions(collider->GetOwner());
@@ -40,7 +42,7 @@ namespace Engine {
 		transform2->SetPosition(transform2->LastPosition());
 	}
 
-	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2)
+	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2, CollisionData& collision)
 	{
 		float cube1Min;
 		float cube2Min;
@@ -79,10 +81,24 @@ namespace Engine {
 			}
 		}
 
-		return (cube1Min <= cube2Max && cube1Max >= cube2Min);
+		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
+			collision.collisionNormal = axis;
+			collision.collisionPenetration = cube2Min - cube1Max;
+			collision.localCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
+			return true;
+		}
+
+		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
+			collision.collisionNormal = -axis;
+			collision.collisionPenetration = cube1Min - cube2Max;
+			collision.localCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
+			return true;
+		}
+
+		return false;
 	}
 
-	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2)
+	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2, CollisionData& collision)
 	{
 		float cube1Min;
 		float cube2Min;
@@ -121,7 +137,21 @@ namespace Engine {
 			}
 		}
 
-		return (cube1Min <= cube2Max && cube1Max >= cube2Min);
+		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
+			collision.collisionNormal = axis;
+			collision.collisionPenetration = cube2Min - cube1Max;
+			collision.localCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
+			return true;
+		}
+
+		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
+			collision.collisionNormal = -axis;
+			collision.collisionPenetration = cube1Min - cube2Max;
+			collision.localCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
+			return true;
+		}
+
+		return false;
 	}
 
 	std::vector<glm::vec3> SystemCollision::GetCubeNormals(ComponentTransform* transform)
