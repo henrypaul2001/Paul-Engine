@@ -121,6 +121,7 @@ namespace Engine {
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 0.1f, 10.0f));
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionAABB*>(floor->GetComponent(COMPONENT_COLLISION_AABB))->IsMovedByCollisions(true);
 		entityManager->AddEntity(floor);
 
 		Entity* physicsCube = new Entity("Physics Cube");
@@ -151,6 +152,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddCollisionResponseSystem(new CollisionResponder(collisionManager));
 
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}

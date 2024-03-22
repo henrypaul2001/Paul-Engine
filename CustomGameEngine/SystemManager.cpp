@@ -31,6 +31,10 @@ namespace Engine
 			}
 			s->AfterAction();
 		}
+
+		// Collision response
+		collisionResponseSystem->OnAction();
+		collisionResponseSystem->AfterAction();
 	}
 
 	void SystemManager::ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT)

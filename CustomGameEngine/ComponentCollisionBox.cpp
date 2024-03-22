@@ -10,6 +10,8 @@ namespace Engine {
 		localPoints.maxY = maxY;
 		localPoints.maxZ = maxZ;
 
+		isMovedByCollisions = true;
+
 		useDefaultCollisionResponse = defaultCollisionResponse;
 	}
 

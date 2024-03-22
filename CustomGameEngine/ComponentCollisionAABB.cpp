@@ -10,6 +10,8 @@ namespace Engine {
 		localBounds.maxY = maxY;
 		localBounds.maxZ = maxZ;
 
+		isMovedByCollisions = true;
+
 		useDefaultCollisionResponse = defaultCollisionResponse;
 	}
 

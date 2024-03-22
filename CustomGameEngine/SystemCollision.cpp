@@ -20,7 +20,7 @@ namespace Engine {
 		if (collider->useDefaultCollisionResponse && collider2->useDefaultCollisionResponse) {
 			CollisionData collision = Intersect(transform, collider, transform2, collider2);
 			if (collision.isColliding) {
-				DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
+				//DefaultCollisionResponse(transform->GetOwner(), transform2->GetOwner());
 				collisionManager->AddToCollisionList(collision);
 
 				collider->AddToCollisions(collider2->GetOwner());

@@ -4,6 +4,8 @@ namespace Engine {
 	{
 		this->sphereRadius = sphereRadius;
 		useDefaultCollisionResponse = defaultCollisionResponse;
+
+		isMovedByCollisions = true;
 	}
 
 	ComponentCollisionSphere::~ComponentCollisionSphere()
