@@ -1,9 +1,10 @@
 #include "SystemCollision.h"
 #include "ComponentTransform.h"
 namespace Engine {
-	SystemCollision::SystemCollision(EntityManager* entityManager)
+	SystemCollision::SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager)
 	{
 		this->entityManager = entityManager;
+		this->collisionManager = collisionManager;
 	}
 
 	SystemCollision::~SystemCollision()

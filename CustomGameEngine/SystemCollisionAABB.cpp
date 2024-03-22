@@ -1,7 +1,7 @@
 #include "SystemCollisionAABB.h"
 #include <iostream>
 namespace Engine {
-	SystemCollisionAABB::SystemCollisionAABB(EntityManager* entityManager) : SystemCollision(entityManager)
+	SystemCollisionAABB::SystemCollisionAABB(EntityManager* entityManager, CollisionManager* collisionManager) : SystemCollision(entityManager, collisionManager)
 	{
 	}
 

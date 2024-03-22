@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="AOScene.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CollisionScene.h" />
     <ClInclude Include="ComponentCollision.h" />
     <ClInclude Include="ComponentCollisionAABB.h" />
@@ -192,6 +193,7 @@
   <ItemGroup>
     <ClCompile Include="AOScene.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionScene.cpp" />
     <ClCompile Include="ComponentCollision.cpp" />
     <ClCompile Include="ComponentCollisionAABB.cpp" />

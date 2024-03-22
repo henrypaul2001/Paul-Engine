@@ -1,6 +1,6 @@
 #include "SystemCollisionSphereAABB.h"
 namespace Engine {
-	SystemCollisionSphereAABB::SystemCollisionSphereAABB(EntityManager* entityManager) : SystemCollision(entityManager)
+	SystemCollisionSphereAABB::SystemCollisionSphereAABB(EntityManager* entityManager, CollisionManager* collisionManager) : SystemCollision(entityManager, collisionManager)
 	{
 
 	}

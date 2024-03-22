@@ -20,6 +20,8 @@ namespace Engine
 
 		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
+
+		this->collisionManager = new CollisionManager();
 	}
 
 	Scene::~Scene()

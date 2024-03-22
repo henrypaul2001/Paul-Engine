@@ -12,7 +12,7 @@ namespace Engine {
 
 		bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
-		SystemCollisionSphereAABB(EntityManager* entityManager);
+		SystemCollisionSphereAABB(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollisionSphereAABB();
 
 		SystemTypes Name() override { return SYSTEM_COLLISION_SPHERE_AABB; }

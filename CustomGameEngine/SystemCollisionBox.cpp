@@ -1,6 +1,6 @@
 #include "SystemCollisionBox.h"
 namespace Engine {
-	SystemCollisionBox::SystemCollisionBox(EntityManager* entityManager) : SystemCollision(entityManager)
+	SystemCollisionBox::SystemCollisionBox(EntityManager* entityManager, CollisionManager* collisionManager) : SystemCollision(entityManager, collisionManager)
 	{
 
 	}

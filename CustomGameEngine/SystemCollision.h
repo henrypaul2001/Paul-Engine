@@ -6,11 +6,13 @@
 #include "ComponentCollisionBox.h"
 #include "ComponentCollisionSphere.h"
 #include "EntityManager.h"
+#include "CollisionManager.h"
 namespace Engine {
 	class SystemCollision : public System
 	{
 	protected:
 		EntityManager* entityManager;
+		CollisionManager* collisionManager;
 		void Collision(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2);
 		virtual bool Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) = 0;
 		void DefaultCollisionResponse(Entity* entity1, Entity* entity2);
@@ -21,7 +23,7 @@ namespace Engine {
 		std::vector<glm::vec3> GetEdgeVectors(ComponentTransform* transform);
 		std::vector<glm::vec3> GetAllCollisionAxis(ComponentTransform* transform, ComponentTransform* transform2);
 	public:
-		SystemCollision(EntityManager* entityManager);
+		SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollision();
 
 		virtual SystemTypes Name() override = 0;

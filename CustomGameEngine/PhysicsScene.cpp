@@ -145,12 +145,12 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemCollisionAABB(entityManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemCollisionSphere(entityManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemCollisionBox(entityManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphere(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionBox(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}

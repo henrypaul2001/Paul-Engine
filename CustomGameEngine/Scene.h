@@ -9,6 +9,7 @@
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "RenderManager.h"
+#include "CollisionManager.h"
 namespace Engine 
 {
 	class SceneManager;
@@ -21,6 +22,7 @@ namespace Engine
 		SystemManager* systemManager;
 		EntityManager* entityManager;
 		RenderManager* renderManager;
+		CollisionManager* collisionManager;
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
 
