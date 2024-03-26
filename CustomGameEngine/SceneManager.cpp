@@ -148,9 +148,10 @@ namespace Engine
 
 		float lastFrame = static_cast<float>(glfwGetTime());
 		float currentFrame;
+		Scene::dt = 0.0f;
 		while (!glfwWindowShouldClose(window))
 		{
-			currentFrame = static_cast<float>(glfwGetTime());
+			currentFrame = static_cast<float>(glfwGetTime()) + 0.0001f;
 			Scene::dt = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 			//Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;

@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include <algorithm>
 #include <iostream>
+#include "ComponentCollisionSphere.h"
 namespace Engine 
 {
 	SystemPhysics::SystemPhysics()
@@ -54,17 +55,18 @@ namespace Engine
 
 		// Apply gravity if component enables it and is not an immovable object
 		if (physics->Gravity() && inverseMass > 0) {
-			acceleration -= glm::vec3(gravityAxis.x * gravity, gravityAxis.y * gravity, gravityAxis.z * gravity) * Scene::dt;
+			acceleration += glm::vec3(gravityAxis.x * -gravity, gravityAxis.y * -gravity, gravityAxis.z * -gravity) * Scene::dt;
 		}
 
 		float vMagnitude = glm::length(velocity); //m/s
 
 		if (vMagnitude > 0) {
 			float surfaceArea = physics->SurfaceArea(); // m2
-			float dragMagnitude = physics->DragCoefficient() * airDensity * ((vMagnitude * vMagnitude) / 2.0f) * surfaceArea;
+			float coefficient = physics->DragCoefficient();
+			float dragMagnitude = coefficient * airDensity * ((vMagnitude * vMagnitude) / 2.0f) * surfaceArea;
 			glm::vec3 dragDirection = -glm::normalize(velocity);
 
-			acceleration += dragMagnitude * dragDirection;
+			acceleration += (dragMagnitude * dragDirection) * Scene::dt;
 		}
 
 		velocity += acceleration * Scene::dt;
@@ -104,8 +106,5 @@ namespace Engine
 
 		physics->ClearForces();
 		physics->SetTorque(glm::vec3(0.0f));
-		//transform->SetLastPosition(transform->Position());
-		//transform->SetPosition(transform->Position() + physics->Velocity() * Scene::dt);
-		//std::cout << " position: " << transform->Position().x << ", " << transform->Position().y << ", " << transform->Position().z << ". last position: " << transform->LastPosition().x << ", " << transform->LastPosition().y << ", " << transform->LastPosition().z << std::endl;
 	}
 }

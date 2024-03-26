@@ -24,6 +24,10 @@ namespace Engine
 
 	void SystemManager::ActionUpdateSystems(EntityManager* entityManager)
 	{
+		// Collision response
+		collisionResponseSystem->OnAction();
+		collisionResponseSystem->AfterAction();
+
 		std::vector<Entity*> entityList = entityManager->Entities();
 		for (System* s : updateSystemList) {
 			for (Entity* e : entityList) {
@@ -31,10 +35,6 @@ namespace Engine
 			}
 			s->AfterAction();
 		}
-
-		// Collision response
-		collisionResponseSystem->OnAction();
-		collisionResponseSystem->AfterAction();
 	}
 
 	void SystemManager::ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT)

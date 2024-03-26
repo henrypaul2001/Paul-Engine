@@ -24,6 +24,7 @@ namespace Engine {
 		bool IsMovedByCollisions() { return isMovedByCollisions; }
 		void IsMovedByCollisions(bool isMoveable) { isMovedByCollisions = isMoveable; }
 
+		std::unordered_map<Entity*, std::string> Collisions() { return EntitiesCollidingWith; }
 		bool IsCollidingWithEntity(Entity* e) { return EntitiesCollidingWith.find(e) != EntitiesCollidingWith.end(); }
 		void AddToCollisions(Entity* e) { EntitiesCollidingWith[e] = e->Name(); }
 		void RemoveFromCollisions(Entity* e) { EntitiesCollidingWith.erase(e); }

@@ -54,6 +54,9 @@ namespace Engine {
 		systemManager->ActionUpdateSystems(entityManager);
 
 		float time = (float)glfwGetTime();
+
+		Entity* ball = entityManager->FindEntity("Physics Ball");
+		//std::cout << "Velocity y = " << dynamic_cast<ComponentPhysics*>(ball->GetComponent(COMPONENT_PHYSICS))->Velocity().y << std::endl;
 	}
 
 	void PhysicsScene::Render()
@@ -90,6 +93,9 @@ namespace Engine {
 			Entity* cube = entityManager->FindEntity("Physics Cube");
 			//dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(5.0f, 100.0f, 0.0f));
 			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.8f, -0.9f));
+
+			Entity* ball2 = entityManager->FindEntity("Physics Ball 2");
+			dynamic_cast<ComponentPhysics*>(ball2->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.8f, -0.9f));
 		}
 		else if (key == GLFW_KEY_G) {
 			SystemPhysics* physics = dynamic_cast<SystemPhysics*>(systemManager->FindSystem(SYSTEM_PHYSICS, UPDATE_SYSTEMS));
@@ -117,26 +123,34 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(0.0f, -1.1f, -30.0f));
+		floor->AddComponent(new ComponentTransform(0.0f, -2.0f, -20.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 0.1f, 10.0f));
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 1.0f, 10.0f));
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		dynamic_cast<ComponentCollisionAABB*>(floor->GetComponent(COMPONENT_COLLISION_AABB))->IsMovedByCollisions(true);
+		dynamic_cast<ComponentCollisionAABB*>(floor->GetComponent(COMPONENT_COLLISION_AABB))->IsMovedByCollisions(false);
 		entityManager->AddEntity(floor);
 
 		Entity* physicsCube = new Entity("Physics Cube");
-		physicsCube->AddComponent(new ComponentTransform(0.0f, 10.0f, -30.0f));
+		physicsCube->AddComponent(new ComponentTransform(-6.5f, 10.0f, -20.0f));
 		physicsCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		physicsCube->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		physicsCube->AddComponent(new ComponentPhysics(10.0f, 1.05f, 1.0f, false)); // drag coefficient of a cube, surface area = 1.0
 		entityManager->AddEntity(physicsCube);
 
 		Entity* physicsBall = new Entity("Physics Ball");
-		physicsBall->AddComponent(new ComponentTransform(5.0f, 50.0f, -30.0f));
+		physicsBall->AddComponent(new ComponentTransform(8.0f, 30.0f, -20.0f));
 		physicsBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		physicsBall->AddComponent(new ComponentCollisionSphere(1.0f, true));
-		physicsBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f)); // drag coefficient of a sphere, surface area = 0.5
+		physicsBall->AddComponent(new ComponentCollisionSphere(1.01f, true));
+		physicsBall->AddComponent(new ComponentPhysics(15.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
 		entityManager->AddEntity(physicsBall);
+
+		Entity* physicsBall2 = new Entity("Physics Ball 2");
+		physicsBall2->AddComponent(new ComponentTransform(6.5f, 8.5f, -20.0f));
+		physicsBall2->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		physicsBall2->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		physicsBall2->AddComponent(new ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
+		dynamic_cast<ComponentCollisionSphere*>(physicsBall2->GetComponent(COMPONENT_COLLISION_SPHERE))->IsMovedByCollisions(true);
+		entityManager->AddEntity(physicsBall2);
 	}
 
 	void PhysicsScene::CreateSystems()
@@ -146,6 +160,7 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphere(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
@@ -153,7 +168,5 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResponder(collisionManager));
-
-		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }

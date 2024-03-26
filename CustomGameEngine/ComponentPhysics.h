@@ -34,6 +34,9 @@ namespace Engine {
 		void SetVelocity(glm::vec3 newVelocity) { velocity = newVelocity; }
 		void SetAngularVelocity(glm::vec3 newVelocity) { angularVelocity = newVelocity; }
 
+		void ApplyLinearImpulse(glm::vec3 force) { velocity += force * inverseMass; }
+		void ApplyAngularImpulse(glm::vec3 angularForce) { angularVelocity += inertiaTensor * force; }
+
 		void SetTorque(glm::vec3 newTorque) { torque = newTorque; }
 
 		bool Gravity() { return gravity; }

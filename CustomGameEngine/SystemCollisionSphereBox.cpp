@@ -101,10 +101,10 @@ namespace Engine {
 		glm::vec3 localPoint = (transform2->GetWorldPosition() - transform->GetWorldPosition()) - closestPoint;
 
 		CollisionData collision;
-		if (distance <= scaledRadius) {
+		if (distance < scaledRadius) {
 			collision.isColliding = true;
 			collision.collisionPenetration = scaledRadius - distance;
-			collision.collisionNormal = glm::normalize(localPoint);
+			collision.collisionNormal = glm::normalize(-localPoint);
 			collision.localCollisionPoint = closestPoint;
 			collision.otherLocalCollisionPoint -collision.collisionNormal * scaledRadius;
 			collision.collidingObject = transform->GetOwner();

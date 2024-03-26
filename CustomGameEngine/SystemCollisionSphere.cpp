@@ -82,10 +82,10 @@ namespace Engine {
 		float combinedRadius = scaledRadius1 + scaledRadius2;
 		
 		CollisionData collision;
-		if (distance <= combinedRadius) {
+		if (distance < combinedRadius) {
 			collision.isColliding = true;
 			collision.collisionPenetration = combinedRadius - distance;
-			collision.collisionNormal = glm::normalize(transform2->GetWorldPosition() - transform->GetWorldPosition());
+			collision.collisionNormal = -glm::normalize(transform2->GetWorldPosition() - transform->GetWorldPosition());
 			collision.localCollisionPoint = collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius();
 			collision.otherLocalCollisionPoint = collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius();
 			collision.collidingObject = transform->GetOwner();

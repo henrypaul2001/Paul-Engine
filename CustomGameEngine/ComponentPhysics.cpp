@@ -8,7 +8,8 @@ namespace Engine {
 		this->surfaceArea = surfaceArea;
 		this->gravity = gravity;
 
-		inertiaTensor = glm::mat3(1.0f);
+		//inertiaTensor = glm::mat3(1.0f);
+		inertiaTensor = glm::mat3(0.0f);
 	}
 
 	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea)
@@ -18,7 +19,7 @@ namespace Engine {
 		this->surfaceArea = surfaceArea;
 		gravity = true;
 
-		inertiaTensor = glm::mat3(1.0f);
+		inertiaTensor = glm::mat3(0.0f);
 	}
 
 	ComponentPhysics::ComponentPhysics(float mass, float drag)
@@ -28,7 +29,7 @@ namespace Engine {
 		gravity = true;
 		surfaceArea = 1.0f;
 
-		inertiaTensor = glm::mat3(1.0f);
+		inertiaTensor = glm::mat3(0.0f);
 	}
 
 	ComponentPhysics::ComponentPhysics(float mass, bool gravity)
@@ -38,7 +39,7 @@ namespace Engine {
 		dragCoefficient = 1.05f; // cube drag coefficient
 		surfaceArea = 1.0f;
 
-		inertiaTensor = glm::mat3(1.0f);
+		inertiaTensor = glm::mat3(0.0f);
 	}
 
 	ComponentPhysics::ComponentPhysics(float mass)
@@ -48,7 +49,7 @@ namespace Engine {
 		dragCoefficient = 1.05f; // cube drag coefficient
 		surfaceArea = 1.0f;
 
-		inertiaTensor = glm::mat3(1.0f);
+		inertiaTensor = glm::mat3(0.0f);
 	}
 
 	ComponentPhysics::~ComponentPhysics()
