@@ -11,6 +11,7 @@
 namespace Engine {
 	PhysicsScene::PhysicsScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
+		ballCount = 0;
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SSAO = true;
@@ -90,12 +91,17 @@ namespace Engine {
 			ToggleSSAO();
 		}
 		else if (key == GLFW_KEY_KP_8) {
-			Entity* cube = entityManager->FindEntity("Physics Cube");
-			//dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(5.0f, 100.0f, 0.0f));
-			dynamic_cast<ComponentPhysics*>(cube->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.8f, -0.9f));
-
-			Entity* ball2 = entityManager->FindEntity("Physics Ball 2");
-			dynamic_cast<ComponentPhysics*>(ball2->GetComponent(COMPONENT_PHYSICS))->AddForce(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.8f, -0.9f));
+			std::string name = std::string("Ball ") + std::string(std::to_string(ballCount));
+			std::cout << "Creating " << name << std::endl;
+			Entity* newBall = new Entity(name);
+			newBall->AddComponent(new ComponentTransform(6.5f, 8.5f, -20.0f));
+			newBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+			newBall->AddComponent(new ComponentCollisionSphere(1.0f, true));
+			newBall->AddComponent(new ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
+			dynamic_cast<ComponentCollisionSphere*>(newBall->GetComponent(COMPONENT_COLLISION_SPHERE))->IsMovedByCollisions(true);
+			entityManager->AddEntity(newBall);
+			std::cout << "Created " << name << std::endl;
+			ballCount++;
 		}
 		else if (key == GLFW_KEY_G) {
 			SystemPhysics* physics = dynamic_cast<SystemPhysics*>(systemManager->FindSystem(SYSTEM_PHYSICS, UPDATE_SYSTEMS));
@@ -119,29 +125,55 @@ namespace Engine {
 		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		directional->Colour = glm::vec3(1.0f);
 		directional->Specular = glm::vec3(0.0f);
+		directional->Direction = glm::vec3(0.0f, -1.0f, 0.0f);
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(0.0f, -2.0f, -20.0f));
-		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(100.0f, 1.0f, 10.0f));
-		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		dynamic_cast<ComponentCollisionAABB*>(floor->GetComponent(COMPONENT_COLLISION_AABB))->IsMovedByCollisions(false);
-		entityManager->AddEntity(floor);
+		Entity* leftWall = new Entity("Left Wall");
+		leftWall->AddComponent(new ComponentTransform(-6.15f, -2.0f, -20.0f));
+		leftWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(leftWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(leftWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(-45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
+		//floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		leftWall->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionBox*>(leftWall->GetComponent(COMPONENT_COLLISION_BOX))->IsMovedByCollisions(false);
+		entityManager->AddEntity(leftWall);
 
-		Entity* physicsCube = new Entity("Physics Cube");
-		physicsCube->AddComponent(new ComponentTransform(-6.5f, 10.0f, -20.0f));
-		physicsCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		physicsCube->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		physicsCube->AddComponent(new ComponentPhysics(10.0f, 1.05f, 1.0f, false)); // drag coefficient of a cube, surface area = 1.0
-		entityManager->AddEntity(physicsCube);
+		Entity* rightWall = new Entity("Right Wall");
+		rightWall->AddComponent(new ComponentTransform(6.15f, -2.0f, -20.0f));
+		rightWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(rightWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(rightWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
+		//floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		rightWall->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionBox*>(rightWall->GetComponent(COMPONENT_COLLISION_BOX))->IsMovedByCollisions(false);
+		entityManager->AddEntity(rightWall);
+
+		Entity* backWall = new Entity("Back Wall");
+		backWall->AddComponent(new ComponentTransform(0.0f, -2.0f, -31.5f));
+		backWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(backWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(backWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(glm::radians(88.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+		//floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		backWall->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionBox*>(backWall->GetComponent(COMPONENT_COLLISION_BOX))->IsMovedByCollisions(false);
+		entityManager->AddEntity(backWall);
+
+		Entity* frontWall = new Entity("Front Wall");
+		frontWall->AddComponent(new ComponentTransform(0.0f, -2.0f, -8.5f));
+		frontWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(frontWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		dynamic_cast<ComponentTransform*>(frontWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(glm::radians(-88.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+		//floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		frontWall->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionBox*>(frontWall->GetComponent(COMPONENT_COLLISION_BOX))->IsMovedByCollisions(false);
+		entityManager->AddEntity(frontWall);
 
 		Entity* physicsBall = new Entity("Physics Ball");
 		physicsBall->AddComponent(new ComponentTransform(8.0f, 30.0f, -20.0f));
 		physicsBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		physicsBall->AddComponent(new ComponentCollisionSphere(1.01f, true));
-		physicsBall->AddComponent(new ComponentPhysics(15.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
+		physicsBall->AddComponent(new ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
 		entityManager->AddEntity(physicsBall);
 
 		Entity* physicsBall2 = new Entity("Physics Ball 2");

@@ -103,7 +103,6 @@ namespace Engine {
 			collision.isColliding = true;
 			collision.collisionPenetration = scaledRadius - distance;
 			collision.collisionNormal = -glm::normalize(transform2->GetWorldPosition() - closestPointWorldSpace);
-			//collision.collisionNormal = glm::normalize(-localPoint);
 			collision.localCollisionPoint = closestPoint;
 			collision.otherLocalCollisionPoint -collision.collisionNormal * scaledRadius;
 			collision.collidingObject = transform->GetOwner();

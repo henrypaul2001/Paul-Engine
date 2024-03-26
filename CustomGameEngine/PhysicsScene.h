@@ -3,6 +3,7 @@
 namespace Engine {
 	class PhysicsScene : public Scene
 	{
+		int ballCount;
 		bool SSAO;
 		void CreateEntities();
 		void CreateSystems();
