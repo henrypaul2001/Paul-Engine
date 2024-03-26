@@ -87,7 +87,7 @@ namespace Engine {
 			collision.collisionPenetration = combinedRadius - distance;
 			collision.collisionNormal = -glm::normalize(transform2->GetWorldPosition() - transform->GetWorldPosition());
 			collision.localCollisionPoint = collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius();
-			collision.otherLocalCollisionPoint = collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius();
+			collision.otherLocalCollisionPoint = -collision.collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius();
 			collision.collidingObject = transform->GetOwner();
 			collision.otherCollidingObject = transform2->GetOwner();
 		}

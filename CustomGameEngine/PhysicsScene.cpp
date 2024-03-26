@@ -130,7 +130,7 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		Entity* leftWall = new Entity("Left Wall");
-		leftWall->AddComponent(new ComponentTransform(-6.15f, -2.0f, -20.0f));
+		leftWall->AddComponent(new ComponentTransform(-6.15f, -20.0f, -20.0f));
 		leftWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(leftWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
 		dynamic_cast<ComponentTransform*>(leftWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(-45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -140,7 +140,7 @@ namespace Engine {
 		entityManager->AddEntity(leftWall);
 
 		Entity* rightWall = new Entity("Right Wall");
-		rightWall->AddComponent(new ComponentTransform(6.15f, -2.0f, -20.0f));
+		rightWall->AddComponent(new ComponentTransform(6.15f, -20.0f, -20.0f));
 		rightWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(rightWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
 		dynamic_cast<ComponentTransform*>(rightWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -150,7 +150,7 @@ namespace Engine {
 		entityManager->AddEntity(rightWall);
 
 		Entity* backWall = new Entity("Back Wall");
-		backWall->AddComponent(new ComponentTransform(0.0f, -2.0f, -31.5f));
+		backWall->AddComponent(new ComponentTransform(0.0f, -20.0f, -31.5f));
 		backWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(backWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
 		dynamic_cast<ComponentTransform*>(backWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(glm::radians(88.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -160,7 +160,7 @@ namespace Engine {
 		entityManager->AddEntity(backWall);
 
 		Entity* frontWall = new Entity("Front Wall");
-		frontWall->AddComponent(new ComponentTransform(0.0f, -2.0f, -8.5f));
+		frontWall->AddComponent(new ComponentTransform(0.0f, -20.0f, -8.5f));
 		frontWall->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(frontWall->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
 		dynamic_cast<ComponentTransform*>(frontWall->GetComponent(COMPONENT_TRANSFORM))->SetOrientation(glm::angleAxis(glm::radians(-88.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
