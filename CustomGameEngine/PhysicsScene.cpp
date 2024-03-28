@@ -183,6 +183,28 @@ namespace Engine {
 		physicsBall2->AddComponent(new ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
 		dynamic_cast<ComponentCollisionSphere*>(physicsBall2->GetComponent(COMPONENT_COLLISION_SPHERE))->IsMovedByCollisions(true);
 		entityManager->AddEntity(physicsBall2);
+
+		Entity* floor = new Entity("Floor");
+		floor->AddComponent(new ComponentTransform(0.0f, -2.0f, 0.0f));
+		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionAABB*>(floor->GetComponent(COMPONENT_COLLISION_AABB))->IsMovedByCollisions(false);
+		entityManager->AddEntity(floor);
+
+		Entity* inelasticBall = new Entity("Inelastic Ball");
+		inelasticBall->AddComponent(new ComponentTransform(-1.0f, 8.0f, -1.0f));
+		inelasticBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		inelasticBall->AddComponent(new ComponentCollisionSphere(1.01f, true));
+		inelasticBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f, 0.0f, true));
+		entityManager->AddEntity(inelasticBall);
+
+		Entity* elasticBall = new Entity("Elastic Ball");
+		elasticBall->AddComponent(new ComponentTransform(1.0f, 8.0f, -1.0f));
+		elasticBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		elasticBall->AddComponent(new ComponentCollisionSphere(1.01f, true));
+		elasticBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f, 1.0f, true));
+		entityManager->AddEntity(elasticBall);
 	}
 
 	void PhysicsScene::CreateSystems()

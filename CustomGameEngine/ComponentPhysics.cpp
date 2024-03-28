@@ -1,13 +1,23 @@
 #include "ComponentPhysics.h"
 #include <glm/gtc/quaternion.hpp>
 namespace Engine {
+	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, float elasticity, bool gravity)
+	{
+		SetMass(mass);
+		dragCoefficient = drag;
+		this->surfaceArea = surfaceArea;
+		this->gravity = gravity;
+		this->elasticity = elasticity;
+		inertiaTensor = glm::mat3(1.0f);
+	}
+
 	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, bool gravity)
 	{
 		SetMass(mass);
 		dragCoefficient = drag;
 		this->surfaceArea = surfaceArea;
 		this->gravity = gravity;
-
+		this->elasticity = 0.5f;
 		inertiaTensor = glm::mat3(1.0f);
 		//inertiaTensor = glm::mat3(0.0f);
 	}
@@ -18,7 +28,7 @@ namespace Engine {
 		dragCoefficient = drag;
 		this->surfaceArea = surfaceArea;
 		gravity = true;
-
+		this->elasticity = 0.5f;
 		inertiaTensor = glm::mat3(1.0f);
 		//inertiaTensor = glm::mat3(0.0f);
 	}
@@ -29,7 +39,7 @@ namespace Engine {
 		dragCoefficient = drag;
 		gravity = true;
 		surfaceArea = 1.0f;
-
+		this->elasticity = 0.5f;
 		inertiaTensor = glm::mat3(1.0f);
 		//inertiaTensor = glm::mat3(0.0f);
 	}
@@ -40,7 +50,7 @@ namespace Engine {
 		this->gravity = gravity;
 		dragCoefficient = 1.05f; // cube drag coefficient
 		surfaceArea = 1.0f;
-
+		this->elasticity = 0.5f;
 		inertiaTensor = glm::mat3(1.0f);
 		//inertiaTensor = glm::mat3(0.0f);
 	}
@@ -51,7 +61,7 @@ namespace Engine {
 		gravity = true;
 		dragCoefficient = 1.05f; // cube drag coefficient
 		surfaceArea = 1.0f;
-
+		this->elasticity = 0.5f;
 		inertiaTensor = glm::mat3(1.0f);
 		//inertiaTensor = glm::mat3(0.0f);
 	}

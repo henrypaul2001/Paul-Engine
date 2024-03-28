@@ -125,8 +125,14 @@ namespace Engine {
 
 		float angularEffect = glm::dot(intertiaA + intertiaB, collision.collisionNormal);
 
-		float coefficient = 0.66f; // hard coded value representing energy lost on collision, will later be determined by physical properties in physics component
-	
+		float elasticityA = 0.5f;
+		float elasticityB = 0.5f;
+		if (physicsA != nullptr) { elasticityA = physicsA->Elasticity(); }
+		if (physicsB != nullptr) { elasticityB = physicsB->Elasticity(); }
+
+		//float coefficient = 0.66f; // hard coded value representing energy lost on collision, will later be determined by physical properties in physics component
+		float coefficient = elasticityA * elasticityB;
+
 		float J = (-(1.0f + coefficient) * impulseForce) / (totalMass + angularEffect);
 		glm::vec3 fullImpulse = collision.collisionNormal * J;
 

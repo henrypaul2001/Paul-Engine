@@ -275,10 +275,10 @@ namespace Engine {
 		Entity* pointLight5 = new Entity("Point Light5");
 		pointLight5->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
 		pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(earth);
+		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
 		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
-		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.25f));
+		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light5 = new ComponentLight(POINT);
 		light5->Colour = glm::vec3(25.0f, 25.0f, 25.0f);
 		//light5->Colour = glm::vec3(0.5, 0.5, 0.5);

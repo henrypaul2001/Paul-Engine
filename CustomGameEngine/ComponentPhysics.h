@@ -7,6 +7,7 @@ namespace Engine {
     class ComponentPhysics : public Component
     {
 	public:
+		ComponentPhysics(float mass = 10.0f, float drag = 1.05f, float surfaceArea = 1.0f, float elasticity = 0.5f, bool gravity = true);
 		ComponentPhysics(float mass, float drag, float surfaceArea, bool gravity);
 		ComponentPhysics(float mass, float drag, float surfaceArea);
 		ComponentPhysics(float mass, float drag);
@@ -54,6 +55,9 @@ namespace Engine {
 		float SurfaceArea() { return surfaceArea; }
 		void SurfaceArea(float surfaceArea) { this->surfaceArea = surfaceArea; }
 
+		float Elasticity() { return elasticity; }
+		float Elasticity(float elasticity) { this->elasticity = elasticity; }
+
 		ComponentTypes ComponentType() override { return COMPONENT_PHYSICS; }
 		void Close() override;
 	private:
@@ -65,6 +69,7 @@ namespace Engine {
 		float dragCoefficient;
 		float inverseMass;
 		float mass;
+		float elasticity;
 		
 		glm::vec3 velocity;
 		
