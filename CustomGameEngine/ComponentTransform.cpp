@@ -45,7 +45,8 @@ namespace Engine
 	{
 		this->rotationAxis = rotationAxis;
 		this->rotationAngle = rotationAngle;
-		UpdateModelMatrix();
+		SetOrientation(glm::angleAxis(glm::radians(rotationAngle), rotationAxis));
+		//UpdateModelMatrix();
 	}
 
 	void ComponentTransform::SetScale(glm::vec3 scale) {
