@@ -7,12 +7,7 @@ namespace Engine {
     class ComponentPhysics : public Component
     {
 	public:
-		ComponentPhysics(float mass = 10.0f, float drag = 1.05f, float surfaceArea = 1.0f, float elasticity = 0.5f, bool gravity = true);
-		ComponentPhysics(float mass, float drag, float surfaceArea, bool gravity);
-		ComponentPhysics(float mass, float drag, float surfaceArea);
-		ComponentPhysics(float mass, float drag);
-		ComponentPhysics(float mass, bool gravity);
-		ComponentPhysics(float mass);
+		ComponentPhysics(float mass = 10.0f, float drag = 1.05f, float surfaceArea = 1.0f, float elasticity = 0.5f, bool gravity = true, bool cuboidIntertiaTensor = false);
 		~ComponentPhysics();
 
 		void ClearForces() { force = glm::vec3(0.0f); }
@@ -36,7 +31,7 @@ namespace Engine {
 		void SetAngularVelocity(glm::vec3 newVelocity) { angularVelocity = newVelocity; }
 
 		void ApplyLinearImpulse(glm::vec3 force) { velocity += force * inverseMass; }
-		void ApplyAngularImpulse(glm::vec3 angularForce) { angularVelocity += inertiaTensor * force; }
+		void ApplyAngularImpulse(glm::vec3 angularForce) { angularVelocity += inverseInertiaTensor * angularForce; }
 
 		void SetTorque(glm::vec3 newTorque) { torque = newTorque; }
 
@@ -46,6 +41,9 @@ namespace Engine {
 		glm::mat3 InertiaTensor() { return inertiaTensor; }
 		glm::vec3 Torque() { return torque; }
 		glm::vec3 AngularVelocity() { return angularVelocity; }
+
+		glm::mat3 InverseInertiaTensor() { return inverseInertiaTensor; }
+		glm::vec3 InverseInertia() { return inverseInertia; }
 
 		void UpdateInertiaTensor(glm::quat orientation);
 
@@ -76,6 +74,9 @@ namespace Engine {
 		glm::vec3 angularVelocity;
 		glm::vec3 torque;
 		glm::mat3 inertiaTensor;
+
+		glm::mat3 inverseInertiaTensor;
+		glm::vec3 inverseInertia;
 
 		glm::vec3 force;
     };

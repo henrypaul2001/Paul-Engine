@@ -1,69 +1,32 @@
 #include "ComponentPhysics.h"
 #include <glm/gtc/quaternion.hpp>
 namespace Engine {
-	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, float elasticity, bool gravity)
+	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, float elasticity, bool gravity, bool cuboidInertiaTensor)
 	{
 		SetMass(mass);
 		dragCoefficient = drag;
 		this->surfaceArea = surfaceArea;
 		this->gravity = gravity;
 		this->elasticity = elasticity;
-		inertiaTensor = glm::mat3(1.0f);
-	}
 
-	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, bool gravity)
-	{
-		SetMass(mass);
-		dragCoefficient = drag;
-		this->surfaceArea = surfaceArea;
-		this->gravity = gravity;
-		this->elasticity = 0.5f;
-		inertiaTensor = glm::mat3(1.0f);
-		//inertiaTensor = glm::mat3(0.0f);
-	}
+		if (!cuboidInertiaTensor) {
+			float radius = surfaceArea; // temp
+			float I = 2.5f * inverseMass / (radius * radius);
 
-	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea)
-	{
-		SetMass(mass);
-		dragCoefficient = drag;
-		this->surfaceArea = surfaceArea;
-		gravity = true;
-		this->elasticity = 0.5f;
-		inertiaTensor = glm::mat3(1.0f);
-		//inertiaTensor = glm::mat3(0.0f);
-	}
+			inverseInertia = glm::vec3(I);
+		}
+		else {
+			float maxX = surfaceArea;
+			float maxY = surfaceArea;
+			float maxZ = surfaceArea;
 
-	ComponentPhysics::ComponentPhysics(float mass, float drag)
-	{
-		SetMass(mass);
-		dragCoefficient = drag;
-		gravity = true;
-		surfaceArea = 1.0f;
-		this->elasticity = 0.5f;
-		inertiaTensor = glm::mat3(1.0f);
-		//inertiaTensor = glm::mat3(0.0f);
-	}
+			glm::vec3 dimensions = glm::vec3(surfaceArea); // temp
+			glm::vec3 dimensionsSquared = dimensions * dimensions;
 
-	ComponentPhysics::ComponentPhysics(float mass, bool gravity)
-	{
-		SetMass(mass);
-		this->gravity = gravity;
-		dragCoefficient = 1.05f; // cube drag coefficient
-		surfaceArea = 1.0f;
-		this->elasticity = 0.5f;
-		inertiaTensor = glm::mat3(1.0f);
-		//inertiaTensor = glm::mat3(0.0f);
-	}
-
-	ComponentPhysics::ComponentPhysics(float mass)
-	{
-		SetMass(mass);
-		gravity = true;
-		dragCoefficient = 1.05f; // cube drag coefficient
-		surfaceArea = 1.0f;
-		this->elasticity = 0.5f;
-		inertiaTensor = glm::mat3(1.0f);
-		//inertiaTensor = glm::mat3(0.0f);
+			inverseInertia.x = (12.0f * inverseMass) / (dimensionsSquared.y + dimensionsSquared.z);
+			inverseInertia.y = (12.0f * inverseMass) / (dimensionsSquared.x + dimensionsSquared.z);
+			inverseInertia.z = (12.0f * inverseMass) / (dimensionsSquared.x + dimensionsSquared.y);
+		}
 	}
 
 	ComponentPhysics::~ComponentPhysics()
@@ -73,11 +36,15 @@ namespace Engine {
 
 	void ComponentPhysics::UpdateInertiaTensor(glm::quat orientation)
 	{
+		glm::mat3 inverseOrientation = glm::mat3_cast(glm::conjugate(orientation));
 		glm::mat3 rotation = glm::mat3_cast(orientation);
 
-		glm::mat3 rotatedTensor = rotation * inertiaTensor * glm::transpose(rotation);
+		glm::mat3 scaled = glm::mat3();
+		scaled[0][0] = inverseInertia.x;
+		scaled[1][1] = inverseInertia.y;
+		scaled[2][2] = inverseInertia.z;
 
-		inertiaTensor = rotatedTensor;
+		inverseInertiaTensor = rotation * scaled * inverseOrientation;
 	}
 
 	void ComponentPhysics::Close()

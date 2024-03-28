@@ -78,19 +78,22 @@ namespace Engine {
 		std::vector<glm::vec3> axes = GetAllCollisionAxis(transform, transform2);
 
 		CollisionData collision;
-
 		CollisionData bestCollision;
 		bestCollision.collisionPenetration = -FLT_MAX;
 		for (glm::vec3 axis : axes) {
-			if (!CheckForCollisionOnAxis(axis, transform, dynamic_cast<ComponentCollisionBox*>(collider), transform2, dynamic_cast<ComponentCollisionBox*>(collider2), collision)) {
-				collision.isColliding = false;
-				return collision;
-			}
+			if (axis != glm::vec3(0.0f, 0.0f, 0.0f)) {
+				collision.collidingObject = transform->GetOwner();
+				collision.otherCollidingObject = transform2->GetOwner();
+				if (!CheckForCollisionOnAxis(axis, transform, dynamic_cast<ComponentCollisionBox*>(collider), transform2, dynamic_cast<ComponentCollisionBox*>(collider2), collision)) {
+					collision.isColliding = false;
+					return collision;
+				}
 
-			if (collision.collisionPenetration >= bestCollision.collisionPenetration) {
-				bestCollision = collision;
+				if (collision.collisionPenetration >= bestCollision.collisionPenetration) {
+					bestCollision = collision;
+				}
+				collision = CollisionData();
 			}
-			collision = CollisionData();
 		}
 
 		bestCollision.isColliding = true;

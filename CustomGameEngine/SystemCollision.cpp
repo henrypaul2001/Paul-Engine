@@ -51,7 +51,7 @@ namespace Engine {
 		float cube2Max;
 
 		std::vector<glm::vec3> cube1 = collider->WorldSpacePoints(transform->GetWorldModelMatrix());
-		std::vector<glm::vec3> cube2 = collider->WorldSpacePoints(transform2->GetWorldModelMatrix());
+		std::vector<glm::vec3> cube2 = collider2->WorldSpacePoints(transform2->GetWorldModelMatrix());
 
 		// Project points onto axis and check for overlap
 		cube1Min = glm::dot(cube1[0], axis);
@@ -81,17 +81,26 @@ namespace Engine {
 			}
 		}
 
+		glm::vec3 closestPoint = glm::vec3();
+		//closestPoint.x = std::max(localMinMax.minX, std::min(transformedSherePosition.x, localMinMax.maxX));
+		//closestPoint.y = std::max(localMinMax.minY, std::min(transformedSherePosition.y, localMinMax.maxY));
+		//closestPoint.z = std::max(localMinMax.minZ, std::min(transformedSherePosition.z, localMinMax.maxZ));
+
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
-			collision.collisionNormal = axis;
+			collision.collisionNormal = glm::normalize(axis);
 			collision.collisionPenetration = cube2Min - cube1Max;
-			collision.localCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
+			collision.otherLocalCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
+			//collision.localCollisionPoint = glm::vec3();
+			//collision.otherLocalCollisionPoint = glm::vec3();
 			return true;
 		}
 
 		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
-			collision.collisionNormal = -axis;
+			collision.collisionNormal = -glm::normalize(axis);
 			collision.collisionPenetration = cube1Min - cube2Max;
-			collision.localCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
+			collision.otherLocalCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
+			//collision.localCollisionPoint = glm::vec3();
+			//collision.otherLocalCollisionPoint = glm::vec3();
 			return true;
 		}
 
@@ -107,7 +116,7 @@ namespace Engine {
 		float cube2Max;
 
 		std::vector<glm::vec3> cube1 = collider->WorldSpacePoints(transform->GetWorldModelMatrix());
-		std::vector<glm::vec3> cube2 = collider->WorldSpacePoints(transform2->GetWorldModelMatrix());
+		std::vector<glm::vec3> cube2 = collider2->WorldSpacePoints(transform2->GetWorldModelMatrix());
 
 		// Project points onto axis and check for overlap
 		cube1Min = glm::dot(cube1[0], axis);
@@ -138,16 +147,18 @@ namespace Engine {
 		}
 
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
-			collision.collisionNormal = axis;
+			collision.collisionNormal = glm::normalize(axis);
 			collision.collisionPenetration = cube2Min - cube1Max;
-			collision.localCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
+			collision.otherLocalCollisionPoint = cube2Min + collision.collisionNormal * collision.collisionPenetration;
+			//collision.otherLocalCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
 			return true;
 		}
 
 		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
-			collision.collisionNormal = -axis;
+			collision.collisionNormal = -glm::normalize(axis);
 			collision.collisionPenetration = cube1Min - cube2Max;
-			collision.localCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
+			collision.otherLocalCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
+			//collision.localCollisionPoint = cube2Max + collision.collisionNormal * collision.collisionPenetration;
 			return true;
 		}
 
@@ -165,7 +176,7 @@ namespace Engine {
 
 		// Rotate each normal based on objects current rotation
 		for (glm::vec3& normal : normals) {
-			normal = rotationMatrix * normal;
+			normal = glm::normalize(rotationMatrix * normal);
 		}
 
 		return normals;

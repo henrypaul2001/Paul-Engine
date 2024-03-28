@@ -75,7 +75,7 @@ namespace Engine
 		// Angular
 		physics->UpdateInertiaTensor(transform->GetOrientation());
 
-		glm::vec3 angularAcceleration = physics->InertiaTensor() * physics->Torque();
+		glm::vec3 angularAcceleration = physics->InverseInertiaTensor() * physics->Torque();
 		glm::vec3 angularVelocity = physics->AngularVelocity();
 
 		angularVelocity += angularAcceleration * Scene::dt;

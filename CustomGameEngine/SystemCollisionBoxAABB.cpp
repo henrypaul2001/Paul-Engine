@@ -85,6 +85,8 @@ namespace Engine {
 		CollisionData bestCollision;
 		bestCollision.collisionPenetration = -FLT_MAX;
 		for (glm::vec3 axis : axes) {
+			collision.collidingObject = transform->GetOwner();
+			collision.otherCollidingObject = transform2->GetOwner();
 			if (!CheckForCollisionOnAxis(axis, transform, dynamic_cast<ComponentCollisionBox*>(collider), transform2, dynamic_cast<ComponentCollisionAABB*>(collider2), collision)) {
 				collision.isColliding = false;
 				return collision;

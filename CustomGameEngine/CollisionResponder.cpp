@@ -58,18 +58,8 @@ namespace Engine {
 
 	void CollisionResponder::Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData collision)
 	{
-		float penetrationA = collision.collisionPenetration + 0.035f;
-		float penetrationB = collision.collisionPenetration + 0.035f;
-
-		float velocityToRest = 1.5f * Scene::dt;
-
 		if (colliderA->IsMovedByCollisions()) {
 			if (physicsA != nullptr) {
-				glm::vec3 velocity = physicsA->Velocity();
-				float vMagnitude = glm::length(velocity);
-				if (vMagnitude < velocityToRest) {
-					penetrationA = collision.collisionPenetration + vMagnitude;
-				}
 				transformA->SetPosition(transformA->GetWorldPosition() + (collision.collisionNormal * collision.collisionPenetration) * (physicsA->InverseMass() / totalMass));
 			}
 			else {
@@ -78,11 +68,6 @@ namespace Engine {
 		}
 		if (colliderB->IsMovedByCollisions()) {
 			if (physicsB != nullptr) {
-				glm::vec3 velocity = physicsB->Velocity();
-				float vMagnitude = glm::length(velocity);
-				if (vMagnitude < velocityToRest) {
-					penetrationB = collision.collisionPenetration * vMagnitude;
-				}
 				transformB->SetPosition(transformB->GetWorldPosition() - (collision.collisionNormal * collision.collisionPenetration) * (physicsB->InverseMass() / totalMass));
 			}
 			else {
@@ -137,11 +122,13 @@ namespace Engine {
 		glm::vec3 fullImpulse = collision.collisionNormal * J;
 
 		if (physicsA != nullptr && colliderA->IsMovedByCollisions()) {
+			//physicsA->AddForce(-fullImpulse, relativeA);
 			physicsA->ApplyLinearImpulse(-fullImpulse);
 			physicsA->ApplyAngularImpulse(glm::cross(relativeA, -fullImpulse));
 		}
 
 		if (physicsB != nullptr && colliderB->IsMovedByCollisions()) {
+			//physicsB->AddForce(fullImpulse, relativeB);
 			physicsB->ApplyLinearImpulse(fullImpulse);
 			physicsB->ApplyAngularImpulse(glm::cross(relativeB, fullImpulse));
 		}
