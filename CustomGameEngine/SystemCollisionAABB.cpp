@@ -111,8 +111,8 @@ namespace Engine {
 			collision.collisionNormal = bestAxis;
 			collision.localCollisionPoint = glm::vec3();
 			collision.otherLocalCollisionPoint = glm::vec3();
-			collision.collidingObject = transform->GetOwner();
-			collision.otherCollidingObject = transform2->GetOwner();
+			collision.collidingObject = transform2->GetOwner();
+			collision.otherCollidingObject = transform->GetOwner();
 		}
 		else {
 			collision.isColliding = false;
