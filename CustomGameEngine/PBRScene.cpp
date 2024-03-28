@@ -141,6 +141,12 @@ namespace Engine {
 		worn_corrugated_iron->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/displacement.png", TEXTURE_DISPLACE, false));
 		worn_corrugated_iron->height_scale = -0.1;
 
+		PBRMaterial* earth = new PBRMaterial();
+		earth->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/albedo.jpg", TEXTURE_ALBEDO, true));
+		earth->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/displacement.jpg", TEXTURE_DISPLACE, false));
+		earth->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/specular.jpg", TEXTURE_METALLIC, false));
+		earth->height_scale = -0.1;
+
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE));
@@ -269,10 +275,10 @@ namespace Engine {
 		Entity* pointLight5 = new Entity("Point Light5");
 		pointLight5->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
 		pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(earth);
 		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
-		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
+		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.25f));
 		ComponentLight* light5 = new ComponentLight(POINT);
 		light5->Colour = glm::vec3(25.0f, 25.0f, 25.0f);
 		//light5->Colour = glm::vec3(0.5, 0.5, 0.5);
@@ -342,6 +348,7 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+		systemManager->AddCollisionResponseSystem(new CollisionResponder(collisionManager));
 	}
 
 	void PBRScene::Update()
