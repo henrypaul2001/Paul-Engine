@@ -107,12 +107,11 @@ namespace Engine {
 			}
 
 			collision.isColliding = true;
-			collision.collisionPenetration = penetration;
-			collision.collisionNormal = bestAxis;
-			collision.localCollisionPoint = glm::vec3();
-			collision.otherLocalCollisionPoint = glm::vec3();
-			collision.collidingObject = transform2->GetOwner();
-			collision.otherCollidingObject = transform->GetOwner();
+
+			collision.AddContactPoint(glm::vec3(), glm::vec3(), bestAxis, penetration);
+
+			collision.objectA = transform2->GetOwner();
+			collision.objectB = transform->GetOwner();
 		}
 		else {
 			collision.isColliding = false;

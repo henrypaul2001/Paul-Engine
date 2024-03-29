@@ -14,8 +14,8 @@ namespace Engine {
 	void CollisionResponder::OnAction()
 	{
 		for (CollisionData collision : collisionManager->GetUnresolvedCollisions()) {
-			Entity* objectA = collision.collidingObject;
-			Entity* objectB = collision.otherCollidingObject;
+			Entity* objectA = collision.objectA;
+			Entity* objectB = collision.objectB;
 
 			ComponentPhysics* physicsA = dynamic_cast<ComponentPhysics*>(objectA->GetComponent(COMPONENT_PHYSICS));
 			ComponentPhysics* physicsB = dynamic_cast<ComponentPhysics*>(objectB->GetComponent(COMPONENT_PHYSICS));
@@ -58,79 +58,77 @@ namespace Engine {
 
 	void CollisionResponder::Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData collision)
 	{
-		if (colliderA->IsMovedByCollisions()) {
-			if (physicsA != nullptr) {
-				transformA->SetPosition(transformA->GetWorldPosition() + (collision.collisionNormal * collision.collisionPenetration) * (physicsA->InverseMass() / totalMass));
+		for (const ContactPoint& contact : collision.contactPoints) {
+			if (colliderA->IsMovedByCollisions()) {
+				if (physicsA != nullptr) {
+					transformA->SetPosition(transformA->GetWorldPosition() + (contact.normal * contact.penetration) * (physicsA->InverseMass() / totalMass));
+				}
+				else {
+					transformA->SetPosition(transformA->GetWorldPosition() + (contact.normal * contact.penetration));
+				}
 			}
-			else {
-				transformA->SetPosition(transformA->GetWorldPosition() + (collision.collisionNormal * collision.collisionPenetration));
-			}
-		}
-		if (colliderB->IsMovedByCollisions()) {
-			if (physicsB != nullptr) {
-				transformB->SetPosition(transformB->GetWorldPosition() - (collision.collisionNormal * collision.collisionPenetration) * (physicsB->InverseMass() / totalMass));
-			}
-			else {
-				transformB->SetPosition(transformB->GetWorldPosition() - (collision.collisionNormal * collision.collisionPenetration));
+			if (colliderB->IsMovedByCollisions()) {
+				if (physicsB != nullptr) {
+					transformB->SetPosition(transformB->GetWorldPosition() - (contact.normal * contact.penetration) * (physicsB->InverseMass() / totalMass));
+				}
+				else {
+					transformB->SetPosition(transformB->GetWorldPosition() - (contact.normal * contact.penetration));
+				}
 			}
 		}
 	}
 
 	void CollisionResponder::Impulse(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData collision)
 	{
-		//glm::vec3 relativeA = collision.otherLocalCollisionPoint - transformA->GetWorldPosition();
-		//glm::vec3 relativeB = collision.localCollisionPoint - transformB->GetWorldPosition();
+		for (const ContactPoint& contact : collision.contactPoints) {
+			glm::vec3 relativeA = contact.contactPointA;
+			glm::vec3 relativeB = contact.contactPointB;
 
-		glm::vec3 relativeA = collision.localCollisionPoint;
-		glm::vec3 relativeB = collision.otherLocalCollisionPoint;
+			glm::vec3 angularVelocityA = glm::vec3();
+			glm::vec3 velocityA = glm::vec3();
 
-		glm::vec3 angularVelocityA = glm::vec3();
-		glm::vec3 velocityA = glm::vec3();
+			glm::vec3 angularVelocityB = glm::vec3();
+			glm::vec3 velocityB = glm::vec3();
 
-		glm::vec3 angularVelocityB = glm::vec3();
-		glm::vec3 velocityB = glm::vec3();
+			if (physicsA != nullptr) {
+				angularVelocityA = glm::cross(physicsA->AngularVelocity(), relativeA);
+				velocityA = physicsA->Velocity() + angularVelocityA;
+			}
+			if (physicsB != nullptr) {
+				angularVelocityB = glm::cross(physicsB->AngularVelocity(), relativeB);
+				velocityB = physicsB->Velocity() + angularVelocityB;
+			}
 
-		if (physicsA != nullptr) { 
-			angularVelocityA = glm::cross(physicsA->AngularVelocity(), relativeA);
-			velocityA = physicsA->Velocity() + angularVelocityA;
-		}
-		if (physicsB != nullptr) { 
-			angularVelocityB = glm::cross(physicsB->AngularVelocity(), relativeB);
-			velocityB = physicsB->Velocity() + angularVelocityB;
-		}
+			glm::vec3 contactVelocity = velocityB - velocityA;
 
-		glm::vec3 contactVelocity = velocityB - velocityA;
+			float impulseForce = glm::dot(contactVelocity, contact.normal);
 
-		float impulseForce = glm::dot(contactVelocity, collision.collisionNormal);
+			glm::vec3 intertiaA = glm::vec3();
+			glm::vec3 intertiaB = glm::vec3();
+			if (physicsA != nullptr) { intertiaA = glm::cross(physicsA->InertiaTensor() * glm::cross(relativeA, contact.normal), relativeA); }
+			if (physicsB != nullptr) { intertiaB = glm::cross(physicsB->InertiaTensor() * glm::cross(relativeB, contact.normal), relativeB); }
 
-		glm::vec3 intertiaA = glm::vec3();
-		glm::vec3 intertiaB = glm::vec3();
-		if (physicsA != nullptr) { intertiaA = glm::cross(physicsA->InertiaTensor() * glm::cross(relativeA, collision.collisionNormal), relativeA); }
-		if (physicsB != nullptr) { intertiaB = glm::cross(physicsB->InertiaTensor() * glm::cross(relativeB, collision.collisionNormal), relativeB); }
+			float angularEffect = glm::dot(intertiaA + intertiaB, contact.normal);
 
-		float angularEffect = glm::dot(intertiaA + intertiaB, collision.collisionNormal);
+			float elasticityA = 0.5f;
+			float elasticityB = 0.5f;
+			if (physicsA != nullptr) { elasticityA = physicsA->Elasticity(); }
+			if (physicsB != nullptr) { elasticityB = physicsB->Elasticity(); }
 
-		float elasticityA = 0.5f;
-		float elasticityB = 0.5f;
-		if (physicsA != nullptr) { elasticityA = physicsA->Elasticity(); }
-		if (physicsB != nullptr) { elasticityB = physicsB->Elasticity(); }
+			float coefficient = elasticityA * elasticityB;
 
-		//float coefficient = 0.66f; // hard coded value representing energy lost on collision, will later be determined by physical properties in physics component
-		float coefficient = elasticityA * elasticityB;
+			float J = (-(1.0f + coefficient) * impulseForce) / (totalMass + angularEffect);
+			glm::vec3 fullImpulse = contact.normal * J;
 
-		float J = (-(1.0f + coefficient) * impulseForce) / (totalMass + angularEffect);
-		glm::vec3 fullImpulse = collision.collisionNormal * J;
+			if (physicsA != nullptr && colliderA->IsMovedByCollisions()) {
+				physicsA->ApplyLinearImpulse(-fullImpulse);
+				physicsA->ApplyAngularImpulse(glm::cross(relativeA, -fullImpulse));
+			}
 
-		if (physicsA != nullptr && colliderA->IsMovedByCollisions()) {
-			//physicsA->AddForce(-fullImpulse, relativeA);
-			physicsA->ApplyLinearImpulse(-fullImpulse);
-			physicsA->ApplyAngularImpulse(glm::cross(relativeA, -fullImpulse));
-		}
-
-		if (physicsB != nullptr && colliderB->IsMovedByCollisions()) {
-			//physicsB->AddForce(fullImpulse, relativeB);
-			physicsB->ApplyLinearImpulse(fullImpulse);
-			physicsB->ApplyAngularImpulse(glm::cross(relativeB, fullImpulse));
+			if (physicsB != nullptr && colliderB->IsMovedByCollisions()) {
+				physicsB->ApplyLinearImpulse(fullImpulse);
+				physicsB->ApplyAngularImpulse(glm::cross(relativeB, fullImpulse));
+			}
 		}
 	}
 }

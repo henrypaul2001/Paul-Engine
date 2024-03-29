@@ -101,12 +101,15 @@ namespace Engine {
 		CollisionData collision;
 		if (distance < scaledRadius) {
 			collision.isColliding = true;
-			collision.collisionPenetration = scaledRadius - distance;
-			collision.collisionNormal = -glm::normalize(transform2->GetWorldPosition() - closestPointWorldSpace);
-			collision.localCollisionPoint = closestPoint;
-			collision.otherLocalCollisionPoint = -collision.collisionNormal * scaledRadius;
-			collision.collidingObject = transform->GetOwner();
-			collision.otherCollidingObject = transform2->GetOwner();
+
+			float collisionPenetration = scaledRadius - distance;
+			glm::vec3 collisionNormal = -glm::normalize(transform2->GetWorldPosition() - closestPointWorldSpace);
+			glm::vec3 localCollisionPoint = closestPoint;
+			glm::vec3 otherLocalCollisionPoint = -collisionNormal * scaledRadius;
+			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
+
+			collision.objectA = transform->GetOwner();
+			collision.objectB = transform2->GetOwner();
 		}
 		else {
 			collision.isColliding = false;

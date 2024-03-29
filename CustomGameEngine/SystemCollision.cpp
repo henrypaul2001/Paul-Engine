@@ -81,26 +81,21 @@ namespace Engine {
 			}
 		}
 
-		glm::vec3 closestPoint = glm::vec3();
-		//closestPoint.x = std::max(localMinMax.minX, std::min(transformedSherePosition.x, localMinMax.maxX));
-		//closestPoint.y = std::max(localMinMax.minY, std::min(transformedSherePosition.y, localMinMax.maxY));
-		//closestPoint.z = std::max(localMinMax.minZ, std::min(transformedSherePosition.z, localMinMax.maxZ));
-
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
-			collision.collisionNormal = glm::normalize(axis);
-			collision.collisionPenetration = cube2Min - cube1Max;
-			collision.otherLocalCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
-			//collision.localCollisionPoint = glm::vec3();
-			//collision.otherLocalCollisionPoint = glm::vec3();
+			glm::vec3 collisionNormal = glm::normalize(axis);
+			float collisionPenetration = cube2Min - cube1Max;
+			glm::vec3 otherLocalCollisionPoint = cube1Max + collisionNormal * collisionPenetration;
+
+			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
 		}
 
 		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
-			collision.collisionNormal = -glm::normalize(axis);
-			collision.collisionPenetration = cube1Min - cube2Max;
-			collision.otherLocalCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
-			//collision.localCollisionPoint = glm::vec3();
-			//collision.otherLocalCollisionPoint = glm::vec3();
+			glm::vec3 collisionNormal = -glm::normalize(axis);
+			float collisionPenetration = cube1Min - cube2Max;
+			glm::vec3 otherLocalCollisionPoint = cube1Min + collisionNormal * collisionPenetration;
+
+			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
 		}
 
@@ -147,18 +142,20 @@ namespace Engine {
 		}
 
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
-			collision.collisionNormal = glm::normalize(axis);
-			collision.collisionPenetration = cube2Min - cube1Max;
-			collision.otherLocalCollisionPoint = cube2Min + collision.collisionNormal * collision.collisionPenetration;
-			//collision.otherLocalCollisionPoint = cube1Max + collision.collisionNormal * collision.collisionPenetration;
+			glm::vec3 collisionNormal = glm::normalize(axis);
+			float collisionPenetration = cube2Min - cube1Max;
+			glm::vec3 otherLocalCollisionPoint = cube2Min + collisionNormal * collisionPenetration;
+
+			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
 		}
 
 		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
-			collision.collisionNormal = -glm::normalize(axis);
-			collision.collisionPenetration = cube1Min - cube2Max;
-			collision.otherLocalCollisionPoint = cube1Min + collision.collisionNormal * collision.collisionPenetration;
-			//collision.localCollisionPoint = cube2Max + collision.collisionNormal * collision.collisionPenetration;
+			glm::vec3 collisionNormal = -glm::normalize(axis);
+			float collisionPenetration = cube1Min - cube2Max;
+			glm::vec3 otherLocalCollisionPoint = cube1Min + collisionNormal * collisionPenetration;
+			
+			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
 		}
 

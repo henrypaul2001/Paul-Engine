@@ -83,16 +83,17 @@ namespace Engine {
 		CollisionData collision;
 
 		CollisionData bestCollision;
-		bestCollision.collisionPenetration = -FLT_MAX;
+		bestCollision.AddContactPoint(glm::vec3(), glm::vec3(), glm::vec3(), -FLT_MAX);
+		float penetration = -FLT_MAX;
 		for (glm::vec3 axis : axes) {
-			collision.collidingObject = transform->GetOwner();
-			collision.otherCollidingObject = transform2->GetOwner();
+			collision.objectA = transform->GetOwner();
+			collision.objectB = transform2->GetOwner();
 			if (!CheckForCollisionOnAxis(axis, transform, dynamic_cast<ComponentCollisionBox*>(collider), transform2, dynamic_cast<ComponentCollisionAABB*>(collider2), collision)) {
 				collision.isColliding = false;
 				return collision;
 			}
 
-			if (collision.collisionPenetration >= bestCollision.collisionPenetration) {
+			if (collision.contactPoints[0].penetration >= bestCollision.contactPoints[0].penetration) {
 				bestCollision = collision;
 			}
 			collision = CollisionData();

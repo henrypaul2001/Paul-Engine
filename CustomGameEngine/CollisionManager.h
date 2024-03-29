@@ -2,16 +2,26 @@
 #include "Entity.h"
 #include <glm/ext/vector_float3.hpp>
 namespace Engine {
+	struct ContactPoint {
+		ContactPoint(glm::vec3 contactA, glm::vec3 contactB, glm::vec3 collisionNormal, float collisionPenetration) : contactPointA(contactA), contactPointB(contactB), normal(collisionNormal), penetration(collisionPenetration) {}
+
+		glm::vec3 contactPointA;
+		glm::vec3 contactPointB;
+
+		glm::vec3 normal;
+
+		float penetration;
+	};
+
 	struct CollisionData {
-		Entity* collidingObject;
-		Entity* otherCollidingObject;
+		Entity* objectA;
+		Entity* objectB;
 
-		glm::vec3 localCollisionPoint;
-		glm::vec3 otherLocalCollisionPoint;
+		std::vector<ContactPoint> contactPoints;
 
-		glm::vec3 collisionNormal;
-
-		float collisionPenetration;
+		void AddContactPoint(glm::vec3 contactA, glm::vec3 contactB, glm::vec3 normal, float penetration) {
+			contactPoints.push_back(ContactPoint(contactA, contactB, normal, penetration));
+		};
 
 		bool isColliding;
 	};
