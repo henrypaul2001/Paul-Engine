@@ -31,6 +31,8 @@ namespace Engine
 		void SetLastPosition(glm::vec3 position);
 		void SetRotation(glm::vec3 rotationAxis, float rotationAngle);
 		void SetScale(glm::vec3 scale);
+		void SetScale(float uniformScale);
+		void SetScale(float xScale, float yScale, float zScale);
 
 		void UpdateModelMatrix();
 

@@ -54,6 +54,18 @@ namespace Engine
 		UpdateModelMatrix();
 	}
 
+	void ComponentTransform::SetScale(float uniformScale)
+	{
+		this->scale = glm::vec3(uniformScale);
+		UpdateModelMatrix();
+	}
+
+	void ComponentTransform::SetScale(float xScale, float yScale, float zScale)
+	{
+		this->scale = glm::vec3(xScale, yScale, zScale);
+		UpdateModelMatrix();
+	}
+
 	void ComponentTransform::SetOrientation(glm::quat newOrientation)
 	{
 		orientation = newOrientation;

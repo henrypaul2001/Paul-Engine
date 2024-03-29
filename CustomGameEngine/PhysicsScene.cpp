@@ -209,6 +209,7 @@ namespace Engine {
 		Entity* elasticBall = new Entity("Elastic Ball");
 		elasticBall->AddComponent(new ComponentTransform(2.0f, 8.0f, -1.0f));
 		elasticBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
+		dynamic_cast<ComponentTransform*>(elasticBall->GetComponent(COMPONENT_TRANSFORM))->SetScale(0.5f);
 		dynamic_cast<ComponentGeometry*>(elasticBall->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(textured);
 		elasticBall->AddComponent(new ComponentCollisionSphere(1.01f, true));
 		elasticBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f, 1.0f, true));
