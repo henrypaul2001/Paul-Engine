@@ -26,6 +26,8 @@ namespace Engine {
 		SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollision();
 
+		void GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max);
+
 		virtual SystemTypes Name() override = 0;
 		virtual void OnAction(Entity* entity) override = 0;
 		virtual void AfterAction() override = 0;

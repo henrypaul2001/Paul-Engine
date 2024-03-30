@@ -42,6 +42,27 @@ namespace Engine {
 		transform2->SetPosition(transform2->LastPosition());
 	}
 
+	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max)
+	{
+		if (worldSpacePoints.size() < 1) {
+			return;
+		}
+
+		out_min = glm::dot(worldSpacePoints[0], worldSpaceAxis);
+		out_max = out_min;
+
+		float projectedPosition;
+		for (unsigned int i = 1; i < worldSpacePoints.size(); i++) {
+			projectedPosition = glm::dot(worldSpacePoints[i], worldSpaceAxis);
+			if (projectedPosition > out_max) {
+				out_max = projectedPosition;
+			}
+			else if (projectedPosition < out_min) {
+				out_min = projectedPosition;
+			}
+		}
+	}
+
 	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2, CollisionData& collision)
 	{
 		float cube1Min;
@@ -54,32 +75,8 @@ namespace Engine {
 		std::vector<glm::vec3> cube2 = collider2->WorldSpacePoints(transform2->GetWorldModelMatrix());
 
 		// Project points onto axis and check for overlap
-		cube1Min = glm::dot(cube1[0], axis);
-		cube1Max = cube1Min;
-
-		cube2Min = glm::dot(cube2[0], axis);
-		cube2Max = cube2Min;
-
-		float projectedPositionOnAxis;
-		for (unsigned int i = 1; i < cube1.size(); i++) {
-			// Cube 1
-			projectedPositionOnAxis = glm::dot(cube1[i], axis);
-			if (projectedPositionOnAxis > cube1Max) {
-				cube1Max = projectedPositionOnAxis;
-			}
-			else if (projectedPositionOnAxis < cube1Min) {
-				cube1Min = projectedPositionOnAxis;
-			}
-
-			// Cube 2
-			projectedPositionOnAxis = glm::dot(cube2[i], axis);
-			if (projectedPositionOnAxis > cube2Max) {
-				cube2Max = projectedPositionOnAxis;
-			}
-			else if (projectedPositionOnAxis < cube2Min) {
-				cube2Min = projectedPositionOnAxis;
-			}
-		}
+		GetMinMaxOnAxis(cube1, axis, cube1Min, cube1Max);
+		GetMinMaxOnAxis(cube2, axis, cube2Min, cube2Max);
 
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
 			glm::vec3 collisionNormal = glm::normalize(axis);
@@ -114,32 +111,8 @@ namespace Engine {
 		std::vector<glm::vec3> cube2 = collider2->WorldSpacePoints(transform2->GetWorldModelMatrix());
 
 		// Project points onto axis and check for overlap
-		cube1Min = glm::dot(cube1[0], axis);
-		cube1Max = cube1Min;
-
-		cube2Min = glm::dot(cube2[0], axis);
-		cube2Max = cube2Min;
-
-		float projectedPositionOnAxis;
-		for (unsigned int i = 1; i < cube1.size(); i++) {
-			// Cube 1
-			projectedPositionOnAxis = glm::dot(cube1[i], axis);
-			if (projectedPositionOnAxis > cube1Max) {
-				cube1Max = projectedPositionOnAxis;
-			}
-			else if (projectedPositionOnAxis < cube1Min) {
-				cube1Min = projectedPositionOnAxis;
-			}
-
-			// Cube 2
-			projectedPositionOnAxis = glm::dot(cube2[i], axis);
-			if (projectedPositionOnAxis > cube2Max) {
-				cube2Max = projectedPositionOnAxis;
-			}
-			else if (projectedPositionOnAxis < cube2Min) {
-				cube2Min = projectedPositionOnAxis;
-			}
-		}
+		GetMinMaxOnAxis(cube1, axis, cube1Min, cube1Max);
+		GetMinMaxOnAxis(cube2, axis, cube2Min, cube2Max);
 
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
 			glm::vec3 collisionNormal = glm::normalize(axis);
