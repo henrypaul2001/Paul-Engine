@@ -98,6 +98,48 @@ namespace Engine {
 
 		bestCollision.isColliding = true;
 
+		GetContactPoints(bestCollision);
+
 		return bestCollision;
+	}
+
+	void SystemCollisionBox::GetContactPoints(CollisionData& out_collisionInfo)
+	{
+		std::vector<glm::vec3> poly1, poly2;
+		glm::vec3 normal1, normal2;
+		glm::vec3 adjPlaneNormal1;
+		glm::vec3 adjPlaneNormal2;
+		float adjPlaneDistance1;
+		float adjPlaneDistance2;
+
+		// Get incident reference polygon 1
+		glm::mat4 modelMatrix1 = dynamic_cast<ComponentTransform*>(out_collisionInfo.objectA->GetComponent(COMPONENT_TRANSFORM))->GetWorldModelMatrix();
+		std::vector<glm::vec3> cube1 = dynamic_cast<ComponentCollisionBox*>(out_collisionInfo.objectA->GetComponent(COMPONENT_COLLISION_BOX))->WorldSpacePoints(modelMatrix1);
+		// Get incident reference polygon 2
+
+		// return 0 if either polygon contains no contact points
+
+		// if poly 1 contacts == 1
+		//		add contact point to collision
+
+		// if poly 2 contacts == 1
+		//		add contact point to collision
+
+		// else
+		//		clipping method
+	}
+
+	void SystemCollisionBox::GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, glm::vec3& out_adjPlaneNormal1, glm::vec3& out_adjPlaneNormal2, float& out_adjPlaneDistance1, float& out_adjPlaneDistance2, const std::vector<glm::vec3>& worldPoints)
+	{
+		// Get furthest vertex along axis - furthest face
+		float min;
+		float max;
+		int minVertexIndex;
+		int maxVertexIndex;
+		GetMinMaxOnAxis(worldPoints, axis, min, max, minVertexIndex, maxVertexIndex);
+
+		// Get face which is furthest along axis (contains the furthest vertex)
+		// Determined by normal being closest to parallel with axis
+
 	}
 }

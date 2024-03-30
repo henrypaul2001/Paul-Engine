@@ -85,7 +85,7 @@ namespace Engine {
 		glm::vec3 transformedSherePosition = glm::vec3(glm::inverse(boxTransform) * glm::vec4(worldSpaceSpherePosition, 1.0f));
 
 		// Find closest point on box to sphere position
-		BoxPoints localMinMax = dynamic_cast<ComponentCollisionBox*>(collider)->GetLocalPoints();
+		BoxExtents localMinMax = dynamic_cast<ComponentCollisionBox*>(collider)->GetLocalPoints();
 		glm::vec3 closestPoint = glm::vec3();
 		closestPoint.x = std::max(localMinMax.minX, std::min(transformedSherePosition.x, localMinMax.maxX));
 		closestPoint.y = std::max(localMinMax.minY, std::min(transformedSherePosition.y, localMinMax.maxY));

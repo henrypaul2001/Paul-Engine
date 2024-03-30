@@ -63,6 +63,31 @@ namespace Engine {
 		}
 	}
 
+	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max, int& out_minIndex, int& out_maxIndex)
+	{
+		if (worldSpacePoints.size() < 1) {
+			return;
+		}
+
+		out_min = glm::dot(worldSpacePoints[0], worldSpaceAxis);
+		out_minIndex = 0;
+		out_max = out_min;
+		out_maxIndex = out_minIndex;
+
+		float projectedPosition;
+		for (unsigned int i = 1; i < worldSpacePoints.size(); i++) {
+			projectedPosition = glm::dot(worldSpacePoints[i], worldSpaceAxis);
+			if (projectedPosition > out_max) {
+				out_max = projectedPosition;
+				out_maxIndex = i;
+			}
+			else if (projectedPosition < out_min) {
+				out_min = projectedPosition;
+				out_minIndex = i;
+			}
+		}
+	}
+
 	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2, CollisionData& collision)
 	{
 		float cube1Min;
