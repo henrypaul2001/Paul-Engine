@@ -167,6 +167,9 @@ namespace Engine {
     };
 
     struct ClippingPlane {
+        ClippingPlane() { normal = glm::vec3(); distance = 0.0f; }
+        ClippingPlane(glm::vec3 normal, float distance) { this->normal = normal; this->distance = distance; }
+
         glm::vec3 normal;
         float distance;
     };

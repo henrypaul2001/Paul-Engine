@@ -8,7 +8,7 @@ namespace Engine {
 
 		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 		void GetContactPoints(CollisionData& out_collisionInfo);
-		void GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, glm::vec3& out_adjPlaneNormal1, glm::vec3& out_adjPlaneNormal2, float& out_adjPlaneDistance1, float& out_adjPlaneDistance2, const std::vector<glm::vec3>& worldPoints);
+		void GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, std::vector<ClippingPlane>& out_adjPlanes, Entity* object);
 	public:
 		SystemCollisionBox(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollisionBox();

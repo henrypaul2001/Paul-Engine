@@ -107,15 +107,13 @@ namespace Engine {
 	{
 		std::vector<glm::vec3> poly1, poly2;
 		glm::vec3 normal1, normal2;
-		glm::vec3 adjPlaneNormal1;
-		glm::vec3 adjPlaneNormal2;
-		float adjPlaneDistance1;
-		float adjPlaneDistance2;
+		std::vector<ClippingPlane> adjPlanes1, adjPlanes2;
 
 		// Get incident reference polygon 1
-		glm::mat4 modelMatrix1 = dynamic_cast<ComponentTransform*>(out_collisionInfo.objectA->GetComponent(COMPONENT_TRANSFORM))->GetWorldModelMatrix();
-		std::vector<glm::vec3> cube1 = dynamic_cast<ComponentCollisionBox*>(out_collisionInfo.objectA->GetComponent(COMPONENT_COLLISION_BOX))->WorldSpacePoints(modelMatrix1);
+		GetIncidentReferencePolygon(out_collisionInfo.contactPoints[0].normal, poly1, normal1, adjPlanes1, out_collisionInfo.objectA);
+
 		// Get incident reference polygon 2
+		GetIncidentReferencePolygon(-out_collisionInfo.contactPoints[0].normal, poly2, normal2, adjPlanes2, out_collisionInfo.objectB);
 
 		// return 0 if either polygon contains no contact points
 
@@ -129,17 +127,68 @@ namespace Engine {
 		//		clipping method
 	}
 
-	void SystemCollisionBox::GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, glm::vec3& out_adjPlaneNormal1, glm::vec3& out_adjPlaneNormal2, float& out_adjPlaneDistance1, float& out_adjPlaneDistance2, const std::vector<glm::vec3>& worldPoints)
+	void SystemCollisionBox::GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, std::vector<ClippingPlane>& out_adjPlanes, Entity* object)
 	{
+		glm::mat4 modelMatrix = dynamic_cast<ComponentTransform*>(object->GetComponent(COMPONENT_TRANSFORM))->GetWorldModelMatrix();
+		glm::mat3 inverseNormalMatrix = glm::inverse(glm::mat3(modelMatrix));
+		glm::mat3 normalMatrix = glm::inverse(inverseNormalMatrix);
+
+		glm::vec3 localAxis = inverseNormalMatrix * axis;
+
 		// Get furthest vertex along axis - furthest face
-		float min;
-		float max;
-		int minVertexIndex;
-		int maxVertexIndex;
-		GetMinMaxOnAxis(worldPoints, axis, min, max, minVertexIndex, maxVertexIndex);
+		int minVertexId, maxVertexId;
+		BoundingBox& cube = dynamic_cast<ComponentCollisionBox*>(object->GetComponent(COMPONENT_COLLISION_BOX))->GetBoundingBox();
+		cube.GetMinMaxVerticesOnAxis(localAxis, minVertexId, maxVertexId);
+		BoxVertex& vertex = cube.vertices[maxVertexId];
 
 		// Get face which is furthest along axis (contains the furthest vertex)
 		// Determined by normal being closest to parallel with axis
+		const BoxFace* bestFace = nullptr;
+		float correlation = -FLT_MAX;
+		for (int faceId : vertex.enclosingFaceIds) {
+			const BoxFace* face = &cube.faces[faceId];
+			float tempCorrelation = glm::dot(localAxis, face->normal);
+			if (tempCorrelation > correlation) {
+				correlation = tempCorrelation;
+				bestFace = face;
+			}
+		}
 
+		if (bestFace == nullptr) {
+			return;
+		}
+
+		// Output face normal
+		out_normal = glm::normalize((normalMatrix * bestFace->normal));
+
+		// Output face vertices in world space
+		for (int vertexId : bestFace->vertexIds) {
+			const BoxVertex* vert = &cube.vertices[vertexId];
+			out_face.push_back(modelMatrix * glm::vec4(vert->position, 1.0f));
+		}
+
+		// Define st of planes that will clip geometry down to fit in the shape. Form list of clip
+		// planes from each adjacent face and the reference of the face itself
+		glm::vec3 worldPointOnPlane = modelMatrix * glm::vec4(cube.vertices[cube.edges[bestFace->edgeIds[0]].startVertexId].position, 1.0f);
+
+		// Form plane around reference face
+		glm::vec3 planeNormal = glm::normalize(-(normalMatrix * bestFace->normal));
+		float planeDistance = -glm::dot(planeNormal, worldPointOnPlane);
+
+		// Loop over all adjacent faces and form clip plane
+		for (int edgeId : bestFace->edgeIds) {
+			const BoxEdge& edge = cube.edges[edgeId];
+			worldPointOnPlane = glm::vec3(modelMatrix * glm::vec4(cube.vertices[edge.startVertexId].position, 1.0f));
+
+			for (int adjFaceId : edge.enclosingFaceIds) {
+				if (adjFaceId != bestFace->id) {
+					const BoxFace& adjFace = cube.faces[adjFaceId];
+
+					glm::vec3 planeNrml = glm::normalize(-(normalMatrix * adjFace.normal));
+					float planeDist = -glm::dot(planeNrml, worldPointOnPlane);
+					out_adjPlanes.push_back(ClippingPlane(planeNrml, planeDist));
+				}
+			}
+		}
 	}
 }
