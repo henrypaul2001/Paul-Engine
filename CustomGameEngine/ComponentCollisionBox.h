@@ -166,6 +166,11 @@ namespace Engine {
         }
     };
 
+    struct ClippingPlane {
+        glm::vec3 normal;
+        float distance;
+    };
+
     class ComponentCollisionBox : public ComponentCollision
     {
     public:
