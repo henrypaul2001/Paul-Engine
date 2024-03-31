@@ -13,28 +13,7 @@ namespace Engine {
         float maxZ;
     };
 
-    struct BoundingBox {
-        std::vector<BoxVertex> vertices;
-        std::vector<BoxEdge> edges;
-        std::vector<BoxFace> faces;
-
-        int AddVertex(glm::vec3 position) {
-
-        }
-
-        int AddFace(glm::vec3 normal, int numVertices, int vertices[]) {
-
-        }
-
-        int FindEdge(int vertexIdA, int vertexIdB) {
-
-        }
-
-        int ConstructNewEdge(int parentFaceId, int vertexStart, int vertexEnd) {
-
-        }
-    };
-    
+    // Bounding box structure and implementation below adapted from: https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/previousinformation/csc8503coderepository/
     struct BoxEdge {
         int id;
         int startVertexId, endVertexId;
@@ -51,13 +30,117 @@ namespace Engine {
     };
 
     struct BoxVertex {
-        BoxVertex() { id = 0; position = glm::vec3(0.0f) }
+        BoxVertex() { id = 0; position = glm::vec3(0.0f); }
         BoxVertex(int id, glm::vec3 position) { this->id = id; this->position = position; }
 
         int id;
         glm::vec3 position;
         std::vector<int> enclosingEdgeIds;
         std::vector<int> enclosingFaceIds;
+    };
+
+    struct BoundingBox {
+        std::vector<BoxVertex> vertices;
+        std::vector<BoxEdge> edges;
+        std::vector<BoxFace> faces;
+
+        int AddVertex(glm::vec3 position) {
+            int size = vertices.size(); // .size() isn't zero indexed so this is fine
+            vertices.push_back(BoxVertex(size, position));
+            return size;
+        }
+
+        int AddFace(glm::vec3 normal, int numVertices, int vertices[]) {
+            BoxFace newFace;
+            newFace.id = faces.size();
+            newFace.normal = glm::normalize(normal);
+
+            // Construct all edges
+            int point0 = numVertices - 1;
+            for (int point1 = 0; point1 < numVertices; point1++) {
+                newFace.vertexIds.push_back(vertices[point1]);
+                newFace.edgeIds.push_back(ConstructNewEdge(newFace.id, vertices[point0], vertices[point1]));
+                point0 = point1;
+            }
+
+            // Find adjacent faces
+            for (int i = 0; i < newFace.id; i++) {
+                BoxFace& currentFace = faces[i];
+                bool found = false;
+                for (int j = 0; found == false && j < currentFace.edgeIds.size(); j++) {
+                    for (int k = 0; found == false && k < numVertices; k++) {
+                        if (newFace.edgeIds[k] == currentFace.edgeIds[j]) {
+                            found = true;
+                            currentFace.adjoiningFaceIds.push_back(newFace.id);
+                            newFace.adjoiningFaceIds.push_back(i);
+                        }
+                    }
+                }
+            }
+
+            // Update contained vertices
+            for (int i = 0; i < numVertices; i++) {
+                BoxVertex& start = this->vertices[edges[newFace.edgeIds[i]].startVertexId];
+                BoxVertex& end = this->vertices[edges[newFace.edgeIds[i]].endVertexId];
+
+                auto foundStart = std::find(start.enclosingFaceIds.begin(), start.enclosingFaceIds.end(), newFace.id);
+                if (foundStart == start.enclosingFaceIds.end()) {
+                    start.enclosingFaceIds.push_back(newFace.id);
+                }
+
+                auto foundEnd = std::find(end.enclosingFaceIds.begin(), end.enclosingFaceIds.end(), newFace.id);
+                if (foundEnd == end.enclosingFaceIds.end()) {
+                    end.enclosingFaceIds.push_back(newFace.id);
+                }
+            }
+
+            faces.push_back(newFace);
+            return newFace.id;
+        }
+
+        int FindEdge(int vertexIdA, int vertexIdB) {
+            for (const BoxEdge& edge : edges) {
+                if ((edge.startVertexId == vertexIdA && edge.endVertexId == vertexIdB) || (edge.startVertexId == vertexIdB && edge.endVertexId == vertexIdA)) {
+                    return edge.id;
+                }
+            }
+            return -1; // edge not found
+        }
+
+        int ConstructNewEdge(int parentFaceId, int vertexStart, int vertexEnd) {
+            int id = FindEdge(vertexStart, vertexEnd);
+
+            if (id == -1) {
+                // Edge doesn't yet exist
+                id = edges.size();
+
+                BoxEdge newEdge;
+                newEdge.id = id;
+                newEdge.startVertexId = vertexStart;
+                newEdge.endVertexId = vertexEnd;
+                
+                // Find adjacent edges
+                for (int i = 0; i < newEdge.id; i++) {
+                    if (edges[i].startVertexId == vertexStart
+                        || edges[i].startVertexId == vertexEnd
+                        || edges[i].endVertexId == vertexStart
+                        || edges[i].endVertexId == vertexEnd)
+                    {
+                        edges[i].adjoiningEdgeIds.push_back(newEdge.id);
+                        newEdge.adjoiningEdgeIds.push_back(i);
+                    }
+                }
+
+                // Update contained vertices
+                vertices[vertexStart].enclosingEdgeIds.push_back(newEdge.id);
+                vertices[vertexEnd].enclosingEdgeIds.push_back(newEdge.id);
+
+                edges.push_back(newEdge);
+            }
+
+            edges[id].enclosingFaceIds.push_back(parentFaceId);
+            return id;
+        }
     };
 
     class ComponentCollisionBox : public ComponentCollision
