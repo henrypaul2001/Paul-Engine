@@ -141,6 +141,29 @@ namespace Engine {
             edges[id].enclosingFaceIds.push_back(parentFaceId);
             return id;
         }
+
+        void GetMinMaxVerticesOnAxis(const glm::vec3 localAxis, int& out_minIndex, int& out_maxIndex) {
+            float correlation;
+
+            float minCorrelation = FLT_MAX, maxCorrelation = -FLT_MAX;
+
+            for (size_t i = 0; i < vertices.size(); ++i)
+            {
+                correlation = glm::dot(localAxis, vertices[i].position);
+
+                if (correlation > maxCorrelation)
+                {
+                    maxCorrelation = correlation;
+                    out_maxIndex = i;
+                }
+
+                if (correlation <= minCorrelation)
+                {
+                    minCorrelation = correlation;
+                    out_minIndex = i;
+                }
+            }
+        }
     };
 
     class ComponentCollisionBox : public ComponentCollision
