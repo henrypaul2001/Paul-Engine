@@ -115,16 +115,61 @@ namespace Engine {
 		// Get incident reference polygon 2
 		GetIncidentReferencePolygon(-out_collisionInfo.contactPoints[0].normal, poly2, normal2, adjPlanes2, out_collisionInfo.objectB);
 
-		// return 0 if either polygon contains no contact points
+		float penatration = out_collisionInfo.contactPoints[0].penetration;
+		glm::vec3 normal = out_collisionInfo.contactPoints[0].normal;
+		out_collisionInfo.contactPoints.clear();
+		// return if either polygon contains no contact points
+		if (poly1.size() == 0 || poly2.size() == 0) {
+			return;
+		}
+		else if (poly1.size() == 1) {
+			out_collisionInfo.AddContactPoint(poly1.front(), poly1.front() + normal * penatration, normal, penatration);
+		}
+		else if (poly2.size() == 1) {
+			out_collisionInfo.AddContactPoint(poly2.front() - normal * penatration, poly2.front(), normal, penatration);
+		}
+		else {
+			// Clipping method
+			// Check if we need to flip the incident and reference faces
+			bool flipped = fabs(glm::dot(normal, normal1)) < fabs(glm::dot(normal, normal2));
+			if (flipped) {
+				std::swap(poly1, poly2);
+				std::swap(normal1, normal2);
+				std::swap(adjPlanes1, adjPlanes2);
+			}
 
-		// if poly 1 contacts == 1
-		//		add contact point to collision
+			// Clip incident face to adjacent edges of reference face
+			if (adjPlanes1.size() > 0) {
+				SutherlandHodgmanClipping(poly2, adjPlanes1.size(), &adjPlanes1[0], &poly2, false);
+			}
 
-		// if poly 2 contacts == 1
-		//		add contact point to collision
+			// Clip and remove any contact points that are above the reference face
+			ClippingPlane refPlane = ClippingPlane(-normal1, -glm::dot(-normal1, poly1.front()));
+			SutherlandHodgmanClipping(poly2, 1, &refPlane, &poly2, true);
 
-		// else
-		//		clipping method
+			// Now left with selection of valid contact points to be used for collision manifold
+			for (const glm::vec3& point : poly2) {
+				// Get distance to reference plane
+				glm::vec3 pointDiff = point - GetClosestPointPolygon(point, poly1);
+				float contact_penetration = glm::dot(pointDiff, normal);
+
+				// set contact data
+				glm::vec3 globalOnA = point;
+				glm::vec3 globalOnB = point - normal * contact_penetration;
+
+				if (flipped) {
+					contact_penetration = -contact_penetration;
+					globalOnA = point + normal * contact_penetration;
+					globalOnB = point;
+				}
+
+				if (contact_penetration < 0.0f) {
+					glm::vec3 localA = globalOnA - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectA->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
+					glm::vec3 localB = globalOnB - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectB->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
+					out_collisionInfo.AddContactPoint(localA, localB, normal, contact_penetration);
+				}
+			}
+		}
 	}
 
 	void SystemCollisionBox::GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, std::vector<ClippingPlane>& out_adjPlanes, Entity* object)

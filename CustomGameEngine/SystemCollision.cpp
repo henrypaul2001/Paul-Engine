@@ -238,4 +238,156 @@ namespace Engine {
 		int size = axes.size();
 		return axes;
 	}
+
+	// Implementation below adapted from: https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/previousinformation/csc8503coderepository/
+	void SystemCollision::SutherlandHodgmanClipping(const std::vector<glm::vec3>& input_polygon, int num_clip_planes, const ClippingPlane* clip_planes, std::vector<glm::vec3>* out_polygon, bool removeNotClipToPlane)
+	{
+		if (!out_polygon) {
+			return;
+		}
+		if (num_clip_planes == 0) {
+			*out_polygon = input_polygon;
+		}
+
+		// Create temporary vertices
+		std::vector<glm::vec3> ppPolygon1, ppPolygon2;
+		std::vector<glm::vec3>* input = &ppPolygon1, *output = &ppPolygon2;
+
+		*input = input_polygon;
+
+		// Iterate over each clipping plane
+		for (int i = 0; i < num_clip_planes; i++) {
+			// If every point on shape has already been removed, exit
+			if (input->empty()) {
+				break;
+			}
+
+			const ClippingPlane& plane = clip_planes[i];
+
+			// Loop through each edge of the polygon and clip edge against current plane
+			glm::vec3 tempPoint, startPoint = input->back();
+			for (const glm::vec3& endPoint : *input) {
+				bool startInPlane = plane.PointInPlane(startPoint);
+				bool endInPlane = plane.PointInPlane(endPoint);
+
+				// If in final pass, remove all points outside reference plane
+				if (removeNotClipToPlane) {
+					if (endInPlane) {
+						output->push_back(endPoint);
+					}
+				}
+				else {
+					// If edge is entirely within clipping plane, keep as is
+					if (startInPlane && endInPlane) {
+						output->push_back(endPoint);
+					}
+					// If the dge intersects the clipping plane, cut the edge along the clip plane
+					else if (startInPlane && !endInPlane) {
+						if (PlaneEdgeIntersection(plane, startPoint, endPoint, tempPoint)) {
+							output->push_back(tempPoint);
+						}
+					}
+					else if (!startInPlane && endInPlane) {
+						if (PlaneEdgeIntersection(plane, startPoint, endPoint, tempPoint)) {
+							output->push_back(tempPoint);
+						}
+
+						output->push_back(endPoint);
+					}
+				}
+				
+				startPoint = endPoint;
+			}
+
+			// Swap input / output polygons and clear list
+			std::swap(input, output);
+			output->clear();
+		}
+
+		*out_polygon = *input;
+	}
+
+	bool SystemCollision::PlaneEdgeIntersection(const ClippingPlane& plane, const glm::vec3& start, const glm::vec3& end, glm::vec3& out_point)
+	{
+		glm::vec3 ab = end - start;
+
+		// Check edge and plane are not parallel
+		float ab_p = glm::dot(plane.normal, ab);
+		if (fabs(ab_p) > 1e-6f) {
+			// Generate random point on plane
+			glm::vec3 p_co = plane.normal * -plane.distance;
+
+			// Work out edge factor to scale edge by
+			float fac = -glm::dot(plane.normal, start - p_co) / ab_p;
+
+			// Stop and large floating point divide issues with close to parallel lines
+			fac = std::min(std::max(fac, 0.0f), 1.0f);
+
+			// Return point on edge
+			out_point = start + ab * fac;
+			return true;
+		}
+
+		return false;
+	}
+
+	glm::vec3 SystemCollision::GetClosestPointPolygon(const glm::vec3& pos, const std::vector<glm::vec3>& polygon)
+	{
+		glm::vec3 final_closest_point = glm::vec3(0.0f);
+		float final_closest_distsq = FLT_MAX;
+
+		glm::vec3 last = polygon.back();
+		for (const glm::vec3& next : polygon) {
+			Edge edge = Edge(last, next);
+			glm::vec3 edge_closest_point = GetClosestPoint(pos, edge);
+
+			// Compute distance
+			glm::vec3 diff = pos - edge_closest_point;
+			float temp_distsq = glm::dot(diff, diff);
+
+			if (temp_distsq < final_closest_distsq) {
+				final_closest_distsq = temp_distsq;
+				final_closest_point = edge_closest_point;
+			}
+
+			last = next;
+		}
+
+		return final_closest_point;
+	}
+
+	glm::vec3 SystemCollision::GetClosestPoint(const glm::vec3& pos, std::vector<Edge>& edges)
+	{
+		glm::vec3 final_closest_point = glm::vec3(0.0f);
+		float final_closest_distsq = FLT_MAX;
+
+		for (Edge& edge : edges) {
+			glm::vec3 edge_closest_point = GetClosestPoint(pos, edge);
+			
+			glm::vec3 diff = pos - edge_closest_point;
+			float temp_distsq = glm::dot(diff, diff);
+
+			if (temp_distsq < final_closest_distsq) {
+				final_closest_distsq = temp_distsq;
+				final_closest_point = edge_closest_point;
+			}
+		}
+
+		return final_closest_point;
+	}
+
+	glm::vec3 SystemCollision::GetClosestPoint(const glm::vec3& pos, Edge& edge)
+	{
+		glm::vec3 diffAP = pos - edge.start;
+		glm::vec3 diffAB = edge.end - edge.start;
+
+		// Distance along line in world space
+		float ABAPproduct = glm::dot(diffAP, diffAB);
+		float magnitudeAB = glm::dot(diffAB, diffAB);
+
+		float distance = ABAPproduct / magnitudeAB;
+		distance = std::max(std::min(distance, 1.0f), 0.0f);
+
+		return edge.start + diffAB * distance;
+	}
 }

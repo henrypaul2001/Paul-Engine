@@ -170,6 +170,14 @@ namespace Engine {
         ClippingPlane() { normal = glm::vec3(); distance = 0.0f; }
         ClippingPlane(glm::vec3 normal, float distance) { this->normal = normal; this->distance = distance; }
 
+        bool PointInPlane(const glm::vec3& position) const {
+            if (glm::dot(position, normal) + distance < 0.0f) {
+                return false;
+            }
+
+            return true;
+        }
+
         glm::vec3 normal;
         float distance;
     };

@@ -8,6 +8,13 @@
 #include "EntityManager.h"
 #include "CollisionManager.h"
 namespace Engine {
+	struct Edge {
+		Edge(glm::vec3 start = glm::vec3(0.0f), glm::vec3 end = glm::vec3(0.0f)) : start(start), end(end) {}
+
+		glm::vec3 start;
+		glm::vec3 end;
+	};
+
 	class SystemCollision : public System
 	{
 	protected:
@@ -22,6 +29,11 @@ namespace Engine {
 		std::vector<glm::vec3> GetCubeNormals(ComponentTransform* transform);
 		std::vector<glm::vec3> GetEdgeVectors(ComponentTransform* transform);
 		std::vector<glm::vec3> GetAllCollisionAxis(ComponentTransform* transform, ComponentTransform* transform2);
+		void SutherlandHodgmanClipping(const std::vector<glm::vec3>& input_polygon, int num_clip_planes, const ClippingPlane* clip_planes, std::vector<glm::vec3>* out_polygon, bool removeNotClipToPlane);
+		bool PlaneEdgeIntersection(const ClippingPlane& plane, const glm::vec3& start, const glm::vec3& end, glm::vec3& out_point);
+		glm::vec3 GetClosestPointPolygon(const glm::vec3& pos, const std::vector<glm::vec3>& polygon);
+		glm::vec3 GetClosestPoint(const glm::vec3& pos, std::vector<Edge>& edges);
+		glm::vec3 GetClosestPoint(const glm::vec3& pos, Edge& edge);
 	public:
 		SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollision();
