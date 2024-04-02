@@ -26,6 +26,14 @@ namespace Engine {
 			inverseInertia.x = (12.0f * inverseMass) / (dimensionsSquared.y + dimensionsSquared.z);
 			inverseInertia.y = (12.0f * inverseMass) / (dimensionsSquared.x + dimensionsSquared.z);
 			inverseInertia.z = (12.0f * inverseMass) / (dimensionsSquared.x + dimensionsSquared.y);
+
+			//float sideLength = sqrt(surfaceArea); // assuming surfaceArea is the surface area of the cube
+			//float sideLength = surfaceArea;
+			//float inertiaScalar = (1.0f / 6.0f) * mass * sideLength * sideLength;
+
+			//inverseInertia.x = 1.0f / inertiaScalar;
+			//inverseInertia.y = 1.0f / inertiaScalar;
+			//inverseInertia.z = 1.0f / inertiaScalar;
 		}
 	}
 

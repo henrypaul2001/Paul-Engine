@@ -1,8 +1,10 @@
 #pragma once
 #include "Component.h"
 #include <unordered_map>
-#include "Entity.h"
+
 namespace Engine {
+	class Entity;
+
 	class ComponentCollision : public Component
 	{
 	protected:
@@ -15,7 +17,7 @@ namespace Engine {
 		virtual void Close() override = 0;
 		
 		void ClearEntitiesCheckedThisFrame() { EntitiesCheckedThisFrame.clear(); }
-		void AddToEntitiesCheckedThisFrame(Entity* e) { EntitiesCheckedThisFrame[e] = e->Name(); }
+		void AddToEntitiesCheckedThisFrame(Entity* e);
 
 		bool useDefaultCollisionResponse;
 
@@ -26,7 +28,7 @@ namespace Engine {
 
 		std::unordered_map<Entity*, std::string> Collisions() { return EntitiesCollidingWith; }
 		bool IsCollidingWithEntity(Entity* e) { return EntitiesCollidingWith.find(e) != EntitiesCollidingWith.end(); }
-		void AddToCollisions(Entity* e) { EntitiesCollidingWith[e] = e->Name(); }
+		void AddToCollisions(Entity* e);
 		void RemoveFromCollisions(Entity* e) { EntitiesCollidingWith.erase(e); }
 	};
 }
