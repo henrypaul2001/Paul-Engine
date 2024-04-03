@@ -16,24 +16,16 @@ namespace Engine {
 			inverseInertia = glm::vec3(I);
 		}
 		else {
-			float maxX = surfaceArea;
-			float maxY = surfaceArea;
-			float maxZ = surfaceArea;
+			glm::vec3 dimensions = glm::vec3(surfaceArea);
+			glm::vec3 dimsSqr = dimensions * dimensions;
 
-			glm::vec3 dimensions = glm::vec3(surfaceArea); // temp
-			glm::vec3 dimensionsSquared = dimensions * dimensions;
+			//inverseInertia.x = (12.0f * inverseMass) / (dimsSqr.y + dimsSqr.z);
+			//inverseInertia.y = (12.0f * inverseMass) / (dimsSqr.x + dimsSqr.z);
+			//inverseInertia.z = (12.0f * inverseMass) / (dimsSqr.x + dimsSqr.y);
 
-			inverseInertia.x = (12.0f * inverseMass) / (dimensionsSquared.y + dimensionsSquared.z);
-			inverseInertia.y = (12.0f * inverseMass) / (dimensionsSquared.x + dimensionsSquared.z);
-			inverseInertia.z = (12.0f * inverseMass) / (dimensionsSquared.x + dimensionsSquared.y);
-
-			//float sideLength = sqrt(surfaceArea); // assuming surfaceArea is the surface area of the cube
-			//float sideLength = surfaceArea;
-			//float inertiaScalar = (1.0f / 6.0f) * mass * sideLength * sideLength;
-
-			//inverseInertia.x = 1.0f / inertiaScalar;
-			//inverseInertia.y = 1.0f / inertiaScalar;
-			//inverseInertia.z = 1.0f / inertiaScalar;
+			inverseInertia.x = ((1.0f / 6.0f) * mass) * (dimsSqr.y + dimsSqr.z);
+			inverseInertia.y = ((1.0f / 6.0f) * mass) * (dimsSqr.x + dimsSqr.z);
+			inverseInertia.z = ((1.0f / 6.0f) * mass) * (dimsSqr.x + dimsSqr.y);
 		}
 	}
 

@@ -3,7 +3,7 @@
 #include <glm/ext/vector_float3.hpp>
 namespace Engine {
 	struct ContactPoint {
-		ContactPoint(glm::vec3 contactA, glm::vec3 contactB, glm::vec3 collisionNormal, float collisionPenetration) : contactPointA(contactA), contactPointB(contactB), normal(collisionNormal), penetration(collisionPenetration) {}
+		ContactPoint(glm::vec3 contactA, glm::vec3 contactB, glm::vec3 collisionNormal, float collisionPenetration) : contactPointA(contactA), contactPointB(contactB), normal(collisionNormal), penetration(collisionPenetration), b_term(0.0f), sumImpulseContact(0.0f), sumImpulseFriction(glm::vec3(0.0f)) {}
 
 		glm::vec3 contactPointA;
 		glm::vec3 contactPointB;
@@ -11,6 +11,10 @@ namespace Engine {
 		glm::vec3 normal;
 
 		float penetration;
+
+		float b_term;
+		glm::vec3 sumImpulseFriction;
+		float sumImpulseContact;
 	};
 
 	struct CollisionData {

@@ -24,12 +24,14 @@ namespace Engine
 
 	void SystemManager::ActionUpdateSystems(EntityManager* entityManager)
 	{
-		// Collision response
-		collisionResponseSystem->OnAction();
-		collisionResponseSystem->AfterAction();
-
 		std::vector<Entity*> entityList = entityManager->Entities();
 		for (System* s : updateSystemList) {
+			if (s->Name() == SYSTEM_PHYSICS) {
+				// Collision response
+				collisionResponseSystem->OnAction();
+				collisionResponseSystem->AfterAction();
+			}
+
 			for (Entity* e : entityList) {
 				s->OnAction(e);
 			}

@@ -203,7 +203,7 @@ namespace Engine {
 		inelasticBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		//dynamic_cast<ComponentGeometry*>(inelasticBall->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(textured);
 		inelasticBall->AddComponent(new ComponentCollisionSphere(1.0f, true));
-		inelasticBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f, 0.0f, true));
+		inelasticBall->AddComponent(new ComponentPhysics(10.0f, 0.47f, 0.5f, 0.15f, true));
 		entityManager->AddEntity(inelasticBall);
 
 		Entity* elasticBall = new Entity("Elastic Ball");
@@ -217,11 +217,19 @@ namespace Engine {
 
 		Entity* box = new Entity("Box");
 		box->AddComponent(new ComponentTransform(-5.0f, 10.0f, -1.0f));
-		//dynamic_cast<ComponentTransform*>(box->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 1.0f), 5.0f);
+		dynamic_cast<ComponentTransform*>(box->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
 		box->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		box->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		box->AddComponent(new ComponentPhysics(5.0f, 1.05f, 1.0f, 0.5f, true, true));
+		box->AddComponent(new ComponentPhysics(5.0f, 1.05f, 2.0f, 0.5f, true, true));
 		entityManager->AddEntity(box);
+
+		//Entity* box2 = new Entity("Box 2");
+		//box2->AddComponent(new ComponentTransform(-4.5f, 13.0f, -1.0f));
+		//dynamic_cast<ComponentTransform*>(box2->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
+		//box2->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		//box2->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		//box2->AddComponent(new ComponentPhysics(5.0f, 1.05f, 2.0f, 0.5f, true, true));
+		//entityManager->AddEntity(box2);
 	}
 
 	void PhysicsScene::CreateSystems()
@@ -231,7 +239,6 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphere(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
@@ -239,5 +246,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResponder(collisionManager));
+		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }

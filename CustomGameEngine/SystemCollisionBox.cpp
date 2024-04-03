@@ -117,15 +117,16 @@ namespace Engine {
 
 		float penatration = out_collisionInfo.contactPoints[0].penetration;
 		glm::vec3 normal = out_collisionInfo.contactPoints[0].normal;
-		out_collisionInfo.contactPoints.clear();
 		// return if either polygon contains no contact points
 		if (poly1.size() == 0 || poly2.size() == 0) {
 			return;
 		}
 		else if (poly1.size() == 1) {
+			out_collisionInfo.contactPoints.clear();
 			out_collisionInfo.AddContactPoint(poly1.front(), poly1.front() + normal * penatration, normal, penatration);
 		}
 		else if (poly2.size() == 1) {
+			out_collisionInfo.contactPoints.clear();
 			out_collisionInfo.AddContactPoint(poly2.front() - normal * penatration, poly2.front(), normal, penatration);
 		}
 		else {
@@ -148,6 +149,7 @@ namespace Engine {
 			SutherlandHodgmanClipping(poly2, 1, &refPlane, &poly2, true);
 
 			// Now left with selection of valid contact points to be used for collision manifold
+			bool first = true;
 			for (const glm::vec3& point : poly2) {
 				// Get distance to reference plane
 				glm::vec3 pointDiff = point - GetClosestPointPolygon(point, poly1);
@@ -164,6 +166,10 @@ namespace Engine {
 				}
 
 				if (contact_penetration < 0.0f) {
+					if (first) {
+						out_collisionInfo.contactPoints.clear();
+						first = false;
+					}
 					glm::vec3 localA = globalOnA - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectA->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
 					glm::vec3 localB = globalOnB - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectB->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
 					out_collisionInfo.AddContactPoint(localA, localB, normal, contact_penetration);
