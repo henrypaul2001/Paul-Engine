@@ -234,6 +234,9 @@
     <ClInclude Include="ConstraintPosition.h">
       <Filter>Header Files\Engine\Constraints</Filter>
     </ClInclude>
+    <ClInclude Include="ConstraintSolver.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -397,6 +400,9 @@
     </ClCompile>
     <ClCompile Include="ConstraintPosition.cpp">
       <Filter>Source Files\Engine\Constraints</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstraintSolver.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

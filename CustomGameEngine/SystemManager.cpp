@@ -13,6 +13,9 @@ namespace Engine
 
 	SystemManager::~SystemManager()
 	{
+		if (collisionResponseSystem != nullptr) { delete collisionResponseSystem; }
+		if (constraintSolver != nullptr) { delete constraintSolver; }
+
 		for (System* s : updateSystemList) {
 			delete s;
 		}
@@ -27,9 +30,16 @@ namespace Engine
 		std::vector<Entity*> entityList = entityManager->Entities();
 		for (System* s : updateSystemList) {
 			if (s->Name() == SYSTEM_PHYSICS) {
-				// Collision response
-				collisionResponseSystem->OnAction();
-				collisionResponseSystem->AfterAction();
+				if (collisionResponseSystem != nullptr) {
+					// Collision response
+					collisionResponseSystem->OnAction();
+					collisionResponseSystem->AfterAction();
+				}
+				if (constraintSolver != nullptr) {
+					// Solve constraints
+					constraintSolver->OnAction();
+					constraintSolver->AfterAction();
+				}
 			}
 
 			for (Entity* e : entityList) {
