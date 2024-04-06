@@ -144,7 +144,7 @@
     <ClInclude Include="AOScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
-    <ClInclude Include="CollisionResponder.h" />
+    <ClInclude Include="CollisionResolver.h" />
     <ClInclude Include="CollisionScene.h" />
     <ClInclude Include="ComponentCollision.h" />
     <ClInclude Include="ComponentCollisionAABB.h" />
@@ -195,7 +195,7 @@
     <ClCompile Include="AOScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
-    <ClCompile Include="CollisionResponder.cpp" />
+    <ClCompile Include="CollisionResolver.cpp" />
     <ClCompile Include="CollisionScene.cpp" />
     <ClCompile Include="ComponentCollision.cpp" />
     <ClCompile Include="ComponentCollisionAABB.cpp" />

@@ -5,7 +5,7 @@
 #include <string>
 #include "SystemRender.h"
 #include "SystemShadowMapping.h"
-#include "CollisionResponder.h"
+#include "CollisionResolver.h"
 namespace Engine
 {
 	enum SystemLists {
@@ -21,7 +21,7 @@ namespace Engine
 
 		SystemRender* renderSystem;
 		SystemShadowMapping* shadowmapSystem;
-		CollisionResponder* collisionResponseSystem;
+		CollisionResolver* collisionResponseSystem;
 	public:
 		SystemManager();
 		~SystemManager();
@@ -30,7 +30,7 @@ namespace Engine
 		void ActionUpdateSystems(EntityManager* entityManager);
 		void ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT);
 		void AddSystem(System* system, SystemLists list);
-		void AddCollisionResponseSystem(CollisionResponder* collisionResponder) { this->collisionResponseSystem = collisionResponder; }
+		void AddCollisionResponseSystem(CollisionResolver* collisionResponder) { this->collisionResponseSystem = collisionResponder; }
 	};
 }
 

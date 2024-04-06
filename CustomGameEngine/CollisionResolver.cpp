@@ -1,17 +1,17 @@
-#include "CollisionResponder.h"
+#include "CollisionResolver.h"
 #include "Scene.h"
 namespace Engine {
-	CollisionResponder::CollisionResponder(CollisionManager* collisonManager)
+	CollisionResolver::CollisionResolver(CollisionManager* collisonManager)
 	{
 		this->collisionManager = collisonManager;
 	}
 
-	CollisionResponder::~CollisionResponder()
+	CollisionResolver::~CollisionResolver()
 	{
 
 	}
 
-	void CollisionResponder::OnAction()
+	void CollisionResolver::OnAction()
 	{
 		for (CollisionData collision : collisionManager->GetUnresolvedCollisions()) {
 			Entity* objectA = collision.objectA;
@@ -59,12 +59,12 @@ namespace Engine {
 		}
 	}
 
-	void CollisionResponder::AfterAction()
+	void CollisionResolver::AfterAction()
 	{
 		collisionManager->ClearUnresolvedCollisions();
 	}
 
-	void CollisionResponder::Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData& collision)
+	void CollisionResolver::Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData& collision)
 	{
 		for (ContactPoint& contact : collision.contactPoints) {
 			//ContactPoint& contact = collision.contactPoints[0];
@@ -87,7 +87,7 @@ namespace Engine {
 		}
 	}
 
-	void CollisionResponder::Impulse(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData& collision)
+	void CollisionResolver::Impulse(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData& collision)
 	{
 		std::vector<glm::vec3> impulses;
 		std::vector<glm::vec3> inertiaAs;
@@ -172,7 +172,7 @@ namespace Engine {
 		}
 	}
 
-	void CollisionResponder::PresolveContactPoint(ContactPoint& contact, Entity* objectA, Entity* objectB, int numContacts)
+	void CollisionResolver::PresolveContactPoint(ContactPoint& contact, Entity* objectA, Entity* objectB, int numContacts)
 	{
 		// Update contact constraint
 		contact.sumImpulseContact = 0.0f;
@@ -217,7 +217,7 @@ namespace Engine {
 		contact.b_term += (elasticity * elasticity_term) / numContacts;
 	}
 
-	void CollisionResponder::SolveContactPoint(ContactPoint& contact, Entity* objectA, Entity* objectB, int numContacts)
+	void CollisionResolver::SolveContactPoint(ContactPoint& contact, Entity* objectA, Entity* objectB, int numContacts)
 	{
 		ComponentPhysics* physicsA = objectA->GetPhysicsComponent();
 		ComponentPhysics* physicsB = objectB->GetPhysicsComponent();

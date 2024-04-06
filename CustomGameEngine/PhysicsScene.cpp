@@ -245,7 +245,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
-		systemManager->AddCollisionResponseSystem(new CollisionResponder(collisionManager));
+		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }

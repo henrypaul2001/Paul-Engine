@@ -4,11 +4,11 @@
 #include "ComponentTransform.h"
 #include "ComponentCollision.h"
 namespace Engine {
-	class CollisionResponder
+	class CollisionResolver
 	{
 	public:
-		CollisionResponder(CollisionManager* collisonManager);
-		~CollisionResponder();
+		CollisionResolver(CollisionManager* collisonManager);
+		~CollisionResolver();
 
 		void OnAction();
 		void AfterAction();

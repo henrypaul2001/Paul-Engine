@@ -348,7 +348,7 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddCollisionResponseSystem(new CollisionResponder(collisionManager));
+		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 	}
 
 	void PBRScene::Update()

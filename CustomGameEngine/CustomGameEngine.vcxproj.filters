@@ -216,7 +216,7 @@
     <ClInclude Include="CollisionManager.h">
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionResponder.h">
+    <ClInclude Include="CollisionResolver.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
   </ItemGroup>
@@ -371,7 +371,7 @@
     <ClCompile Include="CollisionManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionResponder.cpp">
+    <ClCompile Include="CollisionResolver.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
