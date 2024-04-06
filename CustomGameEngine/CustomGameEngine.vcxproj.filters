@@ -70,6 +70,12 @@
     <Filter Include="Header Files\Engine\Utility">
       <UniqueIdentifier>{c14a281b-407e-47e2-8010-c3c39a632926}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Constraints">
+      <UniqueIdentifier>{e9644799-32c7-48d0-8add-b77d5efede9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Constraints">
+      <UniqueIdentifier>{54844653-d125-44c1-bcef-66f0fdea0871}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -223,7 +229,10 @@
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Constraint.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\Constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstraintPosition.h">
+      <Filter>Header Files\Engine\Constraints</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -384,7 +393,10 @@
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
     <ClCompile Include="Constraint.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
+      <Filter>Source Files\Engine\Constraints</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstraintPosition.cpp">
+      <Filter>Source Files\Engine\Constraints</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
