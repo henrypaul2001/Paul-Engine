@@ -4,7 +4,7 @@ namespace Engine {
 	class Constraint
 	{
 	public:
-		Constraint(Entity& objectA, Entity& objectB) { this->objectA = objectA; this->objectB = objectB; active = true; }
+		Constraint(Entity& objectA, Entity& objectB);
 		~Constraint() {}
 
 		void Activate() { active = true; }
