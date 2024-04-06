@@ -7,6 +7,8 @@ namespace Engine {
 		Constraint(Entity& objectA, Entity& objectB);
 		~Constraint() {}
 
+		virtual void UpdateConstraint(float deltaTime) = 0;
+
 		void Activate() { active = true; }
 		void Deactivate() { active = false; }
 		bool IsActive() { return active; }
