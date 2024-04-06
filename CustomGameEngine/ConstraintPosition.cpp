@@ -33,7 +33,7 @@ namespace Engine {
 
 			if (constraintMass > 0.0f) {
 				float constraintStress = glm::dot(relativeVelocity, direction);
-				float biasFactor = 0.00000001f;
+				float biasFactor = this->bias;
 				float bias = -(biasFactor / deltaTime) * offset;
 
 				float lambda = -(constraintStress + bias) / constraintMass;

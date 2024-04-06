@@ -236,8 +236,9 @@ namespace Engine {
 		glm::vec3 linkSize = glm::vec3(2.0f, 1.0f, 1.0f);
 		float linkMass = 2.0f;
 		int links = 15;
-		float maxConstraintDistance = 1.0f;
-		float linkDistance = -5.0f;
+		float maxConstraintDistance = 1.5f;
+		float linkDistance = -3.0f;
+		float bias = 0.00000005f;
 
 		glm::vec3 startPosition = glm::vec3(-25.0f, 5.0f, 17.0f);
 
@@ -262,10 +263,10 @@ namespace Engine {
 			newLink->AddComponent(new ComponentPhysics(linkMass, 1.05f, 2.0f, 0.7f, true, true));
 			newLink->AddComponent(new ComponentGeometry(MODEL_CUBE));
 			entityManager->AddEntity(newLink);
-			constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *newLink, maxConstraintDistance));
+			constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *newLink, maxConstraintDistance, bias));
 			previous = newLink;
 		}
-		constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *bridgeEnd, maxConstraintDistance));
+		constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *bridgeEnd, maxConstraintDistance, bias));
 	}
 
 	void PhysicsScene::CreateSystems()
@@ -282,7 +283,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
-		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 40));
+		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 20));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }
