@@ -17,7 +17,7 @@ namespace Engine
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
 		renderManager = RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
-
+		constraintManager = new ConstraintManager();
 		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
 
@@ -27,6 +27,9 @@ namespace Engine
 	Scene::~Scene()
 	{
 		delete camera;
+		delete systemManager;
+		delete constraintManager;
+		delete entityManager;
 	}
 
 	void Scene::Update()

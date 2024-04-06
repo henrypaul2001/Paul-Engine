@@ -6,7 +6,7 @@ namespace Engine {
 	{
 	public:
 		ConstraintManager() {}
-		~ConstraintManager() {}
+		~ConstraintManager() { ClearConstraints(); }
 
 		void AddNewConstraint(Constraint* constraint) { constraints.push_back(constraint); }
 
