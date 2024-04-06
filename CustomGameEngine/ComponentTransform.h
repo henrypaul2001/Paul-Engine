@@ -24,6 +24,7 @@ namespace Engine
 		std::vector<Entity*> children;
 	public:
 		ComponentTransform(glm::vec3 position, glm::vec3 rotationAxis, float rotationAngle, glm::vec3 scale);
+		ComponentTransform(glm::vec3 position);
 		ComponentTransform(float posX, float posY, float posZ);
 		~ComponentTransform();
 

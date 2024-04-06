@@ -16,6 +16,19 @@ namespace Engine
 		UpdateModelMatrix();
 	}
 
+	ComponentTransform::ComponentTransform(glm::vec3 position)
+	{
+		this->position = position;
+		this->lastPosition = position;
+		this->rotationAxis = glm::vec3(1.0, 1.0, 1.0);
+		this->rotationAngle = 0.0f;
+		this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		orientation = glm::angleAxis(glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+		UpdateModelMatrix();
+	}
+
 	ComponentTransform::ComponentTransform(float posX, float posY, float posZ) {
 		this->position = glm::vec3(posX, posY, posZ);
 		this->lastPosition = position;
