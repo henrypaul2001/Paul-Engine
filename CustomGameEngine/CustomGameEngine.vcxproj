@@ -155,6 +155,8 @@
     <ClInclude Include="ComponentPhysics.h" />
     <ClInclude Include="ComponentVelocity.h" />
     <ClInclude Include="ComponentTransform.h" />
+    <ClInclude Include="Constraint.h" />
+    <ClInclude Include="ConstraintManager.h" />
     <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -206,6 +208,8 @@
     <ClCompile Include="ComponentPhysics.cpp" />
     <ClCompile Include="ComponentVelocity.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
+    <ClCompile Include="Constraint.cpp" />
+    <ClCompile Include="ConstraintManager.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />

@@ -219,6 +219,12 @@
     <ClInclude Include="CollisionResolver.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="ConstraintManager.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Constraint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -373,6 +379,12 @@
     </ClCompile>
     <ClCompile Include="CollisionResolver.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstraintManager.cpp">
+      <Filter>Source Files\Engine\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Constraint.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
