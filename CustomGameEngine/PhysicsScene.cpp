@@ -220,7 +220,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(box->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
 		box->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		box->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		box->AddComponent(new ComponentPhysics(5.0f, 1.05f, 2.0f, 0.5f, true, true));
+		box->AddComponent(new ComponentPhysics(5.0f, 1.05f, 2.0f, 0.7f, true, true));
 		entityManager->AddEntity(box);
 
 		//Entity* box2 = new Entity("Box 2");

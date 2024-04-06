@@ -155,17 +155,18 @@ namespace Engine {
 		}
 
 		for (int i = 0; i < impulses.size(); i++) {
-			glm::vec3 impulse = impulses[i] / float(collision.contactPoints.size());
+			//glm::vec3 impulse = impulses[i] / float(collision.contactPoints.size());
+			glm::vec3 impulse = impulses[i];
 			glm::vec3 relativeA = collision.contactPoints[i].contactPointA;
 			glm::vec3 relativeB = collision.contactPoints[i].contactPointB;
 
 			if (physicsA != nullptr && colliderA->IsMovedByCollisions()) {
-				physicsA->ApplyLinearImpulse(-impulse);
+				physicsA->ApplyLinearImpulse(-impulse / float(collision.contactPoints.size()));
 				physicsA->ApplyAngularImpulse(glm::cross(relativeA, collision.contactPoints[i].normal * -impulse));
 			}
 
 			if (physicsB != nullptr && colliderB->IsMovedByCollisions()) {
-				physicsB->ApplyLinearImpulse(impulse);
+				physicsB->ApplyLinearImpulse(impulse / float(collision.contactPoints.size()));
 				physicsB->ApplyAngularImpulse(glm::cross(relativeB, collision.contactPoints[i].normal * impulse));
 			}
 		}

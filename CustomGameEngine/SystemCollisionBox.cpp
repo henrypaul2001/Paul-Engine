@@ -172,6 +172,7 @@ namespace Engine {
 					}
 					glm::vec3 localA = globalOnA - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectA->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
 					glm::vec3 localB = globalOnB - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectB->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
+					//glm::vec3 newNormal = glm::normalize(-normal1 + normal2);
 					out_collisionInfo.AddContactPoint(localA, localB, normal, contact_penetration);
 				}
 			}
