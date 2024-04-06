@@ -4,7 +4,7 @@
 namespace Engine {
 	void ConstraintPosition::UpdateConstraint(float deltaTime)
 	{
-		glm::vec3 relativePosition = objectA.GetTransformComponent()->GetWorldPosition() + objectB.GetTransformComponent()->GetWorldPosition();
+		glm::vec3 relativePosition = objectA.GetTransformComponent()->GetWorldPosition() - objectB.GetTransformComponent()->GetWorldPosition();
 		float currentDistance = glm::length(relativePosition);
 		float offset = distance - currentDistance;
 
@@ -33,7 +33,7 @@ namespace Engine {
 
 			if (constraintMass > 0.0f) {
 				float constraintStress = glm::dot(relativeVelocity, direction);
-				float biasFactor = 0.01f;
+				float biasFactor = 0.00000001f;
 				float bias = -(biasFactor / deltaTime) * offset;
 
 				float lambda = -(constraintStress + bias) / constraintMass;

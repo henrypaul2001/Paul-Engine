@@ -8,6 +8,7 @@
 #include "SystemCollisionBox.h"
 #include "SystemCollisionBoxAABB.h"
 #include "SystemCollisionSphereBox.h"
+#include "ConstraintPosition.h"
 namespace Engine {
 	PhysicsScene::PhysicsScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -230,6 +231,41 @@ namespace Engine {
 		//box2->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		//box2->AddComponent(new ComponentPhysics(5.0f, 1.05f, 2.0f, 0.5f, true, true));
 		//entityManager->AddEntity(box2);
+
+		// Rope bridge
+		glm::vec3 linkSize = glm::vec3(2.0f, 1.0f, 1.0f);
+		float linkMass = 2.0f;
+		int links = 15;
+		float maxConstraintDistance = 1.0f;
+		float linkDistance = -5.0f;
+
+		glm::vec3 startPosition = glm::vec3(-25.0f, 5.0f, 17.0f);
+
+		Entity* bridgeStart = new Entity("Bridge Start");
+		bridgeStart->AddComponent(new ComponentTransform(startPosition));
+		bridgeStart->GetTransformComponent()->SetScale(linkSize);
+		bridgeStart->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(bridgeStart);
+
+		Entity* bridgeEnd = new Entity("Bridge End");
+		bridgeEnd->AddComponent(new ComponentTransform(startPosition + glm::vec3(0.0f, 0.0f, (links + 1) * linkDistance)));
+		bridgeEnd->GetTransformComponent()->SetScale(linkSize);
+		bridgeEnd->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		entityManager->AddEntity(bridgeEnd);
+
+		Entity* previous = bridgeStart;
+		for (int i = 0; i < links; i++) {
+			std::string name = std::string("Link ") + std::string(std::to_string(i));
+			Entity* newLink = new Entity(name);
+			newLink->AddComponent(new ComponentTransform(startPosition + glm::vec3(0.0f, 0.0f, (i + 1) * linkDistance)));
+			newLink->GetTransformComponent()->SetScale(linkSize);
+			newLink->AddComponent(new ComponentPhysics(linkMass, 1.05f, 2.0f, 0.7f, true, true));
+			newLink->AddComponent(new ComponentGeometry(MODEL_CUBE));
+			entityManager->AddEntity(newLink);
+			constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *newLink, maxConstraintDistance));
+			previous = newLink;
+		}
+		constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *bridgeEnd, maxConstraintDistance));
 	}
 
 	void PhysicsScene::CreateSystems()
@@ -246,7 +282,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
-		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager));
+		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 40));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }
