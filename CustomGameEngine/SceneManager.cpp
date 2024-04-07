@@ -155,7 +155,7 @@ namespace Engine
 			Scene::dt = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 			//Scene::dt = std::chrono::duration_cast<std::chrono::milliseconds>(timeStep).count() / 1000.0;
-			Scene::dt = 0.0066f;
+			//Scene::dt = 0.0066f;
 			// Process inputs
 			scene->GetInputManager()->ProcessInputs();
 
