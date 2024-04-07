@@ -110,6 +110,10 @@ namespace Engine {
 
 			physics->Gravity(-axis);
 		}
+		else if (key == GLFW_KEY_KP_9) {
+			Entity* torqueEntity = entityManager->FindEntity("Link 0");
+			torqueEntity->GetPhysicsComponent()->SetTorque(glm::vec3(0.0f, 0.0f, 1.0f));
+		}
 	}
 
 	void PhysicsScene::keyDown(int key)
@@ -236,7 +240,7 @@ namespace Engine {
 		glm::vec3 linkSize = glm::vec3(2.0f, 1.0f, 1.0f);
 		float linkMass = 2.0f;
 		int links = 15;
-		float maxConstraintDistance = 1.5f;
+		float maxConstraintDistance = 0.5f;
 		float linkDistance = -3.0f;
 		float bias = 0.00000005f;
 
