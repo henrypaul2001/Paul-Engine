@@ -267,10 +267,10 @@ namespace Engine {
 			newLink->AddComponent(new ComponentPhysics(linkMass, 1.05f, 2.0f, 0.7f, true, true));
 			newLink->AddComponent(new ComponentGeometry(MODEL_CUBE));
 			entityManager->AddEntity(newLink);
-			constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *newLink, maxConstraintDistance, bias));
+			constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *newLink, maxConstraintDistance, bias, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 			previous = newLink;
 		}
-		constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *bridgeEnd, maxConstraintDistance, bias));
+		constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *bridgeEnd, maxConstraintDistance, bias, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 	}
 
 	void PhysicsScene::CreateSystems()
