@@ -4,7 +4,9 @@
 namespace Engine {
 	void ConstraintPosition::UpdateConstraint(float deltaTime)
 	{
-		glm::vec3 relativePosition = (objectA.GetTransformComponent()->GetWorldPosition() + relativeJointPositionA) - (objectB.GetTransformComponent()->GetWorldPosition() + relativeJointPositionB);
+		glm::vec3 worldSpaceJointPositionA = objectA.GetTransformComponent()->GetWorldModelMatrix() * glm::vec4(relativeJointPositionA, 1.0f);
+		glm::vec3 worldSpaceJointPositionB = objectB.GetTransformComponent()->GetWorldModelMatrix() * glm::vec4(relativeJointPositionB, 1.0f);
+		glm::vec3 relativePosition = worldSpaceJointPositionA - worldSpaceJointPositionB;
 		float currentDistance = glm::length(relativePosition);
 		float offset = distance - currentDistance;
 
