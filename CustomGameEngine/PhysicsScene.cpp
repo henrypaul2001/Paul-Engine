@@ -238,9 +238,9 @@ namespace Engine {
 
 		// Rope bridge
 		glm::vec3 linkSize = glm::vec3(2.0f, 1.0f, 1.0f);
-		float linkMass = 2.0f;
+		float linkMass = 1.0f;
 		int links = 15;
-		float maxConstraintDistance = 0.5f;
+		float maxConstraintDistance = 0.0f;
 		float linkDistance = -3.0f;
 		float bias = 0.00000005f;
 
@@ -250,12 +250,14 @@ namespace Engine {
 		bridgeStart->AddComponent(new ComponentTransform(startPosition));
 		bridgeStart->GetTransformComponent()->SetScale(linkSize);
 		bridgeStart->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		//bridgeStart->AddComponent(new ComponentPhysics(10000.0f, 1.05f, 2.0f, 0.7f, false, true));
 		entityManager->AddEntity(bridgeStart);
 
 		Entity* bridgeEnd = new Entity("Bridge End");
 		bridgeEnd->AddComponent(new ComponentTransform(startPosition + glm::vec3(0.0f, 0.0f, (links + 1) * linkDistance)));
 		bridgeEnd->GetTransformComponent()->SetScale(linkSize);
 		bridgeEnd->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		//bridgeEnd->AddComponent(new ComponentPhysics(10000.0f, 1.05f, 2.0f, 0.7f, false, true));
 		entityManager->AddEntity(bridgeEnd);
 
 		Entity* previous = bridgeStart;
@@ -287,7 +289,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionBoxAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
-		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 20));
+		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 40));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }
