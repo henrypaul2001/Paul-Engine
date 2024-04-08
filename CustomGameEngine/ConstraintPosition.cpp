@@ -19,7 +19,9 @@ namespace Engine {
 		float angleDegrees = cosAngle * (180.0f / glm::pi<float>());
 
 		float angleOffset = targetAngleDegrees - angleDegrees;
-
+		if (angleDegrees > 180.0f) {
+			angleDegrees = 180.0f - angleDegrees;
+		}
 		if (abs(offset) > 0.0f) {
 			glm::vec3 direction = glm::normalize(relativePosition);
 
