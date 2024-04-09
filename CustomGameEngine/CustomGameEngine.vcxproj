@@ -158,6 +158,7 @@
     <ClInclude Include="Constraint.h" />
     <ClInclude Include="ConstraintManager.h" />
     <ClInclude Include="ConstraintPosition.h" />
+    <ClInclude Include="ConstraintRotation.h" />
     <ClInclude Include="ConstraintSolver.h" />
     <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Entity.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="Constraint.cpp" />
     <ClCompile Include="ConstraintManager.cpp" />
     <ClCompile Include="ConstraintPosition.cpp" />
+    <ClCompile Include="ConstraintRotation.cpp" />
     <ClCompile Include="ConstraintSolver.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="Entity.cpp" />

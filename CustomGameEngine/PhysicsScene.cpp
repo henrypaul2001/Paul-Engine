@@ -9,6 +9,7 @@
 #include "SystemCollisionBoxAABB.h"
 #include "SystemCollisionSphereBox.h"
 #include "ConstraintPosition.h"
+#include "ConstraintRotation.h"
 namespace Engine {
 	PhysicsScene::PhysicsScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -114,6 +115,10 @@ namespace Engine {
 			//Entity* torqueEntity = entityManager->FindEntity("Link 0");
 			//torqueEntity->GetPhysicsComponent()->SetTorque(glm::vec3(0.0f, 0.0f, 1.0f));
 			constraintManager->RemoveConstraint(constraintManager->GetConstraints().size() - 1);
+		}
+		else if (key == GLFW_KEY_KP_3) {
+			Entity* cube = entityManager->FindEntity("Test Cube 2");
+			cube->GetPhysicsComponent()->SetTorque(glm::vec3(1.0f, 0.0f, 0.0f));
 		}
 	}
 
@@ -274,6 +279,20 @@ namespace Engine {
 			previous = newLink;
 		}
 		constraintManager->AddNewConstraint(new ConstraintPosition(*previous, *bridgeEnd, maxConstraintDistance, bias, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+
+		Entity* testCube = new Entity("Test Cube");
+		testCube->AddComponent(new ComponentTransform(0.0f, 10.0f, 15.0f));
+		testCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		testCube->AddComponent(new ComponentPhysics(linkMass, 1.05f, 2.0f, 0.7f, false, true));
+		//testCube->GetTransformComponent()->SetOrientation(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.5f)));
+		entityManager->AddEntity(testCube);
+
+		Entity* testCube2 = new Entity("Test Cube 2");
+		testCube2->AddComponent(new ComponentTransform(2.0f, 10.0f, 15.0f));
+		testCube2->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		testCube2->AddComponent(new ComponentPhysics(linkMass, 1.05f, 2.0f, 0.7f, false, true));
+		entityManager->AddEntity(testCube2);
+		constraintManager->AddNewConstraint(new ConstraintRotation(*testCube, *testCube2, glm::vec3(20.0f, 0.0f, 0.0f)));
 	}
 
 	void PhysicsScene::CreateSystems()
