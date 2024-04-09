@@ -8,7 +8,9 @@ namespace Engine {
 
 		for (int i = 0; i < numIterations; i++) {
 			for (Constraint* c : constraints) {
-				c->UpdateConstraint(dividedDeltaTime);
+				if (c->IsActive()) {
+					c->UpdateConstraint(dividedDeltaTime);
+				}
 			}
 		}
 	}
