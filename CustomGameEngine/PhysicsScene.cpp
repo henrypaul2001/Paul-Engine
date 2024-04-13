@@ -118,7 +118,7 @@ namespace Engine {
 		}
 		else if (key == GLFW_KEY_KP_3) {
 			Entity* cube = entityManager->FindEntity("Test Cube 2");
-			cube->GetPhysicsComponent()->SetTorque(glm::vec3(1.0f, 0.0f, 0.0f));
+			cube->GetPhysicsComponent()->SetTorque(glm::vec3(5.0f, 0.0f, 0.0f));
 		}
 	}
 

@@ -17,12 +17,7 @@ namespace Engine {
 		currentOffset = currentRotationB - currentRotationA;
 		glm::vec3 offset = maxRotationOffset - currentOffset;
 
-		glm::vec3 jointPositionA = glm::vec3(1.0f, 0.0f, 0.0f);
-		glm::vec3 jointPositionB = glm::vec3(-1.0f, 0.0f, 0.0f);
-
-		glm::vec3 worldSpaceJointPositionA = objectA.GetTransformComponent()->GetWorldModelMatrix() * glm::vec4(jointPositionA, 1.0f);
-		glm::vec3 worldSpaceJointPositionB = objectB.GetTransformComponent()->GetWorldModelMatrix() * glm::vec4(jointPositionB, 1.0f);
-		glm::vec3 relativePosition = worldSpaceJointPositionA - worldSpaceJointPositionB;
+		glm::vec3 relativePosition = objectA.GetTransformComponent()->GetWorldPosition() - objectB.GetTransformComponent()->GetWorldPosition();
 		ComponentPhysics* physicsA = objectA.GetPhysicsComponent();
 		ComponentPhysics* physicsB = objectB.GetPhysicsComponent();
 
@@ -47,7 +42,6 @@ namespace Engine {
 			glm::vec3 direction = glm::normalize(relativePosition);
 			float constraintStress = glm::dot((angularVelocityB - angularVelocityA), direction);
 ;			if (abs(currentOffset.x) > abs(maxRotationOffset.x) && controlXRotation) {
-				//float constraintStress = angularVelocityB.x - angularVelocityA.x;
 				float biasFactor = this->bias;
 				float bias = -(biasFactor / deltaTime) * currentOffset.x;
 
@@ -56,7 +50,6 @@ namespace Engine {
 			}
 
 			if (abs(currentOffset.y) > abs(maxRotationOffset.y) && controlYRotation) {
-				//float constraintStress = angularVelocityB.y - angularVelocityA.y;
 				float biasFactor = this->bias;
 				float bias = -(biasFactor / deltaTime) * currentOffset.y;
 
@@ -65,7 +58,6 @@ namespace Engine {
 			}
 
 			if (abs(currentOffset.z) > abs(maxRotationOffset.z) && controlZRotation) {
-				//float constraintStress = angularVelocityB.z - angularVelocityA.z;
 				float biasFactor = this->bias;
 				float bias = -(biasFactor / deltaTime) * currentOffset.z;
 
@@ -74,11 +66,12 @@ namespace Engine {
 			}
 
 			if (physicsA != nullptr) {
-				//physicsA->ApplyAngularImpulse(angularImpulse);
+				glm::vec3 impulseA = angularImpulse;
+				physicsA->AddTorque(impulseA);
 			}
 			if (physicsB != nullptr) {
-				glm::vec3 impulseB = direction * angularImpulse;
-				physicsB->ApplyAngularImpulse(glm::cross(worldSpaceJointPositionB - objectB.GetTransformComponent()->GetWorldPosition(), impulseB));
+				glm::vec3 impulseB = -angularImpulse;
+				physicsB->AddTorque(impulseB);
 			}
 		}
 	}
