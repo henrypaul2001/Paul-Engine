@@ -112,9 +112,9 @@ namespace Engine {
 			physics->Gravity(-axis);
 		}
 		else if (key == GLFW_KEY_KP_9) {
-			//Entity* torqueEntity = entityManager->FindEntity("Link 0");
-			//torqueEntity->GetPhysicsComponent()->SetTorque(glm::vec3(0.0f, 0.0f, 1.0f));
-			constraintManager->RemoveConstraint(constraintManager->GetConstraints().size() - 1);
+			Entity* torqueEntity = entityManager->FindEntity("Link 0");
+			torqueEntity->GetPhysicsComponent()->SetTorque(glm::vec3(0.0f, 2.0f, 0.0f));
+			//constraintManager->RemoveConstraint(constraintManager->GetConstraints().size() - 1);
 		}
 		else if (key == GLFW_KEY_KP_3) {
 			Entity* cube = entityManager->FindEntity("Test Cube 2");

@@ -71,7 +71,28 @@ namespace Engine {
 			}
 			if (physicsB != nullptr) {
 				glm::vec3 impulseB = -angularImpulse;
+				glm::vec3 torqueImpulseB = impulseB;
 				physicsB->AddTorque(impulseB);
+
+				// Angular
+				/*
+				physicsB->UpdateInertiaTensor(objectB.GetTransformComponent()->GetOrientation());
+
+				glm::vec3 angularAcceleration = physicsB->InverseInertiaTensor() * torqueImpulseB;
+				glm::vec3 angularVelocity = physicsB->AngularVelocity();
+
+				angularVelocity += angularAcceleration * deltaTime;
+				physicsB->SetAngularVelocity(angularVelocity);
+
+				// Angular velocity
+				glm::quat orientation = objectB.GetTransformComponent()->GetOrientation();
+				angularVelocity = physicsB->AngularVelocity();
+
+				orientation = orientation + (glm::quat(glm::vec3(angularVelocity * deltaTime * 0.5f)) * orientation);
+				orientation = glm::normalize(orientation);
+
+				objectB.GetTransformComponent()->SetOrientation(orientation);
+				*/
 			}
 		}
 	}
