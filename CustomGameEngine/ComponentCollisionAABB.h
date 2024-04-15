@@ -15,11 +15,15 @@ namespace Engine {
 	{
 	private:
 		AABBPoints localBounds;
+		BoundingBox boundingBox;
+
+		void ConstructCube();
 	public:
 		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool defaultCollisionResponse);
 		~ComponentCollisionAABB();
 
 		AABBPoints GetBoundary() { return localBounds; }
+		BoundingBox& GetBoundingBox() { return boundingBox; }
 
 		void SetMinX(float minX) { localBounds.minX = minX; }
 		void SetMinY(float minY) { localBounds.minY = minY; }

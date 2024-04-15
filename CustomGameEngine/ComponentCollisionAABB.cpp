@@ -13,6 +13,8 @@ namespace Engine {
 		isMovedByCollisions = true;
 
 		useDefaultCollisionResponse = defaultCollisionResponse;
+
+		ConstructCube();
 	}
 
 	ComponentCollisionAABB::~ComponentCollisionAABB()
@@ -64,6 +66,36 @@ namespace Engine {
 		}
 
 		return cubePoints;
+	}
+
+	void ComponentCollisionAABB::ConstructCube()
+	{
+		// Vertices
+		boundingBox.AddVertex(glm::vec3(localBounds.minX, localBounds.minY, localBounds.minZ)); // 0
+		boundingBox.AddVertex(glm::vec3(localBounds.minX, localBounds.maxY, localBounds.minZ)); // 1
+		boundingBox.AddVertex(glm::vec3(localBounds.maxX, localBounds.maxY, localBounds.minZ)); // 2
+		boundingBox.AddVertex(glm::vec3(localBounds.maxX, localBounds.minY, localBounds.minZ)); // 3
+
+		boundingBox.AddVertex(glm::vec3(localBounds.minX, localBounds.minY, localBounds.maxZ)); // 4
+		boundingBox.AddVertex(glm::vec3(localBounds.minX, localBounds.maxY, localBounds.maxZ)); // 5
+		boundingBox.AddVertex(glm::vec3(localBounds.maxX, localBounds.maxY, localBounds.maxZ)); // 6
+		boundingBox.AddVertex(glm::vec3(localBounds.maxX, localBounds.minY, localBounds.maxZ)); // 7
+
+		// Indices, counter clockwise
+		int face1[] = { 0, 1, 2, 3 };
+		int face2[] = { 7, 6, 5, 4 };
+		int face3[] = { 5, 6, 2, 1 };
+		int face4[] = { 0, 3, 7, 4 };
+		int face5[] = { 6, 7, 3, 2 };
+		int face6[] = { 4, 5, 1, 0 };
+
+		// Faces
+		boundingBox.AddFace(glm::vec3(0.0f, 0.0f, -1.0f), 4, face1);
+		boundingBox.AddFace(glm::vec3(0.0f, 0.0f, 1.0f), 4, face2);
+		boundingBox.AddFace(glm::vec3(0.0f, 1.0f, 0.0f), 4, face3);
+		boundingBox.AddFace(glm::vec3(0.0f, -1.0f, 0.0f), 4, face4);
+		boundingBox.AddFace(glm::vec3(1.0f, 0.0f, 0.0f), 4, face5);
+		boundingBox.AddFace(glm::vec3(-1.0f, 0.0f, 0.0f), 4, face6);
 	}
 
 	void ComponentCollisionAABB::Close()

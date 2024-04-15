@@ -228,7 +228,7 @@ namespace Engine {
 
 		Entity* box = new Entity("Box");
 		box->AddComponent(new ComponentTransform(-5.0f, 10.0f, -1.0f));
-		dynamic_cast<ComponentTransform*>(box->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
+		//dynamic_cast<ComponentTransform*>(box->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
 		box->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		box->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		box->AddComponent(new ComponentPhysics(5.0f, 1.05f, 2.0f, 0.7f, true, true));
@@ -293,6 +293,13 @@ namespace Engine {
 		testCube2->AddComponent(new ComponentPhysics(linkMass, 1.05f, 2.0f, 0.7f, false, true));
 		entityManager->AddEntity(testCube2);
 		constraintManager->AddNewConstraint(new ConstraintRotation(*testCube, *testCube2, glm::vec3(20.0f, 0.0f, 0.0f)));
+
+		Entity* aabbCube = new Entity("AABB Cube");
+		aabbCube->AddComponent(new ComponentTransform(3.0f, 4.0f, 2.0f));
+		aabbCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		aabbCube->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		aabbCube->AddComponent(new ComponentPhysics(30.0f, 0.47f, 1.0f, 0.5f, true, true));
+		entityManager->AddEntity(aabbCube);
 	}
 
 	void PhysicsScene::CreateSystems()

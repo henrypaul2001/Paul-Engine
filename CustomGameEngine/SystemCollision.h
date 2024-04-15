@@ -24,6 +24,8 @@ namespace Engine {
 		virtual CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) = 0;
 		void DefaultCollisionResponse(Entity* entity1, Entity* entity2);
 
+		void GetContactPoints(CollisionData& out_collisionInfo);
+		void GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, std::vector<ClippingPlane>& out_adjPlanes, Entity* object);
 		bool CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2, CollisionData& collision);
 		bool CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2, CollisionData& collision);
 		std::vector<glm::vec3> GetCubeNormals(ComponentTransform* transform);
