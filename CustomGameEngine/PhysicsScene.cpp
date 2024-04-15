@@ -60,10 +60,6 @@ namespace Engine {
 
 		Entity* ball = entityManager->FindEntity("Physics Ball");
 		//std::cout << "Velocity y = " << dynamic_cast<ComponentPhysics*>(ball->GetComponent(COMPONENT_PHYSICS))->Velocity().y << std::endl;
-
-		Entity* cube = entityManager->FindEntity("AABB Cube");
-		glm::vec3 position = cube->GetTransformComponent()->Position();
-		std::cout << "Position x = " << position.x << " || Position y = " << position.y << " || Position z = " << position.z << std::endl;
 	}
 
 	void PhysicsScene::Render()
@@ -209,8 +205,8 @@ namespace Engine {
 		floor->AddComponent(new ComponentTransform(0.0f, -2.0f, 0.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 1.0f, 10.0f));
-		floor->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
-		dynamic_cast<ComponentCollisionBox*>(floor->GetComponent(COMPONENT_COLLISION_BOX))->IsMovedByCollisions(false);
+		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		dynamic_cast<ComponentCollisionAABB*>(floor->GetComponent(COMPONENT_COLLISION_AABB))->IsMovedByCollisions(false);
 		entityManager->AddEntity(floor);
 
 		Entity* inelasticBall = new Entity("Inelastic Ball");
