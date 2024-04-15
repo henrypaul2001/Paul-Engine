@@ -101,6 +101,8 @@ namespace Engine {
 
 		bestCollision.isColliding = true;
 
+		GetContactPoints(bestCollision);
+
 		return bestCollision;
 	}
 }

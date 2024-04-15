@@ -32,6 +32,8 @@ namespace Engine {
     };
 
     struct BoundingBox {
+        BoundingBox() {}
+
         std::vector<BoxVertex> vertices;
         std::vector<BoxEdge> edges;
         std::vector<BoxFace> faces;

@@ -60,6 +60,10 @@ namespace Engine {
 
 		Entity* ball = entityManager->FindEntity("Physics Ball");
 		//std::cout << "Velocity y = " << dynamic_cast<ComponentPhysics*>(ball->GetComponent(COMPONENT_PHYSICS))->Velocity().y << std::endl;
+
+		Entity* cube = entityManager->FindEntity("AABB Cube");
+		glm::vec3 position = cube->GetTransformComponent()->Position();
+		std::cout << "Position x = " << position.x << " || Position y = " << position.y << " || Position z = " << position.z << std::endl;
 	}
 
 	void PhysicsScene::Render()
@@ -295,7 +299,7 @@ namespace Engine {
 		constraintManager->AddNewConstraint(new ConstraintRotation(*testCube, *testCube2, glm::vec3(20.0f, 0.0f, 0.0f)));
 
 		Entity* aabbCube = new Entity("AABB Cube");
-		aabbCube->AddComponent(new ComponentTransform(3.0f, 4.0f, 2.0f));
+		aabbCube->AddComponent(new ComponentTransform(3.0f, 2.0f, 2.0f));
 		aabbCube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		aabbCube->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
 		aabbCube->AddComponent(new ComponentPhysics(30.0f, 0.47f, 1.0f, 0.5f, true, true));

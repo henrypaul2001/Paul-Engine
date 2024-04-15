@@ -217,7 +217,12 @@ namespace Engine {
 
 		// Combine into one list of potential collision axes
 		axes = cube1Normals;
-		axes.insert(axes.end(), cube2Normals.begin(), cube2Normals.end());
+		for (int i = 0; i < cube1Normals.size(); i++) {
+			if (cube2Normals[i] != cube1Normals[i]) {
+				axes.push_back(cube2Normals[i]);
+			}
+		}
+		//axes.insert(axes.end(), cube2Normals.begin(), cube2Normals.end());
 
 		/*
 		// Add cross product of all edges to axes
@@ -231,7 +236,9 @@ namespace Engine {
 		// Add cross product of all normals to axes
 		for (glm::vec3 normal1 : cube1Normals) {
 			for (glm::vec3 normal2 : cube2Normals) {
-				axes.push_back(glm::cross(normal1, normal2));
+				if (normal1 != normal2) {
+					axes.push_back(glm::cross(normal1, normal2));
+				}
 			}
 		}
 
@@ -477,7 +484,16 @@ namespace Engine {
 
 		// Get furthest vertex along axis - furthest face
 		int minVertexId, maxVertexId;
-		BoundingBox& cube = dynamic_cast<ComponentCollisionBox*>(object->GetComponent(COMPONENT_COLLISION_BOX))->GetBoundingBox();
+		BoundingBox cube;
+		if (object->GetBoxCollisionComponent() != nullptr) {
+			cube = object->GetBoxCollisionComponent()->GetBoundingBox();
+		}
+		else if (object->GetAABBCollisionComponent() != nullptr) {
+			cube = object->GetAABBCollisionComponent()->GetBoundingBox();
+		}
+		else {
+			throw std::invalid_argument("Incident refernc polygon can only be retrieved on objects with either an AABB collider or box collider");
+		}
 		cube.GetMinMaxVerticesOnAxis(localAxis, minVertexId, maxVertexId);
 		BoxVertex& vertex = cube.vertices[maxVertexId];
 
