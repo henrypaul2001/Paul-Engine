@@ -142,7 +142,11 @@ namespace Engine {
 		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		directional->Colour = glm::vec3(1.0f);
 		directional->Specular = glm::vec3(0.0f);
-		directional->Direction = glm::vec3(0.0f, -1.0f, 0.0f);
+		directional->Direction = glm::vec3(0.01f, -0.9f, -0.01f);
+		directional->MinShadowBias = 0.0f;
+		directional->MaxShadowBias = 0.003f;
+		directional->DirectionalLightDistance = 20.0f;
+		directional->ShadowProjectionSize = 30.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
