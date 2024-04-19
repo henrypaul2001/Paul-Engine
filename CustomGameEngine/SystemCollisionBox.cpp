@@ -93,11 +93,13 @@ namespace Engine {
 	CollisionData SystemCollisionBox::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		CollisionData collision;
-		if (!BroadPhaseIntersect(transform, collider, transform2, collider2)) {
-			collision.objectA = transform->GetOwner();
-			collision.objectB = transform2->GetOwner();
-			collision.isColliding = false;
-			return collision;
+		if (dynamic_cast<ComponentCollisionBox*>(collider)->CheckBroadPhaseFirst() && dynamic_cast<ComponentCollisionBox*>(collider2)->CheckBroadPhaseFirst()) {
+			if (!BroadPhaseIntersect(transform, collider, transform2, collider2)) {
+				collision.objectA = transform->GetOwner();
+				collision.objectB = transform2->GetOwner();
+				collision.isColliding = false;
+				return collision;
+			}
 		}
 
 		std::vector<glm::vec3> axes = GetAllCollisionAxis(transform, transform2);
