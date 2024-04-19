@@ -154,34 +154,34 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(collisionTestLeft->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		collisionTestLeft->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		collisionTestLeft->AddComponent(new ComponentVelocity(glm::vec3(10.0f, 0.0f, 0.0f)));
-		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		collisionTestLeft->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		entityManager->AddEntity(collisionTestLeft);
 
 		Entity* collisionTestRight = new Entity("Collision Test Right");
 		collisionTestRight->AddComponent(new ComponentTransform(4.0f, 0.5f, 0.0f));
 		collisionTestRight->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		collisionTestRight->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		collisionTestRight->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		entityManager->AddEntity(collisionTestRight);
 
 		Entity* sphereCollisionTestLeft = new Entity("Sphere Collision Test Left");
 		sphereCollisionTestLeft->AddComponent(new ComponentTransform(-4.0f, 1.5f, -2.0f));
 		dynamic_cast<ComponentTransform*>(sphereCollisionTestLeft->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		sphereCollisionTestLeft->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		sphereCollisionTestLeft->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		sphereCollisionTestLeft->AddComponent(new ComponentCollisionSphere(1.0f));
 		sphereCollisionTestLeft->AddComponent(new ComponentVelocity(1.0f, 0.0f, 0.0f));
 		entityManager->AddEntity(sphereCollisionTestLeft);
 
 		Entity* sphereCollisionTestRight = new Entity("Sphere Collision Test Right");
 		sphereCollisionTestRight->AddComponent(new ComponentTransform(4.0f, 0.5f, -2.0f));
 		sphereCollisionTestRight->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		sphereCollisionTestRight->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		sphereCollisionTestRight->AddComponent(new ComponentCollisionSphere(1.0f));
 		entityManager->AddEntity(sphereCollisionTestRight);
 
 		Entity* boxSphereCollisionTest = new Entity("Box Sphere Collision Test");
 		boxSphereCollisionTest->AddComponent(new ComponentTransform(-7.0f, 0.25f, -2.0f));
 		dynamic_cast<ComponentTransform*>(boxSphereCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f, 2.0f, 8.0f));
 		boxSphereCollisionTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		boxSphereCollisionTest->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		boxSphereCollisionTest->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		entityManager->AddEntity(boxSphereCollisionTest);
 
 		Entity* rotatedBoxCollider1 = new Entity("Rotated Box");
@@ -189,7 +189,7 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(rotatedBoxCollider1->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), 45.0f);
 		dynamic_cast<ComponentTransform*>(rotatedBoxCollider1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
 		rotatedBoxCollider1->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		rotatedBoxCollider1->AddComponent(new ComponentCollisionBox(-1.0f, -1.0, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		rotatedBoxCollider1->AddComponent(new ComponentCollisionBox(-1.0f, -1.0, -1.0f, 1.0f, 1.0f, 1.0f));
 		rotatedBoxCollider1->AddComponent(new ComponentVelocity(2.0f, 0.0f, 0.0f));
 		entityManager->AddEntity(rotatedBoxCollider1);
 
@@ -198,14 +198,14 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(rotatedBoxCollider2->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), 45.0f);
 		dynamic_cast<ComponentTransform*>(rotatedBoxCollider2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		rotatedBoxCollider2->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		rotatedBoxCollider2->AddComponent(new ComponentCollisionBox(-1.0f, -1.0, -1.0f, 1.0f, 1.0f, 1.0f, true));
+		rotatedBoxCollider2->AddComponent(new ComponentCollisionBox(-1.0f, -1.0, -1.0f, 1.0f, 1.0f, 1.0f));
 		entityManager->AddEntity(rotatedBoxCollider2);
 
 		Entity* sphereBoxCollisionTest = new Entity("Sphere vs Box");
 		sphereBoxCollisionTest->AddComponent(new ComponentTransform(6.0f, 1.0f, 3.75f));
 		dynamic_cast<ComponentTransform*>(sphereBoxCollisionTest->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.65f));
 		sphereBoxCollisionTest->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		sphereBoxCollisionTest->AddComponent(new ComponentCollisionSphere(1.0f, true));
+		sphereBoxCollisionTest->AddComponent(new ComponentCollisionSphere(1.0f));
 		entityManager->AddEntity(sphereBoxCollisionTest);
 	}
 

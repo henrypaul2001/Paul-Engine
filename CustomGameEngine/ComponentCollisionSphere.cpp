@@ -1,9 +1,8 @@
 #include "ComponentCollisionSphere.h"
 namespace Engine {
-	ComponentCollisionSphere::ComponentCollisionSphere(float sphereRadius, bool defaultCollisionResponse)
+	ComponentCollisionSphere::ComponentCollisionSphere(float sphereRadius)
 	{
 		this->sphereRadius = sphereRadius;
-		useDefaultCollisionResponse = defaultCollisionResponse;
 
 		isMovedByCollisions = true;
 	}

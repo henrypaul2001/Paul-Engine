@@ -15,7 +15,7 @@ namespace Engine {
     class ComponentCollisionBox : public ComponentCollision
     {
     public:
-        ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool defaultCollisionResponse);
+        ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
         ~ComponentCollisionBox();
 
         BoxExtents GetLocalPoints() { return localExtents; }
@@ -41,5 +41,7 @@ namespace Engine {
 
         BoxExtents localExtents;
         BoundingBox boundingBox;
+
+        bool checkBroadPhaseFirst;
     };
 }

@@ -19,7 +19,7 @@ namespace Engine {
 
 		void ConstructCube();
 	public:
-		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool defaultCollisionResponse);
+		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 		~ComponentCollisionAABB();
 
 		AABBPoints GetBoundary() { return localBounds; }

@@ -1,6 +1,6 @@
 #include "ComponentCollisionBox.h"
 namespace Engine {
-	ComponentCollisionBox::ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool defaultCollisionResponse)
+	ComponentCollisionBox::ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 	{
 		localExtents = BoxExtents();
 		localExtents.minX = minX;
@@ -11,8 +11,6 @@ namespace Engine {
 		localExtents.maxZ = maxZ;
 
 		isMovedByCollisions = true;
-
-		useDefaultCollisionResponse = defaultCollisionResponse;
 
 		ConstructCube();
 	}

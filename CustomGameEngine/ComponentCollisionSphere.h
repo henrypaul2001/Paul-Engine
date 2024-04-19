@@ -8,7 +8,7 @@ namespace Engine {
 	private:
 		float sphereRadius;
 	public:
-		ComponentCollisionSphere(float sphereRadius, bool defaultCollisionResponse);
+		ComponentCollisionSphere(float sphereRadius);
 		~ComponentCollisionSphere();
 
 		float CollisionRadius() { return sphereRadius; }
