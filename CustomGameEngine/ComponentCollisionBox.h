@@ -29,6 +29,9 @@ namespace Engine {
         void SetMaxY(float maxY) { localExtents.maxY = maxY; }
         void SetMaxZ(float maxZ) { localExtents.maxZ = maxZ; }
 
+        bool CheckBroadPhaseFirst() { return checkBroadPhaseFirst; }
+        void CheckBroadPhaseFirst(bool checkBroadPhase) { checkBroadPhaseFirst = checkBroadPhase; }
+
         BoundingBox& GetBoundingBox() { return boundingBox; }
 
         BoxExtents GetWorldSpacePoints(glm::mat4 modelMatrix);

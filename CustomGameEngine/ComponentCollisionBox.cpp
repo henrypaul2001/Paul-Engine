@@ -11,7 +11,7 @@ namespace Engine {
 		localExtents.maxZ = maxZ;
 
 		isMovedByCollisions = true;
-
+		checkBroadPhaseFirst = true;
 		ConstructCube();
 	}
 
