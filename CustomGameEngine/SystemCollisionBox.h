@@ -6,6 +6,7 @@ namespace Engine {
 	private:
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_BOX);
 
+		bool BroadPhaseIntersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2);
 		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
 		SystemCollisionBox(EntityManager* entityManager, CollisionManager* collisionManager);
