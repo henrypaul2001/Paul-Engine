@@ -77,15 +77,16 @@ namespace Engine {
 		float scaledRadius1 = dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius() * transform->GetBiggestScaleFactor();
 		float scaledRadius2 = dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius() * transform2->GetBiggestScaleFactor();
 
-		float distance = glm::distance(transform->GetWorldPosition(), transform2->GetWorldPosition());
+		float distanceSqr = glm::distance2(transform->GetWorldPosition(), transform2->GetWorldPosition());
 
 		float combinedRadius = scaledRadius1 + scaledRadius2;
-		
-		CollisionData collision;
-		if (distance < combinedRadius) {
-			collision.isColliding = true;
+		float combinedRadiusSqr = combinedRadius * combinedRadius;
 
-			float collisionPenetration = combinedRadius - distance;
+		CollisionData collision;
+		if (distanceSqr < combinedRadiusSqr) {
+			collision.isColliding = true;
+			float distance = glm::sqrt(distanceSqr);
+			float collisionPenetration = combinedRadius- distance;
 			glm::vec3 collisionNormal = -glm::normalize(transform2->GetWorldPosition() - transform->GetWorldPosition());
 			glm::vec3 localCollisionPoint = collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius();
 			glm::vec3 otherLocalCollisionPoint = -collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius();
