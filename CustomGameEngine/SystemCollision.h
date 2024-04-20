@@ -35,6 +35,7 @@ namespace Engine {
 		glm::vec3 GetClosestPointPolygon(const glm::vec3& pos, const std::vector<glm::vec3>& polygon);
 		glm::vec3 GetClosestPoint(const glm::vec3& pos, std::vector<Edge>& edges);
 		glm::vec3 GetClosestPoint(const glm::vec3& pos, Edge& edge);
+		bool BroadPhaseSphereSphere(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2);
 	public:
 		SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager);
 		~SystemCollision();

@@ -73,28 +73,11 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollisionBox::BroadPhaseIntersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
-	{
-		// Use a quick sphere-sphere collision test to see if objects are close enough to check with more complex SAT collision detection
-		ComponentCollisionBox* boxA = dynamic_cast<ComponentCollisionBox*>(collider);
-		ComponentCollisionBox* boxB = dynamic_cast<ComponentCollisionBox*>(collider2);
-
-		float aRadius = (boxA->GetLocalPoints().GetBiggestExtent() / 2.0f) * transform->GetBiggestScaleFactor();
-		float bRadius = (boxB->GetLocalPoints().GetBiggestExtent() / 2.0f) * transform2->GetBiggestScaleFactor();
-
-		float distanceSqr = glm::distance2(transform->GetWorldPosition(), transform2->GetWorldPosition());
-
-		float combinedRadius = aRadius + bRadius;
-		float combinedRadiusSqr = combinedRadius * combinedRadius;
-
-		return (distanceSqr < combinedRadiusSqr) ? true : false;
-	}
-
 	CollisionData SystemCollisionBox::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
 		CollisionData collision;
 		if (dynamic_cast<ComponentCollisionBox*>(collider)->CheckBroadPhaseFirst() && dynamic_cast<ComponentCollisionBox*>(collider2)->CheckBroadPhaseFirst()) {
-			if (!BroadPhaseIntersect(transform, collider, transform2, collider2)) {
+			if (!BroadPhaseSphereSphere(transform, collider, transform2, collider2)) {
 				collision.objectA = transform->GetOwner();
 				collision.objectB = transform2->GetOwner();
 				collision.isColliding = false;

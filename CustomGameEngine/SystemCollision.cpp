@@ -386,6 +386,46 @@ namespace Engine {
 		return edge.start + diffAB * distance;
 	}
 
+	// Use a quick sphere-sphere collision test to see if objects are close enough to check with more complex SAT collision detection
+	bool SystemCollision::BroadPhaseSphereSphere(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	{
+		ComponentCollisionBox* boxA;
+		ComponentCollisionBox* boxB;
+
+		ComponentCollisionAABB* aabbA;
+		ComponentCollisionAABB* aabbB;
+
+		float aRadius;
+		float bRadius;
+		
+		if ((boxA = dynamic_cast<ComponentCollisionBox*>(collider)) != nullptr) {
+			aRadius = (boxA->GetLocalPoints().GetBiggestExtent() / 2.0f) * transform->GetBiggestScaleFactor();
+		}
+		else if ((aabbA = dynamic_cast<ComponentCollisionAABB*>(collider)) != nullptr) {
+			aRadius = (aabbA->GetBoundary().GetBiggestExtent() / 2.0f) * transform->GetBiggestScaleFactor();
+		}
+		else {
+			throw std::invalid_argument("Collider must be AABB or box for broad phase");
+		}
+
+		if ((boxB = dynamic_cast<ComponentCollisionBox*>(collider2)) != nullptr) {
+			bRadius = (boxB->GetLocalPoints().GetBiggestExtent() / 2.0f) * transform2->GetBiggestScaleFactor();
+		}
+		else if ((aabbB = dynamic_cast<ComponentCollisionAABB*>(collider2)) != nullptr) {
+			bRadius = (aabbB->GetBoundary().GetBiggestExtent() / 2.0f) * transform2->GetBiggestScaleFactor();
+		}
+		else {
+			throw std::invalid_argument("Collider must be AABB or box for broad phase");
+		}
+
+		float distanceSqr = glm::distance2(transform->GetWorldPosition(), transform2->GetWorldPosition());
+
+		float combinedRadius = aRadius + bRadius;
+		float combinedRadiusSqr = combinedRadius * combinedRadius;
+
+		return (distanceSqr < combinedRadiusSqr) ? true : false;
+	}
+
 	void SystemCollision::GetContactPoints(CollisionData& out_collisionInfo)
 	{
 		std::vector<glm::vec3> poly1, poly2;

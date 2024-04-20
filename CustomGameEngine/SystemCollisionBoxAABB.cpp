@@ -78,9 +78,17 @@ namespace Engine {
 
 	CollisionData SystemCollisionBoxAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
-		std::vector<glm::vec3> axes = GetAllCollisionAxis(transform, transform2);
-
 		CollisionData collision;
+		if (dynamic_cast<ComponentCollisionBox*>(collider)->CheckBroadPhaseFirst()) {
+			if (!BroadPhaseSphereSphere(transform, collider, transform2, collider2)) {
+				collision.objectA = transform->GetOwner();
+				collision.objectB = transform2->GetOwner();
+				collision.isColliding = false;
+				return collision;
+			}
+		}
+
+		std::vector<glm::vec3> axes = GetAllCollisionAxis(transform, transform2);
 
 		CollisionData bestCollision;
 		bestCollision.AddContactPoint(glm::vec3(), glm::vec3(), glm::vec3(), -FLT_MAX);

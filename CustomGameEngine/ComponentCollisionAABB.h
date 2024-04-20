@@ -9,6 +9,16 @@ namespace Engine {
 		float maxX;
 		float maxY;
 		float maxZ;
+
+		float GetBiggestExtent() {
+			float x = maxX - minX;
+			float y = maxY - minY;
+			float z = maxZ - minZ;
+			float biggest = x;
+			if (y > biggest) { biggest = y; }
+			if (z > biggest) { biggest = z; }
+			return biggest;
+		}
 	};
 
 	class ComponentCollisionAABB : public ComponentCollision
