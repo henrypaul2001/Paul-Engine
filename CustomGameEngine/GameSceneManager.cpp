@@ -69,6 +69,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_PHYSICS);
+		ChangeScene(SCENE_COLLISIONS);
 	}
 }
