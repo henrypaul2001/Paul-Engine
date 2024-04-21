@@ -83,7 +83,7 @@ namespace Engine {
 		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-		shader->setBool("instanced", false);
+		shader->setBool("instanced", geometry->Instanced());
 		shader->setFloat("textureScale", geometry->GetTextureScale());
 		//shader->setFloat("material.SHININESS", 13.72f);
 
@@ -104,7 +104,7 @@ namespace Engine {
 			glCullFace(GL_FRONT);
 		}
 
-		geometry->GetModel()->Draw(*geometry->GetShader());
+		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->InstanceSources().size());
 
 		if (geometry->GetModel()->ContainsTransparentMeshes()) {
 			float distanceToCamera = glm::length(activeCamera->Position - transform->GetWorldPosition());
@@ -137,7 +137,7 @@ namespace Engine {
 			glm::mat4 model = transform->GetWorldModelMatrix();
 			shader->setMat4("model", model);
 			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			shader->setBool("instanced", false);
+			shader->setBool("instanced", geometry->Instanced());
 			shader->setFloat("textureScale", geometry->GetTextureScale());
 
 			if (geometry->Cull_Face()) {
@@ -157,7 +157,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->DrawTransparentMeshes(*shader);
+			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->InstanceSources().size());
 		}
 
 		transparentGeometry.clear();

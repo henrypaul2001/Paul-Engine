@@ -15,7 +15,8 @@ namespace Engine
 		SCENE_AO,
 		SCENE_PBR,
 		SCENE_COLLISIONS,
-		SCENE_PHYSICS
+		SCENE_PHYSICS,
+		SCENE_INSTANCED,
 	};
 
 	using SceneDelegate = std::function<void()>;

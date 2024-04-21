@@ -240,6 +240,12 @@
     <ClInclude Include="ConstraintRotation.h">
       <Filter>Header Files\Engine\Constraints</Filter>
     </ClInclude>
+    <ClInclude Include="SystemInstanceGeometryUpdate.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="InstanceScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -409,6 +415,12 @@
     </ClCompile>
     <ClCompile Include="ConstraintRotation.cpp">
       <Filter>Source Files\Engine\Constraints</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemInstanceGeometryUpdate.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="InstanceScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

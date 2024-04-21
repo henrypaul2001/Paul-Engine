@@ -169,6 +169,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GameSceneManager.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="InstanceScene.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Mesh.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="SystemCollisionSphere.h" />
     <ClInclude Include="SystemCollisionSphereAABB.h" />
     <ClInclude Include="SystemCollisionSphereBox.h" />
+    <ClInclude Include="SystemInstanceGeometryUpdate.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
@@ -226,6 +228,7 @@
     <ClCompile Include="GameSceneManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="InstanceScene.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
@@ -249,6 +252,7 @@
     <ClCompile Include="SystemCollisionSphere.cpp" />
     <ClCompile Include="SystemCollisionSphereAABB.cpp" />
     <ClCompile Include="SystemCollisionSphereBox.cpp" />
+    <ClCompile Include="SystemInstanceGeometryUpdate.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />

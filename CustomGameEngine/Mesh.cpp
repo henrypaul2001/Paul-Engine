@@ -39,7 +39,7 @@ namespace Engine {
 		this->PBRmaterial = pbrMaterial;
 	}
 
-	void Mesh::Draw(Shader& shader)
+	void Mesh::Draw(Shader& shader, int instanceNum)
 	{
 		int offset = 18;
 		if (!pbr) {
@@ -243,7 +243,13 @@ namespace Engine {
 
 		// draw
 		glBindVertexArray(VAO);
-		glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+		if (instanceNum == 0) {
+			glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+		}
+		else if (instanceNum > 0) {
+			glDrawElementsInstanced(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, instanceNum);
+		}
+
 		glBindVertexArray(0);
 		glActiveTexture(GL_TEXTURE0);
 	}

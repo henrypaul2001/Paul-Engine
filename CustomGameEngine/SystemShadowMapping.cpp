@@ -70,7 +70,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->Draw(*depthShader);
+			geometry->GetModel()->Draw(*depthShader, 0);
 		}
 	}
 }

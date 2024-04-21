@@ -117,7 +117,7 @@ namespace Engine {
 		PBRMaterial* GetPBRMaterial() { return PBRmaterial; }
 		bool PBR() { return pbr; }
 
-		void Draw(Shader& shader);
+		void Draw(Shader& shader, int instanceNum = 0);
 	private:
 		GLenum drawPrimitive;
 		unsigned int VBO, EBO;

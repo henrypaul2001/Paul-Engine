@@ -35,30 +35,30 @@ namespace Engine {
 
 	}
 
-	void Model::Draw(Shader& shader)
+	void Model::Draw(Shader& shader, int instanceNum)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (!meshes[i]->GetMaterial()->isTransparent) {
-					meshes[i]->Draw(shader);
+					meshes[i]->Draw(shader, instanceNum);
 				}
 			}
 			else {
-				meshes[i]->Draw(shader);
+				meshes[i]->Draw(shader, instanceNum);
 			}
 		}
 	}
 
-	void Model::DrawTransparentMeshes(Shader& shader)
+	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (meshes[i]->GetMaterial()->isTransparent) {
-					meshes[i]->Draw(shader);
+					meshes[i]->Draw(shader, instanceNum);
 				}
 			}
 			else {
-				meshes[i]->Draw(shader);
+				meshes[i]->Draw(shader, instanceNum);
 			}
 		}
 	}

@@ -6,10 +6,10 @@ namespace Engine {
 	class ComponentGeometry : public Component
 	{
 	public:
-		ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath);
-		ComponentGeometry(PremadeModel modelType);
-		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr);
-		ComponentGeometry(const char* modelFilepath, bool pbr);
+		ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath, bool instanced = false);
+		ComponentGeometry(PremadeModel modelType, bool instanced = false);
+		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false);
+		ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced = false);
 		~ComponentGeometry();
 
 		ComponentTypes ComponentType() override { return COMPONENT_GEOMETRY; }
@@ -32,6 +32,21 @@ namespace Engine {
 		bool CastShadows() { return castShadows; }
 
 		void SetTextureScale(float newScale) { textureScale = newScale; }
+
+		bool Instanced() { return instanced; }
+		const std::vector<Entity*>& InstanceSources() { return instanceSources; }
+		const std::vector<glm::mat4>& InstanceTransforms() { return instanceTransforms; }
+		unsigned int InstanceVBO() { return instanceVBO; }
+
+		void AddNewInstanceSource(Entity* newSource) { instanceSources.push_back(newSource); }
+		void RemoveInstanceSource(Entity* sourceToRemove);
+		void UpdateInstanceTransform(int index, glm::mat4 transform) { instanceTransforms[index] = transform; }
+		void ResizeInstancedTransforms() { 
+			if (instanceTransforms.size() != instanceSources.size()) {
+				instanceTransforms.resize(instanceSources.size());
+			}
+		}
+
 	private:
 		Model* model;
 		Shader* shader;
@@ -44,5 +59,12 @@ namespace Engine {
 
 		GLenum CULL_TYPE;
 		bool CULL_FACE;
+
+		unsigned int instanceVBO;
+		bool instanced;
+		std::vector<glm::mat4> instanceTransforms;
+		std::vector<Entity*> instanceSources;
+	
+		void SetupInstanceVBO();
 	};
 }

@@ -34,6 +34,21 @@ namespace Engine {
 	{
 		Scene::Update();
 		systemManager->ActionUpdateSystems(entityManager);
+
+		float time = (float)glfwGetTime();
+		Entity* baseInstance = entityManager->FindEntity("Base Instance");
+		
+		std::vector<Entity*> sources = baseInstance->GetGeometryComponent()->InstanceSources();
+
+		for (int i = 0; i < sources.size(); i++) {
+			ComponentTransform* transform = sources[i]->GetTransformComponent();
+			if (i % 2 == 0) {
+				//transform->SetPosition(transform->Position() + glm::vec3(0.0f, sin(time) * 0.5f, 0.0f));
+			}
+			else {
+				//transform->SetPosition(transform->Position() + glm::vec3(sin(time) * 0.5f, 0.0f, 0.0f));
+			}
+		}
 	}
 
 	void InstanceScene::Render()
@@ -84,27 +99,38 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		int xNum = 20;
-		int yNum = 20;
+		Entity* baseInstance = new Entity("Base Instance");
+		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		entityManager->AddEntity(baseInstance);
+		baseInstance->GetGeometryComponent()->AddNewInstanceSource(baseInstance);
+
+		int xNum = 30;
+		int yNum = 30;
+		int zNum = 30;
 
 		float originX = float(-xNum) / 2.0f;
 		float originY = float(-yNum) / 2.0f;
 		float originZ = -10.0f;
 
-		float xDistance = 5.0f;
-		float yDistance = 5.0f;
+		float xDistance = 2.5f;
+		float yDistance = 2.5f;
+		float zDistance = -2.5f;
 
 		int count = 0;
 		for (int i = 0; i < yNum; i++) {
 			for (int j = 0; j < xNum; j++) {
-				std::string name = std::string("Box ") + std::string(std::to_string(count));
-				//Entity* box = new Entity(name);
-				//box->AddComponent(new ComponentTransform(originX + (j * xDistance), originY + (i * yDistance), originZ));
-				//box->AddComponent(new ComponentGeometry(MODEL_CUBE));
-				//box->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
-				//box->GetBoxCollisionComponent()->CheckBroadPhaseFirst(true);
-				//entityManager->AddEntity(box);
-				count++;
+				for (int k = 0; k < zNum; k++) {
+					std::string name = std::string("Box ") + std::string(std::to_string(count));
+					Entity* box = new Entity(name);
+					box->AddComponent(new ComponentTransform(originX + (j * xDistance), originY + (i * yDistance), originZ + (k * zDistance)));
+					//box->AddComponent(new ComponentGeometry(MODEL_CUBE));
+					//box->GetGeometryComponent()->CastShadows(false);
+					entityManager->AddEntity(box);
+					baseInstance->GetGeometryComponent()->AddNewInstanceSource(box);
+					count++;
+					std::cout << "box " << count << " created" << std::endl;
+				}
 			}
 		}
 		std::cout << count << " box instances created" << std::endl;

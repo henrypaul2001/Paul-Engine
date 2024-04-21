@@ -20,8 +20,8 @@ namespace Engine {
 		Model(const char* filepath, bool pbr);
 		~Model();
 
-		void Draw(Shader& shader);
-		void DrawTransparentMeshes(Shader& shader);
+		void Draw(Shader& shader, int instanceNum);
+		void DrawTransparentMeshes(Shader& shader, int instanceNum);
 
 		bool PBR() { return pbr; }
 
