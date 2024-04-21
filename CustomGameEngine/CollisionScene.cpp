@@ -121,8 +121,8 @@ namespace Engine {
 				Entity* box = new Entity(name);
 				box->AddComponent(new ComponentTransform(originX + (j * xDistance), originY + (i * yDistance), originZ));
 				box->AddComponent(new ComponentGeometry(MODEL_CUBE));
-				box->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
-				box->GetBoxCollisionComponent()->CheckBroadPhaseFirst(true);
+				//box->AddComponent(new ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+				//box->GetBoxCollisionComponent()->CheckBroadPhaseFirst(true);
 				entityManager->AddEntity(box);
 				count++;
 			}

@@ -83,6 +83,7 @@ namespace Engine {
 		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+		shader->setBool("instanced", false);
 		shader->setFloat("textureScale", geometry->GetTextureScale());
 		//shader->setFloat("material.SHININESS", 13.72f);
 
@@ -136,6 +137,7 @@ namespace Engine {
 			glm::mat4 model = transform->GetWorldModelMatrix();
 			shader->setMat4("model", model);
 			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			shader->setBool("instanced", false);
 			shader->setFloat("textureScale", geometry->GetTextureScale());
 
 			if (geometry->Cull_Face()) {
