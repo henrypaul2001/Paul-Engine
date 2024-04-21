@@ -34,7 +34,7 @@ namespace Engine {
 		float NearClip;
 		float FarClip;
 
-		Camera(unsigned int scr_width, unsigned int scr_height, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f, glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f), float moveSpeed = 2.5f, float mouseSens = 0.1f, float zoom = 45.0f);
+		Camera(unsigned int scr_width, unsigned int scr_height, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f, glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f), float moveSpeed = 6.5f, float mouseSens = 0.1f, float zoom = 45.0f);
 		~Camera();
 
 		glm::mat4 GetViewMatrix();

@@ -13,7 +13,7 @@ namespace Engine {
 		MouseSensitivity = mouseSens;
 		Zoom = zoom;
 		NearClip = 0.1f;
-		FarClip = 150.0f;
+		FarClip = 500.0f;
 		SCR_WIDTH = scr_width;
 		SCR_HEIGHT = scr_height;
 
