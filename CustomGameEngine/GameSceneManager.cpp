@@ -5,6 +5,7 @@
 #include "CollisionScene.h"
 #include "PBRScene.h"
 #include "PhysicsScene.h"
+#include "InstanceScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -54,6 +55,9 @@ namespace Engine
 		case SCENE_PHYSICS:
 			newScene = new PhysicsScene(this);
 			break;
+		case SCENE_INSTANCED:
+			newScene = new InstanceScene(this);
+			break;
 		case SCENE_NONE:
 			newScene = nullptr;
 			break;
@@ -69,6 +73,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_COLLISIONS);
+		ChangeScene(SCENE_INSTANCED);
 	}
 }
