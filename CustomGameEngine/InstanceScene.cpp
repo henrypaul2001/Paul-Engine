@@ -79,7 +79,7 @@ namespace Engine {
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
 		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-		directional->Colour = glm::vec3(1.0f);
+		directional->Colour = glm::vec3(6.0f, 6.0f, 8.0f);
 		directional->Specular = glm::vec3(0.0f);
 		directional->ShadowProjectionSize = 70.0f;
 		directional->Far = 150.0f;
@@ -92,10 +92,20 @@ namespace Engine {
 		textured->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL, false));
 		textured->shininess = 5.0f;
 
+		PBRMaterial* bricks = new PBRMaterial();
+		bricks->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
+		bricks->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/normal.png", TEXTURE_NORMAL, false));
+		bricks->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/specular.png", TEXTURE_METALLIC, false));
+		bricks->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/roughness.png", TEXTURE_ROUGHNESS, false));
+		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
+		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
+		bricks->height_scale = -0.1;
+
 		Entity* baseInstance = new Entity("Base Instance");
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		baseInstance->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(textured);
+		baseInstance->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		baseInstance->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(bricks);
 		entityManager->AddEntity(baseInstance);
 
 		Entity* pointLight = new Entity("Point Light");
@@ -104,17 +114,17 @@ namespace Engine {
 		pointLight->GetLightComponent()->Colour = glm::vec3(0.8f, 0.15f, 0.25f);
 		entityManager->AddEntity(pointLight);
 
-		int xNum = 10;
-		int yNum = 10;
-		int zNum = 10;
+		int xNum = 30;
+		int yNum = 30;
+		int zNum = 30;
 
 		float originX = float(-xNum) / 2.0f;
 		float originY = float(-yNum) / 2.0f;
 		float originZ = -10.0f;
 
-		float xDistance = 2.5f;
-		float yDistance = 2.5f;
-		float zDistance = -2.5f;
+		float xDistance = 2.25f;
+		float yDistance = 2.25f;
+		float zDistance = -2.25f;
 
 		int count = 0;
 		for (int i = 0; i < yNum; i++) {
@@ -131,6 +141,7 @@ namespace Engine {
 			}
 		}
 
+		/*
 		Entity* baseInstance2 = new Entity("Base Instance 2");
 		baseInstance2->AddComponent(new ComponentTransform(0.0f, 0.0f, 2.5f));
 		baseInstance2->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
@@ -149,6 +160,7 @@ namespace Engine {
 				}
 			}
 		}
+		*/
 		std::cout << count << " box instances created" << std::endl;
 	}
 
