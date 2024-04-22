@@ -49,6 +49,10 @@ namespace Engine {
 		bool bloom;
 		float bloomThreshold;
 
+		// Env hdr map
+		unsigned int* GetHDRCubeCaptureFBO() { return hdrCubeCaptureFBO; }
+		unsigned int* GetEnvironmentCubemapTexture() { return envCubemapTexture; }
+
 		unsigned int ShadowWidth() { return shadowWidth; }
 		unsigned int ShadowHeight() { return shadowHeight; }
 		unsigned int ScreenWidth() { return screenWidth; }
@@ -65,6 +69,7 @@ namespace Engine {
 		void SetupTexturedFBO(unsigned int screenWidth, unsigned int screenHeight);
 		void SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight);
 		void SetupBloomPingPongFBO();
+		void SetupEnvironmentMapFBOAndCubemap();
 
 		void SetupGBuffer();
 
@@ -102,6 +107,11 @@ namespace Engine {
 		unsigned int* bloomBrightnessBuffer;
 		unsigned int* pingPongFBO[2];
 		unsigned int* pingPongColourBuffers[2];
+
+		// Env hdr map
+		unsigned int* hdrCubeCaptureFBO;
+		unsigned int* hdrCubeCaptureRBO;
+		unsigned int* envCubemapTexture;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;

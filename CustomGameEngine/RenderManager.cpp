@@ -21,6 +21,7 @@ namespace Engine {
 		SetupTexturedFBO(screenWidth, screenHeight);
 		SetupGBuffer();
 		SetupSSAOBuffers();
+		SetupEnvironmentMapFBOAndCubemap();
 
 		exposure = 1.0f;
 		bloom = true;
@@ -76,6 +77,10 @@ namespace Engine {
 			delete flatDepthMaps[i];
 			delete cubeDepthMaps[i];
 		}
+
+		delete hdrCubeCaptureFBO;
+		delete hdrCubeCaptureRBO;
+		delete envCubemapTexture;
 
 		delete instance;
 	}
@@ -411,5 +416,33 @@ namespace Engine {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *pingPongColourBuffers[i], 0);
 		}
+	}
+	
+	void RenderManager::SetupEnvironmentMapFBOAndCubemap()
+	{
+		hdrCubeCaptureFBO = new unsigned int;
+		hdrCubeCaptureRBO = new unsigned int;
+
+		// Setup capture framebuffer
+		glGenFramebuffers(1, hdrCubeCaptureFBO);
+		glGenRenderbuffers(1, hdrCubeCaptureRBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, *hdrCubeCaptureRBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *hdrCubeCaptureRBO);
+	
+		// Cubemap memory allocation
+		envCubemapTexture = new unsigned int;
+		glGenTextures(1, envCubemapTexture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, *envCubemapTexture);
+		for (unsigned int i = 0; i < 6; ++i) {
+			// store each face with 16 bit floating point values
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }
