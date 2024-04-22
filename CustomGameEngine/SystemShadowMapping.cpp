@@ -53,6 +53,7 @@ namespace Engine {
 			}
 
 			depthShader->setMat4("model", transform->GetWorldModelMatrix());
+			depthShader->setBool("instanced", geometry->Instanced());
 
 			if (geometry->Cull_Face()) {
 				glEnable(GL_CULL_FACE);
@@ -70,7 +71,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->Draw(*depthShader, 0);
+			geometry->GetModel()->Draw(*depthShader, geometry->InstanceSources().size());
 		}
 	}
 }

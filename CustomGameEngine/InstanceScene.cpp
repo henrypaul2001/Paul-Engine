@@ -95,7 +95,8 @@ namespace Engine {
 		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		directional->Colour = glm::vec3(1.0f);
 		directional->Specular = glm::vec3(0.0f);
-		directional->ShadowProjectionSize = 20.0f;
+		directional->ShadowProjectionSize = 70.0f;
+		directional->Far = 150.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
@@ -105,9 +106,15 @@ namespace Engine {
 		entityManager->AddEntity(baseInstance);
 		baseInstance->GetGeometryComponent()->AddNewInstanceSource(baseInstance);
 
-		int xNum = 30;
-		int yNum = 30;
-		int zNum = 30;
+		Entity* pointLight = new Entity("Point Light");
+		pointLight->AddComponent(new ComponentTransform(0.0f, 0.0f, -2.0f));
+		pointLight->AddComponent(new ComponentLight(POINT));
+		pointLight->GetLightComponent()->Colour = glm::vec3(0.8f, 0.15f, 0.25f);
+		entityManager->AddEntity(pointLight);
+
+		int xNum = 20;
+		int yNum = 20;
+		int zNum = 20;
 
 		float originX = float(-xNum) / 2.0f;
 		float originY = float(-yNum) / 2.0f;
