@@ -121,6 +121,28 @@ namespace Engine {
 		}
 	}
 
+	void ComponentGeometry::BufferInstanceTransforms()
+	{
+		//const std::vector<Entity*>& sources = InstanceSources();
+		ResizeInstancedTransforms();
+
+		//geometry->UpdateInstanceTransform(0, transform->GetWorldModelMatrix());
+		for (int i = 0; i < instanceSources.size(); i++) {
+			UpdateInstanceTransform(i, instanceSources[i]->GetTransformComponent()->GetWorldModelMatrix());
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		glBufferData(GL_ARRAY_BUFFER, instanceSources.size() * sizeof(glm::mat4), &instanceTransforms[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void ComponentGeometry::OnAddedToEntity()
+	{
+		if (instanced) {
+			AddNewInstanceSource(GetOwner());
+		}
+	}
+
 	void ComponentGeometry::SetupInstanceVBO()
 	{
 		glGenBuffers(1, &instanceVBO);

@@ -29,6 +29,8 @@ namespace Engine
 
 		virtual ComponentTypes ComponentType() = 0;
 		virtual void Close() = 0;
+
+		virtual void OnAddedToEntity() {}
 	};
 }
 

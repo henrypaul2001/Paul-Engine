@@ -1,6 +1,5 @@
 #include "InstanceScene.h"
 #include "GameInputManager.h"
-#include "SystemInstanceGeometryUpdate.h"
 namespace Engine {
 	InstanceScene::InstanceScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -36,19 +35,6 @@ namespace Engine {
 		systemManager->ActionUpdateSystems(entityManager);
 
 		float time = (float)glfwGetTime();
-		Entity* baseInstance = entityManager->FindEntity("Base Instance");
-		
-		std::vector<Entity*> sources = baseInstance->GetGeometryComponent()->InstanceSources();
-
-		for (int i = 0; i < sources.size(); i++) {
-			ComponentTransform* transform = sources[i]->GetTransformComponent();
-			if (i % 2 == 0) {
-				//transform->SetPosition(transform->Position() + glm::vec3(0.0f, sin(time) * 0.5f, 0.0f));
-			}
-			else {
-				//transform->SetPosition(transform->Position() + glm::vec3(sin(time) * 0.5f, 0.0f, 0.0f));
-			}
-		}
 	}
 
 	void InstanceScene::Render()
@@ -104,7 +90,6 @@ namespace Engine {
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		entityManager->AddEntity(baseInstance);
-		//baseInstance->GetGeometryComponent()->AddNewInstanceSource(baseInstance);
 
 		Entity* pointLight = new Entity("Point Light");
 		pointLight->AddComponent(new ComponentTransform(0.0f, 0.0f, -2.0f));
@@ -112,9 +97,9 @@ namespace Engine {
 		pointLight->GetLightComponent()->Colour = glm::vec3(0.8f, 0.15f, 0.25f);
 		entityManager->AddEntity(pointLight);
 
-		int xNum = 20;
-		int yNum = 20;
-		int zNum = 20;
+		int xNum = 10;
+		int yNum = 10;
+		int zNum = 10;
 
 		float originX = float(-xNum) / 2.0f;
 		float originY = float(-yNum) / 2.0f;
@@ -131,8 +116,6 @@ namespace Engine {
 					std::string name = std::string("Box ") + std::string(std::to_string(count));
 					Entity* box = new Entity(name);
 					box->AddComponent(new ComponentTransform(originX + (j * xDistance), originY + (i * yDistance), originZ + (k * zDistance)));
-					//box->AddComponent(new ComponentGeometry(MODEL_CUBE));
-					//box->GetGeometryComponent()->CastShadows(false);
 					entityManager->AddEntity(box);
 					baseInstance->GetGeometryComponent()->AddNewInstanceSource(box);
 					count++;
@@ -140,13 +123,26 @@ namespace Engine {
 				}
 			}
 		}
-		std::cout << count << " box instances created" << std::endl;
 
-		//Entity* baseInstance2 = new Entity("Base Instance 2");
-		//baseInstance2->AddComponent(new ComponentTransform(0.0f, 0.0f, 2.5f));
-		//baseInstance2->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		//entityManager->AddEntity(baseInstance2);
-		//baseInstance2->GetGeometryComponent()->AddNewInstanceSource(baseInstance2);
+		Entity* baseInstance2 = new Entity("Base Instance 2");
+		baseInstance2->AddComponent(new ComponentTransform(0.0f, 0.0f, 2.5f));
+		baseInstance2->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		entityManager->AddEntity(baseInstance2);
+
+		for (int i = 0; i < yNum; i++) {
+			for (int j = 0; j < xNum; j++) {
+				for (int k = 0; k < zNum; k++) {
+					std::string name = std::string("Box ") + std::string(std::to_string(count));
+					Entity* box = new Entity(name);
+					box->AddComponent(new ComponentTransform(originX + (j * xDistance), originY + (i * yDistance), -originZ + (k * -zDistance)));
+					entityManager->AddEntity(box);
+					baseInstance2->GetGeometryComponent()->AddNewInstanceSource(box);
+					count++;
+					std::cout << "box " << count << " created" << std::endl;
+				}
+			}
+		}
+		std::cout << count << " box instances created" << std::endl;
 	}
 
 	void InstanceScene::CreateSystems()
@@ -156,6 +152,5 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemInstanceGeometryUpdate(), UPDATE_SYSTEMS);
 	}
 }

@@ -8,14 +8,13 @@ namespace Engine
 		SYSTEM_AUDIO = 1 << 0,
 		SYSTEM_PHYSICS = 1 << 1,
 		SYSTEM_RENDER = 1 << 2,
-		SYSTEM_GEO_INSTANCE_UPDATE = 1 << 3,
-		SYSTEM_SHADOWMAP = 1 << 4,
-		SYSTEM_COLLISION_AABB = 1 << 5,
-		SYSTEM_COLLISION_SPHERE = 1 << 6,
-		SYSTEM_COLLISION_SPHERE_AABB = 1 << 7,
-		SYSTEM_COLLISION_BOX = 1 << 8,
-		SYSTEM_COLLISION_BOX_AABB = 1 << 9,
-		SYSTEM_COLLISION_BOX_SPHERE = 1 << 10,
+		SYSTEM_SHADOWMAP = 1 << 3,
+		SYSTEM_COLLISION_AABB = 1 << 4,
+		SYSTEM_COLLISION_SPHERE = 1 << 5,
+		SYSTEM_COLLISION_SPHERE_AABB = 1 << 6,
+		SYSTEM_COLLISION_BOX = 1 << 7,
+		SYSTEM_COLLISION_BOX_AABB = 1 << 8,
+		SYSTEM_COLLISION_BOX_SPHERE = 1 << 9,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }

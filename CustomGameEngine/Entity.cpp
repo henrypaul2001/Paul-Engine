@@ -28,6 +28,7 @@ namespace Engine
 		mask = mask | component->ComponentType();
 
 		component->SetOwner(this);
+		component->OnAddedToEntity();
 	}
 
 	void Entity::Close() {

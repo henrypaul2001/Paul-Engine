@@ -84,6 +84,7 @@ namespace Engine {
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 		shader->setBool("instanced", geometry->Instanced());
+		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 		shader->setFloat("textureScale", geometry->GetTextureScale());
 		//shader->setFloat("material.SHININESS", 13.72f);
 
@@ -138,6 +139,7 @@ namespace Engine {
 			shader->setMat4("model", model);
 			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 			shader->setBool("instanced", geometry->Instanced());
+			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			shader->setFloat("textureScale", geometry->GetTextureScale());
 
 			if (geometry->Cull_Face()) {
