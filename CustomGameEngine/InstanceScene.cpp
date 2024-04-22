@@ -86,9 +86,16 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
+		Material* textured = new Material();
+		textured->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE, false));
+		textured->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/specular.png", TEXTURE_SPECULAR, false));
+		textured->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL, false));
+		textured->shininess = 5.0f;
+
 		Entity* baseInstance = new Entity("Base Instance");
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		baseInstance->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(textured);
 		entityManager->AddEntity(baseInstance);
 
 		Entity* pointLight = new Entity("Point Light");
