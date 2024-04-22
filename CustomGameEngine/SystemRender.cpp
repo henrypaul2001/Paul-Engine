@@ -104,7 +104,7 @@ namespace Engine {
 			glCullFace(GL_FRONT);
 		}
 
-		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->InstanceSources().size());
+		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances());
 
 		if (geometry->GetModel()->ContainsTransparentMeshes()) {
 			float distanceToCamera = glm::length(activeCamera->Position - transform->GetWorldPosition());
@@ -157,7 +157,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->InstanceSources().size());
+			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->NumInstances());
 		}
 
 		transparentGeometry.clear();

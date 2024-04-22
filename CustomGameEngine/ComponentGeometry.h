@@ -34,6 +34,7 @@ namespace Engine {
 		void SetTextureScale(float newScale) { textureScale = newScale; }
 
 		bool Instanced() { return instanced; }
+		const int NumInstances() { return instanceSources.size() + 1; }
 		const std::vector<Entity*>& InstanceSources() { return instanceSources; }
 		const std::vector<glm::mat4>& InstanceTransforms() { return instanceTransforms; }
 		unsigned int InstanceVBO() { return instanceVBO; }
@@ -42,8 +43,8 @@ namespace Engine {
 		void RemoveInstanceSource(Entity* sourceToRemove);
 		void UpdateInstanceTransform(int index, glm::mat4 transform) { instanceTransforms[index] = transform; }
 		void ResizeInstancedTransforms() { 
-			if (instanceTransforms.size() != instanceSources.size()) {
-				instanceTransforms.resize(instanceSources.size());
+			if (instanceTransforms.size() != instanceSources.size() + 1) {
+				instanceTransforms.resize(instanceSources.size() + 1);
 			}
 		}
 

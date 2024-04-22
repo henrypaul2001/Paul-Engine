@@ -45,8 +45,9 @@ namespace Engine {
 		const std::vector<Entity*>& sources = geometry->InstanceSources();
 		geometry->ResizeInstancedTransforms();
 
+		geometry->UpdateInstanceTransform(0, transform->GetWorldModelMatrix());
 		for (int i = 0; i < sources.size(); i++) {
-			geometry->UpdateInstanceTransform(i, sources[i]->GetTransformComponent()->GetWorldModelMatrix());
+			geometry->UpdateInstanceTransform(i + 1, sources[i]->GetTransformComponent()->GetWorldModelMatrix());
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, geometry->InstanceVBO());

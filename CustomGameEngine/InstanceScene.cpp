@@ -104,7 +104,7 @@ namespace Engine {
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		entityManager->AddEntity(baseInstance);
-		baseInstance->GetGeometryComponent()->AddNewInstanceSource(baseInstance);
+		//baseInstance->GetGeometryComponent()->AddNewInstanceSource(baseInstance);
 
 		Entity* pointLight = new Entity("Point Light");
 		pointLight->AddComponent(new ComponentTransform(0.0f, 0.0f, -2.0f));
@@ -141,6 +141,12 @@ namespace Engine {
 			}
 		}
 		std::cout << count << " box instances created" << std::endl;
+
+		//Entity* baseInstance2 = new Entity("Base Instance 2");
+		//baseInstance2->AddComponent(new ComponentTransform(0.0f, 0.0f, 2.5f));
+		//baseInstance2->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		//entityManager->AddEntity(baseInstance2);
+		//baseInstance2->GetGeometryComponent()->AddNewInstanceSource(baseInstance2);
 	}
 
 	void InstanceScene::CreateSystems()

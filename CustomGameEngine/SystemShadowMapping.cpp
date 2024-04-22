@@ -71,7 +71,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->Draw(*depthShader, geometry->InstanceSources().size());
+			geometry->GetModel()->Draw(*depthShader, geometry->NumInstances());
 		}
 	}
 }
