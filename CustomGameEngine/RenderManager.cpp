@@ -112,9 +112,10 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		// convertToCubemapShader.use();
-		// convertToCubemapShader.setInt("equirectangularMap", 0);
-		// convertToCubemapShader.setMat4("projection", captureProjection);
+		Shader* convertToCubemapShader = ResourceManager::GetInstance()->EquirectangularToCubemapShader();
+		convertToCubemapShader->Use();
+		convertToCubemapShader->setInt("equirectangularMap", 0);
+		convertToCubemapShader->setMat4("projection", captureProjection);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 
@@ -122,7 +123,7 @@ namespace Engine {
 		glViewport(0, 0, 512, 512);
 		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
 		for (unsigned int i = 0; i < 6; i++) {
-			// convertToCubemapShader.setMat4("view", captureViews[i]);
+			convertToCubemapShader->setMat4("view", captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemapTexture, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
@@ -166,9 +167,10 @@ namespace Engine {
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
 		};
 
-		//irradianceShader.use();
-		//irradianceShader.setInt("environmentMap", 0);
-		//irradianceShader.setMat4("projection", captureProjection);
+		Shader* irradianceShader = ResourceManager::GetInstance()->CreateIrradianceShader();
+		irradianceShader->Use();
+		irradianceShader->setInt("environmentMap", 0);
+		irradianceShader->setMat4("projection", captureProjection);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
 
@@ -176,7 +178,7 @@ namespace Engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			//irradianceShader.setMat4("view", captureViews[i]);
+			irradianceShader->setMat4("view", captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
@@ -214,9 +216,10 @@ namespace Engine {
 
 		// Capture prefilter mipmap levels
 		// -------------------------------
-		// prefilterShader.use();
-		// prefilterShader.setInt("environmentMap", 0);
-		// prefilterShader.setMat4("projection", captureProjection);
+		Shader* prefilterShader = ResourceManager::GetInstance()->CreatePrefilterShader();
+		prefilterShader->Use();
+		prefilterShader->setInt("environmentMap", 0);
+		prefilterShader->setMat4("projection", captureProjection);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
 
@@ -234,9 +237,9 @@ namespace Engine {
 			glViewport(0, 0, mipWidth, mipHeight);
 
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
-			// prefilterShader.setFloat("roughness", roughness);
+			prefilterShader->setFloat("roughness", roughness);
 			for (unsigned int i = 0; i < 6; i++) {
-				// prefilterShader.setMat4("view", captureViews[i]);
+				prefilterShader->setMat4("view", captureViews[i]);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
@@ -267,7 +270,7 @@ namespace Engine {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
 
 		glViewport(0, 0, 512, 512);
-		// brdfShader.use();
+		ResourceManager::GetInstance()->CreateBRDFShader()->Use();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 

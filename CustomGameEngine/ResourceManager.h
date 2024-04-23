@@ -48,6 +48,12 @@ namespace Engine {
 
 		Shader* skyboxShader;
 
+		// Environment mapping
+		Shader* equirectangularToCubemapShader;
+		Shader* createIrradianceShader;
+		Shader* createPrefilterShader;
+		Shader* createBRDFShader;
+
 		unsigned int uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
@@ -88,6 +94,10 @@ namespace Engine {
 		Shader* SkyboxShader() { return skyboxShader; }
 		Shader* DefaultLitPBR() { return defaultLitPBRShader; }
 		Shader* BloomBlurShader() { return bloomBlur; }
+		Shader* EquirectangularToCubemapShader() { return equirectangularToCubemapShader; }
+		Shader* CreateIrradianceShader() { return createIrradianceShader; }
+		Shader* CreatePrefilterShader() { return createPrefilterShader; }
+		Shader* CreateBRDFShader() { return createBRDFShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 	};
 }

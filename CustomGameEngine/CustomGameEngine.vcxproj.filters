@@ -493,5 +493,23 @@
     <None Include="Shaders\bloomBlur.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="Shaders\convertToCubemap.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\convertToCubemap.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\irradianceConvolute.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\prefilter.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\brdf.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\brdf.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

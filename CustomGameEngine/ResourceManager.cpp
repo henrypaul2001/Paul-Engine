@@ -269,6 +269,10 @@ namespace Engine {
 		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag");
 		defaultLitPBRShader = LoadShader("Shaders/defaultLit_pbr.vert", "Shaders/defaultLit_pbr.frag");
 		bloomBlur = LoadShader("Shaders/bloomBlur.vert", "Shaders/bloomBlur.frag");
+		equirectangularToCubemapShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/convertToCubemap.frag");
+		createIrradianceShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/irradianceConvolute.frag");
+		createPrefilterShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/prefilter.frag");
+		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag");
 
 		bloomBlur->Use();
 		bloomBlur->setInt("image", 0);
@@ -337,7 +341,7 @@ namespace Engine {
 		defaultLitPBRShader->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_AO1", 5 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
