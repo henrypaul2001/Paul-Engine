@@ -114,9 +114,9 @@ namespace Engine {
 		pointLight->GetLightComponent()->Colour = glm::vec3(0.8f, 0.15f, 0.25f);
 		entityManager->AddEntity(pointLight);
 
-		int xNum = 30;
-		int yNum = 30;
-		int zNum = 30;
+		int xNum = 5;
+		int yNum = 5;
+		int zNum = 5;
 
 		float originX = float(-xNum) / 2.0f;
 		float originY = float(-yNum) / 2.0f;
