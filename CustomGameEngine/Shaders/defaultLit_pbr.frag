@@ -2,6 +2,8 @@
 layout (location = 0) out vec4 FragColour;
 layout (location = 1) out vec4 BrightColour;
 
+// -------------|  Lights  |-----------------
+// ------------------------------------------
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
     vec3 Direction;
@@ -58,6 +60,15 @@ uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
 
+// -------------|    IBL   |-----------------
+// ------------------------------------------
+uniform bool useIBL;
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
+
+// -------------|   INPUT  |-----------------
+// ------------------------------------------
 in VIEW_DATA {
     flat vec3 TangentViewPos;
     flat vec3 ViewPos;
@@ -73,6 +84,8 @@ in VERTEX_DATA {
 	vec3 TangentFragPos;
 } vertex_data;
 
+// -------------| Material |-----------------
+// ------------------------------------------
 struct PBRMaterial {
     sampler2D TEXTURE_ALBEDO1;
     sampler2D TEXTURE_NORMAL1;
@@ -264,6 +277,10 @@ float GeometrySmith(vec3 L) {
 
 vec3 FresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 vec3 PerLightReflectance_SpotLight(int lightIndex) {
@@ -503,11 +520,24 @@ void main() {
     else {
         ambient = vec3(0.01) * Albedo * AO;
     }
-    /*
+    
     if (useIBL) {
-        // Image based lighting goes here
+        vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
+        
+        vec3 kS = F;
+        vec3 kD = 1.0 - kS;
+        kD *= 1.0 - Metallic;
+
+        vec3 irradiance = texture(irradianceMap, N).rgb;
+        vec3 diffuse = irradiance * Albedo;
+
+        const float MAX_REFLECTION_LOD = 4.0;
+        vec3 prefilteredColour = textureLod(prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
+        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+        vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
+
+        ambient = (kD * diffuse + specular) * AO;
     }
-    */
 
     vec3 Colour = ambient + Lo;
 

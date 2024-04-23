@@ -46,7 +46,12 @@ namespace Engine {
 		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 		glDrawBuffers(2, drawBuffers);
 
-		// ENVIRONMENT MAP GET /OR/ look at light manager default shader uniform setting
+		Camera* activeCamera = renderSystem->GetActiveCamera();
+
+		// Image based lighting
+		if (activeCamera->UseHDREnvironmentMap()) {
+
+		}
 
 		//glCullFace(GL_BACK);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -59,8 +64,6 @@ namespace Engine {
 		Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
 		skyShader->Use();
 
-		Camera* activeCamera = renderSystem->GetActiveCamera();
-
 		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -71,7 +74,12 @@ namespace Engine {
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
+		if (activeCamera->UseHDREnvironmentMap()) {
+			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->cubemapID);
+		}
+		else {
+			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
+		}
 		ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
 		glCullFace(GL_BACK);
 		glDepthFunc(GL_LESS);

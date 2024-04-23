@@ -65,7 +65,7 @@ namespace Engine {
 					// add shader to list and set lighting uniforms
 					shadersUsedThisFrame.push_back(s);
 					shader->Use();
-					LightManager::GetInstance()->SetShaderUniforms(shader);
+					LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
 					break;
 				}
 			}
@@ -73,7 +73,7 @@ namespace Engine {
 		else {
 			shadersUsedThisFrame.push_back(shader);
 			shader->Use();
-			LightManager::GetInstance()->SetShaderUniforms(shader);
+			LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
 		}
 
 		shader->Use();

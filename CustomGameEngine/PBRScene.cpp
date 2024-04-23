@@ -6,10 +6,10 @@ namespace Engine {
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
-		SSAO = true;
+		//SSAO = true;
 		SetupScene();
-		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
-		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
+		//ResourceManager::GetInstance()->DeferredLightingPass()->Use();
+		//ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 	}
 
 	PBRScene::~PBRScene()
@@ -36,7 +36,8 @@ namespace Engine {
 		directional->CastShadows = true;
 		directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
 		//directional->Ambient = glm::vec3(0.035f, 0.035f, 0.08f);
-		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		//directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		directional->Colour = glm::vec3(0.0f);
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		directional->MinShadowBias = 0.0f;
 		directional->MaxShadowBias = 0.003f;

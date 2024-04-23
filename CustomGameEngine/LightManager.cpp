@@ -70,7 +70,23 @@ namespace Engine {
 		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap(-1, MAP_2D));
 	}
 
-	void LightManager::SetShaderUniforms(Shader* shader)
+	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
+	{
+		int textureOffset = 18;
+
+		shader->setBool("useIBL", true);
+
+		glActiveTexture(GL_TEXTURE0 + 7 + textureOffset);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->irradianceID);
+
+		glActiveTexture(GL_TEXTURE0 + 8 + textureOffset);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->prefilterID);
+
+		glActiveTexture(GL_TEXTURE0 + 9 + textureOffset);
+		glBindTexture(GL_TEXTURE_2D, activeCamera->GetEnvironmentMap()->brdf_lutID);
+	}
+
+	void LightManager::SetShaderUniforms(Shader* shader, Camera* activeCamera)
 	{
 		shader->Use();
 
@@ -133,6 +149,12 @@ namespace Engine {
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].OuterCutoff")), lightComponent->OuterCutoff);
 				shader->setMat4(std::string("lights[" + std::string(std::to_string(i)) + std::string("].LightSpaceMatrix")), lightSpaceMatrix);
 			}
+		}
+
+		// Image based lighting
+		shader->setBool("useIBL", false);
+		if (activeCamera->UseHDREnvironmentMap()) {
+			SetIBLUniforms(shader, activeCamera);
 		}
 	}
 }

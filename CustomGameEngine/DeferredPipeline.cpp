@@ -25,6 +25,8 @@ namespace Engine {
 		}
 
 		if (renderSystem != nullptr) {
+			Camera* activeCamera = renderSystem->GetActiveCamera();
+
 			// Geometry pass
 			// -------------
 			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -91,7 +93,7 @@ namespace Engine {
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
-			LightManager::GetInstance()->SetShaderUniforms(lightingPass);
+			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
 			ResourceManager::GetInstance()->DefaultPlane().Draw(*lightingPass);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
@@ -106,8 +108,6 @@ namespace Engine {
 
 			Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
 			skyShader->Use();
-
-			Camera* activeCamera = renderSystem->GetActiveCamera();
 
 			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
 			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
@@ -128,7 +128,7 @@ namespace Engine {
 
 			// Transparency using forward rendering
 			// ------------------------------------
-			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader());
+			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader(), activeCamera);
 			glEnable(GL_BLEND);
 			renderSystem->DrawTransparentGeometry(true);
 			glDisable(GL_BLEND);
