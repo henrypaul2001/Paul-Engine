@@ -42,7 +42,7 @@ namespace Engine {
 
 		void SetSkyboxTexture(Cubemap* newSkybox) { skybox = newSkybox; }
 		Cubemap* GetSkybox() { return skybox; }
-		HDRCubemap* GetEnvironmentMap() { return environmentMap; }
+		HDREnvironment* GetEnvironmentMap() { return environmentMap; }
 		bool UseHDREnvironmentMap() { return useHDREnvironmentMap; }
 		void UseHDREnvironmentMap(bool useEnvMap) { useHDREnvironmentMap = useEnvMap; }
 
@@ -54,7 +54,7 @@ namespace Engine {
 
 		bool useHDREnvironmentMap;
 		Cubemap* skybox;
-		HDRCubemap* environmentMap;
+		HDREnvironment* environmentMap;
 
 		unsigned int SCR_WIDTH;
 		unsigned int SCR_HEIGHT;

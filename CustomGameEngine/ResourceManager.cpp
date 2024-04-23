@@ -1,4 +1,5 @@
 #include "ResourceManager.h"
+#include "RenderManager.h"
 namespace Engine {
 
 	ResourceManager* ResourceManager::instance = nullptr;
@@ -397,7 +398,7 @@ namespace Engine {
 		}
 
 		// delete hdr cubemaps
-		std::unordered_map<std::string, HDRCubmap*>::iterator hdrmapsIt = hdrCubemaps.begin();
+		std::unordered_map<std::string, HDREnvironment*>::iterator hdrmapsIt = hdrCubemaps.begin();
 		while (hdrmapsIt != hdrCubemaps.end()) {
 			delete hdrmapsIt->second;
 			hdrmapsIt++;
@@ -609,10 +610,10 @@ namespace Engine {
 		return it->second;
 	}
 
-	HDRCubmap* ResourceManager::LoadHDRCubemap(std::string filepath, bool flipVertically)
+	HDREnvironment* ResourceManager::LoadHDREnvironmentMap(std::string filepath, bool flipVertically, bool skipConversionAndBRDFLutGeneration)
 	{
 		// First check if already loaded
-		std::unordered_map<std::string, HDRCubmap*>::iterator it = hdrCubemaps.find(filepath);
+		std::unordered_map<std::string, HDREnvironment*>::iterator it = hdrCubemaps.find(filepath);
 
 		if (it == hdrCubemaps.end()) {
 			// Load cubemap
@@ -637,6 +638,26 @@ namespace Engine {
 			stbi_image_free(data);
 			stbi_set_flip_vertically_on_load(false);
 
+			unsigned int irradianceMap = 0;
+			unsigned int brdf_LUT = 0;
+			unsigned int environmentMap = 0;
+			unsigned int prefilterMap = 0;
+			if (!skipConversionAndBRDFLutGeneration) {
+				RenderManager* renderInstance = RenderManager::GetInstance();
+				environmentMap = renderInstance->ConvertHDREquirectangularToCube(hdrTexture);
+				irradianceMap = renderInstance->CreateIrradianceMap();
+				renderInstance->ConvoluteEnvironmentMap(environmentMap, irradianceMap);
+				prefilterMap = renderInstance->CreatePrefilterMap(environmentMap);
+				brdf_LUT = renderInstance->CreateBRDF();
+			}
+
+			HDREnvironment* cubemap = new HDREnvironment();
+			cubemap->cubemapID = environmentMap;
+			cubemap->irradianceID = irradianceMap;
+			cubemap->brdf_lutID = brdf_LUT;
+			cubemap->prefilterID = prefilterMap;
+			cubemap->filepath = filepath;
+			hdrCubemaps[filepath] = cubemap;
 			return hdrCubemaps[filepath];
 		}
 

@@ -7,8 +7,11 @@ namespace Engine {
 		std::string rootFilepath;
 	};
 
-	struct HDRCubmap {
-		unsigned int id;
+	struct HDREnvironment {
+		unsigned int cubemapID;
+		unsigned int irradianceID;
+		unsigned int prefilterID;
+		unsigned int brdf_lutID;
 		std::string filepath;
 	};
 
@@ -19,7 +22,7 @@ namespace Engine {
 		std::unordered_map<std::string, Shader*> shaders;
 		std::unordered_map<std::string, Texture*> textures;
 		std::unordered_map<std::string, Cubemap*> cubemaps;
-		std::unordered_map<std::string, HDRCubmap*> hdrCubemaps;
+		std::unordered_map<std::string, HDREnvironment*> hdrCubemaps;
 
 		Mesh* defaultCube;
 		Mesh* defaultPlane;
@@ -64,7 +67,7 @@ namespace Engine {
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath);
 		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb);
 		Cubemap* LoadCubemap(std::string rootFilepath);
-		HDRCubmap* LoadHDRCubemap(std::string filepath, bool flipVertically = false);
+		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	

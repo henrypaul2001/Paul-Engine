@@ -58,6 +58,12 @@ namespace Engine {
 		unsigned int ScreenWidth() { return screenWidth; }
 		unsigned int ScreenHeight() { return screenHeight; }
 
+		unsigned int ConvertHDREquirectangularToCube(const unsigned int& textureId);
+		unsigned int CreateIrradianceMap();
+		void ConvoluteEnvironmentMap(const unsigned int& environmentMap, const unsigned int& irradianceMap);
+		unsigned int CreatePrefilterMap(const unsigned int& environmentMap);
+		unsigned int CreateBRDF();
+
 		RenderPipeline* GetRenderPipeline() { return renderPipeline; }
 		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
 	private:

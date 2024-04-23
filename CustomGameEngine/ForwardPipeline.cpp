@@ -46,6 +46,8 @@ namespace Engine {
 		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 		glDrawBuffers(2, drawBuffers);
 
+		// ENVIRONMENT MAP GET /OR/ look at light manager default shader uniform setting
+
 		//glCullFace(GL_BACK);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		for (Entity* e : entities) {
