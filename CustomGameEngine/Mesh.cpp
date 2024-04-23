@@ -254,6 +254,21 @@ namespace Engine {
 		glActiveTexture(GL_TEXTURE0);
 	}
 
+	void Mesh::DrawWithNoMaterial(int instanceNum)
+	{
+		// draw
+		glBindVertexArray(VAO);
+		if (instanceNum == 0) {
+			glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+		}
+		else if (instanceNum > 0) {
+			glDrawElementsInstanced(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, instanceNum);
+		}
+
+		glBindVertexArray(0);
+		glActiveTexture(GL_TEXTURE0);
+	}
+
 	void Mesh::SetupMesh()
 	{
 		drawPrimitive = GL_TRIANGLES;

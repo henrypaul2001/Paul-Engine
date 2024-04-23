@@ -118,6 +118,7 @@ namespace Engine {
 		bool PBR() { return pbr; }
 
 		void Draw(Shader& shader, int instanceNum = 0);
+		void DrawWithNoMaterial(int instanceNum = 0);
 	private:
 		GLenum drawPrimitive;
 		unsigned int VBO, EBO;
