@@ -18,6 +18,7 @@ namespace Engine {
 		SCR_HEIGHT = scr_height;
 
 		skybox = ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space");
+		environmentMap = ResourceManager::GetInstance()->LoadHDRCubemap("Textures/Environment Maps/newport_loft.hdr", true);
 
 		UpdateCameraVectors();
 	}

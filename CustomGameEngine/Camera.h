@@ -42,6 +42,9 @@ namespace Engine {
 
 		void SetSkyboxTexture(Cubemap* newSkybox) { skybox = newSkybox; }
 		Cubemap* GetSkybox() { return skybox; }
+		HDRCubemap* GetEnvironmentMap() { return environmentMap; }
+		bool UseHDREnvironmentMap() { return useHDREnvironmentMap; }
+		void UseHDREnvironmentMap(bool useEnvMap) { useHDREnvironmentMap = useEnvMap; }
 
 		void ProcessKeyboard(CameraMovement direction, float deltaTime);
 		void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
@@ -49,7 +52,9 @@ namespace Engine {
 	private:
 		void UpdateCameraVectors();
 
+		bool useHDREnvironmentMap;
 		Cubemap* skybox;
+		HDRCubemap* environmentMap;
 
 		unsigned int SCR_WIDTH;
 		unsigned int SCR_HEIGHT;
