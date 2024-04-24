@@ -26,10 +26,12 @@ namespace Engine {
 		unsigned int* GetTexturedFBO() { return texturedFBO; }
 
 		unsigned int* GetGBuffer() { return gBuffer; }
+		unsigned int* GetGBufferPBR() { return gBufferPBR; }
 		unsigned int* GPosition() { return gPosition; }
 		unsigned int* GNormal() { return gNormal; }
 		unsigned int* GAlbedo() { return gAlbedo; }
 		unsigned int* GSpecular() { return gSpecular; }
+		unsigned int* GArm() { return gArm; }
 
 		unsigned int* GetScreenTexture() { return screenTexture; }
 		unsigned int* GetBloomBrightnessTexture() { return bloomBrightnessBuffer; }
@@ -75,7 +77,7 @@ namespace Engine {
 		void SetupTexturedFBO(unsigned int screenWidth, unsigned int screenHeight);
 		void SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight);
 		void SetupBloomPingPongFBO();
-		void SetupEnvironmentMapFBOAndCubemap();
+		void SetupEnvironmentMapFBO();
 
 		void SetupGBuffer();
 
@@ -100,7 +102,8 @@ namespace Engine {
 
 		// Deferred rendering
 		unsigned int* gBuffer;
-		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular;
+		unsigned int* gBufferPBR;
+		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm;
 
 		// SSAO
 		unsigned int* ssaoFBO;
