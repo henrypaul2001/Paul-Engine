@@ -21,6 +21,11 @@ namespace Engine
 		return nullptr;
 	}
 
+	bool Entity::ContainsComponents(const ComponentTypes MASK)
+	{
+		return ((mask & MASK) == MASK);
+	}
+
 	void Entity::AddComponent(Component* component) {
 		_ASSERT(&component != nullptr, "Component cannot be null");
 
