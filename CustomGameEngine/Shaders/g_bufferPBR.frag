@@ -96,6 +96,22 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
     return finalTexCoords;
 }
 
+vec3 GetNormalFromMap() {
+    vec3 tangentNormal = texture(material.TEXTURE_NORMAL1, TexCoords).xyz * 2.0 - 1.0;
+
+    vec3 Q1 = dFdx(vertex_data.WorldPos);
+    vec3 Q2 = dFdy(vertex_data.WorldPos);
+    vec2 st1 = dFdx(TexCoords);
+    vec2 st2 = dFdy(TexCoords);
+
+    vec3 N = normalize(Normal);
+    vec3 T = normalize(Q1 * st2.t - Q2 * st1.t);
+    vec3 B = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
+
 void main() {
     vec2 TexCoords = vertex_data.TexCoords;
     TexCoords *= textureScale;
@@ -114,15 +130,13 @@ void main() {
     gPosition.xyz = vertex_data.WorldPos;
 
     // Normal
-    vec3 Normal = vertex_data.Normal;
+    Normal = vertex_data.Normal;
     if (material.useNormalMap) {
-        Normal = texture(material.TEXTURE_NORMAL1, TexCoords).rgb;
-        Normal = normalize(vertex_data.TBN * Normal);
+        Normal = GetNormalFromMap();
     }
-    gNormal.xyz = normalize(Normal);
 
     // Albedo
-    vec3 Albedo = material.ALBEDO;
+    Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {
         Albedo = texture(material.TEXTURE_ALBEDO1, TexCoords).rgb;
     }

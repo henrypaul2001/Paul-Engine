@@ -265,6 +265,7 @@ namespace Engine {
 		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
 		deferredGeometryPassPBR = LoadShader("Shaders/g_buffer.vert", "Shaders/g_bufferPBR.frag");
 		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
+		deferredLightingPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferredPBR.frag");
 		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
 		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
 		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag");
@@ -326,6 +327,23 @@ namespace Engine {
 		deferredLightingPass->setInt("gSpecular", 21);
 		deferredLightingPass->setInt("SSAO", 22);
 
+		deferredLightingPassPBR->Use();
+		deferredLightingPassPBR->setInt("dirLight.ShadowMap", 0);
+		for (int i = 0; i <= 8; i++) {
+			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+		}
+
+		deferredLightingPassPBR->setInt("gPosition", 18);
+		deferredLightingPassPBR->setInt("gNormal", 19);
+		deferredLightingPassPBR->setInt("gAlbedo", 20);
+		deferredLightingPassPBR->setInt("gArm", 21);
+		deferredLightingPassPBR->setInt("SSAO", 22);
+
+		deferredLightingPassPBR->setInt("irradianceMap", 25);
+		deferredLightingPassPBR->setInt("prefilterMap", 26);
+		deferredLightingPassPBR->setInt("brdfLUT", 27);
+
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
 		ssaoShader->setInt("gNormal", 1);
@@ -360,6 +378,7 @@ namespace Engine {
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
 		unsigned int deferredGeometryPassPBRLocation = glGetUniformBlockIndex(deferredGeometryPassPBR->GetID(), "Common");
 		unsigned int deferredLightingPassLocation = glGetUniformBlockIndex(deferredLightingPass->GetID(), "Common");
+		unsigned int deferredLightingPassPBRLocation = glGetUniformBlockIndex(deferredLightingPassPBR->GetID(), "Common");
 		unsigned int ssaoShaderLocation = glGetUniformBlockIndex(ssaoShader->GetID(), "Common");
 		unsigned int skyboxShaderLocation = glGetUniformBlockIndex(skyboxShader->GetID(), "Common");
 		unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLitPBRShader->GetID(), "Common");
@@ -367,6 +386,7 @@ namespace Engine {
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
 		glUniformBlockBinding(deferredLightingPass->GetID(), deferredLightingPassLocation, 0);
+		glUniformBlockBinding(deferredLightingPassPBR->GetID(), deferredLightingPassPBRLocation, 0);
 		glUniformBlockBinding(ssaoShader->GetID(), ssaoShaderLocation, 0);
 		glUniformBlockBinding(skyboxShader->GetID(), skyboxShaderLocation, 0);
 		glUniformBlockBinding(defaultLitPBRShader->GetID(), defaultLitPBRBlockLocation, 0);

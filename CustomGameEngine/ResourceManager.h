@@ -41,6 +41,7 @@ namespace Engine {
 		Shader* deferredGeometryPass;
 		Shader* deferredGeometryPassPBR;
 		Shader* deferredLightingPass;
+		Shader* deferredLightingPassPBR;
 
 		Shader* ssaoShader;
 		Shader* ssaoBlur;
@@ -91,6 +92,7 @@ namespace Engine {
 		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
 		Shader* DeferredGeometryPassPBR() { return deferredGeometryPassPBR; }
 		Shader* DeferredLightingPass() { return deferredLightingPass; }
+		Shader* DeferredLightingPassPBR() { return deferredLightingPassPBR; }
 		Shader* SSAOShader() { return ssaoShader; }
 		Shader* SSABlur() { return ssaoBlur; }
 		Shader* SkyboxShader() { return skyboxShader; }

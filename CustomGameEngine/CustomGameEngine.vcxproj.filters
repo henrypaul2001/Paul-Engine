@@ -514,5 +514,8 @@
     <None Include="Shaders\g_bufferPBR.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="Shaders\defaultDeferredPBR.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -268,6 +268,7 @@
     <None Include="Shaders\cubeDepthMap.vert" />
     <None Include="Shaders\defaultDeferred.frag" />
     <None Include="Shaders\defaultDeferred.vert" />
+    <None Include="Shaders\defaultDeferredPBR.frag" />
     <None Include="Shaders\defaultLit.frag" />
     <None Include="Shaders\defaultLit.vert" />
     <None Include="Shaders\defaultLitNew.frag" />
