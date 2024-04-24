@@ -39,6 +39,7 @@ namespace Engine {
 		Shader* hdrTonemappingShader;
 
 		Shader* deferredGeometryPass;
+		Shader* deferredGeometryPassPBR;
 		Shader* deferredLightingPass;
 
 		Shader* ssaoShader;
@@ -88,6 +89,7 @@ namespace Engine {
 		Shader* ScreenQuadShader() { return screenQuadShader; }
 		Shader* HDRTonemappingShader() { return hdrTonemappingShader; }
 		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
+		Shader* DeferredGeometryPassPBR() { return deferredGeometryPassPBR; }
 		Shader* DeferredLightingPass() { return deferredLightingPass; }
 		Shader* SSAOShader() { return ssaoShader; }
 		Shader* SSABlur() { return ssaoBlur; }

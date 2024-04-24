@@ -278,6 +278,7 @@
     <None Include="Shaders\depthMap.vert" />
     <None Include="Shaders\g_buffer.frag" />
     <None Include="Shaders\g_buffer.vert" />
+    <None Include="Shaders\g_bufferPBR.frag" />
     <None Include="Shaders\hdrTonemapping.frag" />
     <None Include="Shaders\irradianceConvolute.frag" />
     <None Include="Shaders\prefilter.frag" />

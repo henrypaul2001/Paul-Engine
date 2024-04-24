@@ -263,6 +263,7 @@ namespace Engine {
 		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
 		hdrTonemappingShader = LoadShader("Shaders/screenQuad.vert", "Shaders/hdrTonemapping.frag");
 		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
+		deferredGeometryPassPBR = LoadShader("Shaders/g_buffer.vert", "Shaders/g_bufferPBR.frag");
 		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
 		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
 		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
@@ -303,6 +304,14 @@ namespace Engine {
 		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
+
+		deferredGeometryPass->Use();
+		deferredGeometryPass->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_AO1", 5 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
 
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("dirLight.ShadowMap", 0);
@@ -349,12 +358,14 @@ namespace Engine {
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
+		unsigned int deferredGeometryPassPBRLocation = glGetUniformBlockIndex(deferredGeometryPassPBR->GetID(), "Common");
 		unsigned int deferredLightingPassLocation = glGetUniformBlockIndex(deferredLightingPass->GetID(), "Common");
 		unsigned int ssaoShaderLocation = glGetUniformBlockIndex(ssaoShader->GetID(), "Common");
 		unsigned int skyboxShaderLocation = glGetUniformBlockIndex(skyboxShader->GetID(), "Common");
 		unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLitPBRShader->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
+		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
 		glUniformBlockBinding(deferredLightingPass->GetID(), deferredLightingPassLocation, 0);
 		glUniformBlockBinding(ssaoShader->GetID(), ssaoShaderLocation, 0);
 		glUniformBlockBinding(skyboxShader->GetID(), skyboxShaderLocation, 0);
