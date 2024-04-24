@@ -62,7 +62,7 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
 		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.35f, -1.0f, 0.0f);
-		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
+		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(5.0f, 5.0f, 5.0f);
 		entityManager->AddEntity(dirLight);
 
 		Entity* sponza = new Entity("Sponza");
@@ -80,7 +80,7 @@ namespace Engine {
 		dynamic_cast<ComponentGeometry*>(light->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(light->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(light->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
-		entityManager->AddEntity(light);
+		//entityManager->AddEntity(light);
 
 		Entity* light2 = new Entity("Light 2");
 		light2->AddComponent(new ComponentTransform(0.0f, 10.0f, 0.0f));
@@ -91,7 +91,7 @@ namespace Engine {
 		dynamic_cast<ComponentGeometry*>(light2->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(light2->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(light2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
-		entityManager->AddEntity(light2);
+		//entityManager->AddEntity(light2);
 
 		Entity* light3 = new Entity("Light 3");
 		light3->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
@@ -102,7 +102,7 @@ namespace Engine {
 		dynamic_cast<ComponentGeometry*>(light3->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(light3->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(light3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
-		entityManager->AddEntity(light3);
+		//entityManager->AddEntity(light3);
 
 		Entity* spotLight = new Entity("Spot Light");
 		spotLight->AddComponent(new ComponentTransform(0.0f, 6.5f, 0.0f));
@@ -112,7 +112,7 @@ namespace Engine {
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->OuterCutoff = glm::radians(15.0f);
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Linear = 0.045f;
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Quadratic = 0.0075f;
-		entityManager->AddEntity(spotLight);
+		//entityManager->AddEntity(spotLight);
 	}
 
 	void SponzaScene::CreateSystems()
