@@ -40,11 +40,11 @@ namespace Engine {
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (!meshes[i]->GetMaterial()->isTransparent) {
-					meshes[i]->Draw(shader, instanceNum);
+					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
 			}
 			else {
-				meshes[i]->Draw(shader, instanceNum);
+				meshes[i]->Draw(shader, pbr, instanceNum);
 			}
 		}
 	}
@@ -54,11 +54,11 @@ namespace Engine {
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (meshes[i]->GetMaterial()->isTransparent) {
-					meshes[i]->Draw(shader, instanceNum);
+					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
 			}
 			else {
-				meshes[i]->Draw(shader, instanceNum);
+				meshes[i]->Draw(shader, pbr, instanceNum);
 			}
 		}
 	}

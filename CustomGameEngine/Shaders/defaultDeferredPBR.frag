@@ -1,18 +1,8 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColour;
+layout (location = 1) out vec4 BrightColour;
 
 in vec2 TexCoords;
-
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gAlbedo;
-uniform sampler2D gArm;
-uniform sampler2D SSAO;
-
-uniform bool useIBL;
-uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
-uniform sampler2D brdfLUT;
 
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
@@ -69,6 +59,17 @@ struct Light {
 uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
+
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
+uniform sampler2D gAlbedo;
+uniform sampler2D gArm;
+uniform sampler2D SSAO;
+
+uniform bool useIBL;
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
 
 in vec3 ViewPos;
 
@@ -419,4 +420,6 @@ void main() {
     }
 
     vec3 Colour = ambient + Lo;
+
+    FragColour = vec4(Colour, 1.0);
 }

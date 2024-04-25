@@ -24,6 +24,7 @@ namespace Engine {
 		void DrawTransparentMeshes(Shader& shader, int instanceNum);
 
 		bool PBR() { return pbr; }
+		void PBR(bool PBR) { pbr = PBR; }
 
 		void ApplyMaterialToAllMesh(Material* material);
 		void ApplyMaterialToMeshAtIndex(Material* material, int index);

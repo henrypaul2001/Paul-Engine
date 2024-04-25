@@ -113,7 +113,7 @@ vec3 GetNormalFromMap() {
 }
 
 void main() {
-    vec2 TexCoords = vertex_data.TexCoords;
+    TexCoords = vertex_data.TexCoords;
     TexCoords *= textureScale;
 
     vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentWorldPos);
@@ -134,6 +134,14 @@ void main() {
     if (material.useNormalMap) {
         Normal = GetNormalFromMap();
     }
+    gNormal.rgb = Normal;
+
+    //Normal = vertex_data.Normal;
+    //if (material.useNormalMap) {
+        //Normal = texture(material.TEXTURE_NORMAL1, TexCoords).rgb;
+        //Normal = normalize(vertex_data.TBN * Normal);
+    //}
+    //gNormal.xyz = normalize(Normal);
 
     // Albedo
     Albedo = material.ALBEDO;

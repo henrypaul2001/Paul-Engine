@@ -48,11 +48,6 @@ namespace Engine {
 
 		Camera* activeCamera = renderSystem->GetActiveCamera();
 
-		// Image based lighting
-		if (activeCamera->UseHDREnvironmentMap()) {
-
-		}
-
 		//glCullFace(GL_BACK);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		for (Entity* e : entities) {
@@ -80,7 +75,8 @@ namespace Engine {
 		else {
 			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
 		}
-		ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
+		//ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
+		ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 		glCullFace(GL_BACK);
 		glDepthFunc(GL_LESS);
 
@@ -108,7 +104,8 @@ namespace Engine {
 			blurShader->setInt("horizontal", horizontal);
 			glBindTexture(GL_TEXTURE_2D, first_iteration ? *renderInstance->GetBloomBrightnessTexture() : *renderInstance->GetBloomPingPongColourBuffer(!horizontal));
 
-			ResourceManager::GetInstance()->DefaultPlane().Draw(*blurShader);
+			//ResourceManager::GetInstance()->DefaultPlane().Draw(*blurShader);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			horizontal = !horizontal;
 			if (first_iteration) {
@@ -146,7 +143,8 @@ namespace Engine {
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_STENCIL_TEST);
-		ResourceManager::GetInstance()->DefaultPlane().Draw(*hdrShader);
+		//ResourceManager::GetInstance()->DefaultPlane().Draw(*hdrShader);
+		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_STENCIL_TEST);
@@ -177,7 +175,8 @@ namespace Engine {
 		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
-		ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
+		//ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
+		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 	}

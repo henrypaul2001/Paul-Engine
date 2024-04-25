@@ -5,7 +5,6 @@ namespace Engine {
 	{
 		this->vertices = vertices;
 		this->indices = indices;
-		this->pbr = true;
 		this->PBRmaterial = pbrMaterial;
 		SetupMesh();
 	}
@@ -14,7 +13,6 @@ namespace Engine {
 	{
 		this->vertices = vertices;
 		this->indices = indices;
-		this->pbr = false;
 		this->material = material;
 		SetupMesh();
 	}
@@ -29,17 +27,15 @@ namespace Engine {
 
 	void Mesh::ApplyMaterial(Material* material)
 	{
-		pbr = false;
 		this->material = material;
 	}
 
 	void Mesh::ApplyMaterial(PBRMaterial* pbrMaterial)
 	{
-		pbr = true;
 		this->PBRmaterial = pbrMaterial;
 	}
 
-	void Mesh::Draw(Shader& shader, int instanceNum)
+	void Mesh::Draw(Shader& shader, bool pbr, int instanceNum)
 	{
 		int offset = 18;
 		if (!pbr) {

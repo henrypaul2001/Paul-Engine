@@ -16,6 +16,12 @@ namespace Engine {
 		void Close() override;
 
 		bool PBR() { return pbr; }
+		void PBR(bool PBR) { 
+			pbr = PBR;
+			if (model != nullptr) {
+				model->PBR(PBR);
+			}
+		}
 
 		void SetCulling(bool cull, GLenum cull_type) { CULL_FACE = cull, CULL_TYPE = cull_type; }
 		void SetShader(Shader* newShader) { shader = newShader; }

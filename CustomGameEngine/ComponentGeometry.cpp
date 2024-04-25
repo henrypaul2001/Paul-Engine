@@ -93,14 +93,19 @@ namespace Engine {
 		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr);
 
 		shader = nullptr;
-		if (pbr) {
-			shader = ResourceManager::GetInstance()->DefaultLitPBR();
-		}
-		else {
-			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+			if (pbr) {
+				shader = ResourceManager::GetInstance()->DefaultLitPBR();
+			}
+			else {
 				shader = ResourceManager::GetInstance()->DefaultLitShader();
 			}
-			else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+		}
+		else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+			if (pbr) {
+				shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
+			}
+			else {
 				shader = ResourceManager::GetInstance()->DeferredGeometryPass();
 			}
 		}

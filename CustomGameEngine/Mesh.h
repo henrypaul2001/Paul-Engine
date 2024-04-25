@@ -115,16 +115,14 @@ namespace Engine {
 		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
 		Material* GetMaterial() { return material; }
 		PBRMaterial* GetPBRMaterial() { return PBRmaterial; }
-		bool PBR() { return pbr; }
 
-		void Draw(Shader& shader, int instanceNum = 0);
+		void Draw(Shader& shader, bool pbr, int instanceNum = 0);
 		void DrawWithNoMaterial(int instanceNum = 0);
 	private:
 		GLenum drawPrimitive;
 		unsigned int VBO, EBO;
 		Material* material;
 		PBRMaterial* PBRmaterial;
-		bool pbr;
 
 		void SetupMesh();
 	};

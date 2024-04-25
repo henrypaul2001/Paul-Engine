@@ -5,9 +5,9 @@
 #include "ResourceManager.h"
 #include "LightManager.h"
 namespace Engine {
-	DeferredPipeline::DeferredPipeline()
+	DeferredPipeline::DeferredPipeline(bool pbr)
 	{
-
+		this->pbr = pbr;
 	}
 
 	DeferredPipeline::~DeferredPipeline()
@@ -31,7 +31,12 @@ namespace Engine {
 			// -------------
 			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glViewport(0, 0, screenWidth, screenHeight);
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
+			if (pbr) {
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBufferPBR());
+			}
+			else {
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
+			}
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glDisable(GL_BLEND);
 			for (Entity* e : entities) {
@@ -55,12 +60,14 @@ namespace Engine {
 				ssaoShader->setVec3("samples[" + std::to_string(i) + "]", *ssaoKernel[i]);
 			}
 
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAONoiseTexture());
-			ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoShader);
+			//ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoShader);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			// Blur SSAO texture to remove noise
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOBlurFBO());
@@ -69,7 +76,8 @@ namespace Engine {
 			ssaoBlur->Use();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOColour());
-			ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoBlur);
+			//ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoBlur);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			// Lighting pass
 			// -------------
@@ -77,31 +85,56 @@ namespace Engine {
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			Shader* lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
+			Shader* lightingPass = nullptr;
+			if (pbr) {
+				lightingPass = ResourceManager::GetInstance()->DeferredLightingPassPBR();
+				lightingPass->Use();
 
-			lightingPass->Use();
-			glActiveTexture(GL_TEXTURE18);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
-			glActiveTexture(GL_TEXTURE19);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
-			glActiveTexture(GL_TEXTURE20);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
-			glActiveTexture(GL_TEXTURE21);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
-			glActiveTexture(GL_TEXTURE22);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
+
+				glActiveTexture(GL_TEXTURE18);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+				glActiveTexture(GL_TEXTURE19);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+				glActiveTexture(GL_TEXTURE20);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
+				glActiveTexture(GL_TEXTURE21);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm());
+				glActiveTexture(GL_TEXTURE22);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
+			}
+			else {
+				lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
+
+				lightingPass->Use();
+				glActiveTexture(GL_TEXTURE18);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+				glActiveTexture(GL_TEXTURE19);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+				glActiveTexture(GL_TEXTURE20);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
+				glActiveTexture(GL_TEXTURE21);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
+				glActiveTexture(GL_TEXTURE22);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
+			}
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
-			ResourceManager::GetInstance()->DefaultPlane().Draw(*lightingPass);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 
 			// Skybox
 			// ------
 			// Retrieve depth and stencil information from gBuffer
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
+			if (pbr) {
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBufferPBR());
+			}
+			else {
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
+			}
+
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -117,8 +150,14 @@ namespace Engine {
 			glCullFace(GL_FRONT);
 
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
-			ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
+			if (activeCamera->UseHDREnvironmentMap()) {
+				glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->cubemapID);
+			}
+			else {
+				glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
+			}
+			//ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
+			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 			glCullFace(GL_BACK);
 			glDepthFunc(GL_LESS);
 
@@ -161,7 +200,8 @@ namespace Engine {
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
-			ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
+			//ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 		}
