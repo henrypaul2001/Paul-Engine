@@ -136,13 +136,6 @@ void main() {
     }
     gNormal.rgb = Normal;
 
-    //Normal = vertex_data.Normal;
-    //if (material.useNormalMap) {
-        //Normal = texture(material.TEXTURE_NORMAL1, TexCoords).rgb;
-        //Normal = normalize(vertex_data.TBN * Normal);
-    //}
-    //gNormal.xyz = normalize(Normal);
-
     // Albedo
     Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {

@@ -25,7 +25,7 @@ namespace Engine {
 		SetupEnvironmentMapFBO();
 
 		exposure = 1.0f;
-		bloom = true;
+		bloom = false;
 		bloomThreshold = 15.0;
 	}
 

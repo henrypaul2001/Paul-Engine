@@ -174,7 +174,33 @@ namespace Engine {
 
 			// Post Processing
 			// ---------------
-			// render final scene texture on screen quad
+			
+			// HDR Tonemapping
+			glViewport(0, 0, screenWidth, screenHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+			Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
+			hdrShader->Use();
+			hdrShader->setFloat("gamma", 1.2);
+			hdrShader->setFloat("exposure", renderInstance->exposure);
+			hdrShader->setBool("bloom", renderInstance->bloom);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+			glActiveTexture(GL_TEXTURE1);
+			//glBindTexture(GL_TEXTURE_2D, *renderInstance->GetBloomPingPongColourBuffer(finalBloomTexture));
+			glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+			glDisable(GL_STENCIL_TEST);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_STENCIL_TEST);
+
+			// Final post process output
 			glViewport(0, 0, screenWidth, screenHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT);
