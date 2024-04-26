@@ -76,7 +76,6 @@ namespace Engine {
 			ssaoBlur->Use();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOColour());
-			//ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoBlur);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			// Lighting pass
@@ -85,41 +84,34 @@ namespace Engine {
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			glActiveTexture(GL_TEXTURE18);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+			glActiveTexture(GL_TEXTURE19);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+			glActiveTexture(GL_TEXTURE20);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
+
 			Shader* lightingPass = nullptr;
 			if (pbr) {
 				lightingPass = ResourceManager::GetInstance()->DeferredLightingPassPBR();
-				lightingPass->Use();
 
-
-				glActiveTexture(GL_TEXTURE18);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
-				glActiveTexture(GL_TEXTURE19);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
-				glActiveTexture(GL_TEXTURE20);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
 				glActiveTexture(GL_TEXTURE21);
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm());
-				glActiveTexture(GL_TEXTURE22);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
+
 			}
 			else {
 				lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
 
-				lightingPass->Use();
-				glActiveTexture(GL_TEXTURE18);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
-				glActiveTexture(GL_TEXTURE19);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
-				glActiveTexture(GL_TEXTURE20);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
 				glActiveTexture(GL_TEXTURE21);
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
-				glActiveTexture(GL_TEXTURE22);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
+
 			}
+			glActiveTexture(GL_TEXTURE22);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
+			lightingPass->Use();
 			lightingPass->setBool("useSSAO", activeCamera->UseSSAO());
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
@@ -157,7 +149,6 @@ namespace Engine {
 			else {
 				glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
 			}
-			//ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
 			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 			glCullFace(GL_BACK);
 			glDepthFunc(GL_LESS);
@@ -227,7 +218,6 @@ namespace Engine {
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
-			//ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
