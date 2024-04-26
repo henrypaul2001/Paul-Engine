@@ -34,6 +34,10 @@ namespace Engine
 
 		bool ContainsComponents(const ComponentTypes MASK);
 
+		Component* RemoveGetComponent(int componentIndex);
+		Component* RemoveGetComponent(ComponentTypes type);
+		void RemoveComponent(Component* component);
+
 		void AddComponent(Component* component);
 		void Close();
 	};

@@ -26,6 +26,37 @@ namespace Engine
 		return ((mask & MASK) == MASK);
 	}
 
+	Component* Entity::RemoveGetComponent(int componentIndex)
+	{
+		Component* result = nullptr;
+		if (componentIndex < componentList.size()) {
+			result = componentList[componentIndex];
+			componentList.erase(componentList.begin() + componentIndex);
+		}
+		return result;
+	}
+
+	Component* Entity::RemoveGetComponent(ComponentTypes type)
+	{
+		for (int i = 0; i < componentList.size(); i++) {
+			if (componentList[i]->ComponentType() == type) {
+				Component* result = componentList[i];
+				componentList.erase(componentList.begin() + i);
+			}
+		}
+		return nullptr;
+	}
+
+	void Entity::RemoveComponent(Component* component)
+	{
+		for (int i = 0; i < componentList.size(); i++) {
+			if (componentList[i] == component) {
+				componentList.erase(componentList.begin() + i);
+				return;
+			}
+		}
+	}
+
 	void Entity::AddComponent(Component* component) {
 		_ASSERT(&component != nullptr, "Component cannot be null");
 
