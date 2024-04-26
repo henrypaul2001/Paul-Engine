@@ -3,7 +3,6 @@
 namespace Engine {
 	class CollisionScene : public Scene
 	{
-		bool SSAO;
 		void CreateEntities();
 		void CreateSystems();
 	public:
@@ -11,7 +10,6 @@ namespace Engine {
 		~CollisionScene();
 
 		void ChangePostProcessEffect();
-		void ToggleSSAO();
 
 		void Update() override;
 		void Render() override;

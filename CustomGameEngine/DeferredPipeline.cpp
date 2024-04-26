@@ -120,6 +120,7 @@ namespace Engine {
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
+			lightingPass->setBool("useSSAO", activeCamera->UseSSAO());
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 			glEnable(GL_DEPTH_TEST);

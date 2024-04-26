@@ -16,10 +16,7 @@ namespace Engine {
 		ballCount = 0;
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
-		SSAO = true;
 		SetupScene();
-		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
-		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 		RenderManager::GetInstance()->bloomThreshold = 10.0f;
 	}
 
@@ -41,14 +38,6 @@ namespace Engine {
 		}
 
 		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
-	}
-
-	void PhysicsScene::ToggleSSAO()
-	{
-		SSAO = !SSAO;
-		std::cout << "SSAO: " << SSAO << std::endl;
-		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
-		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 	}
 
 	void PhysicsScene::Update()
@@ -88,9 +77,6 @@ namespace Engine {
 	{
 		if (key == GLFW_KEY_SLASH) {
 			ChangePostProcessEffect();
-		}
-		else if (key == GLFW_KEY_P) {
-			ToggleSSAO();
 		}
 		else if (key == GLFW_KEY_KP_8) {
 			std::string name = std::string("Ball ") + std::string(std::to_string(ballCount));

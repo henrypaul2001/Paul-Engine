@@ -4,7 +4,6 @@ namespace Engine {
 	class PhysicsScene : public Scene
 	{
 		int ballCount;
-		bool SSAO;
 		void CreateEntities();
 		void CreateSystems();
 	public:
@@ -12,7 +11,6 @@ namespace Engine {
 		~PhysicsScene();
 
 		void ChangePostProcessEffect();
-		void ToggleSSAO();
 
 		void Update() override;
 		void Render() override;

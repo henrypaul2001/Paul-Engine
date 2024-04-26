@@ -4,7 +4,6 @@
 namespace Engine {
 	class PBRScene : public Scene
 	{
-		bool SSAO;
 		void CreateEntities();
 		void CreateSystems();
 	public:
@@ -12,7 +11,6 @@ namespace Engine {
 		~PBRScene();
 
 		void ChangePostProcessEffect();
-		void ToggleSSAO();
 
 		void Update() override;
 		void Render() override;

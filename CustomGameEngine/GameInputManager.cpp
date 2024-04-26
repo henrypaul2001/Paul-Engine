@@ -100,6 +100,9 @@ namespace Engine {
 		if (key == GLFW_KEY_B) {
 			RenderManager::GetInstance()->bloom = !RenderManager::GetInstance()->bloom;
 		}
+		if (key == GLFW_KEY_P) {
+			camera->ToggleSSAO();
+		}
 	}
 
 	void GameInputManager::keyDown(int key)

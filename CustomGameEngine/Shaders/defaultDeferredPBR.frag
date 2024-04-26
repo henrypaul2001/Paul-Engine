@@ -395,10 +395,10 @@ void main() {
     vec3 ambient;
 
     if (dirLight.Active) {
-        ambient = dirLight.Ambient * Albedo * AO;
+        ambient = (dirLight.Ambient * Albedo * AO) * AmbientOcclusion;
     }
     else {
-        ambient = vec3(0.01) * Albedo * AO;
+        ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
     }
     
     if (useIBL) {
@@ -416,7 +416,7 @@ void main() {
         vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
         vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
 
-        ambient = (kD * diffuse + specular) * AO;
+        ambient = ((kD * diffuse + specular) * AO) * AmbientOcclusion;
     }
 
     vec3 Colour = ambient + Lo;

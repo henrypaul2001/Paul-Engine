@@ -20,7 +20,7 @@ namespace Engine {
 		skybox = ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space");
 		environmentMap = ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
 		useHDREnvironmentMap = true;
-
+		useSSAO = true;
 		UpdateCameraVectors();
 	}
 
@@ -100,6 +100,12 @@ namespace Engine {
 		else if (Zoom > 120.0f) {
 			Zoom = 120.0f;
 		}
+	}
+
+	void Camera::ToggleSSAO()
+	{
+		useSSAO = !useSSAO;
+		std::cout << "SSAO: " << useSSAO << std::endl;
 	}
 
 	void Camera::UpdateCameraVectors()

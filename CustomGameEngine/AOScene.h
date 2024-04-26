@@ -7,7 +7,6 @@ namespace Engine {
 		//EntityManager entityManager;
 		//SystemManager systemManager;
 
-		bool SSAO;
 		void CreateEntities();
 		void CreateSystems();
 	public:
@@ -15,7 +14,6 @@ namespace Engine {
 		~AOScene();
 
 		void ChangePostProcessEffect();
-		void ToggleSSAO();
 
 		void Update() override;
 		void Render() override;

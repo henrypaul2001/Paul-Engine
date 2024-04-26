@@ -13,10 +13,7 @@ namespace Engine {
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
-		SSAO = true;
 		SetupScene();
-		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
-		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 		RenderManager::GetInstance()->bloomThreshold = 10.0f;
 	}
 
@@ -38,14 +35,6 @@ namespace Engine {
 		}
 
 		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
-	}
-
-	void CollisionScene::ToggleSSAO()
-	{
-		SSAO = !SSAO;
-		std::cout << "SSAO: " << SSAO << std::endl;
-		ResourceManager::GetInstance()->DeferredLightingPass()->Use();
-		ResourceManager::GetInstance()->DeferredLightingPass()->setBool("useSSAO", SSAO);
 	}
 
 	void CollisionScene::Update()
@@ -80,9 +69,6 @@ namespace Engine {
 	{
 		if (key == GLFW_KEY_SLASH) {
 			ChangePostProcessEffect();
-		}
-		else if (key == GLFW_KEY_P) {
-			ToggleSSAO();
 		}
 	}
 

@@ -43,15 +43,22 @@ namespace Engine {
 		void SetSkyboxTexture(Cubemap* newSkybox) { skybox = newSkybox; }
 		Cubemap* GetSkybox() { return skybox; }
 		HDREnvironment* GetEnvironmentMap() { return environmentMap; }
+		
 		bool UseHDREnvironmentMap() { return useHDREnvironmentMap; }
 		void UseHDREnvironmentMap(bool useEnvMap) { useHDREnvironmentMap = useEnvMap; }
+
+		bool UseSSAO() { return useSSAO; }
+		void UseSSAO(bool ssao) { useSSAO = ssao; }
 
 		void ProcessKeyboard(CameraMovement direction, float deltaTime);
 		void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 		void ProcessMouseScroll(float yoffset);
+
+		void ToggleSSAO();
 	private:
 		void UpdateCameraVectors();
 
+		bool useSSAO;
 		bool useHDREnvironmentMap;
 		Cubemap* skybox;
 		HDREnvironment* environmentMap;
