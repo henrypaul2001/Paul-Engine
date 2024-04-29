@@ -25,6 +25,7 @@ namespace Engine {
 		void virtual DirLightShadowStep();
 		void virtual ActiveLightsShadowStep();
 		void virtual RunShadowMapSteps();
+		void virtual RunBloomStep();
 
 		RenderManager* renderInstance;
 
@@ -44,5 +45,7 @@ namespace Engine {
 
 		unsigned int screenWidth;
 		unsigned int screenHeight;
+
+		unsigned int finalBloomTexture;
 	};
 }

@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColour;
+layout (location = 1) out vec4 BrightColour;
 
 in vec2 TexCoords;
 
@@ -73,6 +74,8 @@ vec3 SpecularSample;
 float Shininess;
 float AmbientOcclusion;
 
+uniform float BloomThreshold;
+
 float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
     // perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -111,7 +114,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
 // array of offset direction for sampling
 vec3 gridSamplingDisk[20] = vec3[]
 (
-   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
    vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
    vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
@@ -296,5 +299,14 @@ void main() {
         }
     }
 
-    FragColor = vec4(Lighting, 1.0);
+    // Check whether result is higher than bloom threshold and output bloom colour accordingly
+    float brightness = dot(Lighting, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > BloomThreshold) {
+        BrightColour = vec4(Lighting, 1.0);
+    }
+    else {
+        BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+
+    FragColour = vec4(Lighting, 1.0);
 }

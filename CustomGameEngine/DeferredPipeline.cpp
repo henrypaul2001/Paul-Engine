@@ -84,6 +84,9 @@ namespace Engine {
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+			glDrawBuffers(2, buffers);
+
 			glActiveTexture(GL_TEXTURE18);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
 			glActiveTexture(GL_TEXTURE19);
@@ -135,6 +138,8 @@ namespace Engine {
 			Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
 			skyShader->Use();
 
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
 			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
 			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -164,6 +169,10 @@ namespace Engine {
 			renderSystem->DrawTransparentGeometry(true);
 			glDisable(GL_BLEND);
 
+			// Bloom
+			// -----
+			RunBloomStep();
+
 			// Post Processing
 			// ---------------
 			
@@ -181,7 +190,7 @@ namespace Engine {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 			glActiveTexture(GL_TEXTURE1);
-			//glBindTexture(GL_TEXTURE_2D, *renderInstance->GetBloomPingPongColourBuffer(finalBloomTexture));
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetBloomPingPongColourBuffer(finalBloomTexture));
 			glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 			glDisable(GL_DEPTH_TEST);

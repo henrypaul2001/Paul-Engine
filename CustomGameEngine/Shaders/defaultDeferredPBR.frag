@@ -85,6 +85,8 @@ float AmbientOcclusion;
 
 uniform bool useSSAO;
 
+uniform float BloomThreshold;
+
 vec3 N;
 vec3 V;
 vec3 R;
@@ -419,6 +421,15 @@ void main() {
     }
 
     vec3 Colour = ambient + Lo;
+
+    // Check whether result is higher than bloom threshold and output bloom colour accordingly
+    float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > BloomThreshold) {
+        BrightColour = vec4(Colour, 1.0);
+    }
+    else {
+        BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+    }
 
     FragColour = vec4(Colour, 1.0);
 }
