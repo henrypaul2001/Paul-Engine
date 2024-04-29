@@ -204,12 +204,11 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
 }
 
 vec3 PerLightReflectance_SpotLight(int lightIndex) {
-/*
     // Radiance
     vec3 L = normalize(lights[lightIndex].Position - FragPos);
     vec3 H = normalize(V + L);
 
-    float dist = length(lights[lightIndex].TangentPosition - vertex_data.TangentFragPos);
+    float dist = length(lights[lightIndex].Position - FragPos);
     float attenuation = 1.0 / (lights[lightIndex].Constant + lights[lightIndex].Linear * dist + lights[lightIndex].Quadratic * (dist * dist));
     vec3 radiance = lights[lightIndex].Colour * attenuation;
 
@@ -257,7 +256,7 @@ vec3 PerLightReflectance_SpotLight(int lightIndex) {
     // Add to outgoing radiance Lo
     vec3 Lo = (kD * Albedo / PI + specular) * radiance * NdotL;
     return Lo;
-    */
+    
     return vec3(0.0);
 }
 
@@ -383,7 +382,7 @@ void main() {
     for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
         if (lights[i].Active) {
             if (lights[i].SpotLight) {
-                //Lo += PerLightReflectance_SpotLight(i);
+                Lo += PerLightReflectance_SpotLight(i);
             }
             else {
                 Lo += PerLightReflectance_PointLight(i);
