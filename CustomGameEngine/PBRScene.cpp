@@ -7,6 +7,7 @@ namespace Engine {
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
+		renderManager->bloomThreshold = 400.0f;
 	}
 
 	PBRScene::~PBRScene()
@@ -43,7 +44,7 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		PBRMaterial* bloomTest = new PBRMaterial();
-		bloomTest->albedo = glm::vec3(25.0f, 25.0f, 25.0f);
+		bloomTest->albedo = glm::vec3(1500.0f);
 		bloomTest->metallic = 0.0f;
 		bloomTest->roughness = 0.0f;
 		bloomTest->ao = 0.0f;
@@ -149,8 +150,8 @@ namespace Engine {
 		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
-		floor->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//floor->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
@@ -161,8 +162,8 @@ namespace Engine {
 		wall1->AddComponent(new ComponentTransform(0.0f, 0.0f, 10.0f));
 		wall1->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(snow);
-		wall1->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//wall1->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 		dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 		dynamic_cast<ComponentTransform*>(wall1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -174,8 +175,8 @@ namespace Engine {
 		wall2->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
 		wall2->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(space_blanket);
-		wall2->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//wall2->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 		dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 		dynamic_cast<ComponentTransform*>(wall2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -186,8 +187,8 @@ namespace Engine {
 		wall3->AddComponent(new ComponentTransform(10.0f, 0.0f, 0.0f));
 		wall3->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		wall3->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//wall3->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 		dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 		dynamic_cast<ComponentTransform*>(wall3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -199,8 +200,8 @@ namespace Engine {
 		wall4->AddComponent(new ComponentTransform(-10.0f, 0.0f, 0.0f));
 		wall4->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(scifi);
-		wall4->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//wall4->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 		dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 		dynamic_cast<ComponentTransform*>(wall4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -224,8 +225,8 @@ namespace Engine {
 		pointLight->AddComponent(new ComponentTransform(6.5f, 4.0f, -6.5f));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		pointLight->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//pointLight->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light = new ComponentLight(POINT);
@@ -241,8 +242,8 @@ namespace Engine {
 		pointLight2->AddComponent(new ComponentTransform(-8.5f, 4.0f, 8.5f));
 		pointLight2->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		pointLight2->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//pointLight2->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(pointLight2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light2 = new ComponentLight(POINT);
@@ -258,8 +259,8 @@ namespace Engine {
 		pointLight3->AddComponent(new ComponentTransform(6.5f, 4.0f, 6.5f));
 		pointLight3->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		pointLight3->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		// dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//pointLight3->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(pointLight3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light3 = new ComponentLight(POINT);
@@ -275,8 +276,8 @@ namespace Engine {
 		pointLight4->AddComponent(new ComponentTransform(-6.5f, 2.0f, -6.5f));
 		pointLight4->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		pointLight4->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//pointLight4->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(pointLight4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light4 = new ComponentLight(POINT);
@@ -293,8 +294,8 @@ namespace Engine {
 		pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
 		pointLight5->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
-		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
+		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light5 = new ComponentLight(POINT);
 		light5->Colour = glm::vec3(25.0f, 25.0f, 25.0f);
@@ -312,8 +313,8 @@ namespace Engine {
 		spotParent->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
 		spotParent->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
-		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
+		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(spotParent->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f));
 		spotParent->GetGeometryComponent()->PBR(true);
 		entityManager->AddEntity(spotParent);
@@ -323,8 +324,8 @@ namespace Engine {
 		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
 		spotLight->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
-		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(spotParent);
 		ComponentLight* spot = new ComponentLight(SPOT);
@@ -358,8 +359,8 @@ namespace Engine {
 		bloomLight->CastShadows = false;
 		bloomCube->AddComponent(bloomLight);
 		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
-		bloomCube->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
-		//dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
+		//bloomCube->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DeferredGeometryPassPBR());
+		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
 		bloomCube->GetGeometryComponent()->PBR(true);
 		entityManager->AddEntity(bloomCube);
 	}
