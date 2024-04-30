@@ -369,9 +369,10 @@ namespace Engine {
 		defaultLitPBRShader->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_AO1", 5 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
-		defaultLitPBRShader->setInt("irradianceMap", 7 + textureOffset);
-		defaultLitPBRShader->setInt("prefilterMap", 8 + textureOffset);
-		defaultLitPBRShader->setInt("brdfLUT", 9 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 7 + textureOffset);
+		defaultLitPBRShader->setInt("irradianceMap", 8 + textureOffset);
+		defaultLitPBRShader->setInt("prefilterMap", 9 + textureOffset);
+		defaultLitPBRShader->setInt("brdfLUT", 10 + textureOffset);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");

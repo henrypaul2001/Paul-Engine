@@ -146,6 +146,15 @@ namespace Engine {
 		earth->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/specular.jpg", TEXTURE_METALLIC, false));
 		earth->height_scale = -0.1;
 
+		PBRMaterial* raindrops = new PBRMaterial();
+		raindrops->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
+		raindrops->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/normal.png", TEXTURE_NORMAL, false));
+		raindrops->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/roughness.jpg", TEXTURE_ROUGHNESS, false));
+		raindrops->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/ao.jpg", TEXTURE_AO, false));
+		raindrops->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/height.png", TEXTURE_DISPLACE, false));
+		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
+		raindrops->isTransparent = true;
+
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
@@ -154,6 +163,15 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
+
+		Entity* rainFloor = new Entity("Rain Floor");
+		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
+		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		rainFloor->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(raindrops);
+		rainFloor->GetGeometryComponent()->SetTextureScale(10.0f);
+		rainFloor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		entityManager->AddEntity(rainFloor);
 
 		Entity* wall1 = new Entity("Wall 1");
 		wall1->AddComponent(new ComponentTransform(0.0f, 0.0f, 10.0f));
@@ -281,7 +299,7 @@ namespace Engine {
 		Entity* spotParent = new Entity("Spot Parent");
 		spotParent->AddComponent(new ComponentTransform(1.0f, 0.0f, 4.6f));
 		spotParent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(raindrops);
 		dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 		dynamic_cast<ComponentTransform*>(spotParent->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f));
 		entityManager->AddEntity(spotParent);

@@ -135,7 +135,7 @@ namespace Engine {
 			shader.setBool("material.useRoughnessMap", false);
 			shader.setBool("material.useAoMap", false);
 			shader.setBool("material.useHeightMap", false);
-			//shader.setBool("material.useOpacityMap", false);
+			shader.setBool("material.useOpacityMap", false);
 
 			unsigned int albedoNr = 1;
 			unsigned int normalNr = 1;
@@ -143,7 +143,7 @@ namespace Engine {
 			unsigned int roughnessNr = 1;
 			unsigned int aoNr = 1;
 			unsigned int heightNr = 1;
-			//unsigned int opacityNr = 1;
+			unsigned int opacityNr = 1;
 
 			std::string number;
 			std::string name;
@@ -230,6 +230,19 @@ namespace Engine {
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->heightMaps[i]->id);
 					heightNr++;
 					shader.setBool("material.useHeightMap", true);
+				}
+				count++;
+			}
+
+			// opacity maps
+			for (int i = 0; i < PBRmaterial->opacityMaps.size(); i++) {
+				glActiveTexture(GL_TEXTURE0 + count + offset);
+				name = ConvertTextureTypeToString(PBRmaterial->opacityMaps[i]->type);
+				if (name == ConvertTextureTypeToString(TEXTURE_OPACITY)) {
+					shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
+					glBindTexture(GL_TEXTURE_2D, PBRmaterial->opacityMaps[i]->id);
+					opacityNr++;
+					shader.setBool("material.useOpacityMap", true);
 				}
 				count++;
 			}

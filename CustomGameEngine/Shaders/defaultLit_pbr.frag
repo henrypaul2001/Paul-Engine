@@ -93,6 +93,7 @@ struct PBRMaterial {
     sampler2D TEXTURE_ROUGHNESS1;
     sampler2D TEXTURE_AO1;
     sampler2D TEXTURE_DISPLACE1;
+    sampler2D TEXTURE_OPACITY1;
 
     float HEIGHT_SCALE;
 
@@ -108,6 +109,7 @@ struct PBRMaterial {
     bool useRoughnessMap;
     bool useAoMap;
     bool useHeightMap;
+    bool useOpacityMap;
 };
 uniform PBRMaterial material;
 
@@ -116,6 +118,7 @@ vec3 Normal;
 float Metallic;
 float Roughness;
 float AO;
+float Alpha;
 vec2 TexCoords;
 
 vec3 N;
@@ -454,6 +457,12 @@ void main() {
         }
     }
 
+    // Get alpha
+    Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
+
 	// Get material colour
     Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {
@@ -550,5 +559,5 @@ void main() {
         BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
     }
 
-    FragColour = vec4(Colour, 1.0);
+    FragColour = vec4(Colour, Alpha);
 }

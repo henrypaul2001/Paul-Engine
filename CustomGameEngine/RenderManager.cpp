@@ -10,7 +10,7 @@ namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
-		renderPipeline = new DeferredPipeline(true);
+		renderPipeline = new ForwardPipeline();
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;

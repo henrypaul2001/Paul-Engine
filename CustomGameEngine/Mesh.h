@@ -89,6 +89,7 @@ namespace Engine {
 		std::vector<Texture*> roughnessMaps;
 		std::vector<Texture*> aoMaps;
 		std::vector<Texture*> heightMaps;
+		std::vector<Texture*> opacityMaps;
 
 		float height_scale;
 
@@ -96,6 +97,8 @@ namespace Engine {
 		float metallic;
 		float roughness;
 		float ao;
+
+		bool isTransparent;
 	};
 
 	class Mesh

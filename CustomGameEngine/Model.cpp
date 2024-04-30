@@ -44,7 +44,9 @@ namespace Engine {
 				}
 			}
 			else {
-				meshes[i]->Draw(shader, pbr, instanceNum);
+				if (!meshes[i]->GetPBRMaterial()->isTransparent) {
+					meshes[i]->Draw(shader, pbr, instanceNum);
+				}
 			}
 		}
 	}
@@ -58,7 +60,9 @@ namespace Engine {
 				}
 			}
 			else {
-				meshes[i]->Draw(shader, pbr, instanceNum);
+				if (meshes[i]->GetPBRMaterial()->isTransparent) {
+					meshes[i]->Draw(shader, pbr, instanceNum);
+				}
 			}
 		}
 	}
@@ -81,6 +85,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial)
 	{
+		containsTransparentMeshes = pbrMaterial->isTransparent;
 		for (Mesh* m : meshes) {
 			m->ApplyMaterial(pbrMaterial);
 		}
@@ -88,6 +93,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index)
 	{
+		containsTransparentMeshes = pbrMaterial->isTransparent;
 		if (index < meshes.size()) {
 			meshes[index]->ApplyMaterial(pbrMaterial);
 		}
@@ -279,6 +285,13 @@ namespace Engine {
 
 				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
 				pbrMaterial->heightMaps = heightMaps;
+
+				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY);
+				pbrMaterial->opacityMaps = opacityMaps;
+
+				if (opacityMaps.size() > 0) {
+					pbrMaterial->isTransparent = true;
+				}
 
 				return new Mesh(vertices, indices, pbrMaterial);
 			}
