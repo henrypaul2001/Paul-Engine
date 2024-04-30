@@ -15,7 +15,7 @@ namespace Engine {
 	class Model
 	{
 	public:
-		Model(PremadeModel modelType);
+		Model(PremadeModel modelType, bool pbr = false);
 		Model(const char* filepath);
 		Model(const char* filepath, bool pbr);
 		~Model();

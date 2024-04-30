@@ -1,7 +1,7 @@
 #include "Model.h"
 #include "ResourceManager.h"
 namespace Engine {
-	Model::Model(PremadeModel modelType)
+	Model::Model(PremadeModel modelType, bool pbr)
 	{
 		if (modelType == MODEL_PLANE) {
 			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultPlane()));
@@ -13,7 +13,7 @@ namespace Engine {
 			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultSphere()));
 		}
 		containsTransparentMeshes = false;
-		pbr = false;
+		this->pbr = pbr;
 	}
 
 	Model::Model(const char* filepath)

@@ -1,11 +1,11 @@
 #include "ComponentGeometry.h"
 #include "SceneManager.h"
 namespace Engine {
-	ComponentGeometry::ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath, bool instanced)
+	ComponentGeometry::ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced)
 	{
 		this->instanced = instanced;
-		this->pbr = false;
-		model = new Model(modelType);
+		this->pbr = pbr;
+		model = new Model(modelType, pbr);
 
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
@@ -26,11 +26,11 @@ namespace Engine {
 		if (instanced) { SetupInstanceVBO(); }
 	}
 
-	ComponentGeometry::ComponentGeometry(PremadeModel modelType, bool instanced)
+	ComponentGeometry::ComponentGeometry(PremadeModel modelType, bool pbr, bool instanced)
 	{
 		this->instanced = instanced;
-		this->pbr = false;
-		model = new Model(modelType);
+		this->pbr = pbr;
+		model = new Model(modelType, pbr);
 
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
@@ -46,10 +46,20 @@ namespace Engine {
 
 		shader = nullptr;
 		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
-			shader = ResourceManager::GetInstance()->DefaultLitShader();
+			if (pbr) {
+				shader = ResourceManager::GetInstance()->DefaultLitPBR();
+			}
+			else {
+				shader = ResourceManager::GetInstance()->DefaultLitShader();
+			}
 		}
 		else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
-			shader = ResourceManager::GetInstance()->DeferredGeometryPass();
+			if (pbr) {
+				shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
+			}
+			else {
+				shader = ResourceManager::GetInstance()->DeferredGeometryPass();
+			}
 		}
 
 		textureScale = 1.0f;
