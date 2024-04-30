@@ -165,6 +165,7 @@ namespace Engine {
 			// Transparency using forward rendering
 			// ------------------------------------
 			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader(), activeCamera);
+			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitPBR(), activeCamera);
 			glEnable(GL_BLEND);
 			renderSystem->DrawTransparentGeometry(true);
 			glDisable(GL_BLEND);

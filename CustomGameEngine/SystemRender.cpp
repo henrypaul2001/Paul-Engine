@@ -126,7 +126,12 @@ namespace Engine {
 
 			Shader* shader;
 			if (useDefaultForwardShader) {
-				shader = ResourceManager::GetInstance()->DefaultLitShader();
+				if (geometry->PBR()) {
+					shader = ResourceManager::GetInstance()->DefaultLitPBR();
+				}
+				else {
+					shader = ResourceManager::GetInstance()->DefaultLitShader();
+				}
 			}
 			else {
 				shader = geometry->GetShader();
