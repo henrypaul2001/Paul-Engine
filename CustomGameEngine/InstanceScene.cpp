@@ -101,11 +101,17 @@ namespace Engine {
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
 
+		PBRMaterial* gold = new PBRMaterial();
+		gold->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
+		gold->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/normal.png", TEXTURE_NORMAL, false));
+		gold->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/metallic.png", TEXTURE_METALLIC, false));
+		gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS, false));
+		gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
+
 		Entity* baseInstance = new Entity("Base Instance");
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		baseInstance->GetGeometryComponent()->SetShader(ResourceManager::GetInstance()->DefaultLitPBR());
-		baseInstance->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(bricks);
+		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true, true));
+		baseInstance->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(gold);
 		entityManager->AddEntity(baseInstance);
 
 		Entity* pointLight = new Entity("Point Light");
