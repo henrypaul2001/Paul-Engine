@@ -121,7 +121,10 @@ namespace Engine
 			//glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "error message here"); // example of custom error message
 		}
 
-		// Load GUI
+		// Setup freetype
+		if (FT_Init_FreeType(&freetypeLib)) {
+			std::cout << "FAIL::SCENEMANAGER::ONLOAD::Failed to initialize FreeType Library" << std::endl;
+		}
 
 		// Set up Resource Manager
 		resources = ResourceManager::GetInstance();

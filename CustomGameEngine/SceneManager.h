@@ -3,6 +3,9 @@
 #include "Scene.h"
 #include <thread>
 #include <iostream>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 namespace Engine
 {
 	enum SceneTypes {
@@ -23,6 +26,8 @@ namespace Engine
 
 	class SceneManager
 	{
+	private:
+		FT_Library freetypeLib;
 	protected:
 		void OnLoad();
 		void OnUpdateFrame();
@@ -51,6 +56,8 @@ namespace Engine
 
 		int GetWindowHeight() { return SCR_HEIGHT; }
 		int GetWindowWidth() { return SCR_WIDTH; }
+
+		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 
 		void Run();
 	};
