@@ -1,6 +1,10 @@
 #pragma once
 #include <unordered_map>
 #include "Model.h"
+#include "TextFont.h"
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 namespace Engine {
 	struct Cubemap {
 		unsigned int id;
@@ -23,6 +27,7 @@ namespace Engine {
 		std::unordered_map<std::string, Texture*> textures;
 		std::unordered_map<std::string, Cubemap*> cubemaps;
 		std::unordered_map<std::string, HDREnvironment*> hdrCubemaps;
+		std::unordered_map<std::string, TextFont*> textFonts;
 
 		Mesh* defaultCube;
 		Mesh* defaultPlane;
@@ -50,6 +55,8 @@ namespace Engine {
 
 		Shader* skyboxShader;
 
+		FT_Library freetypeLib;
+
 		// Environment mapping
 		Shader* equirectangularToCubemapShader;
 		Shader* createIrradianceShader;
@@ -76,6 +83,7 @@ namespace Engine {
 		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb);
 		Cubemap* LoadCubemap(std::string rootFilepath);
 		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false);
+		TextFont* LoadTextFont(std::string filepath);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
@@ -103,5 +111,7 @@ namespace Engine {
 		Shader* CreatePrefilterShader() { return createPrefilterShader; }
 		Shader* CreateBRDFShader() { return createBRDFShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
+
+		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};
 }

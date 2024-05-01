@@ -197,6 +197,8 @@
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
     <ClInclude Include="SystemShadowMapping.h" />
+    <ClInclude Include="TextFont.h" />
+    <ClInclude Include="UIElement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AOScene.cpp" />
@@ -257,6 +259,8 @@
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
     <ClCompile Include="SystemShadowMapping.cpp" />
+    <ClCompile Include="TextFont.cpp" />
+    <ClCompile Include="UIElement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\bloomBlur.frag" />

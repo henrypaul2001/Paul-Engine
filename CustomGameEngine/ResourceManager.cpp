@@ -5,6 +5,11 @@ namespace Engine {
 	ResourceManager* ResourceManager::instance = nullptr;
 	ResourceManager::ResourceManager()
 	{
+		// Setup freetype
+		if (FT_Init_FreeType(&freetypeLib)) {
+			std::cout << "FAIL::RESOURCEMANAGER::Failed to initialize FreeType Library" << std::endl;
+		}
+
 		// Load defaults
 		defaultMaterial = new Material();
 		defaultMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
@@ -443,6 +448,15 @@ namespace Engine {
 			hdrmapsIt++;
 		}
 
+		// delete fonts
+		std::unordered_map<std::string, TextFont*>::iterator textFontsIt = textFonts.begin();
+		while (textFontsIt != textFonts.end()) {
+			delete textFontsIt->second;
+			textFontsIt++;
+		}
+
+		FT_Done_FreeType(freetypeLib);
+
 		delete instance;
 	}
 
@@ -698,6 +712,60 @@ namespace Engine {
 			cubemap->filepath = filepath;
 			hdrCubemaps[filepath] = cubemap;
 			return hdrCubemaps[filepath];
+		}
+
+		return it->second;
+	}
+
+	TextFont* ResourceManager::LoadTextFont(std::string filepath)
+	{
+		// First check if already loaded
+		std::unordered_map<std::string, TextFont*>::iterator it = textFonts.find(filepath);
+
+		if (it == textFonts.end()) {
+			// Load font
+			FT_Face face;
+			if (FT_New_Face(freetypeLib, filepath.c_str(), 0, &face)) {
+				std::cout << "Text font failed to load at path: " << filepath << std::endl;
+				return nullptr;
+			}
+
+			TextFont* font = new TextFont();
+
+			FT_Set_Pixel_Sizes(face, 0, 48);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // no byte-alignment restriction
+
+			for (unsigned char c = 0; c < 128; c++) {
+				// load glyph
+				if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+					std::cout << "ERROR::FREETYPE::Failed to load glyph || Filepath: " << filepath << " || c = " << c << std::endl;
+					continue;
+				}
+
+				// generate glyph texture
+				unsigned int texture;
+				glGenTextures(1, &texture);
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				TextCharacter character = {
+					texture,
+					glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+					glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+					face->glyph->advance.x
+				};
+				font->AddCharacter(c, character);
+			}
+			FT_Done_Face(face);
+
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			
+			textFonts[filepath] = font;
+			return textFonts[filepath];
 		}
 
 		return it->second;

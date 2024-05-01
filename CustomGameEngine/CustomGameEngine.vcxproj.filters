@@ -246,6 +246,12 @@
     <ClInclude Include="ComponentUICanvas.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="TextFont.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -421,6 +427,12 @@
     </ClCompile>
     <ClCompile Include="ComponentUICanvas.cpp">
       <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="TextFont.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

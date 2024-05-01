@@ -11,9 +11,7 @@ namespace Engine
 		OnLoad();
 	}
 
-	SceneManager::~SceneManager()
-	{
-	}
+	SceneManager::~SceneManager() {}
 
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam) {
 		// ignore warning codes or insignificant errors
@@ -119,11 +117,6 @@ namespace Engine
 			glDebugMessageCallback(glDebugOutput, nullptr);
 			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 			//glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "error message here"); // example of custom error message
-		}
-
-		// Setup freetype
-		if (FT_Init_FreeType(&freetypeLib)) {
-			std::cout << "FAIL::SCENEMANAGER::ONLOAD::Failed to initialize FreeType Library" << std::endl;
 		}
 
 		// Set up Resource Manager
