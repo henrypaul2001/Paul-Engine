@@ -153,6 +153,7 @@
     <ClInclude Include="ComponentGeometry.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentPhysics.h" />
+    <ClInclude Include="ComponentUICanvas.h" />
     <ClInclude Include="ComponentVelocity.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="Constraint.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="ComponentGeometry.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentPhysics.cpp" />
+    <ClCompile Include="ComponentUICanvas.cpp" />
     <ClCompile Include="ComponentVelocity.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="Constraint.cpp" />
