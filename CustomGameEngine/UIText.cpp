@@ -1,9 +1,10 @@
 #include "UIText.h"
 #include <glad/glad.h>
 namespace Engine {
-	UIText::UIText(glm::vec2 position, TextFont* font) : UIElement(position)
+	UIText::UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour) : UIElement(position, scale)
 	{
 		this->font = font;
+		this->textColour = colour;
 		textVAO = 0;
 		textVBO = 0;
 		InitTextVAOVBO();
