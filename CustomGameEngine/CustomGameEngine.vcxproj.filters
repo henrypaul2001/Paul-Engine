@@ -76,6 +76,12 @@
     <Filter Include="Source Files\Engine\Constraints">
       <UniqueIdentifier>{54844653-d125-44c1-bcef-66f0fdea0871}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\UI">
+      <UniqueIdentifier>{05682c5e-e163-43eb-b5b8-f32221263d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\UI">
+      <UniqueIdentifier>{3e5a9899-c009-4c50-a600-5a56c31b1d3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -246,11 +252,14 @@
     <ClInclude Include="ComponentUICanvas.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="UIElement.h">
-      <Filter>Header Files\Engine\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="TextFont.h">
-      <Filter>Header Files\Engine\Utility</Filter>
+      <Filter>Header Files\Engine\Utility\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>Header Files\Engine\Utility\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIText.h">
+      <Filter>Header Files\Engine\Utility\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -428,11 +437,14 @@
     <ClCompile Include="ComponentUICanvas.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
-    <ClCompile Include="UIElement.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="TextFont.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
+      <Filter>Source Files\Engine\Utility\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>Source Files\Engine\Utility\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIText.cpp">
+      <Filter>Source Files\Engine\Utility\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

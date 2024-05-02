@@ -734,7 +734,7 @@ namespace Engine {
 
 			FT_Set_Pixel_Sizes(face, 0, 48);
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // no byte-alignment restriction
-
+			glEnable(GL_BLEND);
 			for (unsigned char c = 0; c < 128; c++) {
 				// load glyph
 				if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -763,7 +763,8 @@ namespace Engine {
 			FT_Done_Face(face);
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			
+			glDisable(GL_BLEND);
+
 			textFonts[filepath] = font;
 			return textFonts[filepath];
 		}

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "UIElement.h"
 namespace Engine {
 	enum CanvasTypes {
 		SCREEN_SPACE,
@@ -13,9 +14,9 @@ namespace Engine {
 		~ComponentUICanvas();
 
 		CanvasTypes UIType() { return uiType; }
-		//std::vector<UIElement>& UIElements() { return uiElements; }
+		std::vector<UIElement>& UIElements() { return uiElements; }
 	private:
-		//std::vector<UIElement> uiElements;
+		std::vector<UIElement> uiElements;
 
 		CanvasTypes uiType;
 	};

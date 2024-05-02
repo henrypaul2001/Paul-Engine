@@ -199,6 +199,7 @@
     <ClInclude Include="SystemShadowMapping.h" />
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="UIElement.h" />
+    <ClInclude Include="UIText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AOScene.cpp" />
@@ -261,6 +262,7 @@
     <ClCompile Include="SystemShadowMapping.cpp" />
     <ClCompile Include="TextFont.cpp" />
     <ClCompile Include="UIElement.cpp" />
+    <ClCompile Include="UIText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\bloomBlur.frag" />
