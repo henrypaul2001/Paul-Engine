@@ -10,6 +10,8 @@ namespace Engine {
 		UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour);
 		~UIText();
 
+		void Draw() override;
+
 		const unsigned int TextVAO() const { return textVAO; }
 		const unsigned int TextVBO() const { return textVBO; }
 
