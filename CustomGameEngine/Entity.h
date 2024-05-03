@@ -31,6 +31,7 @@ namespace Engine
 		ComponentCollisionSphere* GetSphereCollisionComponent() { return dynamic_cast<ComponentCollisionSphere*>(GetComponent(COMPONENT_COLLISION_SPHERE)); }
 		ComponentCollisionBox* GetBoxCollisionComponent() { return dynamic_cast<ComponentCollisionBox*>(GetComponent(COMPONENT_COLLISION_BOX)); }
 		ComponentPhysics* GetPhysicsComponent() { return dynamic_cast<ComponentPhysics*>(GetComponent(COMPONENT_PHYSICS)); }
+		ComponentUICanvas* GetUICanvasComponent() { return dynamic_cast<ComponentUICanvas*>(GetComponent(COMPONENT_UICANVAS)); }
 
 		bool ContainsComponents(const ComponentTypes MASK);
 
