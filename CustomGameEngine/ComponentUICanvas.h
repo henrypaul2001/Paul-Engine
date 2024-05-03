@@ -14,6 +14,7 @@ namespace Engine {
 		~ComponentUICanvas();
 
 		ComponentTypes ComponentType() override { return COMPONENT_UICANVAS; }
+		void Close() override;
 
 		const CanvasTypes UIType() const { return uiType; }
 		const std::vector<UIElement*>& UIElements() const { return uiElements; }

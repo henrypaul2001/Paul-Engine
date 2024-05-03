@@ -10,7 +10,7 @@ namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
 	{
-		renderPipeline = new DeferredPipeline(true);
+		renderPipeline = new ForwardPipeline();
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
@@ -23,6 +23,11 @@ namespace Engine {
 		SetupGBuffer();
 		SetupSSAOBuffers();
 		SetupEnvironmentMapFBO();
+
+		Shader* defaultTextShader = ResourceManager::GetInstance()->DefaultTextShader();
+		glm::mat4 textProjection = glm::ortho(0.0f, (float)screenWidth, 0.0f, (float)screenHeight);
+		defaultTextShader->Use();
+		defaultTextShader->setMat4("projection", textProjection);
 
 		exposure = 1.0f;
 		bloom = false;

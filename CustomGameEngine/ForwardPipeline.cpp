@@ -32,9 +32,9 @@ namespace Engine {
 
 			RunBloomStep();
 
-			UIRenderStep();
-
 			ScreenTextureStep();
+
+			UIRenderStep();
 		}
 	}
 

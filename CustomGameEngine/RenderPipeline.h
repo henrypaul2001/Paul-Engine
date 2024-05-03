@@ -6,6 +6,7 @@
 namespace Engine {
 	class SystemRender;
 	class SystemShadowMapping;
+	class SystemUIRender;
 	class RenderManager;
 
 	enum RENDER_PIPELINE {

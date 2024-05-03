@@ -6,6 +6,7 @@
 #include "ComponentPhysics.h"
 #include "ComponentGeometry.h"
 #include "ComponentLight.h"
+#include "ComponentUICanvas.h"
 namespace Engine
 {
 	class Entity

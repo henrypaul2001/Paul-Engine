@@ -11,4 +11,9 @@ namespace Engine {
 			delete uiElement;
 		}
 	}
+
+	void ComponentUICanvas::Close()
+	{
+
+	}
 }

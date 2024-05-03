@@ -736,7 +736,7 @@ namespace Engine {
 
 			TextFont* font = new TextFont();
 
-			FT_Set_Pixel_Sizes(face, 0, 48);
+			FT_Set_Pixel_Sizes(face, 0, 48 * 3);
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // no byte-alignment restriction
 			glEnable(GL_BLEND);
 			for (unsigned char c = 0; c < 128; c++) {

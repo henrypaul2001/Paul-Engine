@@ -42,8 +42,11 @@ namespace Engine {
 
 	void SystemUIRender::Draw(ComponentTransform* transform, ComponentUICanvas* canvas)
 	{
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
 		for (UIElement* uiElement : canvas->UIElements()) {
 			uiElement->Draw();
 		}
+		glEnable(GL_DEPTH_TEST);
 	}
 }

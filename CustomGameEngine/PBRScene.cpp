@@ -2,6 +2,7 @@
 #include "GameInputManager.h"
 #include "SystemPhysics.h"
 #include "SystemUIRender.h"
+#include "UIText.h"
 namespace Engine {
 	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -343,6 +344,14 @@ namespace Engine {
 		bloomCube->AddComponent(bloomLight);
 		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
 		entityManager->AddEntity(bloomCube);
+
+		//2560, 1440
+		Entity* canvas = new Entity("Canvas");
+		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(40.0f, 30.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 1.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
+		entityManager->AddEntity(canvas);
 	}
 
 	void PBRScene::CreateSystems()

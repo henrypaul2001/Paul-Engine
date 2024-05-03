@@ -1,8 +1,20 @@
 #include "UIText.h"
 #include <glad/glad.h>
+#include "ResourceManager.h"
 namespace Engine {
-	UIText::UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader) : UIElement(position, scale, shader)
+	UIText::UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour) : UIElement(position, scale, ResourceManager::GetInstance()->DefaultTextShader())
 	{
+		this->text = text;
+		this->font = font;
+		this->textColour = colour;
+		textVAO = 0;
+		textVBO = 0;
+		InitTextVAOVBO();
+	}
+
+	UIText::UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader) : UIElement(position, scale, shader)
+	{
+		this->text = text;
 		this->font = font;
 		this->textColour = colour;
 		textVAO = 0;
@@ -23,7 +35,7 @@ namespace Engine {
 		glBindVertexArray(textVAO);
 
 		float xCharacterPos = position.x;
-
+		//glEnable(GL_BLEND);
 		// iterate through all characters
 		std::string::const_iterator c;
 		for (c = text.begin(); c != text.end(); c++) {
