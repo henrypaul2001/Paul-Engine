@@ -285,6 +285,8 @@
     <None Include="Shaders\defaultLitNew.vert" />
     <None Include="Shaders\defaultLit_pbr.frag" />
     <None Include="Shaders\defaultLit_pbr.vert" />
+    <None Include="Shaders\defaultText.frag" />
+    <None Include="Shaders\defaultText.vert" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
     <None Include="Shaders\g_buffer.frag" />

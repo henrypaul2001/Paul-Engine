@@ -280,6 +280,7 @@ namespace Engine {
 		createIrradianceShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/irradianceConvolute.frag");
 		createPrefilterShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/prefilter.frag");
 		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag");
+		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag");
 
 		bloomBlur->Use();
 		bloomBlur->setInt("image", 0);
@@ -378,6 +379,9 @@ namespace Engine {
 		defaultLitPBRShader->setInt("irradianceMap", 8 + textureOffset);
 		defaultLitPBRShader->setInt("prefilterMap", 9 + textureOffset);
 		defaultLitPBRShader->setInt("brdfLUT", 10 + textureOffset);
+
+		defaultTextShader->Use();
+		defaultTextShader->setInt("text", 0);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");

@@ -63,6 +63,8 @@ namespace Engine {
 		Shader* createPrefilterShader;
 		Shader* createBRDFShader;
 
+		Shader* defaultTextShader;
+
 		unsigned int uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
@@ -110,6 +112,7 @@ namespace Engine {
 		Shader* CreateIrradianceShader() { return createIrradianceShader; }
 		Shader* CreatePrefilterShader() { return createPrefilterShader; }
 		Shader* CreateBRDFShader() { return createBRDFShader; }
+		Shader* DefaultTextShader() { return defaultTextShader; }
 		unsigned int CommonUniforms() { return uboMatrices; }
 
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
