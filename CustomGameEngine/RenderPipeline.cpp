@@ -29,6 +29,8 @@ namespace Engine {
 		screenWidth = renderInstance->ScreenWidth();
 		screenHeight = renderInstance->ScreenHeight();
 
+		// This shouldn't be here!
+		// \/\/\/\/\/\/\/\/\/\/\/\/
 		for (System* s : renderSystems) {
 			if (s->Name() == SYSTEM_RENDER) {
 				renderSystem = dynamic_cast<SystemRender*>(s);

@@ -13,6 +13,7 @@ namespace Engine
 		COMPONENT_COLLISION_SPHERE = 1 << 5,
 		COMPONENT_COLLISION_BOX = 1 << 6,
 		COMPONENT_PHYSICS = 1 << 7,
+		COMPONENT_UICANVAS = 1 << 8,
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }

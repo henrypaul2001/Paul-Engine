@@ -7,5 +7,8 @@ namespace Engine {
 
 	ComponentUICanvas::~ComponentUICanvas()
 	{
+		for (UIElement* uiElement : uiElements) {
+			delete uiElement;
+		}
 	}
 }

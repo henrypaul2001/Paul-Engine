@@ -13,10 +13,22 @@ namespace Engine {
 		ComponentUICanvas(CanvasTypes type);
 		~ComponentUICanvas();
 
-		CanvasTypes UIType() { return uiType; }
-		std::vector<UIElement>& UIElements() { return uiElements; }
+		ComponentTypes ComponentType() override { return COMPONENT_UICANVAS; }
+
+		const CanvasTypes UIType() const { return uiType; }
+		const std::vector<UIElement*>& UIElements() const { return uiElements; }
+
+		void AddUIElement(UIElement* uiElement) { uiElements.push_back(uiElement); }
+		UIElement* RemoveGetUIElement(int uiIndex) {
+			UIElement* result = nullptr;
+			if (uiIndex < uiElements.size()) {
+				result = uiElements[uiIndex];
+				uiElements.erase(uiElements.begin() + uiIndex);
+			}
+			return result;
+		}
 	private:
-		std::vector<UIElement> uiElements;
+		std::vector<UIElement*> uiElements;
 
 		CanvasTypes uiType;
 	};

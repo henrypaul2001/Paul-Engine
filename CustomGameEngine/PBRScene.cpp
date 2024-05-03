@@ -1,6 +1,7 @@
 #include "PBRScene.h"
 #include "GameInputManager.h"
 #include "SystemPhysics.h"
+#include "SystemUIRender.h"
 namespace Engine {
 	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -352,6 +353,7 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 	}
 

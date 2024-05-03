@@ -261,6 +261,9 @@
     <ClInclude Include="UIText.h">
       <Filter>Header Files\Engine\Utility\UI</Filter>
     </ClInclude>
+    <ClInclude Include="SystemUIRender.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -445,6 +448,9 @@
     </ClCompile>
     <ClCompile Include="UIText.cpp">
       <Filter>Source Files\Engine\Utility\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemUIRender.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
