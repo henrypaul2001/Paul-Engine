@@ -1,7 +1,7 @@
 #include "UIText.h"
 #include <glad/glad.h>
 namespace Engine {
-	UIText::UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour) : UIElement(position, scale)
+	UIText::UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader) : UIElement(position, scale, shader)
 	{
 		this->font = font;
 		this->textColour = colour;

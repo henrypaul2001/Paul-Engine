@@ -5,7 +5,7 @@ namespace Engine {
 	class UIElement
 	{
 	public:
-		UIElement(glm::vec2 position, glm::vec2 scale);
+		UIElement(glm::vec2 position, glm::vec2 scale, Shader* shader);
 		~UIElement();
 
 		virtual void Draw() = 0;

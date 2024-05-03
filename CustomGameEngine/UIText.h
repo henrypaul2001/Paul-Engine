@@ -7,7 +7,7 @@ namespace Engine {
 	class UIText : public UIElement
 	{
 	public:
-		UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour);
+		UIText(glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader);
 		~UIText();
 
 		void Draw() override;
