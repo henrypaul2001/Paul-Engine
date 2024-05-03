@@ -26,6 +26,7 @@ namespace Engine {
 		void virtual ActiveLightsShadowStep();
 		void virtual RunShadowMapSteps();
 		void virtual RunBloomStep();
+		void virtual UIRenderStep();
 
 		RenderManager* renderInstance;
 
@@ -36,6 +37,7 @@ namespace Engine {
 
 		SystemRender* renderSystem;
 		SystemShadowMapping* shadowmapSystem;
+		SystemUIRender* uiRenderSystem;
 
 		unsigned int* depthMapFBO;
 		unsigned int* cubeDepthMapFBO;

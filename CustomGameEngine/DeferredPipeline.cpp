@@ -174,6 +174,9 @@ namespace Engine {
 			// -----
 			RunBloomStep();
 
+			// UI Render
+			UIRenderStep();
+
 			// Post Processing
 			// ---------------
 			

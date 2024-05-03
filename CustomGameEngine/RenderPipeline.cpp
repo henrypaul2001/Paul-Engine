@@ -1,6 +1,7 @@
 #include "RenderPipeline.h"
 #include "SystemRender.h"'
 #include "SystemShadowMapping.h"
+#include "SystemUIRender.h"
 #include "ResourceManager.h"
 #include "ComponentLight.h"
 #include "LightManager.h"
@@ -21,6 +22,7 @@ namespace Engine {
 
 		shadowmapSystem = nullptr;
 		renderSystem = nullptr;
+		uiRenderSystem = nullptr;
 		renderInstance = RenderManager::GetInstance();
 
 		shadowWidth = renderInstance->ShadowWidth();
@@ -29,14 +31,15 @@ namespace Engine {
 		screenWidth = renderInstance->ScreenWidth();
 		screenHeight = renderInstance->ScreenHeight();
 
-		// This shouldn't be here!
-		// \/\/\/\/\/\/\/\/\/\/\/\/
 		for (System* s : renderSystems) {
 			if (s->Name() == SYSTEM_RENDER) {
 				renderSystem = dynamic_cast<SystemRender*>(s);
 			}
 			else if (s->Name() == SYSTEM_SHADOWMAP) {
 				shadowmapSystem = dynamic_cast<SystemShadowMapping*>(s);
+			}
+			else if (s->Name() == SYSTEM_UI_RENDER) {
+				uiRenderSystem = dynamic_cast<SystemUIRender*>(s);
 			}
 		}
 	}
@@ -185,5 +188,13 @@ namespace Engine {
 		finalBloomTexture = !horizontal;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void RenderPipeline::UIRenderStep()
+	{
+		for (Entity* e : entities) {
+			uiRenderSystem->OnAction(e);
+		}
+		uiRenderSystem->AfterAction();
 	}
 }
