@@ -200,6 +200,7 @@
     <ClInclude Include="SystemUIRender.h" />
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="UIElement.h" />
+    <ClInclude Include="UIImage.h" />
     <ClInclude Include="UIText.h" />
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +265,7 @@
     <ClCompile Include="SystemUIRender.cpp" />
     <ClCompile Include="TextFont.cpp" />
     <ClCompile Include="UIElement.cpp" />
+    <ClCompile Include="UIImage.cpp" />
     <ClCompile Include="UIText.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -279,6 +281,8 @@
     <None Include="Shaders\defaultDeferred.frag" />
     <None Include="Shaders\defaultDeferred.vert" />
     <None Include="Shaders\defaultDeferredPBR.frag" />
+    <None Include="Shaders\defaultImage.frag" />
+    <None Include="Shaders\defaultImage.vert" />
     <None Include="Shaders\defaultLit.frag" />
     <None Include="Shaders\defaultLit.vert" />
     <None Include="Shaders\defaultLitNew.frag" />

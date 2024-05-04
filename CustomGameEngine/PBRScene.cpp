@@ -3,6 +3,7 @@
 #include "SystemPhysics.h"
 #include "SystemUIRender.h"
 #include "UIText.h"
+#include "UIImage.h"
 namespace Engine {
 	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -348,8 +349,10 @@ namespace Engine {
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(40.0f, 30.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 1.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(40.0f, 30.0f), glm::vec2(0.8f, 0.8f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
+		stbi_set_flip_vertically_on_load(true);
+		canvas->GetUICanvasComponent()->AddUIElement(new UIImage(glm::vec2(0.65f, 0.65f), glm::vec2(0.3f, 0.3f), ResourceManager::GetInstance()->LoadTexture("UI/galaxy.png", TEXTURE_DIFFUSE, false)));
 		entityManager->AddEntity(canvas);
 	}
 

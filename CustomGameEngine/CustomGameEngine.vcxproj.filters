@@ -264,6 +264,9 @@
     <ClInclude Include="SystemUIRender.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="UIImage.h">
+      <Filter>Header Files\Engine\Utility\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -452,6 +455,9 @@
     <ClCompile Include="SystemUIRender.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="UIImage.cpp">
+      <Filter>Source Files\Engine\Utility\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -557,6 +563,12 @@
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="Shaders\defaultText.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultImage.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\defaultImage.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
   </ItemGroup>
