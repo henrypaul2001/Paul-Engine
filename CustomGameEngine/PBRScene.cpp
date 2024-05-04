@@ -349,7 +349,8 @@ namespace Engine {
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(40.0f, 30.0f), glm::vec2(0.8f, 0.8f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
 		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
 		stbi_set_flip_vertically_on_load(true);
 		canvas->GetUICanvasComponent()->AddUIElement(new UIImage(glm::vec2(0.65f, 0.65f), glm::vec2(0.3f, 0.3f), ResourceManager::GetInstance()->LoadTexture("UI/galaxy.png", TEXTURE_DIFFUSE, false)));
@@ -383,6 +384,18 @@ namespace Engine {
 		//axis.z += 0.3 * Scene::dt * cos(time);
 		axis = glm::normalize(axis);
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Spot Light")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 50.0f);
+
+		float fps = 1.0f / Scene::dt;
+
+		float targetFPSPercentage = fps / 160.0f;
+		if (targetFPSPercentage > 1.0f) {
+			targetFPSPercentage = 1.0f;
+		}
+
+		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
+
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 	}
 
 	void PBRScene::Render()
