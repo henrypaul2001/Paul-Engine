@@ -315,6 +315,7 @@ namespace Engine {
 		createPrefilterShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/prefilter.frag");
 		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag");
 		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag");
+		defaultImageShader = LoadShader("Shaders/defaultImage.vert", "Shaders/defaultImage.frag");
 
 		bloomBlur->Use();
 		bloomBlur->setInt("image", 0);
@@ -416,6 +417,9 @@ namespace Engine {
 
 		defaultTextShader->Use();
 		defaultTextShader->setInt("text", 0);
+
+		defaultImageShader->Use();
+		defaultImageShader->setInt("image", 0);
 
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");

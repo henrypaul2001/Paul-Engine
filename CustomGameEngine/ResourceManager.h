@@ -35,35 +35,43 @@ namespace Engine {
 
 		Material* defaultMaterial;
 
+		// Forward shaders
+		// ---------------
 		Shader* defaultLitPBRShader;
-
 		Shader* defaultLitShader;
 		Shader* shadowMapShader;
 		Shader* cubeShadowMapShader;
-		Shader* screenQuadShader;
-		Shader* hdrTonemappingShader;
 
+		Shader* skyboxShader;
+
+		// Deferred shaders
+		// ----------------
 		Shader* deferredGeometryPass;
 		Shader* deferredGeometryPassPBR;
 		Shader* deferredLightingPass;
 		Shader* deferredLightingPassPBR;
 
+		// Post processing / graphics effects shaders
+		// ------------------------------------------
 		Shader* ssaoShader;
 		Shader* ssaoBlur;
-
 		Shader* bloomBlur;
-
-		Shader* skyboxShader;
-
-		FT_Library freetypeLib;
+		Shader* screenQuadShader;
+		Shader* hdrTonemappingShader;
 
 		// Environment mapping
+		// -------------------
 		Shader* equirectangularToCubemapShader;
 		Shader* createIrradianceShader;
 		Shader* createPrefilterShader;
 		Shader* createBRDFShader;
 
+		// UI shaders
+		// ----------
 		Shader* defaultTextShader;
+		Shader* defaultImageShader;
+
+		FT_Library freetypeLib;
 
 		unsigned int uiQuadVAO;
 		unsigned int uiQuadVBO;
@@ -116,6 +124,7 @@ namespace Engine {
 		Shader* CreatePrefilterShader() const { return createPrefilterShader; }
 		Shader* CreateBRDFShader() const { return createBRDFShader; }
 		Shader* DefaultTextShader() const { return defaultTextShader; }
+		Shader* DefaultImageShader() const { return defaultImageShader; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
