@@ -345,7 +345,6 @@ namespace Engine {
 		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
 		entityManager->AddEntity(bloomCube);
 
-		//2560, 1440
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));

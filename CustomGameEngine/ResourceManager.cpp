@@ -260,6 +260,40 @@ namespace Engine {
 		indices.clear();
 		vertex = Vertex();
 
+		// Setup default ui quad mesh
+		// --------------------------
+		glm::vec4 uiQuadVertices[4] = {
+			glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f), // top-left
+			glm::vec4(-1.0f, -1.0f, 0.0f, 0.0f), // bottom-left
+			glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), // top-right
+			glm::vec4(1.0f, -1.0f, 1.0f, 0.0f) // bottom-right
+		};
+		unsigned int uiQuadIndices[6] = {	
+			0, 1, 3,
+			0, 3, 2
+		};
+
+		glGenBuffers(1, &uiQuadEBO);
+		glGenVertexArrays(1, &uiQuadVAO);
+		glGenBuffers(1, &uiQuadVBO);
+
+		glBindVertexArray(uiQuadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, uiQuadVBO);
+
+		glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec4), &uiQuadVertices[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uiQuadEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), &uiQuadIndices[0], GL_STATIC_DRAW);
+
+		// vertex positions
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
+
+		// texture coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)sizeof(glm::vec2));
+
+
 		int textureOffset = 18;
 
 		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");

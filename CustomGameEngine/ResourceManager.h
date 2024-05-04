@@ -65,6 +65,9 @@ namespace Engine {
 
 		Shader* defaultTextShader;
 
+		unsigned int uiQuadVAO;
+		unsigned int uiQuadVBO;
+		unsigned int uiQuadEBO;
 		unsigned int uboMatrices;
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
@@ -89,32 +92,34 @@ namespace Engine {
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
-		Mesh DefaultCube() { return *defaultCube; }
-		Mesh DefaultPlane() { return *defaultPlane; }
-		Mesh DefaultSphere() { return *defaultSphere; }
+		Mesh DefaultCube() const { return *defaultCube; }
+		Mesh DefaultPlane() const { return *defaultPlane; }
+		Mesh DefaultSphere() const { return *defaultSphere; }
 
-		Material* DefaultMaterial() { return defaultMaterial; }
-		Shader* ShadowMapShader() { return shadowMapShader; }
-		Shader* CubeShadowMapShader() { return cubeShadowMapShader; }
-		Shader* DefaultLitShader() { return defaultLitShader; }
-		Shader* ScreenQuadShader() { return screenQuadShader; }
-		Shader* HDRTonemappingShader() { return hdrTonemappingShader; }
-		Shader* DeferredGeometryPass() { return deferredGeometryPass; }
-		Shader* DeferredGeometryPassPBR() { return deferredGeometryPassPBR; }
-		Shader* DeferredLightingPass() { return deferredLightingPass; }
-		Shader* DeferredLightingPassPBR() { return deferredLightingPassPBR; }
-		Shader* SSAOShader() { return ssaoShader; }
-		Shader* SSABlur() { return ssaoBlur; }
-		Shader* SkyboxShader() { return skyboxShader; }
-		Shader* DefaultLitPBR() { return defaultLitPBRShader; }
-		Shader* BloomBlurShader() { return bloomBlur; }
-		Shader* EquirectangularToCubemapShader() { return equirectangularToCubemapShader; }
-		Shader* CreateIrradianceShader() { return createIrradianceShader; }
-		Shader* CreatePrefilterShader() { return createPrefilterShader; }
-		Shader* CreateBRDFShader() { return createBRDFShader; }
-		Shader* DefaultTextShader() { return defaultTextShader; }
-		unsigned int CommonUniforms() { return uboMatrices; }
-
+		Material* DefaultMaterial() const { return defaultMaterial; }
+		Shader* ShadowMapShader() const { return shadowMapShader; }
+		Shader* CubeShadowMapShader() const { return cubeShadowMapShader; }
+		Shader* DefaultLitShader() const { return defaultLitShader; }
+		Shader* ScreenQuadShader() const { return screenQuadShader; }
+		Shader* HDRTonemappingShader() const { return hdrTonemappingShader; }
+		Shader* DeferredGeometryPass() const { return deferredGeometryPass; }
+		Shader* DeferredGeometryPassPBR() const { return deferredGeometryPassPBR; }
+		Shader* DeferredLightingPass() const { return deferredLightingPass; }
+		Shader* DeferredLightingPassPBR() const { return deferredLightingPassPBR; }
+		Shader* SSAOShader() const { return ssaoShader; }
+		Shader* SSABlur() const { return ssaoBlur; }
+		Shader* SkyboxShader() const { return skyboxShader; }
+		Shader* DefaultLitPBR() const { return defaultLitPBRShader; }
+		Shader* BloomBlurShader() const { return bloomBlur; }
+		Shader* EquirectangularToCubemapShader() const { return equirectangularToCubemapShader; }
+		Shader* CreateIrradianceShader() const { return createIrradianceShader; }
+		Shader* CreatePrefilterShader() const { return createPrefilterShader; }
+		Shader* CreateBRDFShader() const { return createBRDFShader; }
+		Shader* DefaultTextShader() const { return defaultTextShader; }
+		const unsigned int CommonUniforms() const { return uboMatrices; }
+		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
+		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
+		const unsigned int GetUIQuadEBO() const { return uiQuadEBO; }
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};
 }
