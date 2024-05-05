@@ -192,13 +192,15 @@ namespace Engine {
 
 	void RenderPipeline::UIRenderStep()
 	{
-		glViewport(0, 0, screenWidth, screenHeight);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		if (uiRenderSystem != nullptr) {
+			glViewport(0, 0, screenWidth, screenHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			//glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-		for (Entity* e : entities) {
-			uiRenderSystem->OnAction(e);
+			for (Entity* e : entities) {
+				uiRenderSystem->OnAction(e);
+			}
+			uiRenderSystem->AfterAction();
 		}
-		uiRenderSystem->AfterAction();
 	}
 }
