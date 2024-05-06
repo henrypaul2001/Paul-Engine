@@ -113,4 +113,14 @@ namespace Engine {
 		std::cout << "Key num: " << key << "| DOWN" << std::endl;
 		owner->keyDown(key);
 	}
+
+	void GameInputManager::mouseUp(int button)
+	{
+		std::cout << "Button num: " << button << "| DOWN" << std::endl;
+	}
+
+	void GameInputManager::mouseDown(int button)
+	{
+		std::cout << "Button num: " << button << "| UP" << std::endl;
+	}
 }

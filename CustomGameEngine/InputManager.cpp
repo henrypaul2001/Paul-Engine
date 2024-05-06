@@ -36,6 +36,16 @@ namespace Engine {
 		}
 	}
 
+	void InputManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+		if (action == GLFW_RELEASE) {
+			mouse_Release(button, action, mods);
+		}
+		else if (action == GLFW_PRESS) {
+			mouse_Press(button, action, mods);
+		}
+	}
+
 	InputManager::InputManager()
 	{
 		ClearInputs();
@@ -57,10 +67,16 @@ namespace Engine {
 			static_cast<InputManager*>(glfwGetWindowUserPointer(window))->mouse_callback(window, xpos, ypos);
 		};
 
+		auto mouse_button = [](GLFWwindow* window, int button, int action, int mods) {
+			static_cast<InputManager*>(glfwGetWindowUserPointer(window))->mouse_button_callback(window, button, action, mods);
+		};
+
 		glfwSetKeyCallback(glfwGetCurrentContext(), key);
 		glfwSetScrollCallback(glfwGetCurrentContext(), scroll);
 		glfwSetCursorPosCallback(glfwGetCurrentContext(), mouse);
+		glfwSetMouseButtonCallback(glfwGetCurrentContext(), mouse_button);
 
+		leftMouseDown = false;
 		cursorLocked = true;
 		SetCursorLock(cursorLocked);
 	}
@@ -85,6 +101,22 @@ namespace Engine {
 	void InputManager::keyboard_Release(int key, int scancode, int action, int mods) {
 		keysPressed[key] = false;
 		keyUp(key);
+	}
+
+	void InputManager::mouse_Press(int button, int action, int mods)
+	{
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+			leftMouseDown = true;
+		}
+		mouseDown(button);
+	}
+
+	void InputManager::mouse_Release(int button, int action, int mods)
+	{
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+			leftMouseDown = false;
+		}
+		mouseUp(button);
 	}
 
 	void InputManager::SetCursorLock(bool locked)

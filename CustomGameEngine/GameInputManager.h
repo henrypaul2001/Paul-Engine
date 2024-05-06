@@ -13,7 +13,8 @@ namespace Engine {
 	protected:
 		void keyUp(int key) override;
 		void keyDown(int key) override;
-
+		void mouseUp(int button) override;
+		void mouseDown(int button) override;
 		Scene* owner;
 	};
 }
