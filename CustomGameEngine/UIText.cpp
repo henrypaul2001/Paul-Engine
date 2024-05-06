@@ -9,6 +9,7 @@ namespace Engine {
 		this->textColour = colour;
 		textVAO = 0;
 		textVBO = 0;
+		type = UI_TEXT;
 		InitTextVAOVBO();
 	}
 
@@ -19,6 +20,7 @@ namespace Engine {
 		this->textColour = colour;
 		textVAO = 0;
 		textVBO = 0;
+		type = UI_TEXT;
 		InitTextVAOVBO();
 	}
 

@@ -2,6 +2,12 @@
 #include <glm/ext/vector_float2.hpp>
 #include "Shader.h"
 namespace Engine {
+	enum UITypes {
+		UI_TEXT,
+		UI_IMAGE,
+		UI_BUTTON,
+	};
+
 	class UIElement
 	{
 	public:
@@ -18,7 +24,11 @@ namespace Engine {
 
 		void SetShader(Shader* newShader) { shader = newShader; }
 		const Shader* GetShader() const { return shader; }
+
+		const UITypes& UIType() const { return type; }
 	protected:
+		UITypes type;
+
 		Shader* shader;
 		glm::vec2 position; // 0.0 - 1.0 XY
 		glm::vec2 scale;

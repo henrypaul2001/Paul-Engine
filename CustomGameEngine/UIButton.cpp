@@ -6,6 +6,9 @@ namespace Engine {
 		OnMouseExit = nullptr;
 		OnMouseDown = nullptr;
 		OnMouseUp = nullptr;
+		type = UI_BUTTON;
+		isHovering = false;
+		isMouseDown = false;
 	}
 
 	UIButton::~UIButton()

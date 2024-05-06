@@ -197,6 +197,7 @@
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
     <ClInclude Include="SystemShadowMapping.h" />
+    <ClInclude Include="SystemUIMouseInteraction.h" />
     <ClInclude Include="SystemUIRender.h" />
     <ClInclude Include="TextFont.h" />
     <ClInclude Include="UIButton.h" />
@@ -263,6 +264,7 @@
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
     <ClCompile Include="SystemShadowMapping.cpp" />
+    <ClCompile Include="SystemUIMouseInteraction.cpp" />
     <ClCompile Include="SystemUIRender.cpp" />
     <ClCompile Include="TextFont.cpp" />
     <ClCompile Include="UIButton.cpp" />

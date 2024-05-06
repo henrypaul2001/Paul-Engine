@@ -3,11 +3,13 @@ namespace Engine {
 	UIImage::UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture) : UIElement(position, scale, ResourceManager::GetInstance()->DefaultImageShader())
 	{
 		this->imageTexture = imageTexture;
+		type = UI_IMAGE;
 	}
 
 	UIImage::UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, Shader* shader) : UIElement(position, scale, shader)
 	{
 		this->imageTexture = imageTexture;
+		type = UI_IMAGE;
 	}
 
 	UIImage::~UIImage()
