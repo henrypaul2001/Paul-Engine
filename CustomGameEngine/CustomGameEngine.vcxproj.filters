@@ -267,6 +267,9 @@
     <ClInclude Include="UIImage.h">
       <Filter>Header Files\Engine\Utility\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UIButton.h">
+      <Filter>Header Files\Engine\Utility\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -456,6 +459,9 @@
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="UIImage.cpp">
+      <Filter>Source Files\Engine\Utility\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
       <Filter>Source Files\Engine\Utility\UI</Filter>
     </ClCompile>
   </ItemGroup>
