@@ -28,6 +28,9 @@ namespace Engine {
 		lastMouseX = xpos;
 		lastMouseY = ypos;
 
+		mousePosition.x = lastMouseX;
+		mousePosition.y = lastMouseY;
+
 		camera->ProcessMouseMovement(xoffset, yoffset, true);
 	}
 

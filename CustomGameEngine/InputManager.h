@@ -12,6 +12,7 @@ namespace Engine {
 		void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 		void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
+		const glm::vec2& GetMousePos() const { return mousePosition; }
 		void ClearInputs();
 		void keyboard_Press(int key, int scancode, int action, int mods);
 		void keyboard_Release(int key, int scancode, int action, int mods);
@@ -22,6 +23,8 @@ namespace Engine {
 		bool firstMouse;
 		float lastMouseX;
 		float lastMouseY;
+
+		glm::vec2 mousePosition;
 	protected:
 		Camera* camera;
 		bool keysPressed[349];
