@@ -31,7 +31,9 @@ namespace Engine {
 		mousePosition.x = lastMouseX;
 		mousePosition.y = lastMouseY;
 
-		camera->ProcessMouseMovement(xoffset, yoffset, true);
+		if (cursorLocked) {
+			camera->ProcessMouseMovement(xoffset, yoffset, true);
+		}
 	}
 
 	InputManager::InputManager()
@@ -58,6 +60,9 @@ namespace Engine {
 		glfwSetKeyCallback(glfwGetCurrentContext(), key);
 		glfwSetScrollCallback(glfwGetCurrentContext(), scroll);
 		glfwSetCursorPosCallback(glfwGetCurrentContext(), mouse);
+
+		cursorLocked = true;
+		SetCursorLock(cursorLocked);
 	}
 
 	InputManager::~InputManager()
@@ -80,5 +85,19 @@ namespace Engine {
 	void InputManager::keyboard_Release(int key, int scancode, int action, int mods) {
 		keysPressed[key] = false;
 		keyUp(key);
+	}
+
+	void InputManager::SetCursorLock(bool locked)
+	{
+		cursorLocked = locked;
+
+		if (cursorLocked) {
+			std::cout << "INPUTMANAGER::Cursor locked" << std::endl;
+			glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else {
+			std::cout << "INPUTMANAGER::Cursor unlocked" << std::endl;
+			glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
 	}
 }

@@ -97,9 +97,6 @@ namespace Engine
 		//glfwSetScrollCallback(window, scroll_callback);
 		//glfwSwapInterval(0); // disables v sync
 
-		// Capture mouse
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 		// glad: load OpenGL function pointers
 		// -----------------------------------
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

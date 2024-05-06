@@ -103,6 +103,9 @@ namespace Engine {
 		if (key == GLFW_KEY_P) {
 			camera->ToggleSSAO();
 		}
+		if (key == GLFW_KEY_C) {
+			SetCursorLock(!GetCursorLock());
+		}
 	}
 
 	void GameInputManager::keyDown(int key)

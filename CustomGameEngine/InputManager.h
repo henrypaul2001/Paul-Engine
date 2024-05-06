@@ -19,11 +19,15 @@ namespace Engine {
 		virtual void ProcessInputs() = 0;
 		virtual void Close() = 0;
 		void SetCameraPointer(Camera* camPointer) { camera = camPointer; }
+
+		void SetCursorLock(bool locked);
+		bool GetCursorLock() { return cursorLocked; }
 	private:
 		bool firstMouse;
 		float lastMouseX;
 		float lastMouseY;
 
+		bool cursorLocked;
 		glm::vec2 mousePosition;
 	protected:
 		Camera* camera;

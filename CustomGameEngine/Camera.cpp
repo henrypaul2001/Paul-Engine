@@ -23,7 +23,7 @@ namespace Engine {
 		if (useHDREnvironmentMap) {
 			environmentMap = ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
 		}
-		
+
 		useSSAO = true;
 		UpdateCameraVectors();
 	}

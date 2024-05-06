@@ -34,6 +34,8 @@ namespace Engine
 		int SCR_HEIGHT;
 		int windowXPos;
 		int windowYPos;
+
+		GLFWwindow* window;
 	public:
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
@@ -43,7 +45,6 @@ namespace Engine
 		SceneDelegate renderer;
 		SceneDelegate updater;
 
-		GLFWwindow* window;
 
 		virtual void StartNewGame() = 0;
 		virtual void StartMenu() = 0;
@@ -51,6 +52,8 @@ namespace Engine
 
 		int GetWindowHeight() { return SCR_HEIGHT; }
 		int GetWindowWidth() { return SCR_WIDTH; }
+
+		const GLFWwindow* GetWindow() const { return window; }
 
 		void Run();
 	};
