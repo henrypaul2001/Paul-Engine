@@ -273,6 +273,9 @@
     <ClInclude Include="SystemUIMouseInteraction.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="UITextButton.h">
+      <Filter>Header Files\Engine\Utility\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -469,6 +472,9 @@
     </ClCompile>
     <ClCompile Include="SystemUIMouseInteraction.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="UITextButton.cpp">
+      <Filter>Source Files\Engine\Utility\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

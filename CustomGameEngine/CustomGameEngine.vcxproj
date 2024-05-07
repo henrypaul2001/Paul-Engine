@@ -204,6 +204,7 @@
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIImage.h" />
     <ClInclude Include="UIText.h" />
+    <ClInclude Include="UITextButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AOScene.cpp" />
@@ -271,6 +272,7 @@
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIImage.cpp" />
     <ClCompile Include="UIText.cpp" />
+    <ClCompile Include="UITextButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\bloomBlur.frag" />

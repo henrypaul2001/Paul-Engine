@@ -4,7 +4,7 @@
 #include <string>
 #include <glm/ext/vector_float3.hpp>
 namespace Engine {
-	class UIText : public UIElement
+	class UIText : virtual public UIElement
 	{
 	public:
 		UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour);

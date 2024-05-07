@@ -3,7 +3,7 @@
 #include "Mesh.h"
 #include "ResourceManager.h"
 namespace Engine {
-	class UIImage : public UIElement
+	class UIImage : virtual public UIElement
 	{
 	public:
 		UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture);
