@@ -1,4 +1,5 @@
 #include "SystemUIMouseInteraction.h"
+#include "RenderManager.h"
 namespace Engine {
 	SystemUIMouseInteraction::SystemUIMouseInteraction(InputManager* inputManager)
 	{
@@ -52,13 +53,32 @@ namespace Engine {
 	{
 		glm::vec2 mousePos = inputManager->GetMousePos();
 
+		// Invert mouse position Y axis
+		int screenHeight = RenderManager::GetInstance()->ScreenHeight();
+		mousePos.y = (float)screenHeight - mousePos.y;
+		//std::cout << "inverted y = " << mousePos.y << std::endl;
 		// Check if mouse position is inside of buttons boundary
 		glm::vec2 buttonPos = button->Position();
-		glm::vec2 buttonScale = button->Scale();
-		float maxY = buttonPos.y + (buttonScale.y / 2.0f);
-		float minY = buttonPos.y - (buttonScale.y / 2.0f);
-		float minX = buttonPos.x - (buttonScale.x / 2.0f);
-		float maxX = buttonPos.x + (buttonScale.x / 2.0f);
+		glm::vec2 buttonScale = button->GetButtonScale();
+
+		float minX;
+		float minY;
+		float maxX;
+		float maxY;
+
+		ButtonTypes buttonType = button->GetButtonType();
+		if (buttonType == BUTTON_IMAGE) {
+			maxY = buttonPos.y + (buttonScale.y / 2.0f);
+			minY = buttonPos.y - (buttonScale.y / 2.0f);
+			minX = buttonPos.x - (buttonScale.x / 2.0f);
+			maxX = buttonPos.x + (buttonScale.x / 2.0f);
+		}
+		else if (buttonType == BUTTON_TEXT) {
+			maxY = buttonPos.y + buttonScale.y;
+			maxX = buttonPos.y + buttonScale.x;
+			minX = buttonPos.x;
+			minY = buttonPos.y;
+		}
 
 		bool mouseCollision = false;
 		if (mousePos.y < maxY && mousePos.y > minY && mousePos.x < maxX && mousePos.x > minX) {

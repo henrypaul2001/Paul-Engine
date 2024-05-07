@@ -9,6 +9,8 @@ namespace Engine {
 		type = UI_BUTTON;
 		isHovering = false;
 		isMouseDown = false;
+
+		buttonScale = scale;
 	}
 
 	UIButton::~UIButton()

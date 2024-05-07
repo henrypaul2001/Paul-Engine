@@ -31,6 +31,8 @@ namespace Engine {
 		mousePosition.x = lastMouseX;
 		mousePosition.y = lastMouseY;
 
+		//std::cout << mousePosition.x << " | " << mousePosition.y << std::endl;
+
 		if (cursorLocked) {
 			camera->ProcessMouseMovement(xoffset, yoffset, true);
 		}

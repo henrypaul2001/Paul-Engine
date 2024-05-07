@@ -2,8 +2,10 @@
 #include "GameInputManager.h"
 #include "SystemPhysics.h"
 #include "SystemUIRender.h"
+#include "SystemUIMouseInteraction.h"
 #include "UIText.h"
 #include "UIImage.h"
+#include "UITextButton.h"
 namespace Engine {
 	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -27,6 +29,38 @@ namespace Engine {
 
 		CreateSystems();
 		CreateEntities();
+	}
+
+	void ButtonEnter(UIButton* button) {
+		if (button->GetButtonType() == BUTTON_TEXT) {
+			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+			textButton->SetText("Hover");
+			textButton->SetColour(glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+	}
+
+	void ButtonExit(UIButton* button) {
+		if (button->GetButtonType() == BUTTON_TEXT) {
+			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+			textButton->SetText("Button");
+			textButton->SetColour(glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+	}
+
+	void ButtonPress(UIButton* button) {
+		if (button->GetButtonType() == BUTTON_TEXT) {
+			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+			textButton->SetText("Press");
+			textButton->SetColour(glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+	}
+
+	void ButtonRelease(UIButton* button) {
+		if (button->GetButtonType() == BUTTON_TEXT) {
+			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+			textButton->SetText("Release");
+			textButton->SetColour(glm::vec3(0.0f, 1.0f, 0.0f));
+		}
 	}
 
 	void PBRScene::CreateEntities()
@@ -351,6 +385,13 @@ namespace Engine {
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+
+		UITextButton* button = new UITextButton(std::string("Button"), glm::vec2(500.0f, 500.0f), glm::vec2(0.5f, 0.5f), glm::vec2(200.0f, 50.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 1.0f, 1.0f));
+		button->SetMouseDownCallback(ButtonPress);
+		button->SetMouseUpCallback(ButtonRelease);
+		button->SetMouseEnterCallback(ButtonEnter);
+		button->SetMouseExitCallback(ButtonExit);
+		canvas->GetUICanvasComponent()->AddUIElement(button);
 		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
 		stbi_set_flip_vertically_on_load(true);
 		canvas->GetUICanvasComponent()->AddUIElement(new UIImage(glm::vec2(0.65f, 0.65f), glm::vec2(0.3f, 0.3f), ResourceManager::GetInstance()->LoadTexture("UI/galaxy.png", TEXTURE_DIFFUSE, false)));
@@ -367,6 +408,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
+		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
 	}
 
 	void PBRScene::Update()
