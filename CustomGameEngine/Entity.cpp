@@ -7,8 +7,7 @@ namespace Engine
 	}
 
 	Entity::~Entity() {
-		delete& name;
-		delete& mask;
+
 	}
 
 	Component* Entity::GetComponent(ComponentTypes type)
