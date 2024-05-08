@@ -8,6 +8,7 @@ namespace Engine
 		this->SCR_HEIGHT = height;
 		this->windowXPos = windowXPos;
 		this->windowYPos = windowYPos;
+		changeSceneAtEndOfFrame = SCENE_NONE;
 		OnLoad();
 	}
 
@@ -164,6 +165,12 @@ namespace Engine
 			// Poll events
 			glfwPollEvents();
 
+			// Change scene if one has been requested
+			if (changeSceneAtEndOfFrame != SCENE_NONE) {
+				ChangeScene(changeSceneAtEndOfFrame);
+				changeSceneAtEndOfFrame = SCENE_NONE;
+			}
+			
 			// Prepare for next frame
 			// 
 			//std::cout << "FPS: " << (1.0f / Scene::dt) << std::endl;

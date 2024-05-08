@@ -35,6 +35,9 @@ namespace Engine
 		int windowXPos;
 		int windowYPos;
 
+		SceneTypes changeSceneAtEndOfFrame;
+		virtual void ChangeScene(SceneTypes sceneType) = 0;
+
 		GLFWwindow* window;
 	public:
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
@@ -45,10 +48,10 @@ namespace Engine
 		SceneDelegate renderer;
 		SceneDelegate updater;
 
+		void ChangeSceneAtEndOfFrame(SceneTypes scene) { changeSceneAtEndOfFrame = scene; }
 
 		virtual void StartNewGame() = 0;
 		virtual void StartMenu() = 0;
-		virtual void ChangeScene(SceneTypes sceneType) = 0;
 
 		int GetWindowHeight() { return SCR_HEIGHT; }
 		int GetWindowWidth() { return SCR_WIDTH; }

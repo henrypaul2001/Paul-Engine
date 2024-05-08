@@ -6,6 +6,7 @@
 #include "PBRScene.h"
 #include "PhysicsScene.h"
 #include "InstanceScene.h"
+#include "MainMenu.h"
 #include <iostream>
 namespace Engine
 {
@@ -31,7 +32,7 @@ namespace Engine
 		Scene* newScene{};
 		switch (sceneType) {
 		case SCENE_MAIN_MENU:
-			std::cout << "Main Menu" << std::endl;
+			newScene = new MainMenu(this);
 			break;
 		case SCENE_GAME:
 			newScene = new GameScene(this);
@@ -73,6 +74,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_PBR);
+		ChangeScene(SCENE_MAIN_MENU);
 	}
 }
