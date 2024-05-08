@@ -32,10 +32,11 @@ namespace Engine {
 		float lastMouseX;
 		float lastMouseY;
 
-		bool cursorLocked;
 		glm::vec2 mousePosition;
 		bool leftMouseDown;
 	protected:
+		bool cursorLocked;
+
 		Camera* camera;
 		bool keysPressed[349];
 		virtual void keyUp(int key) = 0;
