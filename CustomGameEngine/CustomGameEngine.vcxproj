@@ -203,6 +203,7 @@
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIImage.h" />
+    <ClInclude Include="UIImageButton.h" />
     <ClInclude Include="UIText.h" />
     <ClInclude Include="UITextButton.h" />
   </ItemGroup>
@@ -271,6 +272,7 @@
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIImage.cpp" />
+    <ClCompile Include="UIImageButton.cpp" />
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="UITextButton.cpp" />
   </ItemGroup>

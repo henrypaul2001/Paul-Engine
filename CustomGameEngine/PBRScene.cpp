@@ -6,6 +6,7 @@
 #include "UIText.h"
 #include "UIImage.h"
 #include "UITextButton.h"
+#include "UIImageButton.h"
 namespace Engine {
 	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -37,6 +38,9 @@ namespace Engine {
 			textButton->SetText("Hover");
 			textButton->SetColour(glm::vec3(0.0f, 0.0f, 1.0f));
 		}
+		else if (button->GetButtonType() == BUTTON_IMAGE) {
+			std::cout << "Image enter" << std::endl;
+		}
 	}
 
 	void ButtonExit(UIButton* button) {
@@ -44,6 +48,9 @@ namespace Engine {
 			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
 			textButton->SetText("Button");
 			textButton->SetColour(glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+		else if (button->GetButtonType() == BUTTON_IMAGE) {
+			std::cout << "Image exit" << std::endl;
 		}
 	}
 
@@ -53,6 +60,10 @@ namespace Engine {
 			textButton->SetText("Press");
 			textButton->SetColour(glm::vec3(1.0f, 0.0f, 0.0f));
 		}
+		else if (button->GetButtonType() == BUTTON_IMAGE) {
+			UIImageButton* imageButton = dynamic_cast<UIImageButton*>(button);
+			imageButton->SetTexture(ResourceManager::GetInstance()->LoadTexture("UI/cyberpunkLogo.png", TEXTURE_DIFFUSE, false));
+		}
 	}
 
 	void ButtonRelease(UIButton* button) {
@@ -60,6 +71,10 @@ namespace Engine {
 			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
 			textButton->SetText("Release");
 			textButton->SetColour(glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+		else if (button->GetButtonType() == BUTTON_IMAGE) {
+			UIImageButton* imageButton = dynamic_cast<UIImageButton*>(button);
+			imageButton->SetTexture(ResourceManager::GetInstance()->LoadTexture("UI/cyberpunk.png", TEXTURE_DIFFUSE, false));
 		}
 	}
 
@@ -392,8 +407,16 @@ namespace Engine {
 		button->SetMouseEnterCallback(ButtonEnter);
 		button->SetMouseExitCallback(ButtonExit);
 		canvas->GetUICanvasComponent()->AddUIElement(button);
-		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
+
 		stbi_set_flip_vertically_on_load(true);
+		UIImageButton* imgButton = new UIImageButton(glm::vec2(0.65f, -0.65f), glm::vec2(0.25f, 0.25f), glm::vec2(640.0f, 380.0f), ResourceManager::GetInstance()->LoadTexture("UI/cyberpunk.png", TEXTURE_DIFFUSE, false));
+		imgButton->SetMouseDownCallback(ButtonPress);
+		imgButton->SetMouseUpCallback(ButtonRelease);
+		imgButton->SetMouseEnterCallback(ButtonEnter);
+		imgButton->SetMouseExitCallback(ButtonExit);
+		canvas->GetUICanvasComponent()->AddUIElement(imgButton);
+
+		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIImage(glm::vec2(0.65f, 0.65f), glm::vec2(0.3f, 0.3f), ResourceManager::GetInstance()->LoadTexture("UI/galaxy.png", TEXTURE_DIFFUSE, false)));
 		entityManager->AddEntity(canvas);
 	}

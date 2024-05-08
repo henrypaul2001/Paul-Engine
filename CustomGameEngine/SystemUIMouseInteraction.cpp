@@ -51,10 +51,12 @@ namespace Engine {
 
 	void SystemUIMouseInteraction::ProcessUIButton(UIButton* button) const
 	{
+		RenderManager* renderInstance = RenderManager::GetInstance();
+
 		glm::vec2 mousePos = inputManager->GetMousePos();
 
 		// Invert mouse position Y axis
-		int screenHeight = RenderManager::GetInstance()->ScreenHeight();
+		int screenHeight = renderInstance->ScreenHeight();
 		mousePos.y = (float)screenHeight - mousePos.y;
 		//std::cout << "inverted y = " << mousePos.y << std::endl;
 		// Check if mouse position is inside of buttons boundary
@@ -68,6 +70,8 @@ namespace Engine {
 
 		ButtonTypes buttonType = button->GetButtonType();
 		if (buttonType == BUTTON_IMAGE) {
+			buttonPos.x = (renderInstance->ScreenWidth() / 2.0f) + ((renderInstance->ScreenWidth() / 2.0f) * buttonPos.x);
+			buttonPos.y = (renderInstance->ScreenHeight() / 2.0f) + ((renderInstance->ScreenHeight() / 2.0f) * buttonPos.y);
 			maxY = buttonPos.y + (buttonScale.y / 2.0f);
 			minY = buttonPos.y - (buttonScale.y / 2.0f);
 			minX = buttonPos.x - (buttonScale.x / 2.0f);

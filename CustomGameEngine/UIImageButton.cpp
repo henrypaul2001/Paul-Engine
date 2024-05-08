@@ -1,11 +1,11 @@
 #include "UIImageButton.h"
 namespace Engine {
-	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 scale, Texture* imageTexture) : UIElement(position, scale, ResourceManager::GetInstance()->DefaultImageShader()), UIImage(position, scale, imageTexture), UIButton(position, scale, ResourceManager::GetInstance()->DefaultImageShader())
+	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 imageScale, glm::vec2 buttonScale, Texture* imageTexture) : UIElement(position, imageScale, ResourceManager::GetInstance()->DefaultImageShader()), UIImage(position, imageScale, imageTexture), UIButton(position, buttonScale, ResourceManager::GetInstance()->DefaultImageShader())
 	{
 		buttonType = BUTTON_IMAGE;
 	}
 
-	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, Shader* shader) : UIElement(position, scale, shader), UIImage(position, scale, imageTexture, shader), UIButton(position, scale, shader)
+	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 imageScale, glm::vec2 buttonScale, Texture* imageTexture, Shader* shader) : UIElement(position, imageScale, shader), UIImage(position, imageScale, imageTexture, shader), UIButton(position, buttonScale, shader)
 	{
 		buttonType = BUTTON_IMAGE;
 	}
