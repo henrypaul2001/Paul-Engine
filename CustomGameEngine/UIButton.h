@@ -1,5 +1,6 @@
 #pragma once
 #include "UIElement.h"
+#include <functional>
 namespace Engine {
 	enum ButtonTypes {
 		BUTTON_TEXT,
@@ -14,26 +15,26 @@ namespace Engine {
 
 		virtual void Draw() override = 0;
 
-		void SetMouseEnterCallback(void(*mouseEnter)(UIButton* button)) { OnMouseEnter = mouseEnter; }
-		void SetMouseExitCallback(void(*mouseExit)(UIButton* button)) { OnMouseExit = mouseExit; }
-		void SetMouseDownCallback(void(*leftMouseDown)(UIButton* button)) { OnMouseDown = leftMouseDown; }
-		void SetMouseUpCallback(void(*mouseUp)(UIButton* button)) { OnMouseUp = mouseUp; }
+		void SetMouseEnterCallback(std::function<void(UIButton*)> mouseEnter) { OnMouseEnter = mouseEnter; }
+		void SetMouseExitCallback(std::function<void(UIButton*)> mouseExit) { OnMouseExit = mouseExit; }
+		void SetMouseDownCallback(std::function<void(UIButton*)> mouseDown) { OnMouseDown = mouseDown; }
+		void SetMouseUpCallback(std::function<void(UIButton*)> mouseUp) { OnMouseUp = mouseUp; }
 
 		const bool IsHovering() const { return isHovering; }
 		const bool IsMouseDown() const { return isMouseDown; }
 
-		void MouseEnter() { isHovering = true; OnMouseEnter(this); }
-		void MouseExit() { isHovering = false; isMouseDown = false; OnMouseExit(this); }
-		void MouseDown() { isMouseDown = true; OnMouseDown(this); }
-		void MouseUp() { isMouseDown = false; OnMouseUp(this); }
+		void MouseEnter() { isHovering = true; if (OnMouseEnter != nullptr) { OnMouseEnter(this); } }
+		void MouseExit() { isHovering = false; isMouseDown = false; if (OnMouseExit != nullptr) { OnMouseExit(this); } }
+		void MouseDown() { isMouseDown = true; if (OnMouseDown != nullptr) { OnMouseDown(this); } }
+		void MouseUp() { isMouseDown = false; if (OnMouseUp != nullptr) { OnMouseUp(this); } }
 
 		const glm::vec2& GetButtonScale() const { return buttonScale; }
 		const ButtonTypes& GetButtonType() const { return buttonType; }
 	protected:
-		void (*OnMouseEnter)(UIButton* button);
-		void (*OnMouseExit)(UIButton* button);
-		void (*OnMouseDown)(UIButton* button);
-		void (*OnMouseUp)(UIButton* button);
+		std::function<void(UIButton*)> OnMouseEnter;
+		std::function<void(UIButton*)> OnMouseExit;
+		std::function<void(UIButton*)> OnMouseDown;
+		std::function<void(UIButton*)> OnMouseUp;
 
 		bool isHovering;
 		bool isMouseDown;
