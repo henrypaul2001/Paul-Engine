@@ -169,6 +169,8 @@ namespace Engine
 			if (changeSceneAtEndOfFrame != SCENE_NONE) {
 				ChangeScene(changeSceneAtEndOfFrame);
 				changeSceneAtEndOfFrame = SCENE_NONE;
+				lastFrame = static_cast<float>(glfwGetTime()); // reset frame time calculations for new scene
+				currentFrame = 0.0f;
 			}
 			
 			// Prepare for next frame
