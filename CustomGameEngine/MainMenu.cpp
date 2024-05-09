@@ -96,6 +96,14 @@ namespace Engine {
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_INSTANCED);
 	}
 
+	void MainMenu::GameSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch game scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Game Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_GAME);
+	}
+
 	void MainMenu::ButtonPress(UIButton* button)
 	{
 
@@ -142,6 +150,13 @@ namespace Engine {
 		instancingButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		instancingButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(instancingButton);
+
+		UITextButton* gameButton = new UITextButton(std::string("Game Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 165.0f, SCR_HEIGHT * 0.35f), glm::vec2(0.4f, 0.4f), glm::vec2(940.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		gameButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		gameButton->SetMouseUpCallback(std::bind(&MainMenu::GameSceneButtonRelease, this, std::placeholders::_1));
+		gameButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		gameButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(gameButton);
 
 		entityManager->AddEntity(canvas);
 	}
