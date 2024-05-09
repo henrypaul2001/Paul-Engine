@@ -21,6 +21,7 @@ namespace Engine {
 
 		void PBRButtonRelease(UIButton* button);
 		void PhysicsButtonRelease(UIButton* button);
+		void InstancingButtonRelease(UIButton* button);
 
 		void ButtonPress(UIButton* button);
 		void ButtonEnter(UIButton* button);
