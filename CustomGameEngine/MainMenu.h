@@ -20,6 +20,11 @@ namespace Engine {
 		void keyDown(int key) override;
 
 		void PBRButtonRelease(UIButton* button);
+		void PhysicsButtonRelease(UIButton* button);
+
+		void ButtonPress(UIButton* button);
+		void ButtonEnter(UIButton* button);
+		void ButtonExit(UIButton* button);
 	private:
 		void CreateEntities();
 		void CreateSystems();

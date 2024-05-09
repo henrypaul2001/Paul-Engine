@@ -73,23 +73,34 @@ namespace Engine {
 
 	}
 
-	void PBRButtonPress(UIButton* button) {
-
-	}
-
 	void MainMenu::PBRButtonRelease(UIButton* button) {
 		std::cout << "Launch PBR Scene" << std::endl;
 		dynamic_cast<UITextButton*>(button)->SetText("Loading PBR Scene");
 		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
-		dynamic_cast<GameSceneManager*>(sceneManager)->ChangeSceneAtEndOfFrame(SCENE_PBR);
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_PBR);
 	}
 
-	void PBRButtonEnter(UIButton* button) {
+	void MainMenu::PhysicsButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch physics scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Physics Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_PHYSICS);
+	}
+
+	void MainMenu::ButtonPress(UIButton* button)
+	{
+
+	}
+
+	void MainMenu::ButtonEnter(UIButton* button)
+	{
 		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
 		textButton->SetColour(glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 
-	void PBRButtonExit(UIButton* button) {
+	void MainMenu::ButtonExit(UIButton* button)
+	{
 		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
 		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
 	}
@@ -102,11 +113,19 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Main Menu"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.8f), glm::vec2(0.5f, 0.5f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 1.0f, 1.0f)));
 		
 		UITextButton* pbrButton = new UITextButton(std::string("PBR Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 145.0f, SCR_HEIGHT * 0.65f), glm::vec2(0.4f, 0.4f), glm::vec2(500.0f, 50.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.8f, 0.8f, 0.8f));
-		pbrButton->SetMouseDownCallback(PBRButtonPress);
+		pbrButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		pbrButton->SetMouseUpCallback(std::bind(&MainMenu::PBRButtonRelease, this, std::placeholders::_1));
-		pbrButton->SetMouseEnterCallback(PBRButtonEnter);
-		pbrButton->SetMouseExitCallback(PBRButtonExit);
+		pbrButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		pbrButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(pbrButton);
+
+		UITextButton* physicsButton = new UITextButton(std::string("Physics Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 180.0f, SCR_HEIGHT * 0.55f), glm::vec2(0.4f, 0.4f), glm::vec2(700.0f, 50.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.8f, 0.8f, 0.8f));
+		physicsButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		physicsButton->SetMouseUpCallback(std::bind(&MainMenu::PhysicsButtonRelease, this, std::placeholders::_1));
+		physicsButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		physicsButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(physicsButton);
+
 		entityManager->AddEntity(canvas);
 	}
 
