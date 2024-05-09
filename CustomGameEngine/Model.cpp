@@ -137,6 +137,7 @@ namespace Engine {
 
 	Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
+		std::cout << "MODEL::Loading mesh " << mesh->mName.C_Str() << std::endl;
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<Texture*> textures;
@@ -191,6 +192,7 @@ namespace Engine {
 		// retrieve materials
 		if (mesh->mMaterialIndex >= 0) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			std::cout << "MODEL::Loading material " << material->GetName().C_Str() << std::endl;
 
 			if (!pbr) {
 				delete pbrMaterial;

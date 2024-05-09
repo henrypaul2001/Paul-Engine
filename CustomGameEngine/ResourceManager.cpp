@@ -546,6 +546,7 @@ namespace Engine {
 		std::unordered_map<std::string, Model*>::iterator it = models.find(filepath);
 
 		if (it == models.end()) {
+			std::cout << "RESOURCEMANAGER::Loading model " << filepath << std::endl;
 			// Model not currently loaded
 			models[filepath] = new Model(filepath.c_str(), pbr);
 			return models[filepath];
@@ -568,6 +569,7 @@ namespace Engine {
 		std::unordered_map<std::string, Shader*>::iterator it = shaders.find(combinedPath);
 
 		if (it == shaders.end()) {
+			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
 			// Shader not currently loaded
 			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
 			return shaders[combinedPath];
@@ -583,6 +585,7 @@ namespace Engine {
 		std::unordered_map<std::string, Shader*>::iterator it = shaders.find(combinedPath);
 
 		if (it == shaders.end()) {
+			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
 			// Shader not currently loaded
 			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
 			return shaders[combinedPath];
@@ -597,6 +600,7 @@ namespace Engine {
 		std::unordered_map<std::string, Texture*>::iterator it = textures.find(filepath);
 
 		if (it == textures.end()) {
+			std::cout << "RESOURCEMANAGER::Loading texture " << filepath << std::endl;
 			// Load texture
 			unsigned int textureID;
 			glGenTextures(1, &textureID);
@@ -656,6 +660,7 @@ namespace Engine {
 		std::unordered_map<std::string, Cubemap*>::iterator it = cubemaps.find(rootFilepath);
 
 		if (it == cubemaps.end()) {
+			std::cout << "RESOURCEMANAGER::Loading cubemap root " << rootFilepath << std::endl;
 			// Load cubemap
 			unsigned int textureID;
 			glGenTextures(1, &textureID);
@@ -673,6 +678,7 @@ namespace Engine {
 
 			int width, height, nrChannels;
 			for (unsigned int i = 0; i < 6; i++) {
+				std::cout << "RESOURCEMANAGER::Loading cubemap face " << faces[i] << std::endl;
 				unsigned int s = faces->size();
 				unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
 
@@ -706,6 +712,7 @@ namespace Engine {
 		std::unordered_map<std::string, HDREnvironment*>::iterator it = hdrCubemaps.find(filepath);
 
 		if (it == hdrCubemaps.end()) {
+			std::cout << "RESOURCEMANAGER::Loading HDRI " << filepath << std::endl;
 			// Load cubemap
 			stbi_set_flip_vertically_on_load(flipVertically);
 
@@ -760,6 +767,8 @@ namespace Engine {
 		std::unordered_map<std::string, TextFont*>::iterator it = textFonts.find(filepath);
 
 		if (it == textFonts.end()) {
+			std::cout << "RESOURCEMANAGER::Loading font " << filepath << std::endl;
+
 			// Load font
 			FT_Face face;
 			if (FT_New_Face(freetypeLib, filepath.c_str(), 0, &face)) {
