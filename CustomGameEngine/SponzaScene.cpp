@@ -67,7 +67,7 @@ namespace Engine {
 
 		Entity* sponza = new Entity("Sponza");
 		sponza->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		sponza->AddComponent(new ComponentGeometry("Models/sponza/sponza.obj", true));
+		sponza->AddComponent(new ComponentGeometry("Models/PBR/sponza/sponza.obj", true));
 		dynamic_cast<ComponentGeometry*>(sponza->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 		entityManager->AddEntity(sponza);
 		
