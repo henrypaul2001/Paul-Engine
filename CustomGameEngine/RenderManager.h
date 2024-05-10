@@ -101,7 +101,7 @@ namespace Engine {
 
 		// Deferred rendering
 		unsigned int* gBuffer;
-		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm;
+		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm, *gPBRFLAG;// PBRFLAG is to determine which lighting method is used in lighting pass for this pixel
 
 		// SSAO
 		unsigned int* ssaoFBO;

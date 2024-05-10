@@ -76,13 +76,13 @@ namespace Engine {
 
 		shader->setBool("useIBL", true);
 
-		glActiveTexture(GL_TEXTURE0 + 8 + textureOffset);
+		glActiveTexture(GL_TEXTURE0 + 9 + textureOffset);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->irradianceID);
 
-		glActiveTexture(GL_TEXTURE0 + 9 + textureOffset);
+		glActiveTexture(GL_TEXTURE0 + 10 + textureOffset);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->prefilterID);
 
-		glActiveTexture(GL_TEXTURE0 + 10 + textureOffset);
+		glActiveTexture(GL_TEXTURE0 + 11 + textureOffset);
 		glBindTexture(GL_TEXTURE_2D, activeCamera->GetEnvironmentMap()->brdf_lutID);
 	}
 

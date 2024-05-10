@@ -361,7 +361,8 @@ namespace Engine {
 		deferredLightingPass->setInt("gNormal", 19);
 		deferredLightingPass->setInt("gAlbedo", 20);
 		deferredLightingPass->setInt("gSpecular", 21);
-		deferredLightingPass->setInt("SSAO", 22);
+		deferredLightingPass->setInt("gPBRFLAG", 22);
+		deferredLightingPass->setInt("SSAO", 23);
 
 		deferredLightingPassPBR->Use();
 		deferredLightingPassPBR->setInt("dirLight.ShadowMap", 0);
@@ -374,11 +375,12 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("gNormal", 19);
 		deferredLightingPassPBR->setInt("gAlbedo", 20);
 		deferredLightingPassPBR->setInt("gArm", 21);
-		deferredLightingPassPBR->setInt("SSAO", 22);
+		deferredLightingPassPBR->setInt("gPBRFLAG", 22);
+		deferredLightingPassPBR->setInt("SSAO", 23);
 
-		deferredLightingPassPBR->setInt("irradianceMap", 8 + textureOffset);
-		deferredLightingPassPBR->setInt("prefilterMap", 9 + textureOffset);
-		deferredLightingPassPBR->setInt("brdfLUT", 10 + textureOffset);
+		deferredLightingPassPBR->setInt("irradianceMap", 9 + textureOffset);
+		deferredLightingPassPBR->setInt("prefilterMap", 10 + textureOffset);
+		deferredLightingPassPBR->setInt("brdfLUT", 11 + textureOffset);
 
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
@@ -406,9 +408,9 @@ namespace Engine {
 		defaultLitPBRShader->setInt("material.TEXTURE_AO1", 5 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", 7 + textureOffset);
-		defaultLitPBRShader->setInt("irradianceMap", 8 + textureOffset);
-		defaultLitPBRShader->setInt("prefilterMap", 9 + textureOffset);
-		defaultLitPBRShader->setInt("brdfLUT", 10 + textureOffset);
+		defaultLitPBRShader->setInt("irradianceMap", 9 + textureOffset);
+		defaultLitPBRShader->setInt("prefilterMap", 10 + textureOffset);
+		defaultLitPBRShader->setInt("brdfLUT", 11 + textureOffset);
 
 		defaultTextShader->Use();
 		defaultTextShader->setInt("text", 0);

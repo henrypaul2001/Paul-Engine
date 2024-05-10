@@ -8,6 +8,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gSpecular;
+uniform sampler2D gPBRFLAG;
 uniform sampler2D SSAO;
 
 #define NR_REAL_TIME_LIGHTS 8
@@ -270,43 +271,50 @@ vec3 BlinnPhongPointLight(Light light) {
 uniform bool useSSAO;
 
 void main() {
-    // Retrieve data from gBuffer
-    FragPos = texture(gPosition, TexCoords).rgb;
-    Normal = texture(gNormal, TexCoords).rgb;
-    Colour = texture(gAlbedo, TexCoords).rgb;
-    SpecularSample = texture(gSpecular, TexCoords).rgb;
-    Shininess = texture(gSpecular, TexCoords).a;
-    AmbientOcclusion = texture(SSAO, TexCoords).r;
-    ViewDir = normalize(ViewPos - FragPos);
+    if (texture(gPBRFLAG, TexCoords).r == 0) {
+        // Run lighting calculations for non pbr pixel
+        // Retrieve data from gBuffer
+        FragPos = texture(gPosition, TexCoords).rgb;
+        Normal = texture(gNormal, TexCoords).rgb;
+        Colour = texture(gAlbedo, TexCoords).rgb;
+        SpecularSample = texture(gSpecular, TexCoords).rgb;
+        Shininess = texture(gSpecular, TexCoords).a;
+        AmbientOcclusion = texture(SSAO, TexCoords).r;
+        ViewDir = normalize(ViewPos - FragPos);
 
-    if (!useSSAO) {
-        AmbientOcclusion = 1.0;
-    }
+        if (!useSSAO) {
+            AmbientOcclusion = 1.0;
+        }
 
-    // Calculate lighting as normal
-    Lighting = vec3(0.0);
+        // Calculate lighting as normal
+        Lighting = vec3(0.0);
 
-    // Directional Light
-    Lighting += BlinnPhongDirLight(dirLight);
+        // Directional Light
+        Lighting += BlinnPhongDirLight(dirLight);
 
-    // Point and spot lights
-    for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
-        if (lights[i].SpotLight) {
-            Lighting += BlinnPhongSpotLight(lights[i]);
+        // Point and spot lights
+        for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
+            if (lights[i].SpotLight) {
+                Lighting += BlinnPhongSpotLight(lights[i]);
+            }
+            else {
+                Lighting += BlinnPhongPointLight(lights[i]);
+            }
+        }
+
+        // Check whether result is higher than bloom threshold and output bloom colour accordingly
+        float brightness = dot(Lighting, vec3(0.2126, 0.7152, 0.0722));
+        if (brightness > BloomThreshold) {
+            BrightColour = vec4(Lighting, 1.0);
         }
         else {
-            Lighting += BlinnPhongPointLight(lights[i]);
+            BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
         }
-    }
 
-    // Check whether result is higher than bloom threshold and output bloom colour accordingly
-    float brightness = dot(Lighting, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > BloomThreshold) {
-        BrightColour = vec4(Lighting, 1.0);
+        FragColour = vec4(Lighting, 1.0);
     }
     else {
+        FragColour = vec4(0.0, 0.0, 0.0, 1.0);
         BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
     }
-
-    FragColour = vec4(Lighting, 1.0);
 }

@@ -3,6 +3,7 @@ layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
 layout (location = 4) out vec3 gARM; // Ambient, Roughness, Metalness
+layout (location = 5) out uint gPBRFLAG;
 
 in VIEW_DATA {
     flat vec3 TangentViewPos;
@@ -165,4 +166,6 @@ void main() {
     gARM.r = AO;
     gARM.g = Roughness;
     gARM.b = Metallic;
+
+    gPBRFLAG = uint(1);
 }

@@ -64,6 +64,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gArm;
+uniform sampler2D gPBRFLAG;
 uniform sampler2D SSAO;
 
 uniform bool useIBL;
@@ -351,85 +352,92 @@ vec3 PerLightReflectance_PointLight(int lightIndex) {
 }
 
 void main() {
-    // Retrieve data from gBuffer
-    FragPos = texture(gPosition, TexCoords).rgb;
-    Normal = texture(gNormal, TexCoords).rgb;
-    Albedo = texture(gAlbedo, TexCoords).rgb;
-    AO = texture(gArm, TexCoords).r;
-    Roughness = texture(gArm, TexCoords).g;
-    Metallic = texture(gArm, TexCoords).b;
-    AmbientOcclusion = texture(SSAO, TexCoords).r;
-    ViewDir = normalize(ViewPos - FragPos);
+    if (texture(gPBRFLAG, TexCoords).r == 1) {
+        // Run lighting calculations for pbr pixel
+        // Retrieve data from gBuffer
+        FragPos = texture(gPosition, TexCoords).rgb;
+        Normal = texture(gNormal, TexCoords).rgb;
+        Albedo = texture(gAlbedo, TexCoords).rgb;
+        AO = texture(gArm, TexCoords).r;
+        Roughness = texture(gArm, TexCoords).g;
+        Metallic = texture(gArm, TexCoords).b;
+        AmbientOcclusion = texture(SSAO, TexCoords).r;
+        ViewDir = normalize(ViewPos - FragPos);
 
-    if (!useSSAO) {
-        AmbientOcclusion = 1.0;
-    }
+        if (!useSSAO) {
+            AmbientOcclusion = 1.0;
+        }
 
-    N = normalize(Normal);
-    V = normalize(ViewPos - FragPos);
-    R = reflect(-V, N);
+        N = normalize(Normal);
+        V = normalize(ViewPos - FragPos);
+        R = reflect(-V, N);
 
-    // calculate reflectance at normal incidence
-	// if dia-electric, use F0 of 0.04
-	// if metal, use albedo colour as F0
-    F0 = vec3(0.04);
-    F0 = mix(F0, Albedo, Metallic);
+        // calculate reflectance at normal incidence
+	    // if dia-electric, use F0 of 0.04
+	    // if metal, use albedo colour as F0
+        F0 = vec3(0.04);
+        F0 = mix(F0, Albedo, Metallic);
 
-    // per-light reflectance equation
-    vec3 Lo = vec3(0.0);
+        // per-light reflectance equation
+        vec3 Lo = vec3(0.0);
 
-    if (dirLight.Active) {
-        Lo += PerLightReflectance_DirLight();
-    }
-    for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
-        if (lights[i].Active) {
-            if (lights[i].SpotLight) {
-                Lo += PerLightReflectance_SpotLight(i);
-            }
-            else {
-                Lo += PerLightReflectance_PointLight(i);
+        if (dirLight.Active) {
+            Lo += PerLightReflectance_DirLight();
+        }
+        for (int i = 0; i < activeLights && i < NR_REAL_TIME_LIGHTS; i++) {
+            if (lights[i].Active) {
+                if (lights[i].SpotLight) {
+                    Lo += PerLightReflectance_SpotLight(i);
+                }
+                else {
+                    Lo += PerLightReflectance_PointLight(i);
+                }
             }
         }
-    }
 
-    // Ambient lighting
-    vec3 ambient;
+        // Ambient lighting
+        vec3 ambient;
 
-    if (dirLight.Active) {
-        ambient = (dirLight.Ambient * Albedo * AO) * AmbientOcclusion;
-    }
-    else {
-        ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
-    }
+        if (dirLight.Active) {
+            ambient = (dirLight.Ambient * Albedo * AO) * AmbientOcclusion;
+        }
+        else {
+            ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
+        }
     
-    if (useIBL) {
-        vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
+        if (useIBL) {
+            vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
         
-        vec3 kS = F;
-        vec3 kD = 1.0 - kS;
-        kD *= 1.0 - Metallic;
+            vec3 kS = F;
+            vec3 kD = 1.0 - kS;
+            kD *= 1.0 - Metallic;
 
-        vec3 irradiance = texture(irradianceMap, N).rgb;
-        vec3 diffuse = irradiance * Albedo;
+            vec3 irradiance = texture(irradianceMap, N).rgb;
+            vec3 diffuse = irradiance * Albedo;
 
-        const float MAX_REFLECTION_LOD = 4.0;
-        vec3 prefilteredColour = textureLod(prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
-        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
-        vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
+            const float MAX_REFLECTION_LOD = 4.0;
+            vec3 prefilteredColour = textureLod(prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
+            vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+            vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
 
-        ambient = ((kD * diffuse + specular) * AO) * AmbientOcclusion;
-    }
+            ambient = ((kD * diffuse + specular) * AO) * AmbientOcclusion;
+        }
 
-    vec3 Colour = ambient + Lo;
+        vec3 Colour = ambient + Lo;
 
-    // Check whether result is higher than bloom threshold and output bloom colour accordingly
-    float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > BloomThreshold) {
-        BrightColour = vec4(Colour, 1.0);
+        // Check whether result is higher than bloom threshold and output bloom colour accordingly
+        float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
+        if (brightness > BloomThreshold) {
+            BrightColour = vec4(Colour, 1.0);
+        }
+        else {
+            BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+        }
+
+        FragColour = vec4(Colour, 1.0);
     }
     else {
+        FragColour = vec4(0.0, 0.0, 0.0, 1.0);
         BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
     }
-
-    FragColour = vec4(Colour, 1.0);
 }

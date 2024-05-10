@@ -62,6 +62,7 @@ namespace Engine {
 		delete gAlbedo;
 		delete gSpecular;
 		delete gArm;
+		delete gPBRFLAG;
 
 		delete ssaoFBO;
 		delete ssaoBlurFBO;
@@ -364,6 +365,7 @@ namespace Engine {
 		gAlbedo = new unsigned int;
 		gSpecular = new unsigned int;
 		gArm = new unsigned int;
+		gPBRFLAG = new unsigned int;
 
 		// position colour buffer
 		glGenTextures(1, gPosition);
@@ -400,9 +402,16 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, *gArm, 0);
+		// PBRFLAG
+		glGenTextures(1, gPBRFLAG);
+		glBindTexture(GL_TEXTURE_2D, *gPBRFLAG);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, screenWidth, screenHeight, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, *gPBRFLAG, 0);
 
-		unsigned int attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
-		glDrawBuffers(5, attachments);
+		unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
+		glDrawBuffers(6, attachments);
 
 		// create and attach depth buffer
 		unsigned int rboDepth;
