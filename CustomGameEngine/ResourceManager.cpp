@@ -342,13 +342,13 @@ namespace Engine {
 		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
 		deferredGeometryPass->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
 
-		deferredGeometryPass->Use();
-		deferredGeometryPass->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_AO1", 5 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
+		deferredGeometryPassPBR->Use();
+		deferredGeometryPassPBR->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
+		deferredGeometryPassPBR->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
+		deferredGeometryPassPBR->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
+		deferredGeometryPassPBR->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
+		deferredGeometryPassPBR->setInt("material.TEXTURE_AO1", 5 + textureOffset);
+		deferredGeometryPassPBR->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
 
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("dirLight.ShadowMap", 0);

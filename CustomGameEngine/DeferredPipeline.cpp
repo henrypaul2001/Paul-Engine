@@ -31,12 +31,7 @@ namespace Engine {
 			// -------------
 			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glViewport(0, 0, screenWidth, screenHeight);
-			if (pbr) {
-				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBufferPBR());
-			}
-			else {
-				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
-			}
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glDisable(GL_BLEND);
 			for (Entity* e : entities) {
@@ -124,13 +119,7 @@ namespace Engine {
 			// Skybox
 			// ------
 			// Retrieve depth and stencil information from gBuffer
-			if (pbr) {
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBufferPBR());
-			}
-			else {
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
-			}
-
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());

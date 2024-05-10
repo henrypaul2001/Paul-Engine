@@ -57,7 +57,6 @@ namespace Engine {
 		delete texturedFBO;
 		
 		delete gBuffer;
-		delete gBufferPBR;
 		delete gPosition;
 		delete gNormal;
 		delete gAlbedo;
@@ -364,6 +363,7 @@ namespace Engine {
 		gNormal = new unsigned int;
 		gAlbedo = new unsigned int;
 		gSpecular = new unsigned int;
+		gArm = new unsigned int;
 
 		// position colour buffer
 		glGenTextures(1, gPosition);
@@ -393,41 +393,22 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, *gSpecular, 0);
+		// ao, roughness, metallic buffer (pbr)
+		glGenTextures(1, gArm);
+		glBindTexture(GL_TEXTURE_2D, *gArm);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, *gArm, 0);
 
-		unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-		glDrawBuffers(4, attachments);
+		unsigned int attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+		glDrawBuffers(5, attachments);
 
 		// create and attach depth buffer
 		unsigned int rboDepth;
 		glGenRenderbuffers(1, &rboDepth);
 		glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenWidth, screenHeight);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		gBufferPBR = new unsigned int;
-		glGenFramebuffers(1, gBufferPBR);
-		glBindFramebuffer(GL_FRAMEBUFFER, *gBufferPBR);
-
-		gArm = new unsigned int;
-		glBindTexture(GL_TEXTURE_2D, *gPosition);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *gPosition, 0);
-		glBindTexture(GL_TEXTURE_2D, *gNormal);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *gNormal, 0);
-		glBindTexture(GL_TEXTURE_2D, *gAlbedo);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, *gAlbedo, 0);
-
-		glGenTextures(1, gArm);
-		glBindTexture(GL_TEXTURE_2D, *gArm);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, *gArm, 0);
-
-		glDrawBuffers(4, attachments);
-
-		glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

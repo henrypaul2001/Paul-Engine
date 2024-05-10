@@ -26,7 +26,6 @@ namespace Engine {
 		unsigned int* GetTexturedFBO() { return texturedFBO; }
 
 		unsigned int* GetGBuffer() { return gBuffer; }
-		unsigned int* GetGBufferPBR() { return gBufferPBR; }
 		unsigned int* GPosition() { return gPosition; }
 		unsigned int* GNormal() { return gNormal; }
 		unsigned int* GAlbedo() { return gAlbedo; }
@@ -102,7 +101,6 @@ namespace Engine {
 
 		// Deferred rendering
 		unsigned int* gBuffer;
-		unsigned int* gBufferPBR;
 		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm;
 
 		// SSAO
