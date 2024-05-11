@@ -31,9 +31,12 @@ namespace Engine {
 		unsigned int* GAlbedo() { return gAlbedo; }
 		unsigned int* GSpecular() { return gSpecular; }
 		unsigned int* GArm() { return gArm; }
+		unsigned int* GPBRFLAG() { return gPBRFLAG; }
 
 		unsigned int* GetScreenTexture() { return screenTexture; }
+		unsigned int* GetAlternateScreenTexture() { return alternateScreenTexture; }
 		unsigned int* GetBloomBrightnessTexture() { return bloomBrightnessBuffer; }
+		unsigned int* GetAlternateBloomBrightnessTexture() { return alternateBloomBrightnessBuffer; }
 
 		unsigned int* GetSSAOFBO() { return ssaoFBO; }
 		unsigned int* GetSSAOBlurFBO() { return ssaoBlurFBO; }
@@ -95,6 +98,7 @@ namespace Engine {
 		unsigned int* cubeDepthMapFBO;
 
 		unsigned int* screenTexture;
+		unsigned int* alternateScreenTexture;
 
 		// Forward rendering
 		unsigned int* texturedFBO;
@@ -112,6 +116,7 @@ namespace Engine {
 
 		// Bloom
 		unsigned int* bloomBrightnessBuffer;
+		unsigned int* alternateBloomBrightnessBuffer;
 		unsigned int* pingPongFBO[2];
 		unsigned int* pingPongColourBuffers[2];
 

@@ -70,7 +70,11 @@ namespace Engine {
 		delete ssaoBlurColourBuffer;
 		delete noiseTexture;
 		
+		delete screenTexture;
+		delete alternateScreenTexture;
+
 		delete bloomBrightnessBuffer;
+		delete alternateBloomBrightnessBuffer;
 
 		delete pingPongFBO[0];
 		delete pingPongFBO[1];
@@ -405,7 +409,7 @@ namespace Engine {
 		// PBRFLAG
 		glGenTextures(1, gPBRFLAG);
 		glBindTexture(GL_TEXTURE_2D, *gPBRFLAG);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, screenWidth, screenHeight, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, screenWidth, screenHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, *gPBRFLAG, 0);
@@ -581,11 +585,27 @@ namespace Engine {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		
+		// alternate
+		alternateScreenTexture = new unsigned int;
+		glGenTextures(1, alternateScreenTexture);
+		glBindTexture(GL_TEXTURE_2D, *alternateScreenTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 		// Generate bloom texture
 		bloomBrightnessBuffer = new unsigned int;
 		glGenTextures(1, bloomBrightnessBuffer);
 		glBindTexture(GL_TEXTURE_2D, *bloomBrightnessBuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // clamp to the edge as the blur filter would otherwise sample repeated texture values
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// alternate
+		alternateBloomBrightnessBuffer = new unsigned int;
+		glGenTextures(1, alternateBloomBrightnessBuffer);
+		glBindTexture(GL_TEXTURE_2D, *alternateBloomBrightnessBuffer);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

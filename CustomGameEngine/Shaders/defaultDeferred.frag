@@ -271,7 +271,7 @@ vec3 BlinnPhongPointLight(Light light) {
 uniform bool useSSAO;
 
 void main() {
-    if (texture(gPBRFLAG, TexCoords).r == 0) {
+    if (texture(gPBRFLAG, TexCoords).r == 0.0) {
         // Run lighting calculations for non pbr pixel
         // Retrieve data from gBuffer
         FragPos = texture(gPosition, TexCoords).rgb;

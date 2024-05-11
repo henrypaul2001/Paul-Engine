@@ -382,6 +382,9 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("prefilterMap", 10 + textureOffset);
 		deferredLightingPassPBR->setInt("brdfLUT", 11 + textureOffset);
 
+		deferredLightingPassPBR->setInt("nonPBRResult", 30);
+		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
+
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
 		ssaoShader->setInt("gNormal", 1);

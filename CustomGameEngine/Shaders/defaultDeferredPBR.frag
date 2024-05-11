@@ -72,6 +72,9 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
+uniform sampler2D nonPBRResult;
+uniform sampler2D nonPBRBrightResult;
+
 in vec3 ViewPos;
 
 vec3 FragPos;
@@ -352,7 +355,7 @@ vec3 PerLightReflectance_PointLight(int lightIndex) {
 }
 
 void main() {
-    if (texture(gPBRFLAG, TexCoords).r == 1) {
+    if (texture(gPBRFLAG, TexCoords).r == 1.0) {
         // Run lighting calculations for pbr pixel
         // Retrieve data from gBuffer
         FragPos = texture(gPosition, TexCoords).rgb;
@@ -437,7 +440,9 @@ void main() {
         FragColour = vec4(Colour, 1.0);
     }
     else {
-        FragColour = vec4(0.0, 0.0, 0.0, 1.0);
-        BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+        vec3 colour = texture(nonPBRResult, TexCoords).rgb;
+        vec3 bright = texture(nonPBRBrightResult, TexCoords).rgb;
+        FragColour = vec4(colour, 1.0);
+        BrightColour = vec4(bright, 1.0);
     }
 }

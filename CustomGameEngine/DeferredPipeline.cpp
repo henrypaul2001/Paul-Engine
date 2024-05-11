@@ -75,9 +75,16 @@ namespace Engine {
 
 			// Lighting pass
 			// -------------
+
+			// Two lighting passes, first, non pbr will light all non pbr pixels
+			// Second pass will light all pbr pixels
+
 			glViewport(0, 0, screenWidth, screenHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetAlternateScreenTexture(), 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetAlternateBloomBrightnessTexture(), 0);
 
 			const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 			glDrawBuffers(2, buffers);
@@ -89,32 +96,46 @@ namespace Engine {
 			glActiveTexture(GL_TEXTURE20);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
 
-			Shader* lightingPass = nullptr;
-			if (pbr) {
-				lightingPass = ResourceManager::GetInstance()->DeferredLightingPassPBR();
+			glActiveTexture(GL_TEXTURE21);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular()); // non pbr specific
 
-				glActiveTexture(GL_TEXTURE21);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm());
-
-			}
-			else {
-				lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
-
-				glActiveTexture(GL_TEXTURE21);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
-
-			}
 			glActiveTexture(GL_TEXTURE22);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPBRFLAG());
+
+			glActiveTexture(GL_TEXTURE23);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 
+			// First pass
+			Shader* lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			lightingPass->Use();
 			lightingPass->setBool("useSSAO", activeCamera->UseSSAO());
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+
+			// Second pass (pbr)
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetScreenTexture(), 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetBloomBrightnessTexture(), 0);
+
+			glActiveTexture(GL_TEXTURE21);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm()); // pbr specific
+
+			glActiveTexture(GL_TEXTURE30);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetAlternateScreenTexture());
+
+			glActiveTexture(GL_TEXTURE31);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetAlternateBloomBrightnessTexture());
+
+			lightingPass = ResourceManager::GetInstance()->DeferredLightingPassPBR();
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
+			lightingPass->Use();
+			lightingPass->setBool("useSSAO", activeCamera->UseSSAO());
+			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			// Skybox
 			// ------

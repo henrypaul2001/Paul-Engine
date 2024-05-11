@@ -84,10 +84,10 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
-		directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
-		//directional->Ambient = glm::vec3(0.035f, 0.035f, 0.08f);
-		//directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
-		directional->Colour = glm::vec3(0.0f);
+		//directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
+		directional->Ambient = glm::vec3(0.035f, 0.035f, 0.08f);
+		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		//directional->Colour = glm::vec3(0.0f);
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		directional->MinShadowBias = 0.0f;
 		directional->MaxShadowBias = 0.003f;
@@ -419,6 +419,16 @@ namespace Engine {
 		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIImage(glm::vec2(0.65f, 0.65f), glm::vec2(0.3f, 0.3f), ResourceManager::GetInstance()->LoadTexture("UI/galaxy.png", TEXTURE_DIFFUSE, false)));
 		entityManager->AddEntity(canvas);
+
+		Material* nonPBRMat = new Material();
+		nonPBRMat->diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
+		nonPBRMat->specular = glm::vec3(1.0f, 0.0f, 0.0f);
+
+		Entity* nonPBRTest = new Entity("NON PBR TEST");
+		nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
+		nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
+		entityManager->AddEntity(nonPBRTest);
 	}
 
 	void PBRScene::CreateSystems()
