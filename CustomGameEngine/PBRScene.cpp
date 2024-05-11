@@ -264,18 +264,6 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(wall4->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0, 1.0, 0.0), 90.0f);
 		entityManager->AddEntity(wall4);
 
-		//Entity* roof = new Entity("Roof");
-		//roof->AddComponent(new ComponentTransform(0.0f, 5.0f, 0.0));
-		//roof->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		//dynamic_cast<ComponentTransform*>(roof->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		//dynamic_cast<ComponentTransform*>(roof->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
-		//entityManager->AddEntity(roof);
-
-		Material* lightCubeMaterial = new Material();
-		lightCubeMaterial->diffuse = glm::vec3(75.0f / 255.0f, 0.0f, 130.0f / 255.0f);
-		lightCubeMaterial->specular = lightCubeMaterial->diffuse;
-		lightCubeMaterial->shininess = 100.0f;
-
 		Entity* pointLight = new Entity("Point Light");
 		pointLight->AddComponent(new ComponentTransform(6.5f, 4.0f, -6.5f));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
@@ -365,6 +353,7 @@ namespace Engine {
 		//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(spotParent);
 		ComponentLight* spot = new ComponentLight(SPOT);
 		spot->Colour = glm::vec3(70.0f, 20.0f, 40.0f);
+		//spot->Colour = glm::vec3(0.7f, 0.2f, 0.4f);
 		spot->CastShadows = true;
 		spot->Direction = glm::vec3(-1.0f, 0.0f, 0.0f);
 		spot->Cutoff = glm::cos(glm::radians(20.0f));
@@ -390,6 +379,7 @@ namespace Engine {
 		bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		ComponentLight* bloomLight = new ComponentLight(POINT);
 		bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
+		//bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
 		bloomLight->CastShadows = false;
 		bloomCube->AddComponent(bloomLight);
 		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
@@ -423,6 +413,7 @@ namespace Engine {
 		Material* nonPBRMat = new Material();
 		nonPBRMat->diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
 		nonPBRMat->specular = glm::vec3(1.0f, 0.0f, 0.0f);
+		nonPBRMat->shininess = 100.0f;
 
 		Entity* nonPBRTest = new Entity("NON PBR TEST");
 		nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
