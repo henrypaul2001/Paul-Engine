@@ -17,6 +17,9 @@ namespace Engine
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }
+	inline ComponentTypes operator& (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a & (int)b); }
+	inline ComponentTypes operator&= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a &= (int)b); }
+	inline ComponentTypes operator~ (ComponentTypes a) { return (ComponentTypes)~(int)a; }
 
 	class Entity;
 
