@@ -3,6 +3,20 @@
 #include <unordered_map>
 #include "RenderPipeline.h"
 namespace Engine {
+
+	enum RenderOptions {
+		RENDER_SHADOWS = 1 << 0,
+		RENDER_SSAO = 1 << 1,
+		RENDER_BLOOM = 1 << 2,
+		RENDER_TONEMAPPING = 1 << 3,
+		RENDER_UI = 1 << 4,
+	};
+	inline RenderOptions operator| (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a | (int)b); }
+	inline RenderOptions operator|= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a |= (int)b); }
+	inline RenderOptions operator& (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a & (int)b); }
+	inline RenderOptions operator&= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a &= (int)b); }
+	inline RenderOptions operator~ (RenderOptions a) { return (RenderOptions)~(int)a; }
+
 	enum DepthMapType {
 		MAP_2D,
 		MAP_CUBE
@@ -19,6 +33,11 @@ namespace Engine {
 		static RenderManager* GetInstance();
 		static RenderManager* GetInstance(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight);
 		~RenderManager();
+
+		const RenderOptions& const GetRenderOptions() { return renderOptions; }
+		void SetRenderOptions(const RenderOptions& options) { renderOptions = options; }
+		void EnableRenderOptions(const RenderOptions& options) { renderOptions |= options; }
+		void DisableRenderOptions(const RenderOptions& options) { renderOptions &= ~options; }
 
 		unsigned int* GetDepthMap(int index, DepthMapType type);
 		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
@@ -87,6 +106,8 @@ namespace Engine {
 
 		void Bind2DMap(unsigned int* map);
 		void BindCubeMap(unsigned int* map);
+
+		RenderOptions renderOptions;
 
 		unsigned int* depthMap;
 		std::vector<unsigned int*> flatDepthMaps;
