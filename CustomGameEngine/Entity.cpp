@@ -30,7 +30,7 @@ namespace Engine
 		Component* result = nullptr;
 		if (componentIndex < componentList.size()) {
 			result = componentList[componentIndex];
-			mask &= ~result->ComponentType();
+			mask = mask & ~result->ComponentType();
 			componentList.erase(componentList.begin() + componentIndex);
 		}
 		return result;
@@ -41,7 +41,7 @@ namespace Engine
 		for (int i = 0; i < componentList.size(); i++) {
 			if (componentList[i]->ComponentType() == type) {
 				Component* result = componentList[i];
-				mask &= ~result->ComponentType();
+				mask = mask & ~result->ComponentType();
 				componentList.erase(componentList.begin() + i);
 			}
 		}
@@ -52,7 +52,7 @@ namespace Engine
 	{
 		for (int i = 0; i < componentList.size(); i++) {
 			if (componentList[i] == component) {
-				mask &= ~component->ComponentType();
+				mask = mask & ~component->ComponentType();
 				componentList.erase(componentList.begin() + i);
 				return;
 			}

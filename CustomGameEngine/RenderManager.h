@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#include "ResourceManager.h"
 #include "RenderPipeline.h"
 namespace Engine {
 
@@ -39,8 +40,8 @@ namespace Engine {
 
 		const RenderOptions& const GetRenderOptions() { return renderOptions; }
 		void SetRenderOptions(const RenderOptions& options) { renderOptions = options; }
-		void EnableRenderOptions(const RenderOptions& options) { renderOptions |= options; }
-		void DisableRenderOptions(const RenderOptions& options) { renderOptions &= ~options; }
+		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
+		void DisableRenderOptions(const RenderOptions& options) { renderOptions  = renderOptions & ~options; }
 
 		unsigned int* GetDepthMap(int index, DepthMapType type);
 		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
@@ -72,7 +73,6 @@ namespace Engine {
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
 		unsigned int* GetBloomPingPongColourBuffer(int index) { return pingPongColourBuffers[index]; }
-		bool bloom;
 		float bloomThreshold;
 
 		// Env hdr map
