@@ -10,6 +10,9 @@ namespace Engine {
 		RENDER_BLOOM = 1 << 2,
 		RENDER_TONEMAPPING = 1 << 3,
 		RENDER_UI = 1 << 4,
+		RENDER_IBL = 1 << 5,
+		RENDER_SKYBOX = 1 << 6,
+		RENDER_ENVIRONMENT_MAP = 1 << 7,
 	};
 	inline RenderOptions operator| (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a | (int)b); }
 	inline RenderOptions operator|= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a |= (int)b); }
@@ -87,6 +90,11 @@ namespace Engine {
 		unsigned int CreatePrefilterMap(const unsigned int& environmentMap);
 		unsigned int CreateBRDF();
 
+		void SetSkyboxTexture(Cubemap* newSkybox) { skybox = newSkybox; }
+		void SetEnvironmentMap(HDREnvironment* newEnvMap) { environmentMap = newEnvMap; }
+		const Cubemap* GetSkybox() const { return skybox; }
+		const HDREnvironment* GetEnvironmentMap() const { return environmentMap; }
+
 		RenderPipeline* GetRenderPipeline() { return renderPipeline; }
 		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
 	private:
@@ -151,5 +159,8 @@ namespace Engine {
 
 		unsigned int screenWidth;
 		unsigned int screenHeight;
+
+		Cubemap* skybox;
+		HDREnvironment* environmentMap;
 	};
 }

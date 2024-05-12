@@ -22,6 +22,10 @@ namespace Engine
 		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
 
+		renderManager->SetSkyboxTexture(ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space"));
+		renderManager->EnableRenderOptions(RENDER_SKYBOX);
+		renderManager->DisableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+
 		this->collisionManager = new CollisionManager();
 	}
 

@@ -16,15 +16,6 @@ namespace Engine {
 		FarClip = 500.0f;
 		SCR_WIDTH = scr_width;
 		SCR_HEIGHT = scr_height;
-
-		skybox = ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space");
-		useHDREnvironmentMap = true;
-
-		if (useHDREnvironmentMap) {
-			environmentMap = ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
-		}
-
-		useSSAO = true;
 		UpdateCameraVectors();
 	}
 
@@ -104,12 +95,6 @@ namespace Engine {
 		else if (Zoom > 120.0f) {
 			Zoom = 120.0f;
 		}
-	}
-
-	void Camera::ToggleSSAO()
-	{
-		useSSAO = !useSSAO;
-		std::cout << "SSAO: " << useSSAO << std::endl;
 	}
 
 	void Camera::UpdateCameraVectors()
