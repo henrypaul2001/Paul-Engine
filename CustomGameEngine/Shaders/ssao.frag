@@ -9,12 +9,11 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
 
-uniform vec3 samples[64];
-
 // SSAO parameters
-int kernelSize = 64;
-float radius = 0.5;
-float bias = 0.025;
+uniform vec3 samples[64];
+uniform float radius;
+uniform int kernelSize;
+uniform float bias;
 
 uniform int scr_width;
 uniform int scr_height;

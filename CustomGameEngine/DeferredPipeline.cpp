@@ -45,9 +45,20 @@ namespace Engine {
 				ssaoShader->setInt("scr_width", screenWidth);
 				ssaoShader->setInt("scr_height", screenHeight);
 
+				RenderParams* renderParams = renderInstance->GetRenderParams();
+				int samples = renderParams->GetSSAOSamples();
+				float radius = renderParams->GetSSAORadius();
+				float bias = renderParams->GetSSAOBias();
+
+				ssaoShader->setInt("kernelSize", samples);
+				ssaoShader->setFloat("radius", radius);
+				ssaoShader->setFloat("bias", bias);
+
+				if (samples > 64) { samples = 64; }
+
 				// Send kernel + rotation
 				std::vector<glm::vec3*> ssaoKernel = renderInstance->SSAOKernel();
-				for (unsigned int i = 0; i < 64; i++) {
+				for (unsigned int i = 0; i < samples; i++) {
 					ssaoShader->setVec3("samples[" + std::to_string(i) + "]", *ssaoKernel[i]);
 				}
 

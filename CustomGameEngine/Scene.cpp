@@ -30,6 +30,10 @@ namespace Engine
 		renderManager->GetRenderParams()->SetExposure(1.0f);
 		renderManager->GetRenderParams()->SetBloomPasses(10);
 
+		renderManager->GetRenderParams()->SetSSAOSamples(64);
+		renderManager->GetRenderParams()->SetSSAORadius(0.5f);
+		renderManager->GetRenderParams()->SetSSAOBias(0.025f);
+
 		this->collisionManager = new CollisionManager();
 	}
 

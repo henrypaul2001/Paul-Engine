@@ -15,6 +15,7 @@ namespace Engine {
 		SetupScene();
 		renderManager->GetRenderParams()->SetBloomThreshold(400.0f);
 		renderManager->GetRenderParams()->SetBloomPasses(10);
+		renderManager->GetRenderParams()->SetSSAOSamples(32);
 	}
 
 	PBRScene::~PBRScene()

@@ -36,16 +36,33 @@ namespace Engine {
 		const float& GetExposure() const { return exposure; }
 		const float& GetBloomThreshold() const { return bloomThreshold; }
 		const int& GetBloomPasses() const { return bloomPasses; }
+		const int& GetSSAOSamples() const { return ssaoSamples; }
+		const float& GetSSAORadius() const { return ssaoRadius; }
+		const float& GetSSAOBias() const { return ssaoBias; }
 
 		void SetExposure(const float newExposure) { exposure = newExposure; }
 		void SetBloomThreshold(const float newThreshold) { bloomThreshold = newThreshold; }
 		void SetBloomPasses(const int newPasses) { bloomPasses = newPasses; }
 
+		// Max sample count = 64
+		void SetSSAOSamples(const int newSamples) { ssaoSamples = newSamples; }
+		
+		void SetSSAORadius(const float newRadius) { ssaoRadius = newRadius; }
+		void SetSSAOBias(const float newBias) { ssaoBias = newBias; }
 	private:
 		RenderOptions renderOptions;
+		
+		// Tonemapping
 		float exposure;
+
+		// Bloom
 		float bloomThreshold;
 		int bloomPasses;
+
+		// SSAO
+		int ssaoSamples;
+		float ssaoRadius;
+		float ssaoBias;
 	};
 
 	class RenderManager
