@@ -2,7 +2,6 @@
 #include <vector>
 #include "System.h"
 #include "Shader.h"
-
 namespace Engine {
 	class SystemRender;
 	class SystemShadowMapping;

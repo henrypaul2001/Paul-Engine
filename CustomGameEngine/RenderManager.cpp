@@ -5,7 +5,6 @@
 #include "ForwardPipeline.h"
 #include "DeferredPipeline.h"
 #include <random>
-#include "ResourceManager.h"
 namespace Engine {
 	RenderManager* RenderManager::instance = nullptr;
 	RenderManager::RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight)
@@ -14,6 +13,8 @@ namespace Engine {
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
+		skybox = nullptr;
+		environmentMap = nullptr;
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 		SetupShadowMapTextures(shadowWidth, shadowHeight);
@@ -30,7 +31,6 @@ namespace Engine {
 		defaultTextShader->setMat4("projection", textProjection);
 
 		exposure = 1.0f;
-		bloom = false;
 		bloomThreshold = 15.0;
 	}
 

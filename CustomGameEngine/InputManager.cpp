@@ -126,11 +126,11 @@ namespace Engine {
 		cursorLocked = locked;
 
 		if (cursorLocked) {
-			std::cout << "INPUTMANAGER::Cursor locked" << std::endl;
+			std::cout << "INPUTMANAGER::ENABLE::Cursor lock" << std::endl;
 			glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 		else {
-			std::cout << "INPUTMANAGER::Cursor unlocked" << std::endl;
+			std::cout << "INPUTMANAGER::DISABLE::Cursor lock" << std::endl;
 			glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 	}

@@ -1,6 +1,6 @@
 #include "SystemRender.h"
 #include "LightManager.h"
-
+#include "ResourceManager.h"
 namespace Engine {
 	SystemRender::SystemRender()
 	{

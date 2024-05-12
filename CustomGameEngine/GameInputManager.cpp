@@ -99,12 +99,28 @@ namespace Engine {
 	{
 		std::cout << "Key num: " << key << "| UP" << std::endl;
 		owner->keyUp(key);
-
+		RenderManager* renderInstance = RenderManager::GetInstance();
 		if (key == GLFW_KEY_B) {
-			RenderManager::GetInstance()->bloom = !RenderManager::GetInstance()->bloom;
+			bool bloom = (renderInstance->GetRenderOptions() & RENDER_BLOOM) != 0;
+			if (bloom) {
+				renderInstance->DisableRenderOptions(RENDER_BLOOM);
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
+			}
+			else {
+				renderInstance->EnableRenderOptions(RENDER_BLOOM);
+				std::cout << "GAMEINPUTMANAGER::ENABLE::Bloom" << std::endl;
+			}
 		}
 		if (key == GLFW_KEY_P) {
-			camera->ToggleSSAO();
+			bool SSAO = (renderInstance->GetRenderOptions() & RENDER_SSAO) != 0;
+			if (SSAO) {
+				renderInstance->DisableRenderOptions(RENDER_SSAO);
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Screen space ambient occlusion" << std::endl;
+			}
+			else {
+				renderInstance->EnableRenderOptions(RENDER_SSAO);
+				std::cout << "GAMEINPUTMANAGER::ENABLE::Screen space ambient occlusion" << std::endl;
+			}
 		}
 		if (key == GLFW_KEY_C) {
 			SetCursorLock(!GetCursorLock());

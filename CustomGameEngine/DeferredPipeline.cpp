@@ -5,19 +5,14 @@
 #include "ResourceManager.h"
 #include "LightManager.h"
 namespace Engine {
-	DeferredPipeline::DeferredPipeline(bool pbr)
-	{
-		this->pbr = pbr;
-	}
+	DeferredPipeline::DeferredPipeline() {}
 
-	DeferredPipeline::~DeferredPipeline()
-	{
-
-	}
+	DeferredPipeline::~DeferredPipeline() {}
 
 	void DeferredPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
 		RenderPipeline::Run(renderSystems, entities);
+		RenderOptions renderOptions = renderInstance->GetRenderOptions();
 
 		// shadow map steps
 		if (shadowmapSystem != nullptr) {
@@ -41,37 +36,38 @@ namespace Engine {
 
 			// SSAO Pass
 			// ---------
-			// SSAO Texture
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOFBO());
-			glClear(GL_COLOR_BUFFER_BIT);
-			Shader* ssaoShader = ResourceManager::GetInstance()->SSAOShader();
-			ssaoShader->Use();
-			ssaoShader->setInt("scr_width", screenWidth);
-			ssaoShader->setInt("scr_height", screenHeight);
+			if ((renderOptions & RENDER_SSAO) != 0) {
+				// SSAO Texture
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOFBO());
+				glClear(GL_COLOR_BUFFER_BIT);
+				Shader* ssaoShader = ResourceManager::GetInstance()->SSAOShader();
+				ssaoShader->Use();
+				ssaoShader->setInt("scr_width", screenWidth);
+				ssaoShader->setInt("scr_height", screenHeight);
 
-			// Send kernel + rotation
-			std::vector<glm::vec3*> ssaoKernel = renderInstance->SSAOKernel();
-			for (unsigned int i = 0; i < 64; i++) {
-				ssaoShader->setVec3("samples[" + std::to_string(i) + "]", *ssaoKernel[i]);
+				// Send kernel + rotation
+				std::vector<glm::vec3*> ssaoKernel = renderInstance->SSAOKernel();
+				for (unsigned int i = 0; i < 64; i++) {
+					ssaoShader->setVec3("samples[" + std::to_string(i) + "]", *ssaoKernel[i]);
+				}
+
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAONoiseTexture());
+				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+
+				// Blur SSAO texture to remove noise
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOBlurFBO());
+				glClear(GL_COLOR_BUFFER_BIT);
+				Shader* ssaoBlur = ResourceManager::GetInstance()->SSABlur();
+				ssaoBlur->Use();
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOColour());
+				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 			}
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAONoiseTexture());
-			//ResourceManager::GetInstance()->DefaultPlane().Draw(*ssaoShader);
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
-
-			// Blur SSAO texture to remove noise
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOBlurFBO());
-			glClear(GL_COLOR_BUFFER_BIT);
-			Shader* ssaoBlur = ResourceManager::GetInstance()->SSABlur();
-			ssaoBlur->Use();
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOColour());
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			// Lighting pass
 			// -------------
@@ -110,7 +106,7 @@ namespace Engine {
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			lightingPass->Use();
-			lightingPass->setBool("useSSAO", activeCamera->UseSSAO());
+			lightingPass->setBool("useSSAO", ((renderOptions & RENDER_SSAO) != 0));
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
@@ -134,44 +130,46 @@ namespace Engine {
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 			lightingPass->Use();
-			lightingPass->setBool("useSSAO", activeCamera->UseSSAO());
+			lightingPass->setBool("useSSAO", ((renderOptions& RENDER_SSAO) != 0));
 			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 			// Skybox
 			// ------
-			// Retrieve depth and stencil information from gBuffer
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
-			glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+			if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+				// Retrieve depth and stencil information from gBuffer
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+				glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 
-			Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
-			skyShader->Use();
+				Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+				skyShader->Use();
 
-			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+				glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+				glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+				glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
+				glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-			glDepthFunc(GL_LEQUAL);
-			glCullFace(GL_FRONT);
+				glDepthFunc(GL_LEQUAL);
+				glCullFace(GL_FRONT);
 
-			glActiveTexture(GL_TEXTURE0);
-			if (activeCamera->UseHDREnvironmentMap()) {
-				glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->cubemapID);
+				glActiveTexture(GL_TEXTURE0);
+				if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+					glBindTexture(GL_TEXTURE_CUBE_MAP, renderInstance->GetEnvironmentMap()->cubemapID);
+				}
+				else if ((renderOptions & RENDER_SKYBOX) != 0) {
+					glBindTexture(GL_TEXTURE_CUBE_MAP, renderInstance->GetSkybox()->id);
+				}
+				ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
+				glCullFace(GL_BACK);
+				glDepthFunc(GL_LESS);
+
+				glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+				glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
+				glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			}
-			else {
-				glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
-			}
-			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
-			glCullFace(GL_BACK);
-			glDepthFunc(GL_LESS);
-
-			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 			// Transparency using forward rendering
 			// ------------------------------------
@@ -187,8 +185,6 @@ namespace Engine {
 
 			// Post Processing
 			// ---------------
-			
-			RenderOptions renderOptions = renderInstance->GetRenderOptions();
 			if ((renderOptions & RENDER_TONEMAPPING) != 0) {
 				// HDR Tonemapping
 				glViewport(0, 0, screenWidth, screenHeight);
@@ -199,7 +195,7 @@ namespace Engine {
 				hdrShader->Use();
 				hdrShader->setFloat("gamma", 1.2);
 				hdrShader->setFloat("exposure", renderInstance->exposure);
-				hdrShader->setBool("bloom", renderInstance->bloom);
+				hdrShader->setBool("bloom", (renderOptions & RENDER_BLOOM) != 0);
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());

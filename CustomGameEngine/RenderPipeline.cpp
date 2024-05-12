@@ -2,9 +2,10 @@
 #include "SystemRender.h"'
 #include "SystemShadowMapping.h"
 #include "SystemUIRender.h"
-#include "ResourceManager.h"
 #include "ComponentLight.h"
 #include "LightManager.h"
+#include "ResourceManager.h"
+#include "RenderManager.h"
 namespace Engine {
 	RenderPipeline::RenderPipeline()
 	{
@@ -104,8 +105,6 @@ namespace Engine {
 					glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
 					glClear(GL_DEPTH_BUFFER_BIT);
 
-					//glEnable(GL_CULL_FACE);
-					//glCullFace(GL_FRONT);
 					shadowmapSystem->SetDepthMapType(MAP_2D);
 					for (Entity* e : entities) {
 						shadowmapSystem->OnAction(e);
@@ -179,7 +178,6 @@ namespace Engine {
 				blurShader->setInt("horizontal", horizontal);
 				glBindTexture(GL_TEXTURE_2D, first_iteration ? *renderInstance->GetBloomBrightnessTexture() : *renderInstance->GetBloomPingPongColourBuffer(!horizontal));
 
-				//ResourceManager::GetInstance()->DefaultPlane().Draw(*blurShader);
 				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
 				horizontal = !horizontal;

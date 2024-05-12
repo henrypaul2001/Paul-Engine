@@ -77,13 +77,13 @@ namespace Engine {
 		shader->setBool("useIBL", true);
 
 		glActiveTexture(GL_TEXTURE0 + 9 + textureOffset);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->irradianceID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->irradianceID);
 
 		glActiveTexture(GL_TEXTURE0 + 10 + textureOffset);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->prefilterID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->prefilterID);
 
 		glActiveTexture(GL_TEXTURE0 + 11 + textureOffset);
-		glBindTexture(GL_TEXTURE_2D, activeCamera->GetEnvironmentMap()->brdf_lutID);
+		glBindTexture(GL_TEXTURE_2D, RenderManager::GetInstance()->GetEnvironmentMap()->brdf_lutID);
 	}
 
 	void LightManager::SetShaderUniforms(Shader* shader, Camera* activeCamera)
@@ -151,9 +151,11 @@ namespace Engine {
 			}
 		}
 
+		RenderOptions renderOptions = RenderManager::GetInstance()->GetRenderOptions();
+
 		// Image based lighting
 		shader->setBool("useIBL", false);
-		if (activeCamera->UseHDREnvironmentMap()) {
+		if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0 && (renderOptions & RENDER_IBL) != 0) {
 			SetIBLUniforms(shader, activeCamera);
 		}
 	}

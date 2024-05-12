@@ -2,7 +2,6 @@
 #include "ResourceManager.h"
 #include "ComponentLight.h"
 #include "LightManager.h"
-
 #include "SystemRender.h"'
 #include "SystemShadowMapping.h"
 namespace Engine {
@@ -40,6 +39,7 @@ namespace Engine {
 
 	void ForwardPipeline::SceneRenderStep()
 	{
+		RenderOptions renderOptions = renderInstance->GetRenderOptions();
 		glViewport(0, 0, screenWidth, screenHeight);
 
 		// Render to textured framebuffer
@@ -50,7 +50,6 @@ namespace Engine {
 
 		Camera* activeCamera = renderSystem->GetActiveCamera();
 
-		//glCullFace(GL_BACK);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		for (Entity* e : entities) {
 			renderSystem->OnAction(e);
@@ -58,33 +57,34 @@ namespace Engine {
 		renderSystem->AfterAction();
 
 		// Render skybox
-		Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
-		skyShader->Use();
+		if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+			Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+			skyShader->Use();
 
-		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		glDepthFunc(GL_LEQUAL);
-		glCullFace(GL_FRONT);
+			glDepthFunc(GL_LEQUAL);
+			glCullFace(GL_FRONT);
 
-		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-		glActiveTexture(GL_TEXTURE0);
-		if (activeCamera->UseHDREnvironmentMap()) {
-			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetEnvironmentMap()->cubemapID);
+			glActiveTexture(GL_TEXTURE0);
+			if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+				glBindTexture(GL_TEXTURE_CUBE_MAP, renderInstance->GetEnvironmentMap()->cubemapID);
+			}
+			else if ((renderOptions & RENDER_SKYBOX) != 0) {
+				glBindTexture(GL_TEXTURE_CUBE_MAP, renderInstance->GetSkybox()->id);
+			}
+			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
+			glCullFace(GL_BACK);
+			glDepthFunc(GL_LESS);
+
+			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
-		else {
-			glBindTexture(GL_TEXTURE_CUBE_MAP, activeCamera->GetSkybox()->id);
-		}
-		//ResourceManager::GetInstance()->DefaultCube().Draw(*skyShader);
-		ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
-		glCullFace(GL_BACK);
-		glDepthFunc(GL_LESS);
-
-		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Render transparent objects
 		renderSystem->DrawTransparentGeometry(false);
@@ -98,13 +98,13 @@ namespace Engine {
 			glViewport(0, 0, screenWidth, screenHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glDrawBuffer(GL_COLOR_ATTACHMENT0);
-			//glClear(GL_COLOR_BUFFER_BIT);
 
 			Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
 			hdrShader->Use();
 			hdrShader->setFloat("gamma", 1.2);
 			hdrShader->setFloat("exposure", renderInstance->exposure);
-			hdrShader->setBool("bloom", renderInstance->bloom);
+
+			hdrShader->setBool("bloom", (renderInstance->GetRenderOptions() & RENDER_BLOOM) != 0);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
@@ -115,7 +115,6 @@ namespace Engine {
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			glDisable(GL_STENCIL_TEST);
-			//ResourceManager::GetInstance()->DefaultPlane().Draw(*hdrShader);
 			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
@@ -148,7 +147,6 @@ namespace Engine {
 		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
-		//ResourceManager::GetInstance()->DefaultPlane().Draw(*screenQuadShader);
 		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);

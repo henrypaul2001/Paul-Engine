@@ -30,6 +30,9 @@ namespace Engine {
 
 		CreateSystems();
 		CreateEntities();
+
+		renderManager->SetEnvironmentMap(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true));
+		renderManager->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
 	void ButtonEnter(UIButton* button) {
