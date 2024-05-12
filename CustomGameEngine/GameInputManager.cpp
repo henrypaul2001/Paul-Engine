@@ -71,22 +71,26 @@ namespace Engine {
 			std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
 		}
 
+		RenderManager* renderInstance = RenderManager::GetInstance();
+		float exposure = renderInstance->GetRenderParams()->GetExposure();
 		if (keysPressed[GLFW_KEY_E] && keysPressed[GLFW_KEY_LEFT_CONTROL]) {
-			RenderManager::GetInstance()->exposure -= 0.01f;
-			std::cout << "Exposure: " << RenderManager::GetInstance()->exposure << std::endl;
+
+			renderInstance->GetRenderParams()->SetExposure(exposure - 0.01f);
+			std::cout << "Exposure: " << exposure - 0.01f << std::endl;
 		}
 		else if (keysPressed[GLFW_KEY_E]) {
-			RenderManager::GetInstance()->exposure += 0.01f;
-			std::cout << "Exposure: " << RenderManager::GetInstance()->exposure << std::endl;
+			renderInstance->GetRenderParams()->SetExposure(exposure + 0.01f);
+			std::cout << "Exposure: " << exposure + 0.01f << std::endl;
 		}
 
+		float bloomThreshold = renderInstance->GetRenderParams()->GetBloomThreshold();
 		if (keysPressed[GLFW_KEY_T] && keysPressed[GLFW_KEY_LEFT_CONTROL]) {
-			RenderManager::GetInstance()->bloomThreshold -= 0.1f;
-			std::cout << "Bloom threshold: " << RenderManager::GetInstance()->bloomThreshold << std::endl;
+			renderInstance->GetRenderParams()->SetBloomThreshold(bloomThreshold - 0.1f);
+			std::cout << "Bloom threshold: " << bloomThreshold - 0.1f << std::endl;
 		}
 		else if (keysPressed[GLFW_KEY_T] && keysPressed[GLFW_KEY_RIGHT_CONTROL]) {
-			RenderManager::GetInstance()->bloomThreshold += 0.1f;
-			std::cout << "Bloom threshold: " << RenderManager::GetInstance()->bloomThreshold << std::endl;
+			renderInstance->GetRenderParams()->SetBloomThreshold(bloomThreshold + 0.1f);
+			std::cout << "Bloom threshold: " << bloomThreshold + 0.1f << std::endl;
 		}
 	}
 
@@ -101,24 +105,24 @@ namespace Engine {
 		owner->keyUp(key);
 		RenderManager* renderInstance = RenderManager::GetInstance();
 		if (key == GLFW_KEY_B) {
-			bool bloom = (renderInstance->GetRenderOptions() & RENDER_BLOOM) != 0;
+			bool bloom = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_BLOOM) != 0;
 			if (bloom) {
-				renderInstance->DisableRenderOptions(RENDER_BLOOM);
+				renderInstance->GetRenderParams()->DisableRenderOptions(RENDER_BLOOM);
 				std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
 			}
 			else {
-				renderInstance->EnableRenderOptions(RENDER_BLOOM);
+				renderInstance->GetRenderParams()->EnableRenderOptions(RENDER_BLOOM);
 				std::cout << "GAMEINPUTMANAGER::ENABLE::Bloom" << std::endl;
 			}
 		}
 		if (key == GLFW_KEY_P) {
-			bool SSAO = (renderInstance->GetRenderOptions() & RENDER_SSAO) != 0;
+			bool SSAO = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_SSAO) != 0;
 			if (SSAO) {
-				renderInstance->DisableRenderOptions(RENDER_SSAO);
+				renderInstance->GetRenderParams()->DisableRenderOptions(RENDER_SSAO);
 				std::cout << "GAMEINPUTMANAGER::DISABLE::Screen space ambient occlusion" << std::endl;
 			}
 			else {
-				renderInstance->EnableRenderOptions(RENDER_SSAO);
+				renderInstance->GetRenderParams()->EnableRenderOptions(RENDER_SSAO);
 				std::cout << "GAMEINPUTMANAGER::ENABLE::Screen space ambient occlusion" << std::endl;
 			}
 		}

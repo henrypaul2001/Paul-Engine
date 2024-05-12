@@ -13,7 +13,8 @@ namespace Engine {
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
-		renderManager->bloomThreshold = 400.0f;
+		renderManager->GetRenderParams()->SetBloomThreshold(400.0f);
+		renderManager->GetRenderParams()->SetBloomPasses(10);
 	}
 
 	PBRScene::~PBRScene()
@@ -32,7 +33,7 @@ namespace Engine {
 		CreateEntities();
 
 		renderManager->SetEnvironmentMap(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true));
-		renderManager->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
 	void ButtonEnter(UIButton* button) {

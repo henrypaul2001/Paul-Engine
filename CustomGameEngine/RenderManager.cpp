@@ -30,8 +30,7 @@ namespace Engine {
 		defaultTextShader->Use();
 		defaultTextShader->setMat4("projection", textProjection);
 
-		exposure = 1.0f;
-		bloomThreshold = 15.0;
+		renderParams = new RenderParams;
 	}
 
 	RenderManager* RenderManager::GetInstance()
@@ -93,6 +92,8 @@ namespace Engine {
 		delete hdrCubeCaptureFBO;
 		delete hdrCubeCaptureRBO;
 		delete envCubemapTexture;
+
+		delete renderParams;
 
 		delete instance;
 	}

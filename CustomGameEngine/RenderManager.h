@@ -26,6 +26,28 @@ namespace Engine {
 		MAP_CUBE
 	};
 
+	struct RenderParams {
+	public:
+		const RenderOptions& GetRenderOptions() const { return renderOptions; }
+		void SetRenderOptions(const RenderOptions& options) { renderOptions = options; }
+		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
+		void DisableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions & ~options; }
+
+		const float& GetExposure() const { return exposure; }
+		const float& GetBloomThreshold() const { return bloomThreshold; }
+		const int& GetBloomPasses() const { return bloomPasses; }
+
+		void SetExposure(const float newExposure) { exposure = newExposure; }
+		void SetBloomThreshold(const float newThreshold) { bloomThreshold = newThreshold; }
+		void SetBloomPasses(const int newPasses) { bloomPasses = newPasses; }
+
+	private:
+		RenderOptions renderOptions;
+		float exposure;
+		float bloomThreshold;
+		int bloomPasses;
+	};
+
 	class RenderManager
 	{
 	public:
@@ -38,10 +60,7 @@ namespace Engine {
 		static RenderManager* GetInstance(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight);
 		~RenderManager();
 
-		const RenderOptions& const GetRenderOptions() { return renderOptions; }
-		void SetRenderOptions(const RenderOptions& options) { renderOptions = options; }
-		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
-		void DisableRenderOptions(const RenderOptions& options) { renderOptions  = renderOptions & ~options; }
+		RenderParams* GetRenderParams() const { return renderParams; }
 
 		unsigned int* GetDepthMap(int index, DepthMapType type);
 		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
@@ -68,12 +87,9 @@ namespace Engine {
 		unsigned int* SSAONoiseTexture() { return noiseTexture; }
 		std::vector<glm::vec3*> SSAOKernel() { return ssaoKernel; }
 
-		float exposure;
-
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
 		unsigned int* GetBloomPingPongColourBuffer(int index) { return pingPongColourBuffers[index]; }
-		float bloomThreshold;
 
 		// Env hdr map
 		unsigned int* GetHDRCubeCaptureFBO() { return hdrCubeCaptureFBO; }
@@ -115,13 +131,13 @@ namespace Engine {
 		void Bind2DMap(unsigned int* map);
 		void BindCubeMap(unsigned int* map);
 
-		RenderOptions renderOptions;
-
 		unsigned int* depthMap;
 		std::vector<unsigned int*> flatDepthMaps;
 		std::vector<unsigned int*> cubeDepthMaps; // consider using hashmap <mapIndex, texture pointer*> in future. That way, a single collection can hold both types of shadow map
 
 		RenderPipeline* renderPipeline;
+
+		RenderParams* renderParams;
 
 		unsigned int* flatDepthMapFBO;
 		unsigned int* cubeDepthMapFBO;

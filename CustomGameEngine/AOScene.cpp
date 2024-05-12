@@ -7,7 +7,7 @@ namespace Engine {
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
-		RenderManager::GetInstance()->bloomThreshold = 1.0f;
+		renderManager->GetRenderParams()->SetBloomThreshold(1.0f);
 	}
 
 	AOScene::~AOScene()

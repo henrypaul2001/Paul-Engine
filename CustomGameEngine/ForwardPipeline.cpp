@@ -39,7 +39,7 @@ namespace Engine {
 
 	void ForwardPipeline::SceneRenderStep()
 	{
-		RenderOptions renderOptions = renderInstance->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		glViewport(0, 0, screenWidth, screenHeight);
 
 		// Render to textured framebuffer
@@ -92,7 +92,7 @@ namespace Engine {
 
 	void ForwardPipeline::ScreenTextureStep()
 	{
-		RenderOptions renderOptions = renderInstance->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_TONEMAPPING) != 0) {
 			// HDR tonemapping step
 			glViewport(0, 0, screenWidth, screenHeight);
@@ -102,9 +102,9 @@ namespace Engine {
 			Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
 			hdrShader->Use();
 			hdrShader->setFloat("gamma", 1.2);
-			hdrShader->setFloat("exposure", renderInstance->exposure);
+			hdrShader->setFloat("exposure", renderInstance->GetRenderParams()->GetExposure());
 
-			hdrShader->setBool("bloom", (renderInstance->GetRenderOptions() & RENDER_BLOOM) != 0);
+			hdrShader->setBool("bloom", (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_BLOOM) != 0);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());

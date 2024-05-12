@@ -147,7 +147,7 @@ namespace Engine {
 
 	void RenderPipeline::RunShadowMapSteps()
 	{
-		RenderOptions renderOptions = renderInstance->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_SHADOWS) != 0) {
 			depthShader = ResourceManager::GetInstance()->ShadowMapShader();
 			cubeDepthShader = ResourceManager::GetInstance()->CubeShadowMapShader();
@@ -162,11 +162,11 @@ namespace Engine {
 
 	void RenderPipeline::RunBloomStep()
 	{
-		RenderOptions renderOptions = renderInstance->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_BLOOM) != 0) {
 			bool horizontal = true;
 			bool first_iteration = true;
-			int bloomPasses = 20;
+			int bloomPasses = renderInstance->GetRenderParams()->GetBloomPasses();
 			Shader* blurShader = ResourceManager::GetInstance()->BloomBlurShader();
 			blurShader->Use();
 
@@ -196,7 +196,7 @@ namespace Engine {
 
 	void RenderPipeline::UIRenderStep()
 	{
-		RenderOptions renderOptions = renderInstance->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_UI) != 0) {
 			if (uiRenderSystem != nullptr) {
 				glViewport(0, 0, screenWidth, screenHeight);

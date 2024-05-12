@@ -100,7 +100,7 @@ namespace Engine {
 
 		shader->setInt("activeLights", lightEntities.size());
 
-		shader->setFloat("BloomThreshold", RenderManager::GetInstance()->bloomThreshold);
+		shader->setFloat("BloomThreshold", RenderManager::GetInstance()->GetRenderParams()->GetBloomThreshold());
 
 		// Now spot and point lights
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
@@ -151,7 +151,7 @@ namespace Engine {
 			}
 		}
 
-		RenderOptions renderOptions = RenderManager::GetInstance()->GetRenderOptions();
+		RenderOptions renderOptions = RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions();
 
 		// Image based lighting
 		shader->setBool("useIBL", false);

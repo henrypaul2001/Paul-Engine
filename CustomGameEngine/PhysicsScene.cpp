@@ -17,7 +17,7 @@ namespace Engine {
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
-		RenderManager::GetInstance()->bloomThreshold = 10.0f;
+		renderManager->GetRenderParams()->SetBloomThreshold(10.0f);
 	}
 
 	PhysicsScene::~PhysicsScene()

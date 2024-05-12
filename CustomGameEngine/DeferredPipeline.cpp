@@ -12,7 +12,7 @@ namespace Engine {
 	void DeferredPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
 		RenderPipeline::Run(renderSystems, entities);
-		RenderOptions renderOptions = renderInstance->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 
 		// shadow map steps
 		if (shadowmapSystem != nullptr) {
@@ -194,7 +194,7 @@ namespace Engine {
 				Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
 				hdrShader->Use();
 				hdrShader->setFloat("gamma", 1.2);
-				hdrShader->setFloat("exposure", renderInstance->exposure);
+				hdrShader->setFloat("exposure", renderInstance->GetRenderParams()->GetExposure());
 				hdrShader->setBool("bloom", (renderOptions & RENDER_BLOOM) != 0);
 
 				glActiveTexture(GL_TEXTURE0);
