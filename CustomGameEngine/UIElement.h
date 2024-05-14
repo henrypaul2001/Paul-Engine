@@ -14,7 +14,7 @@ namespace Engine {
 		UIElement(glm::vec2 position, glm::vec2 scale, Shader* shader);
 		~UIElement();
 
-		virtual void Draw() = 0;
+		virtual void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) = 0;
 
 		void Position(glm::vec2 newPosition) { position = newPosition; }
 		const glm::vec2& Position() const { return position; }

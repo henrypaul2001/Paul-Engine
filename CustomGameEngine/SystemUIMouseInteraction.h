@@ -17,7 +17,7 @@ namespace Engine {
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 	private:
-		void ProcessUIButton(UIButton* button) const;
+		void ProcessUIButton(UIButton* button, ComponentTransform* canvasTransform) const;
 		InputManager* inputManager;
 	};
 }

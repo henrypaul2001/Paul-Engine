@@ -44,8 +44,10 @@ namespace Engine {
 	{
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
+		glm::vec2 canvasPosition = glm::vec2(transform->Position().x, transform->Position().y);
+		glm::vec2 canvasScale = glm::vec2(transform->Scale().x, transform->Scale().y);
 		for (UIElement* uiElement : canvas->UIElements()) {
-			uiElement->Draw();
+			uiElement->Draw(canvasPosition, canvasScale);
 		}
 		glEnable(GL_DEPTH_TEST);
 	}

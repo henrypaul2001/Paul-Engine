@@ -11,7 +11,7 @@ namespace Engine {
 		UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader);
 		~UIText();
 
-		void Draw() override;
+		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override;
 
 		const unsigned int TextVAO() const { return textVAO; }
 		const unsigned int TextVBO() const { return textVBO; }

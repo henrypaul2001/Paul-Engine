@@ -36,7 +36,7 @@ namespace Engine {
 				if (canvas != nullptr) {
 					for (UIElement* ui : canvas->UIElements()) {
 						if (ui->UIType() == UI_BUTTON) {
-							ProcessUIButton(dynamic_cast<UIButton*>(ui));
+							ProcessUIButton(dynamic_cast<UIButton*>(ui), transform);
 						}
 					}
 				}
@@ -49,7 +49,7 @@ namespace Engine {
 
 	}
 
-	void SystemUIMouseInteraction::ProcessUIButton(UIButton* button) const
+	void SystemUIMouseInteraction::ProcessUIButton(UIButton* button, ComponentTransform* canvasTransform) const
 	{
 		RenderManager* renderInstance = RenderManager::GetInstance();
 
@@ -60,13 +60,13 @@ namespace Engine {
 		mousePos.y = (float)screenHeight - mousePos.y;
 		//std::cout << "inverted y = " << mousePos.y << std::endl;
 		// Check if mouse position is inside of buttons boundary
-		glm::vec2 buttonPos = button->Position();
-		glm::vec2 buttonScale = button->GetButtonScale();
+		glm::vec2 buttonPos = button->Position() + glm::vec2(canvasTransform->Position().x, canvasTransform->Position().y);
+		glm::vec2 buttonScale = button->GetButtonScale() * glm::vec2(canvasTransform->Scale().x, canvasTransform->Scale().y);
 
-		float minX;
-		float minY;
-		float maxX;
-		float maxY;
+		float minX = 0.0f;
+		float minY = 0.0f;
+		float maxX = 0.0f;
+		float maxY = 0.0f;
 
 		ButtonTypes buttonType = button->GetButtonType();
 		if (buttonType == BUTTON_IMAGE) {

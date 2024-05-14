@@ -17,12 +17,12 @@ namespace Engine {
 
 	}
 
-	void UIImage::Draw()
+	void UIImage::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
 	{
 		shader->Use();
 
-		shader->setVec2("translate", position);
-		shader->setVec2("scale", scale);
+		shader->setVec2("translate", position + canvasPosition);
+		shader->setVec2("scale", scale * canvasScale);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, imageTexture->id);

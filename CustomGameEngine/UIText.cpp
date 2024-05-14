@@ -29,25 +29,28 @@ namespace Engine {
 
 	}
 
-	void UIText::Draw()
+	void UIText::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
 	{
 		shader->Use();
 		shader->setVec3("textColour", textColour);
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(textVAO);
 
-		float xCharacterPos = position.x;
+		glm::vec2 transformedPosition = position + canvasPosition;
+		glm::vec2 transformedScale = scale * canvasScale;
+
+		float xCharacterPos = transformedPosition.x;
 		//glEnable(GL_BLEND);
 		// iterate through all characters
 		std::string::const_iterator c;
 		for (c = text.begin(); c != text.end(); c++) {
 			const TextCharacter* ch = font->GetCharacter(*c);
 
-			float xPos = xCharacterPos + ch->Bearing.x * scale.x;
-			float yPos = position.y - (ch->Size.y - ch->Bearing.y) * scale.y;
+			float xPos = xCharacterPos + ch->Bearing.x * transformedScale.x;
+			float yPos = transformedPosition.y - (ch->Size.y - ch->Bearing.y) * transformedScale.y;
 
-			float width = ch->Size.x * scale.x;
-			float height = ch->Size.y * scale.y;
+			float width = ch->Size.x * transformedScale.x;
+			float height = ch->Size.y * transformedScale.y;
 
 			// this will change. Instead, use transformations in shader
 			// --------------------------------------------------------

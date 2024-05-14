@@ -16,8 +16,8 @@ namespace Engine {
 
 	}
 
-	void UITextButton::Draw()
+	void UITextButton::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
 	{
-		UIText::Draw();
+		UIText::Draw(canvasPosition, canvasScale);
 	}
 }

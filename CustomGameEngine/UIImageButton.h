@@ -9,7 +9,7 @@ namespace Engine {
 		UIImageButton(glm::vec2 position, glm::vec2 imageScale, glm::vec2 buttonScale, Texture* imageTexture, Shader* shader);
 		~UIImageButton();
 	
-		void Draw() override;
+		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override;
 	private:
 
 	};

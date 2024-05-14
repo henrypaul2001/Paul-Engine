@@ -14,8 +14,8 @@ namespace Engine {
 	{
 	}
 
-	void UIImageButton::Draw()
+	void UIImageButton::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
 	{
-		UIImage::Draw();
+		UIImage::Draw(canvasPosition, canvasScale);
 	}
 }
