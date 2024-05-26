@@ -12,6 +12,22 @@ namespace Engine {
 		MODEL_PLANE
 	};
 
+	struct AnimationSkeleton {
+		std::map<std::string, AnimationBone> bones;
+		AnimationBone* rootBone;
+		glm::mat4 originTransform;
+	};
+
+	struct AnimationBone {
+		int boneID = -1;
+		std::string name;
+		glm::mat4 offsetMatrix = glm::mat4(1.0f);
+		glm::mat4 finalTransform = glm::mat4(1.0f);
+		glm::mat4 nodeTransform = glm::mat4(1.0f);
+
+		std::vector<std::string> childNodeNames;
+	};
+
 	class Model
 	{
 	public:
@@ -34,6 +50,8 @@ namespace Engine {
 
 		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
 
+		AnimationSkeleton& GetAnimationSkeleton() { return skeleton; }
+
 		std::vector<Mesh*> meshes;
 		//std::vector<Texture> textures_loaded;
 	private:
@@ -41,6 +59,8 @@ namespace Engine {
 		bool pbr;
 
 		bool containsTransparentMeshes;
+
+		AnimationSkeleton skeleton;
 
 		void LoadModel(std::string filepath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
