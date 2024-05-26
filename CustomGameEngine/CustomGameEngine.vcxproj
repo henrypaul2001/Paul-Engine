@@ -184,6 +184,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SkeletalAnimation.h" />
     <ClInclude Include="SponzaScene.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="System.h" />
@@ -254,6 +255,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SkeletalAnimation.cpp" />
     <ClCompile Include="SponzaScene.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="System.cpp" />

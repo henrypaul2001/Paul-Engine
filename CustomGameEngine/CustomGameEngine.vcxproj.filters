@@ -288,6 +288,9 @@
     <ClInclude Include="AnimationChannel.h">
       <Filter>Header Files\Engine\Utility\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletalAnimation.h">
+      <Filter>Header Files\Engine\Utility\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -492,6 +495,9 @@
       <Filter>Source Files\Engine\Utility\UI</Filter>
     </ClCompile>
     <ClCompile Include="AnimationChannel.cpp">
+      <Filter>Source Files\Engine\Utility\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalAnimation.cpp">
       <Filter>Source Files\Engine\Utility\Animation</Filter>
     </ClCompile>
   </ItemGroup>

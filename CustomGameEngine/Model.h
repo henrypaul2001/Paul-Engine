@@ -1,7 +1,7 @@
 #pragma once
 #include "Mesh.h"
 #include "stb_image.h"
-
+#include <map>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -12,12 +12,6 @@ namespace Engine {
 		MODEL_PLANE
 	};
 
-	struct AnimationSkeleton {
-		std::map<std::string, AnimationBone> bones;
-		AnimationBone* rootBone;
-		glm::mat4 originTransform;
-	};
-
 	struct AnimationBone {
 		int boneID = -1;
 		std::string name;
@@ -26,6 +20,12 @@ namespace Engine {
 		glm::mat4 nodeTransform = glm::mat4(1.0f);
 
 		std::vector<std::string> childNodeNames;
+	};
+
+	struct AnimationSkeleton {
+		std::map<std::string, AnimationBone> bones;
+		AnimationBone* rootBone;
+		glm::mat4 originTransform;
 	};
 
 	class Model
