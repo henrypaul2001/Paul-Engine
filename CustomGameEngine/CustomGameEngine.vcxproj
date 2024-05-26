@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationChannel.h" />
     <ClInclude Include="AOScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="UITextButton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AOScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />

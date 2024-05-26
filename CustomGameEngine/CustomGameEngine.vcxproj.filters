@@ -82,6 +82,12 @@
     <Filter Include="Source Files\Engine\Utility\UI">
       <UniqueIdentifier>{3e5a9899-c009-4c50-a600-5a56c31b1d3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Animation">
+      <UniqueIdentifier>{a71ef7a0-a0bd-4fa8-bb76-0beb8622314e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\Animation">
+      <UniqueIdentifier>{7c38d609-217a-48de-a473-48874dd25d1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -278,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="UIImageButton.h">
       <Filter>Header Files\Engine\Utility\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationChannel.h">
+      <Filter>Header Files\Engine\Utility\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +490,9 @@
     </ClCompile>
     <ClCompile Include="UIImageButton.cpp">
       <Filter>Source Files\Engine\Utility\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationChannel.cpp">
+      <Filter>Source Files\Engine\Utility\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
