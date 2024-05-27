@@ -51,7 +51,6 @@ namespace Engine {
 		std::string filepath;
 	};
 
-	// #define MAX_BONE_INFLUENCE 4
 	struct Vertex {
 		glm::vec3 Position;
 		glm::vec3 Normal;
@@ -59,10 +58,24 @@ namespace Engine {
 		glm::vec3 Tangent;
 		glm::vec3 Bitangent;
 
-		// bone indices which will influence this vertex
-		// int BoneIDs[MAX_BONE_INFLUENCE];
-		// weights from each bone
-		// float Weights[MAX_BONE_INFLUENCE];
+		int BoneIDs[MaxBoneInfluence()] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+		float BoneWeights[MaxBoneInfluence()] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+
+		void AddBoneData(int boneID, float boneWeight) {
+			if (boneWeight == 0.0f) {
+				// skip bone
+				return;
+			}
+
+			for (int i = 0; i < MaxBoneInfluence(); i++) {
+				if (BoneIDs[i] == -1 && BoneIDs[i] != boneID) {
+					// empty bone slot found
+					BoneIDs[i] = boneID;
+					BoneWeights[i] = boneWeight;
+					return;
+				}
+			}
+		}
 	};
 
 	struct Material {
