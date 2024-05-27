@@ -497,6 +497,13 @@ namespace Engine {
 			textFontsIt++;
 		}
 
+		// delete animations
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator animationsIt = animations.begin();
+		while (animationsIt != animations.end()) {
+			delete animationsIt->second;
+			animationsIt++;
+		}
+
 		FT_Done_FreeType(freetypeLib);
 
 		delete instance;
@@ -818,6 +825,96 @@ namespace Engine {
 
 			textFonts[filepath] = font;
 			return textFonts[filepath];
+		}
+
+		return it->second;
+	}
+
+	SkeletalAnimation* ResourceManager::LoadAnimation(std::string filepath, int fileAnimationIndex)
+	{
+		std::string indexedFilepath = filepath + "/(" + std::to_string(fileAnimationIndex) + ")";
+
+		// First check if already loaded
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator it = animations.find(indexedFilepath);
+
+		if (it == animations.end()) {
+			// Load animation
+			std::cout << "RESOURCEMANAGER::Loading animation " << indexedFilepath << std::endl;
+
+			Assimp::Importer importer;
+			const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate);
+			if (scene && scene->mRootNode) {
+				if (fileAnimationIndex > scene->mNumAnimations - 1) {
+					std::cout << "ERROR::RESOURCEMANAGER::LoadAnimation::Animation index higher than animation count in file || Index = " << fileAnimationIndex << " || Filepath: " << filepath << std::endl;
+					return nullptr;
+				}
+
+				aiAnimation* aiAnimation = scene->mAnimations[fileAnimationIndex];
+				float duration = aiAnimation->mDuration;
+				float ticksPerSecond = aiAnimation->mTicksPerSecond;
+
+				int numChannels = aiAnimation->mNumChannels;
+				std::vector<AnimationChannel> channels;
+				channels.reserve(numChannels);
+
+				for (int i = 0; i < numChannels; i++) {
+					aiNodeAnim* aiChannel = aiAnimation->mChannels[i];
+
+					std::string channelName = aiChannel->mNodeName.C_Str();
+
+					// Position keyframes
+					std::vector<AnimKeyPosition> positions;
+					int numPositions = aiChannel->mNumPositionKeys;
+					positions.reserve(numPositions);
+					for (int j = 0; j < numPositions; j++) {
+						aiVector3D aiPosition = aiChannel->mPositionKeys[j].mValue;
+						float timeStamp = aiChannel->mPositionKeys[j].mTime;
+
+						AnimKeyPosition keyframe;
+						keyframe.position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
+						keyframe.timeStamp = timeStamp;
+						positions.push_back(keyframe);
+					}
+
+					// Rotation keyframes
+					std::vector<AnimKeyRotation> rotations;
+					int numRotations = aiChannel->mNumRotationKeys;;
+					rotations.reserve(numRotations);
+					for (int j = 0; j < numRotations; j++) {
+						aiQuaternion aiOrientation = aiChannel->mRotationKeys[j].mValue;
+						float timeStamp = aiChannel->mRotationKeys[j].mTime;
+
+						AnimKeyRotation keyframe;
+						keyframe.orientation = glm::quat(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
+						keyframe.timeStamp = timeStamp;
+						rotations.push_back(keyframe);
+					}
+
+					// Scale keyframes
+					std::vector<AnimKeyScale> scalings;
+					int numScalings = aiChannel->mNumScalingKeys;
+					scalings.reserve(numScalings);
+					for (int j = 0; j < numScalings; j++) {
+						aiVector3D aiScale = aiChannel->mScalingKeys[j].mValue;
+						float timeStamp = aiChannel->mScalingKeys[j].mTime;
+
+						AnimKeyScale keyframe;
+						keyframe.scale = glm::vec3(aiScale.x, aiScale.y, aiScale.z);
+						keyframe.timeStamp = timeStamp;
+						scalings.push_back(keyframe);
+					}
+
+					channels.push_back(AnimationChannel(channelName, i, positions, rotations, scalings));
+				}
+
+				SkeletalAnimation* animation = new SkeletalAnimation(channels, duration, ticksPerSecond);
+				animations[indexedFilepath] = animation;
+				return animations[indexedFilepath];
+			}
+			else {
+				std::cout << "ERROR::RESOURCEMANAGER::LoadAnimation::Error reading animation file || Index = " << fileAnimationIndex << " || Filepath: " << filepath << std::endl;
+				return nullptr;
+			}
 		}
 
 		return it->second;

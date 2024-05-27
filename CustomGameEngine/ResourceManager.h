@@ -4,6 +4,7 @@
 #include "TextFont.h"
 
 #include <ft2build.h>
+#include "SkeletalAnimation.h"
 #include FT_FREETYPE_H
 namespace Engine {
 	struct Cubemap {
@@ -28,6 +29,7 @@ namespace Engine {
 		std::unordered_map<std::string, Cubemap*> cubemaps;
 		std::unordered_map<std::string, HDREnvironment*> hdrCubemaps;
 		std::unordered_map<std::string, TextFont*> textFonts;
+		std::unordered_map<std::string, SkeletalAnimation*> animations;
 
 		Mesh* defaultCube;
 		Mesh* defaultPlane;
@@ -96,6 +98,7 @@ namespace Engine {
 		Cubemap* LoadCubemap(std::string rootFilepath);
 		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false);
 		TextFont* LoadTextFont(std::string filepath);
+		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
