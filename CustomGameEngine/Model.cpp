@@ -19,15 +19,15 @@ namespace Engine {
 	Model::Model(const char* filepath)
 	{
 		pbr = false;
-		LoadModel(filepath);
 		containsTransparentMeshes = false;
+		LoadModel(filepath);
 	}
 
 	Model::Model(const char* filepath, bool pbr)
 	{
 		this->pbr = pbr;
-		LoadModel(filepath);
 		containsTransparentMeshes = false;
+		LoadModel(filepath);
 	}
 
 	Model::~Model()
