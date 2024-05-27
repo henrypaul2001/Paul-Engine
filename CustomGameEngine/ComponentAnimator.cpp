@@ -13,6 +13,11 @@ namespace Engine {
 
 	}
 
+	void ComponentAnimator::Close()
+	{
+
+	}
+
 	void ComponentAnimator::UpdateAnimation(float deltaTime, AnimationSkeleton& animationTarget)
 	{
 		if (!paused) {

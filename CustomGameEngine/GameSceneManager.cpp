@@ -7,6 +7,7 @@
 #include "PhysicsScene.h"
 #include "InstanceScene.h"
 #include "MainMenu.h"
+#include "AnimationScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -59,6 +60,9 @@ namespace Engine
 		case SCENE_INSTANCED:
 			newScene = new InstanceScene(this);
 			break;
+		case SCENE_ANIMATION:
+			newScene = new AnimationScene(this);
+			break;
 		case SCENE_NONE:
 			newScene = nullptr;
 			break;
@@ -74,6 +78,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_PBR);
+		ChangeScene(SCENE_ANIMATION);
 	}
 }

@@ -8,6 +8,9 @@ namespace Engine {
 		ComponentAnimator(SkeletalAnimation* animation, bool paused = false);
 		~ComponentAnimator();
 
+		ComponentTypes ComponentType() override { return COMPONENT_ANIMATOR; }
+		void Close() override;
+
 		const bool Paused() const { return paused; }
 
 		void UpdateAnimation(float deltaTime, AnimationSkeleton& animationTarget);

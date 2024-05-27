@@ -17,6 +17,7 @@ namespace Engine
 		SCENE_COLLISIONS,
 		SCENE_PHYSICS,
 		SCENE_INSTANCED,
+		SCENE_ANIMATION,
 	};
 
 	using SceneDelegate = std::function<void()>;
@@ -42,7 +43,7 @@ namespace Engine
 	public:
 		SceneManager(int width, int height, int windowXPos, int windowYPos);
 		~SceneManager();
-
+		
 		Scene* scene;
 
 		SceneDelegate renderer;
