@@ -3,6 +3,10 @@
 #include <iostream>
 #include <vector>
 namespace Engine {
+
+	static constexpr int MaxBoneInfluence() { return 8; }
+	static constexpr int MaxBoneCount() { return 200; }
+
 	enum TextureTypes {
 		TEXTURE_NONE,
 		TEXTURE_DIFFUSE,

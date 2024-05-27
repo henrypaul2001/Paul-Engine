@@ -102,7 +102,7 @@ namespace Engine {
 	void Model::LoadModel(std::string filepath)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData | aiProcess_GenNormals);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -295,7 +295,58 @@ namespace Engine {
 					pbrMaterial->isTransparent = true;
 				}
 
+				// retrieve bones
+				if (mesh->HasBones()) {
+					ProcessBones(vertices, mesh, scene);
+				}
+
 				return new Mesh(vertices, indices, pbrMaterial);
+			}
+		}
+	}
+
+	void Model::ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
+	{
+		for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+			// Get bone ID
+			// -----------
+			int boneID = -1;
+			std::string boneName = mesh->mBones[i]->mName.C_Str();
+
+			if (skeleton.bones.find(boneName) == skeleton.bones.end()) {
+				// Create new bone
+				AnimationBone newBone;
+				boneID = skeleton.bones.size();
+				newBone.boneID = boneID;
+				newBone.offsetMatrix = ConvertMatrixToGLMFormat(mesh->mBones[i]->mOffsetMatrix);
+				newBone.nodeTransform = ConvertMatrixToGLMFormat(mesh->mBones[i]->mNode->mTransformation);
+				newBone.name = boneName;
+
+				// Get child bone names
+				for (unsigned int j = 0; j < mesh->mBones[i]->mNode->mNumChildren; j++) {
+					std::string childName = mesh->mBones[i]->mNode->mChildren[j]->mName.C_Str();
+					newBone.childNodeNames.push_back(childName);
+				}
+
+				skeleton.bones[boneName] = newBone;
+
+				if (skeleton.bones.find(mesh->mBones[i]->mNode->mParent->mName.C_Str()) == skeleton.bones.end()) {
+					// Parent node name is not in bones list, this bone must be the root bone
+					skeleton.rootBone = &skeleton.bones[boneName];
+					skeleton.originTransform = ConvertMatrixToGLMFormat(mesh->mBones[i]->mNode->mParent->mTransformation);
+				}
+			}
+			else {
+				// Bone already exists
+				boneID = skeleton.bones[boneName].boneID;
+			}
+
+			// Update vertices with IDs and weights
+			for (unsigned int j = 0; j < mesh->mBones[i]->mNumWeights; j++) {
+				const aiVertexWeight& aiWeight = mesh->mBones[i]->mWeights[j];
+				int vertexID = aiWeight.mVertexId;
+				assert(vertexID < vertices.size());
+				vertices[vertexID].AddBoneData(boneID, aiWeight.mWeight);
 			}
 		}
 	}

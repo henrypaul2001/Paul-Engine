@@ -2,10 +2,6 @@
 #include "AnimationChannel.h"
 #include "Model.h"
 namespace Engine {
-
-	static constexpr int MaxBoneInfluence() { return 8; }
-	static constexpr int MaxBoneCount() { return 200; }
-
 	class SkeletalAnimation
 	{
 	public:
