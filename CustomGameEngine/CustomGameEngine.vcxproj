@@ -147,6 +147,7 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CollisionResolver.h" />
     <ClInclude Include="CollisionScene.h" />
+    <ClInclude Include="ComponentAnimator.h" />
     <ClInclude Include="ComponentCollision.h" />
     <ClInclude Include="ComponentCollisionAABB.h" />
     <ClInclude Include="ComponentCollisionBox.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionResolver.cpp" />
     <ClCompile Include="CollisionScene.cpp" />
+    <ClCompile Include="ComponentAnimator.cpp" />
     <ClCompile Include="ComponentCollision.cpp" />
     <ClCompile Include="ComponentCollisionAABB.cpp" />
     <ClCompile Include="ComponentCollisionBox.cpp" />

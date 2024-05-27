@@ -1,0 +1,30 @@
+#include "ComponentAnimator.h"
+namespace Engine {
+	ComponentAnimator::ComponentAnimator(SkeletalAnimation* animation, bool paused)
+	{
+		currentTime = 0.0f;
+		currentAnimation = animation;
+		deltaTime = 0.0f;
+		this->paused = paused;
+	}
+
+	ComponentAnimator::~ComponentAnimator()
+	{
+
+	}
+
+	void ComponentAnimator::UpdateAnimation(float deltaTime, AnimationSkeleton& animationTarget)
+	{
+		if (!paused) {
+			currentTime += currentAnimation->GetTicksPerSecond() * deltaTime;
+			currentTime = fmod(currentTime, currentAnimation->GetDuration());
+		}
+		currentAnimation->Update(deltaTime, currentTime, animationTarget);
+	}
+
+	void ComponentAnimator::ChangeAnimation(SkeletalAnimation* newAnimation)
+	{
+		currentAnimation = newAnimation;
+		currentTime = 0.0f;
+	}
+}
