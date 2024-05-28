@@ -240,6 +240,12 @@ namespace Engine {
 					meshMaterial->isTransparent = true;
 				}
 
+				// retrieve bones
+				if (mesh->HasBones()) {
+					ProcessBones(vertices, mesh, scene);
+					skeleton.finalBoneMatrices = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
+				}
+
 				return new Mesh(vertices, indices, meshMaterial);
 			}
 			else {
@@ -298,7 +304,7 @@ namespace Engine {
 				// retrieve bones
 				if (mesh->HasBones()) {
 					ProcessBones(vertices, mesh, scene);
-					skeleton.finalBoneMatrices = std::vector<glm::mat4>(mesh->mNumBones);
+					skeleton.finalBoneMatrices = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
 				}
 
 				return new Mesh(vertices, indices, pbrMaterial);
