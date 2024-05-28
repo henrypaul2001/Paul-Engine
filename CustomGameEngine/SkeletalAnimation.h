@@ -13,18 +13,15 @@ namespace Engine {
 		const AnimationChannel* GetAnimationChannelAtIndex(const int index) const { return &channels[index]; }
 		const AnimationChannel* GetAnimationChannelByName(const std::string& name);
 
-		const std::vector<glm::mat4>& GetFinalBoneMatrices() const { return finalBoneMatrices; }
-
 		const float GetTicksPerSecond() const { return ticksPerSecond; }
 		const float GetDuration() const { return duration; }
 
 	private:
 		AnimationChannel* FindAnimationChannel(const std::string& name);
-		void CalculateBoneTransformsRecursive(const AnimationBone& bone, const glm::mat4& parentTransform, const AnimationSkeleton& animationTarget, const float currentTime);
+		void CalculateBoneTransformsRecursive(const AnimationBone& bone, const glm::mat4& parentTransform, AnimationSkeleton& animationTarget, const float currentTime);
 
 		float duration;
 		int ticksPerSecond;
 		std::vector<AnimationChannel> channels;
-		std::vector<glm::mat4> finalBoneMatrices;
 	};
 }

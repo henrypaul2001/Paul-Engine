@@ -26,6 +26,8 @@ namespace Engine {
 		std::map<std::string, AnimationBone> bones;
 		AnimationBone* rootBone;
 		glm::mat4 originTransform;
+
+		std::vector<glm::mat4> finalBoneMatrices;
 	};
 
 	class Model

@@ -298,6 +298,7 @@ namespace Engine {
 				// retrieve bones
 				if (mesh->HasBones()) {
 					ProcessBones(vertices, mesh, scene);
+					skeleton.finalBoneMatrices = std::vector<glm::mat4>(mesh->mNumBones);
 				}
 
 				return new Mesh(vertices, indices, pbrMaterial);

@@ -6,7 +6,6 @@ namespace Engine {
 		this->channels = animationChannels;
 		this->duration = duration;
 		this->ticksPerSecond = ticksPerSecond;
-		finalBoneMatrices = std::vector<glm::mat4>(MaxBoneCount());
 	}
 
 	SkeletalAnimation::~SkeletalAnimation() {}
@@ -32,7 +31,7 @@ namespace Engine {
 		return nullptr;
 	}
 
-	void SkeletalAnimation::CalculateBoneTransformsRecursive(const AnimationBone& bone, const glm::mat4& parentTransform, const AnimationSkeleton& animationTarget, const float currentTime)
+	void SkeletalAnimation::CalculateBoneTransformsRecursive(const AnimationBone& bone, const glm::mat4& parentTransform, AnimationSkeleton& animationTarget, const float currentTime)
 	{
 		std::string boneName = bone.name;
 		glm::mat4 nodeTransform = bone.nodeTransform;
@@ -49,7 +48,7 @@ namespace Engine {
 		int index = bone.boneID;
 		glm::mat4 offset = bone.offsetMatrix;
 
-		finalBoneMatrices[index] = globalTransformation * offset;
+		animationTarget.finalBoneMatrices[index] = globalTransformation * offset;
 
 		std::map<std::string, AnimationBone> bones = animationTarget.bones;
 		for (const std::string& childBoneName : bone.childNodeNames) {
