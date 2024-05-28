@@ -1,6 +1,7 @@
 #include "AnimationScene.h"
 #include "GameInputManager.h"
 #include "ComponentAnimator.h"
+#include "SystemSkeletalAnimationUpdater.h"
 namespace Engine {
 	AnimationScene::AnimationScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -104,5 +105,6 @@ namespace Engine {
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemSkeletalAnimationUpdater(), UPDATE_SYSTEMS);
 	}
 }
