@@ -56,6 +56,14 @@ namespace Engine {
 			depthShader->setBool("instanced", geometry->Instanced());
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 
+			// Bones
+			if (geometry->GetModel()->HasBones()) {
+				const AnimationSkeleton& skeleton = geometry->GetModel()->GetAnimationSkeleton();
+				for (int i = 0; i < skeleton.finalBoneMatrices.size(); i++) {
+					depthShader->setMat4("boneTransforms[" + std::to_string(i) + "]", skeleton.finalBoneMatrices[i]);
+				}
+			}
+
 			if (geometry->Cull_Face()) {
 				glEnable(GL_CULL_FACE);
 			}

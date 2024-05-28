@@ -2,6 +2,8 @@
 #include "GameInputManager.h"
 #include "ComponentAnimator.h"
 #include "SystemSkeletalAnimationUpdater.h"
+#include "UIText.h"
+#include "SystemUIRender.h"
 namespace Engine {
 	AnimationScene::AnimationScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -38,6 +40,18 @@ namespace Engine {
 		systemManager->ActionUpdateSystems(entityManager);
 
 		float time = (float)glfwGetTime();
+
+		float fps = 1.0f / Scene::dt;
+
+		float targetFPSPercentage = fps / 160.0f;
+		if (targetFPSPercentage > 1.0f) {
+			targetFPSPercentage = 1.0f;
+		}
+
+		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
+
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 	}
 
 	void AnimationScene::Render()
@@ -68,6 +82,11 @@ namespace Engine {
 		if (key == GLFW_KEY_SLASH) {
 			ChangePostProcessEffect();
 		}
+
+		if (key == GLFW_KEY_KP_3) {
+			ComponentAnimator* anim = dynamic_cast<ComponentAnimator*>(entityManager->FindEntity("Vampire")->GetComponent(COMPONENT_ANIMATOR));
+			anim->SetPause(!anim->Paused());
+		}
 	}
 
 	void AnimationScene::keyDown(int key)
@@ -96,6 +115,20 @@ namespace Engine {
 		vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
 		vampire->AddComponent(new ComponentAnimator(testAnim));
 		entityManager->AddEntity(vampire);
+
+		Entity* vampire2 = new Entity("Vampire 2");
+		vampire2->AddComponent(new ComponentTransform(glm::vec3(4.0f, 0.0f, 0.0f)));
+		vampire2->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+		vampire2->AddComponent(new ComponentAnimator(testAnim));
+		entityManager->AddEntity(vampire2);
+
+		Entity* canvas = new Entity("Canvas");
+		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		canvas->GetTransformComponent()->SetScale(1.0f);
+		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		entityManager->AddEntity(canvas);
 	}
 
 	void AnimationScene::CreateSystems()
@@ -106,5 +139,6 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemSkeletalAnimationUpdater(), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 	}
 }

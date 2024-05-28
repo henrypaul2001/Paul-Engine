@@ -52,6 +52,8 @@ namespace Engine {
 
 		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
 
+		bool HasBones() { return (skeleton.bones.size() > 0); }
+
 		// Helper function to convert ASSIMP aiMatrix4x4 to glm::mat4
 		static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
 		{

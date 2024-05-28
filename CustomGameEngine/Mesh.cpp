@@ -313,15 +313,15 @@ namespace Engine {
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
-		// 5 reserved for instancing
-
 		// ids
-		glEnableVertexAttribArray(6);
+		glEnableVertexAttribArray(5);
 		glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, BoneIDs));
 
 		// weights
-		glEnableVertexAttribArray(7);
+		glEnableVertexAttribArray(6);
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, BoneWeights));
 		glBindVertexArray(0);
+
+		// 7, 8, 9, 10 reserved for instancing
 	}
 }

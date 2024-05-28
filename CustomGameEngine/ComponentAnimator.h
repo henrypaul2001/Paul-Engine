@@ -11,6 +11,8 @@ namespace Engine {
 		ComponentTypes ComponentType() override { return COMPONENT_ANIMATOR; }
 		void Close() override;
 
+		const std::vector<glm::mat4>& GetFinalBonesMatrices() const { return finalBoneMatrices; }
+
 		const bool Paused() const { return paused; }
 
 		void UpdateAnimation(float deltaTime, AnimationSkeleton& animationTarget);
@@ -23,5 +25,7 @@ namespace Engine {
 		SkeletalAnimation* currentAnimation;
 		float currentTime;
 		float deltaTime;
+
+		std::vector<glm::mat4> finalBoneMatrices;
 	};
 }

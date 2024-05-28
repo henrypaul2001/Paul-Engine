@@ -78,15 +78,20 @@ namespace Engine {
 
 		shader->Use();
 
-		//LightManager::GetInstance()->SetShaderUniforms(shader);
-
 		glm::mat4 model = transform->GetWorldModelMatrix();
 		shader->setMat4("model", model);
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 		shader->setBool("instanced", geometry->Instanced());
 		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 		shader->setFloat("textureScale", geometry->GetTextureScale());
-		//shader->setFloat("material.SHININESS", 13.72f);
+
+		// Bones
+		if (geometry->GetModel()->HasBones()) {
+			std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+			for (int i = 0; i < transforms.size(); i++) {
+				shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+			}
+		}
 
 		if (geometry->Cull_Face()) {
 			glEnable(GL_CULL_FACE);
@@ -102,7 +107,7 @@ namespace Engine {
 			glCullFace(GL_FRONT);
 		}
 		else {
-			glCullFace(GL_FRONT);
+			glCullFace(GL_BACK);
 		}
 
 		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances());
@@ -147,6 +152,14 @@ namespace Engine {
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			shader->setFloat("textureScale", geometry->GetTextureScale());
 
+			// Bones
+			if (geometry->GetModel()->HasBones()) {
+				std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+				for (int i = 0; i < transforms.size(); i++) {
+					shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+				}
+			}
+
 			if (geometry->Cull_Face()) {
 				glEnable(GL_CULL_FACE);
 			}
@@ -161,7 +174,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 			else {
-				glCullFace(GL_FRONT);
+				glCullFace(GL_BACK);
 			}
 
 			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->NumInstances());

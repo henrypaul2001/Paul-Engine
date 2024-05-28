@@ -4,7 +4,10 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBitangent;
-layout (location = 5) in mat4 aInstancedModelMatrix;
+layout (location = 5) in ivec4 aBoneIDs;
+layout (location = 6) in vec4 aWeights;
+layout (location = 7) in mat4 aInstancedModelMatrix;
+// 8, 9, 10 reserved for instancing
 
 // uniform block
 layout (std140) uniform Common
@@ -33,6 +36,10 @@ uniform mat4 model;
 uniform mat3 normalMatrix;
 uniform bool instanced;
 
+const int MAX_BONES = 200;
+const int MAX_BONE_INFLUENCE = 8;
+uniform mat4 boneTransforms[MAX_BONES];
+
 void main() {
     mat3 NormalMatrix = normalMatrix;
     mat4 Model = model;
@@ -42,13 +49,30 @@ void main() {
         NormalMatrix = transpose(inverse(mat3(Model)));
     }
 
-    vertex_data.WorldPos = vec3(Model * vec4(aPos, 1.0));
+    vec4 transformedLocalPos = vec4(aPos, 1.0);
+    vec3 transformedNormal = aNormal;
+    vec3 transformTangent = aTangent;
+    vec3 transformedBitangent = aBitangent;
+
+    // Skeletal animation
+    mat4 boneTransform = mat4(0.0);
+    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+        if (aBoneIDs[i] != -1 && aBoneIDs[i] < MAX_BONES) {
+            boneTransform += boneTransforms[aBoneIDs[i]] * aWeights[i];
+        }
+    }
+    transformedLocalPos = boneTransform * vec4(aPos, 1.0);
+    transformedNormal = normalize(vec3(boneTransform * vec4(aNormal, 1.0)));
+    transformTangent = normalize(vec3(boneTransform * vec4(aTangent, 1.0)));
+    transformedBitangent = normalize(vec3(boneTransform * vec4(aBitangent, 1.0)));
+
+    vertex_data.WorldPos = vec3(Model * transformedLocalPos);
     vertex_data.TexCoords = aTexCoords;
-    vertex_data.Normal = NormalMatrix * aNormal;
+    vertex_data.Normal = normalize(NormalMatrix * transformedNormal);
     
-    vec3 T = normalize(vec3(Model * vec4(aTangent,   0.0)));
-    vec3 B = normalize(vec3(Model * vec4(aBitangent, 0.0)));
-    vec3 N = normalize(vec3(Model * vec4(aNormal,    0.0)));
+    vec3 T = normalize(vec3(Model * vec4(transformTangent,      0.0)));
+    vec3 B = normalize(vec3(Model * vec4(transformedBitangent,  0.0)));
+    vec3 N = normalize(vec3(Model * vec4(transformedNormal,     0.0)));
     vertex_data.TBN = transpose(mat3(T, B, N));
 
     vertex_data.TangentWorldPos = vertex_data.TBN * vertex_data.WorldPos;
@@ -57,5 +81,4 @@ void main() {
     view_data.ViewPos = viewPos;
     
     gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
-    //gl_Position = projection * viewModelPos;
 }

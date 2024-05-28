@@ -25,6 +25,7 @@ namespace Engine {
 			currentTime = fmod(currentTime, currentAnimation->GetDuration());
 		}
 		currentAnimation->Update(deltaTime, currentTime, animationTarget);
+		finalBoneMatrices = animationTarget.finalBoneMatrices;
 	}
 
 	void ComponentAnimator::ChangeAnimation(SkeletalAnimation* newAnimation)

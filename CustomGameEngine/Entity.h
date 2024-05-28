@@ -7,6 +7,7 @@
 #include "ComponentGeometry.h"
 #include "ComponentLight.h"
 #include "ComponentUICanvas.h"
+#include "ComponentAnimator.h"
 namespace Engine
 {
 	class Entity
@@ -33,6 +34,7 @@ namespace Engine
 		ComponentCollisionBox* GetBoxCollisionComponent() { return dynamic_cast<ComponentCollisionBox*>(GetComponent(COMPONENT_COLLISION_BOX)); }
 		ComponentPhysics* GetPhysicsComponent() { return dynamic_cast<ComponentPhysics*>(GetComponent(COMPONENT_PHYSICS)); }
 		ComponentUICanvas* GetUICanvasComponent() { return dynamic_cast<ComponentUICanvas*>(GetComponent(COMPONENT_UICANVAS)); }
+		ComponentAnimator* GetAnimator() { return dynamic_cast<ComponentAnimator*>(GetComponent(COMPONENT_ANIMATOR)); }
 
 		bool ContainsComponents(const ComponentTypes MASK);
 
