@@ -104,6 +104,8 @@ float Alpha;
 
 uniform float BloomThreshold;
 
+uniform bool OpaqueRenderPass;
+
 const float minLayers = 8.0;
 const float maxLayers = 32.0;
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
@@ -343,26 +345,7 @@ vec3 BlinnPhongPointLight(Light light) {
     return lighting;
 }
 
-void main() {
-    TangentViewDirection = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
-
-    TexCoords = vertex_data.TexCoords;
-    TexCoords *= textureScale;
-
-    // Apply parallax mapping to tex coords if material has height map
-    if (material.useHeightMap) {
-        TexCoords = ParallaxMapping(TexCoords, TangentViewDirection);
-        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
-            //discard;
-        }
-    }
-
-    // Get alpha
-    Alpha = 1.0;
-    if (material.useOpacityMap) {
-        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
-    }
-
+void CalculateLighting() {
     // Get base colour
     Colour = material.DIFFUSE;
     if (material.useDiffuseMap) {
@@ -408,4 +391,42 @@ void main() {
     }
 
     FragColour = vec4(Lighting, Alpha);
+}
+
+void main() {
+    bool opaquePixel = false;
+
+    TexCoords = vertex_data.TexCoords;
+    TexCoords *= textureScale;
+
+    TangentViewDirection = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
+
+    // Apply parallax mapping to tex coords if material has height map
+    if (material.useHeightMap) {
+        TexCoords = ParallaxMapping(TexCoords, TangentViewDirection);
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            //discard;
+        }
+    }
+
+    // Get alpha
+    Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
+
+    if (Alpha == 1.0) {
+        opaquePixel = true;
+    }
+
+    // First pass will render fully opaque pixels. Second pass will render non opaque pixels
+    if (OpaqueRenderPass && opaquePixel) {
+        CalculateLighting();
+    }
+    else if (!OpaqueRenderPass && !opaquePixel) {
+        CalculateLighting();
+    }
+    else {
+        discard;
+    }
 }

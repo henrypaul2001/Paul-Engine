@@ -55,12 +55,14 @@ namespace Engine {
 			depthShader->setMat4("model", transform->GetWorldModelMatrix());
 			depthShader->setBool("instanced", geometry->Instanced());
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			depthShader->setBool("hasBones", false);
 
 			// Bones
 			if (geometry->GetModel()->HasBones()) {
-				const AnimationSkeleton& skeleton = geometry->GetModel()->GetAnimationSkeleton();
-				for (int i = 0; i < skeleton.finalBoneMatrices.size(); i++) {
-					depthShader->setMat4("boneTransforms[" + std::to_string(i) + "]", skeleton.finalBoneMatrices[i]);
+				depthShader->setBool("hasBones", true);
+				std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+				for (int i = 0; i < transforms.size(); i++) {
+					depthShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
 				}
 			}
 

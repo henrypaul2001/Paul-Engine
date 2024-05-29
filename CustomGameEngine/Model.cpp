@@ -39,14 +39,20 @@ namespace Engine {
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
+				meshes[i]->Draw(shader, pbr, instanceNum);
+				/*
 				if (!meshes[i]->GetMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
+				*/
 			}
 			else {
+				meshes[i]->Draw(shader, pbr, instanceNum);
+				/*
 				if (!meshes[i]->GetPBRMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
+				*/
 			}
 		}
 	}
@@ -55,14 +61,20 @@ namespace Engine {
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
+				meshes[i]->Draw(shader, pbr, instanceNum);
+				/*
 				if (meshes[i]->GetMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
+				*/
 			}
 			else {
+				meshes[i]->Draw(shader, pbr, instanceNum);
+				/*
 				if (meshes[i]->GetPBRMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
+				*/
 			}
 		}
 	}

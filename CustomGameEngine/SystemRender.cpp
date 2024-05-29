@@ -85,6 +85,7 @@ namespace Engine {
 		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 		shader->setFloat("textureScale", geometry->GetTextureScale());
 		shader->setBool("hasBones", false);
+		shader->setBool("OpaqueRenderPass", true);
 
 		// Bones
 		if (geometry->GetModel()->HasBones()) {
@@ -154,6 +155,7 @@ namespace Engine {
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			shader->setFloat("textureScale", geometry->GetTextureScale());
 			shader->setBool("hasBones", false);
+			shader->setBool("OpaqueRenderPass", false);
 
 			// Bones
 			if (geometry->GetModel()->HasBones()) {
