@@ -3,6 +3,7 @@
 struct Material {
     sampler2D TEXTURE_OPACITY1;
     bool useOpacityMap;
+    float shadowCastAlphaDiscardThreshold;
 };
 uniform Material material;
 
@@ -12,8 +13,6 @@ in vec2 texCoords;
 
 vec2 TexCoords;
 float Alpha;
-
-float alphaDiscardThreshold = 0.5;
 
 void main() {
     TexCoords = texCoords;
@@ -26,7 +25,7 @@ void main() {
     }
 
 
-    if (Alpha < alphaDiscardThreshold) {
+    if (Alpha < material.shadowCastAlphaDiscardThreshold) {
         discard;
     }
     else {

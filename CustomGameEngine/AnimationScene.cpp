@@ -123,7 +123,7 @@ namespace Engine {
 		entityManager->AddEntity(vampire2);
 
 		Entity* cube = new Entity("Cube");
-		cube->AddComponent(new ComponentTransform(0.0f, 1.75f, 3.0f));
+		cube->AddComponent(new ComponentTransform(0.0f, 0.9f, 3.0f));
 		cube->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		cube->GetTransformComponent()->SetScale(0.75f);
 		entityManager->AddEntity(cube);

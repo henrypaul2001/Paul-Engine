@@ -60,6 +60,7 @@ namespace Engine {
 			shader.setVec3("material.SPECULAR", material->specular);
 			shader.setFloat("material.SHININESS", material->shininess);
 			shader.setFloat("material.HEIGHT_SCALE", material->height_scale);
+			shader.setFloat("material.shadowCastAlphaDiscardThreshold", material->shadowCastAlphaDiscardThreshold);
 
 			// diffuse maps
 			for (int i = 0; i < material->diffuseMaps.size(); i++) {
@@ -154,6 +155,7 @@ namespace Engine {
 			shader.setFloat("material.ROUGHNESS", PBRmaterial->roughness);
 			shader.setFloat("material.AO", PBRmaterial->ao);
 			shader.setFloat("material.HEIGHT_SCALE", PBRmaterial->height_scale);
+			shader.setFloat("material.shadowCastAlphaDiscardThreshold", PBRmaterial->shadowCastAlphaDiscardThreshold);
 
 			int count = 0;
 

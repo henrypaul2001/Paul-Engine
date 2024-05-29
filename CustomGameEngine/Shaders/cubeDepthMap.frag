@@ -4,6 +4,7 @@ in vec4 FragPos;
 struct Material {
     sampler2D TEXTURE_OPACITY1;
     bool useOpacityMap;
+    float shadowCastAlphaDiscardThreshold;
 };
 uniform Material material;
 
@@ -13,8 +14,6 @@ in vec2 texCoords;
 
 vec2 TexCoords;
 float Alpha;
-
-float alphaDiscardThreshold = 0.5;
 
 uniform vec3 lightPos;
 uniform float far_plane;
@@ -29,7 +28,7 @@ void main() {
         Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
     }
 
-    if (Alpha < alphaDiscardThreshold) {
+    if (Alpha < material.shadowCastAlphaDiscardThreshold) {
         discard;
     }
     else {

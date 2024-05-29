@@ -78,6 +78,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_ANIMATION);
+		ChangeScene(SCENE_PBR);
 	}
 }

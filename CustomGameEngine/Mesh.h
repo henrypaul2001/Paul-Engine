@@ -91,6 +91,7 @@ namespace Engine {
 
 		float shininess;
 		float height_scale;
+		float shadowCastAlphaDiscardThreshold = 0.5f;
 
 		glm::vec3 diffuse;
 		glm::vec3 specular;
@@ -109,6 +110,7 @@ namespace Engine {
 		std::vector<Texture*> opacityMaps;
 
 		float height_scale;
+		float shadowCastAlphaDiscardThreshold = 0.5f;
 
 		glm::vec3 albedo;
 		float metallic;

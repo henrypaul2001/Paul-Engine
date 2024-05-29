@@ -127,6 +127,7 @@ vec3 R;
 vec3 F0;
 
 uniform float BloomThreshold;
+uniform bool OpaqueRenderPass;
 
 const float PI = 3.14159265359;
 
@@ -445,25 +446,8 @@ vec3 GetNormalFromMap() {
     return normalize(TBN * tangentNormal);
 }
 
-void main() {
-
-    TexCoords = vertex_data.TexCoords;
-    // Apply parallax mapping to tex coords if material has height map
-    if (material.useHeightMap) {
-        vec3 viewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
-        TexCoords = ParallaxMapping(TexCoords, viewDir);
-        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
-            //discard;
-        }
-    }
-
-    // Get alpha
-    Alpha = 1.0;
-    if (material.useOpacityMap) {
-        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
-    }
-
-	// Get material colour
+void CalculateLighting() {
+    // Get material colour
     Albedo = material.ALBEDO;
     if (material.useAlbedoMap) {
         Albedo = texture(material.TEXTURE_ALBEDO1, TexCoords).rgb;
@@ -560,4 +544,38 @@ void main() {
     }
 
     FragColour = vec4(Colour, Alpha);
+}
+
+void main() {
+    bool opaquePixel = false;
+    TexCoords = vertex_data.TexCoords;
+    // Apply parallax mapping to tex coords if material has height map
+    if (material.useHeightMap) {
+        vec3 viewDir = normalize(view_data.TangentViewPos - vertex_data.TangentFragPos);
+        TexCoords = ParallaxMapping(TexCoords, viewDir);
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            //discard;
+        }
+    }
+
+    // Get alpha
+    Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
+
+    if (Alpha == 1.0) {
+        opaquePixel = true;
+    }
+    
+    // First pass will render fully opaque pixels. Second pass will render non opaque pixels
+    if (OpaqueRenderPass && opaquePixel) {
+        CalculateLighting();
+    }
+    else if (!OpaqueRenderPass && !opaquePixel) {
+        CalculateLighting();
+    }
+    else {
+        discard;
+    }
 }
