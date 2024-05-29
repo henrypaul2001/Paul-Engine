@@ -73,6 +73,10 @@ void main() {
         transformedBitangent = normalize(boneNormalTransform * aBitangent);
     }
 
+    vertex_data.TexCoords = aTexCoords * textureScale;
+    vertex_data.WorldPos = vec3(Model * transformedLocalPos);
+    vertex_data.Normal = normalize(NormalMatrix * transformedNormal);
+
     // Tangent space
     vec3 T = normalize(NormalMatrix * transformTangent);
     vec3 N = normalize(NormalMatrix * transformedNormal);
