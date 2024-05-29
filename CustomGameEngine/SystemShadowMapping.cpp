@@ -55,6 +55,7 @@ namespace Engine {
 			depthShader->setMat4("model", transform->GetWorldModelMatrix());
 			depthShader->setBool("instanced", geometry->Instanced());
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			depthShader->setFloat("textureScale", geometry->GetTextureScale());
 			depthShader->setBool("hasBones", false);
 
 			// Bones

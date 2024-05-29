@@ -1,5 +1,6 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
+layout (location = 2) in vec2 aTexCoords;
 layout (location = 5) in ivec4 aBoneIDs;
 layout (location = 6) in vec4 aWeights;
 layout (location = 7) in mat4 aInstancedModelMatrix;
@@ -12,6 +13,8 @@ const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 8;
 uniform mat4 boneTransforms[MAX_BONES];
 uniform bool hasBones;
+
+out vec2 texCoords;
 
 void main() {
 	mat4 Model = model;
@@ -33,6 +36,8 @@ void main() {
         }
         transformedLocalPos = boneTransform * vec4(aPos, 1.0);
     }
+
+    texCoords = aTexCoords;
 
 	gl_Position = Model * transformedLocalPos;
 }

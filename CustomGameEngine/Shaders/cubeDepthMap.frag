@@ -1,16 +1,45 @@
 #version 330 core
 in vec4 FragPos;
 
+struct Material {
+    sampler2D TEXTURE_OPACITY1;
+    bool useOpacityMap;
+};
+uniform Material material;
+
+uniform float textureScale;
+
+in vec2 texCoords;
+
+vec2 TexCoords;
+float Alpha;
+
+float alphaDiscardThreshold = 0.5;
+
 uniform vec3 lightPos;
 uniform float far_plane;
 
 void main() {
-	// get distance between fragment and light source
-	float lightDistance = length(FragPos.xyz - lightPos);
+    TexCoords = texCoords;
+    TexCoords *= textureScale;
 
-	// map to 0,1 range by dividing by far plane
-	lightDistance = lightDistance / far_plane;
+    // Get alpha
+    Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
 
-	// write as modified depth
-	gl_FragDepth = lightDistance;
+    if (Alpha < alphaDiscardThreshold) {
+        discard;
+    }
+    else {
+	    // get distance between fragment and light source
+	    float lightDistance = length(FragPos.xyz - lightPos);
+
+	    // map to 0,1 range by dividing by far plane
+	    lightDistance = lightDistance / far_plane;
+
+	    // write as modified depth
+	    gl_FragDepth = lightDistance;
+    }
 }
