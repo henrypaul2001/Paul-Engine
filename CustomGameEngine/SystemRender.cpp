@@ -84,9 +84,11 @@ namespace Engine {
 		shader->setBool("instanced", geometry->Instanced());
 		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 		shader->setFloat("textureScale", geometry->GetTextureScale());
+		shader->setBool("hasBones", false);
 
 		// Bones
 		if (geometry->GetModel()->HasBones()) {
+			shader->setBool("hasBones", true);
 			std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
 			for (int i = 0; i < transforms.size(); i++) {
 				shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
@@ -151,9 +153,11 @@ namespace Engine {
 			shader->setBool("instanced", geometry->Instanced());
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			shader->setFloat("textureScale", geometry->GetTextureScale());
+			shader->setBool("hasBones", false);
 
 			// Bones
 			if (geometry->GetModel()->HasBones()) {
+				shader->setBool("hasBones", true);
 				std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
 				for (int i = 0; i < transforms.size(); i++) {
 					shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);

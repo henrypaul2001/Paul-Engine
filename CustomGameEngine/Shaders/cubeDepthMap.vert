@@ -11,6 +11,7 @@ uniform bool instanced;
 const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 8;
 uniform mat4 boneTransforms[MAX_BONES];
+uniform bool hasBones;
 
 void main() {
 	mat4 Model = model;
@@ -18,16 +19,20 @@ void main() {
 		Model = aInstancedModelMatrix;
 	}
 
-	vec4 transformedLocalPos = vec4(0.0);
+	vec4 transformedLocalPos = vec4(aPos, 1.0);
 
-    // Skeletal animation
-    mat4 boneTransform = mat4(0.0);
-    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-        if (aBoneIDs[i] != -1 && aBoneIDs[i] < MAX_BONES) {
-            boneTransform += boneTransforms[aBoneIDs[i]] * aWeights[i];
+    if (hasBones) {
+        // Skeletal animation
+        mat4 boneTransform = mat4(0.0);
+        mat3 boneNormalTransform = mat3(0.0);
+        for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+            if (aBoneIDs[i] != -1 && aBoneIDs[i] < MAX_BONES) {
+                boneTransform += boneTransforms[aBoneIDs[i]] * aWeights[i];
+                boneNormalTransform += mat3(boneTransforms[aBoneIDs[i]]) * aWeights[i];
+            }
         }
+        transformedLocalPos = boneTransform * vec4(aPos, 1.0);
     }
-    transformedLocalPos = boneTransform * vec4(aPos, 1.0);
 
 	gl_Position = Model * transformedLocalPos;
 }

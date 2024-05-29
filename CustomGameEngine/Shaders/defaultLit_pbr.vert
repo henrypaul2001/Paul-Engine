@@ -39,6 +39,7 @@ uniform bool instanced;
 const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 8;
 uniform mat4 boneTransforms[MAX_BONES];
+uniform bool hasBones;
 
 uniform float textureScale;
 
@@ -56,19 +57,21 @@ void main() {
     vec3 transformTangent = aTangent;
     vec3 transformedBitangent = aBitangent;
 
-    // Skeletal animation
-    mat4 boneTransform = mat4(0.0);
-    mat3 boneNormalTransform = mat3(0.0);
-    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-        if (aBoneIDs[i] != -1 && aBoneIDs[i] < MAX_BONES) {
-            boneTransform += boneTransforms[aBoneIDs[i]] * aWeights[i];
-            boneNormalTransform += mat3(boneTransforms[aBoneIDs[i]]) * aWeights[i];
+    if (hasBones) {
+        // Skeletal animation
+        mat4 boneTransform = mat4(0.0);
+        mat3 boneNormalTransform = mat3(0.0);
+        for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+            if (aBoneIDs[i] != -1 && aBoneIDs[i] < MAX_BONES) {
+                boneTransform += boneTransforms[aBoneIDs[i]] * aWeights[i];
+                boneNormalTransform += mat3(boneTransforms[aBoneIDs[i]]) * aWeights[i];
+            }
         }
+        transformedLocalPos = boneTransform * vec4(aPos, 1.0);
+        transformedNormal = normalize(boneNormalTransform * aNormal);
+        transformTangent = normalize(boneNormalTransform * aTangent);
+        transformedBitangent = normalize(boneNormalTransform * aBitangent);
     }
-    transformedLocalPos = boneTransform * vec4(aPos, 1.0);
-    transformedNormal = normalize(boneNormalTransform * aNormal);
-    transformTangent = normalize(boneNormalTransform * aTangent);
-    transformedBitangent = normalize(boneNormalTransform * aBitangent);
 
     // Tangent space
     vec3 T = normalize(NormalMatrix * transformTangent);

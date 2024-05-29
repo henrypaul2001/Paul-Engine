@@ -122,6 +122,12 @@ namespace Engine {
 		vampire2->AddComponent(new ComponentAnimator(testAnim));
 		entityManager->AddEntity(vampire2);
 
+		Entity* cube = new Entity("Cube");
+		cube->AddComponent(new ComponentTransform(0.0f, 1.0f, 2.0f));
+		cube->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		cube->GetTransformComponent()->SetScale(0.5f);
+		entityManager->AddEntity(cube);
+
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->GetTransformComponent()->SetScale(1.0f);
