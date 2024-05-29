@@ -101,7 +101,7 @@ namespace Engine {
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
 		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-		directional->Colour = glm::vec3(6.0f, 6.0f, 8.0f);
+		directional->Colour = glm::vec3(1.0f, 1.0f, 1.5f);
 		directional->Specular = glm::vec3(0.0f);
 		directional->ShadowProjectionSize = 70.0f;
 		directional->Far = 150.0f;
@@ -111,22 +111,28 @@ namespace Engine {
 		SkeletalAnimation* testAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
 
 		Entity* vampire = new Entity("Vampire");
-		vampire->AddComponent(new ComponentTransform(glm::vec3(0.0f, 0.0f, 0.0f)));
+		vampire->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.5f, 0.0f)));
 		vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
 		vampire->AddComponent(new ComponentAnimator(testAnim));
 		entityManager->AddEntity(vampire);
 
 		Entity* vampire2 = new Entity("Vampire 2");
-		vampire2->AddComponent(new ComponentTransform(glm::vec3(4.0f, 0.0f, 0.0f)));
+		vampire2->AddComponent(new ComponentTransform(glm::vec3(4.0f, -0.5f, 0.0f)));
 		vampire2->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
 		vampire2->AddComponent(new ComponentAnimator(testAnim));
 		entityManager->AddEntity(vampire2);
 
 		Entity* cube = new Entity("Cube");
-		cube->AddComponent(new ComponentTransform(0.0f, 1.0f, 2.0f));
+		cube->AddComponent(new ComponentTransform(0.0f, 1.75f, 3.0f));
 		cube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		cube->GetTransformComponent()->SetScale(0.5f);
+		cube->GetTransformComponent()->SetScale(0.75f);
 		entityManager->AddEntity(cube);
+
+		Entity* floor = new Entity("Floor");
+		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));
+		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		floor->GetTransformComponent()->SetScale(10.0f, 0.1f, 10.0f);
+		entityManager->AddEntity(floor);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
