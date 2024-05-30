@@ -27,6 +27,7 @@ struct PBRMaterial {
     sampler2D TEXTURE_ROUGHNESS1;
     sampler2D TEXTURE_AO1;
     sampler2D TEXTURE_DISPLACE1;
+    sampler2D TEXTURE_OPACITY1;
 
     float HEIGHT_SCALE;
 
@@ -42,15 +43,18 @@ struct PBRMaterial {
     bool useRoughnessMap;
     bool useAoMap;
     bool useHeightMap;
+    bool useOpacityMap;
 };
 uniform PBRMaterial material;
 uniform float textureScale;
+uniform bool OpaqueRenderPass;
 
 vec3 Albedo;
 vec3 Normal;
 float Metallic;
 float Roughness;
 float AO;
+float Alpha;
 vec2 TexCoords;
 
 const float minLayers = 8.0;
@@ -113,20 +117,7 @@ vec3 GetNormalFromMap() {
     return normalize(TBN * tangentNormal);
 }
 
-void main() {
-    TexCoords = vertex_data.TexCoords;
-    TexCoords *= textureScale;
-
-    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentWorldPos);
-
-    // Apply parallax mapping to tex coords if material has height map
-    if (material.useHeightMap) {
-        TexCoords = ParallaxMapping(TexCoords, tangentViewDir);
-        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
-            //discard;
-        }
-    }
-
+void WriteToBuffers() {
     // Position
     gPosition.xyz = vertex_data.WorldPos;
 
@@ -168,4 +159,36 @@ void main() {
     gARM.b = Metallic;
 
     gPBRFLAG = 1.0;
+}
+
+void main() {
+    TexCoords = vertex_data.TexCoords;
+    TexCoords *= textureScale;
+
+    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentWorldPos);
+
+    // Apply parallax mapping to tex coords if material has height map
+    if (material.useHeightMap) {
+        TexCoords = ParallaxMapping(TexCoords, tangentViewDir);
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            //discard;
+        }
+    }
+
+    // Get alpha
+    Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
+
+    // First pass will render fully opaque pixels. Second pass will render non opaque pixels
+    if (OpaqueRenderPass && Alpha >= 1.0) {
+        WriteToBuffers();
+    }
+    else if (!OpaqueRenderPass && Alpha < 1.0) {
+        WriteToBuffers();
+    }
+    else {
+        discard;
+    }
 }

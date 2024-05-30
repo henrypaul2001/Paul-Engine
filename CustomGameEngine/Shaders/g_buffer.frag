@@ -42,6 +42,7 @@ struct Material {
 };
 uniform Material material;
 uniform float textureScale;
+uniform bool OpaqueRenderPass;
 
 const float minLayers = 8.0;
 const float maxLayers = 32.0;
@@ -87,20 +88,9 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
     return finalTexCoords;
 }
 
-void main() {
-    vec2 TexCoords = vertex_data.TexCoords;
-    TexCoords *= textureScale;
+vec2 TexCoords;
 
-    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentWorldPos);
-
-    // Apply parallax mapping to tex coords if material has height map
-    if (material.useHeightMap) {
-        TexCoords = ParallaxMapping(TexCoords, tangentViewDir);
-        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
-            //discard;
-        }
-    }
-
+void WriteToBuffers() {
     // Position
     gPosition.xyz = vertex_data.WorldPos;
 
@@ -128,4 +118,36 @@ void main() {
     gSpecular.a = material.SHININESS;
 
     gPBRFLAG = 0.0;
+}
+
+void main() {
+    TexCoords = vertex_data.TexCoords;
+    TexCoords *= textureScale;
+
+    vec3 tangentViewDir = normalize(view_data.TangentViewPos - vertex_data.TangentWorldPos);
+
+    // Apply parallax mapping to tex coords if material has height map
+    if (material.useHeightMap) {
+        TexCoords = ParallaxMapping(TexCoords, tangentViewDir);
+        if (TexCoords.x > 1.0 || TexCoords.y > 1.0 || TexCoords.x < 0.0 || TexCoords.y < 0.0) {
+            //discard;
+        }
+    }
+
+    // Get alpha
+    float Alpha = 1.0;
+    if (material.useOpacityMap) {
+        Alpha = texture(material.TEXTURE_OPACITY1, TexCoords).a;
+    }
+
+    // First pass will render fully opaque pixels. Second pass will render non opaque pixels
+    if (OpaqueRenderPass && Alpha >= 1.0) {
+        WriteToBuffers();
+    }
+    else if (!OpaqueRenderPass && Alpha < 1.0) {
+        WriteToBuffers();
+    }
+    else {
+        discard;
+    }
 }
