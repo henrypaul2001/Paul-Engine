@@ -72,18 +72,20 @@ void main() {
     }
 
     vertex_data.WorldPos = vec3(Model * transformedLocalPos);
-    vertex_data.TexCoords = aTexCoords;
     vertex_data.Normal = normalize(NormalMatrix * transformedNormal);
+    vertex_data.TexCoords = aTexCoords;
     
     vec3 T = normalize(vec3(Model * vec4(transformTangent,      0.0)));
     vec3 B = normalize(vec3(Model * vec4(transformedBitangent,  0.0)));
     vec3 N = normalize(vec3(Model * vec4(transformedNormal,     0.0)));
-    vertex_data.TBN = transpose(mat3(T, B, N));
+    
+    mat3 TBN = transpose(mat3(T, B, N));
+    vertex_data.TBN = TBN;
 
     vertex_data.TangentWorldPos = vertex_data.TBN * vertex_data.WorldPos;
 
     view_data.TangentViewPos = vertex_data.TBN * viewPos;
     view_data.ViewPos = viewPos;
     
-    gl_Position = projection * view * vec4(vertex_data.WorldPos, 1.0);
+    gl_Position = projection * view * Model * transformedLocalPos;
 }
