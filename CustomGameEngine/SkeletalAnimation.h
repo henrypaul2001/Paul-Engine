@@ -16,6 +16,8 @@ namespace Engine {
 		const float GetTicksPerSecond() const { return ticksPerSecond; }
 		const float GetDuration() const { return duration; }
 
+		void SetDuration(float newDuration) { this->duration = newDuration; }
+		void SetTicksPerSecond(float newTPS) { this->ticksPerSecond = newTPS; }
 	private:
 		AnimationChannel* FindAnimationChannel(const std::string& name);
 		void CalculateBoneTransformsRecursive(const AnimationBone& bone, const glm::mat4& parentTransform, AnimationSkeleton& animationTarget, const float currentTime);
