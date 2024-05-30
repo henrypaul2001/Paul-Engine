@@ -5,6 +5,7 @@ namespace Engine {
 		currentTime = 0.0f;
 		currentAnimation = animation;
 		deltaTime = 0.0f;
+		speedModifier = 1.0f;
 		this->paused = paused;
 	}
 
@@ -20,6 +21,7 @@ namespace Engine {
 
 	void ComponentAnimator::UpdateAnimation(float deltaTime, AnimationSkeleton& animationTarget)
 	{
+		deltaTime *= speedModifier;
 		if (!paused) {
 			currentTime += currentAnimation->GetTicksPerSecond() * deltaTime;
 			currentTime = fmod(currentTime, currentAnimation->GetDuration());
