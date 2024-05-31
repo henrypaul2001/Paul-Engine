@@ -13,6 +13,7 @@ namespace Engine {
 			meshes.push_back(new Mesh(ResourceManager::GetInstance()->DefaultSphere()));
 		}
 		containsTransparentMeshes = false;
+		hasBones = false;
 		this->pbr = pbr;
 	}
 
@@ -20,6 +21,7 @@ namespace Engine {
 	{
 		pbr = false;
 		containsTransparentMeshes = false;
+		hasBones = false;
 		LoadModel(filepath);
 	}
 
@@ -27,6 +29,7 @@ namespace Engine {
 	{
 		this->pbr = pbr;
 		containsTransparentMeshes = false;
+		hasBones = false;
 		LoadModel(filepath);
 	}
 
@@ -105,6 +108,16 @@ namespace Engine {
 		}
 	}
 
+	void Model::RetargetSkeletonRootBone(const std::string& boneName)
+	{
+		if (skeleton.bones.find(boneName) != skeleton.bones.end()) {
+			skeleton.rootBone = &skeleton.bones[boneName];
+		}
+		else {
+			std::cout << "ERROR::MODEL::RETARGETSKELETONROOTBONE::Bone not found" << std::endl;
+		}
+	}
+
 	void Model::LoadModel(std::string filepath)
 	{
 		Assimp::Importer importer;
@@ -117,6 +130,10 @@ namespace Engine {
 		directory = filepath.substr(0, filepath.find_last_of('/'));
 
 		ProcessNode(scene->mRootNode, scene);
+
+		if (hasBones) {
+			ProcessRootBones(scene->mRootNode);
+		}
 	}
 
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)
@@ -249,7 +266,8 @@ namespace Engine {
 				// retrieve bones
 				if (mesh->HasBones()) {
 					ProcessBones(vertices, mesh, scene);
-					skeleton.finalBoneMatrices = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
+					std::vector<glm::mat4> meshBones = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
+					skeleton.finalBoneMatrices.insert(skeleton.finalBoneMatrices.end(), meshBones.begin(), meshBones.end());
 				}
 
 				return new Mesh(vertices, indices, meshMaterial);
@@ -310,7 +328,8 @@ namespace Engine {
 				// retrieve bones
 				if (mesh->HasBones()) {
 					ProcessBones(vertices, mesh, scene);
-					skeleton.finalBoneMatrices = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
+					std::vector<glm::mat4> meshBones = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
+					skeleton.finalBoneMatrices.insert(skeleton.finalBoneMatrices.end(), meshBones.begin(), meshBones.end());
 				}
 
 				return new Mesh(vertices, indices, pbrMaterial);
@@ -321,6 +340,8 @@ namespace Engine {
 	void Model::ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
 	{
 		for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+			hasBones = true;
+
 			// Get bone ID
 			// -----------
 			int boneID = -1;
@@ -360,6 +381,45 @@ namespace Engine {
 				int vertexID = aiWeight.mVertexId;
 				assert(vertexID < vertices.size());
 				vertices[vertexID].AddBoneData(boneID, aiWeight.mWeight);
+			}
+		}
+	}
+
+	bool Model::ProcessRootBones(aiNode* node)
+	{
+		if (node) {
+			std::string nodeName = node->mName.C_Str();
+
+			if (skeleton.bones.find(nodeName) == skeleton.bones.end()) {
+
+				bool isRootBone = false;
+				for (int i = 0; i < node->mNumChildren; i++) {
+					aiNode* child = node->mChildren[i];
+
+					if (ProcessRootBones(child)) {
+						isRootBone = true;
+					}
+				}
+
+				if (isRootBone) {
+					AnimationBone newBone;
+					newBone.boneID = -1;
+					newBone.nodeTransform = ConvertMatrixToGLMFormat(node->mTransformation);
+					newBone.name = nodeName;
+
+					for (int i = 0; i < node->mNumChildren; i++) {
+						newBone.childNodeNames.push_back(node->mChildren[i]->mName.C_Str());
+					}
+
+					skeleton.rootBones[nodeName] = newBone;
+					skeleton.rootBone = &skeleton.rootBones[nodeName];
+				}
+				return isRootBone;
+			}
+			else {
+				// Bone already attached to mesh, no need to process
+				// Tell parent that this branch contains bones, thus a root node needs to be created above it. Return true
+				return true;
 			}
 		}
 	}

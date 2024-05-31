@@ -23,7 +23,12 @@ namespace Engine {
 	};
 
 	struct AnimationSkeleton {
+		// Map of bones attached to a mesh
 		std::map<std::string, AnimationBone> bones;
+
+		// Map of bones that are not tied to any mesh or vertex, but required to apply transformations to the rest of the bones
+		std::map<std::string, AnimationBone> rootBones;
+
 		AnimationBone* rootBone;
 		glm::mat4 originTransform;
 
@@ -52,7 +57,7 @@ namespace Engine {
 
 		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
 
-		bool HasBones() { return (skeleton.bones.size() > 0); }
+		bool HasBones() { return hasBones; }
 
 		// Helper function to convert ASSIMP aiMatrix4x4 to glm::mat4
 		static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
@@ -68,6 +73,8 @@ namespace Engine {
 
 		AnimationSkeleton& GetAnimationSkeleton() { return skeleton; }
 
+		void RetargetSkeletonRootBone(const std::string& boneName);
+
 		std::vector<Mesh*> meshes;
 		//std::vector<Texture> textures_loaded;
 	private:
@@ -78,10 +85,13 @@ namespace Engine {
 
 		AnimationSkeleton skeleton;
 
+		bool hasBones;
+
 		void LoadModel(std::string filepath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
+		bool ProcessRootBones(aiNode* node);
 		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name);
 	};
 }
