@@ -108,25 +108,30 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		SkeletalAnimation* testAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
+		SkeletalAnimation* vampireDanceAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
+		SkeletalAnimation* flairAnim = ResourceManager::GetInstance()->LoadAnimation("Animations/trip_new.dae");
+		SkeletalAnimation* nurseTestAnim = ResourceManager::GetInstance()->LoadAnimation("Models/nurseNew/nurse.dae");
 
 		Entity* vampire = new Entity("Vampire");
 		vampire->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.5f, 0.0f)));
 		vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-		vampire->AddComponent(new ComponentAnimator(testAnim));
+		vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
 		entityManager->AddEntity(vampire);
 
 		Entity* vampire2 = new Entity("Vampire 2");
 		vampire2->AddComponent(new ComponentTransform(glm::vec3(4.0f, -0.5f, 0.0f)));
 		vampire2->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-		vampire2->AddComponent(new ComponentAnimator(testAnim));
+		vampire2->AddComponent(new ComponentAnimator(vampireDanceAnim));
+		vampire2->GetAnimator()->SetSpeedModifier(0.5f);
 		entityManager->AddEntity(vampire2);
 
-		Entity* cube = new Entity("Cube");
-		cube->AddComponent(new ComponentTransform(0.0f, 0.9f, 3.0f));
-		cube->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		cube->GetTransformComponent()->SetScale(0.75f);
-		entityManager->AddEntity(cube);
+		Entity* nurse = new Entity("Nurse");
+		nurse->AddComponent(new ComponentTransform(glm::vec3(-4.0f, -0.5f, 0.0f)));
+		nurse->AddComponent(new ComponentGeometry("Models/nurseNew/nurseMeshNew.dae", true));
+		nurse->AddComponent(new ComponentAnimator(nurseTestAnim));
+		nurse->GetTransformComponent()->SetScale(0.015f);
+		nurse->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 90.0f);
+		entityManager->AddEntity(nurse);
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));

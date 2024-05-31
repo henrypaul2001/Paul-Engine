@@ -849,67 +849,74 @@ namespace Engine {
 					return nullptr;
 				}
 
-				aiAnimation* aiAnimation = scene->mAnimations[fileAnimationIndex];
-				float duration = aiAnimation->mDuration;
-				float ticksPerSecond = aiAnimation->mTicksPerSecond;
+				if (scene->mNumAnimations > 0) {
 
-				int numChannels = aiAnimation->mNumChannels;
-				std::vector<AnimationChannel> channels;
-				channels.reserve(numChannels);
+					aiAnimation* aiAnimation = scene->mAnimations[fileAnimationIndex];
+					float duration = aiAnimation->mDuration;
+					float ticksPerSecond = aiAnimation->mTicksPerSecond;
 
-				for (int i = 0; i < numChannels; i++) {
-					aiNodeAnim* aiChannel = aiAnimation->mChannels[i];
+					int numChannels = aiAnimation->mNumChannels;
+					std::vector<AnimationChannel> channels;
+					channels.reserve(numChannels);
 
-					std::string channelName = aiChannel->mNodeName.C_Str();
+					for (int i = 0; i < numChannels; i++) {
+						aiNodeAnim* aiChannel = aiAnimation->mChannels[i];
 
-					// Position keyframes
-					std::vector<AnimKeyPosition> positions;
-					int numPositions = aiChannel->mNumPositionKeys;
-					positions.reserve(numPositions);
-					for (int j = 0; j < numPositions; j++) {
-						aiVector3D aiPosition = aiChannel->mPositionKeys[j].mValue;
-						float timeStamp = aiChannel->mPositionKeys[j].mTime;
+						std::string channelName = aiChannel->mNodeName.C_Str();
 
-						AnimKeyPosition keyframe;
-						keyframe.position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
-						keyframe.timeStamp = timeStamp;
-						positions.push_back(keyframe);
+						// Position keyframes
+						std::vector<AnimKeyPosition> positions;
+						int numPositions = aiChannel->mNumPositionKeys;
+						positions.reserve(numPositions);
+						for (int j = 0; j < numPositions; j++) {
+							aiVector3D aiPosition = aiChannel->mPositionKeys[j].mValue;
+							float timeStamp = aiChannel->mPositionKeys[j].mTime;
+
+							AnimKeyPosition keyframe;
+							keyframe.position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
+							keyframe.timeStamp = timeStamp;
+							positions.push_back(keyframe);
+						}
+
+						// Rotation keyframes
+						std::vector<AnimKeyRotation> rotations;
+						int numRotations = aiChannel->mNumRotationKeys;;
+						rotations.reserve(numRotations);
+						for (int j = 0; j < numRotations; j++) {
+							aiQuaternion aiOrientation = aiChannel->mRotationKeys[j].mValue;
+							float timeStamp = aiChannel->mRotationKeys[j].mTime;
+
+							AnimKeyRotation keyframe;
+							keyframe.orientation = glm::quat(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
+							keyframe.timeStamp = timeStamp;
+							rotations.push_back(keyframe);
+						}
+
+						// Scale keyframes
+						std::vector<AnimKeyScale> scalings;
+						int numScalings = aiChannel->mNumScalingKeys;
+						scalings.reserve(numScalings);
+						for (int j = 0; j < numScalings; j++) {
+							aiVector3D aiScale = aiChannel->mScalingKeys[j].mValue;
+							float timeStamp = aiChannel->mScalingKeys[j].mTime;
+
+							AnimKeyScale keyframe;
+							keyframe.scale = glm::vec3(aiScale.x, aiScale.y, aiScale.z);
+							keyframe.timeStamp = timeStamp;
+							scalings.push_back(keyframe);
+						}
+
+						channels.push_back(AnimationChannel(channelName, i, positions, rotations, scalings));
 					}
 
-					// Rotation keyframes
-					std::vector<AnimKeyRotation> rotations;
-					int numRotations = aiChannel->mNumRotationKeys;;
-					rotations.reserve(numRotations);
-					for (int j = 0; j < numRotations; j++) {
-						aiQuaternion aiOrientation = aiChannel->mRotationKeys[j].mValue;
-						float timeStamp = aiChannel->mRotationKeys[j].mTime;
-
-						AnimKeyRotation keyframe;
-						keyframe.orientation = glm::quat(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
-						keyframe.timeStamp = timeStamp;
-						rotations.push_back(keyframe);
-					}
-
-					// Scale keyframes
-					std::vector<AnimKeyScale> scalings;
-					int numScalings = aiChannel->mNumScalingKeys;
-					scalings.reserve(numScalings);
-					for (int j = 0; j < numScalings; j++) {
-						aiVector3D aiScale = aiChannel->mScalingKeys[j].mValue;
-						float timeStamp = aiChannel->mScalingKeys[j].mTime;
-
-						AnimKeyScale keyframe;
-						keyframe.scale = glm::vec3(aiScale.x, aiScale.y, aiScale.z);
-						keyframe.timeStamp = timeStamp;
-						scalings.push_back(keyframe);
-					}
-
-					channels.push_back(AnimationChannel(channelName, i, positions, rotations, scalings));
+					SkeletalAnimation* animation = new SkeletalAnimation(channels, duration, ticksPerSecond);
+					animations[indexedFilepath] = animation;
+					return animations[indexedFilepath];
 				}
-
-				SkeletalAnimation* animation = new SkeletalAnimation(channels, duration, ticksPerSecond);
-				animations[indexedFilepath] = animation;
-				return animations[indexedFilepath];
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::LoadAnimation::Error reading animation file || Index = " << fileAnimationIndex << " || Filepath: " << filepath << std::endl;
+					return nullptr;
+				}
 			}
 			else {
 				std::cout << "ERROR::RESOURCEMANAGER::LoadAnimation::Error reading animation file || Index = " << fileAnimationIndex << " || Filepath: " << filepath << std::endl;
