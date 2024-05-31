@@ -12,7 +12,7 @@ namespace Engine {
 
 	void SkeletalAnimation::Update(const float deltaTime, const float currentTime, AnimationSkeleton& animationTarget)
 	{
-		CalculateBoneTransformsRecursive(*animationTarget.rootBone, animationTarget.originTransform, animationTarget, currentTime);
+		CalculateBoneTransformsRecursive(*animationTarget.rootBone, glm::mat4(1.0f), animationTarget, currentTime);
 	}
 
 	const AnimationChannel* SkeletalAnimation::GetAnimationChannelByName(const std::string& name)
@@ -46,15 +46,30 @@ namespace Engine {
 		glm::mat4 globalTransformation = parentTransform * nodeTransform;
 
 		int index = bone.boneID;
-		glm::mat4 offset = bone.offsetMatrix;
+		glm::mat4 offset = glm::mat4(1.0f);
 
-		animationTarget.finalBoneMatrices[index] = globalTransformation * offset;
+		if (index > -1) {
+			offset = bone.offsetMatrix;
+
+			animationTarget.finalBoneMatrices[index] = globalTransformation * offset;
+		}
+
 
 		std::map<std::string, AnimationBone> bones = animationTarget.bones;
+		std::map<std::string, AnimationBone> emptyBones = animationTarget.emptyBones;
+
 		for (const std::string& childBoneName : bone.childNodeNames) {
+			AnimationBone* child = nullptr;
+
 			if (bones.find(childBoneName) != bones.end()) {
-				AnimationBone& child = bones[childBoneName];
-				CalculateBoneTransformsRecursive(child, globalTransformation, animationTarget, currentTime);
+				child = &bones[childBoneName];
+			}
+			else if (emptyBones.find(childBoneName) != emptyBones.end()) {
+				child = &emptyBones[childBoneName];
+			}
+
+			if (child) {
+				CalculateBoneTransformsRecursive(*child, globalTransformation, animationTarget, currentTime);
 			}
 		}
 	}
