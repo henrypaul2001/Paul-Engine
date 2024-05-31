@@ -132,7 +132,7 @@ namespace Engine {
 		ProcessNode(scene->mRootNode, scene);
 
 		if (hasBones) {
-			ProcessRootBones(scene->mRootNode);
+			ProcessEmptyBones(scene->mRootNode);
 		}
 	}
 
@@ -347,6 +347,10 @@ namespace Engine {
 			int boneID = -1;
 			std::string boneName = mesh->mBones[i]->mName.C_Str();
 
+			if (boneName == "Armature_CC_Base_L_Thigh") {
+				std::cout << "break" << std::endl;
+			}
+
 			if (skeleton.bones.find(boneName) == skeleton.bones.end()) {
 				// Create new bone
 				AnimationBone newBone;
@@ -385,23 +389,23 @@ namespace Engine {
 		}
 	}
 
-	bool Model::ProcessRootBones(aiNode* node)
+	bool Model::ProcessEmptyBones(aiNode* node)
 	{
 		if (node) {
 			std::string nodeName = node->mName.C_Str();
 
 			if (skeleton.bones.find(nodeName) == skeleton.bones.end()) {
 
-				bool isRootBone = false;
+				bool isInBoneBranch = false;
 				for (int i = 0; i < node->mNumChildren; i++) {
 					aiNode* child = node->mChildren[i];
 
-					if (ProcessRootBones(child)) {
-						isRootBone = true;
+					if (ProcessEmptyBones(child)) {
+						isInBoneBranch = true;
 					}
 				}
 
-				if (isRootBone) {
+				if (isInBoneBranch) {
 					AnimationBone newBone;
 					newBone.boneID = -1;
 					newBone.nodeTransform = ConvertMatrixToGLMFormat(node->mTransformation);
@@ -411,14 +415,19 @@ namespace Engine {
 						newBone.childNodeNames.push_back(node->mChildren[i]->mName.C_Str());
 					}
 
-					skeleton.rootBones[nodeName] = newBone;
-					skeleton.rootBone = &skeleton.rootBones[nodeName];
+					skeleton.emptyBones[nodeName] = newBone;
+					skeleton.rootBone = &skeleton.emptyBones[nodeName];
 				}
-				return isRootBone;
+				return isInBoneBranch;
 			}
 			else {
 				// Bone already attached to mesh, no need to process
 				// Tell parent that this branch contains bones, thus a root node needs to be created above it. Return true
+				for (int i = 0; i < node->mNumChildren; i++) {
+					aiNode* child = node->mChildren[i];
+
+					ProcessEmptyBones(child);
+				}
 				return true;
 			}
 		}

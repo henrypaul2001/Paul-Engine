@@ -27,7 +27,7 @@ namespace Engine {
 		std::map<std::string, AnimationBone> bones;
 
 		// Map of bones that are not tied to any mesh or vertex, but required to apply transformations to the rest of the bones
-		std::map<std::string, AnimationBone> rootBones;
+		std::map<std::string, AnimationBone> emptyBones;
 
 		AnimationBone* rootBone;
 		glm::mat4 originTransform;
@@ -91,7 +91,7 @@ namespace Engine {
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
-		bool ProcessRootBones(aiNode* node);
+		bool ProcessEmptyBones(aiNode* node);
 		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name);
 	};
 }
