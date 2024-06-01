@@ -1,0 +1,17 @@
+﻿{
+    "hold_gun_fastrun_forward_end_279362": {
+        "Version": "1.10.1822.1",
+        "Scene": {
+            "Name": true,
+            "SupportShaderSelect": true
+        },
+        "Export Directory": "C:/RLConverterServices/RLConverter/TempData/Convert/95d5cf3d9c2c04d/JICbf50d5a3f780cf1b9",
+        "Object": {
+            "hold_gun_fastrun_forward_end_279362": {
+                "Generation": "ActorScan",
+                "Physics": {},
+                "Meshes": {}
+            }
+        }
+    }
+}

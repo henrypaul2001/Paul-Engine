@@ -1,0 +1,17 @@
+﻿{
+    "walk-relaxed_loop_251148": {
+        "Version": "1.10.1822.1",
+        "Scene": {
+            "Name": true,
+            "SupportShaderSelect": true
+        },
+        "Export Directory": "C:/RLConverterServices/RLConverter/TempData/Convert/1429f1a0de223c9f/JIC99e3fc6fdf596ba47",
+        "Object": {
+            "walk-relaxed_loop_251148": {
+                "Generation": "ActorScan",
+                "Physics": {},
+                "Meshes": {}
+            }
+        }
+    }
+}

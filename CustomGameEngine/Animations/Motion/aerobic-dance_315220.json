@@ -1,0 +1,17 @@
+﻿{
+    "aerobic-dance_315220": {
+        "Version": "1.10.1822.1",
+        "Scene": {
+            "Name": true,
+            "SupportShaderSelect": true
+        },
+        "Export Directory": "C:/RLConverterServices/RLConverter/TempData/Convert/fd8ab62a803c7040/JICf4482a8125caede33",
+        "Object": {
+            "aerobic-dance_315220": {
+                "Generation": "ActorScan",
+                "Physics": {},
+                "Meshes": {}
+            }
+        }
+    }
+}

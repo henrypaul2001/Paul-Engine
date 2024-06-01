@@ -1,0 +1,17 @@
+﻿{
+    "dance-graceful_250999": {
+        "Version": "1.10.1822.1",
+        "Scene": {
+            "Name": true,
+            "SupportShaderSelect": true
+        },
+        "Export Directory": "C:/RLConverterServices/RLConverter/TempData/Convert/234c33e9f351592a/JIC173e79433084ffd30",
+        "Object": {
+            "dance-graceful_250999": {
+                "Generation": "ActorScan",
+                "Physics": {},
+                "Meshes": {}
+            }
+        }
+    }
+}

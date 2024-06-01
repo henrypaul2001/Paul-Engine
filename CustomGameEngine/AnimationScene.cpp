@@ -125,13 +125,20 @@ namespace Engine {
 		vampire2->GetAnimator()->SetSpeedModifier(0.5f);
 		entityManager->AddEntity(vampire2);
 
-		Entity* nurse = new Entity("Nurse");
-		nurse->AddComponent(new ComponentTransform(glm::vec3(-4.0f, -0.5f, 0.0f)));
-		nurse->AddComponent(new ComponentGeometry("Models/nurseNew/nurseMeshNew.dae", true));
-		nurse->AddComponent(new ComponentAnimator(nurseTestAnim));
-		nurse->GetTransformComponent()->SetScale(0.015f);
-		nurse->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 90.0f);
-		entityManager->AddEntity(nurse);
+		//Entity* nurse = new Entity("Nurse");
+		//nurse->AddComponent(new ComponentTransform(glm::vec3(-4.0f, -0.5f, 0.0f)));
+		//nurse->AddComponent(new ComponentGeometry("Models/nurseNew/nurseMeshNew.dae", true));
+		//nurse->AddComponent(new ComponentAnimator(nurseTestAnim));
+		//nurse->GetTransformComponent()->SetScale(0.015f);
+		//nurse->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 90.0f);
+		//entityManager->AddEntity(nurse);
+
+		Entity* man = new Entity("Man");
+		man->AddComponent(new ComponentTransform(-4.0f, -0.5f, 3.0f));
+		man->AddComponent(new ComponentGeometry("Models/man/man.fbx", true));
+		man->GetTransformComponent()->SetScale(0.015f);
+		man->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		entityManager->AddEntity(man);
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));
