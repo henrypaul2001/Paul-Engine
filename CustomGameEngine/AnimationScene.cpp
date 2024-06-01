@@ -111,6 +111,9 @@ namespace Engine {
 		SkeletalAnimation* vampireDanceAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
 		SkeletalAnimation* flairAnim = ResourceManager::GetInstance()->LoadAnimation("Animations/trip_new.dae");
 		SkeletalAnimation* nurseTestAnim = ResourceManager::GetInstance()->LoadAnimation("Models/nurseNew/nurse.dae");
+		SkeletalAnimation* walk = ResourceManager::GetInstance()->LoadAnimation("Animations/walk-relaxed_287304/walk-relaxed_loop_251148.fbx");
+		SkeletalAnimation* idle = ResourceManager::GetInstance()->LoadAnimation("Animations/Motion/idle_251105.fbx");
+		SkeletalAnimation* gunRun = ResourceManager::GetInstance()->LoadAnimation("Animations/Motion/hold_gun_fastrun_forward/hold_gun_fastrun_forward_loop_279387.fbx");
 
 		Entity* vampire = new Entity("Vampire");
 		vampire->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.5f, 0.0f)));
@@ -136,6 +139,7 @@ namespace Engine {
 		Entity* man = new Entity("Man");
 		man->AddComponent(new ComponentTransform(-4.0f, -0.5f, 3.0f));
 		man->AddComponent(new ComponentGeometry("Models/man/man.fbx", true));
+		man->AddComponent(new ComponentAnimator(gunRun));
 		man->GetTransformComponent()->SetScale(0.015f);
 		man->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		entityManager->AddEntity(man);
