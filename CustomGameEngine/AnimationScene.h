@@ -20,5 +20,8 @@ namespace Engine {
 	private:
 		void CreateEntities();
 		void CreateSystems();
+
+		int animIndex;
+		std::vector<SkeletalAnimation*> animations;
 	};
 }

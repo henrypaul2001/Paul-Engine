@@ -87,6 +87,17 @@ namespace Engine {
 			ComponentAnimator* anim = dynamic_cast<ComponentAnimator*>(entityManager->FindEntity("Vampire")->GetComponent(COMPONENT_ANIMATOR));
 			anim->SetPause(!anim->Paused());
 		}
+
+		if (key == GLFW_KEY_KP_9) {
+			ComponentAnimator* anim = entityManager->FindEntity("Swat")->GetAnimator();
+
+			animIndex++;
+			if (animIndex >= animations.size()) {
+				animIndex = 0;
+			}
+
+			anim->ChangeAnimation(animations[animIndex]);
+		}
 	}
 
 	void AnimationScene::keyDown(int key)
@@ -109,11 +120,17 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		SkeletalAnimation* vampireDanceAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
-		SkeletalAnimation* flairAnim = ResourceManager::GetInstance()->LoadAnimation("Animations/trip_new.dae");
-		SkeletalAnimation* nurseTestAnim = ResourceManager::GetInstance()->LoadAnimation("Models/nurseNew/nurse.dae");
-		SkeletalAnimation* walk = ResourceManager::GetInstance()->LoadAnimation("Animations/walk-relaxed_287304/walk-relaxed_loop_251148.fbx");
-		SkeletalAnimation* idle = ResourceManager::GetInstance()->LoadAnimation("Animations/Motion/idle_251105.fbx");
-		SkeletalAnimation* gunRun = ResourceManager::GetInstance()->LoadAnimation("Animations/Motion/hold_gun_fastrun_forward/hold_gun_fastrun_forward_loop_279387.fbx");
+		SkeletalAnimation* tripAnim = ResourceManager::GetInstance()->LoadAnimation("Animations/trip.dae");
+		SkeletalAnimation* walkAnim = ResourceManager::GetInstance()->LoadAnimation("Animations/walk.dae");
+		SkeletalAnimation* drunkWalk = ResourceManager::GetInstance()->LoadAnimation("Animations/drunkWalk.dae");
+		SkeletalAnimation* injuredWalk = ResourceManager::GetInstance()->LoadAnimation("Animations/injuredWalk.dae");
+		SkeletalAnimation* rifleWalk = ResourceManager::GetInstance()->LoadAnimation("Animations/rifleWalk.dae");
+		SkeletalAnimation* sneakWalk = ResourceManager::GetInstance()->LoadAnimation("Animations/sneakWalk.dae");
+
+		animIndex = 0;
+		animations = { tripAnim, walkAnim, drunkWalk, injuredWalk, rifleWalk, sneakWalk };
+
+		//SkeletalAnimation* nurseTestAnim = ResourceManager::GetInstance()->LoadAnimation("Models/nurseNew/nurse.dae");
 
 		Entity* vampire = new Entity("Vampire");
 		vampire->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.5f, 0.0f)));
@@ -136,13 +153,20 @@ namespace Engine {
 		//nurse->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 90.0f);
 		//entityManager->AddEntity(nurse);
 
-		Entity* man = new Entity("Man");
-		man->AddComponent(new ComponentTransform(-4.0f, -0.5f, 3.0f));
-		man->AddComponent(new ComponentGeometry("Models/man/man.fbx", true));
-		man->AddComponent(new ComponentAnimator(gunRun));
-		man->GetTransformComponent()->SetScale(0.015f);
-		man->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
-		entityManager->AddEntity(man);
+		//Entity* man = new Entity("Man");
+		//man->AddComponent(new ComponentTransform(-4.0f, -0.5f, 3.0f));
+		//man->AddComponent(new ComponentGeometry("Models/man/man.fbx", true));
+		//man->AddComponent(new ComponentAnimator(gunRun));
+		//man->GetTransformComponent()->SetScale(0.015f);
+		//man->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
+		//entityManager->AddEntity(man);
+
+		Entity* swat = new Entity("Swat");
+		swat->AddComponent(new ComponentTransform(-4.0f, -0.5f, 0.0f));
+		//swat->GetTransformComponent()->SetScale(0.015f);
+		swat->AddComponent(new ComponentGeometry("Models/swat/swat.dae", false));
+		swat->AddComponent(new ComponentAnimator(animations[animIndex]));
+		entityManager->AddEntity(swat);
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));
