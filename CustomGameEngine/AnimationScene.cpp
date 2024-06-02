@@ -83,11 +83,6 @@ namespace Engine {
 			ChangePostProcessEffect();
 		}
 
-		if (key == GLFW_KEY_KP_3) {
-			ComponentAnimator* anim = dynamic_cast<ComponentAnimator*>(entityManager->FindEntity("Vampire")->GetComponent(COMPONENT_ANIMATOR));
-			anim->SetPause(!anim->Paused());
-		}
-
 		if (key == GLFW_KEY_KP_9) {
 			ComponentAnimator* anim = entityManager->FindEntity("Swat")->GetAnimator();
 
@@ -132,18 +127,33 @@ namespace Engine {
 
 		//SkeletalAnimation* nurseTestAnim = ResourceManager::GetInstance()->LoadAnimation("Models/nurseNew/nurse.dae");
 
-		Entity* vampire = new Entity("Vampire");
-		vampire->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.5f, 0.0f)));
-		vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-		vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
-		entityManager->AddEntity(vampire);
+		int xNum = 3;
+		int zNum = 3;
 
-		Entity* vampire2 = new Entity("Vampire 2");
-		vampire2->AddComponent(new ComponentTransform(glm::vec3(4.0f, -0.5f, 0.0f)));
-		vampire2->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-		vampire2->AddComponent(new ComponentAnimator(vampireDanceAnim));
-		vampire2->GetAnimator()->SetSpeedModifier(0.5f);
-		entityManager->AddEntity(vampire2);
+		float originX = float(-xNum) / 2.0f;
+		float originY = -0.5f;
+		float originZ = float(-zNum) / 2.0f;
+
+		float xDistance = 2.25f;
+		float zDistance = -2.25f;
+
+		int count = 0;
+		for (int i = 0; i < zNum; i++) {
+			for (int j = 0; j < xNum; j++) {
+				for (int k = 0; k < zNum; k++) {
+					std::string name = std::string("Vampire ") + std::string(std::to_string(count));
+
+					Entity* vampire = new Entity(name);
+					vampire->AddComponent(new ComponentTransform(originX + (j * xDistance), originY, originZ + (k * zDistance)));
+					vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+					vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
+					entityManager->AddEntity(vampire);
+
+					count++;
+					std::cout << "vampire " << count << " created" << std::endl;
+				}
+			}
+		}
 
 		//Entity* nurse = new Entity("Nurse");
 		//nurse->AddComponent(new ComponentTransform(glm::vec3(-4.0f, -0.5f, 0.0f)));
