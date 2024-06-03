@@ -18,6 +18,7 @@ namespace Engine
 		SCENE_PHYSICS,
 		SCENE_INSTANCED,
 		SCENE_ANIMATION,
+		SCENE_AUDIO,
 	};
 
 	using SceneDelegate = std::function<void()>;

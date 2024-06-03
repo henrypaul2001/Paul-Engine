@@ -144,6 +144,7 @@
     <ClInclude Include="AnimationChannel.h" />
     <ClInclude Include="AnimationScene.h" />
     <ClInclude Include="AOScene.h" />
+    <ClInclude Include="AudioScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CollisionResolver.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AnimationScene.cpp" />
     <ClCompile Include="AOScene.cpp" />
+    <ClCompile Include="AudioScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionResolver.cpp" />

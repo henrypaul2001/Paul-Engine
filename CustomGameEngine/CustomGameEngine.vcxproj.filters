@@ -300,6 +300,9 @@
     <ClInclude Include="SystemSkeletalAnimationUpdater.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="AudioScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -517,6 +520,9 @@
     </ClCompile>
     <ClCompile Include="SystemSkeletalAnimationUpdater.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
