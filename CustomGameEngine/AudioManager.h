@@ -11,6 +11,8 @@ namespace Engine {
 
 		static AudioManager* GetInstance();
 
+		irrklang::ISoundEngine* GetSoundEngine() const { return soundEngine; }
+
 	private:
 		AudioManager();
 		static AudioManager* instance;

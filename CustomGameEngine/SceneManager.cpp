@@ -120,6 +120,9 @@ namespace Engine
 		// Set up Resource Manager
 		resources = ResourceManager::GetInstance();
 
+		// Set up audio manager
+		audioManager = AudioManager::GetInstance();
+
 		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
 

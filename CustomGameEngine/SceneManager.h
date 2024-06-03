@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include <thread>
 #include <iostream>
+#include "AudioManager.h"
 namespace Engine
 {
 	enum SceneTypes {
@@ -31,6 +32,7 @@ namespace Engine
 		void OnRenderFrame();
 
 		ResourceManager* resources;
+		AudioManager* audioManager;
 
 		int SCR_WIDTH;
 		int SCR_HEIGHT;

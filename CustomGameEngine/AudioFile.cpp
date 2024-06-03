@@ -2,7 +2,7 @@
 namespace Engine {
 
 
-	AudioFile::AudioFile(irrklang::ISoundSource* source, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX)
+	AudioFile::AudioFile(irrklang::ISoundSource* source, float defaultVolume, float defaultPan, float defaultMinAttenuationDistance, float defaultMaxAttenuationDistance)
 	{
 		this->source = source;
 
@@ -17,6 +17,6 @@ namespace Engine {
 
 	AudioFile::~AudioFile()
 	{
-
+		source->drop();
 	}
 }

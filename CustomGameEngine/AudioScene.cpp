@@ -2,6 +2,7 @@
 #include "GameInputManager.h"
 #include "UIText.h"
 #include "SystemUIRender.h"
+#include "AudioManager.h"
 namespace Engine {
 	AudioScene::AudioScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -100,6 +101,9 @@ namespace Engine {
 		directional->Far = 150.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
+
+		AudioFile* bell = ResourceManager::GetInstance()->LoadAudio("Audio/bell.wav");
+		AudioManager::GetInstance()->GetSoundEngine()->play2D(bell->GetSource(), true);
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));

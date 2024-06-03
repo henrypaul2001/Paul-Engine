@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include "RenderManager.h"
+#include "AudioManager.h"
 namespace Engine {
 
 	ResourceManager* ResourceManager::instance = nullptr;
@@ -504,6 +505,13 @@ namespace Engine {
 			animationsIt++;
 		}
 
+		// delete audio files
+		std::unordered_map<std::string, AudioFile*>::iterator audioIt = audioFiles.begin();
+		while (audioIt != audioFiles.end()) {
+			delete audioIt->second;
+			audioIt++;
+		}
+
 		FT_Done_FreeType(freetypeLib);
 
 		delete instance;
@@ -922,6 +930,30 @@ namespace Engine {
 				std::cout << "ERROR::RESOURCEMANAGER::LoadAnimation::Error reading animation file || Index = " << fileAnimationIndex << " || Filepath: " << filepath << std::endl;
 				return nullptr;
 			}
+		}
+
+		return it->second;
+	}
+
+	AudioFile* ResourceManager::LoadAudio(std::string filepath, float defaultVolume, float defaultPan, float defaultMinAttenuationDistance, float defaultMaxAttenuationDistance)
+	{
+		std::unordered_map<std::string, AudioFile*>::iterator it = audioFiles.find(filepath);
+
+		if (it == audioFiles.end()) {
+			std::cout << "RESOURCEMANAGER::Loading audio file " << filepath << std::endl;
+			// Audio not currently loaded
+
+			irrklang::ISoundSource* newSource = AudioManager::GetInstance()->GetSoundEngine()->addSoundSourceFromFile(filepath.c_str(), irrklang::ESM_NO_STREAMING, true);
+
+			if (!newSource) {
+				std::cout << "ERROR::RESOURCEMANAGER::Failed to load audio file at path: " << filepath << std::endl;
+				return nullptr;
+			}
+
+			AudioFile* newAudio = new AudioFile(newSource, defaultVolume, defaultPan, defaultMinAttenuationDistance, defaultMaxAttenuationDistance);
+			audioFiles[filepath] = newAudio;
+
+			return audioFiles[filepath];
 		}
 
 		return it->second;

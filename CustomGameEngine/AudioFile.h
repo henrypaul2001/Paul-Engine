@@ -17,7 +17,7 @@ namespace Engine {
 		AudioFile(irrklang::ISoundSource* source, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX);
 		~AudioFile();
 
-		const irrklang::ISoundSource* GetSource() const { return source; }
+		irrklang::ISoundSource* GetSource() const { return source; }
 
 		const AudioFileDefaultSettings& GetDefaultSettings() const { return defaultSettings; }
 		const float GetLengthMilliSeconds() const { return lengthMilliseconds; }

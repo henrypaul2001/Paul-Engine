@@ -145,6 +145,7 @@
     <ClInclude Include="AnimationScene.h" />
     <ClInclude Include="AOScene.h" />
     <ClInclude Include="AudioFile.h" />
+    <ClInclude Include="AudioManager.h" />
     <ClInclude Include="AudioScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="AnimationScene.cpp" />
     <ClCompile Include="AOScene.cpp" />
     <ClCompile Include="AudioFile.cpp" />
+    <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="AudioScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
