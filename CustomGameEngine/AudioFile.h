@@ -14,8 +14,7 @@ namespace Engine {
 	class AudioFile
 	{
 	public:
-		AudioFile(irrklang::ISoundSource* source, AudioFileDefaultSettings defaultSettings);
-		AudioFile(irrklang::ISoundSource* source);
+		AudioFile(irrklang::ISoundSource* source, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX);
 		~AudioFile();
 
 		const irrklang::ISoundSource* GetSource() const { return source; }
