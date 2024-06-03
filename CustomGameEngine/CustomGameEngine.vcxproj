@@ -120,7 +120,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>glfw3.lib;assimp-vc143-mtd.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mtd.lib;opengl32.lib;freetype.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,13 +137,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;assimp-vc143-mtd.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mtd.lib;opengl32.lib;freetype.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationChannel.h" />
     <ClInclude Include="AnimationScene.h" />
     <ClInclude Include="AOScene.h" />
+    <ClInclude Include="AudioFile.h" />
     <ClInclude Include="AudioScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AnimationScene.cpp" />
     <ClCompile Include="AOScene.cpp" />
+    <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="AudioScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -289,6 +291,7 @@
     <ClCompile Include="UITextButton.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="irrKlang.dll" />
     <None Include="Shaders\bloomBlur.frag" />
     <None Include="Shaders\bloomBlur.vert" />
     <None Include="Shaders\brdf.frag" />

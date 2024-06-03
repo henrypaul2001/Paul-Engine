@@ -303,6 +303,9 @@
     <ClInclude Include="AudioScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="AudioFile.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -524,6 +527,9 @@
     <ClCompile Include="AudioScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="AudioFile.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -637,5 +643,6 @@
     <None Include="Shaders\defaultImage.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="irrKlang.dll" />
   </ItemGroup>
 </Project>
