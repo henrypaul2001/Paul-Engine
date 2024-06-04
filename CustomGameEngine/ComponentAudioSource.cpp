@@ -16,6 +16,7 @@ namespace Engine {
 		else {
 			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, enableSoundEffects);
 		}
+		sfxController = sound->getSoundEffectControl();
 	}
 
 	ComponentAudioSource::~ComponentAudioSource()

@@ -53,12 +53,14 @@ namespace Engine {
 		}
 
 		irrklang::ISound* GetSound() { return sound; }
+		irrklang::ISoundEffectControl* GetSFXController() { return sfxController; }
 	private:
 		bool is3D;
 		bool isPlaying;
 		bool isLooped;
 		bool soundEffectsEnabled;
 
+		irrklang::ISoundEffectControl* sfxController;
 		irrklang::ISound* sound;
 		AudioFile* activeAudio;
 	};
