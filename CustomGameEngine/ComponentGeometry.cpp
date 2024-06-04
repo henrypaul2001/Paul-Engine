@@ -24,6 +24,8 @@ namespace Engine {
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 
 		if (instanced) { SetupInstanceVBO(); }
+
+		if (pbr) { ApplyMaterialToModel(ResourceManager::GetInstance()->DefaultMaterialPBR()); }
 	}
 
 	ComponentGeometry::ComponentGeometry(PremadeModel modelType, bool pbr, bool instanced)
@@ -65,6 +67,8 @@ namespace Engine {
 		textureScale = 1.0f;
 
 		if (instanced) { SetupInstanceVBO(); }
+
+		if (pbr) { ApplyMaterialToModel(ResourceManager::GetInstance()->DefaultMaterialPBR()); }
 	}
 
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced)

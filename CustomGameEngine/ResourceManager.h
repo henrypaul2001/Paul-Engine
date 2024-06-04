@@ -38,6 +38,7 @@ namespace Engine {
 		Mesh* defaultSphere;
 
 		Material* defaultMaterial;
+		PBRMaterial* defaultMaterialPBR;
 
 		// Forward shaders
 		// ---------------
@@ -110,6 +111,7 @@ namespace Engine {
 		Mesh DefaultSphere() const { return *defaultSphere; }
 
 		Material* DefaultMaterial() const { return defaultMaterial; }
+		PBRMaterial* DefaultMaterialPBR() const { return defaultMaterialPBR; }
 		Shader* ShadowMapShader() const { return shadowMapShader; }
 		Shader* CubeShadowMapShader() const { return cubeShadowMapShader; }
 		Shader* DefaultLitShader() const { return defaultLitShader; }

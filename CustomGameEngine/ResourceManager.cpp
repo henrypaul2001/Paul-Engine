@@ -18,6 +18,13 @@ namespace Engine {
 		defaultMaterial->shininess = 105.0f;
 		//defaultMaterial->shininess = 60.0f;
 
+		defaultMaterialPBR = new PBRMaterial();
+		defaultMaterialPBR->albedo = glm::vec3(1.0f, 1.0f, 1.0f);
+		defaultMaterialPBR->metallic = 0.0f;
+		defaultMaterialPBR->roughness = 0.5f;
+		defaultMaterialPBR->ao = 1.0f;
+		defaultMaterialPBR->isTransparent = false;
+
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		Vertex vertex;
