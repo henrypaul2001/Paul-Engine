@@ -15,6 +15,7 @@ namespace Engine
 		COMPONENT_PHYSICS = 1 << 7,
 		COMPONENT_UICANVAS = 1 << 8,
 		COMPONENT_ANIMATOR = 1 << 9,
+		COMPONENT_AUDIO_SOURCE = 1 << 10,
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
 	inline ComponentTypes operator|= (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int&)a |= (int)b); }
