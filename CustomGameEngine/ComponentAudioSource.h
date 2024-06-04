@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "AudioFile.h"
-#include "irrklang/irrklang.h"
+#include "AudioManager.h"
 namespace Engine {
 	class ComponentAudioSource : public Component
 	{
@@ -13,7 +13,21 @@ namespace Engine {
 		void Close() override;
 
 		bool Is3D() const { return is3D; }
-		void Set3D(bool newValue) { is3D = newValue; }
+		void Set3D(bool newValue) { 
+			is3D = newValue;
+
+			irrklang::vec3df previousPosition = sound->getPosition();
+
+			sound->stop();
+			sound->drop();
+
+			if (is3D) {
+				sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), previousPosition, isLooped, !isPlaying, true, soundEffectsEnabled);
+			}
+			else {
+				sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, !isPlaying, true, soundEffectsEnabled);
+			}
+		}
 
 		bool IsLooped() const { return isLooped; }
 		void SetIsLooped(bool newValue) { isLooped = newValue; }
@@ -27,6 +41,9 @@ namespace Engine {
 			irrklang::vec3df previousPosition = sound->getPosition();
 			activeAudio = newAudio;
 
+			sound->stop();
+			sound->drop();
+
 			if (is3D) {
 				sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), previousPosition, isLooped, startPaused, true, soundEffectsEnabled);
 			}
@@ -34,6 +51,8 @@ namespace Engine {
 				sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, startPaused, true, soundEffectsEnabled);
 			}
 		}
+
+		irrklang::ISound* GetSound() { return sound; }
 	private:
 		bool is3D;
 		bool isPlaying;

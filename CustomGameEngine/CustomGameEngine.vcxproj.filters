@@ -312,6 +312,9 @@
     <ClInclude Include="ComponentAudioSource.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
+    <ClInclude Include="SystemAudio.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -541,6 +544,9 @@
     </ClCompile>
     <ClCompile Include="ComponentAudioSource.cpp">
       <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemAudio.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

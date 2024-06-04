@@ -8,6 +8,7 @@
 #include "ComponentLight.h"
 #include "ComponentUICanvas.h"
 #include "ComponentAnimator.h"
+#include "ComponentAudioSource.h"
 namespace Engine
 {
 	class Entity
@@ -35,6 +36,7 @@ namespace Engine
 		ComponentPhysics* GetPhysicsComponent() { return dynamic_cast<ComponentPhysics*>(GetComponent(COMPONENT_PHYSICS)); }
 		ComponentUICanvas* GetUICanvasComponent() { return dynamic_cast<ComponentUICanvas*>(GetComponent(COMPONENT_UICANVAS)); }
 		ComponentAnimator* GetAnimator() { return dynamic_cast<ComponentAnimator*>(GetComponent(COMPONENT_ANIMATOR)); }
+		ComponentAudioSource* GetAudioComponent() { return dynamic_cast<ComponentAudioSource*>(GetComponent(COMPONENT_AUDIO_SOURCE)); }
 
 		bool ContainsComponents(const ComponentTypes MASK);
 

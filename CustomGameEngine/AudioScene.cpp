@@ -3,6 +3,7 @@
 #include "UIText.h"
 #include "SystemUIRender.h"
 #include "AudioManager.h"
+#include "SystemAudio.h"
 namespace Engine {
 	AudioScene::AudioScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -103,13 +104,19 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		AudioFile* bell = ResourceManager::GetInstance()->LoadAudio("Audio/bell.wav");
-		AudioManager::GetInstance()->GetSoundEngine()->play2D(bell->GetSource(), true);
 
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		floor->GetTransformComponent()->SetScale(10.0f, 0.1f, 10.0f);
 		entityManager->AddEntity(floor);
+
+		Entity* bellTest = new Entity("BellTest");
+		bellTest->AddComponent(new ComponentTransform(-5.0f, 0.0f, -5.0f));
+		bellTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		bellTest->GetTransformComponent()->SetScale(0.5f);
+		bellTest->AddComponent(new ComponentAudioSource(bell));
+		entityManager->AddEntity(bellTest);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -128,5 +135,6 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemAudio(), UPDATE_SYSTEMS);
 	}
 }
