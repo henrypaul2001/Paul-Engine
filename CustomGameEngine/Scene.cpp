@@ -47,7 +47,9 @@ namespace Engine
 
 	void Scene::Update()
 	{
-
+		glm::vec3 position = camera->Position;
+		glm::vec3 forward = camera->Front;
+		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
 	}
 
 	void Scene::Render()
