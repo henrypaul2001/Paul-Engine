@@ -158,6 +158,74 @@ namespace Engine {
 		}
 	}
 
+	void ComponentGeometry::ApplyMaterialToModel(Material* newMaterial)
+	{
+		bool changedMatType = false;
+
+		if (pbr == false) {
+			changedMatType = false;
+		}
+		else {
+			pbr = false;
+			changedMatType = true;
+		}
+
+		if (changedMatType && usingDefaultShader) {
+			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+				if (pbr) {
+					shader = ResourceManager::GetInstance()->DefaultLitPBR();
+				}
+				else {
+					shader = ResourceManager::GetInstance()->DefaultLitShader();
+				}
+			}
+			else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+				if (pbr) {
+					shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
+				}
+				else {
+					shader = ResourceManager::GetInstance()->DeferredGeometryPass();
+				}
+			}
+		}
+
+		model->ApplyMaterialToAllMesh(newMaterial);
+	}
+
+	void ComponentGeometry::ApplyMaterialToModel(PBRMaterial* newMaterial)
+	{
+		bool changedMatType = false;
+
+		if (pbr == true) {
+			changedMatType = false;
+		}
+		else {
+			pbr = true;
+			changedMatType = true;
+		}
+
+		if (changedMatType && usingDefaultShader) {
+			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+				if (pbr) {
+					shader = ResourceManager::GetInstance()->DefaultLitPBR();
+				}
+				else {
+					shader = ResourceManager::GetInstance()->DefaultLitShader();
+				}
+			}
+			else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+				if (pbr) {
+					shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
+				}
+				else {
+					shader = ResourceManager::GetInstance()->DeferredGeometryPass();
+				}
+			}
+		}
+
+		model->ApplyMaterialToAllMesh(newMaterial);
+	}
+
 	void ComponentGeometry::SetupInstanceVBO()
 	{
 		glGenBuffers(1, &instanceVBO);

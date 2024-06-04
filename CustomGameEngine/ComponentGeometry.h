@@ -57,6 +57,9 @@ namespace Engine {
 		void BufferInstanceTransforms();
 
 		void OnAddedToEntity() override;
+
+		void ApplyMaterialToModel(Material* newMaterial);
+		void ApplyMaterialToModel(PBRMaterial* newMaterial);
 	private:
 		Model* model;
 		Shader* shader;

@@ -78,6 +78,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToAllMesh(Material* material)
 	{
+		pbr = false;
 		containsTransparentMeshes = material->isTransparent;
 		for (Mesh* m : meshes) {
 			m->ApplyMaterial(material);
@@ -86,6 +87,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToMeshAtIndex(Material* material, int index)
 	{
+		pbr = false;
 		containsTransparentMeshes = material->isTransparent;
 		if (index < meshes.size()) {
 			meshes[index]->ApplyMaterial(material);
@@ -94,6 +96,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial)
 	{
+		pbr = true;
 		containsTransparentMeshes = pbrMaterial->isTransparent;
 		for (Mesh* m : meshes) {
 			m->ApplyMaterial(pbrMaterial);
@@ -102,6 +105,7 @@ namespace Engine {
 
 	void Model::ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index)
 	{
+		pbr = true;
 		containsTransparentMeshes = pbrMaterial->isTransparent;
 		if (index < meshes.size()) {
 			meshes[index]->ApplyMaterial(pbrMaterial);
