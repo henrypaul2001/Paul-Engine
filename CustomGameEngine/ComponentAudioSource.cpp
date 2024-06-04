@@ -9,11 +9,12 @@ namespace Engine {
 		soundEffectsEnabled = enableSoundEffects;
 		isPlaying = !startPaused;
 
+		// should always initialise as paused as we dont currently know the position of the sound. Audio will be resumed in audio system where its correct position will also be set
 		if (is3D) {
-			sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), irrklang::vec3df(0.0f, 0.0f, 0.0f), isLooped, startPaused, true, enableSoundEffects);
+			sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), irrklang::vec3df(0.0f, 0.0f, 0.0f), isLooped, true, true, enableSoundEffects);
 		}
 		else {
-			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, startPaused, true, enableSoundEffects);
+			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, enableSoundEffects);
 		}
 	}
 
