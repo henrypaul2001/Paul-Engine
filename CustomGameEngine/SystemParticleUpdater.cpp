@@ -1,4 +1,5 @@
 #include "SystemParticleUpdater.h"
+#include "Scene.h"
 namespace Engine {
 	SystemParticleUpdater::SystemParticleUpdater()
 	{
@@ -31,7 +32,7 @@ namespace Engine {
 				}
 			}
 
-			
+			UpdateParticles(transform, generator);
 		}
 	}
 
@@ -42,12 +43,14 @@ namespace Engine {
 
 	void SystemParticleUpdater::UpdateParticles(ComponentTransform* transform, ComponentParticleGenerator* generator)
 	{
+		float deltaTime = Scene::dt;
 		std::vector<Particle>& particles = generator->GetParticles();
 
 		unsigned int framesSinceLastRespawn = generator->FramesSinceLastRespawn();
 		unsigned int delay = generator->RespawnDelay();
 		unsigned int numberToRespawn = generator->NumberParticlesToRespawn();
 
+		// Spawn new particles
 		if (framesSinceLastRespawn == delay) {
 			generator->SetFramesSinceLastRespawn(0);
 
@@ -62,6 +65,16 @@ namespace Engine {
 		}
 		else {
 			generator->SetFramesSinceLastRespawn(framesSinceLastRespawn++);
+		}
+
+		// Update particles
+		for (Particle& p : particles) {
+			p.Life -= deltaTime;
+
+			if (p.Life > 0.0f) {
+				p.Position += p.Velocity * deltaTime;
+				p.Colour.a = 0.0f + (p.Life / 1.0f);
+			}
 		}
 	}
 }

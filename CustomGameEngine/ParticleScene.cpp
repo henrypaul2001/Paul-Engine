@@ -2,6 +2,7 @@
 #include "GameInputManager.h"
 #include "UIText.h"
 #include "SystemUIRender.h"
+#include "SystemParticleUpdater.h"
 namespace Engine {
 	ParticleScene::ParticleScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -102,7 +103,10 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-
+		Entity* particles = new Entity("Particles");
+		particles->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		particles->AddComponent(new ComponentParticleGenerator());
+		entityManager->AddEntity(particles);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -118,6 +122,7 @@ namespace Engine {
 		SystemRender* renderSystem = new SystemRender();
 		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
 		renderSystem->SetActiveCamera(camera);
+		systemManager->AddSystem(new SystemParticleUpdater(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
