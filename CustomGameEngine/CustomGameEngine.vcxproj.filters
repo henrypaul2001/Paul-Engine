@@ -318,6 +318,9 @@
     <ClInclude Include="ParticleScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentParticleGenerator.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -553,6 +556,9 @@
     </ClCompile>
     <ClCompile Include="ParticleScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentParticleGenerator.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
