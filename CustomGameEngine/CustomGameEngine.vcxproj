@@ -205,6 +205,7 @@
     <ClInclude Include="SystemCollisionSphereAABB.h" />
     <ClInclude Include="SystemCollisionSphereBox.h" />
     <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="SystemParticleUpdater.h" />
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
     <ClInclude Include="SystemShadowMapping.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="SystemCollisionSphereAABB.cpp" />
     <ClCompile Include="SystemCollisionSphereBox.cpp" />
     <ClCompile Include="SystemManager.cpp" />
+    <ClCompile Include="SystemParticleUpdater.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
     <ClCompile Include="SystemShadowMapping.cpp" />

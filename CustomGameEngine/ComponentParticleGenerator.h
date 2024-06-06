@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
 namespace Engine {
@@ -12,10 +13,22 @@ namespace Engine {
 		Particle() : Position(0.0f), Velocity(0.0f), Scale(1.0f), Colour(1.0f), Life(0.0f) {}
 	};
 
+	struct RandomParameters {
+		glm::vec2 randomPositionXRange;
+		glm::vec2 randomPositionYRange;
+		glm::vec2 randomPositionZRange;
+
+		glm::vec2 randomVelocityXRange;
+		glm::vec2 randomVelocityYRange;
+		glm::vec2 randomVelocityZRange;
+
+		RandomParameters() : randomPositionXRange(-10.0f, 10.0f), randomPositionYRange(-10.0f, 10.0f), randomPositionZRange(-10.0f, 10.0f), randomVelocityXRange(-10.0f, 10.0f), randomVelocityYRange(-10.0f, 10.0f), randomVelocityZRange(-10.0f, 10.0f) {}
+	};
+
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f));
+		ComponentParticleGenerator(unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(10.0f), float velocityScale = 0.5f);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -24,17 +37,32 @@ namespace Engine {
 		unsigned int MaxParticles() const { return maxParticles; }
 		unsigned int RespawnDelay() const { return respawnDelay; }
 		unsigned int FramesSinceLastRespawn() const { return framesSinceLastRespawn; }
+		unsigned int NumberParticlesToRespawn() const { return numberParticlesToRespawn; }
+		int LastDeadParticleIndex() const { return lastDeadParticle; }
+		const glm::vec3& Offset() const { return offset; }
+		float VelocityScale() const { return generatorVelocityScale; }
+		const glm::vec3& ParticleScale() const { return particleScale; }
 
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
+		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
+		void SetRandomParameters(RandomParameters params) { randomParams = params; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
+		const RandomParameters& GetRandomParameters() const { return randomParams; }
 	private:
 		unsigned int maxParticles;
 		unsigned int respawnDelay;
 		unsigned int framesSinceLastRespawn;
+		unsigned int numberParticlesToRespawn;
+		int lastDeadParticle;
+
+		// Scale -1.0, 1.0. Applies to particle velocity when taking into account velocity of generator
+		float generatorVelocityScale;
 
 		glm::vec3 offset;
+		glm::vec3 particleScale;
 
 		std::vector<Particle> particles;
+		RandomParameters randomParams;
 	};
 }
