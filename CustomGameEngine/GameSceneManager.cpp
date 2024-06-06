@@ -9,6 +9,7 @@
 #include "MainMenu.h"
 #include "AnimationScene.h"
 #include "AudioScene.h"
+#include "ParticleScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -67,6 +68,9 @@ namespace Engine
 		case SCENE_AUDIO:
 			newScene = new AudioScene(this);
 			break;
+		case SCENE_PARTICLES:
+			newScene = new ParticleScene(this);
+			break;
 		case SCENE_NONE:
 			newScene = nullptr;
 			break;
@@ -82,6 +86,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_AUDIO);
+		ChangeScene(SCENE_PARTICLES);
 	}
 }

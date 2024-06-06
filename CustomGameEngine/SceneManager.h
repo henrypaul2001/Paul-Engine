@@ -20,6 +20,7 @@ namespace Engine
 		SCENE_INSTANCED,
 		SCENE_ANIMATION,
 		SCENE_AUDIO,
+		SCENE_PARTICLES,
 	};
 
 	using SceneDelegate = std::function<void()>;
