@@ -1,0 +1,70 @@
+#include "SystemParticleRenderer.h"
+#include "ResourceManager.h"
+namespace Engine {
+	SystemParticleRenderer::SystemParticleRenderer()
+	{
+
+	}
+
+	SystemParticleRenderer::~SystemParticleRenderer()
+	{
+
+	}
+
+	void SystemParticleRenderer::OnAction(Entity* entity)
+	{
+		if ((entity->Mask() & MASK) == MASK) {
+			std::vector<Component*> components = entity->Components();
+
+			ComponentTransform* transform = nullptr;
+			for (Component* c : components) {
+				transform = dynamic_cast<ComponentTransform*>(c);
+				if (transform != nullptr) {
+					break;
+				}
+			}
+
+			ComponentParticleGenerator* generator = nullptr;
+			for (Component* c : components) {
+				generator = dynamic_cast<ComponentParticleGenerator*>(c);
+				if (generator != nullptr) {
+					break;
+				}
+			}
+
+			Draw(transform, generator);
+		}
+	}
+
+	void SystemParticleRenderer::AfterAction()
+	{
+
+	}
+
+	void SystemParticleRenderer::Draw(ComponentTransform* transform, ComponentParticleGenerator* generator)
+	{
+		Shader* particleShader = ResourceManager::GetInstance()->DefaultParticleShader();
+
+		particleShader->Use();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, generator->GetSprite()->id);
+
+		glEnable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending
+
+		for (const Particle& particle : generator->GetParticles()) {
+			particleShader->setVec3("offset", particle.Position);
+			particleShader->setVec4("colour", particle.Colour);
+			particleShader->setVec3("scale", particle.Scale);
+			glBindVertexArray(ResourceManager::GetInstance()->DefaultPlane().VAO);
+			glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(ResourceManager::GetInstance()->DefaultPlane().indices.size()), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_BLEND);
+		glEnable(GL_CULL_FACE);
+	}
+}

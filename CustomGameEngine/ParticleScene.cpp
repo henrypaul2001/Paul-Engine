@@ -3,6 +3,7 @@
 #include "UIText.h"
 #include "SystemUIRender.h"
 #include "SystemParticleUpdater.h"
+#include "SystemParticleRenderer.h"
 namespace Engine {
 	ParticleScene::ParticleScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -126,5 +127,6 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemParticleRenderer(), RENDER_SYSTEMS);
 	}
 }
