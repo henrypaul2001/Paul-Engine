@@ -319,6 +319,7 @@ namespace Engine {
 		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag");
 		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag");
 		defaultImageShader = LoadShader("Shaders/defaultImage.vert", "Shaders/defaultImage.frag");
+		particleShader = LoadShader("Shaders/particles.vert", "Shaders/particles.frag");
 
 		bloomBlur->Use();
 		bloomBlur->setInt("image", 0);
@@ -429,6 +430,9 @@ namespace Engine {
 		defaultImageShader->Use();
 		defaultImageShader->setInt("image", 0);
 
+		particleShader->Use();
+		particleShader->setInt("sprite", 0);
+
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
@@ -438,6 +442,7 @@ namespace Engine {
 		unsigned int ssaoShaderLocation = glGetUniformBlockIndex(ssaoShader->GetID(), "Common");
 		unsigned int skyboxShaderLocation = glGetUniformBlockIndex(skyboxShader->GetID(), "Common");
 		unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLitPBRShader->GetID(), "Common");
+		unsigned int defaultParticleLocation = glGetUniformBlockIndex(particleShader->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
@@ -446,6 +451,7 @@ namespace Engine {
 		glUniformBlockBinding(ssaoShader->GetID(), ssaoShaderLocation, 0);
 		glUniformBlockBinding(skyboxShader->GetID(), skyboxShaderLocation, 0);
 		glUniformBlockBinding(defaultLitPBRShader->GetID(), defaultLitPBRBlockLocation, 0);
+		glUniformBlockBinding(particleShader->GetID(), defaultParticleLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);

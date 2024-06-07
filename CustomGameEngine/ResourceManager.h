@@ -48,6 +48,7 @@ namespace Engine {
 		Shader* cubeShadowMapShader;
 
 		Shader* skyboxShader;
+		Shader* particleShader;
 
 		// Deferred shaders
 		// ----------------
@@ -132,6 +133,7 @@ namespace Engine {
 		Shader* CreateBRDFShader() const { return createBRDFShader; }
 		Shader* DefaultTextShader() const { return defaultTextShader; }
 		Shader* DefaultImageShader() const { return defaultImageShader; }
+		Shader* DefaultParticleShader() const { return particleShader; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }

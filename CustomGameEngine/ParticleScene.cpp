@@ -105,7 +105,7 @@ namespace Engine {
 
 		Entity* particles = new Entity("Particles");
 		particles->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		particles->AddComponent(new ComponentParticleGenerator());
+		particles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
 		entityManager->AddEntity(particles);
 
 		Entity* canvas = new Entity("Canvas");
