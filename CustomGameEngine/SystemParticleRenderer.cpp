@@ -50,8 +50,9 @@ namespace Engine {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, generator->GetSprite()->id);
 
-		glEnable(GL_BLEND);
 		glDisable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending
 
 		for (const Particle& particle : generator->GetParticles()) {
@@ -60,11 +61,12 @@ namespace Engine {
 			particleShader->setVec3("scale", particle.Scale);
 			glBindVertexArray(ResourceManager::GetInstance()->DefaultPlane().VAO);
 			glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(ResourceManager::GetInstance()->DefaultPlane().indices.size()), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
 		}
 
+		glBindVertexArray(0);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_BLEND);
 		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
 	}
 }
