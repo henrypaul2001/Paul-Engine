@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Mesh.h"
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
@@ -28,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(10.0f), float velocityScale = 0.5f);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(10.0f), float velocityScale = 0.5f);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -49,6 +50,9 @@ namespace Engine {
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
+
+		const Texture* GetSprite() const { return sprite; }
+		void SetSprite(Texture* newSprite) { sprite = newSprite; }
 	private:
 		unsigned int maxParticles;
 		unsigned int respawnDelay;
@@ -64,5 +68,7 @@ namespace Engine {
 
 		std::vector<Particle> particles;
 		RandomParameters randomParams;
+
+		Texture* sprite;
 	};
 }
