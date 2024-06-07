@@ -333,6 +333,8 @@
     <None Include="Shaders\g_bufferPBR.frag" />
     <None Include="Shaders\hdrTonemapping.frag" />
     <None Include="Shaders\irradianceConvolute.frag" />
+    <None Include="Shaders\particles.frag" />
+    <None Include="Shaders\particles.vert" />
     <None Include="Shaders\prefilter.frag" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />

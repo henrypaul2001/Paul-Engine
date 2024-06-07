@@ -680,5 +680,11 @@
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="irrKlang.dll" />
+    <None Include="Shaders\particles.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particles.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
