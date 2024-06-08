@@ -320,6 +320,7 @@ namespace Engine {
 		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag");
 		defaultImageShader = LoadShader("Shaders/defaultImage.vert", "Shaders/defaultImage.frag");
 		particleShader = LoadShader("Shaders/particles.vert", "Shaders/particles.frag");
+		pointParticleShader = LoadShader("Shaders/pointParticles.vert", "Shaders/particles.frag", "Shaders/pointParticles.geom");
 
 		bloomBlur->Use();
 		bloomBlur->setInt("image", 0);
@@ -433,6 +434,9 @@ namespace Engine {
 		particleShader->Use();
 		particleShader->setInt("sprite", 0);
 
+		pointParticleShader->Use();
+		pointParticleShader->setInt("sprite", 0);
+
 		// Uniform blocks
 		unsigned int defaultLitBlockLocation = glGetUniformBlockIndex(defaultLitShader->GetID(), "Common");
 		unsigned int deferredGeometryPassLocation = glGetUniformBlockIndex(deferredGeometryPass->GetID(), "Common");
@@ -443,6 +447,7 @@ namespace Engine {
 		unsigned int skyboxShaderLocation = glGetUniformBlockIndex(skyboxShader->GetID(), "Common");
 		unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLitPBRShader->GetID(), "Common");
 		unsigned int defaultParticleLocation = glGetUniformBlockIndex(particleShader->GetID(), "Common");
+		unsigned int defaultPointParticleLocation = glGetUniformBlockIndex(pointParticleShader->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
@@ -452,6 +457,7 @@ namespace Engine {
 		glUniformBlockBinding(skyboxShader->GetID(), skyboxShaderLocation, 0);
 		glUniformBlockBinding(defaultLitPBRShader->GetID(), defaultLitPBRBlockLocation, 0);
 		glUniformBlockBinding(particleShader->GetID(), defaultParticleLocation, 0);
+		glUniformBlockBinding(pointParticleShader->GetID(), defaultPointParticleLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);

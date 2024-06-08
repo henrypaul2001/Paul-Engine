@@ -29,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, bool sphericalBillboarding = true);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, bool sphericalBillboarding = true, bool pointSprite = true);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -44,11 +44,13 @@ namespace Engine {
 		float VelocityScale() const { return generatorVelocityScale; }
 		const glm::vec3& ParticleScale() const { return particleScale; }
 		const bool SphericalBillboarding() const { return sphericalBillboarding; }
+		const bool PointSprite() const { return pointSprite; }
 
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
 		void SetSphericalBillboarding(bool spherical) { sphericalBillboarding = spherical; }
+		void SetIsPointSpriteMethod(bool pointSprite) { this->pointSprite = pointSprite; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -67,6 +69,7 @@ namespace Engine {
 
 		// If false, cylindrical billboarding will be used instead
 		bool sphericalBillboarding;
+		bool pointSprite;
 
 		glm::vec3 offset;
 		glm::vec3 particleScale;

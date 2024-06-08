@@ -49,6 +49,7 @@ namespace Engine {
 
 		Shader* skyboxShader;
 		Shader* particleShader;
+		Shader* pointParticleShader;
 
 		// Deferred shaders
 		// ----------------
@@ -134,6 +135,7 @@ namespace Engine {
 		Shader* DefaultTextShader() const { return defaultTextShader; }
 		Shader* DefaultImageShader() const { return defaultImageShader; }
 		Shader* DefaultParticleShader() const { return particleShader; }
+		Shader* DefaultPointParticleShader() const { return pointParticleShader; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
