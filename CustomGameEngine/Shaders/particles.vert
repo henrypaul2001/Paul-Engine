@@ -13,29 +13,32 @@ layout (std140) uniform Common
 out vec2 TexCoords;
 out vec4 ParticleColour;
 
-uniform vec3 offset;
-uniform vec3 scale;
+uniform bool sphericalBillboarding;
+uniform mat4 model;
 uniform vec4 colour;
 
 void main() {
-    vec3 viewScale;
-    viewScale.x = length(vec3(view[0][0], view[0][1], view[0][2]));
-    viewScale.y = length(vec3(view[1][0], view[1][1], view[1][2]));
-    viewScale.z = length(vec3(view[2][0], view[2][1], view[2][2]));
+    mat4 viewModel = view * model;
 
-    vec3 viewTranslation = vec3(view[3][0], view[3][1], view[3][2]);
+    // First column
+    viewModel[0][0] = 1.0f;
+    viewModel[0][1] = 0.0f;
+    viewModel[0][2] = 0.0f;
 
-    mat4 billboardView = mat4(1.0);
+    if (sphericalBillboarding) {
+        // Second column
+        viewModel[1][0] = 0.0f;
+        viewModel[1][1] = 1.0f;
+        viewModel[1][2] = 0.0f;
+    }
 
-    billboardView[0][0] = viewScale.x;
-    billboardView[1][1] = viewScale.y;
-    billboardView[2][2] = viewScale.z;
-
-    billboardView[3] = vec4(viewTranslation, 1.0);
+    // Third column
+    viewModel[2][0] = 0.0f;
+    viewModel[2][1] = 0.0f;
+    viewModel[2][2] = 1.0f;
 
     TexCoords = aTexCoords;
     ParticleColour = colour;
 
-    vec4 worldPos = vec4((aPos * scale) + offset, 1.0);
-    gl_Position = projection * billboardView * worldPos;
+    gl_Position = projection * viewModel * vec4(aPos, 1.0);
 }

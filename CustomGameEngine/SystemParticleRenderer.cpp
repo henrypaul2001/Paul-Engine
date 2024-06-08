@@ -55,10 +55,15 @@ namespace Engine {
 		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending
 
+		particleShader->setBool("sphericalBillboarding", generator->SphericalBillboarding());
+
+		glm::mat4 model = glm::mat4(1.0f);
 		for (const Particle& particle : generator->GetParticles()) {
-			particleShader->setVec3("offset", particle.Position);
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, particle.Position);
+			model = glm::scale(model, particle.Scale);
+			particleShader->setMat4("model", model);
 			particleShader->setVec4("colour", particle.Colour);
-			particleShader->setVec3("scale", particle.Scale);
 			glBindVertexArray(ResourceManager::GetInstance()->DefaultPlane().VAO);
 			glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(ResourceManager::GetInstance()->DefaultPlane().indices.size()), GL_UNSIGNED_INT, 0);
 		}

@@ -29,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(10.0f), float velocityScale = 0.5f);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, bool sphericalBillboarding = true);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -43,10 +43,12 @@ namespace Engine {
 		const glm::vec3& Offset() const { return offset; }
 		float VelocityScale() const { return generatorVelocityScale; }
 		const glm::vec3& ParticleScale() const { return particleScale; }
+		const bool SphericalBillboarding() const { return sphericalBillboarding; }
 
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
+		void SetSphericalBillboarding(bool spherical) { sphericalBillboarding = spherical; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -62,6 +64,9 @@ namespace Engine {
 
 		// Scale -1.0, 1.0. Applies to particle velocity when taking into account velocity of generator
 		float generatorVelocityScale;
+
+		// If false, cylindrical billboarding will be used instead
+		bool sphericalBillboarding;
 
 		glm::vec3 offset;
 		glm::vec3 particleScale;
