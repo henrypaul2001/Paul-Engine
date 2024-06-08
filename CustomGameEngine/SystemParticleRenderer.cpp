@@ -53,47 +53,39 @@ namespace Engine {
 		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending
 
-		if (generator->PointSprite()) {
-			glm::vec3 point = glm::vec3(0.0f, 0.0f, 0.0f);
+		std::vector<glm::vec3> positions;
+		std::vector<glm::vec2> scales;
+		std::vector<glm::vec4> colours;
 
-			unsigned int VAO, VBO;
-			glGenVertexArrays(1, &VAO);
-			glGenBuffers(1, &VBO);
-			glBindVertexArray(VAO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-			glBufferData(GL_ARRAY_BUFFER, 1 * sizeof(glm::vec3), &point, GL_STATIC_DRAW);
-
-			// vertex positions
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-
-			particleShader = ResourceManager::GetInstance()->DefaultPointParticleShader();
-			particleShader->Use();
-			
-			for (const Particle& particle : generator->GetParticles()) {
-				particleShader->setVec4("colour", particle.Colour);
-				particleShader->setVec2("Scale", glm::vec2(particle.Scale.x, particle.Scale.y));
-				particleShader->setVec3("translation", particle.Position);
-				glDrawArrays(GL_POINTS, 0, 1);
-			}
+		for (const Particle& particle : generator->GetParticles()) {
+			positions.push_back(particle.Position);
+			scales.push_back(glm::vec2(particle.Scale.x, particle.Scale.y));
+			colours.push_back(particle.Colour);
 		}
-		else {
-			particleShader = ResourceManager::GetInstance()->DefaultParticleShader();
-			particleShader->Use();
-			particleShader->setBool("sphericalBillboarding", generator->SphericalBillboarding());
 
-			glm::mat4 model = glm::mat4(1.0f);
-			for (const Particle& particle : generator->GetParticles()) {
-				model = glm::mat4(1.0f);
-				model = glm::translate(model, particle.Position);
-				model = glm::scale(model, particle.Scale);
-				particleShader->setMat4("model", model);
-				particleShader->setVec4("colour", particle.Colour);
-				glBindVertexArray(ResourceManager::GetInstance()->DefaultPlane().VAO);
-				glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(ResourceManager::GetInstance()->DefaultPlane().indices.size()), GL_UNSIGNED_INT, 0);
-			}
-		}
+		unsigned int VAO = generator->GetVAO();
+		unsigned int positionVBO = generator->GetPositionVBO();
+		unsigned int scaleVBO = generator->GetScaleVBO();
+		unsigned int colourVBO = generator->GetColourVBO();
+
+		glBindVertexArray(VAO);
+
+		// Position buffer
+		glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+		glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), positions.data(), GL_DYNAMIC_DRAW);
+
+		// Scale buffer
+		glBindBuffer(GL_ARRAY_BUFFER, scaleVBO);
+		glBufferData(GL_ARRAY_BUFFER, scales.size() * sizeof(glm::vec2), scales.data(), GL_DYNAMIC_DRAW);
+
+		// Colour buffer
+		glBindBuffer(GL_ARRAY_BUFFER, colourVBO);
+		glBufferData(GL_ARRAY_BUFFER, colours.size() * sizeof(glm::vec4), colours.data(), GL_DYNAMIC_DRAW);
+
+		// Draw particles
+		particleShader = ResourceManager::GetInstance()->DefaultPointParticleShader();
+		particleShader->Use();
+		glDrawArraysInstanced(GL_POINTS, 0, 1, positions.size());
 
 		glBindVertexArray(0);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

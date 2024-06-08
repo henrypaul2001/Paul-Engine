@@ -11,7 +11,7 @@ namespace Engine {
 		glm::vec4 Colour;
 		float Life;
 
-		Particle() : Position(0.0f), Velocity(0.0f), Scale(1.0f), Colour(1.0f), Life(0.0f) {}
+		Particle() : Position(0.0f), Velocity(0.0f), Scale(0.0f), Colour(0.0f), Life(0.0f) {}
 	};
 
 	struct RandomParameters {
@@ -29,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, bool sphericalBillboarding = true, bool pointSprite = true);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -43,14 +43,13 @@ namespace Engine {
 		const glm::vec3& Offset() const { return offset; }
 		float VelocityScale() const { return generatorVelocityScale; }
 		const glm::vec3& ParticleScale() const { return particleScale; }
-		const bool SphericalBillboarding() const { return sphericalBillboarding; }
-		const bool PointSprite() const { return pointSprite; }
-
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
-		void SetSphericalBillboarding(bool spherical) { sphericalBillboarding = spherical; }
-		void SetIsPointSpriteMethod(bool pointSprite) { this->pointSprite = pointSprite; }
+		const unsigned int GetVAO() const { return VAO; }
+		const unsigned int GetPositionVBO() const { return positionVBO; }
+		const unsigned int GetScaleVBO() const { return scaleVBO; }
+		const unsigned int GetColourVBO() const { return colourVBO; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -58,10 +57,16 @@ namespace Engine {
 		const Texture* GetSprite() const { return sprite; }
 		void SetSprite(Texture* newSprite) { sprite = newSprite; }
 	private:
+		void SetupBuffers();
+
 		unsigned int maxParticles;
 		unsigned int respawnDelay;
 		unsigned int framesSinceLastRespawn;
 		unsigned int numberParticlesToRespawn;
+
+		// For instanced rendering
+		unsigned int VAO, positionVBO, scaleVBO, colourVBO;
+
 		int lastDeadParticle;
 
 		// Scale -1.0, 1.0. Applies to particle velocity when taking into account velocity of generator
