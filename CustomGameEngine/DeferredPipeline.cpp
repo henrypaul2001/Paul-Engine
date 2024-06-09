@@ -192,7 +192,9 @@ namespace Engine {
 
 			// Particle render using forward rendering
 			// ---------------------------------------
-			ForwardParticleRenderStep();
+			if ((renderOptions & RENDER_PARTICLES) != 0) {
+				ForwardParticleRenderStep();
+			}
 
 			// Bloom
 			// -----

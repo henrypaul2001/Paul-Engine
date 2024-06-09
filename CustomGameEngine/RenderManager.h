@@ -14,6 +14,7 @@ namespace Engine {
 		RENDER_IBL = 1 << 5,
 		RENDER_SKYBOX = 1 << 6,
 		RENDER_ENVIRONMENT_MAP = 1 << 7,
+		RENDER_PARTICLES = 1 << 8,
 	};
 	inline RenderOptions operator| (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a | (int)b); }
 	inline RenderOptions operator|= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a |= (int)b); }

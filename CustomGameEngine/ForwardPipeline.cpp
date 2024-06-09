@@ -91,8 +91,10 @@ namespace Engine {
 		// Render transparent objects
 		renderSystem->DrawTransparentGeometry(false);
 
-		// Render particles
-		ForwardParticleRenderStep();
+		if ((renderOptions & RENDER_PARTICLES) != 0) {
+			// Render particles
+			ForwardParticleRenderStep();
+		}
 
 		// Run any other render systems that may have been added
 		for (System* s : renderSystems) {

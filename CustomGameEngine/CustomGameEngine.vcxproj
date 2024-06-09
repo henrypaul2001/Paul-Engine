@@ -205,6 +205,7 @@
     <ClInclude Include="SystemCollisionSphereAABB.h" />
     <ClInclude Include="SystemCollisionSphereBox.h" />
     <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="SystemParticleRenderer.h" />
     <ClInclude Include="SystemParticleUpdater.h" />
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
@@ -287,6 +288,7 @@
     <ClCompile Include="SystemCollisionSphereAABB.cpp" />
     <ClCompile Include="SystemCollisionSphereBox.cpp" />
     <ClCompile Include="SystemManager.cpp" />
+    <ClCompile Include="SystemParticleRenderer.cpp" />
     <ClCompile Include="SystemParticleUpdater.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
@@ -334,7 +336,9 @@
     <None Include="Shaders\hdrTonemapping.frag" />
     <None Include="Shaders\irradianceConvolute.frag" />
     <None Include="Shaders\particles.frag" />
+    <None Include="Shaders\pointParticles.geom" />
     <None Include="Shaders\particles.vert" />
+    <None Include="Shaders\pointParticles.vert" />
     <None Include="Shaders\prefilter.frag" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />
