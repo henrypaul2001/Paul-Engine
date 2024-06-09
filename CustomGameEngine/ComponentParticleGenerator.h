@@ -23,7 +23,7 @@ namespace Engine {
 		glm::vec2 randomVelocityYRange;
 		glm::vec2 randomVelocityZRange;
 
-		RandomParameters() : randomPositionXRange(-10.0f, 10.0f), randomPositionYRange(-10.0f, 10.0f), randomPositionZRange(-10.0f, 10.0f), randomVelocityXRange(-10.0f, 10.0f), randomVelocityYRange(-10.0f, 10.0f), randomVelocityZRange(-10.0f, 10.0f) {}
+		RandomParameters() : randomPositionXRange(-0.5f, 0.5f), randomPositionYRange(-0.5f, 0.5f), randomPositionZRange(-0.5f, 0.5f), randomVelocityXRange(-0.5f, 0.5f), randomVelocityYRange(-0.5f, 0.5f), randomVelocityZRange(-0.5f, 0.5f) {}
 	};
 
 	class ComponentParticleGenerator : public Component
