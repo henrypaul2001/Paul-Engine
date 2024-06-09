@@ -129,10 +129,10 @@ namespace Engine {
 
 		RandomParameters smokeParams;
 		smokeParams.randomPositionXRange = glm::vec2(-0.15f, 0.15f);
-		smokeParams.randomPositionYRange = glm::vec2(0.0f);
+		smokeParams.randomPositionYRange = glm::vec2(0.0f, 2.0f);
 		smokeParams.randomPositionZRange = smokeParams.randomPositionXRange;
 		smokeParams.randomVelocityXRange = smokeParams.randomPositionXRange;
-		smokeParams.randomVelocityYRange = glm::vec2(2.0f, 10.0f);
+		smokeParams.randomVelocityYRange = glm::vec2(0.2f, 0.75f);
 		smokeParams.randomVelocityZRange = smokeParams.randomPositionZRange;
 
 		Entity* particles = new Entity("Particles");
@@ -160,7 +160,7 @@ namespace Engine {
 
 		Entity* smokeParticles = new Entity("Smoke Particles");
 		smokeParticles->AddComponent(new ComponentTransform(-3.0f, 0.8f, -4.5f));
-		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 1000, glm::vec3(0.0f), 10, glm::vec3(0.5f), 0.5f));
+		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 1000, glm::vec3(0.0f), 2, glm::vec3(0.5f), 0.5f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
 		smokeParticles->GetParticleGenerator()->SetRandomParameters(smokeParams);
 		entityManager->AddEntity(smokeParticles);
 

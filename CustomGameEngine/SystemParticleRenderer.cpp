@@ -51,7 +51,7 @@ namespace Engine {
 		glDisable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending
+		glBlendFunc(generator->GetSrcBlendFactor(), generator->GetDstBlendFactor()); // additive blending
 
 		std::vector<float> particleBuffer;
 		particleBuffer.reserve(generator->MaxParticles() * 9);

@@ -29,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -43,11 +43,18 @@ namespace Engine {
 		const glm::vec3& Offset() const { return offset; }
 		float VelocityScale() const { return generatorVelocityScale; }
 		const glm::vec3& ParticleScale() const { return particleScale; }
+
+		const unsigned int GetVAO() const { return VAO; }
+		const unsigned int GetVBO() const { return VBO; }
+		const GLenum GetSrcBlendFactor() const { return srcFactor; }
+		const GLenum GetDstBlendFactor() const { return dstFactor; }
+
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
-		const unsigned int GetVAO() const { return VAO; }
-		const unsigned int GetVBO() const { return VBO; }
+
+		void SetSrcBlendFactor(const GLenum srcBlend) { srcFactor = srcBlend; }
+		void SetDstBlendFactor(const GLenum dstBlend) { dstFactor = dstBlend; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -81,5 +88,8 @@ namespace Engine {
 		RandomParameters randomParams;
 
 		Texture* sprite;
+
+		GLenum srcFactor;
+		GLenum dstFactor;
 	};
 }
