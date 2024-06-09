@@ -35,26 +35,31 @@ namespace Engine {
 	{
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+		// vertex attributes
+		
+		// v: pX, pY, pZ, sX, sY, cR, cG, cB, cA
+
+		GLsizei stride = sizeof(float) * 9;
 
 		// Position
-		glGenBuffers(1, &positionVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		glEnableVertexAttribArray(0);
 		glVertexAttribDivisor(0, 1);
 
 		// Scale
-		glGenBuffers(1, &scaleVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, scaleVBO);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * 3));
 		glEnableVertexAttribArray(1);
 		glVertexAttribDivisor(1, 1);
 
 		// Colour
-		glGenBuffers(1, &colourVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, colourVBO);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)0);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * 5));
 		glEnableVertexAttribArray(2);
 		glVertexAttribDivisor(2, 1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
 	}
 }

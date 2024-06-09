@@ -47,9 +47,7 @@ namespace Engine {
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
 		const unsigned int GetVAO() const { return VAO; }
-		const unsigned int GetPositionVBO() const { return positionVBO; }
-		const unsigned int GetScaleVBO() const { return scaleVBO; }
-		const unsigned int GetColourVBO() const { return colourVBO; }
+		const unsigned int GetVBO() const { return VBO; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -65,7 +63,7 @@ namespace Engine {
 		unsigned int numberParticlesToRespawn;
 
 		// For instanced rendering
-		unsigned int VAO, positionVBO, scaleVBO, colourVBO;
+		unsigned int VAO, VBO;
 
 		int lastDeadParticle;
 
