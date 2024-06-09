@@ -19,6 +19,8 @@ namespace Engine {
 	{
 		RenderPipeline::Run(renderSystems, entities);
 
+		this->renderSystems = renderSystems;
+
 		// shadow map steps
 		if (shadowmapSystem != nullptr) {
 			RunShadowMapSteps();
@@ -88,6 +90,19 @@ namespace Engine {
 
 		// Render transparent objects
 		renderSystem->DrawTransparentGeometry(false);
+
+		// Render particles
+		ForwardParticleRenderStep();
+
+		// Run any other render systems that may have been added
+		for (System* s : renderSystems) {
+			if (s->Name() != SYSTEM_RENDER && s->Name() != SYSTEM_UI_RENDER && s->Name() != SYSTEM_SHADOWMAP && s->Name() != SYSTEM_PARTICLE_RENDER) {
+				for (Entity* e : entities) {
+					s->OnAction(e);
+				}
+				s->AfterAction();
+			}
+		}
 	}
 
 	void ForwardPipeline::ScreenTextureStep()

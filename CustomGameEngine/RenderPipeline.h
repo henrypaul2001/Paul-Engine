@@ -2,6 +2,7 @@
 #include <vector>
 #include "System.h"
 #include "Shader.h"
+#include "SystemParticleRenderer.h"
 namespace Engine {
 	class SystemRender;
 	class SystemShadowMapping;
@@ -27,6 +28,7 @@ namespace Engine {
 		void virtual RunShadowMapSteps();
 		void virtual RunBloomStep();
 		void virtual UIRenderStep();
+		void virtual ForwardParticleRenderStep();
 
 		RenderManager* renderInstance;
 
@@ -38,6 +40,9 @@ namespace Engine {
 		SystemRender* renderSystem;
 		SystemShadowMapping* shadowmapSystem;
 		SystemUIRender* uiRenderSystem;
+		SystemParticleRenderer* particleRenderSystem;
+
+		std::vector<System*> renderSystems;
 
 		unsigned int* depthMapFBO;
 		unsigned int* cubeDepthMapFBO;

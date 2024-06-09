@@ -190,6 +190,10 @@ namespace Engine {
 			renderSystem->DrawTransparentGeometry(true);
 			glDisable(GL_BLEND);
 
+			// Particle render using forward rendering
+			// ---------------------------------------
+			ForwardParticleRenderStep();
+
 			// Bloom
 			// -----
 			RunBloomStep();

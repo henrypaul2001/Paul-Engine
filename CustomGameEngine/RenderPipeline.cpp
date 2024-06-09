@@ -24,6 +24,7 @@ namespace Engine {
 		shadowmapSystem = nullptr;
 		renderSystem = nullptr;
 		uiRenderSystem = nullptr;
+		particleRenderSystem = nullptr;
 		renderInstance = RenderManager::GetInstance();
 
 		shadowWidth = renderInstance->ShadowWidth();
@@ -41,6 +42,9 @@ namespace Engine {
 			}
 			else if (s->Name() == SYSTEM_UI_RENDER) {
 				uiRenderSystem = dynamic_cast<SystemUIRender*>(s);
+			}
+			else if (s->Name() == SYSTEM_PARTICLE_RENDER) {
+				particleRenderSystem = dynamic_cast<SystemParticleRenderer*>(s);
 			}
 		}
 	}
@@ -209,5 +213,14 @@ namespace Engine {
 				uiRenderSystem->AfterAction();
 			}
 		}
+	}
+
+	void RenderPipeline::ForwardParticleRenderStep()
+	{
+		// Render particles
+		for (Entity* e : entities) {
+			particleRenderSystem->OnAction(e);
+		}
+		particleRenderSystem->AfterAction();
 	}
 }
