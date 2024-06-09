@@ -39,7 +39,7 @@ namespace Engine {
 
 			particle.Position = generatorPosition + offset + glm::vec3(randomXPosition, randomYPosition, randomZPosition);
 			particle.Colour = glm::vec4(randomColour, randomColour, randomColour, 1.0f);
-			particle.Life = 1.0f;
+			particle.Life = generator.GetParticleLifespan();
 			particle.Velocity = (generatorVelocity * generator.VelocityScale()) + glm::vec3(randomXVelocity, randomYVelocity, randomZVelocity);
 			particle.Scale = generator.ParticleScale();
 		}

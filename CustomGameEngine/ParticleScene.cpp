@@ -131,37 +131,38 @@ namespace Engine {
 		smokeParams.randomPositionXRange = glm::vec2(-0.15f, 0.15f);
 		smokeParams.randomPositionYRange = glm::vec2(0.0f, 2.0f);
 		smokeParams.randomPositionZRange = smokeParams.randomPositionXRange;
-		smokeParams.randomVelocityXRange = smokeParams.randomPositionXRange;
+		smokeParams.randomVelocityXRange = glm::vec2(-0.05f, 0.05f);
 		smokeParams.randomVelocityYRange = glm::vec2(0.2f, 0.75f);
-		smokeParams.randomVelocityZRange = smokeParams.randomPositionZRange;
+		smokeParams.randomVelocityZRange = smokeParams.randomVelocityXRange;
 
 		Entity* particles = new Entity("Particles");
 		particles->AddComponent(new ComponentTransform(0.0f, 0.8f, 0.0f));
-		particles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 35, glm::vec3(1.0f), 0.5f));
+		particles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 35, 1.0f, glm::vec3(1.0f), 0.5f));
 		particles->GetParticleGenerator()->SetRandomParameters(wallParams);
 		entityManager->AddEntity(particles);
 
 		Entity* particles2 = new Entity("Particles 2");
 		particles2->AddComponent(new ComponentTransform(5.0f, 0.8f, 0.0f));
-		particles2->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 75, glm::vec3(1.0f), 0.5f));
+		particles2->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 75, 1.0f, glm::vec3(1.0f), 0.5f));
 		particles2->GetParticleGenerator()->SetRandomParameters(wallParams);
 		entityManager->AddEntity(particles2);
 
 		Entity* particles3 = new Entity("Particles 3");
 		particles3->AddComponent(new ComponentTransform(-5.0f, 0.8f, 0.0f));
-		particles3->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 20, glm::vec3(1.0f), 0.5f));
+		particles3->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 20, 1.0f, glm::vec3(1.0f), 0.5f));
 		particles3->GetParticleGenerator()->SetRandomParameters(wallParams);
 		entityManager->AddEntity(particles3);
 
 		Entity* energyParticles = new Entity("Energy Particles");
 		energyParticles->AddComponent(new ComponentTransform(0.0f, 2.0f, -4.5f));
-		energyParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/energy.png", TEXTURE_DIFFUSE, false), 50, glm::vec3(0.0f), 1, glm::vec3(0.25f), 0.5f));
+		energyParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/energy.png", TEXTURE_DIFFUSE, false), 50, glm::vec3(0.0f), 1, 1.0f, glm::vec3(0.25f), 0.5f));
 		entityManager->AddEntity(energyParticles);
 
 		Entity* smokeParticles = new Entity("Smoke Particles");
-		smokeParticles->AddComponent(new ComponentTransform(-3.0f, 0.8f, -4.5f));
-		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 1000, glm::vec3(0.0f), 2, glm::vec3(0.5f), 0.5f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
+		smokeParticles->AddComponent(new ComponentTransform(-7.0f, 0.4f, -6.5f));
+		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10, 25.0f, glm::vec3(0.75f), 0.5f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
 		smokeParticles->GetParticleGenerator()->SetRandomParameters(smokeParams);
+		smokeParticles->GetParticleGenerator()->SetRespawnDelay(60);
 		entityManager->AddEntity(smokeParticles);
 
 		Entity* window = new Entity("Window");

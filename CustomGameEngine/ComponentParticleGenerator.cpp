@@ -1,6 +1,6 @@
 #include "ComponentParticleGenerator.h"
 namespace Engine {
-	ComponentParticleGenerator::ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles, glm::vec3 offset, unsigned int numberParticlesToRespawn, glm::vec3 particleScale, float velocityScale, GLenum srcFactor, GLenum dstFactor)
+	ComponentParticleGenerator::ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles, glm::vec3 offset, unsigned int numberParticlesToRespawn, float particleLifespan, glm::vec3 particleScale, float velocityScale, GLenum srcFactor, GLenum dstFactor)
 	{
 		this->sprite = sprite;
 		this->maxParticles = maxParticles;
@@ -8,6 +8,7 @@ namespace Engine {
 		this->numberParticlesToRespawn = numberParticlesToRespawn;
 		this->srcFactor = srcFactor;
 		this->dstFactor = dstFactor;
+		this->particleLifespan = particleLifespan;
 		lastDeadParticle = 0;
 
 		if (velocityScale > 1.0f) { velocityScale = 1.0f; }

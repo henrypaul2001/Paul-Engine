@@ -29,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, float particleLifespan = 1.0f, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -49,12 +49,17 @@ namespace Engine {
 		const GLenum GetSrcBlendFactor() const { return srcFactor; }
 		const GLenum GetDstBlendFactor() const { return dstFactor; }
 
+		const float GetParticleLifespan() const { return particleLifespan; }
+
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
 
 		void SetSrcBlendFactor(const GLenum srcBlend) { srcFactor = srcBlend; }
 		void SetDstBlendFactor(const GLenum dstBlend) { dstFactor = dstBlend; }
+
+		void SetParticleLifespan(const float lifespan) { particleLifespan = lifespan; }
+		void SetRespawnDelay(const unsigned int frameDelay) { respawnDelay = frameDelay; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -76,6 +81,8 @@ namespace Engine {
 
 		// Scale -1.0, 1.0. Applies to particle velocity when taking into account velocity of generator
 		float generatorVelocityScale;
+
+		float particleLifespan;
 
 		// If false, cylindrical billboarding will be used instead
 		bool sphericalBillboarding;

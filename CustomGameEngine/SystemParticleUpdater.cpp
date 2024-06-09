@@ -64,16 +64,17 @@ namespace Engine {
 			}
 		}
 		else {
-			generator->SetFramesSinceLastRespawn(framesSinceLastRespawn++);
+			generator->SetFramesSinceLastRespawn(++framesSinceLastRespawn);
 		}
 
+		float startingLifespan = generator->GetParticleLifespan();
 		// Update particles
 		for (Particle& p : particles) {
 			p.Life -= deltaTime;
 
 			if (p.Life > 0.0f) {
 				p.Position += p.Velocity * deltaTime;
-				p.Colour.a = 0.0f + (p.Life / 1.0f);
+				p.Colour.a = 0.0f + (p.Life / startingLifespan);
 			}
 		}
 	}
