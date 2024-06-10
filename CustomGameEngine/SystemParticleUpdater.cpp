@@ -81,6 +81,9 @@ namespace Engine {
 				p.Position += p.Velocity * deltaTime;
 				p.Colour.a = 0.0f + (p.Life / startingLifespan);
 			}
+			else {
+				p.Colour.a = 0.0f;
+			}
 		}
 	}
 }
