@@ -136,6 +136,11 @@ namespace Engine {
 		smokeParams.randomVelocityZRange = glm::vec2(0.0f);
 		smokeParams.randomAccelerationXRange = glm::vec2(-0.000030f, -0.000029f);
 
+		RandomParameters energyParams;
+		energyParams.randomAccelerationXRange = glm::vec2(-0.00015f, 0.00015f);
+		energyParams.randomAccelerationYRange = energyParams.randomAccelerationXRange;
+		energyParams.randomAccelerationZRange = energyParams.randomAccelerationXRange;
+
 		Entity* particles = new Entity("Particles");
 		particles->AddComponent(new ComponentTransform(0.0f, 0.8f, 0.0f));
 		particles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 150.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
@@ -157,6 +162,7 @@ namespace Engine {
 		Entity* energyParticles = new Entity("Energy Particles");
 		energyParticles->AddComponent(new ComponentTransform(0.0f, 2.0f, -4.5f));
 		energyParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/energy.png", TEXTURE_DIFFUSE, false), 50, glm::vec3(0.0f), 10.0f, 1.0f, 0.5f, glm::vec3(0.25f), 0.5f));
+		energyParticles->GetParticleGenerator()->SetRandomParameters(energyParams);
 		entityManager->AddEntity(energyParticles);
 
 		Entity* smokeParticles = new Entity("Smoke Particles");
@@ -164,6 +170,12 @@ namespace Engine {
 		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10.0f, 25.0f, 0.5f, glm::vec3(1.00f), 0.5f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
 		smokeParticles->GetParticleGenerator()->SetRandomParameters(smokeParams);
 		entityManager->AddEntity(smokeParticles);
+
+		Entity* orbParticles = new Entity("Orb Particles");
+		orbParticles->AddComponent(new ComponentTransform(7.0f, 2.0f, -5.0f));
+		orbParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/orb.png", TEXTURE_DIFFUSE, false), 3, glm::vec3(0.0f), 1.0f, 1.0f, 0.5f, glm::vec3(2.5f)));
+		orbParticles->GetParticleGenerator()->SetRandomParameters(energyParams);
+		entityManager->AddEntity(orbParticles);
 
 		Entity* window = new Entity("Window");
 		window->AddComponent(new ComponentTransform(10.0f, 3.0f, 2.5f));
