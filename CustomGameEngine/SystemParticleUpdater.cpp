@@ -46,27 +46,31 @@ namespace Engine {
 		float deltaTime = Scene::dt;
 		std::vector<Particle>& particles = generator->GetParticles();
 
-		unsigned int framesSinceLastRespawn = generator->FramesSinceLastRespawn();
-		unsigned int delay = generator->RespawnDelay();
-		unsigned int numberToRespawn = generator->NumberParticlesToRespawn();
+		float particlesPerSecond = generator->ParticlesPerSecond();
+		float previousFramesBuildup = generator->GetRunningLessThanOneCount();
+		float fps = 1.0f / deltaTime;
 
-		// Spawn new particles
-		if (framesSinceLastRespawn == delay) {
-			generator->SetFramesSinceLastRespawn(0);
+		float particlesForThisFrame = particlesPerSecond / fps;
+		unsigned int numberToRespawn = static_cast<unsigned int>(particlesForThisFrame);
 
-			// Create new particles
-			for (unsigned int i = 0; i < numberToRespawn; i++) {
-				int firstDeadParticleIndex = FindFirstDeadParticle(particles, generator->LastDeadParticleIndex());
-				if (firstDeadParticleIndex != -1) {
-					generator->SetLastDeadParticleIndex(firstDeadParticleIndex);
-					SpawnParticle(particles[firstDeadParticleIndex], *generator, transform->GetWorldPosition(), glm::vec3(0.0f));
-				}
+		previousFramesBuildup += particlesForThisFrame - (float)numberToRespawn;
+
+		if (previousFramesBuildup >= 1.0f) {
+			numberToRespawn++;
+			previousFramesBuildup -= 1.0f;
+		}
+		
+		generator->SetRunningCount(previousFramesBuildup);
+
+		// Create new particles
+		for (unsigned int i = 0; i < numberToRespawn; i++) {
+			int firstDeadParticleIndex = FindFirstDeadParticle(particles, generator->LastDeadParticleIndex());
+			if (firstDeadParticleIndex != -1) {
+				generator->SetLastDeadParticleIndex(firstDeadParticleIndex);
+				SpawnParticle(particles[firstDeadParticleIndex], *generator, transform->GetWorldPosition(), glm::vec3(0.0f));
 			}
 		}
-		else {
-			generator->SetFramesSinceLastRespawn(++framesSinceLastRespawn);
-		}
-
+		
 		float decayRate = generator->GetDecayRate();
 		float startingLifespan = generator->GetParticleLifespan();
 		// Update particles
