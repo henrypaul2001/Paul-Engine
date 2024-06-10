@@ -29,7 +29,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, float particleLifespan = 1.0f, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), unsigned int numberParticlesToRespawn = 2, float particleLifespan = 1.0f, float decayRate = 0.5f, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -50,6 +50,7 @@ namespace Engine {
 		const GLenum GetDstBlendFactor() const { return dstFactor; }
 
 		const float GetParticleLifespan() const { return particleLifespan; }
+		const float GetDecayRate() const { return decayRate; }
 
 		void SetFramesSinceLastRespawn(unsigned int newValue) { framesSinceLastRespawn = newValue; }
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
@@ -60,6 +61,7 @@ namespace Engine {
 
 		void SetParticleLifespan(const float lifespan) { particleLifespan = lifespan; }
 		void SetRespawnDelay(const unsigned int frameDelay) { respawnDelay = frameDelay; }
+		void SetDecayRate(const float decayRate) { this->decayRate = decayRate; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -83,6 +85,8 @@ namespace Engine {
 		float generatorVelocityScale;
 
 		float particleLifespan;
+
+		float decayRate;
 
 		// If false, cylindrical billboarding will be used instead
 		bool sphericalBillboarding;

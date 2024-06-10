@@ -67,10 +67,11 @@ namespace Engine {
 			generator->SetFramesSinceLastRespawn(++framesSinceLastRespawn);
 		}
 
+		float decayRate = generator->GetDecayRate();
 		float startingLifespan = generator->GetParticleLifespan();
 		// Update particles
 		for (Particle& p : particles) {
-			p.Life -= deltaTime;
+			p.Life -= decayRate * deltaTime;
 
 			if (p.Life > 0.0f) {
 				p.Position += p.Velocity * deltaTime;
