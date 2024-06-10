@@ -149,7 +149,7 @@ namespace Engine {
 
 		Entity* particles2 = new Entity("Particles 2");
 		particles2->AddComponent(new ComponentTransform(5.0f, 0.8f, 0.0f));
-		particles2->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 1250.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
+		particles2->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 150000, glm::vec3(0.0f), 30000.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
 		particles2->GetParticleGenerator()->SetRandomParameters(wallParams);
 		entityManager->AddEntity(particles2);
 
