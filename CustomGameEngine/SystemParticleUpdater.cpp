@@ -78,6 +78,7 @@ namespace Engine {
 			p.Life -= decayRate * deltaTime;
 
 			if (p.Life > 0.0f) {
+				p.Velocity += p.Acceleration;
 				p.Position += p.Velocity * deltaTime;
 				p.Colour.a = 0.0f + (p.Life / startingLifespan);
 			}

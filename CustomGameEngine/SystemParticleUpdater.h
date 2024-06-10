@@ -33,6 +33,10 @@ namespace Engine {
 			float randomYVelocity = Random(params.randomVelocityYRange.x, params.randomVelocityYRange.y);
 			float randomZVelocity = Random(params.randomVelocityZRange.x, params.randomVelocityZRange.y);
 
+			float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
+			float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
+			float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
+
 			float randomColour = Random(0.5f, 1.0f);
 
 			glm::vec3 offset = generator.Offset();
@@ -42,6 +46,7 @@ namespace Engine {
 			particle.Life = generator.GetParticleLifespan();
 			particle.Velocity = (generatorVelocity * generator.VelocityScale()) + glm::vec3(randomXVelocity, randomYVelocity, randomZVelocity);
 			particle.Scale = generator.ParticleScale();
+			particle.Acceleration = glm::vec3(randomXAcceleration, randomYAcceleration, randomZAcceleration);
 		}
 
         int FindFirstDeadParticle(const std::vector<Particle>& particles, const int lastDeadParticle) const {

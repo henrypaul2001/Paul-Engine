@@ -7,11 +7,11 @@
 namespace Engine {
 
 	struct Particle {
-		glm::vec3 Position, Velocity, Scale;
+		glm::vec3 Position, Velocity, Scale, Acceleration;
 		glm::vec4 Colour;
 		float Life;
 
-		Particle() : Position(0.0f), Velocity(0.0f), Scale(0.0f), Colour(0.0f), Life(0.0f) {}
+		Particle() : Position(0.0f), Velocity(0.0f), Scale(0.0f), Colour(0.0f), Life(0.0f), Acceleration(0.0f) {}
 	};
 
 	struct RandomParameters {
@@ -23,7 +23,11 @@ namespace Engine {
 		glm::vec2 randomVelocityYRange;
 		glm::vec2 randomVelocityZRange;
 
-		RandomParameters() : randomPositionXRange(-0.5f, 0.5f), randomPositionYRange(-0.5f, 0.5f), randomPositionZRange(-0.5f, 0.5f), randomVelocityXRange(-0.5f, 0.5f), randomVelocityYRange(-0.5f, 0.5f), randomVelocityZRange(-0.5f, 0.5f) {}
+		glm::vec2 randomAccelerationXRange;
+		glm::vec2 randomAccelerationYRange;
+		glm::vec2 randomAccelerationZRange;
+
+		RandomParameters() : randomPositionXRange(-0.5f, 0.5f), randomPositionYRange(-0.5f, 0.5f), randomPositionZRange(-0.5f, 0.5f), randomVelocityXRange(-0.5f, 0.5f), randomVelocityYRange(-0.5f, 0.5f), randomVelocityZRange(-0.5f, 0.5f), randomAccelerationXRange(0.0f), randomAccelerationYRange(0.0f), randomAccelerationZRange(0.0f) {}
 	};
 
 	class ComponentParticleGenerator : public Component
