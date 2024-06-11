@@ -32,6 +32,10 @@ This is currently under development. Below is a preview of what I have so far:
 
 ![Demo of instanced rendering showing 42875 cubes](https://media.giphy.com/media/nUt6hcCJYYGLDPbiOu/giphy.gif)
 
+### Skeletal Animations
+
+### Particle effects
+
 ## Custom physics engine
 
 ### Sphere, AABB, oriented box collisions using seperating axis theorom
