@@ -23,6 +23,8 @@ namespace Engine {
 		void PhysicsButtonRelease(UIButton* button);
 		void InstancingButtonRelease(UIButton* button);
 		void GameSceneButtonRelease(UIButton* button);
+		void AudioSceneButtonRelease(UIButton* button);
+		void ParticleSceneButtonRelease(UIButton* button);
 
 		void ButtonPress(UIButton* button);
 		void ButtonEnter(UIButton* button);

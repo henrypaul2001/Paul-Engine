@@ -104,6 +104,22 @@ namespace Engine {
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_GAME);
 	}
 
+	void MainMenu::AudioSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch audio scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Audio Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_AUDIO);
+	}
+
+	void MainMenu::ParticleSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch particle scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Particle Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_PARTICLES);
+	}
+
 	void MainMenu::ButtonPress(UIButton* button)
 	{
 
@@ -157,6 +173,20 @@ namespace Engine {
 		gameButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		gameButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(gameButton);
+
+		UITextButton* audioButton = new UITextButton(std::string("Audio Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 155.0f, SCR_HEIGHT * 0.25f), glm::vec2(0.4f, 0.4f), glm::vec2(1095.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		audioButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		audioButton->SetMouseUpCallback(std::bind(&MainMenu::AudioSceneButtonRelease, this, std::placeholders::_1));
+		audioButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		audioButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(audioButton);
+
+		UITextButton* particleButton = new UITextButton(std::string("Particle Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.15f), glm::vec2(0.4f, 0.4f), glm::vec2(1260.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		particleButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		particleButton->SetMouseUpCallback(std::bind(&MainMenu::ParticleSceneButtonRelease, this, std::placeholders::_1));
+		particleButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		particleButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(particleButton);
 
 		entityManager->AddEntity(canvas);
 	}
