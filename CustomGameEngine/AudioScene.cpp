@@ -98,10 +98,10 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
-		directional->Ambient = glm::vec3(0.0f, 0.0f, 0.0f);
+		directional->Ambient = glm::vec3(0.1f, 0.1f, 0.1f);
 		//directional->Colour = glm::vec3(1.0f, 1.0f, 1.5f) * 10.0f;
-		directional->Colour = glm::vec3(0.0f, 0.0f, 0.0f);
-		directional->Specular = glm::vec3(0.0f);
+		directional->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
+		directional->Specular = glm::vec3(0.5f);
 		directional->ShadowProjectionSize = 10.0f;
 		directional->Far = 150.0f;
 		dirLight->AddComponent(directional);
