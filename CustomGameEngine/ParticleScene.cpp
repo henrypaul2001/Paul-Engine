@@ -4,6 +4,9 @@
 #include "SystemUIRender.h"
 #include "SystemParticleUpdater.h"
 #include "SystemParticleRenderer.h"
+#include "SystemCollisionSphereAABB.h"
+#include "SystemCollisionSphereBox.h"
+#include "SystemPhysics.h"
 namespace Engine {
 	ParticleScene::ParticleScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -53,6 +56,32 @@ namespace Engine {
 
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
+
+		Entity* ball = entityManager->FindEntity("Smoke Particles");
+		ComponentPhysics* ballPhysics = ball->GetPhysicsComponent();
+		float forceMagnitude = 0.3f;
+
+		// Lava ball controls
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_6)) {
+			// Move right
+			ballPhysics->AddForce(glm::vec3(forceMagnitude, 0.0f, 0.0f));
+			ballPhysics->AddTorque(glm::vec3(0.0f, 0.0f, -forceMagnitude * 200.0f));
+		}
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_4)) {
+			// Move left
+			ballPhysics->AddForce(glm::vec3(-forceMagnitude, 0.0f, 0.0f));
+			ballPhysics->AddTorque(glm::vec3(0.0f, 0.0f, forceMagnitude * 200.0f));
+		}
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_8)) {
+			// Move up
+			ballPhysics->AddForce(glm::vec3(0.0f, 0.0f, -forceMagnitude));
+			ballPhysics->AddTorque(glm::vec3(-forceMagnitude * 200.0f, 0.0f, 0.0f));
+		}
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_5)) {
+			// Move down
+			ballPhysics->AddForce(glm::vec3(0.0f, 0.0f, forceMagnitude));
+			ballPhysics->AddTorque(glm::vec3(forceMagnitude * 200.0f, 0.0f, 0.0f));
+		}
 	}
 
 	void ParticleScene::Render()
@@ -87,7 +116,14 @@ namespace Engine {
 
 	void ParticleScene::keyDown(int key)
 	{
+		Entity* ball = entityManager->FindEntity("Smoke Particles");
+		ComponentPhysics* ballPhysics = ball->GetPhysicsComponent();
+		float forceMagnitude = 0.3f;
 
+		if (key == GLFW_KEY_KP_2) {
+			// Jump
+			ballPhysics->AddForce(glm::vec3(0.0f, 150.0f, 0.0f));
+		}
 	}
 
 	void ParticleScene::CreateEntities()
@@ -100,11 +136,19 @@ namespace Engine {
 		windowMaterial->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
 		windowMaterial->isTransparent = true;
 
+		Material* lava = new Material();
+		lava->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/diffuse.png", TEXTURE_DIFFUSE, true));
+		lava->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/specular.png", TEXTURE_SPECULAR, false));
+		//lava->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/normal.png", TEXTURE_NORMAL, false));
+		lava->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/displace.png", TEXTURE_DISPLACE, false));
+		lava->height_scale = -0.001f;
+		lava->shininess = 0.2f;
+
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
-		directional->Ambient = glm::vec3(0.1f, 0.1f, 0.1f);
+		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		//directional->Colour = glm::vec3(1.0f, 1.0f, 1.5f) * 10.0f;
 		directional->Colour = glm::vec3(0.7f, 0.65f, 0.85f);
 		directional->Specular = glm::vec3(0.7f, 0.65f, 0.85f);
@@ -117,6 +161,8 @@ namespace Engine {
 		floor->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		floor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
 		entityManager->AddEntity(floor);
 
 		RandomParameters wallParams;
@@ -129,7 +175,7 @@ namespace Engine {
 
 		RandomParameters smokeParams;
 		smokeParams.randomPositionXRange = glm::vec2(-0.15f, 0.15f);
-		smokeParams.randomPositionYRange = glm::vec2(0.0f, 2.0f);
+		smokeParams.randomPositionYRange = glm::vec2(0.65f, 1.25f);
 		smokeParams.randomPositionZRange = smokeParams.randomPositionXRange;
 		smokeParams.randomVelocityXRange = glm::vec2(-0.0015f, -0.0005f);
 		smokeParams.randomVelocityYRange = glm::vec2(0.70f, 0.75f);
@@ -149,7 +195,7 @@ namespace Engine {
 
 		Entity* particles2 = new Entity("Particles 2");
 		particles2->AddComponent(new ComponentTransform(5.0f, 0.8f, 0.0f));
-		particles2->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 150000, glm::vec3(0.0f), 30000.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
+		particles2->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 15000, glm::vec3(0.0f), 3000.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
 		particles2->GetParticleGenerator()->SetRandomParameters(wallParams);
 		entityManager->AddEntity(particles2);
 
@@ -165,10 +211,26 @@ namespace Engine {
 		energyParticles->GetParticleGenerator()->SetRandomParameters(energyParams);
 		entityManager->AddEntity(energyParticles);
 
+		ComponentLight* lavaRockLight = new ComponentLight(POINT);
+		lavaRockLight->Colour = glm::vec3(161.0f, 36.0f, 36.0f) / 255.0f;
+		lavaRockLight->Specular = lavaRockLight->Colour;
+		lavaRockLight->Ambient = glm::vec3(lavaRockLight->Colour * 0.2f);
+		lavaRockLight->CastShadows = false;
+		lavaRockLight->Constant = 1.0f;
+		lavaRockLight->Linear = 0.35f;
+		lavaRockLight->Quadratic = 0.44f;
+
 		Entity* smokeParticles = new Entity("Smoke Particles");
-		smokeParticles->AddComponent(new ComponentTransform(-7.0f, 0.4f, -6.5f));
-		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10.0f, 25.0f, 0.5f, glm::vec3(1.00f), 0.5f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
+		smokeParticles->AddComponent(new ComponentTransform(-7.0f, 3.0f, -6.5f));
+		smokeParticles->GetTransformComponent()->SetScale(0.5f);
+		smokeParticles->AddComponent(new ComponentGeometry(MODEL_SPHERE, false));
+		smokeParticles->GetGeometryComponent()->ApplyMaterialToModel(lava);
+		smokeParticles->AddComponent(new ComponentCollisionSphere(1.0f));
+		smokeParticles->AddComponent(new ComponentPhysics(20.0f, 1.05f, 1.0f, 0.4f, true, false));
+		smokeParticles->GetPhysicsComponent()->ApplyLinearImpulse(glm::vec3(0.005f, 0.05f, 0.005f));
+		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10.0f, 25.0f, 0.5f, glm::vec3(0.5f), 0.5f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
 		smokeParticles->GetParticleGenerator()->SetRandomParameters(smokeParams);
+		smokeParticles->AddComponent(lavaRockLight);
 		entityManager->AddEntity(smokeParticles);
 
 		Entity* orbParticles = new Entity("Orb Particles");
@@ -202,5 +264,9 @@ namespace Engine {
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemParticleRenderer(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphereAABB(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
+		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 	}
 }
