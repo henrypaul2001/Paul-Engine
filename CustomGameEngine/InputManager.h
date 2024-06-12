@@ -23,6 +23,8 @@ namespace Engine {
 		virtual void Close() = 0;
 		void SetCameraPointer(Camera* camPointer) { camera = camPointer; }
 
+		const bool IsKeyDown(int key) const { return keysPressed[key]; }
+
 		void SetCursorLock(bool locked);
 		bool GetCursorLock() { return cursorLocked; }
 
