@@ -217,10 +217,12 @@ namespace Engine {
 
 	void RenderPipeline::ForwardParticleRenderStep()
 	{
-		// Render particles
-		for (Entity* e : entities) {
-			particleRenderSystem->OnAction(e);
+		if (particleRenderSystem) {
+			// Render particles
+			for (Entity* e : entities) {
+				particleRenderSystem->OnAction(e);
+			}
+			particleRenderSystem->AfterAction();
 		}
-		particleRenderSystem->AfterAction();
 	}
 }
