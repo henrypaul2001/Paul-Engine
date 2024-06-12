@@ -46,6 +46,8 @@ namespace Engine {
 		float deltaTime = Scene::dt;
 		std::vector<Particle>& particles = generator->GetParticles();
 
+		// Determine how many particles should be created during this frame based on the generators particles per second rate
+		// If the result is less than 1 for this frame, accumulate this value into the next frame
 		float particlesPerSecond = generator->ParticlesPerSecond();
 		float previousFramesBuildup = generator->GetRunningLessThanOneCount();
 		float fps = 1.0f / deltaTime;
@@ -62,12 +64,18 @@ namespace Engine {
 		
 		generator->SetRunningCount(previousFramesBuildup);
 
+		// Get generator velocity
+		glm::vec3 generatorVelocity = glm::vec3(0.0f);
+		if ((generator->GetOwner()->Mask() & COMPONENT_PHYSICS) == COMPONENT_PHYSICS) {
+			generatorVelocity = generator->GetOwner()->GetPhysicsComponent()->Velocity();
+		}
+
 		// Create new particles
 		for (unsigned int i = 0; i < numberToRespawn; i++) {
 			int firstDeadParticleIndex = FindFirstDeadParticle(particles, generator->LastDeadParticleIndex());
 			if (firstDeadParticleIndex != -1) {
 				generator->SetLastDeadParticleIndex(firstDeadParticleIndex);
-				SpawnParticle(particles[firstDeadParticleIndex], *generator, transform->GetWorldPosition(), glm::vec3(0.0f));
+				SpawnParticle(particles[firstDeadParticleIndex], *generator, transform->GetWorldPosition(), generatorVelocity);
 			}
 		}
 		
