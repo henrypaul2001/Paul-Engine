@@ -81,6 +81,9 @@ namespace Engine {
 		
 		float decayRate = generator->GetDecayRate();
 		float startingLifespan = generator->GetParticleLifespan();
+
+		float accelerationChangeProbability = generator->GetChanceToGenerateNewAcceleration();
+		RandomParameters params = generator->GetRandomParameters();
 		// Update particles
 		for (Particle& p : particles) {
 			p.Life -= decayRate * deltaTime;
@@ -89,6 +92,14 @@ namespace Engine {
 				p.Velocity += p.Acceleration;
 				p.Position += p.Velocity * deltaTime;
 				p.Colour.a = 0.0f + (p.Life / startingLifespan);
+
+				if (Random(0.0f, 1.0f) < accelerationChangeProbability) {
+					// Generate new acceleration based on random paramaters of generator
+					float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
+					float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
+					float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
+					p.Acceleration = glm::vec3(randomXAcceleration, randomYAcceleration, randomZAcceleration);
+				}
 			}
 			else {
 				p.Colour.a = 0.0f;
