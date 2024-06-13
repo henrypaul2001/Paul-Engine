@@ -83,6 +83,7 @@ namespace Engine {
 		float startingLifespan = generator->GetParticleLifespan();
 
 		float accelerationChangeProbability = generator->GetChanceToGenerateNewAcceleration();
+		float acclerationChangeScale = generator->GetAccelerationChangeScale();
 		RandomParameters params = generator->GetRandomParameters();
 		// Update particles
 		for (Particle& p : particles) {
@@ -98,7 +99,7 @@ namespace Engine {
 					float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
 					float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
 					float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
-					p.Acceleration = glm::vec3(randomXAcceleration, randomYAcceleration, randomZAcceleration);
+					p.Acceleration = glm::vec3(randomXAcceleration, randomYAcceleration, randomZAcceleration) * acclerationChangeScale;
 				}
 			}
 			else {

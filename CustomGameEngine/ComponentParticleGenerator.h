@@ -33,7 +33,7 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
-		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), float particlesPerSecond = 2.0f, float particleLifespan = 1.0f, float decayRate = 0.5f, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, float chanceToGenerateNewAccelerationPerParticle = 0.0f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
+		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), float particlesPerSecond = 2.0f, float particleLifespan = 1.0f, float decayRate = 0.5f, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, float chanceToGenerateNewAccelerationPerParticle = 0.0f, float accelerationChangeScale = 1.0f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
@@ -57,6 +57,7 @@ namespace Engine {
 		const float GetRunningLessThanOneCount() const { return lessThanOneCount; }
 
 		const float GetChanceToGenerateNewAcceleration() const { return chanceToGenerateNewAcceleration; }
+		const float GetAccelerationChangeScale() const { return accelerationChangeScale; }
 
 		void SetLastDeadParticleIndex(int newValue) { lastDeadParticle = newValue; }
 		void SetRandomParameters(RandomParameters params) { randomParams = params; }
@@ -70,6 +71,7 @@ namespace Engine {
 		void SetRunningCount(const float count) { this->lessThanOneCount = count; }
 
 		void SetAccelerationChangeChance(const float chance) { chanceToGenerateNewAcceleration = chance; }
+		void SetAccelerationChangeScale(const float scale) { accelerationChangeScale = scale; }
 
 		std::vector<Particle>& GetParticles() { return particles; }
 		const RandomParameters& GetRandomParameters() const { return randomParams; }
@@ -97,6 +99,9 @@ namespace Engine {
 		float lessThanOneCount;
 
 		float chanceToGenerateNewAcceleration;
+
+		// If the acceleration of a particle gets regenerated during its lifespan, the resulting acceleration will be multiplied by this number
+		float accelerationChangeScale;
 
 		// If false, cylindrical billboarding will be used instead
 		bool sphericalBillboarding;

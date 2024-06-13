@@ -1,6 +1,6 @@
 #include "ComponentParticleGenerator.h"
 namespace Engine {
-	ComponentParticleGenerator::ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles, glm::vec3 offset, float particlesPerSecond, float particleLifespan, float decayRate, glm::vec3 particleScale, float velocityScale, float chanceToGenerateNewAccelerationPerParticle, GLenum srcFactor, GLenum dstFactor)
+	ComponentParticleGenerator::ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles, glm::vec3 offset, float particlesPerSecond, float particleLifespan, float decayRate, glm::vec3 particleScale, float velocityScale, float chanceToGenerateNewAccelerationPerParticle, float accelerationChangeScale, GLenum srcFactor, GLenum dstFactor)
 	{
 		this->sprite = sprite;
 		this->maxParticles = maxParticles;
@@ -22,6 +22,7 @@ namespace Engine {
 		this->particleScale = particleScale;
 
 		chanceToGenerateNewAcceleration = chanceToGenerateNewAccelerationPerParticle;
+		this->accelerationChangeScale = accelerationChangeScale;
 
 		particles.reserve(maxParticles);
 		for (unsigned int i = 0; i < maxParticles; i++) {

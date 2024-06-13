@@ -183,6 +183,9 @@ namespace Engine {
 		smokeParams.randomAccelerationXRange = glm::vec2(-0.000030f, -0.000029f);
 
 		RandomParameters energyParams;
+		energyParams.randomPositionXRange = glm::vec2(-0.1f, 0.1f);
+		energyParams.randomPositionYRange = glm::vec2(0.0f);
+		energyParams.randomPositionZRange = glm::vec2 (-0.1f, 0.1f);
 		energyParams.randomAccelerationXRange = glm::vec2(-0.015f, 0.015f);
 		energyParams.randomAccelerationYRange = energyParams.randomAccelerationXRange;
 		energyParams.randomAccelerationZRange = energyParams.randomAccelerationXRange;
@@ -207,7 +210,7 @@ namespace Engine {
 
 		Entity* energyParticles = new Entity("Energy Particles");
 		energyParticles->AddComponent(new ComponentTransform(0.0f, 2.0f, -4.5f));
-		energyParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/energy.png", TEXTURE_DIFFUSE, false), 50, glm::vec3(0.0f), 10.0f, 1.0f, 0.5f, glm::vec3(0.25f), 0.5f, 0.5f));
+		energyParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/energy.png", TEXTURE_DIFFUSE, false), 500, glm::vec3(0.0f), 50.0f, 0.5f, 0.5f, glm::vec3(0.25f), 0.5f, 0.45f, 5.0f));
 		energyParticles->GetParticleGenerator()->SetRandomParameters(energyParams);
 		entityManager->AddEntity(energyParticles);
 
@@ -227,8 +230,7 @@ namespace Engine {
 		smokeParticles->GetGeometryComponent()->ApplyMaterialToModel(lava);
 		smokeParticles->AddComponent(new ComponentCollisionSphere(1.0f));
 		smokeParticles->AddComponent(new ComponentPhysics(20.0f, 1.05f, 1.0f, 0.4f, true, false));
-		smokeParticles->GetPhysicsComponent()->ApplyLinearImpulse(glm::vec3(0.005f, 0.05f, 0.005f));
-		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10.0f, 25.0f, 0.5f, glm::vec3(0.5f), 0.5f, 0.0f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
+		smokeParticles->AddComponent(new ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/smoke2.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10.0f, 25.0f, 0.5f, glm::vec3(0.5f), 0.5f, 0.0f, 0.0f, GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
 		smokeParticles->GetParticleGenerator()->SetRandomParameters(smokeParams);
 		smokeParticles->AddComponent(lavaRockLight);
 		entityManager->AddEntity(smokeParticles);
