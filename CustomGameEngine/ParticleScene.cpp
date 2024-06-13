@@ -6,6 +6,7 @@
 #include "SystemParticleRenderer.h"
 #include "SystemCollisionSphereAABB.h"
 #include "SystemCollisionSphereBox.h"
+#include "SystemCollisionSphere.h"
 #include "SystemPhysics.h"
 namespace Engine {
 	ParticleScene::ParticleScene(SceneManager* sceneManager) : Scene(sceneManager)
@@ -152,7 +153,7 @@ namespace Engine {
 		//directional->Colour = glm::vec3(1.0f, 1.0f, 1.5f) * 10.0f;
 		directional->Colour = glm::vec3(0.7f, 0.65f, 0.85f);
 		directional->Specular = glm::vec3(0.7f, 0.65f, 0.85f);
-		directional->ShadowProjectionSize = 10.0f;
+		directional->ShadowProjectionSize = 15.0f;
 		directional->Far = 150.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
@@ -247,6 +248,38 @@ namespace Engine {
 		window->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(windowMaterial);
 		entityManager->AddEntity(window);
 
+		Entity* leftWall = new Entity("Left Wall");
+		leftWall->AddComponent(new ComponentTransform(-11.0f, 0.25f, 0.0f));
+		leftWall->GetTransformComponent()->SetScale(1.0f, 1.0f, 10.0f);
+		leftWall->AddComponent(new ComponentGeometry(MODEL_CUBE, false));
+		leftWall->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+		leftWall->GetAABBCollisionComponent()->IsMovedByCollisions(false);
+		entityManager->AddEntity(leftWall);
+
+		Entity* rightWall = new Entity("Right Wall");
+		rightWall->AddComponent(new ComponentTransform(11.0f, 0.25f, 0.0f));
+		rightWall->GetTransformComponent()->SetScale(1.0f, 1.0f, 10.0f);
+		rightWall->AddComponent(new ComponentGeometry(MODEL_CUBE, false));
+		rightWall->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+		rightWall->GetAABBCollisionComponent()->IsMovedByCollisions(false);
+		entityManager->AddEntity(rightWall);
+
+		Entity* frontWall = new Entity("Front Wall");
+		frontWall->AddComponent(new ComponentTransform(0.0f, 0.25f, -11.0f));
+		frontWall->GetTransformComponent()->SetScale(12.0f, 1.0f, 1.0f);
+		frontWall->AddComponent(new ComponentGeometry(MODEL_CUBE, false));
+		frontWall->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+		frontWall->GetAABBCollisionComponent()->IsMovedByCollisions(false);
+		entityManager->AddEntity(frontWall);
+
+		Entity* backWall = new Entity("Back Wall");
+		backWall->AddComponent(new ComponentTransform(0.0f, 0.25f, 11.0f));
+		backWall->GetTransformComponent()->SetScale(12.0f, 1.0f, 1.0f);
+		backWall->AddComponent(new ComponentGeometry(MODEL_CUBE, false));
+		backWall->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+		backWall->GetAABBCollisionComponent()->IsMovedByCollisions(false);
+		entityManager->AddEntity(backWall);
+
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->GetTransformComponent()->SetScale(1.0f);
@@ -270,5 +303,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemCollisionSphereBox(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemCollisionSphere(entityManager, collisionManager), UPDATE_SYSTEMS);
 	}
 }
