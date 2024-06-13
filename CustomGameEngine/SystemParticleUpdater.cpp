@@ -66,7 +66,7 @@ namespace Engine {
 
 		// Get generator velocity
 		glm::vec3 generatorVelocity = glm::vec3(0.0f);
-		if ((generator->GetOwner()->Mask() & COMPONENT_PHYSICS) == COMPONENT_PHYSICS) {
+		if ((generator->GetOwner()->ContainsComponents(COMPONENT_PHYSICS))) {
 			generatorVelocity = generator->GetOwner()->GetPhysicsComponent()->Velocity();
 		}
 
