@@ -120,6 +120,14 @@ namespace Engine {
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_PARTICLES);
 	}
 
+	void MainMenu::AnimationSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch Animation scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Animation Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_ANIMATION);
+	}
+
 	void MainMenu::ButtonPress(UIButton* button)
 	{
 
@@ -187,6 +195,13 @@ namespace Engine {
 		particleButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		particleButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(particleButton);
+
+		UITextButton* animationButton = new UITextButton(std::string("Animation Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 190.0f, SCR_HEIGHT * 0.05f), glm::vec2(0.4f, 0.4f), glm::vec2(1460.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		animationButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		animationButton->SetMouseUpCallback(std::bind(&MainMenu::AnimationSceneButtonRelease, this, std::placeholders::_1));
+		animationButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		animationButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(animationButton);
 
 		entityManager->AddEntity(canvas);
 	}
