@@ -94,9 +94,14 @@ namespace Engine {
 		delete hdrCubeCaptureRBO;
 		delete envCubemapTexture;
 
-		delete renderParams;
-
+		for (int i = 0; i < advBloomMipChain.size(); i++) {
+			glDeleteTextures(1, &advBloomMipChain[i].texture);
+			advBloomMipChain[i].texture = 0;
+		}
+		glDeleteFramebuffers(1, advBloomFBO);
 		delete advBloomFBO;
+
+		delete renderParams;
 
 		delete instance;
 	}
@@ -682,6 +687,46 @@ namespace Engine {
 
 	void RenderManager::SetupAdvBloom()
 	{
+		advBloomFBO = new unsigned int;
+		glGenFramebuffers(1, advBloomFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, *advBloomFBO);
 
+		glm::vec2 mipSize((float)screenWidth, (float)screenHeight);
+		glm::ivec2 mipIntSize((int)screenWidth, (int)screenHeight);
+
+		// Setup mip chain for down/up sampling
+		int chainLength = renderParams->GetAdvBloomChainLength();
+		advBloomMipChain.reserve(chainLength);
+		for (unsigned int i = 0; i < chainLength; i++) {
+			AdvBloomMip mip;
+			mipSize *= 0.5f;
+			mipIntSize /= 2;
+			mip.size = mipSize;
+			mip.intSize = mipIntSize;
+
+			glGenTextures(1, &mip.texture);
+			glBindTexture(GL_TEXTURE_2D, mip.texture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R11F_G11F_B10F, (int)mipSize.x, (int)mipSize.y, 0, GL_RGB, GL_FLOAT, nullptr);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+			advBloomMipChain.emplace_back(mip);
+		}
+
+		// Set up fbo attachment
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, advBloomMipChain[0].texture, 0);
+		unsigned int attachments[] = { GL_COLOR_ATTACHMENT0 };
+		glDrawBuffers(1, attachments);
+
+		// error check
+		int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "ERROR::RENDERMANAGER::Advanced bloom FBO incomplete, status: 0x\%x\n" << status << std::endl;
+			delete advBloomFBO;
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
