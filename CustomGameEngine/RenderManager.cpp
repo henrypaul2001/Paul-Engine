@@ -30,6 +30,7 @@ namespace Engine {
 		defaultTextShader->Use();
 		defaultTextShader->setMat4("projection", textProjection);
 
+		SetSkyboxTexture(ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space"));
 		renderParams = new RenderParams;
 	}
 
@@ -94,6 +95,8 @@ namespace Engine {
 		delete envCubemapTexture;
 
 		delete renderParams;
+
+		delete advBloomFBO;
 
 		delete instance;
 	}
@@ -670,5 +673,15 @@ namespace Engine {
 		glBindRenderbuffer(GL_RENDERBUFFER, *hdrCubeCaptureRBO);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *hdrCubeCaptureRBO);
+	}
+
+	void RenderManager::ResizeAdvBloomMipChain(int newSize)
+	{
+		std::cout << "NOT YET IMPLEMENTED. I'M SHOUTING!" << std::endl;
+	}
+
+	void RenderManager::SetupAdvBloom()
+	{
+
 	}
 }

@@ -31,6 +31,16 @@ namespace Engine {
 
 	struct RenderParams {
 	public:
+		RenderParams(float exposure = 1.0f, float bloomThreshold = 15.0f, int bloomPasses = 10, float advBloomThreshold = 1.0f, float advBloomSoftThreshold = 0.5f, int advBloomChainLength = 6, float advBloomFilterRadius = 0.005f, 
+			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f) 
+			: exposure(exposure), bloomThreshold(bloomThreshold), bloomPasses(bloomPasses), advBloomThreshold(advBloomThreshold), advBloomSoftThreshold(advBloomSoftThreshold), advBloomChainLength(advBloomChainLength), advBloomFilterRadius(advBloomFilterRadius), 
+			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias) 
+		{
+			SetRenderOptions(RENDER_UI | RENDER_SSAO | RENDER_SHADOWS | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT | RENDER_TONEMAPPING | RENDER_PARTICLES);
+			EnableRenderOptions(RENDER_SKYBOX);
+			DisableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+		}
+
 		const RenderOptions& GetRenderOptions() const { return renderOptions; }
 		void SetRenderOptions(const RenderOptions& options) { renderOptions = options; }
 		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
@@ -89,6 +99,12 @@ namespace Engine {
 		int ssaoSamples;
 		float ssaoRadius;
 		float ssaoBias;
+	};
+
+	struct AdvBloomMip {
+		glm::vec2 size;
+		glm::ivec2 intSize;
+		unsigned int texture;
 	};
 
 	class RenderManager
@@ -154,6 +170,9 @@ namespace Engine {
 		const Cubemap* GetSkybox() const { return skybox; }
 		const HDREnvironment* GetEnvironmentMap() const { return environmentMap; }
 
+		// Advanced bloom
+		void ResizeAdvBloomMipChain(int newSize);
+		const std::vector<AdvBloomMip>& GetAdvBloomMipChain() const { return advBloomMipChain; }
 		void SetAdvBloomLensDirtTexture(Texture* newDirtMask) { advBloomLensDirtMask = newDirtMask; }
 		const Texture* GetAdvBloomLensDirtTexture() const { return advBloomLensDirtMask; }
 
@@ -169,6 +188,7 @@ namespace Engine {
 		void SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight);
 		void SetupBloomPingPongFBO();
 		void SetupEnvironmentMapFBO();
+		void SetupAdvBloom();
 
 		void SetupGBuffer();
 
@@ -210,6 +230,10 @@ namespace Engine {
 		unsigned int* alternateBloomBrightnessBuffer;
 		unsigned int* pingPongFBO[2];
 		unsigned int* pingPongColourBuffers[2];
+
+		// Advanced bloom
+		unsigned int* advBloomFBO;
+		std::vector<AdvBloomMip> advBloomMipChain;
 
 		// Env hdr map
 		unsigned int* hdrCubeCaptureFBO;
