@@ -15,6 +15,8 @@ namespace Engine {
 		RENDER_SKYBOX = 1 << 6,
 		RENDER_ENVIRONMENT_MAP = 1 << 7,
 		RENDER_PARTICLES = 1 << 8,
+		RENDER_ADVANCED_BLOOM = 1 << 9,
+		RENDER_ADVANCED_BLOOM_LENS_DIRT = 1 << 10,
 	};
 	inline RenderOptions operator| (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a | (int)b); }
 	inline RenderOptions operator|= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a |= (int)b); }
@@ -34,12 +36,27 @@ namespace Engine {
 		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
 		void DisableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions & ~options; }
 
-		const float& GetExposure() const { return exposure; }
-		const float& GetBloomThreshold() const { return bloomThreshold; }
-		const int& GetBloomPasses() const { return bloomPasses; }
-		const int& GetSSAOSamples() const { return ssaoSamples; }
-		const float& GetSSAORadius() const { return ssaoRadius; }
-		const float& GetSSAOBias() const { return ssaoBias; }
+		const float GetExposure() const { return exposure; }
+		const float GetBloomThreshold() const { return bloomThreshold; }
+		const int GetBloomPasses() const { return bloomPasses; }
+		const int GetSSAOSamples() const { return ssaoSamples; }
+		const float GetSSAORadius() const { return ssaoRadius; }
+		const float GetSSAOBias() const { return ssaoBias; }
+
+		// Advanced bloom
+		const float GetAdvBloomThreshold() const { return advBloomThreshold; }
+		const float GetAdvBloomSoftThreshold() const { return advBloomSoftThreshold; }
+		const int GetAdvBloomChainLength() const { return advBloomChainLength; }
+		const float GetAdvBloomFilterRadius() const { return advBloomFilterRadius; }
+		const float GetAdvBloomStrength() const { return advBloomStrength; }
+		const float GetAdvBloomLensDirtMaskStrength() const { return advBloomLensDirtMaskStrength; }
+
+		void SetAdvBloomThreshold(const float newThreshold) { advBloomThreshold = newThreshold; }
+		void SetAdvBloomSoftThreshold(const float newSoftThreshold) { advBloomSoftThreshold = newSoftThreshold; }
+		void SetAdvBloomChainLength(const int newChainLength) { if (newChainLength < 1) { advBloomChainLength = 1; } else { advBloomChainLength = newChainLength; } }
+		void SetAdvBloomFilterRadius(const float newFilterRadius) { advBloomFilterRadius = newFilterRadius; }
+		void SetAdvBloomStrength(const float newStrength) { advBloomStrength = newStrength; }
+		void SetAdvBloomLensDirtMaskStrength(const float newDirtStrength) { advBloomLensDirtMaskStrength = newDirtStrength; }
 
 		void SetExposure(const float newExposure) { exposure = newExposure; }
 		void SetBloomThreshold(const float newThreshold) { bloomThreshold = newThreshold; }
@@ -59,6 +76,14 @@ namespace Engine {
 		// Bloom
 		float bloomThreshold;
 		int bloomPasses;
+
+		// Advanced bloom (pbr bloom)
+		float advBloomThreshold;
+		float advBloomSoftThreshold;
+		int advBloomChainLength;
+		float advBloomFilterRadius;
+		float advBloomStrength;
+		float advBloomLensDirtMaskStrength;
 
 		// SSAO
 		int ssaoSamples;
@@ -129,6 +154,9 @@ namespace Engine {
 		const Cubemap* GetSkybox() const { return skybox; }
 		const HDREnvironment* GetEnvironmentMap() const { return environmentMap; }
 
+		void SetAdvBloomLensDirtTexture(Texture* newDirtMask) { advBloomLensDirtMask = newDirtMask; }
+		const Texture* GetAdvBloomLensDirtTexture() const { return advBloomLensDirtMask; }
+
 		RenderPipeline* GetRenderPipeline() { return renderPipeline; }
 		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
 	private:
@@ -194,6 +222,7 @@ namespace Engine {
 		unsigned int screenWidth;
 		unsigned int screenHeight;
 
+		Texture* advBloomLensDirtMask;
 		Cubemap* skybox;
 		HDREnvironment* environmentMap;
 	};
