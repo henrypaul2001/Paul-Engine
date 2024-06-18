@@ -31,7 +31,7 @@ namespace Engine {
 
 			SceneRenderStep();
 
-			RunBloomStep();
+			BloomStep();
 
 			ScreenTextureStep();
 

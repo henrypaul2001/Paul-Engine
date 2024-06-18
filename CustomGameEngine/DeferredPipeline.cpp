@@ -198,7 +198,7 @@ namespace Engine {
 
 			// Bloom
 			// -----
-			RunBloomStep();
+			BloomStep();
 
 			// Post Processing
 			// ---------------

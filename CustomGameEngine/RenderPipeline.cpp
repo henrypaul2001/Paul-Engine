@@ -164,10 +164,10 @@ namespace Engine {
 		}
 	}
 
-	void RenderPipeline::RunBloomStep()
+	void RenderPipeline::BloomStep()
 	{
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
-		if ((renderOptions & RENDER_BLOOM) != 0) {
+		if ((renderOptions & RENDER_BLOOM) != 0 && (renderOptions & RENDER_ADVANCED_BLOOM) == 0) {
 			bool horizontal = true;
 			bool first_iteration = true;
 			int bloomPasses = renderInstance->GetRenderParams()->GetBloomPasses();
@@ -224,5 +224,84 @@ namespace Engine {
 			}
 			particleRenderSystem->AfterAction();
 		}
+	}
+
+	void RenderPipeline::AdvancedBloomStep()
+	{
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
+		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
+			unsigned int bloomFBO = *renderInstance->GetAdvBloomFBO();
+			glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
+			glClear(GL_COLOR_BUFFER_BIT);
+			
+			std::vector<AdvBloomMip> mipChain = renderInstance->GetAdvBloomMipChain();
+
+			// Downsample
+			AdvBloomDownsampleStep(mipChain);
+
+			// Upsample
+			AdvBloomUpsampleStep(mipChain);
+		}
+	}
+
+	void RenderPipeline::AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain)
+	{
+		// downsampleShader.use();
+		// shader.setVec2(resolution)
+		// shader.setFloat(threshold)
+		// shader.setFloat(softThreshold)
+		// shader.setFirstIteration(true)
+
+		glActiveTexture(GL_TEXTURE0);
+		glDisable(GL_BLEND);
+		unsigned int previousTexture = *renderInstance->GetScreenTexture();
+		Mesh defaultPlane = ResourceManager::GetInstance()->DefaultPlane();
+
+		// Progressively downsample through mip chain
+		for (int i = 0; i < mipChain.size(); i++) {
+			const AdvBloomMip& mip = mipChain[i];
+
+			if (i > 0) {
+				//shader.setFirstIteration(false)
+			}
+
+			glViewport(0, 0, mip.size.x, mip.size.y);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mip.texture, 0);
+
+			glBindTexture(GL_TEXTURE_2D, previousTexture);
+
+			defaultPlane.DrawWithNoMaterial();
+
+			// Set current mip as src resolution for next iteration
+			//shader.setRes(mip.size)
+			previousTexture = mip.texture;
+		}
+	}
+
+	void RenderPipeline::AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain)
+	{
+		//upsampleShader.setFloat(filterRadius)
+		//setFloat(aspectRatio)
+
+		Mesh defaultPlane = ResourceManager::GetInstance()->DefaultPlane();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+
+		for (int i = mipChain.size() - 1; i > 0; i--) {
+			const AdvBloomMip& mip = mipChain[i];
+			const AdvBloomMip& nextMip = mipChain[i - 1];
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, mip.texture);
+
+			// Set render target
+			glViewport(0, 0, nextMip.size.x, nextMip.size.y);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, nextMip.texture, 0);
+
+			defaultPlane.DrawWithNoMaterial();
+		}
+
+		glDisable(GL_BLEND);
 	}
 }

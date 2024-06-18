@@ -8,6 +8,7 @@ namespace Engine {
 	class SystemShadowMapping;
 	class SystemUIRender;
 	class RenderManager;
+	struct AdvBloomMip;
 
 	enum RENDER_PIPELINE {
 		FORWARD_PIPELINE,
@@ -26,9 +27,10 @@ namespace Engine {
 		void virtual DirLightShadowStep();
 		void virtual ActiveLightsShadowStep();
 		void virtual RunShadowMapSteps();
-		void virtual RunBloomStep();
+		void virtual BloomStep();
 		void virtual UIRenderStep();
 		void virtual ForwardParticleRenderStep();
+		void virtual AdvancedBloomStep();
 
 		RenderManager* renderInstance;
 
@@ -54,5 +56,9 @@ namespace Engine {
 		unsigned int screenHeight;
 
 		unsigned int finalBloomTexture;
+
+	private:
+		void AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain);
+		void AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain);
 	};
 }
