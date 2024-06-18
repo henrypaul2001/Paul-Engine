@@ -273,7 +273,7 @@ namespace Engine {
 			AdvBloomDownsampleStep(mipChain, renderParams->GetAdvBloomThreshold(), renderParams->GetAdvBloomSoftThreshold());
 
 			// Upsample
-			AdvBloomUpsampleStep(mipChain);
+			AdvBloomUpsampleStep(mipChain, renderParams->GetAdvBloomFilterRadius());
 		}
 	}
 
@@ -313,10 +313,11 @@ namespace Engine {
 		}
 	}
 
-	void RenderPipeline::AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain)
+	void RenderPipeline::AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius)
 	{
-		//upsampleShader.setFloat(filterRadius)
-		//setFloat(aspectRatio)
+		Shader* upsampleShader = ResourceManager::GetInstance()->AdvBloomUpsampleShader();
+		upsampleShader->setFloat("filterRadius", filterRadius);
+		upsampleShader->setFloat("aspectRatio", (float)screenWidth / (float)screenHeight);
 
 		Mesh defaultPlane = ResourceManager::GetInstance()->DefaultPlane();
 

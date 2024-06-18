@@ -60,6 +60,6 @@ namespace Engine {
 
 	private:
 		void AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold);
-		void AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain);
+		void AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius);
 	};
 }
