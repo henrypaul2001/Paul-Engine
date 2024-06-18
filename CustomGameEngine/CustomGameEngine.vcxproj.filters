@@ -698,5 +698,8 @@
     <None Include="Shaders\pointParticles.vert">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="Shaders\advBloomDownsample.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

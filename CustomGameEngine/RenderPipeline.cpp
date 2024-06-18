@@ -226,9 +226,42 @@ namespace Engine {
 		}
 	}
 
-	void RenderPipeline::AdvancedBloomStep()
+	void RenderPipeline::AdvancedBloomCombineStep()
 	{
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
+		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
+			glViewport(0, 0, screenWidth, screenHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+			//bloomMixShader.use()
+			// bloomMixShader.setFloat(bloomStrength)
+			// bloomMixShader.setFloat(dirtMaskStrength)
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+		
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, renderInstance->GetAdvBloomMipChain()[0].texture);
+
+			const Texture* lensDirt = renderInstance->GetAdvBloomLensDirtTexture();
+			if ((renderOptions & RENDER_ADVANCED_BLOOM_LENS_DIRT) != 0 && lensDirt != nullptr) {
+				//bloomMixShader.setBool(lensDirt = true)
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, lensDirt->id);
+			}
+			else {
+				//bloomMixShader.setBool(lensDirt = false)
+			}
+
+			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+		}
+	}
+
+	void RenderPipeline::AdvancedBloomStep()
+	{
+		RenderParams* renderParams = renderInstance->GetRenderParams();
+		RenderOptions renderOptions = renderParams->GetRenderOptions();
 		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
 			unsigned int bloomFBO = *renderInstance->GetAdvBloomFBO();
 			glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
@@ -237,20 +270,22 @@ namespace Engine {
 			std::vector<AdvBloomMip> mipChain = renderInstance->GetAdvBloomMipChain();
 
 			// Downsample
-			AdvBloomDownsampleStep(mipChain);
+			AdvBloomDownsampleStep(mipChain, renderParams->GetAdvBloomThreshold(), renderParams->GetAdvBloomSoftThreshold());
 
 			// Upsample
 			AdvBloomUpsampleStep(mipChain);
 		}
 	}
 
-	void RenderPipeline::AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain)
+	void RenderPipeline::AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold)
 	{
-		// downsampleShader.use();
-		// shader.setVec2(resolution)
-		// shader.setFloat(threshold)
-		// shader.setFloat(softThreshold)
-		// shader.setFirstIteration(true)
+		Shader* downsampleShader = ResourceManager::GetInstance()->AdvBloomDownsampleShader();
+		downsampleShader->Use();
+		downsampleShader->setVec2("srcResolution", glm::vec2((float)screenWidth, (float)screenHeight));
+		downsampleShader->setFloat("threshold", threshold);
+		downsampleShader->setFloat("softThreshold", softThreshold);
+		downsampleShader->setFloat("gamma", renderInstance->GetRenderParams()->GetGamma());
+		downsampleShader->setBool("firstIteration", true);
 
 		glActiveTexture(GL_TEXTURE0);
 		glDisable(GL_BLEND);
@@ -262,7 +297,7 @@ namespace Engine {
 			const AdvBloomMip& mip = mipChain[i];
 
 			if (i > 0) {
-				//shader.setFirstIteration(false)
+				downsampleShader->setBool("firstIteration", false);
 			}
 
 			glViewport(0, 0, mip.size.x, mip.size.y);
@@ -273,7 +308,7 @@ namespace Engine {
 			defaultPlane.DrawWithNoMaterial();
 
 			// Set current mip as src resolution for next iteration
-			//shader.setRes(mip.size)
+			downsampleShader->setVec2("srcResolution", mip.size);
 			previousTexture = mip.texture;
 		}
 	}

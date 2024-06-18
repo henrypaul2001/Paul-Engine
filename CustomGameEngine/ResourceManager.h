@@ -65,6 +65,9 @@ namespace Engine {
 		Shader* bloomBlur;
 		Shader* screenQuadShader;
 		Shader* hdrTonemappingShader;
+		Shader* advBloomDownsampleShader;
+		Shader* advBloomUpsampleShader;
+		Shader* advBloomCombineShader;
 
 		// Environment mapping
 		// -------------------
@@ -136,6 +139,9 @@ namespace Engine {
 		Shader* DefaultImageShader() const { return defaultImageShader; }
 		Shader* DefaultParticleShader() const { return particleShader; }
 		Shader* DefaultPointParticleShader() const { return pointParticleShader; }
+		Shader* AdvBloomDownsampleShader() const { return advBloomDownsampleShader; }
+		Shader* AdvBloomUpsampleShader() const { return advBloomUpsampleShader; }
+		Shader* AdvBloomCombineShader() const { return advBloomCombineShader; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
