@@ -210,7 +210,7 @@ namespace Engine {
 
 				Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
 				hdrShader->Use();
-				hdrShader->setFloat("gamma", 1.2);
+				hdrShader->setFloat("gamma", renderInstance->GetRenderParams()->GetGamma());
 				hdrShader->setFloat("exposure", renderInstance->GetRenderParams()->GetExposure());
 				hdrShader->setBool("bloom", (renderOptions & RENDER_BLOOM) != 0);
 
