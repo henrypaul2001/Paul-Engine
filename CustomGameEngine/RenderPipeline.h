@@ -31,7 +31,6 @@ namespace Engine {
 		void virtual UIRenderStep();
 		void virtual ForwardParticleRenderStep();
 		void virtual AdvancedBloomStep();
-		void virtual AdvancedBloomCombineStep();
 
 		RenderManager* renderInstance;
 
@@ -61,5 +60,6 @@ namespace Engine {
 	private:
 		void AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold);
 		void AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius);
+		void AdvBloomCombineStep(const bool renderDirtMask, const float bloomStrength, const float lensDirtStrength);
 	};
 }

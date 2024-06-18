@@ -306,6 +306,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="irrKlang.dll" />
+    <None Include="Shaders\advBloomCombine.frag" />
     <None Include="Shaders\advBloomDownsample.frag" />
     <None Include="Shaders\advBloomUpsample.frag" />
     <None Include="Shaders\bloomBlur.frag" />

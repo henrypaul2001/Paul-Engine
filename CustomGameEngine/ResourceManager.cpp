@@ -323,7 +323,13 @@ namespace Engine {
 		pointParticleShader = LoadShader("Shaders/pointParticles.vert", "Shaders/particles.frag", "Shaders/pointParticles.geom");
 		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag");
 		advBloomUpsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomUpsample.frag");
+		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag");
 
+		advBloomCombineShader->Use();
+		advBloomCombineShader->setInt("screenTexture", 0);
+		advBloomCombineShader->setInt("bloomTexture", 1);
+		advBloomCombineShader->setInt("dirtMask", 2);
+		
 		advBloomDownsampleShader->Use();
 		advBloomDownsampleShader->setInt("srcTexture", 0);
 

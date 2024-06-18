@@ -704,5 +704,8 @@
     <None Include="Shaders\advBloomUpsample.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
+    <None Include="Shaders\advBloomCombine.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

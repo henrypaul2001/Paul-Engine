@@ -226,36 +226,34 @@ namespace Engine {
 		}
 	}
 
-	void RenderPipeline::AdvancedBloomCombineStep()
+	void RenderPipeline::AdvBloomCombineStep(const bool renderDirtMask, const float bloomStrength, const float lensDirtStrength)
 	{
-		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
-		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
-			glViewport(0, 0, screenWidth, screenHeight);
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
-			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		glViewport(0, 0, screenWidth, screenHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-			//bloomMixShader.use()
-			// bloomMixShader.setFloat(bloomStrength)
-			// bloomMixShader.setFloat(dirtMaskStrength)
+		Shader* bloomCombineShader = ResourceManager::GetInstance()->AdvBloomCombineShader();
+		bloomCombineShader->Use();
+		bloomCombineShader->setFloat("bloomStrength", bloomStrength);
+		bloomCombineShader->setFloat("dirtMaskStrength", lensDirtStrength);
 
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 		
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, renderInstance->GetAdvBloomMipChain()[0].texture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, renderInstance->GetAdvBloomMipChain()[0].texture);
 
-			const Texture* lensDirt = renderInstance->GetAdvBloomLensDirtTexture();
-			if ((renderOptions & RENDER_ADVANCED_BLOOM_LENS_DIRT) != 0 && lensDirt != nullptr) {
-				//bloomMixShader.setBool(lensDirt = true)
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, lensDirt->id);
-			}
-			else {
-				//bloomMixShader.setBool(lensDirt = false)
-			}
-
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+		const Texture* lensDirt = renderInstance->GetAdvBloomLensDirtTexture();
+		if (renderDirtMask && lensDirt != nullptr) {
+			bloomCombineShader->setBool("useDirtMask", true);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, lensDirt->id);
 		}
+		else {
+			bloomCombineShader->setBool("useDirtMask", false);
+		}
+
+		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 	}
 
 	void RenderPipeline::AdvancedBloomStep()
@@ -274,6 +272,9 @@ namespace Engine {
 
 			// Upsample
 			AdvBloomUpsampleStep(mipChain, renderParams->GetAdvBloomFilterRadius());
+
+			// Combine
+			AdvBloomCombineStep((renderOptions & RENDER_ADVANCED_BLOOM_LENS_DIRT) != 0, renderParams->GetAdvBloomStrength(), renderParams->GetAdvBloomLensDirtMaskStrength());
 		}
 	}
 
