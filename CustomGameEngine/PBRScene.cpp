@@ -16,6 +16,8 @@ namespace Engine {
 		renderManager->GetRenderParams()->SetBloomThreshold(400.0f);
 		renderManager->GetRenderParams()->SetBloomPasses(10);
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
+		renderManager->SetAdvBloomLensDirtTexture(ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false));
 	}
 
 	PBRScene::~PBRScene()

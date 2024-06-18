@@ -317,6 +317,7 @@ namespace Engine {
 	void RenderPipeline::AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius)
 	{
 		Shader* upsampleShader = ResourceManager::GetInstance()->AdvBloomUpsampleShader();
+		upsampleShader->Use();
 		upsampleShader->setFloat("filterRadius", filterRadius);
 		upsampleShader->setFloat("aspectRatio", (float)screenWidth / (float)screenHeight);
 
@@ -339,6 +340,7 @@ namespace Engine {
 			defaultPlane.DrawWithNoMaterial();
 		}
 
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_BLEND);
 	}
 }

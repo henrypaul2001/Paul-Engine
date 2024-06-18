@@ -33,6 +33,8 @@ namespace Engine {
 
 			BloomStep();
 
+			AdvancedBloomStep();
+
 			ScreenTextureStep();
 
 			UIRenderStep();

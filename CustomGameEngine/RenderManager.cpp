@@ -25,13 +25,15 @@ namespace Engine {
 		SetupSSAOBuffers();
 		SetupEnvironmentMapFBO();
 
+		renderParams = new RenderParams;
+		SetupAdvBloom();
+
 		Shader* defaultTextShader = ResourceManager::GetInstance()->DefaultTextShader();
 		glm::mat4 textProjection = glm::ortho(0.0f, (float)screenWidth, 0.0f, (float)screenHeight);
 		defaultTextShader->Use();
 		defaultTextShader->setMat4("projection", textProjection);
 
 		SetSkyboxTexture(ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space"));
-		renderParams = new RenderParams;
 	}
 
 	RenderManager* RenderManager::GetInstance()
