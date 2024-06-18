@@ -122,42 +122,42 @@ namespace Engine {
 		RenderParams* GetRenderParams() const { return renderParams; }
 
 		unsigned int* GetDepthMap(int index, DepthMapType type);
-		unsigned int* GetFlatDepthFBO() { return flatDepthMapFBO; }
-		unsigned int* GetCubeDepthFBO() { return cubeDepthMapFBO; }
-		unsigned int* GetTexturedFBO() { return texturedFBO; }
+		unsigned int* GetFlatDepthFBO() const { return flatDepthMapFBO; }
+		unsigned int* GetCubeDepthFBO() const { return cubeDepthMapFBO; }
+		unsigned int* GetTexturedFBO() const { return texturedFBO; }
 
-		unsigned int* GetGBuffer() { return gBuffer; }
-		unsigned int* GPosition() { return gPosition; }
-		unsigned int* GNormal() { return gNormal; }
-		unsigned int* GAlbedo() { return gAlbedo; }
-		unsigned int* GSpecular() { return gSpecular; }
-		unsigned int* GArm() { return gArm; }
-		unsigned int* GPBRFLAG() { return gPBRFLAG; }
+		unsigned int* GetGBuffer() const { return gBuffer; }
+		unsigned int* GPosition() const { return gPosition; }
+		unsigned int* GNormal() const { return gNormal; }
+		unsigned int* GAlbedo() const { return gAlbedo; }
+		unsigned int* GSpecular() const { return gSpecular; }
+		unsigned int* GArm() const { return gArm; }
+		unsigned int* GPBRFLAG() const { return gPBRFLAG; }
 
-		unsigned int* GetScreenTexture() { return screenTexture; }
-		unsigned int* GetAlternateScreenTexture() { return alternateScreenTexture; }
-		unsigned int* GetBloomBrightnessTexture() { return bloomBrightnessBuffer; }
-		unsigned int* GetAlternateBloomBrightnessTexture() { return alternateBloomBrightnessBuffer; }
+		unsigned int* GetScreenTexture() const { return screenTexture; }
+		unsigned int* GetAlternateScreenTexture() const { return alternateScreenTexture; }
+		unsigned int* GetBloomBrightnessTexture() const { return bloomBrightnessBuffer; }
+		unsigned int* GetAlternateBloomBrightnessTexture() const { return alternateBloomBrightnessBuffer; }
 
-		unsigned int* GetSSAOFBO() { return ssaoFBO; }
-		unsigned int* GetSSAOBlurFBO() { return ssaoBlurFBO; }
-		unsigned int* SSAOColour() { return ssaoColourBuffer; }
-		unsigned int* SSAOBlurColour() { return ssaoBlurColourBuffer; }
-		unsigned int* SSAONoiseTexture() { return noiseTexture; }
-		std::vector<glm::vec3*> SSAOKernel() { return ssaoKernel; }
+		unsigned int* GetSSAOFBO() const { return ssaoFBO; }
+		unsigned int* GetSSAOBlurFBO() const { return ssaoBlurFBO; }
+		unsigned int* SSAOColour() const { return ssaoColourBuffer; }
+		unsigned int* SSAOBlurColour() const { return ssaoBlurColourBuffer; }
+		unsigned int* SSAONoiseTexture() const { return noiseTexture; }
+		std::vector<glm::vec3*> SSAOKernel() const { return ssaoKernel; }
 
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
 		unsigned int* GetBloomPingPongColourBuffer(int index) { return pingPongColourBuffers[index]; }
 
 		// Env hdr map
-		unsigned int* GetHDRCubeCaptureFBO() { return hdrCubeCaptureFBO; }
-		unsigned int* GetEnvironmentCubemapTexture() { return envCubemapTexture; }
+		unsigned int* GetHDRCubeCaptureFBO() const { return hdrCubeCaptureFBO; }
+		unsigned int* GetEnvironmentCubemapTexture() const { return envCubemapTexture; }
 
-		unsigned int ShadowWidth() { return shadowWidth; }
-		unsigned int ShadowHeight() { return shadowHeight; }
-		unsigned int ScreenWidth() { return screenWidth; }
-		unsigned int ScreenHeight() { return screenHeight; }
+		unsigned int ShadowWidth() const { return shadowWidth; }
+		unsigned int ShadowHeight() const { return shadowHeight; }
+		unsigned int ScreenWidth() const { return screenWidth; }
+		unsigned int ScreenHeight() const { return screenHeight; }
 
 		unsigned int ConvertHDREquirectangularToCube(const unsigned int& textureId);
 		unsigned int CreateIrradianceMap();
@@ -175,8 +175,9 @@ namespace Engine {
 		const std::vector<AdvBloomMip>& GetAdvBloomMipChain() const { return advBloomMipChain; }
 		void SetAdvBloomLensDirtTexture(Texture* newDirtMask) { advBloomLensDirtMask = newDirtMask; }
 		const Texture* GetAdvBloomLensDirtTexture() const { return advBloomLensDirtMask; }
+		const unsigned int* GetAdvBloomFBO() const { return advBloomFBO; }
 
-		RenderPipeline* GetRenderPipeline() { return renderPipeline; }
+		RenderPipeline* GetRenderPipeline() const { return renderPipeline; }
 		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
 	private:
 		static RenderManager* instance;
