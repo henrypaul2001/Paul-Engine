@@ -200,6 +200,10 @@ namespace Engine {
 			// -----
 			BloomStep();
 
+			// Advance bloom
+			// -------------
+			AdvancedBloomStep();
+
 			// Post Processing
 			// ---------------
 			if ((renderOptions & RENDER_TONEMAPPING) != 0) {
