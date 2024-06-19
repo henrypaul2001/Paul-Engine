@@ -149,6 +149,7 @@ namespace Engine {
 		screenQuadShader->Use();
 
 		screenQuadShader->setUInt("postProcess", renderSystem->GetPostProcess());
+		screenQuadShader->setFloat("postProcessStrength", renderInstance->GetRenderParams()->GetPostProcessStrength());
 
 		if (renderSystem->GetPostProcess() == CUSTOM_KERNEL) {
 			screenQuadShader->setFloat("customKernel[0]", renderSystem->PostProcessKernel[0]);

@@ -32,9 +32,9 @@ namespace Engine {
 	struct RenderParams {
 	public:
 		RenderParams(float exposure = 1.0f, float gamma = 1.2f, float bloomThreshold = 15.0f, int bloomPasses = 10, float advBloomThreshold = 1.0f, float advBloomSoftThreshold = 0.5f, int advBloomChainLength = 6, float advBloomFilterRadius = 0.005f, 
-			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f) 
+			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f, float postProcessStrength = 1.0f) 
 			: exposure(exposure), gamma(gamma), bloomThreshold(bloomThreshold), bloomPasses(bloomPasses), advBloomThreshold(advBloomThreshold), advBloomSoftThreshold(advBloomSoftThreshold), advBloomChainLength(advBloomChainLength), advBloomFilterRadius(advBloomFilterRadius), 
-			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias) 
+			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias), postProcessStrength(postProcessStrength)
 		{
 			SetRenderOptions(RENDER_UI | RENDER_SSAO | RENDER_SHADOWS | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT | RENDER_TONEMAPPING | RENDER_PARTICLES);
 			EnableRenderOptions(RENDER_SKYBOX);
@@ -46,6 +46,7 @@ namespace Engine {
 		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
 		void DisableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions & ~options; }
 
+		const float GetPostProcessStrength() const { return postProcessStrength; }
 		const float GetGamma() const { return gamma; }
 		const float GetExposure() const { return exposure; }
 		const float GetBloomThreshold() const { return bloomThreshold; }
@@ -69,6 +70,7 @@ namespace Engine {
 		void SetAdvBloomStrength(const float newStrength) { advBloomStrength = newStrength; }
 		void SetAdvBloomLensDirtMaskStrength(const float newDirtStrength) { advBloomLensDirtMaskStrength = newDirtStrength; }
 
+		void SetPostProcessStrength(const float newStrength) { postProcessStrength = newStrength; }
 		void SetGamma(const float newGamma) { gamma = newGamma; }
 		void SetExposure(const float newExposure) { exposure = newExposure; }
 		void SetBloomThreshold(const float newThreshold) { bloomThreshold = newThreshold; }
@@ -82,6 +84,9 @@ namespace Engine {
 	private:
 		RenderOptions renderOptions;
 		
+		// Post processing
+		float postProcessStrength;
+
 		// Tonemapping
 		float exposure;
 		float gamma;

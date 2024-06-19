@@ -62,6 +62,10 @@ float[9] Sobel = float[](
 	-1, -2, -1
 );
 
+uniform float postProcessStrength;
+uniform unsigned int postProcess;
+uniform float[9] customKernel;
+
 vec4 KernelEffect(float[9] kernel) {
 	vec2 offsets[9] = vec2[](
 		vec2(-offset, offset),  // top-left
@@ -87,9 +91,6 @@ vec4 KernelEffect(float[9] kernel) {
 
 	return vec4(col, 1.0);
 }
-
-uniform unsigned int postProcess;
-uniform float[9] customKernel;
 
 void main() {
 	if (postProcess == 0u) {
@@ -121,6 +122,10 @@ void main() {
 	}
 	else if (postProcess == 9u) {
 		FragColor = KernelEffect(customKernel);
+	}
+
+	if (postProcess != 0u) {
+		FragColor = vec4(mix(texture(screenTexture, TexCoords).rgb, FragColor.rgb, postProcessStrength), 1.0);
 	}
 
 	// gamma correction

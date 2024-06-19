@@ -71,6 +71,17 @@ namespace Engine {
 			std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
 		}
 
+		RenderParams* params = RenderManager::GetInstance()->GetRenderParams();
+		float strength = params->GetPostProcessStrength();
+		if (keysPressed[GLFW_KEY_MINUS] && (keysPressed[GLFW_KEY_LEFT_SHIFT] || keysPressed[GLFW_KEY_RIGHT_SHIFT])) {
+			params->SetPostProcessStrength(strength -= 0.01f);
+			std::cout << "Post process strength = " << strength << std::endl;
+		}
+		else if (keysPressed[GLFW_KEY_EQUAL] && (keysPressed[GLFW_KEY_LEFT_SHIFT] || keysPressed[GLFW_KEY_RIGHT_SHIFT])) {
+			params->SetPostProcessStrength(strength += 0.01f);
+			std::cout << "Post process strength = " << strength << std::endl;
+		}
+
 		RenderManager* renderInstance = RenderManager::GetInstance();
 		float exposure = renderInstance->GetRenderParams()->GetExposure();
 		if (keysPressed[GLFW_KEY_E] && keysPressed[GLFW_KEY_LEFT_CONTROL]) {
