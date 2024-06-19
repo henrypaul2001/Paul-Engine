@@ -104,25 +104,37 @@ namespace Engine {
 		std::cout << "Key num: " << key << "| UP" << std::endl;
 		owner->keyUp(key);
 		RenderManager* renderInstance = RenderManager::GetInstance();
+		RenderParams* renderParams = renderInstance->GetRenderParams();
+		RenderOptions renderOptions = renderParams->GetRenderOptions();
+
 		if (key == GLFW_KEY_B) {
-			bool bloom = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_BLOOM) != 0;
-			if (bloom) {
-				renderInstance->GetRenderParams()->DisableRenderOptions(RENDER_BLOOM);
-				std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
-			}
-			else {
-				renderInstance->GetRenderParams()->EnableRenderOptions(RENDER_BLOOM);
+			bool bloom = (renderOptions & RENDER_BLOOM) != 0;
+			bool advancedBloom = (renderOptions & RENDER_ADVANCED_BLOOM) != 0;
+
+			if (!bloom && !advancedBloom) {
+				renderParams->EnableRenderOptions(RENDER_BLOOM);
 				std::cout << "GAMEINPUTMANAGER::ENABLE::Bloom" << std::endl;
+			}
+			else if (bloom && !advancedBloom) {
+				renderParams->DisableRenderOptions(RENDER_BLOOM);
+				renderParams->EnableRenderOptions(RENDER_ADVANCED_BLOOM);
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
+				std::cout << "GAMEINPUTMANAGER::ENABLE::Adv Bloom" << std::endl;
+			}
+			else if (advancedBloom) {
+				renderParams->DisableRenderOptions(RENDER_BLOOM | RENDER_ADVANCED_BLOOM);
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Adv Bloom" << std::endl;
 			}
 		}
 		if (key == GLFW_KEY_P) {
-			bool SSAO = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_SSAO) != 0;
+			bool SSAO = (renderOptions & RENDER_SSAO) != 0;
 			if (SSAO) {
-				renderInstance->GetRenderParams()->DisableRenderOptions(RENDER_SSAO);
+				renderParams->DisableRenderOptions(RENDER_SSAO);
 				std::cout << "GAMEINPUTMANAGER::DISABLE::Screen space ambient occlusion" << std::endl;
 			}
 			else {
-				renderInstance->GetRenderParams()->EnableRenderOptions(RENDER_SSAO);
+				renderParams->EnableRenderOptions(RENDER_SSAO);
 				std::cout << "GAMEINPUTMANAGER::ENABLE::Screen space ambient occlusion" << std::endl;
 			}
 		}
