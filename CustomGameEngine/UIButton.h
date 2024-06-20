@@ -28,6 +28,8 @@ namespace Engine {
 		void MouseDown() { isMouseDown = true; if (OnMouseDown != nullptr) { OnMouseDown(this); } }
 		void MouseUp() { isMouseDown = false; if (OnMouseUp != nullptr) { OnMouseUp(this); } }
 
+		void SetButtonScale(const glm::vec2 newBtnScale) { buttonScale = newBtnScale; }
+
 		const glm::vec2& GetButtonScale() const { return buttonScale; }
 		const ButtonTypes& GetButtonType() const { return buttonType; }
 	protected:
