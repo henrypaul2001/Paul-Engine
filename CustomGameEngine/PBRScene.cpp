@@ -39,49 +39,64 @@ namespace Engine {
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
-	void ButtonEnter(UIButton* button) {
-		if (button->GetButtonType() == BUTTON_TEXT) {
-			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
-			textButton->SetText("Hover");
-			textButton->SetColour(glm::vec3(0.0f, 0.0f, 1.0f));
-		}
-		else if (button->GetButtonType() == BUTTON_IMAGE) {
-			std::cout << "Image enter" << std::endl;
-		}
+	
+	void ButtonEnter(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 
-	void ButtonExit(UIButton* button) {
-		if (button->GetButtonType() == BUTTON_TEXT) {
-			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
-			textButton->SetText("Button");
-			textButton->SetColour(glm::vec3(1.0f, 1.0f, 1.0f));
-		}
-		else if (button->GetButtonType() == BUTTON_IMAGE) {
-			std::cout << "Image exit" << std::endl;
-		}
+	void ButtonExit(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
 	}
 
-	void ButtonPress(UIButton* button) {
-		if (button->GetButtonType() == BUTTON_TEXT) {
-			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
-			textButton->SetText("Press");
-			textButton->SetColour(glm::vec3(1.0f, 0.0f, 0.0f));
-		}
-		else if (button->GetButtonType() == BUTTON_IMAGE) {
-			UIImageButton* imageButton = dynamic_cast<UIImageButton*>(button);
-			imageButton->SetTexture(ResourceManager::GetInstance()->LoadTexture("UI/cyberpunkLogo.png", TEXTURE_DIFFUSE, false));
-		}
+	void ButtonPress(UIButton* button) 
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.15f, 0.7f, 0.15f));
 	}
 
-	void ButtonRelease(UIButton* button) {
-		if (button->GetButtonType() == BUTTON_TEXT) {
-			UITextButton* textButton = dynamic_cast<UITextButton*>(button);
-			textButton->SetText("Release");
-			textButton->SetColour(glm::vec3(0.0f, 1.0f, 0.0f));
+	void BloomBtnRelease(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
+
+		RenderParams* renderParams = RenderManager::GetInstance()->GetRenderParams();
+		RenderOptions renderOptions = renderParams->GetRenderOptions();
+
+		bool bloom = (renderOptions & RENDER_BLOOM) != 0;
+		bool advancedBloom = (renderOptions & RENDER_ADVANCED_BLOOM) != 0;
+		bool lensDirt = (renderOptions & RENDER_ADVANCED_BLOOM_LENS_DIRT) != 0;
+
+		if (!bloom && !advancedBloom) {
+			renderParams->EnableRenderOptions(RENDER_BLOOM);
+			std::cout << "GAMEINPUTMANAGER::ENABLE::Bloom" << std::endl;
+			textButton->SetText("Bloom: on");
+			textButton->SetButtonScale(glm::vec2(550.0f, 65.0f));
 		}
-		else if (button->GetButtonType() == BUTTON_IMAGE) {
-			UIImageButton* imageButton = dynamic_cast<UIImageButton*>(button);
-			imageButton->SetTexture(ResourceManager::GetInstance()->LoadTexture("UI/cyberpunk.png", TEXTURE_DIFFUSE, false));
+		else if (bloom && !advancedBloom) {
+			renderParams->DisableRenderOptions(RENDER_BLOOM);
+			renderParams->EnableRenderOptions(RENDER_ADVANCED_BLOOM);
+			std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
+			std::cout << "GAMEINPUTMANAGER::ENABLE::Adv Bloom" << std::endl;
+			textButton->SetText("Bloom: adv");
+			textButton->SetButtonScale(glm::vec2(575.0f, 65.0f));
+		}
+		else if (advancedBloom && !lensDirt) {
+			renderParams->EnableRenderOptions(RENDER_ADVANCED_BLOOM_LENS_DIRT);
+			std::cout << "GAMEINPUTMANAGER::ENABLE::Adv Bloom Lens Dirt" << std::endl;
+			textButton->SetText("Bloom: adv + dirt");
+			textButton->SetButtonScale(glm::vec2(725.0f, 65.0f));
+		}
+		else if (advancedBloom && lensDirt) {
+			renderParams->DisableRenderOptions(RENDER_BLOOM | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
+			std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
+			std::cout << "GAMEINPUTMANAGER::DISABLE::Adv Bloom" << std::endl;
+			std::cout << "GAMEINPUTMANAGER::DISABLE::Adv Bloom Lens Dirt" << std::endl;
+			textButton->SetText("Bloom: off");
+			textButton->SetButtonScale(glm::vec2(550.0f, 65.0f));
 		}
 	}
 
@@ -393,30 +408,23 @@ namespace Engine {
 		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
 		entityManager->AddEntity(bloomCube);
 
+		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
+
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->GetTransformComponent()->SetScale(1.0f);
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
 
-		UITextButton* button = new UITextButton(std::string("Button"), glm::vec2(500.0f, 500.0f), glm::vec2(0.5f, 0.5f), glm::vec2(200.0f, 50.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 1.0f, 1.0f));
-		button->SetMouseDownCallback(ButtonPress);
-		button->SetMouseUpCallback(ButtonRelease);
-		button->SetMouseEnterCallback(ButtonEnter);
-		button->SetMouseExitCallback(ButtonExit);
-		canvas->GetUICanvasComponent()->AddUIElement(button);
+		// Bloom button
+		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(350.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(725.0f, 65.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		bloomBtn->SetMouseEnterCallback(ButtonEnter);
+		bloomBtn->SetMouseExitCallback(ButtonExit);
+		bloomBtn->SetMouseDownCallback(ButtonPress);
+		bloomBtn->SetMouseUpCallback(BloomBtnRelease);
+		canvas->GetUICanvasComponent()->AddUIElement(bloomBtn);
 
-		stbi_set_flip_vertically_on_load(true);
-		UIImageButton* imgButton = new UIImageButton(glm::vec2(0.65f, -0.65f), glm::vec2(0.25f, 0.25f), glm::vec2(640.0f, 380.0f), ResourceManager::GetInstance()->LoadTexture("UI/cyberpunk.png", TEXTURE_DIFFUSE, false));
-		imgButton->SetMouseDownCallback(ButtonPress);
-		imgButton->SetMouseUpCallback(ButtonRelease);
-		imgButton->SetMouseEnterCallback(ButtonEnter);
-		imgButton->SetMouseExitCallback(ButtonExit);
-		canvas->GetUICanvasComponent()->AddUIElement(imgButton);
-
-		//canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("PBR Scene"), glm::vec2(1760.0f, 1300.0f), glm::vec2(1.0f, 1.0f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(1.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIImage(glm::vec2(0.65f, 0.65f), glm::vec2(0.3f, 0.3f), ResourceManager::GetInstance()->LoadTexture("UI/galaxy.png", TEXTURE_DIFFUSE, false)));
 		entityManager->AddEntity(canvas);
 
 		Material* nonPBRMat = new Material();
