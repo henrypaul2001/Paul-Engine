@@ -19,5 +19,10 @@ namespace Engine {
 
 		void keyUp(int key) override;
 		void keyDown(int key) override;
+
+		void EnvMapBtnRelease(UIButton* button);
+	private:
+		int currentEnvMapIndex;
+		std::vector<HDREnvironment*> envMaps;
 	};
 }

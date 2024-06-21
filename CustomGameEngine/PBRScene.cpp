@@ -35,7 +35,18 @@ namespace Engine {
 		CreateSystems();
 		CreateEntities();
 
-		renderManager->SetEnvironmentMap(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_noord.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/laufenurg_church.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/golden_bay.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_vijzelgracht.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/starsky.hdr", true));
+		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/studio.hdr", true));
+		currentEnvMapIndex = 0;
+
+		renderManager->SetEnvironmentMap(envMaps[0]);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
@@ -155,6 +166,21 @@ namespace Engine {
 			std::cout << "PBRSCENE::Enable::IBL" << std::endl;
 			textButton->SetText("IBL: on");
 		}
+	}
+
+	void PBRScene::EnvMapBtnRelease(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
+
+		currentEnvMapIndex += 1;
+		if (currentEnvMapIndex >= envMaps.size()) {
+			currentEnvMapIndex = 0;
+		}
+
+		RenderManager::GetInstance()->SetEnvironmentMap(envMaps[currentEnvMapIndex]);
+
+		std::cout << "PBRSCENE::ToggleEnvMap::" << currentEnvMapIndex << std::endl;
 	}
 
 	void PBRScene::CreateEntities()
@@ -510,6 +536,14 @@ namespace Engine {
 		iblBtn->SetMouseDownCallback(ButtonPress);
 		iblBtn->SetMouseUpCallback(IBLBtnRelease);
 		canvas->GetUICanvasComponent()->AddUIElement(iblBtn);
+
+		// Env map button
+		UITextButton* envMapBtn = new UITextButton(std::string("Switch Env Map"), glm::vec2(1900.0f, 60.0f), glm::vec2(0.4f), glm::vec2(420.0f, 50.0f), font, glm::vec3(0.8f));
+		envMapBtn->SetMouseEnterCallback(ButtonEnter);
+		envMapBtn->SetMouseExitCallback(ButtonExit);
+		envMapBtn->SetMouseDownCallback(ButtonPress);
+		envMapBtn->SetMouseUpCallback(std::bind(&PBRScene::EnvMapBtnRelease, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(envMapBtn);
 
 		entityManager->AddEntity(canvas);
 #pragma endregion
