@@ -72,31 +72,50 @@ namespace Engine {
 
 		if (!bloom && !advancedBloom) {
 			renderParams->EnableRenderOptions(RENDER_BLOOM);
-			std::cout << "GAMEINPUTMANAGER::ENABLE::Bloom" << std::endl;
+			std::cout << "PBRSCENE::ENABLE::Bloom" << std::endl;
 			textButton->SetText("Bloom: on");
-			textButton->SetButtonScale(glm::vec2(550.0f, 65.0f));
+			textButton->SetButtonScale(glm::vec2(260.0f, 50.0f));
 		}
 		else if (bloom && !advancedBloom) {
 			renderParams->DisableRenderOptions(RENDER_BLOOM);
 			renderParams->EnableRenderOptions(RENDER_ADVANCED_BLOOM);
-			std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
-			std::cout << "GAMEINPUTMANAGER::ENABLE::Adv Bloom" << std::endl;
+			std::cout << "PBRSCENE::DISABLE::Bloom" << std::endl;
+			std::cout << "PBRSCENE::ENABLE::Adv Bloom" << std::endl;
 			textButton->SetText("Bloom: adv");
-			textButton->SetButtonScale(glm::vec2(575.0f, 65.0f));
+			textButton->SetButtonScale(glm::vec2(280.0f, 50.0f));
 		}
 		else if (advancedBloom && !lensDirt) {
 			renderParams->EnableRenderOptions(RENDER_ADVANCED_BLOOM_LENS_DIRT);
-			std::cout << "GAMEINPUTMANAGER::ENABLE::Adv Bloom Lens Dirt" << std::endl;
+			std::cout << "PBRSCENE::ENABLE::Adv Bloom Lens Dirt" << std::endl;
 			textButton->SetText("Bloom: adv + dirt");
-			textButton->SetButtonScale(glm::vec2(725.0f, 65.0f));
+			textButton->SetButtonScale(glm::vec2(445.0f, 50.0f));
 		}
 		else if (advancedBloom && lensDirt) {
 			renderParams->DisableRenderOptions(RENDER_BLOOM | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
-			std::cout << "GAMEINPUTMANAGER::DISABLE::Bloom" << std::endl;
-			std::cout << "GAMEINPUTMANAGER::DISABLE::Adv Bloom" << std::endl;
-			std::cout << "GAMEINPUTMANAGER::DISABLE::Adv Bloom Lens Dirt" << std::endl;
+			std::cout << "PBRSCENE::DISABLE::Bloom" << std::endl;
+			std::cout << "PBRSCENE::DISABLE::Adv Bloom" << std::endl;
+			std::cout << "PBRSCENE::DISABLE::Adv Bloom Lens Dirt" << std::endl;
 			textButton->SetText("Bloom: off");
-			textButton->SetButtonScale(glm::vec2(550.0f, 65.0f));
+			textButton->SetButtonScale(glm::vec2(260.0f, 50.0f));
+		}
+	}
+
+	void SSAOBtnRelease(UIButton* button) {
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
+
+		RenderParams* renderParams = RenderManager::GetInstance()->GetRenderParams();
+		RenderOptions renderOptions = renderParams->GetRenderOptions();
+
+		if ((renderOptions & RENDER_SSAO) != 0) {
+			renderParams->DisableRenderOptions(RENDER_SSAO);
+			std::cout << "PBRSCENE::Disable::SSAO" << std::endl;
+			textButton->SetText("SSAO: off");
+		}
+		else {
+			renderParams->EnableRenderOptions(RENDER_SSAO);
+			std::cout << "PBRSCENE::Enable::SSAO" << std::endl;
+			textButton->SetText("SSAO: on");
 		}
 	}
 
@@ -117,6 +136,7 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
+#pragma region materials
 		PBRMaterial* bloomTest = new PBRMaterial();
 		bloomTest->albedo = glm::vec3(1500.0f);
 		bloomTest->metallic = 0.0f;
@@ -229,7 +249,9 @@ namespace Engine {
 		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->isTransparent = true;
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
+#pragma endregion
 
+#pragma region scene
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
@@ -407,7 +429,9 @@ namespace Engine {
 		bloomCube->AddComponent(bloomLight);
 		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
 		entityManager->AddEntity(bloomCube);
+#pragma endregion
 
+#pragma region ui
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
 
 		Entity* canvas = new Entity("Canvas");
@@ -418,14 +442,23 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
 
 		// Bloom button
-		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(350.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(725.0f, 65.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(350.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(445.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
 		bloomBtn->SetMouseEnterCallback(ButtonEnter);
 		bloomBtn->SetMouseExitCallback(ButtonExit);
 		bloomBtn->SetMouseDownCallback(ButtonPress);
 		bloomBtn->SetMouseUpCallback(BloomBtnRelease);
 		canvas->GetUICanvasComponent()->AddUIElement(bloomBtn);
 
+		// SSAO button
+		UITextButton* ssaoBtn = new UITextButton(std::string("SSAO: on"), glm::vec2(850.0f, 60.0f), glm::vec2(0.4f), glm::vec2(260.0f, 50.0f), font, glm::vec3(0.8f));
+		ssaoBtn->SetMouseEnterCallback(ButtonEnter);
+		ssaoBtn->SetMouseExitCallback(ButtonExit);
+		ssaoBtn->SetMouseDownCallback(ButtonPress);
+		ssaoBtn->SetMouseUpCallback(SSAOBtnRelease);
+		canvas->GetUICanvasComponent()->AddUIElement(ssaoBtn);
+
 		entityManager->AddEntity(canvas);
+#pragma endregion
 
 		Material* nonPBRMat = new Material();
 		nonPBRMat->diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
