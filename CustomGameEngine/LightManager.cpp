@@ -53,7 +53,14 @@ namespace Engine {
 		shader->setVec3("dirLight.Specular", directional->Specular);
 		shader->setVec3("dirLight.Ambient", directional->Ambient);
 		shader->setFloat("dirLight.LightDistance", directional->DirectionalLightDistance);
-		shader->setBool("dirLight.CastShadows", directional->CastShadows);
+
+		if ((RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0) {
+			shader->setBool("dirLight.CastShadows", directional->CastShadows);
+		}
+		else {
+			shader->setBool("dirLight.CastShadows", false);
+		}
+		
 		shader->setFloat("dirLight.MinShadowBias", directional->MinShadowBias);
 		shader->setFloat("dirLight.MaxShadowBias", directional->MaxShadowBias);
 		shader->setBool("dirLight.Active", directional->Active);
@@ -102,6 +109,8 @@ namespace Engine {
 
 		shader->setFloat("BloomThreshold", RenderManager::GetInstance()->GetRenderParams()->GetBloomThreshold());
 
+		bool globalShadows = (RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0;
+
 		// Now spot and point lights
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
 			ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
@@ -114,7 +123,14 @@ namespace Engine {
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Constant")), lightComponent->Constant);
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Linear")), lightComponent->Linear);
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Quadratic")), lightComponent->Quadratic);
-			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].CastShadows")), lightComponent->CastShadows);
+
+			if (globalShadows) {
+				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].CastShadows")), lightComponent->CastShadows);
+			}
+			else {
+				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].CastShadows")), false);
+			}
+
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].MinShadowBias")), lightComponent->MinShadowBias);
 			shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].MaxShadowBias")), lightComponent->MaxShadowBias);
 			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Active")), lightComponent->Active);
