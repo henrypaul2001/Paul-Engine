@@ -79,7 +79,7 @@ namespace Engine {
 		}
 		else if (buttonType == BUTTON_TEXT) {
 			maxY = buttonPos.y + buttonScale.y;
-			maxX = buttonPos.y + buttonScale.x;
+			maxX = buttonPos.x + buttonScale.x;
 			minX = buttonPos.x;
 			minY = buttonPos.y;
 		}
