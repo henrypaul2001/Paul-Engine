@@ -138,6 +138,25 @@ namespace Engine {
 		}
 	}
 
+	void IBLBtnRelease(UIButton* button) {
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
+
+		RenderParams* renderParams = RenderManager::GetInstance()->GetRenderParams();
+		RenderOptions renderOptions = renderParams->GetRenderOptions();
+
+		if ((renderOptions & RENDER_IBL) != 0) {
+			renderParams->DisableRenderOptions(RENDER_IBL);
+			std::cout << "PBRSCENE::Disable::IBL" << std::endl;
+			textButton->SetText("IBL: off");
+		}
+		else {
+			renderParams->EnableRenderOptions(RENDER_IBL);
+			std::cout << "PBRSCENE::Enable::IBL" << std::endl;
+			textButton->SetText("IBL: on");
+		}
+	}
+
 	void PBRScene::CreateEntities()
 	{
 		Entity* dirLight = new Entity("Directional Light");
@@ -483,6 +502,14 @@ namespace Engine {
 		shadowsBtn->SetMouseDownCallback(ButtonPress);
 		shadowsBtn->SetMouseUpCallback(ShadowsBtnRelease);
 		canvas->GetUICanvasComponent()->AddUIElement(shadowsBtn);
+
+		// IBL button
+		UITextButton* iblBtn = new UITextButton(std::string("IBL: on"), glm::vec2(1550.0f, 60.0f), glm::vec2(0.4f), glm::vec2(185.0f, 50.0f), font, glm::vec3(0.8f));
+		iblBtn->SetMouseEnterCallback(ButtonEnter);
+		iblBtn->SetMouseExitCallback(ButtonExit);
+		iblBtn->SetMouseDownCallback(ButtonPress);
+		iblBtn->SetMouseUpCallback(IBLBtnRelease);
+		canvas->GetUICanvasComponent()->AddUIElement(iblBtn);
 
 		entityManager->AddEntity(canvas);
 #pragma endregion
