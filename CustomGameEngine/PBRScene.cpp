@@ -119,6 +119,25 @@ namespace Engine {
 		}
 	}
 
+	void ShadowsBtnRelease(UIButton* button) {
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
+
+		RenderParams* renderParams = RenderManager::GetInstance()->GetRenderParams();
+		RenderOptions renderOptions = renderParams->GetRenderOptions();
+
+		if ((renderOptions & RENDER_SHADOWS) != 0) {
+			renderParams->DisableRenderOptions(RENDER_SHADOWS);
+			std::cout << "PBRSCENE::Disable::Shadows" << std::endl;
+			textButton->SetText("Shadows: off");
+		}
+		else {
+			renderParams->EnableRenderOptions(RENDER_SHADOWS);
+			std::cout << "PBRSCENE::Enable::Shadows" << std::endl;
+			textButton->SetText("Shadows: on");
+		}
+	}
+
 	void PBRScene::CreateEntities()
 	{
 		Entity* dirLight = new Entity("Directional Light");
@@ -456,6 +475,14 @@ namespace Engine {
 		ssaoBtn->SetMouseDownCallback(ButtonPress);
 		ssaoBtn->SetMouseUpCallback(SSAOBtnRelease);
 		canvas->GetUICanvasComponent()->AddUIElement(ssaoBtn);
+
+		// Shadows button
+		UITextButton* shadowsBtn = new UITextButton(std::string("Shadows: on"), glm::vec2(1170.0f, 60.0f), glm::vec2(0.4f), glm::vec2(330.0f, 50.0f), font, glm::vec3(0.8f));
+		shadowsBtn->SetMouseEnterCallback(ButtonEnter);
+		shadowsBtn->SetMouseExitCallback(ButtonExit);
+		shadowsBtn->SetMouseDownCallback(ButtonPress);
+		shadowsBtn->SetMouseUpCallback(ShadowsBtnRelease);
+		canvas->GetUICanvasComponent()->AddUIElement(shadowsBtn);
 
 		entityManager->AddEntity(canvas);
 #pragma endregion
