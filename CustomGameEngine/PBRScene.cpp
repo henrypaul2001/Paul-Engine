@@ -7,6 +7,9 @@
 #include "UIImage.h"
 #include "UITextButton.h"
 #include "UIImageButton.h"
+
+#include <iomanip>
+#include <sstream>
 namespace Engine {
 	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -181,6 +184,97 @@ namespace Engine {
 		RenderManager::GetInstance()->SetEnvironmentMap(envMaps[currentEnvMapIndex]);
 
 		std::cout << "PBRSCENE::ToggleEnvMap::" << currentEnvMapIndex << std::endl;
+	}
+
+	void PBRScene::ParameterGroupRelease(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
+
+		parameterGroupIndex += 1;
+		if (parameterGroupIndex >= parameterGroups.size()) {
+			parameterGroupIndex = 0;
+		}
+	}
+
+	void PBRScene::ParameterIncreaseOptionHold(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.15f, 0.7f, 0.15f));
+
+		RenderParams* params = renderManager->GetRenderParams();
+		bool shift = (inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT) || inputManager->IsKeyDown(GLFW_KEY_RIGHT_SHIFT));
+
+		std::ostringstream oss;
+		std::string newText;
+
+		float increase = 0.001f;
+		if (shift) { increase = 0.01f; }
+
+		int buttonId = button->GetIDTag();
+		switch (parameterGroupIndex) {
+		case 0:
+			switch (buttonId) {
+			case 1:
+				// exposure
+				params->SetExposure(params->GetExposure() + increase);
+
+				oss << "Exposure: " << std::setprecision(4) << renderManager->GetRenderParams()->GetExposure();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[0][1])->SetText(newText);
+				break;
+			case 2:
+				// gamma
+				params->SetGamma(params->GetGamma() + increase);
+
+				oss << "Gamma: " << std::setprecision(4) << renderManager->GetRenderParams()->GetGamma();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[0][4])->SetText(newText);
+				break;
+			}
+		}
+	}
+
+	void PBRScene::ParameterDecreaseOptionHold(UIButton* button)
+	{
+		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
+		textButton->SetColour(glm::vec3(0.15f, 0.7f, 0.15f));
+
+		RenderParams* params = renderManager->GetRenderParams();
+		bool shift = (inputManager->IsKeyDown(GLFW_KEY_LEFT_SHIFT) || inputManager->IsKeyDown(GLFW_KEY_RIGHT_SHIFT));
+
+		std::ostringstream oss;
+		std::string newText;
+
+		float decrease = 0.001f;
+		if (shift) { decrease = 0.01f; }
+
+		int buttonId = button->GetIDTag();
+		switch (parameterGroupIndex) {
+		case 0:
+			switch (buttonId) {
+			case 1:
+				// exposure
+				params->SetExposure(params->GetExposure() - decrease);
+
+				oss << "Exposure: " << std::setprecision(4) << renderManager->GetRenderParams()->GetExposure();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[0][1])->SetText(newText);
+				break;
+			case 2:
+				// gamma
+				params->SetGamma(params->GetGamma() - decrease);
+
+				oss << "Gamma: " << std::setprecision(4) << renderManager->GetRenderParams()->GetGamma();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[0][4])->SetText(newText);
+				break;
+			}
+		}
 	}
 
 	void PBRScene::CreateEntities()
@@ -514,7 +608,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("G Pipeline: ") + renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
 		// Bloom button
-		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(355.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(445.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(355.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(445.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		bloomBtn->SetMouseEnterCallback(ButtonEnter);
 		bloomBtn->SetMouseExitCallback(ButtonExit);
 		bloomBtn->SetMouseDownCallback(ButtonPress);
@@ -524,7 +618,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(bloomBtn);
 
 		// SSAO button
-		UITextButton* ssaoBtn = new UITextButton(std::string("SSAO: on"), glm::vec2(850.0f, 60.0f), glm::vec2(0.4f), glm::vec2(260.0f, 50.0f), font, glm::vec3(0.8f));
+		UITextButton* ssaoBtn = new UITextButton(std::string("SSAO: on"), glm::vec2(850.0f, 60.0f), glm::vec2(0.4f), glm::vec2(260.0f, 50.0f), font, glm::vec3(0.8f), 0);
 		ssaoBtn->SetMouseEnterCallback(ButtonEnter);
 		ssaoBtn->SetMouseExitCallback(ButtonExit);
 		ssaoBtn->SetMouseDownCallback(ButtonPress);
@@ -534,7 +628,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(ssaoBtn);
 
 		// Shadows button
-		UITextButton* shadowsBtn = new UITextButton(std::string("Shadows: on"), glm::vec2(1170.0f, 60.0f), glm::vec2(0.4f), glm::vec2(330.0f, 50.0f), font, glm::vec3(0.8f));
+		UITextButton* shadowsBtn = new UITextButton(std::string("Shadows: on"), glm::vec2(1170.0f, 60.0f), glm::vec2(0.4f), glm::vec2(330.0f, 50.0f), font, glm::vec3(0.8f), 0);
 		shadowsBtn->SetMouseEnterCallback(ButtonEnter);
 		shadowsBtn->SetMouseExitCallback(ButtonExit);
 		shadowsBtn->SetMouseDownCallback(ButtonPress);
@@ -544,7 +638,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(shadowsBtn);
 
 		// IBL button
-		UITextButton* iblBtn = new UITextButton(std::string("IBL: on"), glm::vec2(1550.0f, 60.0f), glm::vec2(0.4f), glm::vec2(185.0f, 50.0f), font, glm::vec3(0.8f));
+		UITextButton* iblBtn = new UITextButton(std::string("IBL: on"), glm::vec2(1550.0f, 60.0f), glm::vec2(0.4f), glm::vec2(185.0f, 50.0f), font, glm::vec3(0.8f), 0);
 		iblBtn->SetMouseEnterCallback(ButtonEnter);
 		iblBtn->SetMouseExitCallback(ButtonExit);
 		iblBtn->SetMouseDownCallback(ButtonPress);
@@ -554,7 +648,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(iblBtn);
 
 		// Env map button
-		UITextButton* envMapBtn = new UITextButton(std::string("Switch Env Map"), glm::vec2(1900.0f, 60.0f), glm::vec2(0.4f), glm::vec2(420.0f, 50.0f), font, glm::vec3(0.8f));
+		UITextButton* envMapBtn = new UITextButton(std::string("Switch Env Map"), glm::vec2(1900.0f, 60.0f), glm::vec2(0.4f), glm::vec2(420.0f, 50.0f), font, glm::vec3(0.8f), 0);
 		envMapBtn->SetMouseEnterCallback(ButtonEnter);
 		envMapBtn->SetMouseExitCallback(ButtonExit);
 		envMapBtn->SetMouseDownCallback(ButtonPress);
@@ -562,6 +656,75 @@ namespace Engine {
 		envMapBtn->SetActive(false);
 		optionButtons.push_back(envMapBtn);
 		canvas->GetUICanvasComponent()->AddUIElement(envMapBtn);
+
+		// Render param btn groups
+		// Tonemapping group
+		std::vector<UIElement*> group;
+
+		std::ostringstream oss;
+
+		UITextButton* paramsBtn = new UITextButton(std::string("Tonemapping:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		paramsBtn->SetMouseEnterCallback(ButtonEnter);
+		paramsBtn->SetMouseExitCallback(ButtonExit);
+		paramsBtn->SetMouseDownCallback(ButtonPress);
+		paramsBtn->SetActive(false);
+		group.push_back(paramsBtn);
+		canvas->GetUICanvasComponent()->AddUIElement(paramsBtn);
+
+		// Exposure
+		oss << "Exposure: " << std::setprecision(4) << renderManager->GetRenderParams()->GetExposure();
+		std::string exposureString = oss.str();
+		oss.clear();
+		UIText* exposure = new UIText(exposureString, glm::vec2(60.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		exposure->SetActive(false);
+		group.push_back(exposure);
+		canvas->GetUICanvasComponent()->AddUIElement(exposure);
+
+		UITextButton* exposureIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		exposureIncrease->SetMouseEnterCallback(ButtonEnter);
+		exposureIncrease->SetMouseExitCallback(ButtonExit);
+		exposureIncrease->SetMouseUpCallback(ButtonEnter);
+		exposureIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		exposureIncrease->SetActive(false);
+		group.push_back(exposureIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(exposureIncrease);
+
+		UITextButton* exposureDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		exposureDecrease->SetMouseEnterCallback(ButtonEnter);
+		exposureDecrease->SetMouseExitCallback(ButtonExit);
+		exposureDecrease->SetMouseUpCallback(ButtonEnter);
+		exposureDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		exposureDecrease->SetActive(false);
+		group.push_back(exposureDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(exposureDecrease);
+
+		// Gamma
+		UIText* gamma = new UIText(std::string("Gamma: " + std::to_string(renderManager->GetRenderParams()->GetGamma())), glm::vec2(60.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		gamma->SetActive(false);
+		group.push_back(gamma);
+		canvas->GetUICanvasComponent()->AddUIElement(gamma);
+
+		UITextButton* gammaIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		gammaIncrease->SetMouseEnterCallback(ButtonEnter);
+		gammaIncrease->SetMouseExitCallback(ButtonExit);
+		gammaIncrease->SetMouseUpCallback(ButtonEnter);
+		gammaIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		gammaIncrease->SetActive(false);
+		group.push_back(gammaIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(gammaIncrease);
+
+		UITextButton* gammaDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		gammaDecrease->SetMouseEnterCallback(ButtonEnter);
+		gammaDecrease->SetMouseExitCallback(ButtonExit);
+		gammaDecrease->SetMouseUpCallback(ButtonEnter);
+		gammaDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		gammaDecrease->SetActive(false);
+		group.push_back(gammaDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(gammaDecrease);
+
+		parameterGroups.push_back(group);
+
+		group.clear();
 
 		entityManager->AddEntity(canvas);
 #pragma endregion
@@ -638,6 +801,9 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_C) {
 			for (UIElement* ui : optionButtons) {
+				ui->SetActive(!ui->GetActive());
+			}
+			for (UIElement* ui : parameterGroups[parameterGroupIndex]) {
 				ui->SetActive(!ui->GetActive());
 			}
 		}

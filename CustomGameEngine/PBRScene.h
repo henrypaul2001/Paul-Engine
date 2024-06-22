@@ -21,10 +21,16 @@ namespace Engine {
 		void keyDown(int key) override;
 
 		void EnvMapBtnRelease(UIButton* button);
+		void ParameterGroupRelease(UIButton* button);
+		void ParameterIncreaseOptionHold(UIButton* button);
+		void ParameterDecreaseOptionHold(UIButton* button);
 	private:
 		int currentEnvMapIndex;
 		std::vector<HDREnvironment*> envMaps;
 
 		std::vector<UIElement*> optionButtons;
+
+		int parameterGroupIndex;
+		std::vector<std::vector<UIElement*>> parameterGroups;
 	};
 }
