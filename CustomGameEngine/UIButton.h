@@ -19,6 +19,7 @@ namespace Engine {
 		void SetMouseExitCallback(std::function<void(UIButton*)> mouseExit) { OnMouseExit = mouseExit; }
 		void SetMouseDownCallback(std::function<void(UIButton*)> mouseDown) { OnMouseDown = mouseDown; }
 		void SetMouseUpCallback(std::function<void(UIButton*)> mouseUp) { OnMouseUp = mouseUp; }
+		void SetMouseHoldCallback(std::function<void(UIButton*)> mouseHold) { OnMouseHold = mouseHold; }
 
 		const bool IsHovering() const { return isHovering; }
 		const bool IsMouseDown() const { return isMouseDown; }
@@ -27,6 +28,7 @@ namespace Engine {
 		void MouseExit() { isHovering = false; isMouseDown = false; if (OnMouseExit != nullptr) { OnMouseExit(this); } }
 		void MouseDown() { isMouseDown = true; if (OnMouseDown != nullptr) { OnMouseDown(this); } }
 		void MouseUp() { isMouseDown = false; if (OnMouseUp != nullptr) { OnMouseUp(this); } }
+		void MouseHold() { if (OnMouseHold != nullptr) { OnMouseHold(this); } }
 
 		void SetButtonScale(const glm::vec2 newBtnScale) { buttonScale = newBtnScale; }
 		void SetIDTag(const int tag) { idTag = tag; }
@@ -39,6 +41,7 @@ namespace Engine {
 		std::function<void(UIButton*)> OnMouseExit;
 		std::function<void(UIButton*)> OnMouseDown;
 		std::function<void(UIButton*)> OnMouseUp;
+		std::function<void(UIButton*)> OnMouseHold;
 
 		bool isHovering;
 		bool isMouseDown;

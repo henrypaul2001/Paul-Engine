@@ -91,17 +91,23 @@ namespace Engine {
 
 		// Fire mouse events to button
 		if (mouseCollision) {
-			// Fire mouse enter event once
+			// Fires once on hover
 			if (!button->IsHovering()) { button->MouseEnter(); }
 
 			if (button->IsMouseDown()) {
+				// Fires once on release
 				if (!inputManager->GetLeftMouseDown()) { button->MouseUp(); }
 			}
 			else {
+				// Fires once on click
 				if (inputManager->GetLeftMouseDown()) { button->MouseDown(); }
 			}
+
+			// Fires every frame during hold
+			if (inputManager->GetLeftMouseDown()) { button->MouseHold(); }
 		}
 		else {
+			// Fires once on exit
 			if (button->IsHovering()) { button->MouseExit(); }
 		}
 	}
