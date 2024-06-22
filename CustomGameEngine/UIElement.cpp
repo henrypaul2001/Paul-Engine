@@ -5,6 +5,7 @@ namespace Engine {
 		this->position = position;
 		this->scale = scale;
 		this->shader = shader;
+		isActive = true;
 	}
 
 	UIElement::~UIElement()

@@ -24,5 +24,7 @@ namespace Engine {
 	private:
 		int currentEnvMapIndex;
 		std::vector<HDREnvironment*> envMaps;
+
+		std::vector<UIElement*> optionButtons;
 	};
 }

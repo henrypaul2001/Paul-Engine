@@ -25,6 +25,9 @@ namespace Engine {
 		void SetShader(Shader* newShader) { shader = newShader; }
 		const Shader* GetShader() const { return shader; }
 
+		void SetActive(bool active) { isActive = active; }
+		const bool GetActive() const { return isActive; }
+
 		const UITypes& UIType() const { return type; }
 	protected:
 		UITypes type;
@@ -32,5 +35,7 @@ namespace Engine {
 		Shader* shader;
 		glm::vec2 position; // 0.0 - 1.0 XY
 		glm::vec2 scale;
+
+		bool isActive;
 	};
 }

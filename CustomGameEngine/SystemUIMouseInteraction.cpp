@@ -35,7 +35,7 @@ namespace Engine {
 
 				if (canvas != nullptr) {
 					for (UIElement* ui : canvas->UIElements()) {
-						if (ui->UIType() == UI_BUTTON) {
+						if (ui->UIType() == UI_BUTTON && ui->GetActive()) {
 							ProcessUIButton(dynamic_cast<UIButton*>(ui), transform);
 						}
 					}

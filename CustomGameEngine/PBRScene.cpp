@@ -519,6 +519,8 @@ namespace Engine {
 		bloomBtn->SetMouseExitCallback(ButtonExit);
 		bloomBtn->SetMouseDownCallback(ButtonPress);
 		bloomBtn->SetMouseUpCallback(BloomBtnRelease);
+		bloomBtn->SetActive(false);
+		optionButtons.push_back(bloomBtn);
 		canvas->GetUICanvasComponent()->AddUIElement(bloomBtn);
 
 		// SSAO button
@@ -527,6 +529,8 @@ namespace Engine {
 		ssaoBtn->SetMouseExitCallback(ButtonExit);
 		ssaoBtn->SetMouseDownCallback(ButtonPress);
 		ssaoBtn->SetMouseUpCallback(SSAOBtnRelease);
+		ssaoBtn->SetActive(false);
+		optionButtons.push_back(ssaoBtn);
 		canvas->GetUICanvasComponent()->AddUIElement(ssaoBtn);
 
 		// Shadows button
@@ -535,6 +539,8 @@ namespace Engine {
 		shadowsBtn->SetMouseExitCallback(ButtonExit);
 		shadowsBtn->SetMouseDownCallback(ButtonPress);
 		shadowsBtn->SetMouseUpCallback(ShadowsBtnRelease);
+		shadowsBtn->SetActive(false);
+		optionButtons.push_back(shadowsBtn);
 		canvas->GetUICanvasComponent()->AddUIElement(shadowsBtn);
 
 		// IBL button
@@ -543,6 +549,8 @@ namespace Engine {
 		iblBtn->SetMouseExitCallback(ButtonExit);
 		iblBtn->SetMouseDownCallback(ButtonPress);
 		iblBtn->SetMouseUpCallback(IBLBtnRelease);
+		iblBtn->SetActive(false);
+		optionButtons.push_back(iblBtn);
 		canvas->GetUICanvasComponent()->AddUIElement(iblBtn);
 
 		// Env map button
@@ -551,6 +559,8 @@ namespace Engine {
 		envMapBtn->SetMouseExitCallback(ButtonExit);
 		envMapBtn->SetMouseDownCallback(ButtonPress);
 		envMapBtn->SetMouseUpCallback(std::bind(&PBRScene::EnvMapBtnRelease, this, std::placeholders::_1));
+		envMapBtn->SetActive(false);
+		optionButtons.push_back(envMapBtn);
 		canvas->GetUICanvasComponent()->AddUIElement(envMapBtn);
 
 		entityManager->AddEntity(canvas);
@@ -625,6 +635,11 @@ namespace Engine {
 	{
 		if (key == GLFW_KEY_SLASH) {
 			ChangePostProcessEffect();
+		}
+		if (key == GLFW_KEY_C) {
+			for (UIElement* ui : optionButtons) {
+				ui->SetActive(!ui->GetActive());
+			}
 		}
 	}
 
