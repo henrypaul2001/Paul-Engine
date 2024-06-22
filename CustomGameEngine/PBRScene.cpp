@@ -502,11 +502,19 @@ namespace Engine {
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->GetTransformComponent()->SetScale(1.0f);
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+
+		std::string renderPipeline = "DEFERRED";
+		if (renderManager->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+			renderPipeline = "FORWARD";
+		}
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("G Pipeline: ") + renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
 		// Bloom button
-		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(350.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(445.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
+		UITextButton* bloomBtn = new UITextButton(std::string("Bloom: adv + dirt"), glm::vec2(355.0f, 60.0f), glm::vec2(0.4f, 0.4f), glm::vec2(445.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f));
 		bloomBtn->SetMouseEnterCallback(ButtonEnter);
 		bloomBtn->SetMouseExitCallback(ButtonExit);
 		bloomBtn->SetMouseDownCallback(ButtonPress);
