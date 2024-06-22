@@ -10,7 +10,7 @@ namespace Engine {
 	class UIButton : virtual public UIElement
 	{
 	public:
-		UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader);
+		UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader, int idTag);
 		~UIButton();
 
 		virtual void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override = 0;
@@ -29,9 +29,11 @@ namespace Engine {
 		void MouseUp() { isMouseDown = false; if (OnMouseUp != nullptr) { OnMouseUp(this); } }
 
 		void SetButtonScale(const glm::vec2 newBtnScale) { buttonScale = newBtnScale; }
+		void SetIDTag(const int tag) { idTag = tag; }
 
 		const glm::vec2& GetButtonScale() const { return buttonScale; }
 		const ButtonTypes& GetButtonType() const { return buttonType; }
+		const int GetIDTag() const { return idTag; }
 	protected:
 		std::function<void(UIButton*)> OnMouseEnter;
 		std::function<void(UIButton*)> OnMouseExit;
@@ -44,5 +46,7 @@ namespace Engine {
 		glm::vec2 buttonScale;
 
 		ButtonTypes buttonType;
+
+		int idTag;
 	};
 }

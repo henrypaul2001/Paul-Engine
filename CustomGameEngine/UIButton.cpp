@@ -1,6 +1,6 @@
 #include "UIButton.h"
 namespace Engine {
-	UIButton::UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader) : UIElement(position, scale, shader)
+	UIButton::UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader, int idTag) : UIElement(position, scale, shader)
 	{
 		OnMouseEnter = nullptr;
 		OnMouseExit = nullptr;
@@ -9,7 +9,7 @@ namespace Engine {
 		type = UI_BUTTON;
 		isHovering = false;
 		isMouseDown = false;
-
+		this->idTag = idTag;
 		buttonScale = scale;
 	}
 
