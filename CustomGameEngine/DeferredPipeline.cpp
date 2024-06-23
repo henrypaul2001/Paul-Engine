@@ -55,6 +55,7 @@ namespace Engine {
 				ssaoShader->setFloat("bias", bias);
 
 				if (samples > 64) { samples = 64; }
+				else if (samples < 0) { samples = 0; }
 
 				// Send kernel + rotation
 				std::vector<glm::vec3*> ssaoKernel = renderInstance->SSAOKernel();
