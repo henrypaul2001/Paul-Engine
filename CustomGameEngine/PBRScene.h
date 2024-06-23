@@ -32,5 +32,8 @@ namespace Engine {
 
 		int parameterGroupIndex;
 		std::vector<std::vector<UIElement*>> parameterGroups;
+
+		ComponentLight* directionalLight;
+		float ambientStrength;
 	};
 }

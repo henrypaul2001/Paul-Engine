@@ -326,6 +326,51 @@ namespace Engine {
 				break;
 			}
 			break;
+		case 3:
+			increase *= 5.0f;
+			switch (buttonId) {
+			case 1:
+				directionalLight->Colour.r += increase;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Colour R: " << std::setprecision(4) << directionalLight->Colour.r;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][1])->SetText(newText);
+				break;
+			case 2:
+				directionalLight->Colour.g += increase;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Colour G: " << std::setprecision(4) << directionalLight->Colour.g;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][4])->SetText(newText);
+				break;
+			case 3:
+				directionalLight->Colour.b += increase;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Colour B: " << std::setprecision(4) << directionalLight->Colour.b;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][7])->SetText(newText);
+				break;
+			case 4:
+				ambientStrength += increase;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Ambient strength: " << std::setprecision(4) << ambientStrength;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][10])->SetText(newText);
+				break;
+			}
+			break;
 		}
 	}
 
@@ -450,18 +495,66 @@ namespace Engine {
 				break;
 			}
 		break;
+		case 3:
+			decrease *= 5.0f;
+			switch (buttonId) {
+			case 1:
+				directionalLight->Colour.r -= decrease;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Colour R: " << std::setprecision(4) << directionalLight->Colour.r;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][1])->SetText(newText);
+				break;
+			case 2:
+				directionalLight->Colour.g -= decrease;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Colour G: " << std::setprecision(4) << directionalLight->Colour.g;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][4])->SetText(newText);
+				break;
+			case 3:
+				directionalLight->Colour.b -= decrease;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Colour B: " << std::setprecision(4) << directionalLight->Colour.b;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][7])->SetText(newText);
+				break;
+			case 4:
+				ambientStrength -= decrease;
+				directionalLight->Ambient = directionalLight->Colour * ambientStrength;
+
+				oss = std::ostringstream();
+				oss << "Ambient strength: " << std::setprecision(4) << ambientStrength;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][10])->SetText(newText);
+				break;
+			}
+			break;
 		}
 	}
 
 	void PBRScene::CreateEntities()
 	{
+		ambientStrength = 0.08f;
+
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
 		//directional->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
-		directional->Ambient = glm::vec3(0.035f, 0.035f, 0.08f);
+		//directional->Ambient = glm::vec3(0.035f, 0.035f, 0.08f);
 		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		directional->Ambient = directional->Colour * ambientStrength;
 		//directional->Colour = glm::vec3(0.0f);
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		directional->MinShadowBias = 0.0f;
@@ -469,6 +562,8 @@ namespace Engine {
 		directional->DirectionalLightDistance = 20.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
+
+		directionalLight = dirLight->GetLightComponent();
 
 #pragma region materials
 		PBRMaterial* bloomTest = new PBRMaterial();
@@ -1138,6 +1233,133 @@ namespace Engine {
 		biasDecrease->SetActive(false);
 		group.push_back(biasDecrease);
 		canvas->GetUICanvasComponent()->AddUIElement(biasDecrease);
+
+		parameterGroups.push_back(group);
+		group.clear();
+
+		// Directional light edit group
+		UITextButton* dirLightParams = new UITextButton(std::string("Directional light:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		dirLightParams->SetMouseEnterCallback(ButtonEnter);
+		dirLightParams->SetMouseExitCallback(ButtonExit);
+		dirLightParams->SetMouseDownCallback(ButtonPress);
+		dirLightParams->SetMouseUpCallback(std::bind(&PBRScene::ParameterGroupRelease, this, std::placeholders::_1));
+		dirLightParams->SetActive(false);
+		group.push_back(dirLightParams);
+		canvas->GetUICanvasComponent()->AddUIElement(dirLightParams);
+
+		// Colour R
+		oss << "Colour R: " << std::setprecision(3) << dirLight->GetLightComponent()->Colour.r;
+		std::string cRString = oss.str();
+		oss = std::ostringstream();
+		UIText* cR = new UIText(cRString, glm::vec2(60.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		cR->SetActive(false);
+		group.push_back(cR);
+		canvas->GetUICanvasComponent()->AddUIElement(cR);
+
+		UITextButton* rIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		rIncrease->SetMouseEnterCallback(ButtonEnter);
+		rIncrease->SetMouseExitCallback(ButtonExit);
+		rIncrease->SetMouseUpCallback(ButtonEnter);
+		rIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		rIncrease->SetActive(false);
+		group.push_back(rIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(rIncrease);
+
+		UITextButton* rDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		rDecrease->SetMouseEnterCallback(ButtonEnter);
+		rDecrease->SetMouseExitCallback(ButtonExit);
+		rDecrease->SetMouseUpCallback(ButtonEnter);
+		rDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		rDecrease->SetActive(false);
+		group.push_back(rDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(rDecrease);
+
+		// Colour G
+		oss << "Colour G: " << std::setprecision(3) << dirLight->GetLightComponent()->Colour.g;
+		std::string cGString = oss.str();
+		oss = std::ostringstream();
+		UIText* cG = new UIText(cGString, glm::vec2(60.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		cG->SetActive(false);
+		group.push_back(cG);
+		canvas->GetUICanvasComponent()->AddUIElement(cG);
+
+		UITextButton* gIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		gIncrease->SetMouseEnterCallback(ButtonEnter);
+		gIncrease->SetMouseExitCallback(ButtonExit);
+		gIncrease->SetMouseUpCallback(ButtonEnter);
+		gIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		gIncrease->SetActive(false);
+		group.push_back(gIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(gIncrease);
+
+		UITextButton* gDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		gDecrease->SetMouseEnterCallback(ButtonEnter);
+		gDecrease->SetMouseExitCallback(ButtonExit);
+		gDecrease->SetMouseUpCallback(ButtonEnter);
+		gDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		gDecrease->SetActive(false);
+		group.push_back(gDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(gDecrease);
+
+		// Colour B
+		oss << "Colour B: " << std::setprecision(3) << dirLight->GetLightComponent()->Colour.b;
+		std::string cBString = oss.str();
+		oss = std::ostringstream();
+		UIText* cB = new UIText(cBString, glm::vec2(60.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		cB->SetActive(false);
+		group.push_back(cB);
+		canvas->GetUICanvasComponent()->AddUIElement(cB);
+
+		UITextButton* bIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		bIncrease->SetMouseEnterCallback(ButtonEnter);
+		bIncrease->SetMouseExitCallback(ButtonExit);
+		bIncrease->SetMouseUpCallback(ButtonEnter);
+		bIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		bIncrease->SetActive(false);
+		group.push_back(bIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(bIncrease);
+
+		UITextButton* bDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		bDecrease->SetMouseEnterCallback(ButtonEnter);
+		bDecrease->SetMouseExitCallback(ButtonExit);
+		bDecrease->SetMouseUpCallback(ButtonEnter);
+		bDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		bDecrease->SetActive(false);
+		group.push_back(bDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(bDecrease);
+
+		// Ambient strength
+		oss << "Ambient strength: " << std::setprecision(3) << ambientStrength;
+		std::string ambientString = oss.str();
+		oss = std::ostringstream();
+		UIText* ambientStrength = new UIText(ambientString, glm::vec2(60.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		ambientStrength->SetActive(false);
+		group.push_back(ambientStrength);
+		canvas->GetUICanvasComponent()->AddUIElement(ambientStrength);
+
+		UITextButton* ambientIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 4);
+		ambientIncrease->SetMouseEnterCallback(ButtonEnter);
+		ambientIncrease->SetMouseExitCallback(ButtonExit);
+		ambientIncrease->SetMouseUpCallback(ButtonEnter);
+		ambientIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		ambientIncrease->SetActive(false);
+		group.push_back(ambientIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(ambientIncrease);
+
+		UITextButton* ambientDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 4);
+		ambientDecrease->SetMouseEnterCallback(ButtonEnter);
+		ambientDecrease->SetMouseExitCallback(ButtonExit);
+		ambientDecrease->SetMouseUpCallback(ButtonEnter);
+		ambientDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		ambientDecrease->SetActive(false);
+		group.push_back(ambientDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(ambientDecrease);
+
+		// Min Shadow Bias
+
+		// Max Shadow Bias
+
+		// Shadow projection size
 
 		parameterGroups.push_back(group);
 		group.clear();
