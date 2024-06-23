@@ -244,6 +244,7 @@ namespace Engine {
 				dynamic_cast<UIText*>(parameterGroups[0][4])->SetText(newText);
 				break;
 			}
+			break;
 		case 1:
 			switch (buttonId) {
 			case 1:
@@ -294,6 +295,37 @@ namespace Engine {
 				dynamic_cast<UIText*>(parameterGroups[1][13])->SetText(newText);
 				break;
 			}
+			break;
+		case 2:
+			switch (buttonId) {
+			case 1:
+				increase = 1.0f;
+				params->SetSSAOSamples(params->GetSSAOSamples() + (int)increase);
+
+				newText = "Samples: " + std::to_string(params->GetSSAOSamples());
+
+				dynamic_cast<UIText*>(parameterGroups[2][1])->SetText(newText);
+				break;
+			case 2:
+				params->SetSSAORadius(params->GetSSAORadius() + increase);
+
+				oss = std::ostringstream();
+				oss << "Radius: " << std::setprecision(4) << renderManager->GetRenderParams()->GetSSAORadius();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[2][4])->SetText(newText);
+				break;
+			case 3:
+				params->SetSSAOBias(params->GetSSAOBias() + increase);
+
+				oss = std::ostringstream();
+				oss << "Bias: " << std::setprecision(4) << renderManager->GetRenderParams()->GetSSAOBias();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[2][7])->SetText(newText);
+				break;
+			}
+			break;
 		}
 	}
 
@@ -336,6 +368,7 @@ namespace Engine {
 				dynamic_cast<UIText*>(parameterGroups[0][4])->SetText(newText);
 				break;
 			}
+			break;
 		case 1:
 			switch (buttonId) {
 			case 1:
@@ -386,6 +419,37 @@ namespace Engine {
 				dynamic_cast<UIText*>(parameterGroups[1][13])->SetText(newText);
 				break;
 			}
+			break;
+		case 2:
+			switch (buttonId) {
+			case 1:
+				decrease = 1.0f;
+				params->SetSSAOSamples(params->GetSSAOSamples() - (int)decrease);
+
+				newText = "Samples: " + std::to_string(params->GetSSAOSamples());
+
+				dynamic_cast<UIText*>(parameterGroups[2][1])->SetText(newText);
+				break;
+			case 2:
+				params->SetSSAORadius(params->GetSSAORadius() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Radius: " << std::setprecision(4) << renderManager->GetRenderParams()->GetSSAORadius();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[2][4])->SetText(newText);
+				break;
+			case 3:
+				params->SetSSAOBias(params->GetSSAOBias() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Bias: " << std::setprecision(4) << renderManager->GetRenderParams()->GetSSAOBias();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[2][7])->SetText(newText);
+				break;
+			}
+		break;
 		}
 	}
 
@@ -983,6 +1047,97 @@ namespace Engine {
 		dirtStrengthDecrease->SetActive(false);
 		group.push_back(dirtStrengthDecrease);
 		canvas->GetUICanvasComponent()->AddUIElement(dirtStrengthDecrease);
+
+		parameterGroups.push_back(group);
+		group.clear();
+
+		// SSAO params
+		UITextButton* ssaoParams = new UITextButton(std::string("Ambient occlusion:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		ssaoParams->SetMouseEnterCallback(ButtonEnter);
+		ssaoParams->SetMouseExitCallback(ButtonExit);
+		ssaoParams->SetMouseDownCallback(ButtonPress);
+		ssaoParams->SetMouseUpCallback(std::bind(&PBRScene::ParameterGroupRelease, this, std::placeholders::_1));
+		ssaoParams->SetActive(false);
+		group.push_back(ssaoParams);
+		canvas->GetUICanvasComponent()->AddUIElement(ssaoParams);
+
+		// Samples
+		UIText* samples = new UIText(std::string("Samples: " + std::to_string(renderManager->GetRenderParams()->GetSSAOSamples())), glm::vec2(60.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		samples->SetActive(false);
+		group.push_back(samples);
+		canvas->GetUICanvasComponent()->AddUIElement(samples);
+
+		UITextButton* samplesIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		samplesIncrease->SetMouseEnterCallback(ButtonEnter);
+		samplesIncrease->SetMouseExitCallback(ButtonExit);
+		samplesIncrease->SetMouseUpCallback(ButtonEnter);
+		samplesIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		samplesIncrease->SetActive(false);
+		group.push_back(samplesIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(samplesIncrease);
+
+		UITextButton* samplesDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		samplesDecrease->SetMouseEnterCallback(ButtonEnter);
+		samplesDecrease->SetMouseExitCallback(ButtonExit);
+		samplesDecrease->SetMouseUpCallback(ButtonEnter);
+		samplesDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		samplesDecrease->SetActive(false);
+		group.push_back(samplesDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(samplesDecrease);
+
+		// Radius
+		oss << "Radius: " << std::setprecision(4) << renderManager->GetRenderParams()->GetSSAOBias();
+		std::string radiusString = oss.str();
+		oss = std::ostringstream();
+		UIText* radius = new UIText(radiusString, glm::vec2(60.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		radius->SetActive(false);
+		group.push_back(radius);
+		canvas->GetUICanvasComponent()->AddUIElement(radius);
+
+		UITextButton* radiusIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		radiusIncrease->SetMouseEnterCallback(ButtonEnter);
+		radiusIncrease->SetMouseExitCallback(ButtonExit);
+		radiusIncrease->SetMouseUpCallback(ButtonEnter);
+		radiusIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		radiusIncrease->SetActive(false);
+		group.push_back(radiusIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(radiusIncrease);
+
+		UITextButton* radiusDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		radiusDecrease->SetMouseEnterCallback(ButtonEnter);
+		radiusDecrease->SetMouseExitCallback(ButtonExit);
+		radiusDecrease->SetMouseUpCallback(ButtonEnter);
+		radiusDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		radiusDecrease->SetActive(false);
+		group.push_back(radiusDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(radiusDecrease);
+
+		// Bias
+		oss << "Bias: " << std::setprecision(4) << renderManager->GetRenderParams()->GetSSAOBias();
+		std::string biasString = oss.str();
+		oss = std::ostringstream();
+		UIText* bias = new UIText(biasString, glm::vec2(60.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		bias->SetActive(false);
+		group.push_back(bias);
+		canvas->GetUICanvasComponent()->AddUIElement(bias);
+
+		UITextButton* biasIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		biasIncrease->SetMouseEnterCallback(ButtonEnter);
+		biasIncrease->SetMouseExitCallback(ButtonExit);
+		biasIncrease->SetMouseUpCallback(ButtonEnter);
+		biasIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		biasIncrease->SetActive(false);
+		group.push_back(biasIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(biasIncrease);
+
+		UITextButton* biasDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		biasDecrease->SetMouseEnterCallback(ButtonEnter);
+		biasDecrease->SetMouseExitCallback(ButtonExit);
+		biasDecrease->SetMouseUpCallback(ButtonEnter);
+		biasDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		biasDecrease->SetActive(false);
+		group.push_back(biasDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(biasDecrease);
 
 		parameterGroups.push_back(group);
 		group.clear();
