@@ -191,9 +191,17 @@ namespace Engine {
 		UITextButton* textButton = dynamic_cast<UITextButton*>(button);
 		textButton->SetColour(glm::vec3(0.8f, 0.8f, 0.8f));
 
+		for (UIElement* ui : parameterGroups[parameterGroupIndex]) {
+			ui->SetActive(!ui->GetActive());
+		}
+
 		parameterGroupIndex += 1;
 		if (parameterGroupIndex >= parameterGroups.size()) {
 			parameterGroupIndex = 0;
+		}
+
+		for (UIElement* ui : parameterGroups[parameterGroupIndex]) {
+			ui->SetActive(!ui->GetActive());
 		}
 	}
 
@@ -219,6 +227,7 @@ namespace Engine {
 				// exposure
 				params->SetExposure(params->GetExposure() + increase);
 
+				oss = std::ostringstream();
 				oss << "Exposure: " << std::setprecision(4) << renderManager->GetRenderParams()->GetExposure();
 				newText = oss.str();
 
@@ -228,10 +237,61 @@ namespace Engine {
 				// gamma
 				params->SetGamma(params->GetGamma() + increase);
 
+				oss = std::ostringstream();
 				oss << "Gamma: " << std::setprecision(4) << renderManager->GetRenderParams()->GetGamma();
 				newText = oss.str();
 
 				dynamic_cast<UIText*>(parameterGroups[0][4])->SetText(newText);
+				break;
+			}
+		case 1:
+			switch (buttonId) {
+			case 1:
+				increase *= 10.0f;
+				params->SetAdvBloomThreshold(params->GetAdvBloomThreshold() + increase);
+
+				oss = std::ostringstream();
+				oss << "Threshold: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomThreshold();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][1])->SetText(newText);
+				break;
+			case 2:
+				increase *= 10.0f;
+				params->SetAdvBloomSoftThreshold(params->GetAdvBloomSoftThreshold() + increase);
+
+				oss = std::ostringstream();
+				oss << "Soft Threshold: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomSoftThreshold();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][4])->SetText(newText);
+				break;
+			case 3:
+				params->SetAdvBloomFilterRadius(params->GetAdvBloomFilterRadius() + increase);
+
+				oss = std::ostringstream();
+				oss << "Filter Radius: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomFilterRadius();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][7])->SetText(newText);
+				break;
+			case 4:
+				params->SetAdvBloomStrength(params->GetAdvBloomStrength() + increase);
+
+				oss = std::ostringstream();
+				oss << "Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomStrength();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][10])->SetText(newText);
+				break;
+			case 5:
+				params->SetAdvBloomLensDirtMaskStrength(params->GetAdvBloomLensDirtMaskStrength() + increase);
+
+				oss = std::ostringstream();
+				oss << "Dirt Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomLensDirtMaskStrength();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][13])->SetText(newText);
 				break;
 			}
 		}
@@ -259,6 +319,7 @@ namespace Engine {
 				// exposure
 				params->SetExposure(params->GetExposure() - decrease);
 
+				oss = std::ostringstream();
 				oss << "Exposure: " << std::setprecision(4) << renderManager->GetRenderParams()->GetExposure();
 				newText = oss.str();
 
@@ -268,10 +329,61 @@ namespace Engine {
 				// gamma
 				params->SetGamma(params->GetGamma() - decrease);
 
+				oss = std::ostringstream();
 				oss << "Gamma: " << std::setprecision(4) << renderManager->GetRenderParams()->GetGamma();
 				newText = oss.str();
 
 				dynamic_cast<UIText*>(parameterGroups[0][4])->SetText(newText);
+				break;
+			}
+		case 1:
+			switch (buttonId) {
+			case 1:
+				decrease *= 10.0f;
+				params->SetAdvBloomThreshold(params->GetAdvBloomThreshold() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Threshold: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomThreshold();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][1])->SetText(newText);
+				break;
+			case 2:
+				decrease *= 10.0f;
+				params->SetAdvBloomSoftThreshold(params->GetAdvBloomSoftThreshold() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Soft Threshold: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomSoftThreshold();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][4])->SetText(newText);
+				break;
+			case 3:
+				params->SetAdvBloomFilterRadius(params->GetAdvBloomFilterRadius() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Filter Radius: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomFilterRadius();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][7])->SetText(newText);
+				break;
+			case 4:
+				params->SetAdvBloomStrength(params->GetAdvBloomStrength() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomStrength();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][10])->SetText(newText);
+				break;
+			case 5:
+				params->SetAdvBloomLensDirtMaskStrength(params->GetAdvBloomLensDirtMaskStrength() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Dirt Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomLensDirtMaskStrength();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[1][13])->SetText(newText);
 				break;
 			}
 		}
@@ -663,18 +775,19 @@ namespace Engine {
 
 		std::ostringstream oss;
 
-		UITextButton* paramsBtn = new UITextButton(std::string("Tonemapping:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0);
-		paramsBtn->SetMouseEnterCallback(ButtonEnter);
-		paramsBtn->SetMouseExitCallback(ButtonExit);
-		paramsBtn->SetMouseDownCallback(ButtonPress);
-		paramsBtn->SetActive(false);
-		group.push_back(paramsBtn);
-		canvas->GetUICanvasComponent()->AddUIElement(paramsBtn);
+		UITextButton* tonemappingParams = new UITextButton(std::string("Tonemapping:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		tonemappingParams->SetMouseEnterCallback(ButtonEnter);
+		tonemappingParams->SetMouseExitCallback(ButtonExit);
+		tonemappingParams->SetMouseDownCallback(ButtonPress);
+		tonemappingParams->SetMouseUpCallback(std::bind(&PBRScene::ParameterGroupRelease, this, std::placeholders::_1));
+		tonemappingParams->SetActive(false);
+		group.push_back(tonemappingParams);
+		canvas->GetUICanvasComponent()->AddUIElement(tonemappingParams);
 
 		// Exposure
 		oss << "Exposure: " << std::setprecision(4) << renderManager->GetRenderParams()->GetExposure();
 		std::string exposureString = oss.str();
-		oss.clear();
+		oss = std::ostringstream();
 		UIText* exposure = new UIText(exposureString, glm::vec2(60.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
 		exposure->SetActive(false);
 		group.push_back(exposure);
@@ -724,6 +837,154 @@ namespace Engine {
 
 		parameterGroups.push_back(group);
 
+		group.clear();
+
+		// Advanced bloom (pbr bloom) group
+		UITextButton* advBloomParams = new UITextButton(std::string("Advanced Bloom:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		advBloomParams->SetMouseEnterCallback(ButtonEnter);
+		advBloomParams->SetMouseExitCallback(ButtonExit);
+		advBloomParams->SetMouseDownCallback(ButtonPress);
+		advBloomParams->SetMouseUpCallback(std::bind(&PBRScene::ParameterGroupRelease, this, std::placeholders::_1));
+		advBloomParams->SetActive(false);
+		group.push_back(advBloomParams);
+		canvas->GetUICanvasComponent()->AddUIElement(advBloomParams);
+
+		// Threshold
+		oss << "Threshold: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomThreshold();
+		std::string thresholdString = oss.str();
+		oss = std::ostringstream();
+		UIText* threshold = new UIText(thresholdString, glm::vec2(60.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		threshold->SetActive(false);
+		group.push_back(threshold);
+		canvas->GetUICanvasComponent()->AddUIElement(threshold);
+
+		UITextButton* thresholdIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		thresholdIncrease->SetMouseEnterCallback(ButtonEnter);
+		thresholdIncrease->SetMouseExitCallback(ButtonExit);
+		thresholdIncrease->SetMouseUpCallback(ButtonEnter);
+		thresholdIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		thresholdIncrease->SetActive(false);
+		group.push_back(thresholdIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(thresholdIncrease);
+
+		UITextButton* thresholdDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		thresholdDecrease->SetMouseEnterCallback(ButtonEnter);
+		thresholdDecrease->SetMouseExitCallback(ButtonExit);
+		thresholdDecrease->SetMouseUpCallback(ButtonEnter);
+		thresholdDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		thresholdDecrease->SetActive(false);
+		group.push_back(thresholdDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(thresholdDecrease);
+
+		// Soft threshold
+		oss << "Soft Threshold: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomSoftThreshold();
+		std::string softThresholdString = oss.str();
+		oss = std::ostringstream();
+		UIText* softThreshold = new UIText(softThresholdString, glm::vec2(60.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		softThreshold->SetActive(false);
+		group.push_back(softThreshold);
+		canvas->GetUICanvasComponent()->AddUIElement(softThreshold);
+
+		UITextButton* softThresholdIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		softThresholdIncrease->SetMouseEnterCallback(ButtonEnter);
+		softThresholdIncrease->SetMouseExitCallback(ButtonExit);
+		softThresholdIncrease->SetMouseUpCallback(ButtonEnter);
+		softThresholdIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		softThresholdIncrease->SetActive(false);
+		group.push_back(softThresholdIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(softThresholdIncrease);
+
+		UITextButton* softThresholdDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		softThresholdDecrease->SetMouseEnterCallback(ButtonEnter);
+		softThresholdDecrease->SetMouseExitCallback(ButtonExit);
+		softThresholdDecrease->SetMouseUpCallback(ButtonEnter);
+		softThresholdDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		softThresholdDecrease->SetActive(false);
+		group.push_back(softThresholdDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(softThresholdDecrease);
+
+		// Filter radius
+		oss << "Filter Radius: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomFilterRadius();
+		std::string filterRadiusString = oss.str();
+		oss = std::ostringstream();
+		UIText* filterRadius = new UIText(filterRadiusString, glm::vec2(60.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		filterRadius->SetActive(false);
+		group.push_back(filterRadius);
+		canvas->GetUICanvasComponent()->AddUIElement(filterRadius);
+
+		UITextButton* filterRadiusIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		filterRadiusIncrease->SetMouseEnterCallback(ButtonEnter);
+		filterRadiusIncrease->SetMouseExitCallback(ButtonExit);
+		filterRadiusIncrease->SetMouseUpCallback(ButtonEnter);
+		filterRadiusIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		filterRadiusIncrease->SetActive(false);
+		group.push_back(filterRadiusIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(filterRadiusIncrease);
+
+		UITextButton* filterRadiusDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		filterRadiusDecrease->SetMouseEnterCallback(ButtonEnter);
+		filterRadiusDecrease->SetMouseExitCallback(ButtonExit);
+		filterRadiusDecrease->SetMouseUpCallback(ButtonEnter);
+		filterRadiusDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		filterRadiusDecrease->SetActive(false);
+		group.push_back(filterRadiusDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(filterRadiusDecrease);
+
+		// Strength
+		oss << "Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomStrength();
+		std::string strengthString = oss.str();
+		oss = std::ostringstream();
+		UIText* strength = new UIText(strengthString, glm::vec2(60.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		strength->SetActive(false);
+		group.push_back(strength);
+		canvas->GetUICanvasComponent()->AddUIElement(strength);
+
+		UITextButton* strengthIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 4);
+		strengthIncrease->SetMouseEnterCallback(ButtonEnter);
+		strengthIncrease->SetMouseExitCallback(ButtonExit);
+		strengthIncrease->SetMouseUpCallback(ButtonEnter);
+		strengthIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		strengthIncrease->SetActive(false);
+		group.push_back(strengthIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(strengthIncrease);
+
+		UITextButton* strengthDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 4);
+		strengthDecrease->SetMouseEnterCallback(ButtonEnter);
+		strengthDecrease->SetMouseExitCallback(ButtonExit);
+		strengthDecrease->SetMouseUpCallback(ButtonEnter);
+		strengthDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		strengthDecrease->SetActive(false);
+		group.push_back(strengthDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(strengthDecrease);
+
+		// Dirt strength
+		oss << "Dirt Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetAdvBloomLensDirtMaskStrength();
+		std::string dirtStrengthString = oss.str();
+		oss = std::ostringstream();
+		UIText* dirtStrength = new UIText(dirtStrengthString, glm::vec2(60.0f, (float)SCR_HEIGHT - 280.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		dirtStrength->SetActive(false);
+		group.push_back(dirtStrength);
+		canvas->GetUICanvasComponent()->AddUIElement(dirtStrength);
+
+		UITextButton* dirtStrengthIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 280.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 5);
+		dirtStrengthIncrease->SetMouseEnterCallback(ButtonEnter);
+		dirtStrengthIncrease->SetMouseExitCallback(ButtonExit);
+		dirtStrengthIncrease->SetMouseUpCallback(ButtonEnter);
+		dirtStrengthIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		dirtStrengthIncrease->SetActive(false);
+		group.push_back(dirtStrengthIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(dirtStrengthIncrease);
+
+		UITextButton* dirtStrengthDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 280.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 5);
+		dirtStrengthDecrease->SetMouseEnterCallback(ButtonEnter);
+		dirtStrengthDecrease->SetMouseExitCallback(ButtonExit);
+		dirtStrengthDecrease->SetMouseUpCallback(ButtonEnter);
+		dirtStrengthDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		dirtStrengthDecrease->SetActive(false);
+		group.push_back(dirtStrengthDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(dirtStrengthDecrease);
+
+		parameterGroups.push_back(group);
 		group.clear();
 
 		entityManager->AddEntity(canvas);
