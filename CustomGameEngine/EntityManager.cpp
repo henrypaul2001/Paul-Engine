@@ -4,7 +4,9 @@
 #include "LightManager.h"
 namespace Engine
 {
-	EntityManager::EntityManager() {}
+	EntityManager::EntityManager() {
+		LightManager::GetInstance()->ResetScene();
+	}
 
 	EntityManager::~EntityManager()
 	{

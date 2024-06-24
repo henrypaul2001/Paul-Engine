@@ -50,13 +50,18 @@ namespace Engine
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	InputManager* Scene::GetInputManager()
+	InputManager* Scene::GetInputManager() const
 	{
 		return inputManager;
 	}
 
-	SystemManager* Scene::GetSystemManager()
+	SystemManager* Scene::GetSystemManager() const
 	{
 		return systemManager;
+	}
+
+	SceneManager* Scene::GetSceneManager() const
+	{
+		return sceneManager;
 	}
 }

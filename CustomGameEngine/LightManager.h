@@ -28,6 +28,8 @@ namespace Engine {
 
 		void SetShaderUniforms(Shader* shader, Camera* activeCamera);
 
+		void ResetScene() { lightEntities.clear(); directionalLight = nullptr; }
+
 		std::vector<Entity*> GetLightEntities() { return lightEntities; }
 		Entity* GetDirectionalLightEntity() { return directionalLight; }
 	};

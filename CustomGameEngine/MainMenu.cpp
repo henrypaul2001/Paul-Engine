@@ -6,9 +6,10 @@
 namespace Engine {
 	MainMenu::MainMenu(SceneManager* sceneManager) : Scene(sceneManager)
 	{
-		inputManager = new GameInputManager(this);
+		inputManager = new GameInputManager(this, true);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
+		renderManager->GetRenderParams()->DisableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
 	MainMenu::~MainMenu()

@@ -42,8 +42,9 @@ namespace Engine
 		virtual void keyUp(int key) = 0;
 		virtual void keyDown(int key) = 0;
 
-		InputManager* GetInputManager();
-		SystemManager* GetSystemManager();
+		InputManager* GetInputManager() const;
+		SystemManager* GetSystemManager() const;
+		SceneManager* GetSceneManager() const;
 		Camera* GetCamera() { return camera; }
 	};
 }

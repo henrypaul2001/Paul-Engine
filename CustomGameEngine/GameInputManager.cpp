@@ -1,11 +1,13 @@
 #include "GameInputManager.h"
 #include "Scene.h"
 #include "LightManager.h"
+#include "SceneManager.h"
 //#include "RenderManager.h"
 namespace Engine {
-	GameInputManager::GameInputManager(Scene* owner)
+	GameInputManager::GameInputManager(Scene* owner, bool escapeQuit)
 	{
 		this->owner = owner;
+		this->escapeQuit = escapeQuit;
 	}
 
 	GameInputManager::~GameInputManager()
@@ -17,7 +19,15 @@ namespace Engine {
 	{
 		if (keysPressed[GLFW_KEY_ESCAPE]) {
 			std::cout << "GAMEINPUTMANAGER::KEYCHECK::ESCAPE::TRUE" << std::endl;
-			glfwSetWindowShouldClose(glfwGetCurrentContext(), true);
+
+			if (escapeQuit) {
+				// Quit application
+				glfwSetWindowShouldClose(glfwGetCurrentContext(), true);
+			}
+			else {
+				// Launch main menu
+				owner->GetSceneManager()->ChangeSceneAtEndOfFrame(SCENE_MAIN_MENU);
+			}
 		}
 
 		if (cursorLocked) {
