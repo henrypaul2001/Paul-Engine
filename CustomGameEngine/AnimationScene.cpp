@@ -127,7 +127,7 @@ namespace Engine {
 
 		//SkeletalAnimation* nurseTestAnim = ResourceManager::GetInstance()->LoadAnimation("Models/nurseNew/nurse.dae");
 
-		int xNum = 3;
+		int xNum = 6;
 		int zNum = 3;
 
 		float originX = float(-xNum) / 2.0f;
@@ -138,20 +138,18 @@ namespace Engine {
 		float zDistance = -2.25f;
 
 		int count = 0;
-		for (int i = 0; i < zNum; i++) {
-			for (int j = 0; j < xNum; j++) {
-				for (int k = 0; k < zNum; k++) {
-					std::string name = std::string("Vampire ") + std::string(std::to_string(count));
+		for (int j = 0; j < xNum; j++) {
+			for (int k = 0; k < zNum; k++) {
+				std::string name = std::string("Vampire ") + std::string(std::to_string(count));
 
-					Entity* vampire = new Entity(name);
-					vampire->AddComponent(new ComponentTransform(originX + (j * xDistance), originY, originZ + (k * zDistance)));
-					vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-					vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
-					entityManager->AddEntity(vampire);
+				Entity* vampire = new Entity(name);
+				vampire->AddComponent(new ComponentTransform(originX + (j * xDistance), originY, originZ + (k * zDistance)));
+				vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+				vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
+				entityManager->AddEntity(vampire);
 
-					count++;
-					std::cout << "vampire " << count << " created" << std::endl;
-				}
+				count++;
+				std::cout << "vampire " << count << " created" << std::endl;
 			}
 		}
 
