@@ -291,6 +291,8 @@ namespace Engine {
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
 
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
 		glViewport(0, 0, 512, 512);
 		ResourceManager::GetInstance()->CreateBRDFShader()->Use();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

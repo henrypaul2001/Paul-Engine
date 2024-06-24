@@ -123,6 +123,8 @@ namespace Engine
 		// Set up audio manager
 		audioManager = AudioManager::GetInstance();
 
+		RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
+
 		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
 
