@@ -369,6 +369,26 @@ namespace Engine {
 
 				dynamic_cast<UIText*>(parameterGroups[3][10])->SetText(newText);
 				break;
+			case 5:
+				increase *= 0.01f;
+				directionalLight->MinShadowBias += increase;
+
+				oss = std::ostringstream();
+				oss << "Min Shadow Bias: " << std::setprecision(4) << directionalLight->MinShadowBias;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][13])->SetText(newText);
+				break;
+			case 6:
+				increase *= 0.01f;
+				directionalLight->MaxShadowBias += increase;
+
+				oss = std::ostringstream();
+				oss << "Max Shadow Bias: " << std::setprecision(4) << directionalLight->MaxShadowBias;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][16])->SetText(newText);
+				break;
 			}
 			break;
 		}
@@ -537,6 +557,26 @@ namespace Engine {
 				newText = oss.str();
 
 				dynamic_cast<UIText*>(parameterGroups[3][10])->SetText(newText);
+				break;
+			case 5:
+				decrease *= 0.01f;
+				directionalLight->MinShadowBias -= decrease;
+
+				oss = std::ostringstream();
+				oss << "Min Shadow Bias: " << std::setprecision(4) << directionalLight->MinShadowBias;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][13])->SetText(newText);
+				break;
+			case 6:
+				decrease *= 0.01f;
+				directionalLight->MaxShadowBias -= decrease;
+
+				oss = std::ostringstream();
+				oss << "Max Shadow Bias: " << std::setprecision(4) << directionalLight->MaxShadowBias;
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[3][16])->SetText(newText);
 				break;
 			}
 			break;
@@ -1256,7 +1296,7 @@ namespace Engine {
 		group.push_back(cR);
 		canvas->GetUICanvasComponent()->AddUIElement(cR);
 
-		UITextButton* rIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
+		UITextButton* rIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 1);
 		rIncrease->SetMouseEnterCallback(ButtonEnter);
 		rIncrease->SetMouseExitCallback(ButtonExit);
 		rIncrease->SetMouseUpCallback(ButtonEnter);
@@ -1283,7 +1323,7 @@ namespace Engine {
 		group.push_back(cG);
 		canvas->GetUICanvasComponent()->AddUIElement(cG);
 
-		UITextButton* gIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		UITextButton* gIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
 		gIncrease->SetMouseEnterCallback(ButtonEnter);
 		gIncrease->SetMouseExitCallback(ButtonExit);
 		gIncrease->SetMouseUpCallback(ButtonEnter);
@@ -1310,7 +1350,7 @@ namespace Engine {
 		group.push_back(cB);
 		canvas->GetUICanvasComponent()->AddUIElement(cB);
 
-		UITextButton* bIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
+		UITextButton* bIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 200.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 3);
 		bIncrease->SetMouseEnterCallback(ButtonEnter);
 		bIncrease->SetMouseExitCallback(ButtonExit);
 		bIncrease->SetMouseUpCallback(ButtonEnter);
@@ -1337,7 +1377,7 @@ namespace Engine {
 		group.push_back(ambientStrength);
 		canvas->GetUICanvasComponent()->AddUIElement(ambientStrength);
 
-		UITextButton* ambientIncrease = new UITextButton(std::string("+"), glm::vec2(330.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 4);
+		UITextButton* ambientIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 240.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 4);
 		ambientIncrease->SetMouseEnterCallback(ButtonEnter);
 		ambientIncrease->SetMouseExitCallback(ButtonExit);
 		ambientIncrease->SetMouseUpCallback(ButtonEnter);
@@ -1356,10 +1396,58 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(ambientDecrease);
 
 		// Min Shadow Bias
+		oss << "Min Shadow Bias: " << std::setprecision(4) << directionalLight->MinShadowBias;
+		std::string minBiasString = oss.str();
+		oss = std::ostringstream();
+		UIText* minBias = new UIText(minBiasString, glm::vec2(60.0f, (float)SCR_HEIGHT - 280.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		minBias->SetActive(false);
+		group.push_back(minBias);
+		canvas->GetUICanvasComponent()->AddUIElement(minBias);
+
+		UITextButton* minBiasIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 280.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 5);
+		minBiasIncrease->SetMouseEnterCallback(ButtonEnter);
+		minBiasIncrease->SetMouseExitCallback(ButtonExit);
+		minBiasIncrease->SetMouseUpCallback(ButtonEnter);
+		minBiasIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		minBiasIncrease->SetActive(false);
+		group.push_back(minBiasIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(minBiasIncrease);
+
+		UITextButton* minBiasDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 280.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 5);
+		minBiasDecrease->SetMouseEnterCallback(ButtonEnter);
+		minBiasDecrease->SetMouseExitCallback(ButtonExit);
+		minBiasDecrease->SetMouseUpCallback(ButtonEnter);
+		minBiasDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		minBiasDecrease->SetActive(false);
+		group.push_back(minBiasDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(minBiasDecrease);
 
 		// Max Shadow Bias
+		oss << "Max Shadow Bias: " << std::setprecision(4) << directionalLight->MaxShadowBias;
+		std::string maxBiasString = oss.str();
+		oss = std::ostringstream();
+		UIText* maxBias = new UIText(maxBiasString, glm::vec2(60.0f, (float)SCR_HEIGHT - 320.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		maxBias->SetActive(false);
+		group.push_back(maxBias);
+		canvas->GetUICanvasComponent()->AddUIElement(maxBias);
 
-		// Shadow projection size
+		UITextButton* maxBiasIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 320.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 6);
+		maxBiasIncrease->SetMouseEnterCallback(ButtonEnter);
+		maxBiasIncrease->SetMouseExitCallback(ButtonExit);
+		maxBiasIncrease->SetMouseUpCallback(ButtonEnter);
+		maxBiasIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		maxBiasIncrease->SetActive(false);
+		group.push_back(maxBiasIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(maxBiasIncrease);
+
+		UITextButton* maxBiasDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 320.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 6);
+		maxBiasDecrease->SetMouseEnterCallback(ButtonEnter);
+		maxBiasDecrease->SetMouseExitCallback(ButtonExit);
+		maxBiasDecrease->SetMouseUpCallback(ButtonEnter);
+		maxBiasDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		maxBiasDecrease->SetActive(false);
+		group.push_back(maxBiasDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(maxBiasDecrease);
 
 		parameterGroups.push_back(group);
 		group.clear();
