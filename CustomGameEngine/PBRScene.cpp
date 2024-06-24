@@ -391,6 +391,28 @@ namespace Engine {
 				break;
 			}
 			break;
+		case 4:
+			SystemRender * renderSystem = dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS));
+			unsigned int currentEffect;
+			switch (buttonId) {
+			case 1:
+				ChangePostProcessEffect();
+
+				currentEffect = renderSystem->GetPostProcess();
+				textButton->SetText(postProcessEffectToString[currentEffect]);
+				break;
+			case 2:
+				increase *= 0.5f;
+				params->SetPostProcessStrength(params->GetPostProcessStrength() + increase);
+
+				oss = std::ostringstream();
+				oss << "Post Process Strength: " << std::setprecision(4) << params->GetPostProcessStrength();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[4][2])->SetText(newText);
+				break;
+			}
+			break;
 		}
 	}
 
@@ -577,6 +599,22 @@ namespace Engine {
 				newText = oss.str();
 
 				dynamic_cast<UIText*>(parameterGroups[3][16])->SetText(newText);
+				break;
+			}
+			break;
+		case 4:
+			switch (buttonId) {
+			case 1:
+				break;
+			case 2:
+				decrease *= 0.5f;
+				params->SetPostProcessStrength(params->GetPostProcessStrength() - decrease);
+
+				oss = std::ostringstream();
+				oss << "Post Process Strength: " << std::setprecision(4) << params->GetPostProcessStrength();
+				newText = oss.str();
+
+				dynamic_cast<UIText*>(parameterGroups[4][2])->SetText(newText);
 				break;
 			}
 			break;
@@ -1448,6 +1486,58 @@ namespace Engine {
 		maxBiasDecrease->SetActive(false);
 		group.push_back(maxBiasDecrease);
 		canvas->GetUICanvasComponent()->AddUIElement(maxBiasDecrease);
+
+		parameterGroups.push_back(group);
+		group.clear();
+
+		// Post processing parameter group
+		UITextButton* postProcessParams = new UITextButton(std::string("Post Processing:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		postProcessParams->SetMouseEnterCallback(ButtonEnter);
+		postProcessParams->SetMouseExitCallback(ButtonExit);
+		postProcessParams->SetMouseDownCallback(ButtonPress);
+		postProcessParams->SetMouseUpCallback(std::bind(&PBRScene::ParameterGroupRelease, this, std::placeholders::_1));
+		postProcessParams->SetActive(false);
+		group.push_back(postProcessParams);
+		canvas->GetUICanvasComponent()->AddUIElement(postProcessParams);
+
+		// Effect
+		SystemRender* renderSystem = dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS));
+		std::string effectString = postProcessEffectToString[renderSystem->GetPostProcess()];
+		UITextButton* effect = new UITextButton(effectString, glm::vec2(60.0f, (float)SCR_HEIGHT - 120.0f), glm::vec2(0.2f), glm::vec2(250.0f, 50.0f), font, glm::vec3(0.8f), 1);
+		effect->SetMouseEnterCallback(ButtonEnter);
+		effect->SetMouseExitCallback(ButtonExit);
+		effect->SetMouseDownCallback(ButtonPress);
+		effect->SetMouseUpCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		effect->SetActive(false);
+		group.push_back(effect);
+		canvas->GetUICanvasComponent()->AddUIElement(effect);
+
+		// Post process strength
+		oss << "Post Process Strength: " << std::setprecision(4) << renderManager->GetRenderParams()->GetPostProcessStrength();
+		std::string postStrengthString = oss.str();
+		oss = std::ostringstream();
+		UIText* postStrength = new UIText(postStrengthString, glm::vec2(60.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.2f), font, glm::vec3(0.8f));
+		postStrength->SetActive(false);
+		group.push_back(postStrength);
+		canvas->GetUICanvasComponent()->AddUIElement(postStrength);
+
+		UITextButton* postStrengthIncrease = new UITextButton(std::string("+"), glm::vec2(400.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		postStrengthIncrease->SetMouseEnterCallback(ButtonEnter);
+		postStrengthIncrease->SetMouseExitCallback(ButtonExit);
+		postStrengthIncrease->SetMouseUpCallback(ButtonEnter);
+		postStrengthIncrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterIncreaseOptionHold, this, std::placeholders::_1));
+		postStrengthIncrease->SetActive(false);
+		group.push_back(postStrengthIncrease);
+		canvas->GetUICanvasComponent()->AddUIElement(postStrengthIncrease);
+
+		UITextButton* postStrengthDecrease = new UITextButton(std::string("-"), glm::vec2(10.0f, (float)SCR_HEIGHT - 160.0f), glm::vec2(0.25f), glm::vec2(20.0f, 20.0f), font, glm::vec3(0.8f), 2);
+		postStrengthDecrease->SetMouseEnterCallback(ButtonEnter);
+		postStrengthDecrease->SetMouseExitCallback(ButtonExit);
+		postStrengthDecrease->SetMouseUpCallback(ButtonEnter);
+		postStrengthDecrease->SetMouseHoldCallback(std::bind(&PBRScene::ParameterDecreaseOptionHold, this, std::placeholders::_1));
+		postStrengthDecrease->SetActive(false);
+		group.push_back(postStrengthDecrease);
+		canvas->GetUICanvasComponent()->AddUIElement(postStrengthDecrease);
 
 		parameterGroups.push_back(group);
 		group.clear();
