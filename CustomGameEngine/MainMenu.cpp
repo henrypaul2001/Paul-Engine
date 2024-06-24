@@ -154,49 +154,49 @@ namespace Engine {
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Main Menu"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.8f), glm::vec2(0.5f, 0.5f), font, glm::vec3(1.0f, 1.0f, 1.0f)));
 		
-		UITextButton* pbrButton = new UITextButton(std::string("PBR Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 145.0f, SCR_HEIGHT * 0.65f), glm::vec2(0.4f, 0.4f), glm::vec2(500.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* pbrButton = new UITextButton(std::string("PBR Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 145.0f, SCR_HEIGHT * 0.65f), glm::vec2(0.4f, 0.4f), glm::vec2(300.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		pbrButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		pbrButton->SetMouseUpCallback(std::bind(&MainMenu::PBRButtonRelease, this, std::placeholders::_1));
 		pbrButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		pbrButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(pbrButton);
 
-		UITextButton* physicsButton = new UITextButton(std::string("Physics Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 180.0f, SCR_HEIGHT * 0.55f), glm::vec2(0.4f, 0.4f), glm::vec2(700.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* physicsButton = new UITextButton(std::string("Physics Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 180.0f, SCR_HEIGHT * 0.55f), glm::vec2(0.4f, 0.4f), glm::vec2(400.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		physicsButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		physicsButton->SetMouseUpCallback(std::bind(&MainMenu::PhysicsButtonRelease, this, std::placeholders::_1));
 		physicsButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		physicsButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(physicsButton);
 
-		UITextButton* instancingButton = new UITextButton(std::string("Instancing Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 210.0f, SCR_HEIGHT * 0.45f), glm::vec2(0.4f, 0.4f), glm::vec2(875.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* instancingButton = new UITextButton(std::string("Instancing Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 210.0f, SCR_HEIGHT * 0.45f), glm::vec2(0.4f, 0.4f), glm::vec2(450.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		instancingButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		instancingButton->SetMouseUpCallback(std::bind(&MainMenu::InstancingButtonRelease, this, std::placeholders::_1));
 		instancingButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		instancingButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(instancingButton);
 
-		UITextButton* gameButton = new UITextButton(std::string("Game Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 165.0f, SCR_HEIGHT * 0.35f), glm::vec2(0.4f, 0.4f), glm::vec2(940.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* gameButton = new UITextButton(std::string("Game Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 165.0f, SCR_HEIGHT * 0.35f), glm::vec2(0.4f, 0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		gameButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		gameButton->SetMouseUpCallback(std::bind(&MainMenu::GameSceneButtonRelease, this, std::placeholders::_1));
 		gameButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		gameButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(gameButton);
 
-		UITextButton* audioButton = new UITextButton(std::string("Audio Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 155.0f, SCR_HEIGHT * 0.25f), glm::vec2(0.4f, 0.4f), glm::vec2(1095.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* audioButton = new UITextButton(std::string("Audio Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 155.0f, SCR_HEIGHT * 0.25f), glm::vec2(0.4f, 0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		audioButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		audioButton->SetMouseUpCallback(std::bind(&MainMenu::AudioSceneButtonRelease, this, std::placeholders::_1));
 		audioButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		audioButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(audioButton);
 
-		UITextButton* particleButton = new UITextButton(std::string("Particle Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.15f), glm::vec2(0.4f, 0.4f), glm::vec2(1260.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* particleButton = new UITextButton(std::string("Particle Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.15f), glm::vec2(0.4f, 0.4f), glm::vec2(375.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		particleButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		particleButton->SetMouseUpCallback(std::bind(&MainMenu::ParticleSceneButtonRelease, this, std::placeholders::_1));
 		particleButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		particleButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(particleButton);
 
-		UITextButton* animationButton = new UITextButton(std::string("Animation Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 190.0f, SCR_HEIGHT * 0.05f), glm::vec2(0.4f, 0.4f), glm::vec2(1460.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		UITextButton* animationButton = new UITextButton(std::string("Animation Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 200.0f, SCR_HEIGHT * 0.05f), glm::vec2(0.4f, 0.4f), glm::vec2(450.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		animationButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
 		animationButton->SetMouseUpCallback(std::bind(&MainMenu::AnimationSceneButtonRelease, this, std::placeholders::_1));
 		animationButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
