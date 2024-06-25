@@ -1012,7 +1012,14 @@ namespace Engine {
 
 		std::ostringstream oss;
 
-		UITextButton* tonemappingParams = new UITextButton(std::string("Tonemapping:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		UIBackground tonemappingBackground;
+		tonemappingBackground.BorderColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		tonemappingBackground.Bordered = true;
+		tonemappingBackground.BorderThickness = 0.01f;
+		tonemappingBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 0.85f);
+		tonemappingBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.325f, 0.15f, 0.25f);
+
+		UITextButton* tonemappingParams = new UITextButton(std::string("Tonemapping:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0, tonemappingBackground);
 		tonemappingParams->SetMouseEnterCallback(ButtonEnter);
 		tonemappingParams->SetMouseExitCallback(ButtonExit);
 		tonemappingParams->SetMouseDownCallback(ButtonPress);
@@ -1077,7 +1084,15 @@ namespace Engine {
 		group.clear();
 
 		// Advanced bloom (pbr bloom) group
-		UITextButton* advBloomParams = new UITextButton(std::string("Advanced Bloom:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+
+		UIBackground advBloomBackground;
+		advBloomBackground.BorderColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		advBloomBackground.Bordered = true;
+		advBloomBackground.BorderThickness = 0.01f;
+		advBloomBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 0.85f);
+		advBloomBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.375f, 0.15f, 0.4f);
+
+		UITextButton* advBloomParams = new UITextButton(std::string("Advanced Bloom:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0, advBloomBackground);
 		advBloomParams->SetMouseEnterCallback(ButtonEnter);
 		advBloomParams->SetMouseExitCallback(ButtonExit);
 		advBloomParams->SetMouseDownCallback(ButtonPress);
@@ -1225,7 +1240,14 @@ namespace Engine {
 		group.clear();
 
 		// SSAO params
-		UITextButton* ssaoParams = new UITextButton(std::string("Ambient occlusion:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		UIBackground ssaoBackground;
+		ssaoBackground.BorderColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		ssaoBackground.Bordered = true;
+		ssaoBackground.BorderThickness = 0.01f;
+		ssaoBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 0.85f);
+		ssaoBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.4f, 0.15f, 0.3f);
+
+		UITextButton* ssaoParams = new UITextButton(std::string("Ambient occlusion:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0, ssaoBackground);
 		ssaoParams->SetMouseEnterCallback(ButtonEnter);
 		ssaoParams->SetMouseExitCallback(ButtonExit);
 		ssaoParams->SetMouseDownCallback(ButtonPress);
@@ -1316,7 +1338,14 @@ namespace Engine {
 		group.clear();
 
 		// Directional light edit group
-		UITextButton* dirLightParams = new UITextButton(std::string("Directional light:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		UIBackground dirLightBackground;
+		dirLightBackground.BorderColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		dirLightBackground.Bordered = true;
+		dirLightBackground.BorderThickness = 0.01f;
+		dirLightBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 0.85f);
+		dirLightBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.35f, 0.15f, 0.435f);
+
+		UITextButton* dirLightParams = new UITextButton(std::string("Directional light:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0, dirLightBackground);
 		dirLightParams->SetMouseEnterCallback(ButtonEnter);
 		dirLightParams->SetMouseExitCallback(ButtonExit);
 		dirLightParams->SetMouseDownCallback(ButtonPress);
@@ -1491,7 +1520,14 @@ namespace Engine {
 		group.clear();
 
 		// Post processing parameter group
-		UITextButton* postProcessParams = new UITextButton(std::string("Post Processing:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		UIBackground postProcessingBackground;
+		postProcessingBackground.BorderColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		postProcessingBackground.Bordered = true;
+		postProcessingBackground.BorderThickness = 0.01f;
+		postProcessingBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 0.85f);
+		postProcessingBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.37f, 0.15f, 0.17f);
+
+		UITextButton* postProcessParams = new UITextButton(std::string("Post Processing:"), glm::vec2(25.0f, (float)SCR_HEIGHT - 70.0f), glm::vec2(0.4f), glm::vec2(350.0f, 50.0f), font, glm::vec3(0.8f), 0, postProcessingBackground);
 		postProcessParams->SetMouseEnterCallback(ButtonEnter);
 		postProcessParams->SetMouseExitCallback(ButtonExit);
 		postProcessParams->SetMouseDownCallback(ButtonPress);
