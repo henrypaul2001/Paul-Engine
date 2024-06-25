@@ -319,6 +319,7 @@ namespace Engine {
 		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag");
 		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag");
 		defaultImageShader = LoadShader("Shaders/defaultImage.vert", "Shaders/defaultImage.frag");
+		uiBackgroundShader = LoadShader("Shaders/uiBackground.vert", "Shaders/uiBackground.frag", "Shaders/uiBackground.geom");
 		particleShader = LoadShader("Shaders/particles.vert", "Shaders/particles.frag");
 		pointParticleShader = LoadShader("Shaders/pointParticles.vert", "Shaders/particles.frag", "Shaders/pointParticles.geom");
 		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag");

@@ -80,6 +80,7 @@ namespace Engine {
 		// ----------
 		Shader* defaultTextShader;
 		Shader* defaultImageShader;
+		Shader* uiBackgroundShader;
 
 		FT_Library freetypeLib;
 
@@ -137,6 +138,7 @@ namespace Engine {
 		Shader* CreateBRDFShader() const { return createBRDFShader; }
 		Shader* DefaultTextShader() const { return defaultTextShader; }
 		Shader* DefaultImageShader() const { return defaultImageShader; }
+		Shader* DefaultUIBackgroundShader() const { return uiBackgroundShader; }
 		Shader* DefaultParticleShader() const { return particleShader; }
 		Shader* DefaultPointParticleShader() const { return pointParticleShader; }
 		Shader* AdvBloomDownsampleShader() const { return advBloomDownsampleShader; }
