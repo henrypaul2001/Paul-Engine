@@ -6,7 +6,13 @@ namespace Engine {
 		type = UI_IMAGE;
 	}
 
-	UIImage::UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, Shader* shader) : UIElement(position, scale, shader)
+	UIImage::UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, UIBackground background) : UIElement(position, scale, ResourceManager::GetInstance()->DefaultImageShader(), background)
+	{
+		this->imageTexture = imageTexture;
+		type = UI_IMAGE;
+	}
+
+	UIImage::UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, UIBackground background, Shader* shader) : UIElement(position, scale, shader, background)
 	{
 		this->imageTexture = imageTexture;
 		type = UI_IMAGE;
@@ -19,6 +25,8 @@ namespace Engine {
 
 	void UIImage::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
 	{
+		UIElement::Draw(canvasPosition, canvasScale);
+
 		shader->Use();
 
 		shader->setVec2("translate", position + canvasPosition);

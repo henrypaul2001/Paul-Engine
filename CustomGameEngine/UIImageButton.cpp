@@ -5,7 +5,12 @@ namespace Engine {
 		buttonType = BUTTON_IMAGE;
 	}
 
-	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 imageScale, glm::vec2 buttonScale, Texture* imageTexture, Shader* shader, int idTag) : UIElement(position, imageScale, shader), UIImage(position, imageScale, imageTexture, shader), UIButton(position, buttonScale, shader, idTag)
+	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 imageScale, glm::vec2 buttonScale, Texture* imageTexture, int idTag, UIBackground background) : UIElement(position, imageScale, ResourceManager::GetInstance()->DefaultImageShader(), background), UIImage(position, imageScale, imageTexture, background), UIButton(position, buttonScale, ResourceManager::GetInstance()->DefaultImageShader(), idTag, background)
+	{
+		buttonType = BUTTON_IMAGE;
+	}
+
+	UIImageButton::UIImageButton(glm::vec2 position, glm::vec2 imageScale, glm::vec2 buttonScale, Texture* imageTexture, Shader* shader, int idTag, UIBackground background) : UIElement(position, imageScale, shader, background), UIImage(position, imageScale, imageTexture, background, shader), UIButton(position, buttonScale, shader, idTag, background)
 	{
 		buttonType = BUTTON_IMAGE;
 	}

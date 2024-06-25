@@ -8,7 +8,8 @@ namespace Engine {
 	{
 	public:
 		UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour);
-		UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader);
+		UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, UIBackground background);
+		UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, UIBackground background, Shader* shader);
 		~UIText();
 
 		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override;

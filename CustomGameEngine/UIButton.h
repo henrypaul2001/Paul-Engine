@@ -11,6 +11,7 @@ namespace Engine {
 	{
 	public:
 		UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader, int idTag);
+		UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader, int idTag, UIBackground background);
 		~UIButton();
 
 		virtual void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override = 0;

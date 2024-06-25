@@ -297,6 +297,22 @@ namespace Engine {
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)(sizeof(glm::vec2)));
 
+		// Set up single point VBO
+		glGenVertexArrays(1, &pointVAO);
+		glGenBuffers(1, &pointVBO);
+		glBindVertexArray(pointVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
+
+		glm::vec3 point = glm::vec3(0.0f);
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(point), &point, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
 		int textureOffset = 18;
 
 		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");

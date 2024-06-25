@@ -7,7 +7,8 @@ namespace Engine {
 	{
 	public:
 		UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture);
-		UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, Shader* shader);
+		UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, UIBackground background);
+		UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, UIBackground background, Shader* shader);
 		~UIImage();
 
 		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override;

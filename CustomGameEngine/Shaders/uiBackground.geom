@@ -13,7 +13,7 @@ void main() {
 	float left = -LeftRightUpDownExtents.x;
 	float right = LeftRightUpDownExtents.y;
 	float up = LeftRightUpDownExtents.z;
-	float down = LeftRightUpDownExtents.w;
+	float down = -LeftRightUpDownExtents.w;
 
 	// bottom-left
 	vec2 a = p.xy + vec2(left, down);

@@ -88,6 +88,9 @@ namespace Engine {
 		unsigned int uiQuadVBO;
 		unsigned int uboMatrices;
 
+		unsigned int pointVAO;
+		unsigned int pointVBO;
+
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
 
 		ResourceManager();
@@ -147,6 +150,10 @@ namespace Engine {
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
+		
+		const unsigned int GetPointVAO() const { return pointVAO; }
+		const unsigned int GetPointVBO() const { return pointVBO; }
+
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};
 }

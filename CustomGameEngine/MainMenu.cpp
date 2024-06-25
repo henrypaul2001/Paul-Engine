@@ -153,7 +153,12 @@ namespace Engine {
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(glm::vec3(0.0f, 0.0f, 0.0f)));
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Main Menu"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.8f), glm::vec2(0.5f, 0.5f), font, glm::vec3(1.0f, 1.0f, 1.0f)));
+
+		UIBackground titleBackground;
+		titleBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		titleBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.325f, 0.15f, 0.1f);
+
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Main Menu"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.8f), glm::vec2(0.5f, 0.5f), font, glm::vec3(1.0f, 1.0f, 1.0f), titleBackground));
 		
 		UITextButton* pbrButton = new UITextButton(std::string("PBR Scene"), glm::vec2((SCR_WIDTH / 2.0f) - 145.0f, SCR_HEIGHT * 0.65f), glm::vec2(0.4f, 0.4f), glm::vec2(300.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
 		pbrButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));

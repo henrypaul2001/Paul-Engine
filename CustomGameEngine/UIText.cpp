@@ -13,7 +13,18 @@ namespace Engine {
 		InitTextVAOVBO();
 	}
 
-	UIText::UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, Shader* shader) : UIElement(position, scale, shader)
+	UIText::UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, UIBackground background) : UIElement(position, scale, ResourceManager::GetInstance()->DefaultTextShader(), background)
+	{
+		this->text = text;
+		this->font = font;
+		this->textColour = colour;
+		textVAO = 0;
+		textVBO = 0;
+		type = UI_TEXT;
+		InitTextVAOVBO();
+	}
+
+	UIText::UIText(std::string text, glm::vec2 position, glm::vec2 scale, TextFont* font, glm::vec3 colour, UIBackground background, Shader* shader) : UIElement(position, scale, shader, background)
 	{
 		this->text = text;
 		this->font = font;
@@ -31,6 +42,8 @@ namespace Engine {
 
 	void UIText::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
 	{
+		UIElement::Draw(canvasPosition, canvasScale);
+
 		shader->Use();
 		shader->setVec3("textColour", textColour);
 		glActiveTexture(GL_TEXTURE0);
