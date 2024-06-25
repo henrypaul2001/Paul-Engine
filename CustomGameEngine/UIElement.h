@@ -11,7 +11,14 @@ namespace Engine {
 	struct UIBackground {
 		glm::vec4 LeftRightUpDownExtents; // x = left, y = right, z = up, w = down
 
+		float BorderThickness;
+
+		bool Bordered;
+
 		glm::vec4 Colour;
+		glm::vec4 BorderColour;
+
+		UIBackground() : LeftRightUpDownExtents(glm::vec4(0.0f)), BorderThickness(0.0f), Bordered(false), Colour(glm::vec4(1.0f)), BorderColour(glm::vec4(1.0f)) {}
 	};
 
 	class UIElement
@@ -36,6 +43,9 @@ namespace Engine {
 		const bool GetActive() const { return isActive; }
 
 		const UITypes& UIType() const { return type; }
+
+		const UIBackground& GetBackground() const { return background; }
+		void SetBackground(const UIBackground newBackground) { background = newBackground; }
 
 		const bool UseBackground() const { return useBackground; }
 		void UseBackground(const bool useBackground) { this->useBackground = useBackground; }

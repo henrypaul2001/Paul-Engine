@@ -157,6 +157,9 @@ namespace Engine {
 		UIBackground titleBackground;
 		titleBackground.Colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		titleBackground.LeftRightUpDownExtents = glm::vec4(0.05f, 0.325f, 0.15f, 0.1f);
+		titleBackground.BorderColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.35f);
+		titleBackground.BorderThickness = 0.01f;
+		titleBackground.Bordered = true;
 
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Main Menu"), glm::vec2((SCR_WIDTH / 2.0f) - 175.0f, SCR_HEIGHT * 0.8f), glm::vec2(0.5f, 0.5f), font, glm::vec3(1.0f, 1.0f, 1.0f), titleBackground));
 		

@@ -46,9 +46,13 @@ namespace Engine {
 
 			glm::mat4 projection = glm::ortho(0.0f, (float)renderManager->ScreenWidth(), 0.0f, (float)renderManager->ScreenHeight());
 
+			backgroundShader->setBool("drawBorder", background.Bordered);
+			backgroundShader->setVec4("borderColour", background.BorderColour);
+			backgroundShader->setFloat("borderThickness", background.BorderThickness);
+
 			backgroundShader->setVec2("translation", transformedPosition);
 			backgroundShader->setVec4("LeftRightUpDownExtents", extents);
-			backgroundShader->setVec4("Colour", background.Colour);
+			backgroundShader->setVec4("colour", background.Colour);
 			backgroundShader->setMat4("projection", projection);
 
 			glBindVertexArray(ResourceManager::GetInstance()->GetPointVAO());
