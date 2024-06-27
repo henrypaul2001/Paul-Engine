@@ -120,6 +120,16 @@ namespace Engine {
 		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0, bool loadInPersistentResources = false);
 		AudioFile* LoadAudio(std::string filepath, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX, bool loadInPersistentResources = false);
 
+		Model* GetModel(const std::string& filepath);
+		Shader* GetShader(const std::string& vertexPath, const std::string& fragmentPath);
+		Shader* GetShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
+		Texture* GetTexture(const std::string& filepath);
+		Cubemap* GetCubemap(const std::string& filepath);
+		HDREnvironment* GetHDREnvironmentMap(const std::string& filepath);
+		TextFont* GetTextFont(const std::string& filepath);
+		SkeletalAnimation* GetAnimation(const std::string& filepath, const int animationIndex = 0);
+		AudioFile* GetAudio(const std::string& filepath);
+
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
 		Mesh DefaultCube() const { return *defaultCube; }

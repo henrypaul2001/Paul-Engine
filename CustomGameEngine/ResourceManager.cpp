@@ -1189,6 +1189,156 @@ namespace Engine {
 		return it->second;
 	}
 
+	Model* ResourceManager::GetModel(const std::string& filepath)
+	{
+		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);
+		std::unordered_map<std::string, Model*>::iterator tempIt = tempResources.models.find(filepath);
+
+		if (persistentIt != persistentResources.models.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.models.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	Shader* ResourceManager::GetShader(const std::string& vertexPath, const std::string& fragmentPath)
+	{
+		std::string combinedPath = vertexPath + "|" + fragmentPath;
+
+		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
+
+		if (persistentIt != persistentResources.shaders.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.shaders.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	Shader* ResourceManager::GetShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+	{
+		std::string combinedPath = vertexPath + "|" + fragmentPath + "|" + geometryPath;
+
+		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
+
+		if (persistentIt != persistentResources.shaders.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.shaders.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	Texture* ResourceManager::GetTexture(const std::string& filepath)
+	{
+		std::unordered_map<std::string, Texture*>::iterator persistentIt = persistentResources.textures.find(filepath);
+		std::unordered_map<std::string, Texture*>::iterator tempIt = tempResources.textures.find(filepath);
+
+		if (persistentIt != persistentResources.textures.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.textures.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	Cubemap* ResourceManager::GetCubemap(const std::string& filepath)
+	{
+		std::unordered_map<std::string, Cubemap*>::iterator persistentIt = persistentResources.cubemaps.find(filepath);
+		std::unordered_map<std::string, Cubemap*>::iterator tempIt = tempResources.cubemaps.find(filepath);
+
+		if (persistentIt != persistentResources.cubemaps.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.cubemaps.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	HDREnvironment* ResourceManager::GetHDREnvironmentMap(const std::string& filepath)
+	{
+		std::unordered_map<std::string, HDREnvironment*>::iterator persistentIt = persistentResources.hdrCubemaps.find(filepath);
+		std::unordered_map<std::string, HDREnvironment*>::iterator tempIt = tempResources.hdrCubemaps.find(filepath);
+
+		if (persistentIt != persistentResources.hdrCubemaps.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.hdrCubemaps.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	TextFont* ResourceManager::GetTextFont(const std::string& filepath)
+	{
+		std::unordered_map<std::string, TextFont*>::iterator persistentIt = persistentResources.textFonts.find(filepath);
+		std::unordered_map<std::string, TextFont*>::iterator tempIt = tempResources.textFonts.find(filepath);
+
+		if (persistentIt != persistentResources.textFonts.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.textFonts.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	SkeletalAnimation* ResourceManager::GetAnimation(const std::string& filepath, const int animationIndex)
+	{
+		std::string indexedFilepath = filepath + "/(" + std::to_string(animationIndex) + ")";
+
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator persistentIt = persistentResources.animations.find(indexedFilepath);
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator tempIt = tempResources.animations.find(indexedFilepath);
+
+		if (persistentIt != persistentResources.animations.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.animations.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	AudioFile* ResourceManager::GetAudio(const std::string& filepath)
+	{
+		std::unordered_map<std::string, AudioFile*>::iterator persistentIt = persistentResources.audioFiles.find(filepath);
+		std::unordered_map<std::string, AudioFile*>::iterator tempIt = tempResources.audioFiles.find(filepath);
+
+		if (persistentIt != persistentResources.audioFiles.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.audioFiles.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
 	Material* ResourceManager::GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular)
 	{
 		Material* material = new Material();
