@@ -13,8 +13,6 @@ namespace Engine {
 		flatDepthMapFBO = new unsigned int;
 		cubeDepthMapFBO = new unsigned int;
 		texturedFBO = new unsigned int;
-		skybox = nullptr;
-		environmentMap = nullptr;
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 		SetupShadowMapTextures(shadowWidth, shadowHeight);
@@ -33,7 +31,8 @@ namespace Engine {
 		defaultTextShader->Use();
 		defaultTextShader->setMat4("projection", textProjection);
 
-		SetSkyboxTexture(ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space"));
+		ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space", true);
+		SetSkyboxTexture("Textures/Cubemaps/Space");
 	}
 
 	RenderManager* RenderManager::GetInstance()

@@ -173,16 +173,16 @@ namespace Engine {
 		unsigned int CreatePrefilterMap(const unsigned int& environmentMap);
 		unsigned int CreateBRDF();
 
-		void SetSkyboxTexture(Cubemap* newSkybox) { skybox = newSkybox; }
-		void SetEnvironmentMap(HDREnvironment* newEnvMap) { environmentMap = newEnvMap; }
-		const Cubemap* GetSkybox() const { return skybox; }
-		const HDREnvironment* GetEnvironmentMap() const { return environmentMap; }
+		void SetSkyboxTexture(const std::string& skyboxFilepath) { skyboxLookup = skyboxFilepath; }
+		void SetEnvironmentMap(const std::string& environmentFilepath) { environmentLookup = environmentFilepath; }
+		const Cubemap* GetSkybox() const { return ResourceManager::GetInstance()->GetCubemap(skyboxLookup); }
+		const HDREnvironment* GetEnvironmentMap() const { return ResourceManager::GetInstance()->GetHDREnvironmentMap(environmentLookup); }
 
 		// Advanced bloom
 		void ResizeAdvBloomMipChain(int newSize);
 		const std::vector<AdvBloomMip>& GetAdvBloomMipChain() const { return advBloomMipChain; }
-		void SetAdvBloomLensDirtTexture(Texture* newDirtMask) { advBloomLensDirtMask = newDirtMask; }
-		const Texture* GetAdvBloomLensDirtTexture() const { return advBloomLensDirtMask; }
+		void SetAdvBloomLensDirtTexture(const std::string& advBloomLensDirtMaskFilepath) { advBloomDirtMaskLookup = advBloomLensDirtMaskFilepath; }
+		const Texture* GetAdvBloomLensDirtTexture() const { return ResourceManager::GetInstance()->GetTexture(advBloomDirtMaskLookup); }
 		const unsigned int* GetAdvBloomFBO() const { return advBloomFBO; }
 
 		RenderPipeline* GetRenderPipeline() const { return renderPipeline; }
@@ -255,8 +255,8 @@ namespace Engine {
 		unsigned int screenWidth;
 		unsigned int screenHeight;
 
-		Texture* advBloomLensDirtMask;
-		Cubemap* skybox;
-		HDREnvironment* environmentMap;
+		std::string advBloomDirtMaskLookup;
+		std::string skyboxLookup;
+		std::string environmentLookup;
 	};
 }

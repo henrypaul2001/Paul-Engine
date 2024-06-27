@@ -20,7 +20,9 @@ namespace Engine {
 		renderManager->GetRenderParams()->SetBloomPasses(10);
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
-		renderManager->SetAdvBloomLensDirtTexture(ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false));
+
+		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
+		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 	}
 
 	PBRScene::~PBRScene()
@@ -38,15 +40,25 @@ namespace Engine {
 		CreateSystems();
 		CreateEntities();
 
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_noord.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/laufenurg_church.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/golden_bay.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_vijzelgracht.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/starsky.hdr", true));
-		envMaps.push_back(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/studio.hdr", true));
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_noord.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/laufenurg_church.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/golden_bay.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_vijzelgracht.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/starsky.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/studio.hdr", true);
+
+		envMaps.push_back("Textures/Environment Maps/st_peters_square_night.hdr");
+		envMaps.push_back("Textures/Environment Maps/newport_loft.hdr");
+		envMaps.push_back("Textures/Environment Maps/sky.hdr");
+		envMaps.push_back("Textures/Environment Maps/metro_noord.hdr");
+		envMaps.push_back("Textures/Environment Maps/laufenurg_church.hdr");
+		envMaps.push_back("Textures/Environment Maps/golden_bay.hdr");
+		envMaps.push_back("Textures/Environment Maps/metro_vijzelgracht.hdr");
+		envMaps.push_back("Textures/Environment Maps/starsky.hdr");
+		envMaps.push_back("Textures/Environment Maps/studio.hdr");
 		currentEnvMapIndex = 0;
 
 		renderManager->SetEnvironmentMap(envMaps[0]);

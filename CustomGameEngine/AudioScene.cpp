@@ -76,7 +76,8 @@ namespace Engine {
 		CreateSystems();
 		CreateEntities();
 
-		renderManager->SetEnvironmentMap(ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true));
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
+		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 

@@ -26,7 +26,7 @@ namespace Engine {
 		void ParameterDecreaseOptionHold(UIButton* button);
 	private:
 		int currentEnvMapIndex;
-		std::vector<HDREnvironment*> envMaps;
+		std::vector<std::string> envMaps;
 
 		std::vector<UIElement*> optionButtons;
 
