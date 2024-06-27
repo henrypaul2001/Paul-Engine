@@ -315,32 +315,32 @@ namespace Engine {
 
 		int textureOffset = 18;
 
-		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag");
-		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom");
-		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag");
-		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag");
-		hdrTonemappingShader = LoadShader("Shaders/screenQuad.vert", "Shaders/hdrTonemapping.frag");
-		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag");
-		deferredGeometryPassPBR = LoadShader("Shaders/g_buffer.vert", "Shaders/g_bufferPBR.frag");
-		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag");
-		deferredLightingPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferredPBR.frag");
-		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag");
-		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag");
-		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag");
-		defaultLitPBRShader = LoadShader("Shaders/defaultLit_pbr.vert", "Shaders/defaultLit_pbr.frag");
-		bloomBlur = LoadShader("Shaders/bloomBlur.vert", "Shaders/bloomBlur.frag");
-		equirectangularToCubemapShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/convertToCubemap.frag");
-		createIrradianceShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/irradianceConvolute.frag");
-		createPrefilterShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/prefilter.frag");
-		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag");
-		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag");
-		defaultImageShader = LoadShader("Shaders/defaultImage.vert", "Shaders/defaultImage.frag");
-		uiBackgroundShader = LoadShader("Shaders/uiBackground.vert", "Shaders/uiBackground.frag", "Shaders/uiBackground.geom");
-		particleShader = LoadShader("Shaders/particles.vert", "Shaders/particles.frag");
-		pointParticleShader = LoadShader("Shaders/pointParticles.vert", "Shaders/particles.frag", "Shaders/pointParticles.geom");
-		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag");
-		advBloomUpsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomUpsample.frag");
-		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag");
+		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag", true);
+		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom", true);
+		defaultLitShader = LoadShader("Shaders/defaultLitNew.vert", "Shaders/defaultLitNew.frag", true);
+		screenQuadShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenQuad.frag", true);
+		hdrTonemappingShader = LoadShader("Shaders/screenQuad.vert", "Shaders/hdrTonemapping.frag", true);
+		deferredGeometryPass = LoadShader("Shaders/g_buffer.vert", "Shaders/g_buffer.frag", true);
+		deferredGeometryPassPBR = LoadShader("Shaders/g_buffer.vert", "Shaders/g_bufferPBR.frag", true);
+		deferredLightingPass = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferred.frag", true);
+		deferredLightingPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/defaultDeferredPBR.frag", true);
+		ssaoShader = LoadShader("Shaders/ssao.vert", "Shaders/ssao.frag", true);
+		ssaoBlur = LoadShader("Shaders/ssao.vert", "Shaders/ssaoBlur.frag", true);
+		skyboxShader = LoadShader("Shaders/skybox.vert", "Shaders/skybox.frag", true);
+		defaultLitPBRShader = LoadShader("Shaders/defaultLit_pbr.vert", "Shaders/defaultLit_pbr.frag", true);
+		bloomBlur = LoadShader("Shaders/bloomBlur.vert", "Shaders/bloomBlur.frag", true);
+		equirectangularToCubemapShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/convertToCubemap.frag", true);
+		createIrradianceShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/irradianceConvolute.frag", true);
+		createPrefilterShader = LoadShader("Shaders/convertToCubemap.vert", "Shaders/prefilter.frag", true);
+		createBRDFShader = LoadShader("Shaders/brdf.vert", "Shaders/brdf.frag", true);
+		defaultTextShader = LoadShader("Shaders/defaultText.vert", "Shaders/defaultText.frag", true);
+		defaultImageShader = LoadShader("Shaders/defaultImage.vert", "Shaders/defaultImage.frag", true);
+		uiBackgroundShader = LoadShader("Shaders/uiBackground.vert", "Shaders/uiBackground.frag", "Shaders/uiBackground.geom", true);
+		particleShader = LoadShader("Shaders/particles.vert", "Shaders/particles.frag", true);
+		pointParticleShader = LoadShader("Shaders/pointParticles.vert", "Shaders/particles.frag", "Shaders/pointParticles.geom", true);
+		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag", true);
+		advBloomUpsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomUpsample.frag", true);
+		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag", true);
 
 		advBloomCombineShader->Use();
 		advBloomCombineShader->setInt("screenTexture", 0);
@@ -506,61 +506,8 @@ namespace Engine {
 		delete defaultSphere;
 		delete defaultMaterial;
 
-		// delete models
-		std::unordered_map<std::string, Model*>::iterator modelsIt = models.begin();
-		while (modelsIt != models.end()) {
-			delete modelsIt->second;
-			modelsIt++;
-		}
-
-		// delete shaders
-		std::unordered_map<std::string, Shader*>::iterator shadersIt = shaders.begin();
-		while (shadersIt != shaders.end()) {
-			delete shadersIt->second;
-			shadersIt++;
-		}
-
-		// delete textures
-		std::unordered_map<std::string, Texture*>::iterator texturesIt = textures.begin();
-		while (texturesIt != textures.end()) {
-			delete texturesIt->second;
-			texturesIt++;
-		}
-
-		// delete cubemaps
-		std::unordered_map<std::string, Cubemap*>::iterator cubemapsIt = cubemaps.begin();
-		while (cubemapsIt != cubemaps.end()) {
-			delete cubemapsIt->second;
-			cubemapsIt++;
-		}
-
-		// delete hdr cubemaps
-		std::unordered_map<std::string, HDREnvironment*>::iterator hdrmapsIt = hdrCubemaps.begin();
-		while (hdrmapsIt != hdrCubemaps.end()) {
-			delete hdrmapsIt->second;
-			hdrmapsIt++;
-		}
-
-		// delete fonts
-		std::unordered_map<std::string, TextFont*>::iterator textFontsIt = textFonts.begin();
-		while (textFontsIt != textFonts.end()) {
-			delete textFontsIt->second;
-			textFontsIt++;
-		}
-
-		// delete animations
-		std::unordered_map<std::string, SkeletalAnimation*>::iterator animationsIt = animations.begin();
-		while (animationsIt != animations.end()) {
-			delete animationsIt->second;
-			animationsIt++;
-		}
-
-		// delete audio files
-		std::unordered_map<std::string, AudioFile*>::iterator audioIt = audioFiles.begin();
-		while (audioIt != audioFiles.end()) {
-			delete audioIt->second;
-			audioIt++;
-		}
+		ClearTempResources();
+		ClearPersistentResources();
 
 		FT_Done_FreeType(freetypeLib);
 
@@ -611,17 +558,103 @@ namespace Engine {
 		}
 	}
 
-	Model* ResourceManager::LoadModel(std::string filepath, bool pbr)
+	void ResourceManager::ClearResources(Resources& resources)
 	{
-		std::unordered_map<std::string, Model*>::iterator it = models.find(filepath);
+		// delete models
+		std::unordered_map<std::string, Model*>::iterator modelsIt = resources.models.begin();
+		while (modelsIt != resources.models.end()) {
+			delete modelsIt->second;
+			modelsIt++;
+		}
+		resources.models.clear();
 
-		if (it == models.end()) {
+		// delete shaders
+		std::unordered_map<std::string, Shader*>::iterator shadersIt = resources.shaders.begin();
+		while (shadersIt != resources.shaders.end()) {
+			delete shadersIt->second;
+			shadersIt++;
+		}
+		resources.shaders.clear();
+
+		// delete textures
+		std::unordered_map<std::string, Texture*>::iterator texturesIt = resources.textures.begin();
+		while (texturesIt != resources.textures.end()) {
+			delete texturesIt->second;
+			texturesIt++;
+		}
+		resources.textures.clear();
+
+		// delete cubemaps
+		std::unordered_map<std::string, Cubemap*>::iterator cubemapsIt = resources.cubemaps.begin();
+		while (cubemapsIt != resources.cubemaps.end()) {
+			delete cubemapsIt->second;
+			cubemapsIt++;
+		}
+		resources.cubemaps.clear();
+
+		// delete hdr cubemaps
+		std::unordered_map<std::string, HDREnvironment*>::iterator hdrmapsIt = resources.hdrCubemaps.begin();
+		while (hdrmapsIt != resources.hdrCubemaps.end()) {
+			delete hdrmapsIt->second;
+			hdrmapsIt++;
+		}
+		resources.hdrCubemaps.clear();
+
+		// delete fonts
+		std::unordered_map<std::string, TextFont*>::iterator textFontsIt = resources.textFonts.begin();
+		while (textFontsIt != resources.textFonts.end()) {
+			delete textFontsIt->second;
+			textFontsIt++;
+		}
+		resources.textFonts.clear();
+
+		// delete animations
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator animationsIt = resources.animations.begin();
+		while (animationsIt != resources.animations.end()) {
+			delete animationsIt->second;
+			animationsIt++;
+		}
+		resources.animations.clear();
+
+		// delete audio files
+		std::unordered_map<std::string, AudioFile*>::iterator audioIt = resources.audioFiles.begin();
+		while (audioIt != resources.audioFiles.end()) {
+			delete audioIt->second;
+			audioIt++;
+		}
+		resources.audioFiles.clear();
+	}
+
+	Model* ResourceManager::LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources)
+	{
+		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);
+		std::unordered_map<std::string, Model*>::iterator tempIt = tempResources.models.find(filepath);
+
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.models.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.models.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading model " << filepath << std::endl;
 			// Model not currently loaded
-			models[filepath] = new Model(filepath.c_str(), pbr);
-			return models[filepath];
+			if (loadInPersistentResources) {
+				persistentResources.models[filepath] = new Model(filepath.c_str(), pbr);
+				return persistentResources.models[filepath];
+			}
+			else {
+				tempResources.models[filepath] = new Model(filepath.c_str(), pbr);
+				return tempResources.models[filepath];
+			}
 		}
 		else {
+			std::unordered_map<std::string, Model*>::iterator it = persistentIt;
+			if (existsInTemp) { it = tempIt; }
+
 			if (it->second->PBR() == pbr) {
 				return it->second;
 			}
@@ -632,44 +665,90 @@ namespace Engine {
 		}
 	}
 
-	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath)
-	{		
+	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources)
+	{
 		std::string combinedPath = vertexPath + "|" + fragmentPath;
 
-		std::unordered_map<std::string, Shader*>::iterator it = shaders.find(combinedPath);
+		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
 
-		if (it == shaders.end()) {
-			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
-			// Shader not currently loaded
-			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
-			return shaders[combinedPath];
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.shaders.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.shaders.end()) {
+			existsInTemp = false;
 		}
 
+		if (!existsInPersistent && !existsInTemp) {
+			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
+			// Shader not currently loaded
+			if (loadInPersistentResources) {
+				persistentResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
+				return persistentResources.shaders[combinedPath];
+			}
+			else {
+				tempResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
+				return tempResources.shaders[combinedPath];
+			}
+		}
+
+		std::unordered_map<std::string, Shader*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath)
+	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources)
 	{
 		std::string combinedPath = vertexPath + "|" + fragmentPath + "|" + geometryPath;
 
-		std::unordered_map<std::string, Shader*>::iterator it = shaders.find(combinedPath);
+		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
 
-		if (it == shaders.end()) {
-			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
-			// Shader not currently loaded
-			shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
-			return shaders[combinedPath];
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.shaders.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.shaders.end()) {
+			existsInTemp = false;
 		}
 
+		if (!existsInPersistent && !existsInTemp) {
+			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
+			// Shader not currently loaded
+			if (loadInPersistentResources) {
+				persistentResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
+				return persistentResources.shaders[combinedPath];
+			}
+			else {
+				tempResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
+				return tempResources.shaders[combinedPath];
+			}
+		}
+
+		std::unordered_map<std::string, Shader*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	Texture* ResourceManager::LoadTexture(std::string filepath, TextureTypes type, bool srgb)
+	Texture* ResourceManager::LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources)
 	{
 		// First check if already loaded
-		std::unordered_map<std::string, Texture*>::iterator it = textures.find(filepath);
+		std::unordered_map<std::string, Texture*>::iterator persistentIt = persistentResources.textures.find(filepath);
+		std::unordered_map<std::string, Texture*>::iterator tempIt = tempResources.textures.find(filepath);
 
-		if (it == textures.end()) {
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.textures.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.textures.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading texture " << filepath << std::endl;
 			// Load texture
 			unsigned int textureID;
@@ -717,19 +796,37 @@ namespace Engine {
 			texture->type = type;
 			texture->filepath = filepath;
 
-			textures[filepath] = texture;
-			return textures[filepath];
+			if (loadInPersistentResources) {
+				persistentResources.textures[filepath] = texture;
+				return persistentResources.textures[filepath];
+			}
+			else {
+				tempResources.textures[filepath] = texture;
+				return tempResources.textures[filepath];
+			}
 		}
 
+		std::unordered_map<std::string, Texture*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	Cubemap* ResourceManager::LoadCubemap(std::string rootFilepath)
+	Cubemap* ResourceManager::LoadCubemap(std::string rootFilepath, bool loadInPersistentResources)
 	{
 		// First check if already loaded
-		std::unordered_map<std::string, Cubemap*>::iterator it = cubemaps.find(rootFilepath);
+		std::unordered_map<std::string, Cubemap*>::iterator persistentIt = persistentResources.cubemaps.find(rootFilepath);
+		std::unordered_map<std::string, Cubemap*>::iterator tempIt = tempResources.cubemaps.find(rootFilepath);
 
-		if (it == cubemaps.end()) {
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.cubemaps.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.cubemaps.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading cubemap root " << rootFilepath << std::endl;
 			// Load cubemap
 			unsigned int textureID;
@@ -769,19 +866,38 @@ namespace Engine {
 			Cubemap* cubemap = new Cubemap();
 			cubemap->id = textureID;
 			cubemap->rootFilepath = rootFilepath;
-			cubemaps[rootFilepath] = cubemap;
-			return cubemaps[rootFilepath];
+
+			if (loadInPersistentResources) {
+				persistentResources.cubemaps[rootFilepath] = cubemap;
+				return persistentResources.cubemaps[rootFilepath];
+			}
+			else {
+				tempResources.cubemaps[rootFilepath] = cubemap;
+				return tempResources.cubemaps[rootFilepath];
+			}
 		}
 
+		std::unordered_map<std::string, Cubemap*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	HDREnvironment* ResourceManager::LoadHDREnvironmentMap(std::string filepath, bool flipVertically, bool skipConversionAndBRDFLutGeneration)
+	HDREnvironment* ResourceManager::LoadHDREnvironmentMap(std::string filepath, bool flipVertically, bool skipConversionAndBRDFLutGeneration, bool loadInPersistentResources)
 	{
 		// First check if already loaded
-		std::unordered_map<std::string, HDREnvironment*>::iterator it = hdrCubemaps.find(filepath);
+		std::unordered_map<std::string, HDREnvironment*>::iterator persistentIt = persistentResources.hdrCubemaps.find(filepath);
+		std::unordered_map<std::string, HDREnvironment*>::iterator tempIt = tempResources.hdrCubemaps.find(filepath);
 
-		if (it == hdrCubemaps.end()) {
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.hdrCubemaps.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.hdrCubemaps.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading HDRI " << filepath << std::endl;
 			// Load cubemap
 			stbi_set_flip_vertically_on_load(flipVertically);
@@ -824,19 +940,38 @@ namespace Engine {
 			cubemap->brdf_lutID = brdf_LUT;
 			cubemap->prefilterID = prefilterMap;
 			cubemap->filepath = filepath;
-			hdrCubemaps[filepath] = cubemap;
-			return hdrCubemaps[filepath];
+
+			if (loadInPersistentResources) {
+				persistentResources.hdrCubemaps[filepath] = cubemap;
+				return persistentResources.hdrCubemaps[filepath];
+			}
+			else {
+				tempResources.hdrCubemaps[filepath] = cubemap;
+				return tempResources.hdrCubemaps[filepath];
+			}
 		}
 
+		std::unordered_map<std::string, HDREnvironment*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	TextFont* ResourceManager::LoadTextFont(std::string filepath)
+	TextFont* ResourceManager::LoadTextFont(std::string filepath, bool loadInPersistentResources)
 	{
 		// First check if already loaded
-		std::unordered_map<std::string, TextFont*>::iterator it = textFonts.find(filepath);
+		std::unordered_map<std::string, TextFont*>::iterator persistentIt = persistentResources.textFonts.find(filepath);
+		std::unordered_map<std::string, TextFont*>::iterator tempIt = tempResources.textFonts.find(filepath);
 
-		if (it == textFonts.end()) {
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.textFonts.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.textFonts.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading font " << filepath << std::endl;
 
 			// Load font
@@ -881,21 +1016,39 @@ namespace Engine {
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 			glDisable(GL_BLEND);
 
-			textFonts[filepath] = font;
-			return textFonts[filepath];
+			if (loadInPersistentResources) {
+				persistentResources.textFonts[filepath] = font;
+				return persistentResources.textFonts[filepath];
+			}
+			else {
+				tempResources.textFonts[filepath] = font;
+				return tempResources.textFonts[filepath];
+			}
 		}
 
+		std::unordered_map<std::string, TextFont*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	SkeletalAnimation* ResourceManager::LoadAnimation(std::string filepath, int fileAnimationIndex)
+	SkeletalAnimation* ResourceManager::LoadAnimation(std::string filepath, int fileAnimationIndex, bool loadInPersistentResources)
 	{
 		std::string indexedFilepath = filepath + "/(" + std::to_string(fileAnimationIndex) + ")";
 
 		// First check if already loaded
-		std::unordered_map<std::string, SkeletalAnimation*>::iterator it = animations.find(indexedFilepath);
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator persistentIt = persistentResources.animations.find(indexedFilepath);
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator tempIt = tempResources.animations.find(indexedFilepath);
 
-		if (it == animations.end()) {
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.animations.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.animations.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			// Load animation
 			std::cout << "RESOURCEMANAGER::Loading animation " << indexedFilepath << std::endl;
 
@@ -968,8 +1121,15 @@ namespace Engine {
 					}
 
 					SkeletalAnimation* animation = new SkeletalAnimation(channels, duration, ticksPerSecond);
-					animations[indexedFilepath] = animation;
-					return animations[indexedFilepath];
+
+					if (loadInPersistentResources) {
+						persistentResources.animations[indexedFilepath] = animation;
+						return persistentResources.animations[indexedFilepath];
+					}
+					else {
+						tempResources.animations[indexedFilepath] = animation;
+						return tempResources.animations[indexedFilepath];
+					}
 				}
 				else {
 					std::cout << "ERROR::RESOURCEMANAGER::LoadAnimation::Error reading animation file || Index = " << fileAnimationIndex << " || Filepath: " << filepath << std::endl;
@@ -982,14 +1142,26 @@ namespace Engine {
 			}
 		}
 
+		std::unordered_map<std::string, SkeletalAnimation*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 
-	AudioFile* ResourceManager::LoadAudio(std::string filepath, float defaultVolume, float defaultPan, float defaultMinAttenuationDistance, float defaultMaxAttenuationDistance)
+	AudioFile* ResourceManager::LoadAudio(std::string filepath, float defaultVolume, float defaultPan, float defaultMinAttenuationDistance, float defaultMaxAttenuationDistance, bool loadInPersistentResources)
 	{
-		std::unordered_map<std::string, AudioFile*>::iterator it = audioFiles.find(filepath);
+		std::unordered_map<std::string, AudioFile*>::iterator persistentIt = persistentResources.audioFiles.find(filepath);
+		std::unordered_map<std::string, AudioFile*>::iterator tempIt = tempResources.audioFiles.find(filepath);
 
-		if (it == audioFiles.end()) {
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.audioFiles.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.audioFiles.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading audio file " << filepath << std::endl;
 			// Audio not currently loaded
 
@@ -1001,11 +1173,19 @@ namespace Engine {
 			}
 
 			AudioFile* newAudio = new AudioFile(newSource, defaultVolume, defaultPan, defaultMinAttenuationDistance, defaultMaxAttenuationDistance);
-			audioFiles[filepath] = newAudio;
 
-			return audioFiles[filepath];
+			if (loadInPersistentResources) {
+				persistentResources.audioFiles[filepath] = newAudio;
+				return persistentResources.audioFiles[filepath];
+			}
+			else {
+				tempResources.audioFiles[filepath] = newAudio;
+				return tempResources.audioFiles[filepath];
+			}
 		}
 
+		std::unordered_map<std::string, AudioFile*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
 		return it->second;
 	}
 

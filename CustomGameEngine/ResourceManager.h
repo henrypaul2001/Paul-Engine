@@ -21,9 +21,7 @@ namespace Engine {
 		std::string filepath;
 	};
 
-	class ResourceManager
-	{
-	private:
+	struct Resources {
 		std::unordered_map<std::string, Model*> models;
 		std::unordered_map<std::string, Shader*> shaders;
 		std::unordered_map<std::string, Texture*> textures;
@@ -32,6 +30,13 @@ namespace Engine {
 		std::unordered_map<std::string, TextFont*> textFonts;
 		std::unordered_map<std::string, SkeletalAnimation*> animations;
 		std::unordered_map<std::string, AudioFile*> audioFiles;
+	};
+
+	class ResourceManager
+	{
+	private:
+		Resources persistentResources;
+		Resources tempResources;
 
 		Mesh* defaultCube;
 		Mesh* defaultPlane;
@@ -93,6 +98,8 @@ namespace Engine {
 
 		void GenerateBitangentTangentVectors(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, unsigned int offset);
 
+		void ClearResources(Resources& resources);
+
 		ResourceManager();
 		static ResourceManager* instance;
 	public:
@@ -103,15 +110,15 @@ namespace Engine {
 
 		static ResourceManager* GetInstance();
 
-		Model* LoadModel(std::string filepath, bool pbr);
-		Shader* LoadShader(std::string vertexPath, std::string fragmentPath);
-		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath);
-		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb);
-		Cubemap* LoadCubemap(std::string rootFilepath);
-		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false);
-		TextFont* LoadTextFont(std::string filepath);
-		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0);
-		AudioFile* LoadAudio(std::string filepath, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX);
+		Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false);
+		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources = false);
+		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
+		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false);
+		Cubemap* LoadCubemap(std::string rootFilepath, bool loadInPersistentResources = false);
+		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false, bool loadInPersistentResources = false);
+		TextFont* LoadTextFont(std::string filepath, bool loadInPersistentResources = false);
+		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0, bool loadInPersistentResources = false);
+		AudioFile* LoadAudio(std::string filepath, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX, bool loadInPersistentResources = false);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
@@ -153,6 +160,9 @@ namespace Engine {
 		
 		const unsigned int GetPointVAO() const { return pointVAO; }
 		const unsigned int GetPointVBO() const { return pointVBO; }
+
+		void ClearTempResources() { ClearResources(tempResources); }
+		void ClearPersistentResources() { ClearResources(persistentResources); }
 
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};
