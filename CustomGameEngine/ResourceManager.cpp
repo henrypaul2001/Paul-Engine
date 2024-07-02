@@ -811,6 +811,92 @@ namespace Engine {
 		return it->second;
 	}
 
+	Texture* ResourceManager::LoadTextureEmbedded(const aiTexture* embeddedTexture, const std::string& filename, TextureTypes type, bool srgb, bool loadInPersistentResources)
+	{
+		// First check if already loaded
+		std::unordered_map<std::string, Texture*>::iterator persistentIt = persistentResources.textures.find(filename);
+		std::unordered_map<std::string, Texture*>::iterator tempIt = tempResources.textures.find(filename);
+
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.textures.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.textures.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
+			std::cout << "RESOURCEMANAGER::Loading embedded texture " << filename << std::endl;
+		
+			// Load texture
+			unsigned int textureID;
+			glGenTextures(1, &textureID);
+
+			int width, height, nrComponents;
+			unsigned char* data = nullptr;
+			if (embeddedTexture->mHeight == 0) {
+				data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth, &width, &height, &nrComponents, 0);
+			}
+			else {
+				data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth * embeddedTexture->mHeight, &width, &height, &nrComponents, 0);
+			}
+
+			if (data) {
+				GLenum internalFormat = GL_RGB;
+				GLenum dataFormat = GL_RGB;
+				if (nrComponents == 1) {
+					internalFormat = GL_RED;
+					dataFormat = GL_RED;
+				}
+				else if (nrComponents == 2) {
+					internalFormat = GL_RG;
+					dataFormat = GL_RG;
+				}
+				else if (nrComponents == 3) {
+					internalFormat = srgb ? GL_SRGB : GL_RGB;
+					dataFormat = GL_RGB;
+				}
+				else if (nrComponents == 4) {
+					internalFormat = srgb ? GL_SRGB_ALPHA : GL_RGBA;
+					dataFormat = GL_RGBA;
+				}
+				glBindTexture(GL_TEXTURE_2D, textureID);
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				stbi_image_free(data);
+			}
+			else {
+				std::cout << "ERROR::RESOURCEMANAGER::EMBEDDEDTEXTURELOAD::Texture: " << filename << " failed to load" << std::endl;
+				stbi_image_free(data);
+			}
+
+			Texture* texture = new Texture();
+			texture->id = textureID;
+			texture->type = type;
+			texture->filepath = filename;
+
+			if (loadInPersistentResources) {
+				persistentResources.textures[filename] = texture;
+				return persistentResources.textures[filename];
+			}
+			else {
+				tempResources.textures[filename] = texture;
+				return tempResources.textures[filename];
+			}
+		}
+
+		std::unordered_map<std::string, Texture*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
+		return it->second;
+	}
+
 	Cubemap* ResourceManager::LoadCubemap(std::string rootFilepath, bool loadInPersistentResources)
 	{
 		// First check if already loaded

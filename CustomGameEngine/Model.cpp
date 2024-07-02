@@ -125,7 +125,7 @@ namespace Engine {
 	void Model::LoadModel(std::string filepath)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData | aiProcess_GenNormals);
+		const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData | aiProcess_GenNormals | aiProcess_EmbedTextures | aiProcess_PreTransformVertices);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -219,6 +219,7 @@ namespace Engine {
 		// retrieve materials
 		if (mesh->mMaterialIndex >= 0) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
 			std::cout << "MODEL::Loading material " << material->GetName().C_Str() << std::endl;
 
 			if (!pbr) {
@@ -248,19 +249,19 @@ namespace Engine {
 				meshMaterial->shininess = shine;
 				meshMaterial->height_scale = 10.0f; // this should be read from the material import instead
 
-				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE);
+				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE, scene);
 				meshMaterial->diffuseMaps = diffuseMaps;
 
-				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR);
+				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR, scene);
 				meshMaterial->specularMaps = specularMaps;
 
-				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
+				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL, scene);
 				meshMaterial->normalMaps = normalMaps;
 
-				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
+				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT, scene);
 				meshMaterial->heightMaps = heightMaps;
 
-				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY);
+				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY, scene);
 				meshMaterial->opacityMaps = opacityMaps;
 
 				if (opacityMaps.size() > 0) {
@@ -304,25 +305,25 @@ namespace Engine {
 				pbrMaterial->ao = 1.0f;
 				pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
 
-				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO);
+				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO, scene);
 				pbrMaterial->albedoMaps = albedoMaps;
 
-				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL);
+				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL, scene);
 				pbrMaterial->normalMaps;
 
-				std::vector<Texture*> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, TEXTURE_METALLIC);
+				std::vector<Texture*> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, TEXTURE_METALLIC, scene);
 				pbrMaterial->metallicMaps = metallicMaps;
 
-				std::vector<Texture*> roughnessMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_ROUGHNESS);
+				std::vector<Texture*> roughnessMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_ROUGHNESS, scene);
 				pbrMaterial->roughnessMaps = roughnessMaps;
 
-				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO);
+				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO, scene);
 				pbrMaterial->aoMaps = aoMaps;
 
-				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT);
+				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT, scene);
 				pbrMaterial->heightMaps = heightMaps;
 
-				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY);
+				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY, scene);
 				pbrMaterial->opacityMaps = opacityMaps;
 
 				if (opacityMaps.size() > 0) {
@@ -350,10 +351,6 @@ namespace Engine {
 			// -----------
 			int boneID = -1;
 			std::string boneName = mesh->mBones[i]->mName.C_Str();
-
-			if (boneName == "Armature_CC_Base_L_Thigh") {
-				std::cout << "break" << std::endl;
-			}
 
 			if (skeleton.bones.find(boneName) == skeleton.bones.end()) {
 				// Create new bone
@@ -437,7 +434,7 @@ namespace Engine {
 		}
 	}
 
-	std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name)
+	std::vector<Texture*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name, const aiScene* scene)
 	{
 		std::vector<Texture*> textures;
 		bool skip;
@@ -449,8 +446,16 @@ namespace Engine {
 			if (name == TEXTURE_ALBEDO || name == TEXTURE_DIFFUSE) {
 				srgb = true;
 			}
-			textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name, srgb));
-			//textures.push_back(ResourceManager::GetInstance()->LoadTexture(str.C_Str(), name));
+
+			const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(str.C_Str());
+			
+			if (embeddedTexture) {
+				textures.push_back(ResourceManager::GetInstance()->LoadTextureEmbedded(embeddedTexture, directory + '/' + str.C_Str(), name, srgb));
+			}
+			else {
+				textures.push_back(ResourceManager::GetInstance()->LoadTexture(directory + '/' + str.C_Str(), name, srgb));
+				//textures.push_back(ResourceManager::GetInstance()->LoadTexture(str.C_Str(), name));
+			}
 		}
 
 		return textures;

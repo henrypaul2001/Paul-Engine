@@ -92,6 +92,6 @@ namespace Engine {
 		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
 		bool ProcessEmptyBones(aiNode* node);
-		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name);
+		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name, const aiScene* scene);
 	};
 }
