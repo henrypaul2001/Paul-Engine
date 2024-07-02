@@ -170,6 +170,7 @@ namespace Engine {
 		std::vector<Texture*> textures;
 		Material* meshMaterial = new Material();
 		PBRMaterial* pbrMaterial = new PBRMaterial();
+		std::unordered_map<TextureTypes, aiTextureType> textureTranslations = ResourceManager::GetInstance()->GetTextureTranslations();
 
 		// retrieve vertices
 		Vertex vertex;
@@ -250,19 +251,19 @@ namespace Engine {
 				meshMaterial->height_scale = 10.0f; // this should be read from the material import instead
 				meshMaterial->useDiffuseAlphaAsOpacity = true;
 
-				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE, scene);
+				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_DIFFUSE], TEXTURE_DIFFUSE, scene);
 				meshMaterial->diffuseMaps = diffuseMaps;
 
-				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_SPECULAR, scene);
+				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_SPECULAR], TEXTURE_SPECULAR, scene);
 				meshMaterial->specularMaps = specularMaps;
 
-				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL, scene);
+				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_NORMAL], TEXTURE_NORMAL, scene);
 				meshMaterial->normalMaps = normalMaps;
 
-				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT, scene);
+				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_HEIGHT], TEXTURE_HEIGHT, scene);
 				meshMaterial->heightMaps = heightMaps;
 
-				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY, scene);
+				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_OPACITY], TEXTURE_OPACITY, scene);
 				meshMaterial->opacityMaps = opacityMaps;
 
 				if (opacityMaps.size() > 0) {
@@ -308,25 +309,25 @@ namespace Engine {
 				pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
 				pbrMaterial->useDiffuseAlphaAsOpacity = true;
 
-				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO, scene);
+				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_ALBEDO], TEXTURE_ALBEDO, scene);
 				pbrMaterial->albedoMaps = albedoMaps;
 
-				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TEXTURE_NORMAL, scene);
-				pbrMaterial->normalMaps;
+				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_NORMAL], TEXTURE_NORMAL, scene);
+				pbrMaterial->normalMaps = normalMaps;
 
-				std::vector<Texture*> metallicMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, TEXTURE_METALLIC, scene);
+				std::vector<Texture*> metallicMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_METALLIC], TEXTURE_METALLIC, scene);
 				pbrMaterial->metallicMaps = metallicMaps;
 
-				std::vector<Texture*> roughnessMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TEXTURE_ROUGHNESS, scene);
+				std::vector<Texture*> roughnessMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_ROUGHNESS], TEXTURE_ROUGHNESS, scene);
 				pbrMaterial->roughnessMaps = roughnessMaps;
 
-				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_AO, scene);
+				std::vector<Texture*> aoMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_AO], TEXTURE_AO, scene);
 				pbrMaterial->aoMaps = aoMaps;
 
-				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TEXTURE_HEIGHT, scene);
+				std::vector<Texture*> heightMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_HEIGHT], TEXTURE_HEIGHT, scene);
 				pbrMaterial->heightMaps = heightMaps;
 
-				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, aiTextureType_OPACITY, TEXTURE_OPACITY, scene);
+				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_OPACITY], TEXTURE_OPACITY, scene);
 				pbrMaterial->opacityMaps = opacityMaps;
 
 				if (opacityMaps.size() > 0) {

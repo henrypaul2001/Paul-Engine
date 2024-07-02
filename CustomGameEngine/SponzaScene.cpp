@@ -73,6 +73,13 @@ namespace Engine {
 		dirLight->GetLightComponent()->ShadowProjectionSize = 30.0f;
 		entityManager->AddEntity(dirLight);
 
+		ResourceManager* resources = ResourceManager::GetInstance();
+		resources->SetModelLoaderTextureTranslation(TEXTURE_NORMAL, aiTextureType_NORMALS);
+		resources->SetModelLoaderTextureTranslation(TEXTURE_METALLIC, aiTextureType_METALNESS);
+		resources->SetModelLoaderTextureTranslation(TEXTURE_ROUGHNESS, aiTextureType_DIFFUSE_ROUGHNESS);
+		resources->SetModelLoaderTextureTranslation(TEXTURE_AO, aiTextureType_AMBIENT_OCCLUSION);
+		resources->SetModelLoaderTextureTranslation(TEXTURE_HEIGHT, aiTextureType_HEIGHT);
+
 		Entity* sponza = new Entity("Sponza");
 		sponza->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		sponza->AddComponent(new ComponentGeometry("Models/PBR/newSponza/base/NewSponza_Main_glTF_003.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
@@ -93,6 +100,8 @@ namespace Engine {
 		trees->AddComponent(new ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		trees->GetGeometryComponent()->SetCulling(false, GL_BACK);
 		entityManager->AddEntity(trees);
+
+		resources->ResetModelLoaderTextureTranslationsToDefault();
 
 		Entity* pointLight1 = new Entity("Point Light 1");
 		pointLight1->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));

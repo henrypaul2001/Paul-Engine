@@ -6,6 +6,8 @@ namespace Engine {
 	ResourceManager* ResourceManager::instance = nullptr;
 	ResourceManager::ResourceManager()
 	{
+		ResetModelLoaderTextureTranslationsToDefault();
+
 		// Setup freetype
 		if (FT_Init_FreeType(&freetypeLib)) {
 			std::cout << "FAIL::RESOURCEMANAGER::Failed to initialize FreeType Library" << std::endl;

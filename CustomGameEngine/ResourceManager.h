@@ -35,6 +35,8 @@ namespace Engine {
 	class ResourceManager
 	{
 	private:
+		std::unordered_map<TextureTypes, aiTextureType> modelLoaderTextureTranslations;
+
 		Resources persistentResources;
 		Resources tempResources;
 
@@ -174,6 +176,24 @@ namespace Engine {
 
 		void ClearTempResources() { ClearResources(tempResources); }
 		void ClearPersistentResources() { ClearResources(persistentResources); }
+
+		void ResetModelLoaderTextureTranslationsToDefault() {
+			// non pbr
+			modelLoaderTextureTranslations[TEXTURE_DIFFUSE] = aiTextureType_DIFFUSE;
+			modelLoaderTextureTranslations[TEXTURE_SPECULAR] = aiTextureType_SPECULAR;
+			modelLoaderTextureTranslations[TEXTURE_NORMAL] = aiTextureType_HEIGHT;
+			modelLoaderTextureTranslations[TEXTURE_HEIGHT] = aiTextureType_AMBIENT;
+			modelLoaderTextureTranslations[TEXTURE_OPACITY] = aiTextureType_OPACITY;
+
+			// pbr
+			modelLoaderTextureTranslations[TEXTURE_ALBEDO] = aiTextureType_DIFFUSE;
+			modelLoaderTextureTranslations[TEXTURE_METALLIC] = aiTextureType_SHININESS;
+			modelLoaderTextureTranslations[TEXTURE_ROUGHNESS] = aiTextureType_SPECULAR;
+			modelLoaderTextureTranslations[TEXTURE_AO] = aiTextureType_AMBIENT;
+		}
+		void SetModelLoaderTextureTranslation(const TextureTypes target, const aiTextureType translation) { modelLoaderTextureTranslations[target] = translation; }
+		aiTextureType GetTranslatedTexture(const TextureTypes target) { return modelLoaderTextureTranslations[target]; }
+		const std::unordered_map<TextureTypes, aiTextureType>& GetTextureTranslations() { return modelLoaderTextureTranslations; }
 
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};
