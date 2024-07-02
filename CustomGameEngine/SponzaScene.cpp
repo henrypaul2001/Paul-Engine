@@ -18,7 +18,7 @@ namespace Engine {
 		SetupScene();
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
-
+		//renderManager->GetRenderParams()->DisableRenderOptions(RENDER_SHADOWS);
 		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
 
 		renderManager->SetEnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr");
@@ -83,6 +83,17 @@ namespace Engine {
 		curtains->AddComponent(new ComponentGeometry("Models/PBR/newSponza/curtains/NewSponza_Curtains_glTF.gltf", true));
 		entityManager->AddEntity(curtains);
 
+		Entity* ivy = new Entity("Ivy");
+		ivy->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		ivy->AddComponent(new ComponentGeometry("Models/PBR/newSponza/ivy/NewSponza_IvyGrowth_glTF.gltf", true));
+		entityManager->AddEntity(ivy);
+
+		Entity* trees = new Entity("Trees");
+		trees->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		trees->AddComponent(new ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true));
+		trees->GetGeometryComponent()->SetCulling(false, GL_BACK);
+		entityManager->AddEntity(trees);
+
 		Entity* pointLight1 = new Entity("Point Light 1");
 		pointLight1->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
 		pointLight1->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
@@ -91,6 +102,7 @@ namespace Engine {
 		pointLight1->GetTransformComponent()->SetScale(0.25f);
 		pointLight1->AddComponent(new ComponentLight(POINT));
 		pointLight1->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.3f;
+		pointLight1->GetLightComponent()->CastShadows = false;
 		entityManager->AddEntity(pointLight1);
 
 		Entity* pointLight2 = new Entity("Point Light 2");
@@ -101,6 +113,7 @@ namespace Engine {
 		pointLight2->GetTransformComponent()->SetScale(0.25f);
 		pointLight2->AddComponent(new ComponentLight(POINT));
 		pointLight2->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f);
+		pointLight2->GetLightComponent()->CastShadows = false;
 		entityManager->AddEntity(pointLight2);
 
 		Entity* pointLight3 = new Entity("Point Light 3");
@@ -111,6 +124,7 @@ namespace Engine {
 		pointLight3->GetTransformComponent()->SetScale(0.25f);
 		pointLight3->AddComponent(new ComponentLight(POINT));
 		pointLight3->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.7f;
+		pointLight3->GetLightComponent()->CastShadows = false;
 		entityManager->AddEntity(pointLight3);
 
 		// UI
