@@ -115,17 +115,33 @@ namespace Engine {
 			}
 
 			// opacity maps
-			for (int i = 0; i < material->opacityMaps.size(); i++) {
-				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(material->opacityMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
-					name = ConvertTextureTypeToString(TEXTURE_OPACITY);
-					shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
-					glBindTexture(GL_TEXTURE_2D, material->opacityMaps[i]->id);
-					opacityNr++;
-					shader.setBool("material.useOpacityMap", true);
+			if (!material->useDiffuseAlphaAsOpacity) {
+				for (int i = 0; i < material->opacityMaps.size(); i++) {
+					glActiveTexture(GL_TEXTURE0 + count + offset);
+					name = ConvertTextureTypeToString(material->opacityMaps[i]->type);
+					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
+						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
+						glBindTexture(GL_TEXTURE_2D, material->opacityMaps[i]->id);
+						opacityNr++;
+						shader.setBool("material.useOpacityMap", true);
+					}
+					count++;
 				}
-				count++;
+			}
+			else {
+				for (int i = 0; i < material->diffuseMaps.size(); i++) {
+					glActiveTexture(GL_TEXTURE0 + count + offset);
+					name = ConvertTextureTypeToString(material->diffuseMaps[i]->type);
+					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
+						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
+						glBindTexture(GL_TEXTURE_2D, material->diffuseMaps[i]->id);
+						opacityNr++;
+						shader.setBool("material.useOpacityMap", true);
+					}
+					count++;
+				}
 			}
 
 			glActiveTexture(GL_TEXTURE0);
@@ -238,17 +254,33 @@ namespace Engine {
 			}
 
 			// opacity maps
-			for (int i = 0; i < PBRmaterial->opacityMaps.size(); i++) {
-				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->opacityMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
-					name = ConvertTextureTypeToString(TEXTURE_OPACITY);
-					shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
-					glBindTexture(GL_TEXTURE_2D, PBRmaterial->opacityMaps[i]->id);
-					opacityNr++;
-					shader.setBool("material.useOpacityMap", true);
+			if (!PBRmaterial->useDiffuseAlphaAsOpacity) {
+				for (int i = 0; i < PBRmaterial->opacityMaps.size(); i++) {
+					glActiveTexture(GL_TEXTURE0 + count + offset);
+					name = ConvertTextureTypeToString(PBRmaterial->opacityMaps[i]->type);
+					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
+						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
+						glBindTexture(GL_TEXTURE_2D, PBRmaterial->opacityMaps[i]->id);
+						opacityNr++;
+						shader.setBool("material.useOpacityMap", true);
+					}
+					count++;
 				}
-				count++;
+			}
+			else {
+				for (int i = 0; i < PBRmaterial->albedoMaps.size(); i++) {
+					glActiveTexture(GL_TEXTURE0 + count + offset);
+					name = ConvertTextureTypeToString(PBRmaterial->albedoMaps[i]->type);
+					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
+						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
+						glBindTexture(GL_TEXTURE_2D, PBRmaterial->albedoMaps[i]->id);
+						opacityNr++;
+						shader.setBool("material.useOpacityMap", true);
+					}
+					count++;
+				}
 			}
 
 			glActiveTexture(GL_TEXTURE0);

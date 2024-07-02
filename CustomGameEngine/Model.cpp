@@ -248,6 +248,7 @@ namespace Engine {
 				meshMaterial->specular = specularColour;
 				meshMaterial->shininess = shine;
 				meshMaterial->height_scale = 10.0f; // this should be read from the material import instead
+				meshMaterial->useDiffuseAlphaAsOpacity = true;
 
 				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_DIFFUSE, scene);
 				meshMaterial->diffuseMaps = diffuseMaps;
@@ -266,6 +267,7 @@ namespace Engine {
 
 				if (opacityMaps.size() > 0) {
 					meshMaterial->isTransparent = true;
+					meshMaterial->useDiffuseAlphaAsOpacity = false;
 				}
 
 				// retrieve bones
@@ -304,6 +306,7 @@ namespace Engine {
 				pbrMaterial->roughness = rough;
 				pbrMaterial->ao = 1.0f;
 				pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
+				pbrMaterial->useDiffuseAlphaAsOpacity = true;
 
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TEXTURE_ALBEDO, scene);
 				pbrMaterial->albedoMaps = albedoMaps;
@@ -328,6 +331,7 @@ namespace Engine {
 
 				if (opacityMaps.size() > 0) {
 					pbrMaterial->isTransparent = true;
+					pbrMaterial->useDiffuseAlphaAsOpacity = false;
 				}
 
 				// retrieve bones

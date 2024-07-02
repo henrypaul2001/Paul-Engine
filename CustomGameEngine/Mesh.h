@@ -97,6 +97,7 @@ namespace Engine {
 		glm::vec3 specular;
 
 		bool isTransparent;
+		bool useDiffuseAlphaAsOpacity;
 		// I have no idea how to delete this properly without causing an error. Come back later
 	};
 
@@ -118,6 +119,7 @@ namespace Engine {
 		float ao;
 
 		bool isTransparent;
+		bool useDiffuseAlphaAsOpacity;
 	};
 
 	class Mesh
