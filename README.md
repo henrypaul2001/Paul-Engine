@@ -19,6 +19,8 @@ This is currently under development. Below is a preview of what I have so far:
 ### Bloom
 ![Bloom toggled on and off on a bright cube](https://media.giphy.com/media/0a4tMIFENGIDgynLXy/giphy.gif)
 
+### Advanced Bloom
+
 ### Deferred pipeline and forward pipeline
 
 ### Post processing

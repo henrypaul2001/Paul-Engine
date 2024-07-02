@@ -1,6 +1,11 @@
 #include "SponzaScene.h"
 #include "GameInputManager.h"
-#include "SystemPhysics.h"
+#include "SystemUIRender.h"
+#include "SystemUIMouseInteraction.h"
+#include "UIText.h"
+#include "UIImage.h"
+#include "UITextButton.h"
+#include "UIImageButton.h"
 namespace Engine {
 	SponzaScene::SponzaScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -8,9 +13,18 @@ namespace Engine {
 		systemManager = new SystemManager();
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
-		renderManager = RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
+		renderManager = RenderManager::GetInstance();
 
 		SetupScene();
+		renderManager->GetRenderParams()->SetSSAOSamples(32);
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
+
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
+
+		renderManager->SetEnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr");
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
+		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 	}
 
 	SponzaScene::~SponzaScene()
@@ -53,25 +67,81 @@ namespace Engine {
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
-		dirLight->GetLightComponent()->Direction = glm::vec3(0.35f, -1.0f, 0.0f);
-		dirLight->GetLightComponent()->Colour = glm::vec3(5.0f, 5.0f, 5.0f);
+		dirLight->GetLightComponent()->Direction = glm::vec3(0.35f, -0.6f, 0.0f);
+		dirLight->GetLightComponent()->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		dirLight->GetLightComponent()->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
+		dirLight->GetLightComponent()->ShadowProjectionSize = 30.0f;
 		entityManager->AddEntity(dirLight);
 
 		Entity* sponza = new Entity("Sponza");
 		sponza->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		sponza->AddComponent(new ComponentGeometry("Models/PBR/sponza/sponza.obj", true));
-		dynamic_cast<ComponentGeometry*>(sponza->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
+		sponza->AddComponent(new ComponentGeometry("Models/PBR/newSponza/base/NewSponza_Main_glTF_003.gltf", true));
 		entityManager->AddEntity(sponza);
+
+		Entity* curtains = new Entity("Curtains");
+		curtains->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		curtains->AddComponent(new ComponentGeometry("Models/PBR/newSponza/curtains/NewSponza_Curtains_glTF.gltf", true));
+		entityManager->AddEntity(curtains);
+
+		Entity* pointLight1 = new Entity("Point Light 1");
+		pointLight1->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
+		pointLight1->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		pointLight1->GetGeometryComponent()->ApplyMaterialToModel(gold);
+		pointLight1->GetGeometryComponent()->CastShadows(false);
+		pointLight1->GetTransformComponent()->SetScale(0.25f);
+		pointLight1->AddComponent(new ComponentLight(POINT));
+		pointLight1->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.3f;
+		entityManager->AddEntity(pointLight1);
+
+		Entity* pointLight2 = new Entity("Point Light 2");
+		pointLight2->AddComponent(new ComponentTransform(-10.0f, 7.5f, 0.0f));
+		pointLight2->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		pointLight2->GetGeometryComponent()->ApplyMaterialToModel(gold);
+		pointLight2->GetGeometryComponent()->CastShadows(false);
+		pointLight2->GetTransformComponent()->SetScale(0.25f);
+		pointLight2->AddComponent(new ComponentLight(POINT));
+		pointLight2->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f);
+		entityManager->AddEntity(pointLight2);
+
+		Entity* pointLight3 = new Entity("Point Light 3");
+		pointLight3->AddComponent(new ComponentTransform(16.0f, 1.5f, -1.0f));
+		pointLight3->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		pointLight3->GetGeometryComponent()->ApplyMaterialToModel(gold);
+		pointLight3->GetGeometryComponent()->CastShadows(false);
+		pointLight3->GetTransformComponent()->SetScale(0.25f);
+		pointLight3->AddComponent(new ComponentLight(POINT));
+		pointLight3->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.7f;
+		entityManager->AddEntity(pointLight3);
+
+		// UI
+		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
+
+		Entity* canvas = new Entity("Canvas");
+		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		canvas->GetTransformComponent()->SetScale(1.0f);
+		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+
+		std::string renderPipeline = "DEFERRED";
+		if (renderManager->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+			renderPipeline = "FORWARD";
+		}
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("G Pipeline: ") + renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+
+		entityManager->AddEntity(canvas);
 	}
 
 	void SponzaScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		SystemRender* renderSystem = new SystemRender();
 		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
 		renderSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 	}
 
 	void SponzaScene::Update()
@@ -80,10 +150,17 @@ namespace Engine {
 		systemManager->ActionUpdateSystems(entityManager);
 		float time = (float)glfwGetTime();
 
-		//glm::mat4 model = glm::mat4(1.0f);
-		//model = glm::rotate(model, glm::radians(10.0f) * sin(time), glm::vec3(0.0f, 1.0f, 0.0f));
-		//glm::vec3 newDirection = model * glm::vec4(dynamic_cast<ComponentLight*>(entityManager->FindEntity("Spot Light")->GetComponent(COMPONENT_LIGHT))->Direction, 1.0f);
-		//dynamic_cast<ComponentLight*>(entityManager->FindEntity("Spot Light")->GetComponent(COMPONENT_LIGHT))->Direction = newDirection;
+		float fps = 1.0f / Scene::dt;
+
+		float targetFPSPercentage = fps / 160.0f;
+		if (targetFPSPercentage > 1.0f) {
+			targetFPSPercentage = 1.0f;
+		}
+
+		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
+
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 	}
 
 	void SponzaScene::Render()
