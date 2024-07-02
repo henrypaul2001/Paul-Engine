@@ -129,6 +129,14 @@ namespace Engine {
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_ANIMATION);
 	}
 
+	void MainMenu::SponzaSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch Sponza scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Sponza Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_SPONZA);
+	}
+
 	void MainMenu::ButtonPress(UIButton* button)
 	{
 
@@ -211,6 +219,13 @@ namespace Engine {
 		animationButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		animationButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(animationButton);
+
+		UITextButton* sponzaButton = new UITextButton(std::string("Sponza Scene"), glm::vec2((SCR_WIDTH / 6.0f) - 145.0f, SCR_HEIGHT * 0.65f), glm::vec2(0.4f, 0.4f), glm::vec2(400.0f, 50.0f), font, glm::vec3(0.8f, 0.8f, 0.8f), 0);
+		sponzaButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		sponzaButton->SetMouseUpCallback(std::bind(&MainMenu::SponzaSceneButtonRelease, this, std::placeholders::_1));
+		sponzaButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		sponzaButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(sponzaButton);
 
 		entityManager->AddEntity(canvas);
 	}
