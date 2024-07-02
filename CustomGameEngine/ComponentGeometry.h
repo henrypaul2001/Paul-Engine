@@ -8,8 +8,8 @@ namespace Engine {
 	public:
 		ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false);
 		ComponentGeometry(PremadeModel modelType, bool pbr = false, bool instanced = false);
-		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false);
-		ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced = false);
+		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false, bool persistentStorage = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
+		ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced = false, bool persistentStorage = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		~ComponentGeometry();
 
 		ComponentTypes ComponentType() override { return COMPONENT_GEOMETRY; }

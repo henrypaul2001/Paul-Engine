@@ -75,22 +75,22 @@ namespace Engine {
 
 		Entity* sponza = new Entity("Sponza");
 		sponza->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		sponza->AddComponent(new ComponentGeometry("Models/PBR/newSponza/base/NewSponza_Main_glTF_003.gltf", true));
+		sponza->AddComponent(new ComponentGeometry("Models/PBR/newSponza/base/NewSponza_Main_glTF_003.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		entityManager->AddEntity(sponza);
 
 		Entity* curtains = new Entity("Curtains");
 		curtains->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		curtains->AddComponent(new ComponentGeometry("Models/PBR/newSponza/curtains/NewSponza_Curtains_glTF.gltf", true));
+		curtains->AddComponent(new ComponentGeometry("Models/PBR/newSponza/curtains/NewSponza_Curtains_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		entityManager->AddEntity(curtains);
 
 		Entity* ivy = new Entity("Ivy");
 		ivy->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		ivy->AddComponent(new ComponentGeometry("Models/PBR/newSponza/ivy/NewSponza_IvyGrowth_glTF.gltf", true));
+		ivy->AddComponent(new ComponentGeometry("Models/PBR/newSponza/ivy/NewSponza_IvyGrowth_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		entityManager->AddEntity(ivy);
 
 		Entity* trees = new Entity("Trees");
 		trees->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		trees->AddComponent(new ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true));
+		trees->AddComponent(new ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		trees->GetGeometryComponent()->SetCulling(false, GL_BACK);
 		entityManager->AddEntity(trees);
 

@@ -625,7 +625,7 @@ namespace Engine {
 		resources.audioFiles.clear();
 	}
 
-	Model* ResourceManager::LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources)
+	Model* ResourceManager::LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
 	{
 		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);
 		std::unordered_map<std::string, Model*>::iterator tempIt = tempResources.models.find(filepath);
@@ -643,11 +643,11 @@ namespace Engine {
 			std::cout << "RESOURCEMANAGER::Loading model " << filepath << std::endl;
 			// Model not currently loaded
 			if (loadInPersistentResources) {
-				persistentResources.models[filepath] = new Model(filepath.c_str(), pbr);
+				persistentResources.models[filepath] = new Model(filepath.c_str(), assimpPostProcess, pbr);
 				return persistentResources.models[filepath];
 			}
 			else {
-				tempResources.models[filepath] = new Model(filepath.c_str(), pbr);
+				tempResources.models[filepath] = new Model(filepath.c_str(), assimpPostProcess, pbr);
 				return tempResources.models[filepath];
 			}
 		}

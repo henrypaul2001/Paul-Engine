@@ -71,12 +71,12 @@ namespace Engine {
 		if (pbr) { ApplyMaterialToModel(ResourceManager::GetInstance()->DefaultMaterialPBR()); }
 	}
 
-	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced)
+	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced, bool persistentStorage, const unsigned int assimpPostProcess)
 	{
 		this->instanced = instanced;
 		this->pbr = pbr;
 
-		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr);
+		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
 
 		usingDefaultShader = false;
 
@@ -92,7 +92,7 @@ namespace Engine {
 		if (instanced) { SetupInstanceVBO(); }
 	}
 
-	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced)
+	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced, bool persistentStorage, const unsigned int assimpPostProcess)
 	{
 		this->instanced = instanced;
 		CULL_FACE = true;
@@ -104,7 +104,7 @@ namespace Engine {
 
 		castShadows = true;
 
-		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr);
+		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
 
 		shader = nullptr;
 		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {

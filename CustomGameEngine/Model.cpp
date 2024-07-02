@@ -17,20 +17,20 @@ namespace Engine {
 		this->pbr = pbr;
 	}
 
-	Model::Model(const char* filepath)
+	Model::Model(const char* filepath, unsigned int assimpPostProcess)
 	{
 		pbr = false;
 		containsTransparentMeshes = false;
 		hasBones = false;
-		LoadModel(filepath);
+		LoadModel(filepath, assimpPostProcess);
 	}
 
-	Model::Model(const char* filepath, bool pbr)
+	Model::Model(const char* filepath, unsigned assimpPostProcess, bool pbr)
 	{
 		this->pbr = pbr;
 		containsTransparentMeshes = false;
 		hasBones = false;
-		LoadModel(filepath);
+		LoadModel(filepath, assimpPostProcess);
 	}
 
 	Model::~Model()
@@ -122,10 +122,10 @@ namespace Engine {
 		}
 	}
 
-	void Model::LoadModel(std::string filepath)
+	void Model::LoadModel(std::string filepath, unsigned int assimpPostProcess)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData | aiProcess_GenNormals | aiProcess_EmbedTextures | aiProcess_PreTransformVertices);
+		const aiScene* scene = importer.ReadFile(filepath, assimpPostProcess);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;

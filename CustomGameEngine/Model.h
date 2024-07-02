@@ -6,6 +6,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 namespace Engine {
+	static const unsigned int defaultAssimpPostProcess = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData | aiProcess_GenNormals | aiProcess_EmbedTextures;
+
 	enum PremadeModel {
 		MODEL_SPHERE,
 		MODEL_CUBE,
@@ -39,8 +41,8 @@ namespace Engine {
 	{
 	public:
 		Model(PremadeModel modelType, bool pbr = false);
-		Model(const char* filepath);
-		Model(const char* filepath, bool pbr);
+		Model(const char* filepath, unsigned int assimpPostProcess);
+		Model(const char* filepath, unsigned int assimpPostProcess, bool pbr);
 		~Model();
 
 		void Draw(Shader& shader, int instanceNum);
@@ -87,7 +89,7 @@ namespace Engine {
 
 		bool hasBones;
 
-		void LoadModel(std::string filepath);
+		void LoadModel(std::string filepath, unsigned int assimpPostProcess);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);

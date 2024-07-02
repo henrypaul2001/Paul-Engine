@@ -110,7 +110,7 @@ namespace Engine {
 
 		static ResourceManager* GetInstance();
 
-		Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false);
+		Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources = false);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
 		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false);
