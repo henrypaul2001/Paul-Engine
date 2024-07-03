@@ -1,6 +1,20 @@
 #include "Mesh.h"
 
 namespace Engine {
+	const std::unordered_map<TextureTypes, std::string> Mesh::TextureTypeToString {
+		{ TEXTURE_NONE, "TEXTURE_NONE" },
+		{ TEXTURE_DIFFUSE, "TEXTURE_DIFFUSE" },
+		{ TEXTURE_NORMAL, "TEXTURE_NORMAL" },
+		{ TEXTURE_METALLIC, "TEXTURE_METALLIC" },
+		{ TEXTURE_DISPLACE, "TEXTURE_DISPLACE" },
+		{ TEXTURE_AO, "TEXTURE_AO" },
+		{ TEXTURE_SPECULAR, "TEXTURE_SPECULAR" },
+		{ TEXTURE_HEIGHT, "TEXTURE_HEIGHT" },
+		{ TEXTURE_ALBEDO, "TEXTURE_ALBEDO" },
+		{ TEXTURE_ROUGHNESS, "TEXTURE_ROUGHNESS" },
+		{ TEXTURE_OPACITY, "TEXTURE_OPACITY" }
+	};
+
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial)
 	{
 		this->vertices = vertices;
@@ -65,8 +79,8 @@ namespace Engine {
 			// diffuse maps
 			for (int i = 0; i < material->diffuseMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(material->diffuseMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
+				name = TextureTypeToString.at(material->diffuseMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_DIFFUSE)) {
 					shader.setInt(("material." + name + std::to_string(diffuseNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, material->diffuseMaps[i]->id);
 					diffuseNr++;
@@ -78,8 +92,8 @@ namespace Engine {
 			// specular maps
 			for (int i = 0; i < material->specularMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(material->specularMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_SPECULAR)) {
+				name = TextureTypeToString.at(material->specularMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_SPECULAR)) {
 					shader.setInt(("material." + name + std::to_string(specularNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, material->specularMaps[i]->id);
 					specularNr++;
@@ -91,8 +105,8 @@ namespace Engine {
 			// normal maps
 			for (int i = 0; i < material->normalMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(material->normalMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
+				name = TextureTypeToString.at(material->normalMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_NORMAL)) {
 					shader.setInt(("material." + name + std::to_string(normalNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, material->normalMaps[i]->id);
 					normalNr++;
@@ -104,8 +118,8 @@ namespace Engine {
 			// height maps
 			for (int i = 0; i < material->heightMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(material->heightMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_DISPLACE)) {
+				name = TextureTypeToString.at(material->heightMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_DISPLACE)) {
 					shader.setInt(("material." + name + std::to_string(heightNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, material->heightMaps[i]->id);
 					heightNr++;
@@ -118,9 +132,9 @@ namespace Engine {
 			if (!material->useDiffuseAlphaAsOpacity) {
 				for (int i = 0; i < material->opacityMaps.size(); i++) {
 					glActiveTexture(GL_TEXTURE0 + count + offset);
-					name = ConvertTextureTypeToString(material->opacityMaps[i]->type);
-					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
-						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+					name = TextureTypeToString.at(material->opacityMaps[i]->type);
+					if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_DIFFUSE)) {
+						name = TextureTypeToString.at(TEXTURE_OPACITY);
 						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
 						glBindTexture(GL_TEXTURE_2D, material->opacityMaps[i]->id);
 						opacityNr++;
@@ -132,9 +146,9 @@ namespace Engine {
 			else {
 				for (int i = 0; i < material->diffuseMaps.size(); i++) {
 					glActiveTexture(GL_TEXTURE0 + count + offset);
-					name = ConvertTextureTypeToString(material->diffuseMaps[i]->type);
-					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_DIFFUSE)) {
-						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+					name = TextureTypeToString.at(material->diffuseMaps[i]->type);
+					if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_DIFFUSE)) {
+						name = TextureTypeToString.at(TEXTURE_OPACITY);
 						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
 						glBindTexture(GL_TEXTURE_2D, material->diffuseMaps[i]->id);
 						opacityNr++;
@@ -178,8 +192,8 @@ namespace Engine {
 			// albedo maps
 			for (int i = 0; i < PBRmaterial->albedoMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->albedoMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
+				name = TextureTypeToString.at(PBRmaterial->albedoMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_ALBEDO)) {
 					shader.setInt(("material." + name + std::to_string(albedoNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->albedoMaps[i]->id);
 					albedoNr++;
@@ -191,8 +205,8 @@ namespace Engine {
 			// normal maps
 			for (int i = 0; i < PBRmaterial->normalMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->normalMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_NORMAL)) {
+				name = TextureTypeToString.at(PBRmaterial->normalMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_NORMAL)) {
 					shader.setInt(("material." + name + std::to_string(normalNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->normalMaps[i]->id);
 					normalNr++;
@@ -204,8 +218,8 @@ namespace Engine {
 			// metallic maps
 			for (int i = 0; i < PBRmaterial->metallicMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->metallicMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_METALLIC)) {
+				name = TextureTypeToString.at(PBRmaterial->metallicMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_METALLIC)) {
 					shader.setInt(("material." + name + std::to_string(metallicNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->metallicMaps[i]->id);
 					metallicNr++;
@@ -217,8 +231,8 @@ namespace Engine {
 			// roughness maps
 			for (int i = 0; i < PBRmaterial->roughnessMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->roughnessMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_ROUGHNESS)) {
+				name = TextureTypeToString.at(PBRmaterial->roughnessMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_ROUGHNESS)) {
 					shader.setInt(("material." + name + std::to_string(roughnessNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->roughnessMaps[i]->id);
 					roughnessNr++;
@@ -230,8 +244,8 @@ namespace Engine {
 			// ao maps
 			for (int i = 0; i < PBRmaterial->aoMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->aoMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_AO)) {
+				name = TextureTypeToString.at(PBRmaterial->aoMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_AO)) {
 					shader.setInt(("material." + name + std::to_string(aoNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->aoMaps[i]->id);
 					aoNr++;
@@ -243,8 +257,8 @@ namespace Engine {
 			// height maps
 			for (int i = 0; i < PBRmaterial->heightMaps.size(); i++) {
 				glActiveTexture(GL_TEXTURE0 + count + offset);
-				name = ConvertTextureTypeToString(PBRmaterial->heightMaps[i]->type);
-				if (name == ConvertTextureTypeToString(TEXTURE_DISPLACE)) {
+				name = TextureTypeToString.at(PBRmaterial->heightMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_DISPLACE)) {
 					shader.setInt(("material." + name + std::to_string(heightNr)).c_str(), count + offset);
 					glBindTexture(GL_TEXTURE_2D, PBRmaterial->heightMaps[i]->id);
 					heightNr++;
@@ -257,9 +271,9 @@ namespace Engine {
 			if (!PBRmaterial->useDiffuseAlphaAsOpacity) {
 				for (int i = 0; i < PBRmaterial->opacityMaps.size(); i++) {
 					glActiveTexture(GL_TEXTURE0 + count + offset);
-					name = ConvertTextureTypeToString(PBRmaterial->opacityMaps[i]->type);
-					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
-						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+					name = TextureTypeToString.at(PBRmaterial->opacityMaps[i]->type);
+					if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_ALBEDO)) {
+						name = TextureTypeToString.at(TEXTURE_OPACITY);
 						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
 						glBindTexture(GL_TEXTURE_2D, PBRmaterial->opacityMaps[i]->id);
 						opacityNr++;
@@ -271,9 +285,9 @@ namespace Engine {
 			else {
 				for (int i = 0; i < PBRmaterial->albedoMaps.size(); i++) {
 					glActiveTexture(GL_TEXTURE0 + count + offset);
-					name = ConvertTextureTypeToString(PBRmaterial->albedoMaps[i]->type);
-					if (name == ConvertTextureTypeToString(TEXTURE_OPACITY) || name == ConvertTextureTypeToString(TEXTURE_ALBEDO)) {
-						name = ConvertTextureTypeToString(TEXTURE_OPACITY);
+					name = TextureTypeToString.at(PBRmaterial->albedoMaps[i]->type);
+					if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_ALBEDO)) {
+						name = TextureTypeToString.at(TEXTURE_OPACITY);
 						shader.setInt(("material." + name + std::to_string(opacityNr)).c_str(), count + offset);
 						glBindTexture(GL_TEXTURE_2D, PBRmaterial->albedoMaps[i]->id);
 						opacityNr++;

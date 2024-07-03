@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 namespace Engine {
 
 	static constexpr int MaxBoneInfluence() { return 8; }
@@ -20,34 +21,6 @@ namespace Engine {
 		TEXTURE_ROUGHNESS,
 		TEXTURE_OPACITY
 	};
-
-	static std::string ConvertTextureTypeToString(TextureTypes type) {
-		switch (type) {
-		case TEXTURE_NONE:
-			return "TEXTURE_NONE";
-		case TEXTURE_DIFFUSE:
-			return "TEXTURE_DIFFUSE";
-		case TEXTURE_NORMAL:
-			return "TEXTURE_NORMAL";
-		case TEXTURE_METALLIC:
-			return "TEXTURE_METALLIC";
-		case TEXTURE_DISPLACE:
-			return "TEXTURE_DISPLACE";
-		case TEXTURE_AO:
-			return "TEXTURE_AO";
-		case TEXTURE_SPECULAR:
-			return "TEXTURE_SPECULAR";
-		case TEXTURE_HEIGHT:
-			return "TEXTURE_HEIGHT";
-		case TEXTURE_ALBEDO:
-			return "TEXTURE_ALBEDO";
-		case TEXTURE_ROUGHNESS:
-			return "TEXTURE_ROUGHNESS";
-		case TEXTURE_OPACITY:
-			return "TEXTURE_OPACITY";
-		}
-		return "NULL";
-	}
 
 	struct Texture {
 		unsigned int id;
@@ -125,6 +98,8 @@ namespace Engine {
 	class Mesh
 	{
 	public:
+		static const std::unordered_map<TextureTypes, std::string> TextureTypeToString;
+
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		unsigned int VAO;
