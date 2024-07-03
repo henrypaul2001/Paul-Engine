@@ -18,10 +18,9 @@ namespace Engine {
 		SetupScene();
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
-		//renderManager->GetRenderParams()->DisableRenderOptions(RENDER_SHADOWS);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
 
-		renderManager->SetEnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr");
+		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
@@ -69,7 +68,7 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
 		dirLight->GetLightComponent()->Direction = glm::vec3(0.35f, -0.6f, 0.0f);
 		dirLight->GetLightComponent()->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
-		dirLight->GetLightComponent()->Ambient = glm::vec3(0.01f, 0.01f, 0.05f);
+		dirLight->GetLightComponent()->Ambient = glm::vec3(0.01f, 0.01f, 0.05f) * 0.0f;
 		dirLight->GetLightComponent()->ShadowProjectionSize = 30.0f;
 		entityManager->AddEntity(dirLight);
 
@@ -99,6 +98,9 @@ namespace Engine {
 		trees->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		trees->AddComponent(new ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		trees->GetGeometryComponent()->SetCulling(false, GL_BACK);
+		trees->GetGeometryComponent()->GetModel()->meshes[0]->GetPBRMaterial()->useDiffuseAlphaAsOpacity = false;
+		trees->GetGeometryComponent()->GetModel()->meshes[1]->GetPBRMaterial()->useDiffuseAlphaAsOpacity = true;
+		trees->GetGeometryComponent()->GetModel()->meshes[2]->GetPBRMaterial()->useDiffuseAlphaAsOpacity = false;
 		entityManager->AddEntity(trees);
 
 		resources->ResetModelLoaderTextureTranslationsToDefault();
@@ -111,6 +113,7 @@ namespace Engine {
 		pointLight1->GetTransformComponent()->SetScale(0.25f);
 		pointLight1->AddComponent(new ComponentLight(POINT));
 		pointLight1->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.3f;
+		pointLight1->GetLightComponent()->Ambient = glm::vec3(0.0f);
 		pointLight1->GetLightComponent()->CastShadows = false;
 		entityManager->AddEntity(pointLight1);
 
@@ -121,7 +124,8 @@ namespace Engine {
 		pointLight2->GetGeometryComponent()->CastShadows(false);
 		pointLight2->GetTransformComponent()->SetScale(0.25f);
 		pointLight2->AddComponent(new ComponentLight(POINT));
-		pointLight2->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f);
+		pointLight2->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.7f;
+		pointLight2->GetLightComponent()->Ambient = glm::vec3(0.0f);
 		pointLight2->GetLightComponent()->CastShadows = false;
 		entityManager->AddEntity(pointLight2);
 
@@ -133,6 +137,7 @@ namespace Engine {
 		pointLight3->GetTransformComponent()->SetScale(0.25f);
 		pointLight3->AddComponent(new ComponentLight(POINT));
 		pointLight3->GetLightComponent()->Colour = glm::vec3(224.0f, 222.0f, 164.0f) * 0.7f;
+		pointLight3->GetLightComponent()->Ambient = glm::vec3(0.0f);
 		pointLight3->GetLightComponent()->CastShadows = false;
 		entityManager->AddEntity(pointLight3);
 
