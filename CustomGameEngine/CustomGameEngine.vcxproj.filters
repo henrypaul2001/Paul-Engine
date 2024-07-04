@@ -88,6 +88,12 @@
     <Filter Include="Source Files\Engine\Utility\Animation">
       <UniqueIdentifier>{7c38d609-217a-48de-a473-48874dd25d1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\AI">
+      <UniqueIdentifier>{edb60aed-c63a-4bb0-b095-38a8285b1b62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\AI">
+      <UniqueIdentifier>{623a1300-6cb6-42f6-8438-be8ef1653352}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -326,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="SystemParticleRenderer.h">
       <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>Header Files\Engine\Utility\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -572,6 +581,9 @@
     <ClCompile Include="SystemParticleRenderer.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>Source Files\Engine\Utility\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -685,7 +697,6 @@
     <None Include="Shaders\defaultImage.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
-    <None Include="irrKlang.dll" />
     <None Include="Shaders\particles.vert">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
@@ -715,6 +726,9 @@
     </None>
     <None Include="Shaders\uiBackground.geom">
       <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="irrKlang.dll">
+      <Filter>Source Files\Engine\Utility</Filter>
     </None>
   </ItemGroup>
 </Project>
