@@ -1,7 +1,6 @@
 #pragma once
+#include "State.h"
 namespace Engine {
-	class State;
-
 	class StateTransition
 	{
 	public:

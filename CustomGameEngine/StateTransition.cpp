@@ -1,5 +1,4 @@
 #include "StateTransition.h"
-#include "State.h"
 
 namespace Engine {
 	StateTransition::StateTransition(State* source, State* destination)
