@@ -336,6 +336,18 @@
     <ClInclude Include="StateMachine.h">
       <Filter>Header Files\Engine\Utility\AI</Filter>
     </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files\Engine\Utility\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="StateTransition.h">
+      <Filter>Header Files\Engine\Utility\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericStateTransition.h">
+      <Filter>Header Files\Engine\Utility\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericState.h">
+      <Filter>Header Files\Engine\Utility\AI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -582,6 +594,18 @@
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="StateMachine.cpp">
+      <Filter>Source Files\Engine\Utility\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Source Files\Engine\Utility\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="StateTransition.cpp">
+      <Filter>Source Files\Engine\Utility\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericStateTransition.cpp">
+      <Filter>Source Files\Engine\Utility\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericState.cpp">
       <Filter>Source Files\Engine\Utility\AI</Filter>
     </ClCompile>
   </ItemGroup>

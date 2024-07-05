@@ -27,7 +27,7 @@ namespace Engine {
 	{
 		if (activeState) {
 			// Update state
-			//activeState->Update();
+			activeState->Update();
 
 			// Check transition conditions
 			std::pair<TransitionIterator, TransitionIterator> range = statesToTransitions.equal_range(activeState);
