@@ -10,6 +10,7 @@
 #include "AnimationScene.h"
 #include "AudioScene.h"
 #include "ParticleScene.h"
+#include "AIScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -70,6 +71,9 @@ namespace Engine
 			break;
 		case SCENE_PARTICLES:
 			newScene = new ParticleScene(this);
+			break;
+		case SCENE_AI:
+			newScene = new AIScene(this);
 			break;
 		case SCENE_NONE:
 			newScene = nullptr;

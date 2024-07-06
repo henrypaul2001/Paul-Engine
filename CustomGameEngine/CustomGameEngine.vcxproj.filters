@@ -348,6 +348,9 @@
     <ClInclude Include="GenericState.h">
       <Filter>Header Files\Engine\Utility\AI</Filter>
     </ClInclude>
+    <ClInclude Include="AIScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -607,6 +610,9 @@
     </ClCompile>
     <ClCompile Include="GenericState.cpp">
       <Filter>Source Files\Engine\Utility\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

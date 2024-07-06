@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AIScene.h" />
     <ClInclude Include="AnimationChannel.h" />
     <ClInclude Include="AnimationScene.h" />
     <ClInclude Include="AOScene.h" />
@@ -227,6 +228,7 @@
     <ClInclude Include="UITextButton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AIScene.cpp" />
     <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AnimationScene.cpp" />
     <ClCompile Include="AOScene.cpp" />
