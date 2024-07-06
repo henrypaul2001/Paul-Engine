@@ -9,13 +9,44 @@ namespace Engine {
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
 
-		//renderManager->GetRenderParams()->DisableRenderOptions(RENDER_SKYBOX);
-		renderManager->GetRenderParams()->SetBloomThreshold(10.0f);
+		stateMachine = new StateMachine();
+
+		someData = new int(0);
+		
+		StateFunc AFunc = [](void* data) {
+			int* realData = (int*)data;
+			(*realData)++;
+			std::cout << *realData << " | ";
+			std::cout << "In State A" << std::endl;
+		};
+
+		StateFunc BFunc = [](void* data) {
+			int* realData = (int*)data;
+			(*realData)--;
+			std::cout << *realData << " | ";
+			std::cout << "In State B" << std::endl;
+		};
+
+		stateA = new GenericState(AFunc, (void*)someData);
+		stateB = new GenericState(BFunc, (void*)someData);
+		stateMachine->AddState(stateA);
+		stateMachine->AddState(stateB);
+
+		transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
+		transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateA); // if "someData" is equal to 0, transition from state B to state A
+
+		stateMachine->AddTransition(transitionA);
+		stateMachine->AddTransition(transitionB);
 	}
 
 	AIScene::~AIScene()
 	{
-
+		delete stateMachine;
+		delete stateA;
+		delete stateB;
+		delete transitionA;
+		delete transitionB;
+		delete someData;
 	}
 
 	void AIScene::ChangePostProcessEffect()
@@ -51,6 +82,8 @@ namespace Engine {
 
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
+
+		stateMachine->Update();
 	}
 
 	void AIScene::Render()

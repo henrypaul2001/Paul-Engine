@@ -1,5 +1,8 @@
 #pragma once
 #include "Scene.h"
+#include "StateMachine.h"
+#include "GenericState.h"
+#include "GenericStateTransition.h"
 namespace Engine {
 	class AIScene : public Scene
 	{
@@ -18,6 +21,13 @@ namespace Engine {
 		void keyDown(int key) override;
 
 	private:
+		StateMachine* stateMachine;
+		GenericState* stateA;
+		GenericState* stateB;
+		GenericStateTransition<int&, int>* transitionA;
+		GenericStateTransition<int&, int>* transitionB;
+		int* someData;
+
 		void CreateEntities();
 		void CreateSystems();
 	};
