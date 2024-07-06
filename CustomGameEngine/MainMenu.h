@@ -27,6 +27,7 @@ namespace Engine {
 		void ParticleSceneButtonRelease(UIButton* button);
 		void AnimationSceneButtonRelease(UIButton* button);
 		void SponzaSceneButtonRelease(UIButton* button);
+		void AISceneButtonRelease(UIButton* button);
 
 		void ButtonPress(UIButton* button);
 		void ButtonEnter(UIButton* button);

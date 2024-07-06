@@ -137,6 +137,14 @@ namespace Engine {
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_SPONZA);
 	}
 
+	void MainMenu::AISceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch AI scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading AI Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_AI);
+	}
+
 	void MainMenu::ButtonPress(UIButton* button)
 	{
 
@@ -226,6 +234,13 @@ namespace Engine {
 		sponzaButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		sponzaButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(sponzaButton);
+
+		UITextButton* aiButton = new UITextButton(std::string("AI Scene"), glm::vec2((SCR_WIDTH / 6.0f) - 145.0f, SCR_HEIGHT * 0.55f), glm::vec2(0.4f, 0.4f), glm::vec2(200.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		aiButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		aiButton->SetMouseUpCallback(std::bind(&MainMenu::AISceneButtonRelease, this, std::placeholders::_1));
+		aiButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		aiButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(aiButton);
 
 		entityManager->AddEntity(canvas);
 	}
