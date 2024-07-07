@@ -6,7 +6,7 @@ namespace Engine {
 	class GenericState : public State
 	{
 	public:
-		GenericState(StateFunc function, void* data) {
+		GenericState(const std::string& name, StateFunc function, void* data) : State(name) {
 			this->function = function;
 			this->data = data;
 		}

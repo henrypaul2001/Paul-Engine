@@ -27,8 +27,8 @@ namespace Engine {
 			std::cout << "In State B" << std::endl;
 		};
 
-		stateA = new GenericState(AFunc, (void*)someData);
-		stateB = new GenericState(BFunc, (void*)someData);
+		stateA = new GenericState("State A", AFunc, (void*)someData);
+		stateB = new GenericState("State B", BFunc, (void*)someData);
 		stateMachine->AddState(stateA);
 		stateMachine->AddState(stateB);
 
