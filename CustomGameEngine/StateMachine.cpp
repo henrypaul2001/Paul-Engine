@@ -1,7 +1,8 @@
 #include "StateMachine.h"
 namespace Engine {
-	StateMachine::StateMachine()
+	StateMachine::StateMachine(const int maxHistorySize)
 	{
+		this->maxHistorySize = maxHistorySize;
 		activeState = nullptr;
 	}
 
@@ -34,6 +35,10 @@ namespace Engine {
 			for (TransitionIterator& i = range.first; i != range.second; i++) {
 				if (i->second->Condition()) {
 					State* newState = i->second->GetDestinationState();
+					stateHistory.push(activeState);
+					if (stateHistory.size() > maxHistorySize) {
+						stateHistory.pop();
+					}
 					activeState = newState;
 				}
 			}
