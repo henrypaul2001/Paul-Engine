@@ -27,16 +27,27 @@ namespace Engine {
 			std::cout << "In State B" << std::endl;
 		};
 
+		StateFunc CFunc = [](void* data) {
+			int* realData = (int*)data;
+			(*realData) -= 4;
+			std::cout << *realData << " | ";
+			std::cout << "In State C" << std::endl;
+		};
+
 		stateA = new GenericState("State A", AFunc, (void*)someData);
 		stateB = new GenericState("State B", BFunc, (void*)someData);
+		stateC = new GenericState("State C", CFunc, (void*)someData);
 		stateMachine->AddState(stateA);
 		stateMachine->AddState(stateB);
+		stateMachine->AddState(stateC);
 
 		transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
-		transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateA); // if "someData" is equal to 0, transition from state B to state A
+		transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateC); // if "someData" is equal to 0, transition from state B to state C
+		transitionC = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::LessThanCondition, *someData, -100, stateC, stateA); // if "someData" is less than -100, transition from state C to state A
 
 		stateMachine->AddTransition(transitionA);
 		stateMachine->AddTransition(transitionB);
+		stateMachine->AddTransition(transitionC);
 	}
 
 	AIScene::~AIScene()
@@ -44,8 +55,10 @@ namespace Engine {
 		delete stateMachine;
 		delete stateA;
 		delete stateB;
+		delete stateC;
 		delete transitionA;
 		delete transitionB;
+		delete transitionC;
 		delete someData;
 	}
 

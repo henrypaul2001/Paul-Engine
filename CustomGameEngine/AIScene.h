@@ -24,8 +24,10 @@ namespace Engine {
 		StateMachine* stateMachine;
 		GenericState* stateA;
 		GenericState* stateB;
+		GenericState* stateC;
 		GenericStateTransition<int&, int>* transitionA;
 		GenericStateTransition<int&, int>* transitionB;
+		GenericStateTransition<int&, int>* transitionC;
 		int* someData;
 
 		void CreateEntities();
