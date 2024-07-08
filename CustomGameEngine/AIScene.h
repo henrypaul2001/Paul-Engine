@@ -3,6 +3,7 @@
 #include "StateMachine.h"
 #include "GenericState.h"
 #include "GenericStateTransition.h"
+#include "NavigationGrid.h"
 namespace Engine {
 	class AIScene : public Scene
 	{
@@ -28,6 +29,7 @@ namespace Engine {
 		GenericStateTransition<int&, int>* transitionA;
 		GenericStateTransition<int&, int>* transitionB;
 		GenericStateTransition<int&, int>* transitionC;
+		NavigationGrid* navGrid;
 		int* someData;
 
 		void CreateEntities();

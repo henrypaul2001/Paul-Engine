@@ -9,6 +9,7 @@ namespace Engine {
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
 
+		// State machine
 		stateMachine = new StateMachine();
 
 		someData = new int(0);
@@ -48,6 +49,11 @@ namespace Engine {
 		stateMachine->AddTransition(transitionA);
 		stateMachine->AddTransition(transitionB);
 		stateMachine->AddTransition(transitionC);
+
+		// Nav grid
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
+		NavigationPath path;
+		bool success = navGrid->FindPath(glm::vec3(80.0f, 0.0f, 10.0f), glm::vec3(80.0f, 0.0f, 80.0f), path);
 	}
 
 	AIScene::~AIScene()
@@ -60,6 +66,7 @@ namespace Engine {
 		delete transitionB;
 		delete transitionC;
 		delete someData;
+		delete navGrid;
 	}
 
 	void AIScene::ChangePostProcessEffect()
