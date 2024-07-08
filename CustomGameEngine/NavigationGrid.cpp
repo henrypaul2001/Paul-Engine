@@ -3,12 +3,117 @@
 namespace Engine {
 	NavigationGrid::NavigationGrid()
 	{
+		nodeSize = 0;
+		gridWidth = 0;
+		gridHeight = 0;
+	}
 
+	NavigationGrid::NavigationGrid(const std::string& filepath)
+	{
+		std::ifstream infile(filepath);
+
+		if (infile.is_open()) {
+			infile >> nodeSize;
+			infile >> gridWidth;
+			infile >> gridHeight;
+
+			allNodes.reserve(gridWidth * gridHeight);
+
+			// Create nodes and their positions
+			for (int y = 0; y < gridHeight; y++) {
+				for (int x = 0; x < gridWidth; x++) {
+					allNodes[(gridWidth * y) + x] = new NavGridNode();
+					NavGridNode* n = allNodes[(gridWidth * y) + x];
+					char type = 0;
+					infile >> type;
+					n->type = type;
+					n->worldPosition = glm::vec3(x * gridWidth, 0.0f, y * gridHeight);
+				}
+			}
+
+			// Create connections between nodes based on type
+			for (int y = 0; y < gridHeight; y++) {
+				for (int x = 0; x < gridWidth; x++) {
+					NavGridNode* n = allNodes[(gridWidth * y) + x];
+
+					bool spaceAbove = y > 0;
+					bool spaceBelow = y < gridHeight - 1;
+					bool spaceLeft = x > 0;
+					bool spaceRight = x < gridWidth - 1;
+
+					if (spaceAbove) {
+						// Get above node
+						n->connected[0] = allNodes[(gridWidth * (y - 1)) + x];
+
+						if (spaceRight) {
+							// Get upper right node
+							n->connected[4] = allNodes[(gridWidth * (y - 1)) + (x + 1)];
+						}
+
+						if (spaceLeft) {
+							// Get upper left node
+							n->connected[7] = allNodes[(gridWidth * (y - 1)) + (x - 1)];
+						}
+					}
+
+					if (spaceRight) {
+						// Get right node
+						n->connected[1] = allNodes[(gridWidth * (y)) + (x + 1)];
+					}
+
+					if (spaceBelow) {
+						// Get below node
+						n->connected[2] = allNodes[(gridWidth * (y + 1)) + x];
+
+						if (spaceRight) {
+							// Get lower right node
+							n->connected[5] = allNodes[(gridWidth * (y + 1)) + (x + 1)];
+						}
+
+						if (spaceLeft) {
+							// Get lower left node
+							n->connected[6] = allNodes[(gridWidth * (y + 1)) + (x - 1)];
+						}
+					}
+
+					if (spaceLeft) {
+						// Get left node
+						n->connected[3] = allNodes[(gridWidth * (y)) + (x - 1)];
+					}
+
+					for (int i = 0; i < 8; i++) {
+						if (n->connected[i]) {
+							if (n->connected[i]->type == '.') {
+								float cost = 1.0f;
+								if (i == 6 || i == 5 || i == 4 || i == 7) {
+									// diagonal connection
+									cost = 1.4f;
+								}
+								n->costs[i] = cost;
+							}
+							else if (n->connected[i]->type == 'x') {
+								// not walkable
+								n->connected[i] = nullptr;
+								n->costs[i] = -1.0f;
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
+			std::cout << "ERROR::NAVGRID::Failed to load navigation grid at path: " << filepath << std::endl;
+			nodeSize = 0;
+			gridWidth = 0;
+			gridHeight = 0;
+		}
 	}
 
 	NavigationGrid::~NavigationGrid()
 	{
-
+		for (NavGridNode* node : allNodes) {
+			delete node;
+		}
 	}
 
 	bool NavigationGrid::FindPath(const glm::vec3& start, const glm::vec3& end, NavigationPath& out_path)

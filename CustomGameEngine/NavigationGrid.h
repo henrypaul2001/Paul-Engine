@@ -1,6 +1,9 @@
 #pragma once
 #include "NavigationMap.h"
 #include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
 namespace Engine {
 
 	struct NavGridNode {
@@ -16,7 +19,7 @@ namespace Engine {
 
 		int type;
 	
-		NavGridNode(const glm::vec3& worldPos) {
+		NavGridNode() {
 			for (int i = 0; i < 8; i++) {
 				connected[i] = nullptr;
 				costs[i] = 0.0f;
@@ -26,7 +29,7 @@ namespace Engine {
 			g = 0.0f;
 			type = 0;
 			parent = nullptr;
-			worldPosition = worldPos;
+			worldPosition = glm::vec3();
 		}
 	};
 
@@ -34,6 +37,7 @@ namespace Engine {
 	{
 	public:
 		NavigationGrid();
+		NavigationGrid(const std::string& filepath);
 		~NavigationGrid();
 
 		bool FindPath(const glm::vec3& start, const glm::vec3& end, NavigationPath& out_path) override;
@@ -46,6 +50,6 @@ namespace Engine {
 		int gridWidth;
 		int gridHeight;
 
-		NavGridNode* allNodes[];
+		std::vector<NavGridNode*> allNodes;
 	};
 }
