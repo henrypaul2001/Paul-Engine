@@ -94,6 +94,12 @@
     <Filter Include="Source Files\Engine\Utility\AI">
       <UniqueIdentifier>{623a1300-6cb6-42f6-8438-be8ef1653352}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Pathfinding">
+      <UniqueIdentifier>{d4bd8c3b-8560-4107-be1a-c4dbdabbd191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\Pathfinding">
+      <UniqueIdentifier>{c698af7c-4f1d-47d5-a182-76ef0bb10dc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -350,6 +356,12 @@
     </ClInclude>
     <ClInclude Include="AIScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMap.h">
+      <Filter>Header Files\Engine\Utility\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationPath.h">
+      <Filter>Header Files\Engine\Utility\Pathfinding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -613,6 +625,12 @@
     </ClCompile>
     <ClCompile Include="AIScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMap.cpp">
+      <Filter>Source Files\Engine\Utility\Pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationPath.cpp">
+      <Filter>Source Files\Engine\Utility\Pathfinding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
