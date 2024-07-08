@@ -186,6 +186,7 @@
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="NavigationGrid.h" />
     <ClInclude Include="NavigationMap.h" />
     <ClInclude Include="NavigationPath.h" />
     <ClInclude Include="ParticleScene.h" />
@@ -277,6 +278,7 @@
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="NavigationGrid.cpp" />
     <ClCompile Include="NavigationMap.cpp" />
     <ClCompile Include="NavigationPath.cpp" />
     <ClCompile Include="ParticleScene.cpp" />

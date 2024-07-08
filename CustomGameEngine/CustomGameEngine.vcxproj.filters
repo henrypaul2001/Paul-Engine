@@ -363,6 +363,9 @@
     <ClInclude Include="NavigationPath.h">
       <Filter>Header Files\Engine\Utility\Pathfinding</Filter>
     </ClInclude>
+    <ClInclude Include="NavigationGrid.h">
+      <Filter>Header Files\Engine\Utility\Pathfinding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -630,6 +633,9 @@
       <Filter>Source Files\Engine\Utility\Pathfinding</Filter>
     </ClCompile>
     <ClCompile Include="NavigationPath.cpp">
+      <Filter>Source Files\Engine\Utility\Pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationGrid.cpp">
       <Filter>Source Files\Engine\Utility\Pathfinding</Filter>
     </ClCompile>
   </ItemGroup>
