@@ -18,11 +18,13 @@ namespace Engine {
 			infile >> gridHeight;
 
 			allNodes.reserve(gridWidth * gridHeight);
+			for (int i = 0; i < gridWidth * gridHeight; i++) {
+				allNodes.emplace_back(new NavGridNode());
+			}
 
 			// Create nodes and their positions
 			for (int y = 0; y < gridHeight; y++) {
 				for (int x = 0; x < gridWidth; x++) {
-					allNodes[(gridWidth * y) + x] = new NavGridNode();
 					NavGridNode* n = allNodes[(gridWidth * y) + x];
 					char type = 0;
 					infile >> type;

@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/ext/vector_float3.hpp>
+#include <vector>
 namespace Engine {
 	class NavigationPath
 	{
