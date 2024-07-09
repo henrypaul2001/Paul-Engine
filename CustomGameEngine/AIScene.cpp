@@ -122,8 +122,7 @@ namespace Engine {
 
 		// Nav grid
 		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
-		NavigationPath path;
-		bool success = navGrid->FindPath(glm::vec3(80.0f, 0.0f, 10.0f), glm::vec3(80.0f, 0.0f, 80.0f), path);
+		bool success = navGrid->FindPath(glm::vec3(80.0f, 0.0f, 10.0f), glm::vec3(80.0f, 0.0f, 80.0f), navPath);
 
 		CreateSystems();
 		CreateEntities();
@@ -157,18 +156,29 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		floor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
+		floor->AddComponent(new ComponentTransform(45.0f, 0.0f, 45.0f));
+		floor->GetTransformComponent()->SetScale(glm::vec3(50.0f, 0.5f, 50.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
 		entityManager->AddEntity(floor);
 
+		PBRMaterial* walkable = new PBRMaterial();
+		walkable->albedo = glm::vec3(0.0f, 100.0f, 0.0f);
+
+		PBRMaterial* nonWalkable = new PBRMaterial();
+		nonWalkable->albedo = glm::vec3(100.0f, 0.0f, 0.0f);
+
+		PBRMaterial* path = new PBRMaterial();
+		path->albedo = glm::vec3(0.0f, 0.0f, 100.0f);
+
 		// Pathfinding debug grid
-		Entity* baseInstance = new Entity("Base Instance");
-		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		baseInstance->AddComponent(new ComponentGeometry(MODEL_SPHERE, true, true));
-		entityManager->AddEntity(baseInstance);
+		Entity* baseInstanceNonWalkable = new Entity("Base Instance Non Walkable");
+		baseInstanceNonWalkable->AddComponent(new ComponentTransform(0.0f, -10.0f, 0.0f));
+		baseInstanceNonWalkable->AddComponent(new ComponentGeometry(MODEL_SPHERE, true, true));
+		baseInstanceNonWalkable->GetGeometryComponent()->CastShadows(false);
+		baseInstanceNonWalkable->GetGeometryComponent()->ApplyMaterialToModel(nonWalkable);
+		entityManager->AddEntity(baseInstanceNonWalkable);
 
 		int xNum = navGrid->GetGridWidth();
 		int zNum = navGrid->GetGridHeight();
@@ -187,9 +197,19 @@ namespace Engine {
 				std::string name = std::string("Box ") + std::string(std::to_string(count));
 				Entity* box = new Entity(name);
 				//box->AddComponent(new ComponentTransform(originX + (j * xDistance), 1.0f, originZ + (k * zDistance)));
-				box->AddComponent(new ComponentTransform(nodes[count]->worldPosition));
+				box->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
+
+				if (nodes[count]->type == 'x') {
+					// Non walkable node
+					baseInstanceNonWalkable->GetGeometryComponent()->AddNewInstanceSource(box);
+				}
+				else {
+					box->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+					box->GetGeometryComponent()->ApplyMaterialToModel(walkable);
+					box->GetGeometryComponent()->CastShadows(false);
+				}
+
 				entityManager->AddEntity(box);
-				baseInstance->GetGeometryComponent()->AddNewInstanceSource(box);
 				count++;
 				std::cout << "box " << count << " created" << std::endl;
 			}

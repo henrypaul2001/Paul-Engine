@@ -30,6 +30,7 @@ namespace Engine {
 		GenericStateTransition<int&, int>* transitionB;
 		GenericStateTransition<int&, int>* transitionC;
 		NavigationGrid* navGrid;
+		NavigationPath navPath;
 		int* someData;
 
 		void CreateEntities();
