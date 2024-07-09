@@ -8,52 +8,6 @@ namespace Engine {
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		SetupScene();
-
-		// State machine
-		stateMachine = new StateMachine();
-
-		someData = new int(0);
-		
-		StateFunc AFunc = [](void* data) {
-			int* realData = (int*)data;
-			(*realData)++;
-			std::cout << *realData << " | ";
-			std::cout << "In State A" << std::endl;
-		};
-
-		StateFunc BFunc = [](void* data) {
-			int* realData = (int*)data;
-			(*realData)--;
-			std::cout << *realData << " | ";
-			std::cout << "In State B" << std::endl;
-		};
-
-		StateFunc CFunc = [](void* data) {
-			int* realData = (int*)data;
-			(*realData) -= 4;
-			std::cout << *realData << " | ";
-			std::cout << "In State C" << std::endl;
-		};
-
-		stateA = new GenericState("State A", AFunc, (void*)someData);
-		stateB = new GenericState("State B", BFunc, (void*)someData);
-		stateC = new GenericState("State C", CFunc, (void*)someData);
-		stateMachine->AddState(stateA);
-		stateMachine->AddState(stateB);
-		stateMachine->AddState(stateC);
-
-		transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
-		transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateC); // if "someData" is equal to 0, transition from state B to state C
-		transitionC = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::LessThanCondition, *someData, -100, stateC, stateA); // if "someData" is less than -100, transition from state C to state A
-
-		stateMachine->AddTransition(transitionA);
-		stateMachine->AddTransition(transitionB);
-		stateMachine->AddTransition(transitionC);
-
-		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
-		NavigationPath path;
-		bool success = navGrid->FindPath(glm::vec3(80.0f, 0.0f, 10.0f), glm::vec3(80.0f, 0.0f, 80.0f), path);
 	}
 
 	AIScene::~AIScene()
@@ -125,6 +79,52 @@ namespace Engine {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		// State machine
+		stateMachine = new StateMachine();
+
+		someData = new int(0);
+
+		StateFunc AFunc = [](void* data) {
+			int* realData = (int*)data;
+			(*realData)++;
+			std::cout << *realData << " | ";
+			std::cout << "In State A" << std::endl;
+			};
+
+		StateFunc BFunc = [](void* data) {
+			int* realData = (int*)data;
+			(*realData)--;
+			std::cout << *realData << " | ";
+			std::cout << "In State B" << std::endl;
+			};
+
+		StateFunc CFunc = [](void* data) {
+			int* realData = (int*)data;
+			(*realData) -= 4;
+			std::cout << *realData << " | ";
+			std::cout << "In State C" << std::endl;
+			};
+
+		stateA = new GenericState("State A", AFunc, (void*)someData);
+		stateB = new GenericState("State B", BFunc, (void*)someData);
+		stateC = new GenericState("State C", CFunc, (void*)someData);
+		stateMachine->AddState(stateA);
+		stateMachine->AddState(stateB);
+		stateMachine->AddState(stateC);
+
+		transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
+		transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateC); // if "someData" is equal to 0, transition from state B to state C
+		transitionC = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::LessThanCondition, *someData, -100, stateC, stateA); // if "someData" is less than -100, transition from state C to state A
+
+		stateMachine->AddTransition(transitionA);
+		stateMachine->AddTransition(transitionB);
+		stateMachine->AddTransition(transitionC);
+
+		// Nav grid
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
+		NavigationPath path;
+		bool success = navGrid->FindPath(glm::vec3(80.0f, 0.0f, 10.0f), glm::vec3(80.0f, 0.0f, 80.0f), path);
+
 		CreateSystems();
 		CreateEntities();
 	}
@@ -163,6 +163,37 @@ namespace Engine {
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
 		entityManager->AddEntity(floor);
+
+		// Pathfinding debug grid
+		Entity* baseInstance = new Entity("Base Instance");
+		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		baseInstance->AddComponent(new ComponentGeometry(MODEL_SPHERE, true, true));
+		entityManager->AddEntity(baseInstance);
+
+		int xNum = navGrid->GetGridWidth();
+		int zNum = navGrid->GetGridHeight();
+
+		float originX = 0.0f;
+		float originZ = 0.0f;
+
+		float xDistance = 10.0f;
+		float zDistance = 10.0f;
+
+		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
+
+		int count = 0;
+		for (int j = 0; j < xNum; j++) {
+			for (int k = 0; k < zNum; k++) {
+				std::string name = std::string("Box ") + std::string(std::to_string(count));
+				Entity* box = new Entity(name);
+				//box->AddComponent(new ComponentTransform(originX + (j * xDistance), 1.0f, originZ + (k * zDistance)));
+				box->AddComponent(new ComponentTransform(nodes[count]->worldPosition));
+				entityManager->AddEntity(box);
+				baseInstance->GetGeometryComponent()->AddNewInstanceSource(box);
+				count++;
+				std::cout << "box " << count << " created" << std::endl;
+			}
+		}
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

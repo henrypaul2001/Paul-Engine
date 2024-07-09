@@ -42,10 +42,16 @@ namespace Engine {
 
 		bool FindPath(const glm::vec3& start, const glm::vec3& end, NavigationPath& out_path) override;
 
+		const int GetGridWidth() const { return gridWidth; }
+		const int GetGridHeight() const { return gridHeight; }
+		const int GetNodeSize() const { return nodeSize; }
+		const std::vector<NavGridNode*>& GetNodes() const { return allNodes; }
+
 	protected:
 		bool NodeInList(NavGridNode* n, std::vector<NavGridNode*>& list) const;
 		NavGridNode* RemoveBestNode(std::vector<NavGridNode*>& list) const;
 		float Heuristic(NavGridNode* hNode, NavGridNode* endNode) const;
+
 		int nodeSize;
 		int gridWidth;
 		int gridHeight;
