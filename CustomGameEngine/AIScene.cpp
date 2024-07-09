@@ -79,6 +79,8 @@ namespace Engine {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		camera->Position = glm::vec3(50.0f, 130.0f, 75.0f);
+
 		// State machine
 		stateMachine = new StateMachine();
 
@@ -121,8 +123,17 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
+		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
+		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
+
+		end = glm::vec3(10.0f, 0.0f, 30.0f);
+
 		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
-		bool success = navGrid->FindPath(glm::vec3(80.0f, 0.0f, 10.0f), glm::vec3(80.0f, 0.0f, 80.0f), navPath);
+		bool success = navGrid->FindPath(start, end, navPath);
+
+		if (!success) {
+			std::cout << "Path from " << start.x << " " << start.y << " " << start.z << " -> " << end.x << " " << end.y << " " << end.z << " could not be found" << std::endl;
+		}
 
 		CreateSystems();
 		CreateEntities();
@@ -186,10 +197,12 @@ namespace Engine {
 		float originX = 0.0f;
 		float originZ = 0.0f;
 
-		float xDistance = 10.0f;
-		float zDistance = 10.0f;
+		float nodeSize = 10.0f;
 
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
+
+		std::vector<Entity*> gridEntities;
+		gridEntities.reserve(xNum * zNum);
 
 		int count = 0;
 		for (int j = 0; j < xNum; j++) {
@@ -209,10 +222,20 @@ namespace Engine {
 					box->GetGeometryComponent()->CastShadows(false);
 				}
 
+				gridEntities.push_back(box);
 				entityManager->AddEntity(box);
 				count++;
 				std::cout << "box " << count << " created" << std::endl;
 			}
+		}
+
+		for (const glm::vec3& waypoint : navPath.GetWaypoints()) {
+			// find start and end node indices
+			int x = (waypoint.x / nodeSize);
+			int y = (waypoint.z / nodeSize);
+
+			Entity* gridEntity = gridEntities[(y * xNum) + x];
+			gridEntity->GetGeometryComponent()->ApplyMaterialToModel(path);
 		}
 
 		Entity* canvas = new Entity("Canvas");

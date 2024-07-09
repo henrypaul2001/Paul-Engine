@@ -9,6 +9,8 @@ namespace Engine {
 		~NavigationPath() {}
 
 		void AddWaypoint(const glm::vec3& position) { waypoints.push_back(position); }
+
+		const std::vector<glm::vec3>& GetWaypoints() const { return waypoints; }
 	private:
 		std::vector<glm::vec3> waypoints;
 	};
