@@ -126,9 +126,9 @@ namespace Engine {
 		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
 		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
 
-		end = glm::vec3(10.0f, 0.0f, 30.0f);
+		end = glm::vec3(40.0f, 0.0f, 80.0f);
 
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid3.txt");
 		bool success = navGrid->FindPath(start, end, navPath);
 
 		if (!success) {
