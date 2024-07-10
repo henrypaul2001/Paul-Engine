@@ -59,6 +59,22 @@ namespace Engine {
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 
 		//stateMachine->Update();
+
+		Entity* agent = entityManager->FindEntity("Agent");
+
+		if (agent->GetPathfinder()->HasReachedTarget()) {
+			bool success = false;
+			while (!success) {
+				// Find new target
+				targetIndex++;
+				if (targetIndex >= pathTargets.size()) {
+					targetIndex = 0;
+				}
+
+				glm::vec3 target = pathTargets[targetIndex];
+				success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target);
+			}
+		}
 	}
 
 	void AIScene::Render()
@@ -124,7 +140,7 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid2.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -152,8 +168,9 @@ namespace Engine {
 		//directional->Colour = glm::vec3(1.0f, 1.0f, 1.5f) * 10.0f;
 		directional->Colour = glm::vec3(0.7f, 0.65f, 0.85f);
 		directional->Specular = glm::vec3(0.7f, 0.65f, 0.85f);
-		directional->ShadowProjectionSize = 15.0f;
-		directional->Far = 150.0f;
+		directional->Far = 300.0f;
+		directional->DirectionalLightDistance = 150.0;
+		directional->ShadowProjectionSize = 100.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
@@ -168,6 +185,15 @@ namespace Engine {
 		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
 		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
 
+		targetIndex = 0;
+		pathTargets.push_back(end);
+		pathTargets.push_back(start);
+		pathTargets.push_back(glm::vec3(60.0f, 0.0f, 10.0f));
+		pathTargets.push_back(glm::vec3(40.0f, 0.0f, 50.0f));
+		pathTargets.push_back(glm::vec3(20.0f, 0.0f, 20.0f));
+		pathTargets.push_back(glm::vec3(10.0f, 0.0f, 80.0f));
+		pathTargets.push_back(glm::vec3(60.0f, 0.0f, 20.0f));
+
 		end = glm::vec3(40.0f, 0.0f, 80.0f);
 
 		bool success = navGrid->FindPath(start, end, navPath);
@@ -176,10 +202,10 @@ namespace Engine {
 		agentMaterial->albedo = glm::vec3(100.0f);
 
 		Entity* agent = new Entity("Agent");
-		agent->AddComponent(new ComponentTransform(start.x, 2.5f, start.z));
+		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		agent->GetTransformComponent()->SetScale(1.0f, 4.0f, 1.0f);
-		agent->AddComponent(new ComponentPathfinder(navGrid));
+		agent->AddComponent(new ComponentPathfinder(navGrid, 0.15f, 0.15f));
 		agent->GetPathfinder()->FindPath(start, end);
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		entityManager->AddEntity(agent);
@@ -197,7 +223,7 @@ namespace Engine {
 		Entity* baseInstanceNonWalkable = new Entity("Base Instance Non Walkable");
 		baseInstanceNonWalkable->AddComponent(new ComponentTransform(0.0f, -10.0f, 0.0f));
 		baseInstanceNonWalkable->AddComponent(new ComponentGeometry(MODEL_SPHERE, true, true));
-		baseInstanceNonWalkable->GetGeometryComponent()->CastShadows(false);
+		baseInstanceNonWalkable->GetGeometryComponent()->CastShadows(true);
 		baseInstanceNonWalkable->GetGeometryComponent()->ApplyMaterialToModel(nonWalkable);
 		entityManager->AddEntity(baseInstanceNonWalkable);
 

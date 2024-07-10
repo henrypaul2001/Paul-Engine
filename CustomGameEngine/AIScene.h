@@ -33,6 +33,9 @@ namespace Engine {
 		NavigationPath navPath;
 		int* someData;
 
+		std::vector<glm::vec3> pathTargets;
+		int targetIndex;
+
 		void CreateEntities();
 		void CreateSystems();
 	};
