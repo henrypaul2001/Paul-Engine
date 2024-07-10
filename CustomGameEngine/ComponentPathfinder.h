@@ -24,7 +24,7 @@ namespace Engine {
 		const glm::vec3& GetNextPosition() const { return nextPosition; }
 		void SetNextPosition(const glm::vec3& nextPos) { this->nextPosition = nextPos; }
 
-		void FindPath(const glm::vec3& start, const glm::vec3& end);
+		const bool FindPath(const glm::vec3& start, const glm::vec3& end);
 
 		NavigationPath& GetActivePath() { return activePath; }
 

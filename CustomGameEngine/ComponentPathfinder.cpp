@@ -21,7 +21,7 @@ namespace Engine {
 
 	}
 
-	void ComponentPathfinder::FindPath(const glm::vec3& start, const glm::vec3& end)
+	const bool ComponentPathfinder::FindPath(const glm::vec3& start, const glm::vec3& end)
 	{
 		bool success = navigationMap->FindPath(start, end, activePath);
 		if (!success) {
@@ -32,5 +32,7 @@ namespace Engine {
 			nextPosition = activePath.GetNextWaypoint();
 			targetReached = false;
 		}
+
+		return success;
 	}
 }
