@@ -7,7 +7,7 @@ namespace Engine {
 	class ComponentPathfinder : public Component
 	{
 	public:
-		ComponentPathfinder(NavigationMap* navigationMap, const float moveSpeed = 0.5f, const float nextPositionDistance = 0.25f);
+		ComponentPathfinder(NavigationMap* navigationMap, const float moveSpeed = 0.05f, const float nextPositionDistance = 0.025f);
 		~ComponentPathfinder();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PATHFINDER; }

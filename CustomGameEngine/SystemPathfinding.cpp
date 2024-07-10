@@ -44,8 +44,8 @@ namespace Engine {
 	{
 		if (!pathfinder->HasReachedTarget()) {
 			// Check if entity has reached next position
-			glm::vec3 currentPosition = transform->GetWorldPosition();
-			glm::vec3 nextPathPosition = pathfinder->GetNextPosition();
+			glm::vec3 currentPosition = glm::vec3(transform->GetWorldPosition().x, transform->GetWorldPosition().y, transform->GetWorldPosition().z);
+			glm::vec3 nextPathPosition = glm::vec3(pathfinder->GetNextPosition().x, transform->GetWorldPosition().y, pathfinder->GetNextPosition().z);
 			float targetReachedDistance = pathfinder->GetNextPositionDistanceCheck();
 
 			float distanceToNextPositionSquared = glm::distance2(currentPosition, nextPathPosition);
@@ -70,8 +70,9 @@ namespace Engine {
 			if (pathfinder->GetEntityCanMove()) {
 				// Move toward next position
 				float moveSpeeed = pathfinder->GetMoveSpeed();
+				nextPathPosition = glm::vec3(pathfinder->GetNextPosition().x, transform->GetWorldPosition().y, pathfinder->GetNextPosition().z);
 				glm::vec3 moveDirection = glm::normalize(nextPathPosition - currentPosition);
-				transform->SetPosition(currentPosition + glm::vec3(moveDirection.x * moveSpeeed, 0.0f, moveDirection.z * moveSpeeed));
+				transform->SetPosition(currentPosition + (moveDirection * moveSpeeed));
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 #include "GameInputManager.h"
 #include "UIText.h"
 #include "SystemUIRender.h"
+#include "SystemPathfinding.h"
 namespace Engine {
 	AIScene::AIScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -57,7 +58,7 @@ namespace Engine {
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 
-		stateMachine->Update();
+		//stateMachine->Update();
 	}
 
 	void AIScene::Render()
@@ -123,17 +124,7 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
-		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
-		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
-
-		end = glm::vec3(40.0f, 0.0f, 80.0f);
-
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid3.txt");
-		bool success = navGrid->FindPath(start, end, navPath);
-
-		if (!success) {
-			std::cout << "Path from " << start.x << " " << start.y << " " << start.z << " -> " << end.x << " " << end.y << " " << end.z << " could not be found" << std::endl;
-		}
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -174,6 +165,25 @@ namespace Engine {
 		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
 		entityManager->AddEntity(floor);
 
+		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
+		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
+
+		end = glm::vec3(40.0f, 0.0f, 80.0f);
+
+		bool success = navGrid->FindPath(start, end, navPath);
+
+		PBRMaterial* agentMaterial = new PBRMaterial();
+		agentMaterial->albedo = glm::vec3(100.0f);
+
+		Entity* agent = new Entity("Agent");
+		agent->AddComponent(new ComponentTransform(start.x, 2.5f, start.z));
+		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		agent->GetTransformComponent()->SetScale(1.0f, 4.0f, 1.0f);
+		agent->AddComponent(new ComponentPathfinder(navGrid));
+		agent->GetPathfinder()->FindPath(start, end);
+		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
+		entityManager->AddEntity(agent);
+
 		PBRMaterial* walkable = new PBRMaterial();
 		walkable->albedo = glm::vec3(0.0f, 100.0f, 0.0f);
 
@@ -207,36 +217,47 @@ namespace Engine {
 		int count = 0;
 		for (int j = 0; j < xNum; j++) {
 			for (int k = 0; k < zNum; k++) {
-				std::string name = std::string("Box ") + std::string(std::to_string(count));
-				Entity* box = new Entity(name);
-				//box->AddComponent(new ComponentTransform(originX + (j * xDistance), 1.0f, originZ + (k * zDistance)));
-				box->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
+
 
 				if (nodes[count]->type == 'x') {
+					std::string name = std::string("Box ") + std::string(std::to_string(count));
+					Entity* box = new Entity(name);
+					box->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
+
 					// Non walkable node
 					baseInstanceNonWalkable->GetGeometryComponent()->AddNewInstanceSource(box);
+
+					gridEntities.push_back(box);
+					entityManager->AddEntity(box);
+					std::cout << "box " << count << " created" << std::endl;
 				}
 				else {
-					box->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-					box->GetGeometryComponent()->ApplyMaterialToModel(walkable);
-					box->GetGeometryComponent()->CastShadows(false);
+					//std::string name = std::string("Box ") + std::string(std::to_string(count));
+					//Entity* box = new Entity(name);
+					//box->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
+
+					//box->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+					//box->GetGeometryComponent()->ApplyMaterialToModel(walkable);
+					//box->GetGeometryComponent()->CastShadows(false);
+				
+					//gridEntities.push_back(box);
+					//entityManager->AddEntity(box);
+					//count++;
+					//std::cout << "box " << count << " created" << std::endl;
 				}
 
-				gridEntities.push_back(box);
-				entityManager->AddEntity(box);
 				count++;
-				std::cout << "box " << count << " created" << std::endl;
 			}
 		}
 
-		for (const glm::vec3& waypoint : navPath.GetWaypoints()) {
-			// find start and end node indices
-			int x = (waypoint.x / nodeSize);
-			int y = (waypoint.z / nodeSize);
+		//for (const glm::vec3& waypoint : navPath.GetWaypointStack()._Get_container()) {
+		//	// find start and end node indices
+		//	int x = (waypoint.x / nodeSize);
+		//	int y = (waypoint.z / nodeSize);
 
-			Entity* gridEntity = gridEntities[(y * xNum) + x];
-			gridEntity->GetGeometryComponent()->ApplyMaterialToModel(path);
-		}
+		//	Entity* gridEntity = gridEntities[(y * xNum) + x];
+		//	gridEntity->GetGeometryComponent()->ApplyMaterialToModel(path);
+		//}
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -255,5 +276,6 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemPathfinding(), UPDATE_SYSTEMS);
 	}
 }

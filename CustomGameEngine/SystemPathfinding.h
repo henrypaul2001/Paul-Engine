@@ -13,7 +13,7 @@ namespace Engine {
         void AfterAction() override;
 
     private:
-        const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_PATHFINDING);
+        const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_PATHFINDER);
         void Update(ComponentTransform* transform, ComponentPathfinder* pathfinder);
 	};
 }

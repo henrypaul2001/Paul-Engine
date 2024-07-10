@@ -29,6 +29,7 @@ namespace Engine {
 			targetReached = true;
 		}
 		else {
+			nextPosition = activePath.GetNextWaypoint();
 			targetReached = false;
 		}
 	}
