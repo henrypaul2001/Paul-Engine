@@ -121,6 +121,7 @@ namespace Engine {
 	bool NavigationGrid::FindPath(const glm::vec3& start, const glm::vec3& end, NavigationPath& out_path)
 	{
 		// find start and end node indices
+		// This can lose precision in the grid, should instead round start.x to nearest 'nodeSize' multiple to get closest node in grid
 		int startX = (start.x / nodeSize);
 		int startY = (start.z / nodeSize);
 

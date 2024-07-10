@@ -217,7 +217,7 @@ namespace Engine {
 		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		agent->GetTransformComponent()->SetScale(1.0f, 4.0f, 1.0f);
-		agent->AddComponent(new ComponentPathfinder(navGrid, 0.15f, 0.15f));
+		agent->AddComponent(new ComponentPathfinder(navGrid, 17.5f, 0.15f));
 		agent->GetPathfinder()->FindPath(start, end);
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));

@@ -1,4 +1,5 @@
 #include "SystemPathfinding.h"
+#include "Scene.h"
 namespace Engine {
 	SystemPathfinding::SystemPathfinding()
 	{
@@ -67,12 +68,12 @@ namespace Engine {
 			}
 
 			// Check if entity can be moved (is grounded, isn't stunned, etc)
-			if (pathfinder->GetEntityCanMove()) {
+			if (pathfinder->GetEntityCanMove() && !pathfinder->HasReachedTarget()) {
 				// Move toward next position
 				float moveSpeeed = pathfinder->GetMoveSpeed();
 				nextPathPosition = glm::vec3(pathfinder->GetNextPosition().x, transform->GetWorldPosition().y, pathfinder->GetNextPosition().z);
 				glm::vec3 moveDirection = glm::normalize(nextPathPosition - currentPosition);
-				transform->SetPosition(currentPosition + (moveDirection * moveSpeeed));
+				transform->SetPosition(currentPosition + ((moveDirection * moveSpeeed) * Scene::dt));
 			}
 		}
 	}
