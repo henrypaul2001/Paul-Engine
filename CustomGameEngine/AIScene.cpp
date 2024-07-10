@@ -73,6 +73,9 @@ namespace Engine {
 
 				glm::vec3 target = pathTargets[targetIndex];
 				success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target);
+
+				Entity* targetEntity = entityManager->FindEntity("Target");
+				targetEntity->GetTransformComponent()->SetPosition(glm::vec3(target.x, targetEntity->GetTransformComponent()->GetWorldPosition().y, target.z));
 			}
 		}
 	}
@@ -140,7 +143,7 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid2.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid3.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -201,15 +204,6 @@ namespace Engine {
 		PBRMaterial* agentMaterial = new PBRMaterial();
 		agentMaterial->albedo = glm::vec3(100.0f);
 
-		Entity* agent = new Entity("Agent");
-		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
-		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		agent->GetTransformComponent()->SetScale(1.0f, 4.0f, 1.0f);
-		agent->AddComponent(new ComponentPathfinder(navGrid, 0.15f, 0.15f));
-		agent->GetPathfinder()->FindPath(start, end);
-		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
-		entityManager->AddEntity(agent);
-
 		PBRMaterial* walkable = new PBRMaterial();
 		walkable->albedo = glm::vec3(0.0f, 100.0f, 0.0f);
 
@@ -218,6 +212,27 @@ namespace Engine {
 
 		PBRMaterial* path = new PBRMaterial();
 		path->albedo = glm::vec3(0.0f, 0.0f, 100.0f);
+
+		Entity* agent = new Entity("Agent");
+		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
+		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		agent->GetTransformComponent()->SetScale(1.0f, 4.0f, 1.0f);
+		agent->AddComponent(new ComponentPathfinder(navGrid, 0.15f, 0.15f));
+		agent->GetPathfinder()->FindPath(start, end);
+		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
+		agent->AddComponent(new ComponentLight(POINT));
+		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
+		agent->GetLightComponent()->CastShadows = false;
+		entityManager->AddEntity(agent);
+
+		Entity* target = new Entity("Target");
+		target->AddComponent(new ComponentTransform(end.x, 3.0f, end.z));
+		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		target->GetGeometryComponent()->ApplyMaterialToModel(path);
+		target->AddComponent(new ComponentLight(POINT));
+		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
+		target->GetLightComponent()->CastShadows = false;
+		entityManager->AddEntity(target);
 
 		// Pathfinding debug grid
 		Entity* baseInstanceNonWalkable = new Entity("Base Instance Non Walkable");
