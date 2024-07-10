@@ -20,6 +20,7 @@ namespace Engine
 		SYSTEM_SKELETAL_ANIM_UPDATE = 1 << 12,
 		SYSTEM_PARTICLE_UPDATE = 1 << 13,
 		SYSTEM_PARTICLE_RENDER = 1 << 14,
+		SYSTEM_PATHFINDING = 1 << 15,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }
