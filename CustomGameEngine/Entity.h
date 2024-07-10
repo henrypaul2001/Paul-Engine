@@ -10,6 +10,7 @@
 #include "ComponentAnimator.h"
 #include "ComponentAudioSource.h"
 #include "ComponentParticleGenerator.h"
+#include "ComponentPathfinder.h"
 namespace Engine
 {
 	class Entity
@@ -39,6 +40,7 @@ namespace Engine
 		ComponentAnimator* GetAnimator() { return dynamic_cast<ComponentAnimator*>(GetComponent(COMPONENT_ANIMATOR)); }
 		ComponentAudioSource* GetAudioComponent() { return dynamic_cast<ComponentAudioSource*>(GetComponent(COMPONENT_AUDIO_SOURCE)); }
 		ComponentParticleGenerator* GetParticleGenerator() { return dynamic_cast<ComponentParticleGenerator*>(GetComponent(COMPONENT_PARTICLE_GENERATOR)); }
+		ComponentPathfinder* GetPathfinder() { return dynamic_cast<ComponentPathfinder*>(GetComponent(COMPONENT_PATHFINDER)); }
 
 		bool ContainsComponents(const ComponentTypes MASK);
 
