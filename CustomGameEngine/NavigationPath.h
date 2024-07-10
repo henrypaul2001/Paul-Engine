@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/ext/vector_float3.hpp>
-#include <vector>
+#include <stack>
 namespace Engine {
 	class NavigationPath
 	{
@@ -8,10 +8,13 @@ namespace Engine {
 		NavigationPath() {}
 		~NavigationPath() {}
 
-		void AddWaypoint(const glm::vec3& position) { waypoints.push_back(position); }
+		void AddWaypoint(const glm::vec3& position) { waypointStack.push(position); }
+		void PopWaypointStack() { waypointStack.pop(); }
 
-		const std::vector<glm::vec3>& GetWaypoints() const { return waypoints; }
+		const glm::vec3& GetNextWaypoint() const { return waypointStack.top(); }
+
+		const std::stack<glm::vec3>& GetWaypointStack() const { return waypointStack; }
 	private:
-		std::vector<glm::vec3> waypoints;
+		std::stack<glm::vec3> waypointStack;
 	};
 }
