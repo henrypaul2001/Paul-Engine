@@ -217,6 +217,7 @@
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemParticleRenderer.h" />
     <ClInclude Include="SystemParticleUpdater.h" />
+    <ClInclude Include="SystemPathfinding.h" />
     <ClInclude Include="SystemPhysics.h" />
     <ClInclude Include="SystemRender.h" />
     <ClInclude Include="SystemShadowMapping.h" />
@@ -310,6 +311,7 @@
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="SystemParticleRenderer.cpp" />
     <ClCompile Include="SystemParticleUpdater.cpp" />
+    <ClCompile Include="SystemPathfinding.cpp" />
     <ClCompile Include="SystemPhysics.cpp" />
     <ClCompile Include="SystemRender.cpp" />
     <ClCompile Include="SystemShadowMapping.cpp" />

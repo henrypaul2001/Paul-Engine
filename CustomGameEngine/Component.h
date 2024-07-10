@@ -30,7 +30,7 @@ namespace Engine
 
 	class Component
 	{
-	private:
+	protected:
 		Entity* owner;
 	public:
 		Entity* GetOwner();

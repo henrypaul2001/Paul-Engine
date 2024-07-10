@@ -42,16 +42,37 @@ namespace Engine {
 
 	void SystemPathfinding::Update(ComponentTransform* transform, ComponentPathfinder* pathfinder)
 	{
-		// Check if entity has reached next position
+		if (!pathfinder->HasReachedTarget()) {
+			// Check if entity has reached next position
+			glm::vec3 currentPosition = transform->GetWorldPosition();
+			glm::vec3 nextPathPosition = pathfinder->GetNextPosition();
+			float targetReachedDistance = pathfinder->GetNextPositionDistanceCheck();
 
-			// if false
-			
+			float distanceToNextPositionSquared = glm::distance2(currentPosition, nextPathPosition);
+
+			if (distanceToNextPositionSquared <= (targetReachedDistance * targetReachedDistance)) {
+				// Next waypoint position reached, set next waypoint
+				NavigationPath& path = pathfinder->GetActivePath();
+				path.PopWaypointStack();
+
+				const std::stack<glm::vec3>& waypoints = path.GetWaypointStack();
+
+				if (waypoints.size() == 0) {
+					// End of path reached
+					pathfinder->SetTargetReached(true);
+				}
+				else {
+					pathfinder->SetNextPosition(path.GetNextWaypoint());
+				}
+			}
+
 			// Check if entity can be moved (is grounded, isn't stunned, etc)
-				// Move towards next position at move speed
-
-			// if true
-			// Pop waypoint stack and set next waypoint
-
-
+			if (pathfinder->GetEntityCanMove()) {
+				// Move toward next position
+				float moveSpeeed = pathfinder->GetMoveSpeed();
+				glm::vec3 moveDirection = glm::normalize(nextPathPosition - currentPosition);
+				transform->SetPosition(currentPosition + glm::vec3(moveDirection.x * moveSpeeed, 0.0f, moveDirection.z * moveSpeeed));
+			}
+		}
 	}
 }

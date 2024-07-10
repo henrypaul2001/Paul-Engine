@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "NavigationPath.h"
 #include "NavigationMap.h"
+#include <iostream>
 namespace Engine {
 	class ComponentPathfinder : public Component
 	{
@@ -17,11 +18,27 @@ namespace Engine {
 		void SetMoveSpeed(const float newSpeed) { this->moveSpeed = newSpeed; }
 		float GetMoveSpeed() const { return moveSpeed; }
 
+		const float GetNextPositionDistanceCheck() const { return nextPositionDistanceCheck; }
+		void SetNextPositionDistanceCheck(const float newDistance) { this->nextPositionDistanceCheck = newDistance; }
+
 		const glm::vec3& GetNextPosition() const { return nextPosition; }
 		void SetNextPosition(const glm::vec3& nextPos) { this->nextPosition = nextPos; }
+
+		void FindPath(const glm::vec3& start, const glm::vec3& end);
+
+		NavigationPath& GetActivePath() { return activePath; }
+
+		void SetTargetReached(const bool targetReached) { this->targetReached = targetReached; }
+		const bool HasReachedTarget() const { return targetReached; }
+
+		void SetEntityCanMove(const bool canMove) { this->entityCanMove = canMove; }
+		const bool GetEntityCanMove() const { return entityCanMove; }
+
 	private:
 		float moveSpeed;
-		float nextPositionDistance;
+		float nextPositionDistanceCheck;
+		bool targetReached;
+		bool entityCanMove;
 
 		NavigationMap* navigationMap;
 		NavigationPath activePath;
