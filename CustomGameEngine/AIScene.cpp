@@ -62,6 +62,7 @@ namespace Engine {
 
 		Entity* agent = entityManager->FindEntity("Agent");
 
+		int iterations = 0;
 		if (agent->GetPathfinder()->HasReachedTarget()) {
 			bool success = false;
 			while (!success) {
@@ -76,6 +77,10 @@ namespace Engine {
 
 				Entity* targetEntity = entityManager->FindEntity("Target");
 				targetEntity->GetTransformComponent()->SetPosition(glm::vec3(target.x, targetEntity->GetTransformComponent()->GetWorldPosition().y, target.z));
+				iterations++;
+				if (iterations >= pathTargets.size()) {
+					break;
+				}
 			}
 		}
 	}
@@ -143,7 +148,7 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid3.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid4.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -167,10 +172,9 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
-		directional->Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-		//directional->Colour = glm::vec3(1.0f, 1.0f, 1.5f) * 10.0f;
 		directional->Colour = glm::vec3(0.7f, 0.65f, 0.85f);
-		directional->Specular = glm::vec3(0.7f, 0.65f, 0.85f);
+		directional->Specular = directional->Colour;
+		directional->Ambient = directional->Colour;
 		directional->Far = 300.0f;
 		directional->DirectionalLightDistance = 150.0;
 		directional->ShadowProjectionSize = 100.0f;
@@ -248,7 +252,7 @@ namespace Engine {
 		float originX = 0.0f;
 		float originZ = 0.0f;
 
-		float nodeSize = 10.0f;
+		float nodeSize = 1.0f;
 
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
 

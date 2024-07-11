@@ -29,7 +29,7 @@ namespace Engine {
 					char type = 0;
 					infile >> type;
 					n->type = type;
-					n->worldPosition = glm::vec3(x * gridWidth, 0.0f, y * gridHeight);
+					n->worldPosition = glm::vec3(x * nodeSize, 0.0f, y * nodeSize);
 				}
 			}
 
