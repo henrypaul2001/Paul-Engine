@@ -104,8 +104,6 @@ namespace Engine {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		camera->Position = glm::vec3(50.0f, 130.0f, 75.0f);
-
 		// State machine
 		stateMachine = new StateMachine();
 
@@ -181,14 +179,6 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(45.0f, 0.0f, 45.0f));
-		floor->GetTransformComponent()->SetScale(glm::vec3(50.0f, 0.5f, 50.0f));
-		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
-		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
-		entityManager->AddEntity(floor);
-
 		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
 		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
 
@@ -252,7 +242,7 @@ namespace Engine {
 		float originX = 0.0f;
 		float originZ = 0.0f;
 
-		float nodeSize = 1.0f;
+		int nodeSize = navGrid->GetNodeSize();
 
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
 
@@ -303,6 +293,19 @@ namespace Engine {
 		//	Entity* gridEntity = gridEntities[(y * xNum) + x];
 		//	gridEntity->GetGeometryComponent()->ApplyMaterialToModel(path);
 		//}
+
+
+		// Construct scene based on navigation grid
+		glm::vec3 floorScale = glm::vec3(((xNum - 1.0f) * nodeSize) / 2.0f, 0.5f, ((zNum - 1.0f) * nodeSize) / 2.0f);
+		Entity* floor = new Entity("Floor");
+		floor->AddComponent(new ComponentTransform(((xNum - 1.0f) * nodeSize) / 2.0f, 0.0f, ((zNum - 1.0f) * nodeSize) / 2.0f));
+		floor->GetTransformComponent()->SetScale(floorScale);
+		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
+		entityManager->AddEntity(floor);
+
+		camera->Position = glm::vec3(floor->GetTransformComponent()->GetWorldPosition().x, 130.0f, floor->GetTransformComponent()->GetWorldPosition().z + nodeSize * 3);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
