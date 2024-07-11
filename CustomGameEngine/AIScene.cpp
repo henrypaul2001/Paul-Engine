@@ -170,12 +170,13 @@ namespace Engine {
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
-		directional->Colour = glm::vec3(0.7f, 0.65f, 0.85f);
+		directional->Colour = glm::vec3(0.7f, 0.65f, 0.85f) * 2.0f;
 		directional->Specular = directional->Colour;
-		directional->Ambient = directional->Colour;
+		directional->Ambient = directional->Colour * 200.0f;
 		directional->Far = 300.0f;
 		directional->DirectionalLightDistance = 150.0;
 		directional->ShadowProjectionSize = 100.0f;
+		directional->CastShadows = false;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
@@ -206,6 +207,12 @@ namespace Engine {
 
 		PBRMaterial* path = new PBRMaterial();
 		path->albedo = glm::vec3(0.0f, 0.0f, 100.0f);
+
+		PBRMaterial* grass = new PBRMaterial();
+		grass->albedo = glm::vec3(65.0f, 152.0f, 10.0f) / 100.0f;
+
+		PBRMaterial* wallMaterial = new PBRMaterial();
+		wallMaterial->albedo = glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f;
 
 		Entity* agent = new Entity("Agent");
 		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
@@ -252,47 +259,20 @@ namespace Engine {
 		int count = 0;
 		for (int j = 0; j < xNum; j++) {
 			for (int k = 0; k < zNum; k++) {
-
-
 				if (nodes[count]->type == 'x') {
-					std::string name = std::string("Box ") + std::string(std::to_string(count));
-					Entity* box = new Entity(name);
-					box->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
+					std::string name = std::string("Sphere ") + std::string(std::to_string(count));
+					Entity* sphere = new Entity(name);
+					sphere->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
 
 					// Non walkable node
-					baseInstanceNonWalkable->GetGeometryComponent()->AddNewInstanceSource(box);
+					baseInstanceNonWalkable->GetGeometryComponent()->AddNewInstanceSource(sphere);
 
-					gridEntities.push_back(box);
-					entityManager->AddEntity(box);
-					std::cout << "box " << count << " created" << std::endl;
+					gridEntities.push_back(sphere);
+					entityManager->AddEntity(sphere);
 				}
-				else {
-					//std::string name = std::string("Box ") + std::string(std::to_string(count));
-					//Entity* box = new Entity(name);
-					//box->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
-
-					//box->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-					//box->GetGeometryComponent()->ApplyMaterialToModel(walkable);
-					//box->GetGeometryComponent()->CastShadows(false);
-				
-					//gridEntities.push_back(box);
-					//entityManager->AddEntity(box);
-					//count++;
-					//std::cout << "box " << count << " created" << std::endl;
-				}
-
 				count++;
 			}
 		}
-
-		//for (const glm::vec3& waypoint : navPath.GetWaypointStack()._Get_container()) {
-		//	// find start and end node indices
-		//	int x = (waypoint.x / nodeSize);
-		//	int y = (waypoint.z / nodeSize);
-
-		//	Entity* gridEntity = gridEntities[(y * xNum) + x];
-		//	gridEntity->GetGeometryComponent()->ApplyMaterialToModel(path);
-		//}
 
 
 		// Construct scene based on navigation grid
@@ -303,9 +283,96 @@ namespace Engine {
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		floor->AddComponent(new ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		floor->GetAABBCollisionComponent()->IsMovedByCollisions(false);
+		floor->GetGeometryComponent()->ApplyMaterialToModel(grass);
 		entityManager->AddEntity(floor);
 
 		camera->Position = glm::vec3(floor->GetTransformComponent()->GetWorldPosition().x, 130.0f, floor->GetTransformComponent()->GetWorldPosition().z + nodeSize * 3);
+
+		// Create walls
+		count = 0;
+		for (int y = 0; y < zNum; y++) {
+			for (int x = 0; x < xNum; x++) {
+				NavGridNode* currentNode = nodes[(xNum * y) + x];
+
+				if (currentNode->type == 'x') {
+					// Wall
+
+					// Check right extent
+					NavGridNode* rightNode = currentNode;
+
+					int index;
+
+					int rightExtent = 0;
+					while (rightNode != nullptr && rightNode->type == 'x') {
+						rightExtent++;
+						index = (xNum * (y)) + (x + rightExtent);
+						if (index < nodes.size() && x + rightExtent < xNum) {
+							rightNode = nodes[index];
+						}
+						else {
+							break;
+						}
+					}
+
+					// Check down extent
+					NavGridNode* downNode = currentNode;
+
+					int downExtent = 0;
+					while (downNode != nullptr && downNode->type == 'x') {
+						downExtent++;
+						
+						index = (xNum * (y + downExtent)) + x;
+						if (index < nodes.size() && y + downExtent < zNum) {
+							downNode = nodes[index];
+						}
+						else {
+							break;
+						}
+					}
+
+					if (rightExtent == 1 && downExtent == 1) {
+						// Wall scales to right
+						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
+						wall->AddComponent(new ComponentTransform(currentNode->worldPosition.x, 1.5f, currentNode->worldPosition.z));
+						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+						wall->GetTransformComponent()->SetScale(glm::vec3(nodeSize / 2.0f, 3.0f, nodeSize / 2.0f));
+						wall->GetGeometryComponent()->ApplyMaterialToModel(wallMaterial);
+						entityManager->AddEntity(wall);
+						std::cout << "Wall " << count << " created" << std::endl;
+
+						count++;
+					}
+					else if (rightExtent > downExtent) {
+						// Wall scales to right
+						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
+						wall->AddComponent(new ComponentTransform((currentNode->worldPosition.x + (rightExtent / 2.0f) * nodeSize) - (nodeSize / 2.0f), 1.5f, currentNode->worldPosition.z));
+						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+						wall->GetTransformComponent()->SetScale(glm::vec3(rightExtent * (nodeSize / 2.0f), 3.0f, nodeSize / 2.0f));
+						wall->GetGeometryComponent()->ApplyMaterialToModel(wallMaterial);
+						wall->GetGeometryComponent()->SetTextureScale(glm::vec2(rightExtent, 1.0f));
+						entityManager->AddEntity(wall);
+						std::cout << "Wall " << count << " created" << std::endl;
+
+						x += rightExtent;
+
+						count++;
+					}
+					else {
+						 //Wall scales down
+						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
+						wall->AddComponent(new ComponentTransform(currentNode->worldPosition.x, 1.5f, (currentNode->worldPosition.z + (downExtent / 2.0f) * nodeSize) - nodeSize));
+						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+						wall->GetTransformComponent()->SetScale(glm::vec3(nodeSize / 2.0f, 3.0f, downExtent * (nodeSize / 2.0f)));
+						wall->GetGeometryComponent()->ApplyMaterialToModel(wallMaterial);
+						wall->GetGeometryComponent()->SetTextureScale(glm::vec2(downExtent, 1.0f));
+						entityManager->AddEntity(wall);
+						std::cout << "Wall " << count << " created" << std::endl;
+
+						count++;
+					}
+				}
+			}
+		}
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
