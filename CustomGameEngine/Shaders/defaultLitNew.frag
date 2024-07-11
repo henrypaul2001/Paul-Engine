@@ -92,7 +92,7 @@ struct Material {
 };
 uniform Material material;
 
-uniform float textureScale;
+uniform vec2 textureScale;
 
 vec2 TexCoords;
 vec3 Colour;

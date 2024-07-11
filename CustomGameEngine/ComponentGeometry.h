@@ -32,12 +32,13 @@ namespace Engine {
 		Model* GetModel() { return model; }
 		Shader* GetShader() { return shader; }
 
-		float GetTextureScale() { return textureScale; }
+		glm::vec2 GetTextureScale() { return textureScale; }
 		
 		void CastShadows(bool shadows) { castShadows = shadows; }
 		bool CastShadows() { return castShadows; }
 
-		void SetTextureScale(float newScale) { textureScale = newScale; }
+		void SetTextureScale(float newScale) { textureScale = glm::vec2(newScale); }
+		void SetTextureScale(glm::vec2 newScale) { textureScale = newScale; }
 
 		bool Instanced() { return instanced; }
 		const int NumInstances() { return instanceSources.size(); }
@@ -64,7 +65,7 @@ namespace Engine {
 		Model* model;
 		Shader* shader;
 
-		float textureScale;
+		glm::vec2 textureScale;
 		bool castShadows;
 
 		bool pbr;

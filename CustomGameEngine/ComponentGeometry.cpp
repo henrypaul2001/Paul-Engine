@@ -19,7 +19,7 @@ namespace Engine {
 
 		castShadows = true;
 
-		textureScale = 1.0f;
+		textureScale = glm::vec2(1.0f);
 
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 
@@ -64,7 +64,7 @@ namespace Engine {
 			}
 		}
 
-		textureScale = 1.0f;
+		textureScale = glm::vec2(1.0f);
 
 		if (instanced) { SetupInstanceVBO(); }
 
@@ -82,7 +82,7 @@ namespace Engine {
 
 		castShadows = true;
 
-		textureScale = 1.0f;
+		textureScale = glm::vec2(1.0f);
 
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
@@ -124,7 +124,7 @@ namespace Engine {
 			}
 		}
 
-		textureScale = 1.0f;
+		textureScale = glm::vec2(1.0f);
 
 		if (instanced) { SetupInstanceVBO(); }
 	}

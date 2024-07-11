@@ -41,7 +41,7 @@ const int MAX_BONE_INFLUENCE = 8;
 uniform mat4 boneTransforms[MAX_BONES];
 uniform bool hasBones;
 
-uniform float textureScale;
+uniform vec2 textureScale;
 
 void main() {
     mat3 NormalMatrix = normalMatrix;

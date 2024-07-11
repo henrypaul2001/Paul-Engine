@@ -83,7 +83,7 @@ namespace Engine {
 		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 		shader->setBool("instanced", geometry->Instanced());
 		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
-		shader->setFloat("textureScale", geometry->GetTextureScale());
+		shader->setVec2("textureScale", geometry->GetTextureScale());
 		shader->setBool("hasBones", false);
 		shader->setBool("OpaqueRenderPass", true);
 
@@ -155,7 +155,7 @@ namespace Engine {
 			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 			shader->setBool("instanced", geometry->Instanced());
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
-			shader->setFloat("textureScale", geometry->GetTextureScale());
+			shader->setVec2("textureScale", geometry->GetTextureScale());
 			shader->setBool("hasBones", false);
 			shader->setBool("OpaqueRenderPass", false);
 

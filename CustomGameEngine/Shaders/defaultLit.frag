@@ -85,7 +85,7 @@ vec3 TangentViewDirection;
 
 uniform bool gamma;
 
-uniform float textureScale;
+uniform vec2 textureScale;
 
 vec2 TexCoords;
 const float minLayers = 8.0;

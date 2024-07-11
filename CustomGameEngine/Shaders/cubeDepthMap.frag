@@ -8,7 +8,7 @@ struct Material {
 };
 uniform Material material;
 
-uniform float textureScale;
+uniform vec2 textureScale;
 
 in vec2 texCoords;
 

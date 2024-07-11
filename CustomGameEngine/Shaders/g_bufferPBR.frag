@@ -46,7 +46,7 @@ struct PBRMaterial {
     bool useOpacityMap;
 };
 uniform PBRMaterial material;
-uniform float textureScale;
+uniform vec2 textureScale;
 uniform bool OpaqueRenderPass;
 
 vec3 Albedo;

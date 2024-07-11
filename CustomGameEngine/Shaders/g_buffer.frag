@@ -41,7 +41,7 @@ struct Material {
     bool useOpacityMap;
 };
 uniform Material material;
-uniform float textureScale;
+uniform vec2 textureScale;
 uniform bool OpaqueRenderPass;
 
 const float minLayers = 8.0;
