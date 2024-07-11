@@ -78,7 +78,7 @@ namespace Engine {
 				Entity* targetEntity = entityManager->FindEntity("Target");
 				targetEntity->GetTransformComponent()->SetPosition(glm::vec3(target.x, targetEntity->GetTransformComponent()->GetWorldPosition().y, target.z));
 				iterations++;
-				if (iterations >= pathTargets.size()) {
+				if (iterations > pathTargets.size() + 1) {
 					break;
 				}
 			}
