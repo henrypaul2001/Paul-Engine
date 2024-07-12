@@ -327,7 +327,7 @@ namespace Engine {
 		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		agent->GetTransformComponent()->SetScale(glm::vec3(0.5f, 2.5f, 0.5f) * nodeSize);
-		agent->AddComponent(new ComponentPathfinder(navGrid, 10.0f * nodeSize, 0.015f));
+		agent->AddComponent(new ComponentPathfinder(navGrid, 10.0f * nodeSize, nodeSize));
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));
 		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
