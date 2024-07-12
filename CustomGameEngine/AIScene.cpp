@@ -146,7 +146,7 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid4.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid6.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -249,7 +249,7 @@ namespace Engine {
 		float originX = 0.0f;
 		float originZ = 0.0f;
 
-		int nodeSize = navGrid->GetNodeSize();
+		float nodeSize = navGrid->GetNodeSize();
 
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
 

@@ -44,7 +44,7 @@ namespace Engine {
 
 		const int GetGridWidth() const { return gridWidth; }
 		const int GetGridHeight() const { return gridHeight; }
-		const int GetNodeSize() const { return nodeSize; }
+		const float GetNodeSize() const { return nodeSize; }
 		const std::vector<NavGridNode*>& GetNodes() const { return allNodes; }
 
 	protected:
@@ -52,7 +52,7 @@ namespace Engine {
 		NavGridNode* RemoveBestNode(std::vector<NavGridNode*>& list) const;
 		float Heuristic(NavGridNode* hNode, NavGridNode* endNode) const;
 
-		int nodeSize;
+		float nodeSize;
 		int gridWidth;
 		int gridHeight;
 
