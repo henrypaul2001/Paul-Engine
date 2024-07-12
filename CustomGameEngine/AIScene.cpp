@@ -180,22 +180,6 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		glm::vec3 start = glm::vec3(80.0f, 0.0f, 10.0f);
-		glm::vec3 end = glm::vec3(80.0f, 0.0f, 80.0f);
-
-		targetIndex = 0;
-		pathTargets.push_back(end);
-		pathTargets.push_back(start);
-		pathTargets.push_back(glm::vec3(60.0f, 0.0f, 10.0f));
-		pathTargets.push_back(glm::vec3(40.0f, 0.0f, 50.0f));
-		pathTargets.push_back(glm::vec3(20.0f, 0.0f, 20.0f));
-		pathTargets.push_back(glm::vec3(10.0f, 0.0f, 80.0f));
-		pathTargets.push_back(glm::vec3(60.0f, 0.0f, 20.0f));
-
-		end = glm::vec3(40.0f, 0.0f, 80.0f);
-
-		bool success = navGrid->FindPath(start, end, navPath);
-
 		PBRMaterial* agentMaterial = new PBRMaterial();
 		agentMaterial->albedo = glm::vec3(100.0f);
 
@@ -213,27 +197,6 @@ namespace Engine {
 
 		PBRMaterial* wallMaterial = new PBRMaterial();
 		wallMaterial->albedo = glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f;
-
-		Entity* agent = new Entity("Agent");
-		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
-		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		agent->GetTransformComponent()->SetScale(1.0f, 4.0f, 1.0f);
-		agent->AddComponent(new ComponentPathfinder(navGrid, 17.5f, 0.15f));
-		agent->GetPathfinder()->FindPath(start, end);
-		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
-		agent->AddComponent(new ComponentLight(POINT));
-		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
-		agent->GetLightComponent()->CastShadows = false;
-		entityManager->AddEntity(agent);
-
-		Entity* target = new Entity("Target");
-		target->AddComponent(new ComponentTransform(end.x, 3.0f, end.z));
-		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		target->GetGeometryComponent()->ApplyMaterialToModel(path);
-		target->AddComponent(new ComponentLight(POINT));
-		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
-		target->GetLightComponent()->CastShadows = false;
-		entityManager->AddEntity(target);
 
 		// Pathfinding debug grid
 		Entity* baseInstanceNonWalkable = new Entity("Base Instance Non Walkable");
@@ -253,28 +216,6 @@ namespace Engine {
 
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
 
-		std::vector<Entity*> gridEntities;
-		gridEntities.reserve(xNum * zNum);
-
-		int count = 0;
-		for (int j = 0; j < xNum; j++) {
-			for (int k = 0; k < zNum; k++) {
-				if (nodes[count]->type == 'x') {
-					std::string name = std::string("Sphere ") + std::string(std::to_string(count));
-					Entity* sphere = new Entity(name);
-					sphere->AddComponent(new ComponentTransform(nodes[count]->worldPosition.x, nodes[count]->worldPosition.y + 3.0f, nodes[count]->worldPosition.z));
-
-					// Non walkable node
-					baseInstanceNonWalkable->GetGeometryComponent()->AddNewInstanceSource(sphere);
-
-					gridEntities.push_back(sphere);
-					entityManager->AddEntity(sphere);
-				}
-				count++;
-			}
-		}
-
-
 		// Construct scene based on navigation grid
 		glm::vec3 floorScale = glm::vec3(((xNum - 1.0f) * nodeSize) / 2.0f, 0.5f, ((zNum - 1.0f) * nodeSize) / 2.0f);
 		Entity* floor = new Entity("Floor");
@@ -286,10 +227,10 @@ namespace Engine {
 		floor->GetGeometryComponent()->ApplyMaterialToModel(grass);
 		entityManager->AddEntity(floor);
 
-		camera->Position = glm::vec3(floor->GetTransformComponent()->GetWorldPosition().x, 130.0f, floor->GetTransformComponent()->GetWorldPosition().z + nodeSize * 3);
+		camera->Position = glm::vec3(floor->GetTransformComponent()->GetWorldPosition().x, (xNum + zNum) * nodeSize, floor->GetTransformComponent()->GetWorldPosition().z + nodeSize * 3);
 
 		// Create walls
-		count = 0;
+		int count = 0;
 		for (int y = 0; y < zNum; y++) {
 			for (int x = 0; x < xNum; x++) {
 				NavGridNode* currentNode = nodes[(xNum * y) + x];
@@ -335,7 +276,7 @@ namespace Engine {
 						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
 						wall->AddComponent(new ComponentTransform(currentNode->worldPosition.x, 1.5f, currentNode->worldPosition.z));
 						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-						wall->GetTransformComponent()->SetScale(glm::vec3(nodeSize / 2.0f, 3.0f, nodeSize / 2.0f));
+						wall->GetTransformComponent()->SetScale(glm::vec3(nodeSize / 2.0f, 1.5f, nodeSize / 2.0f));
 						wall->GetGeometryComponent()->ApplyMaterialToModel(wallMaterial);
 						entityManager->AddEntity(wall);
 						std::cout << "Wall " << count << " created" << std::endl;
@@ -347,7 +288,7 @@ namespace Engine {
 						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
 						wall->AddComponent(new ComponentTransform((currentNode->worldPosition.x + (rightExtent / 2.0f) * nodeSize) - (nodeSize / 2.0f), 1.5f, currentNode->worldPosition.z));
 						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-						wall->GetTransformComponent()->SetScale(glm::vec3(rightExtent * (nodeSize / 2.0f), 3.0f, nodeSize / 2.0f));
+						wall->GetTransformComponent()->SetScale(glm::vec3(rightExtent * (nodeSize / 2.0f), 1.5f, nodeSize / 2.0f));
 						wall->GetGeometryComponent()->ApplyMaterialToModel(wallMaterial);
 						wall->GetGeometryComponent()->SetTextureScale(glm::vec2(rightExtent, 1.0f));
 						entityManager->AddEntity(wall);
@@ -362,7 +303,7 @@ namespace Engine {
 						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
 						wall->AddComponent(new ComponentTransform(currentNode->worldPosition.x, 1.5f, (currentNode->worldPosition.z + (downExtent / 2.0f) * nodeSize) - nodeSize));
 						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-						wall->GetTransformComponent()->SetScale(glm::vec3(nodeSize / 2.0f, 3.0f, downExtent * (nodeSize / 2.0f)));
+						wall->GetTransformComponent()->SetScale(glm::vec3(nodeSize / 2.0f, 1.5f, downExtent * (nodeSize / 2.0f)));
 						wall->GetGeometryComponent()->ApplyMaterialToModel(wallMaterial);
 						wall->GetGeometryComponent()->SetTextureScale(glm::vec2(downExtent, 1.0f));
 						entityManager->AddEntity(wall);
@@ -373,6 +314,44 @@ namespace Engine {
 				}
 			}
 		}
+
+		glm::vec3 start = glm::vec3(8.0f, 0.0f, 1.0f) * nodeSize;
+		glm::vec3 end = glm::vec3(8.0f, 0.0f, 8.0f) * nodeSize;
+
+		targetIndex = 0;
+		pathTargets.push_back(end);
+		pathTargets.push_back(start);
+		pathTargets.push_back(glm::vec3(6.0f, 0.0f, 1.0f) * nodeSize);
+		pathTargets.push_back(glm::vec3(4.0f, 0.0f, 5.0f) * nodeSize);
+		pathTargets.push_back(glm::vec3(2.0f, 0.0f, 2.0f) * nodeSize);
+		pathTargets.push_back(glm::vec3(1.0f, 0.0f, 8.0f) * nodeSize);
+		pathTargets.push_back(glm::vec3(6.0f, 0.0f, 2.0f) * nodeSize);
+
+		end = glm::vec3(4.0f, 0.0f, 8.0f) * nodeSize;
+
+		bool success = navGrid->FindPath(start, end, navPath);
+
+		Entity* agent = new Entity("Agent");
+		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
+		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		agent->GetTransformComponent()->SetScale(glm::vec3(0.5f, 2.5f, 0.5f) * nodeSize);
+		agent->AddComponent(new ComponentPathfinder(navGrid, 10.0f * nodeSize, 0.15f));
+		agent->GetPathfinder()->FindPath(start, end);
+		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
+		agent->AddComponent(new ComponentLight(POINT));
+		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
+		agent->GetLightComponent()->CastShadows = false;
+		entityManager->AddEntity(agent);
+
+		Entity* target = new Entity("Target");
+		target->AddComponent(new ComponentTransform(end.x, 1.0f, end.z));
+		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		target->GetGeometryComponent()->ApplyMaterialToModel(path);
+		target->GetTransformComponent()->SetScale(glm::vec3(0.5f) * nodeSize);
+		target->AddComponent(new ComponentLight(POINT));
+		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
+		target->GetLightComponent()->CastShadows = false;
+		entityManager->AddEntity(target);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
