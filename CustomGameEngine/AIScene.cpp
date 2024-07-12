@@ -60,28 +60,34 @@ namespace Engine {
 
 		//stateMachine->Update();
 
-		Entity* agent = entityManager->FindEntity("Agent");
+		// Player movement
+		Entity * agent = entityManager->FindEntity("Agent");
+		Entity* target = entityManager->FindEntity("Target");
+
+		float moveSpeed = agent->GetPathfinder()->GetMoveSpeed() * Scene::dt;
+
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_6)) {
+			// Move right
+			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(moveSpeed, 0.0f, 0.0f));
+		}
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_4)) {
+			// Move left
+			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(-moveSpeed, 0.0f, 0.0f));
+		}
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_5)) {
+			// Move down
+			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, moveSpeed));
+		}
+		if (inputManager->IsKeyDown(GLFW_KEY_KP_8)) {
+			// Move up
+			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -moveSpeed));
+		}
 
 		int iterations = 0;
 		if (agent->GetPathfinder()->HasReachedTarget()) {
 			bool success = false;
-			while (!success) {
-				// Find new target
-				targetIndex++;
-				if (targetIndex >= pathTargets.size()) {
-					targetIndex = 0;
-				}
 
-				glm::vec3 target = pathTargets[targetIndex];
-				success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target);
-
-				Entity* targetEntity = entityManager->FindEntity("Target");
-				targetEntity->GetTransformComponent()->SetPosition(glm::vec3(target.x, targetEntity->GetTransformComponent()->GetWorldPosition().y, target.z));
-				iterations++;
-				if (iterations > pathTargets.size() + 1) {
-					break;
-				}
-			}
+			success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target->GetTransformComponent()->GetWorldPosition());
 		}
 	}
 
@@ -146,7 +152,7 @@ namespace Engine {
 		stateMachine->AddTransition(transitionC);
 
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid6.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid4.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -161,7 +167,7 @@ namespace Engine {
 
 	void AIScene::keyDown(int key)
 	{
-
+		
 	}
 
 	void AIScene::CreateEntities()
@@ -316,27 +322,12 @@ namespace Engine {
 		}
 
 		glm::vec3 start = glm::vec3(8.0f, 0.0f, 1.0f) * nodeSize;
-		glm::vec3 end = glm::vec3(8.0f, 0.0f, 8.0f) * nodeSize;
-
-		targetIndex = 0;
-		pathTargets.push_back(end);
-		pathTargets.push_back(start);
-		pathTargets.push_back(glm::vec3(6.0f, 0.0f, 1.0f) * nodeSize);
-		pathTargets.push_back(glm::vec3(4.0f, 0.0f, 5.0f) * nodeSize);
-		pathTargets.push_back(glm::vec3(2.0f, 0.0f, 2.0f) * nodeSize);
-		pathTargets.push_back(glm::vec3(1.0f, 0.0f, 8.0f) * nodeSize);
-		pathTargets.push_back(glm::vec3(6.0f, 0.0f, 2.0f) * nodeSize);
-
-		end = glm::vec3(4.0f, 0.0f, 8.0f) * nodeSize;
-
-		bool success = navGrid->FindPath(start, end, navPath);
 
 		Entity* agent = new Entity("Agent");
 		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		agent->GetTransformComponent()->SetScale(glm::vec3(0.5f, 2.5f, 0.5f) * nodeSize);
 		agent->AddComponent(new ComponentPathfinder(navGrid, 10.0f * nodeSize, 0.15f));
-		agent->GetPathfinder()->FindPath(start, end);
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));
 		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
@@ -344,7 +335,7 @@ namespace Engine {
 		entityManager->AddEntity(agent);
 
 		Entity* target = new Entity("Target");
-		target->AddComponent(new ComponentTransform(end.x, 1.0f, end.z));
+		target->AddComponent(new ComponentTransform(start.x, 1.0f, start.z + 3.5f));
 		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		target->GetGeometryComponent()->ApplyMaterialToModel(path);
 		target->GetTransformComponent()->SetScale(glm::vec3(0.5f) * nodeSize);
