@@ -59,7 +59,7 @@ namespace Engine {
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 
 		//stateMachine->Update();
-
+		
 		// Player movement
 		Entity * agent = entityManager->FindEntity("Agent");
 		Entity* target = entityManager->FindEntity("Target");
@@ -324,9 +324,9 @@ namespace Engine {
 		glm::vec3 start = glm::vec3(8.0f, 0.0f, 1.0f) * nodeSize;
 
 		Entity* agent = new Entity("Agent");
-		agent->AddComponent(new ComponentTransform(start.x, 3.0f, start.z));
+		agent->AddComponent(new ComponentTransform(start.x, 1.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		agent->GetTransformComponent()->SetScale(glm::vec3(0.5f, 2.5f, 0.5f) * nodeSize);
+		agent->GetTransformComponent()->SetScale(glm::vec3(0.5f, 2.5f, 0.5f) * (nodeSize * 0.5f));
 		agent->AddComponent(new ComponentPathfinder(navGrid, 10.0f * nodeSize, nodeSize));
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));
@@ -338,7 +338,7 @@ namespace Engine {
 		target->AddComponent(new ComponentTransform(start.x, 1.0f, start.z + 3.5f));
 		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		target->GetGeometryComponent()->ApplyMaterialToModel(path);
-		target->GetTransformComponent()->SetScale(glm::vec3(0.5f) * nodeSize);
+		target->GetTransformComponent()->SetScale(glm::vec3(0.5f) * (nodeSize * 0.5f));
 		target->AddComponent(new ComponentLight(POINT));
 		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
 		target->GetLightComponent()->CastShadows = false;
@@ -362,5 +362,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemPathfinding(), UPDATE_SYSTEMS);
+		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 	}
 }
