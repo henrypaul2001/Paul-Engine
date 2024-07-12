@@ -6,6 +6,8 @@ namespace Engine {
 		nodeSize = 0;
 		gridWidth = 0;
 		gridHeight = 0;
+		straightCost = 0.0f;
+		diagonalCost = 0.0f;
 	}
 
 	NavigationGrid::NavigationGrid(const std::string& filepath)
@@ -16,6 +18,8 @@ namespace Engine {
 			infile >> nodeSize;
 			infile >> gridWidth;
 			infile >> gridHeight;
+			infile >> straightCost;
+			infile >> diagonalCost;
 
 			allNodes.reserve(gridWidth * gridHeight);
 			for (int i = 0; i < gridWidth * gridHeight; i++) {
@@ -86,10 +90,10 @@ namespace Engine {
 					for (int i = 0; i < 8; i++) {
 						if (n->connected[i]) {
 							if (n->connected[i]->type == '.') {
-								float cost = 1.0f;
+								float cost = straightCost;
 								if (i == 6 || i == 5 || i == 4 || i == 7) {
 									// diagonal connection
-									cost = 1.4f;
+									cost = diagonalCost;
 								}
 								n->costs[i] = cost;
 							}
@@ -108,6 +112,8 @@ namespace Engine {
 			nodeSize = 0;
 			gridWidth = 0;
 			gridHeight = 0;
+			straightCost = 0.0f;
+			diagonalCost = 0.0f;
 		}
 	}
 

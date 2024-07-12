@@ -1,6 +1,8 @@
 0.5
 20
 20
+1.0
+1.4
 xxxxxxxxxxxxxxxxxxxx
 x.....xx.x.........x
 xxx.x.xx.x....x....x

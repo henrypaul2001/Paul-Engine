@@ -56,6 +56,9 @@ namespace Engine {
 		int gridWidth;
 		int gridHeight;
 
+		float straightCost;
+		float diagonalCost;
+
 		std::vector<NavGridNode*> allNodes;
 	};
 }
