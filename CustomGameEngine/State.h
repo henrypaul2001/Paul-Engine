@@ -8,6 +8,8 @@ namespace Engine {
 		~State() {}
 
 		virtual void Update() = 0;
+		virtual void Enter() = 0;
+		virtual void Exit() = 0;
 
 		const std::string& GetName() const { return name; }
 	protected:

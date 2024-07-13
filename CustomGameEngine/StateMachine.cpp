@@ -16,6 +16,7 @@ namespace Engine {
 		states.emplace_back(newState);
 		if (activeState == nullptr) {
 			activeState = newState;
+			activeState->Enter();
 		}
 	}
 
@@ -34,12 +35,14 @@ namespace Engine {
 			std::pair<TransitionIterator, TransitionIterator> range = statesToTransitions.equal_range(activeState);
 			for (TransitionIterator& i = range.first; i != range.second; i++) {
 				if (i->second->Condition()) {
+					activeState->Exit();
 					State* newState = i->second->GetDestinationState();
 					stateHistory.push(activeState);
 					if (stateHistory.size() > maxHistorySize) {
 						stateHistory.pop();
 					}
 					activeState = newState;
+					activeState->Enter();
 				}
 			}
 		}

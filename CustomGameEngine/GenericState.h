@@ -18,6 +18,15 @@ namespace Engine {
 				function(data);
 			}
 		}
+
+		void Enter() override {
+
+		}
+
+		void Exit() override {
+
+		}
+
 	protected:
 		StateFunc function;
 		void* data;

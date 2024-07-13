@@ -100,6 +100,18 @@
     <Filter Include="Source Files\Engine\Utility\Pathfinding">
       <UniqueIdentifier>{c698af7c-4f1d-47d5-a182-76ef0bb10dc9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Utility">
+      <UniqueIdentifier>{66ea4d2f-8feb-45d7-8f24-5c5af45f24c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Utility\AI">
+      <UniqueIdentifier>{50b9d7a5-405b-4be8-84e4-c4fafa85d19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Utility">
+      <UniqueIdentifier>{d0fc7767-1a63-4946-87f4-2bf2345a7122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Utility\AI">
+      <UniqueIdentifier>{bcba806a-1873-4b07-b71b-5400b5e1a52b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -374,6 +386,9 @@
     </ClInclude>
     <ClInclude Include="ComponentStateController.h">
       <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="IdleState.h">
+      <Filter>Header Files\Game\Utility\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -655,6 +670,9 @@
     </ClCompile>
     <ClCompile Include="ComponentStateController.cpp">
       <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="IdleState.cpp">
+      <Filter>Source Files\Game\Utility\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
