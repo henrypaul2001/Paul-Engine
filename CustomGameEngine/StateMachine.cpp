@@ -8,7 +8,14 @@ namespace Engine {
 
 	StateMachine::~StateMachine()
 	{
-
+		// delete states and transitions
+		for (State* s : states) {
+			std::pair<TransitionIterator, TransitionIterator> range = statesToTransitions.equal_range(s);
+			for (TransitionIterator& i = range.first; i != range.second; i++) {
+				delete i->second;
+			}
+			delete s;
+		}
 	}
 
 	void StateMachine::AddState(State* newState)
