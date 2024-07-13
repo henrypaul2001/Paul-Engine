@@ -163,6 +163,7 @@
     <ClInclude Include="ComponentParticleGenerator.h" />
     <ClInclude Include="ComponentPathfinder.h" />
     <ClInclude Include="ComponentPhysics.h" />
+    <ClInclude Include="ComponentStateController.h" />
     <ClInclude Include="ComponentUICanvas.h" />
     <ClInclude Include="ComponentVelocity.h" />
     <ClInclude Include="ComponentTransform.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="ComponentParticleGenerator.cpp" />
     <ClCompile Include="ComponentPathfinder.cpp" />
     <ClCompile Include="ComponentPhysics.cpp" />
+    <ClCompile Include="ComponentStateController.cpp" />
     <ClCompile Include="ComponentUICanvas.cpp" />
     <ClCompile Include="ComponentVelocity.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />

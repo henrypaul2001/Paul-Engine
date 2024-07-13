@@ -120,21 +120,21 @@ namespace Engine {
 			(*realData)++;
 			std::cout << *realData << " | ";
 			std::cout << "In State A" << std::endl;
-			};
+		};
 
 		StateFunc BFunc = [](void* data) {
 			int* realData = (int*)data;
 			(*realData)--;
 			std::cout << *realData << " | ";
 			std::cout << "In State B" << std::endl;
-			};
+		};
 
 		StateFunc CFunc = [](void* data) {
 			int* realData = (int*)data;
 			(*realData) -= 4;
 			std::cout << *realData << " | ";
 			std::cout << "In State C" << std::endl;
-			};
+		};
 
 		stateA = new GenericState("State A", AFunc, (void*)someData);
 		stateB = new GenericState("State B", BFunc, (void*)someData);
@@ -331,7 +331,7 @@ namespace Engine {
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));
 		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
-		agent->GetLightComponent()->CastShadows = false;
+		agent->GetLightComponent()->CastShadows = true;
 		entityManager->AddEntity(agent);
 
 		Entity* target = new Entity("Target");
@@ -341,7 +341,7 @@ namespace Engine {
 		target->GetTransformComponent()->SetScale(glm::vec3(0.5f) * (nodeSize * 0.5f));
 		target->AddComponent(new ComponentLight(POINT));
 		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
-		target->GetLightComponent()->CastShadows = false;
+		target->GetLightComponent()->CastShadows = true;
 		entityManager->AddEntity(target);
 
 		Entity* canvas = new Entity("Canvas");

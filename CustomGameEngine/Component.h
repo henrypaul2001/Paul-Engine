@@ -17,7 +17,7 @@ namespace Engine
 		COMPONENT_ANIMATOR = 1 << 9,
 		COMPONENT_AUDIO_SOURCE = 1 << 10,
 		COMPONENT_PARTICLE_GENERATOR = 1 << 11,
-		COMPONENT_AI_CONTROLLER = 1 << 12,
+		COMPONENT_STATE_CONTROLLER = 1 << 12,
 		COMPONENT_PATHFINDER = 1 << 13,
 	};
 	inline ComponentTypes operator| (ComponentTypes a, ComponentTypes b) { return (ComponentTypes)((int)a | (int)b); }
