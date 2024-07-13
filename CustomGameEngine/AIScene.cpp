@@ -3,6 +3,8 @@
 #include "UIText.h"
 #include "SystemUIRender.h"
 #include "SystemPathfinding.h"
+#include "IdleState.h"
+#include "SystemStateMachineUpdater.h"
 namespace Engine {
 	AIScene::AIScene(SceneManager* sceneManager) : Scene(sceneManager)
 	{
@@ -13,14 +15,6 @@ namespace Engine {
 
 	AIScene::~AIScene()
 	{
-		delete stateMachine;
-		delete stateA;
-		delete stateB;
-		delete stateC;
-		delete transitionA;
-		delete transitionB;
-		delete transitionC;
-		delete someData;
 		delete navGrid;
 	}
 
@@ -83,12 +77,12 @@ namespace Engine {
 			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -moveSpeed));
 		}
 
-		int iterations = 0;
-		if (agent->GetPathfinder()->HasReachedTarget()) {
-			bool success = false;
+		//int iterations = 0;
+		//if (agent->GetPathfinder()->HasReachedTarget()) {
+		//	bool success = false;
 
-			success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target->GetTransformComponent()->GetWorldPosition());
-		}
+		//	success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target->GetTransformComponent()->GetWorldPosition());
+		//}
 	}
 
 	void AIScene::Render()
@@ -110,49 +104,8 @@ namespace Engine {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		// State machine
-		stateMachine = new StateMachine();
-
-		someData = new int(0);
-
-		StateFunc AFunc = [](void* data) {
-			int* realData = (int*)data;
-			(*realData)++;
-			std::cout << *realData << " | ";
-			std::cout << "In State A" << std::endl;
-		};
-
-		StateFunc BFunc = [](void* data) {
-			int* realData = (int*)data;
-			(*realData)--;
-			std::cout << *realData << " | ";
-			std::cout << "In State B" << std::endl;
-		};
-
-		StateFunc CFunc = [](void* data) {
-			int* realData = (int*)data;
-			(*realData) -= 4;
-			std::cout << *realData << " | ";
-			std::cout << "In State C" << std::endl;
-		};
-
-		stateA = new GenericState("State A", AFunc, (void*)someData);
-		stateB = new GenericState("State B", BFunc, (void*)someData);
-		stateC = new GenericState("State C", CFunc, (void*)someData);
-		stateMachine->AddState(stateA);
-		stateMachine->AddState(stateB);
-		stateMachine->AddState(stateC);
-
-		transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
-		transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateC); // if "someData" is equal to 0, transition from state B to state C
-		transitionC = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::LessThanCondition, *someData, -100, stateC, stateA); // if "someData" is less than -100, transition from state C to state A
-
-		stateMachine->AddTransition(transitionA);
-		stateMachine->AddTransition(transitionB);
-		stateMachine->AddTransition(transitionC);
-
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid7.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid8.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -323,6 +276,38 @@ namespace Engine {
 
 		glm::vec3 start = glm::vec3(8.0f, 0.0f, 1.0f) * nodeSize;
 
+		// AI states
+		StateFunc patrol = [](void* data) {
+			Entity* owner = (Entity*)data;
+
+			if (owner) {
+
+			}
+		};
+
+		StateFunc chase = [](void* data) {
+			Entity* owner = (Entity*)data;
+
+			if (owner) {
+
+			}
+		};
+
+		//stateA = new GenericState("State A", AFunc, (void*)someData);
+		//stateB = new GenericState("State B", BFunc, (void*)someData);
+		//stateC = new GenericState("State C", CFunc, (void*)someData);
+		//stateMachine->AddState(stateA);
+		//stateMachine->AddState(stateB);
+		//stateMachine->AddState(stateC);
+
+		//transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
+		//transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateC); // if "someData" is equal to 0, transition from state B to state C
+		//transitionC = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::LessThanCondition, *someData, -100, stateC, stateA); // if "someData" is less than -100, transition from state C to state A
+
+		//stateMachine->AddTransition(transitionA);
+		//stateMachine->AddTransition(transitionB);
+		//stateMachine->AddTransition(transitionC);
+
 		Entity* agent = new Entity("Agent");
 		agent->AddComponent(new ComponentTransform(start.x, 1.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
@@ -332,6 +317,12 @@ namespace Engine {
 		agent->AddComponent(new ComponentLight(POINT));
 		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
 		agent->GetLightComponent()->CastShadows = true;
+
+		ComponentStateController* agentStateController = new ComponentStateController();
+		agentStateController->GetStateMachine().AddState(new IdleState(agent));
+
+		agent->AddComponent(agentStateController);
+		agent->GetPathfinder()->SetEntityCanMove(false);
 		entityManager->AddEntity(agent);
 
 		Entity* target = new Entity("Target");
@@ -363,5 +354,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemPathfinding(), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
+		systemManager->AddSystem(new SystemStateMachineUpdater(), UPDATE_SYSTEMS);
 	}
 }

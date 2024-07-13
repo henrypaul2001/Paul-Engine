@@ -22,16 +22,8 @@ namespace Engine {
 		void keyDown(int key) override;
 
 	private:
-		StateMachine* stateMachine;
-		GenericState* stateA;
-		GenericState* stateB;
-		GenericState* stateC;
-		GenericStateTransition<int&, int>* transitionA;
-		GenericStateTransition<int&, int>* transitionB;
-		GenericStateTransition<int&, int>* transitionC;
 		NavigationGrid* navGrid;
 		NavigationPath navPath;
-		int* someData;
 
 		void CreateEntities();
 		void CreateSystems();

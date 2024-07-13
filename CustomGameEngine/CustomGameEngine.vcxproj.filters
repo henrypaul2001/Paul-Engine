@@ -390,6 +390,9 @@
     <ClInclude Include="IdleState.h">
       <Filter>Header Files\Game\Utility\AI</Filter>
     </ClInclude>
+    <ClInclude Include="SystemStateMachineUpdater.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -673,6 +676,9 @@
     </ClCompile>
     <ClCompile Include="IdleState.cpp">
       <Filter>Source Files\Game\Utility\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemStateMachineUpdater.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

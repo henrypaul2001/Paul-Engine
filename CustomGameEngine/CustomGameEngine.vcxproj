@@ -224,6 +224,7 @@
     <ClInclude Include="SystemRender.h" />
     <ClInclude Include="SystemShadowMapping.h" />
     <ClInclude Include="SystemSkeletalAnimationUpdater.h" />
+    <ClInclude Include="SystemStateMachineUpdater.h" />
     <ClInclude Include="SystemUIMouseInteraction.h" />
     <ClInclude Include="SystemUIRender.h" />
     <ClInclude Include="TextFont.h" />
@@ -320,6 +321,7 @@
     <ClCompile Include="SystemRender.cpp" />
     <ClCompile Include="SystemShadowMapping.cpp" />
     <ClCompile Include="SystemSkeletalAnimationUpdater.cpp" />
+    <ClCompile Include="SystemStateMachineUpdater.cpp" />
     <ClCompile Include="SystemUIMouseInteraction.cpp" />
     <ClCompile Include="SystemUIRender.cpp" />
     <ClCompile Include="TextFont.cpp" />
