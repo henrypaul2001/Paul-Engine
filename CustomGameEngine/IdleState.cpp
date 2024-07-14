@@ -14,6 +14,7 @@ namespace Engine {
 			isLookingAround = false;
 			isSteppingAround = false;
 			moveSpeed = 0.05f;
+			rotateSpeed = 0.5f;
 			secondsToWait = 2.5f;
 			secondsWaited = 0.0f;
 		}
@@ -33,15 +34,18 @@ namespace Engine {
 		if (owner && owner->GetTransformComponent()) {
 			ComponentTransform* transform = owner->GetTransformComponent();
 			if (isLookingAround) {
-				// Rotate towards target orientation
+				glm::quat currentOrientation = transform->GetOrientation();
 
-				// not yet implemented
+				// Rotate current orientation towards target orientation at rotateSpeed
+				glm::quat rotatedOrientation = glm::slerp(currentOrientation, targetOrientation, rotateSpeed * Scene::dt);
+				transform->SetOrientation(rotatedOrientation);
 
-				isLookingAround = false;
-				DecideNextActivity();
+				if (glm::length2(rotatedOrientation - targetOrientation) < (0.001f * 0.001f)) {
+					isLookingAround = false;
+					DecideNextActivity();
+				}
 			}
 			else if (isSteppingAround) {
-
 				// Check if reached target
 				glm::vec3 currentPosition = transform->GetWorldPosition();
 				float distanceToTargetSquared = glm::distance2(currentPosition, targetPosition);
@@ -91,6 +95,8 @@ namespace Engine {
 			isSteppingAround = false;
 
 			// Create new target orientation
+			float randomAngle = Random(-180.0f, 180.0f);
+			targetOrientation = glm::angleAxis(glm::radians(randomAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 		}
 		else {
 			isLookingAround = false;

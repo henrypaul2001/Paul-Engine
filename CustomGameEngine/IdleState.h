@@ -27,6 +27,7 @@ namespace Engine {
 		glm::vec3 targetPosition;
 
 		float moveSpeed;
+		float rotateSpeed;
 
 		float secondsToWait;
 		float secondsWaited;
