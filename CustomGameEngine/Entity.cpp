@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "EntityManager.h"
 namespace Engine
 {
 	Entity::Entity(std::string name) {
@@ -18,6 +19,16 @@ namespace Engine
 			}
 		}
 		return nullptr;
+	}
+
+	const EntityManager* Entity::GetEntityManager() const
+	{
+		return entityManager;
+	}
+
+	void Entity::SetEntityManager(EntityManager* manager)
+	{
+		this->entityManager = manager;
 	}
 
 	bool Entity::ContainsComponents(const ComponentTypes MASK)

@@ -24,6 +24,7 @@ namespace Engine
 		_ASSERT(transform != nullptr, "Cannot create entity without transform component");
 
 		entityList.push_back(entity);
+		entity->SetEntityManager(this);
 
 		if (light != nullptr) {
 			if (light->GetLightType() == DIRECTIONAL) {

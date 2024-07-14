@@ -14,12 +14,16 @@
 #include "ComponentStateController.h"
 namespace Engine
 {
+	class EntityManager;
+
 	class Entity
 	{
 	private:
 		std::string name;
 		std::vector<Component*> componentList;
 		ComponentTypes mask;
+
+		EntityManager* entityManager;
 
 	public:
 		Entity(std::string name);
@@ -43,6 +47,9 @@ namespace Engine
 		ComponentParticleGenerator* GetParticleGenerator() { return dynamic_cast<ComponentParticleGenerator*>(GetComponent(COMPONENT_PARTICLE_GENERATOR)); }
 		ComponentStateController* GetStateController() { return dynamic_cast<ComponentStateController*>(GetComponent(COMPONENT_STATE_CONTROLLER)); }
 		ComponentPathfinder* GetPathfinder() { return dynamic_cast<ComponentPathfinder*>(GetComponent(COMPONENT_PATHFINDER)); }
+
+		const EntityManager* GetEntityManager() const;
+		void SetEntityManager(EntityManager* manager);
 
 		bool ContainsComponents(const ComponentTypes MASK);
 
