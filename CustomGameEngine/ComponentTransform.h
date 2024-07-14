@@ -15,6 +15,7 @@ namespace Engine
 		glm::vec3 rotationAxis;
 		float rotationAngle;
 		glm::vec3 scale;
+		glm::vec3 forwardVector;
 
 		glm::quat orientation;
 
@@ -45,6 +46,7 @@ namespace Engine
 		float RotationAngle() { return rotationAngle; }
 		glm::vec3 Scale() { return scale; }
 		glm::mat4 GetWorldModelMatrix();
+		const glm::vec3& GetForwardVector() const { return forwardVector; }
 
 		glm::vec3 GetWorldPosition();
 

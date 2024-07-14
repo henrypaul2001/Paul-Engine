@@ -13,6 +13,8 @@ namespace Engine
 		
 		orientation = glm::angleAxis(glm::radians(rotationAngle), rotationAxis);
 
+		forwardVector = glm::vec3(0.0f, 0.0f, -1.0f) * orientation;
+
 		UpdateModelMatrix();
 	}
 
@@ -26,6 +28,8 @@ namespace Engine
 
 		orientation = glm::angleAxis(glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
+		forwardVector = glm::vec3(0.0f, 0.0f, -1.0f) * orientation;
+
 		UpdateModelMatrix();
 	}
 
@@ -37,6 +41,8 @@ namespace Engine
 		this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		orientation = glm::angleAxis(glm::radians(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+		forwardVector = glm::vec3(0.0f, 0.0f, -1.0f) * orientation;
 
 		UpdateModelMatrix();
 	}
@@ -82,6 +88,7 @@ namespace Engine
 	void ComponentTransform::SetOrientation(glm::quat newOrientation)
 	{
 		orientation = newOrientation;
+		forwardVector *= orientation;
 		UpdateModelMatrix();
 	}
 
