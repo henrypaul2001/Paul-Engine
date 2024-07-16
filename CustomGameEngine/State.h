@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 namespace Engine {
 	class State
 	{
@@ -8,8 +9,8 @@ namespace Engine {
 		~State() {}
 
 		virtual void Update() = 0;
-		virtual void Enter() = 0;
-		virtual void Exit() = 0;
+		virtual void Enter();
+		virtual void Exit();
 
 		const std::string& GetName() const { return name; }
 	protected:
