@@ -20,6 +20,8 @@ namespace Engine {
 		void Update();
 
 		const std::queue<State*>& GetStateHistory() const { return stateHistory; }
+
+		const std::string& GetActiveStateName() const { return activeState->GetName(); }
 	private:
 		State* activeState;
 		std::vector<State*> states;
