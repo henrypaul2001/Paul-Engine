@@ -12,6 +12,9 @@ namespace Engine {
 		inputManager->SetCameraPointer(camera);
 		distanceSqr = new float;
 		distanceToHomeSqr = new float;
+		hasReachedDestination = new bool;
+		readyToPatrol = new bool;
+		secondsToWait = Random(3.5f, 10.0f);
 		SetupScene();
 	}
 
@@ -20,6 +23,7 @@ namespace Engine {
 		delete navGrid;
 		delete distanceSqr;
 		delete distanceToHomeSqr;
+		delete hasReachedDestination;
 	}
 
 	void AIScene::ChangePostProcessEffect()
@@ -60,7 +64,7 @@ namespace Engine {
 		Entity * agent = entityManager->FindEntity("Agent");
 		Entity* target = entityManager->FindEntity("Target");
 
-		float moveSpeed = agent->GetPathfinder()->GetMoveSpeed() * Scene::dt;
+		float moveSpeed = 2.5f * Scene::dt;
 
 		if (inputManager->IsKeyDown(GLFW_KEY_KP_6)) {
 			// Move right
@@ -81,6 +85,21 @@ namespace Engine {
 
 		*distanceSqr = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agent->GetTransformComponent()->GetWorldPosition());
 		*distanceToHomeSqr = glm::distance2(agent->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
+		*hasReachedDestination = agent->GetPathfinder()->HasReachedTarget();
+
+		*readyToPatrol = false;
+		if (agent->GetStateController()->GetStateMachine().GetActiveStateName() == "Idle") {
+			secondsWaited += Scene::dt;
+
+			if (secondsWaited >= secondsToWait) {
+				*readyToPatrol = true;
+				secondsWaited = 0.0f;
+				secondsToWait = Random(3.5f, 10.0f);
+			}
+		}
+		else {
+			secondsWaited = 0.0f;
+		}
 	}
 
 	void AIScene::Render()
@@ -274,58 +293,8 @@ namespace Engine {
 
 		glm::vec3 start = glm::vec3(8.0f, 0.0f, 1.0f) * nodeSize;
 
-		// AI states
-		StateFunc patrol = [](void* data) {
-			Entity* owner = (Entity*)data;
-
-			if (owner) {
-
-			}
-		};
-
-		StateFunc chase = [](void* data) {
-			Entity* owner = (Entity*)data;
-
-			if (owner) {
-				if (owner->GetPathfinder()->HasReachedTarget()) {
-					bool success = owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), owner->GetEntityManager()->FindEntity("Target")->GetTransformComponent()->GetWorldPosition());
-				}
-			}
-		};
-
-		StateFunc chaseEnter = [](void* data) {
-			Entity* owner = (Entity*)data;
-
-			if (owner) {
-				owner->GetPathfinder()->Reset();
-			}
-		};
-
-		StateFunc walkHomeEnter = [](void* data) {
-			Entity* owner = (Entity*)data;
-			if (owner) {
-				owner->GetPathfinder()->Reset();
-				owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
-			}
-		};
-
-		//stateA = new GenericState("State A", AFunc, (void*)someData);
-		//stateB = new GenericState("State B", BFunc, (void*)someData);
-		//stateC = new GenericState("State C", CFunc, (void*)someData);
-		//stateMachine->AddState(stateA);
-		//stateMachine->AddState(stateB);
-		//stateMachine->AddState(stateC);
-
-		//transitionA = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::GreaterThanCondition, *someData, 100, stateA, stateB); // if "someData" is greater than 10, transition from state A to state B
-		//transitionB = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::EqualToCondition, *someData, 0, stateB, stateC); // if "someData" is equal to 0, transition from state B to state C
-		//transitionC = new GenericStateTransition<int&, int>(GenericStateTransition<int&, int>::LessThanCondition, *someData, -100, stateC, stateA); // if "someData" is less than -100, transition from state C to state A
-
-		//stateMachine->AddTransition(transitionA);
-		//stateMachine->AddTransition(transitionB);
-		//stateMachine->AddTransition(transitionC);
-
 		Entity* target = new Entity("Target");
-		target->AddComponent(new ComponentTransform(start.x, 1.0f, start.z + 7.5f));
+		target->AddComponent(new ComponentTransform(start.x, 1.0f, start.z + 12.5f));
 		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		target->GetGeometryComponent()->ApplyMaterialToModel(path);
 		target->GetTransformComponent()->SetScale(glm::vec3(0.5f)* (nodeSize * 0.5f));
@@ -346,6 +315,66 @@ namespace Engine {
 
 		ComponentStateController* agentStateController = new ComponentStateController();
 
+		// AI states
+		StateFunc chase = [](void* data) {
+			Entity* owner = (Entity*)data;
+
+			if (owner) {
+				if (owner->GetPathfinder()->HasReachedTarget()) {
+					bool success = owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), owner->GetEntityManager()->FindEntity("Target")->GetTransformComponent()->GetWorldPosition());
+				}
+			}
+		};
+
+		StateFunc chaseEnter = [](void* data) {
+			Entity* owner = (Entity*)data;
+
+			if (owner) {
+				owner->GetPathfinder()->Reset();
+				owner->GetPathfinder()->SetMoveSpeed(2.5f);
+			}
+		};
+
+		StateFunc walkHomeEnter = [](void* data) {
+			Entity* owner = (Entity*)data;
+			if (owner) {
+				owner->GetPathfinder()->Reset();
+				owner->GetPathfinder()->SetMoveSpeed(1.5f);
+				owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
+			}
+		};
+
+		StateFunc patrolEnter = [](void* data) {
+			Entity* owner = (Entity*)data;
+
+			if (owner) {
+
+				std::vector<glm::vec3> patrolPoints;
+				patrolPoints.push_back(glm::vec3(1.0f, 1.0f, 0.25f));
+				patrolPoints.push_back(glm::vec3(4.0f, 1.0f, 0.25f));
+				patrolPoints.push_back(glm::vec3(1.0f, 1.0f, 3.25f));
+				patrolPoints.push_back(glm::vec3(4.0f, 1.0f, 3.25f));
+
+				int random = Random(0.0f, patrolPoints.size());
+
+				glm::vec3 randomPatrolPoint = patrolPoints[random];
+
+				glm::vec3 currentPos = owner->GetTransformComponent()->GetWorldPosition();
+
+				while (glm::distance(randomPatrolPoint, currentPos) <= 0.3f) {
+					// Already at this patrol point, find another
+					patrolPoints.erase(patrolPoints.begin() + random);
+
+					int random = Random(0.0f, patrolPoints.size());
+
+					randomPatrolPoint = patrolPoints[random];
+				}
+
+				owner->GetPathfinder()->SetMoveSpeed(0.5f);
+				owner->GetPathfinder()->FindPath(currentPos, randomPatrolPoint);
+			}
+		};
+
 		// Idle state
 		IdleState* idle = new IdleState(agent);
 		agentStateController->GetStateMachine().AddState(idle);
@@ -358,6 +387,16 @@ namespace Engine {
 		GenericState* walkHomeState = new GenericState("Walk Home", nullptr, agent, walkHomeEnter);
 		agentStateController->GetStateMachine().AddState(walkHomeState);
 
+		// Patrol state
+		GenericState* patrolState = new GenericState("Patrol", nullptr, agent, patrolEnter);
+		agentStateController->GetStateMachine().AddState(patrolState);
+
+		GenericStateTransition<bool&, bool>* patrolToIdleTransition = new GenericStateTransition<bool&, bool>(GenericStateTransition<bool&, bool>::EqualToCondition, *hasReachedDestination, true, patrolState, idle);
+		agentStateController->GetStateMachine().AddTransition(patrolToIdleTransition);
+
+		GenericStateTransition<float&, float>* patrolToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), patrolState, chaseState);
+		agentStateController->GetStateMachine().AddTransition(patrolToChaseTransition);
+
 		GenericStateTransition<float&, float>* walkHomeToIdleTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceToHomeSqr, (1.5f * 1.5f), walkHomeState, idle);
 		agentStateController->GetStateMachine().AddTransition(walkHomeToIdleTransition);
 
@@ -367,13 +406,14 @@ namespace Engine {
 		GenericStateTransition<float&, float>* idleToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), idle, chaseState);
 		agentStateController->GetStateMachine().AddTransition(idleToChaseTransition);
 
+		GenericStateTransition<bool&, bool>* idleToPatrolTransition = new GenericStateTransition<bool&, bool>(GenericStateTransition<bool&, bool>::EqualToCondition, *readyToPatrol, true, idle, patrolState);
+		agentStateController->GetStateMachine().AddTransition(idleToPatrolTransition);
+
 		GenericStateTransition<float&, float>* chaseToWalkHomeTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::GreaterThanCondition, *distanceSqr, (5.0f * 5.0f), chaseState, walkHomeState);
 		agentStateController->GetStateMachine().AddTransition(chaseToWalkHomeTransition);
 
 		agent->AddComponent(agentStateController);
 		entityManager->AddEntity(agent);
-
-
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

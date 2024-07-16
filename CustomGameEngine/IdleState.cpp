@@ -89,6 +89,8 @@ namespace Engine {
 	void IdleState::Enter()
 	{
 		State::Enter();
+		startPosition = owner->GetTransformComponent()->GetWorldPosition();
+		startOrientation = owner->GetTransformComponent()->GetOrientation();
 		owner->GetPathfinder()->Reset();
 		secondsWaited = 0.0f;
 		isLookingAround = false;
@@ -128,8 +130,8 @@ namespace Engine {
 			// Create new target position
 			targetPosition = startPosition;
 
-			float randomX = Random(-0.25f, 0.25f);
-			float randomZ = Random(-0.25f, 0.25f);
+			float randomX = Random(-0.15f, 0.15f);
+			float randomZ = Random(-0.15f, 0.15f);
 
 			targetPosition.x += randomX;
 			targetPosition.z += randomZ;
