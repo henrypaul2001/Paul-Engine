@@ -53,3 +53,11 @@ This is currently under development. Below is a preview of what I have so far:
 ### Images
 
 ### Buttons
+
+## AI
+
+### State Machines
+
+### A* pathfinding
+
+### 2D navigation grid read from text files
