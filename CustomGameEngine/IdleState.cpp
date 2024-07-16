@@ -88,12 +88,17 @@ namespace Engine {
 
 	void IdleState::Enter()
 	{
+		State::Enter();
+		owner->GetPathfinder()->Reset();
+		secondsWaited = 0.0f;
+		isLookingAround = false;
+		isSteppingAround = false;
 		DecideNextActivity();
 	}
 
 	void IdleState::Exit()
 	{
-
+		State::Exit();
 	}
 
 	void IdleState::DecideNextActivity()

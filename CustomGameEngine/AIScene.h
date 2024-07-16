@@ -25,6 +25,8 @@ namespace Engine {
 		NavigationGrid* navGrid;
 		NavigationPath navPath;
 
+		float* distanceSqr;
+
 		void CreateEntities();
 		void CreateSystems();
 	};

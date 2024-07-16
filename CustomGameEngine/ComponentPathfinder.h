@@ -34,6 +34,12 @@ namespace Engine {
 		void SetEntityCanMove(const bool canMove) { this->entityCanMove = canMove; }
 		const bool GetEntityCanMove() const { return entityCanMove; }
 
+		void Reset() {
+			targetReached = true;
+			activePath = NavigationPath();
+			nextPosition = glm::vec3(0.0f);
+		}
+
 	private:
 		float moveSpeed;
 		float nextPositionDistanceCheck;

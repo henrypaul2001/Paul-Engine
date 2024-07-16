@@ -10,12 +10,14 @@ namespace Engine {
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
+		distanceSqr = new float;
 		SetupScene();
 	}
 
 	AIScene::~AIScene()
 	{
 		delete navGrid;
+		delete distanceSqr;
 	}
 
 	void AIScene::ChangePostProcessEffect()
@@ -51,8 +53,6 @@ namespace Engine {
 
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
-
-		//stateMachine->Update();
 		
 		// Player movement
 		Entity * agent = entityManager->FindEntity("Agent");
@@ -77,12 +77,7 @@ namespace Engine {
 			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -moveSpeed));
 		}
 
-		//int iterations = 0;
-		//if (agent->GetPathfinder()->HasReachedTarget()) {
-		//	bool success = false;
-
-		//	success = agent->GetPathfinder()->FindPath(agent->GetTransformComponent()->GetWorldPosition(), target->GetTransformComponent()->GetWorldPosition());
-		//}
+		*distanceSqr = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agent->GetTransformComponent()->GetWorldPosition());
 	}
 
 	void AIScene::Render()
@@ -105,7 +100,7 @@ namespace Engine {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Nav grid
-		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid8.txt");
+		navGrid = new NavigationGrid("Data/NavigationGrid/TestGrid7.txt");
 
 		CreateSystems();
 		CreateEntities();
@@ -287,9 +282,11 @@ namespace Engine {
 
 		StateFunc chase = [](void* data) {
 			Entity* owner = (Entity*)data;
-
+			//owner->GetPathfinder()->SetEntityCanMove(true);
 			if (owner) {
-
+				if (owner->GetPathfinder()->HasReachedTarget()) {
+					bool success = owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), owner->GetEntityManager()->FindEntity("Target")->GetTransformComponent()->GetWorldPosition());
+				}
 			}
 		};
 
@@ -308,6 +305,16 @@ namespace Engine {
 		//stateMachine->AddTransition(transitionB);
 		//stateMachine->AddTransition(transitionC);
 
+		Entity* target = new Entity("Target");
+		target->AddComponent(new ComponentTransform(start.x, 1.0f, start.z + 7.5f));
+		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		target->GetGeometryComponent()->ApplyMaterialToModel(path);
+		target->GetTransformComponent()->SetScale(glm::vec3(0.5f)* (nodeSize * 0.5f));
+		target->AddComponent(new ComponentLight(POINT));
+		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
+		target->GetLightComponent()->CastShadows = true;
+		entityManager->AddEntity(target);
+
 		Entity* agent = new Entity("Agent");
 		agent->AddComponent(new ComponentTransform(start.x, 1.0f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
@@ -319,21 +326,23 @@ namespace Engine {
 		agent->GetLightComponent()->CastShadows = true;
 
 		ComponentStateController* agentStateController = new ComponentStateController();
-		agentStateController->GetStateMachine().AddState(new IdleState(agent));
+		IdleState* idle = new IdleState(agent);
+		agentStateController->GetStateMachine().AddState(idle);
+
+		// Chase state
+		GenericState* chaseState = new GenericState("Chase", chase, agent);
+		agentStateController->GetStateMachine().AddState(chaseState);
+
+		GenericStateTransition<float&, float>* idleTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), idle, chaseState);
+		agentStateController->GetStateMachine().AddTransition(idleTransition);
+
+		GenericStateTransition<float&, float>* chaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::GreaterThanCondition, *distanceSqr, (5.0f * 5.0f), chaseState, idle);
+		agentStateController->GetStateMachine().AddTransition(chaseTransition);
 
 		agent->AddComponent(agentStateController);
-		agent->GetPathfinder()->SetEntityCanMove(false);
 		entityManager->AddEntity(agent);
 
-		Entity* target = new Entity("Target");
-		target->AddComponent(new ComponentTransform(start.x, 1.0f, start.z + 3.5f));
-		target->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		target->GetGeometryComponent()->ApplyMaterialToModel(path);
-		target->GetTransformComponent()->SetScale(glm::vec3(0.5f) * (nodeSize * 0.5f));
-		target->AddComponent(new ComponentLight(POINT));
-		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
-		target->GetLightComponent()->CastShadows = true;
-		entityManager->AddEntity(target);
+
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -352,8 +361,8 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemStateMachineUpdater(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemPathfinding(), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
-		systemManager->AddSystem(new SystemStateMachineUpdater(), UPDATE_SYSTEMS);
 	}
 }

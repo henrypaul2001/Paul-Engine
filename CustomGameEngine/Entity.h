@@ -48,7 +48,7 @@ namespace Engine
 		ComponentStateController* GetStateController() { return dynamic_cast<ComponentStateController*>(GetComponent(COMPONENT_STATE_CONTROLLER)); }
 		ComponentPathfinder* GetPathfinder() { return dynamic_cast<ComponentPathfinder*>(GetComponent(COMPONENT_PATHFINDER)); }
 
-		const EntityManager* GetEntityManager() const;
+		EntityManager* GetEntityManager();
 		void SetEntityManager(EntityManager* manager);
 
 		bool ContainsComponents(const ComponentTypes MASK);

@@ -21,7 +21,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	const EntityManager* Entity::GetEntityManager() const
+	EntityManager* Entity::GetEntityManager()
 	{
 		return entityManager;
 	}

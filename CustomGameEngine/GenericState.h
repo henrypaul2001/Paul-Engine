@@ -20,11 +20,11 @@ namespace Engine {
 		}
 
 		void Enter() override {
-
+			State::Enter();
 		}
 
 		void Exit() override {
-
+			State::Exit();
 		}
 
 	protected:
