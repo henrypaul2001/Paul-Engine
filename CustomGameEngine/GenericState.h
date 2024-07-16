@@ -6,7 +6,7 @@ namespace Engine {
 	class GenericState : public State
 	{
 	public:
-		GenericState(const std::string& name, StateFunc updateFunction, void* data, StateFunc enterFunction = {}, StateFunc exitFunction = {}) : State(name) {
+		GenericState(const std::string& name, StateFunc updateFunction, void* data, StateFunc enterFunction = nullptr, StateFunc exitFunction = nullptr) : State(name) {
 			this->updateFunction = updateFunction;
 			this->enterFunction = enterFunction;
 			this->exitFunction = exitFunction;
@@ -17,18 +17,24 @@ namespace Engine {
 		
 		void Update() override {
 			if (data != nullptr) {
-				updateFunction(data);
+				if (updateFunction) {
+					updateFunction(data);
+				}
 			}
 		}
 
 		void Enter() override {
 			State::Enter();
-			enterFunction(data);
+			if (enterFunction) {
+				enterFunction(data);
+			}
 		}
 
 		void Exit() override {
 			State::Exit();
-			exitFunction(data);
+			if (exitFunction) {
+				exitFunction(data);
+			}
 		}
 
 	protected:

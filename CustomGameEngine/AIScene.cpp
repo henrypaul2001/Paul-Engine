@@ -11,6 +11,7 @@ namespace Engine {
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
 		distanceSqr = new float;
+		distanceToHomeSqr = new float;
 		SetupScene();
 	}
 
@@ -18,6 +19,7 @@ namespace Engine {
 	{
 		delete navGrid;
 		delete distanceSqr;
+		delete distanceToHomeSqr;
 	}
 
 	void AIScene::ChangePostProcessEffect()
@@ -78,6 +80,7 @@ namespace Engine {
 		}
 
 		*distanceSqr = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agent->GetTransformComponent()->GetWorldPosition());
+		*distanceToHomeSqr = glm::distance2(agent->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
 	}
 
 	void AIScene::Render()
@@ -282,11 +285,27 @@ namespace Engine {
 
 		StateFunc chase = [](void* data) {
 			Entity* owner = (Entity*)data;
-			//owner->GetPathfinder()->SetEntityCanMove(true);
+
 			if (owner) {
 				if (owner->GetPathfinder()->HasReachedTarget()) {
 					bool success = owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), owner->GetEntityManager()->FindEntity("Target")->GetTransformComponent()->GetWorldPosition());
 				}
+			}
+		};
+
+		StateFunc chaseEnter = [](void* data) {
+			Entity* owner = (Entity*)data;
+
+			if (owner) {
+				owner->GetPathfinder()->Reset();
+			}
+		};
+
+		StateFunc walkHomeEnter = [](void* data) {
+			Entity* owner = (Entity*)data;
+			if (owner) {
+				owner->GetPathfinder()->Reset();
+				owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
 			}
 		};
 
@@ -326,18 +345,30 @@ namespace Engine {
 		agent->GetLightComponent()->CastShadows = true;
 
 		ComponentStateController* agentStateController = new ComponentStateController();
+
+		// Idle state
 		IdleState* idle = new IdleState(agent);
 		agentStateController->GetStateMachine().AddState(idle);
 
 		// Chase state
-		GenericState* chaseState = new GenericState("Chase", chase, agent);
+		GenericState* chaseState = new GenericState("Chase", chase, agent, chaseEnter);
 		agentStateController->GetStateMachine().AddState(chaseState);
 
-		GenericStateTransition<float&, float>* idleTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), idle, chaseState);
-		agentStateController->GetStateMachine().AddTransition(idleTransition);
+		// Walk home state
+		GenericState* walkHomeState = new GenericState("Walk Home", nullptr, agent, walkHomeEnter);
+		agentStateController->GetStateMachine().AddState(walkHomeState);
 
-		GenericStateTransition<float&, float>* chaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::GreaterThanCondition, *distanceSqr, (5.0f * 5.0f), chaseState, idle);
-		agentStateController->GetStateMachine().AddTransition(chaseTransition);
+		GenericStateTransition<float&, float>* walkHomeToIdleTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceToHomeSqr, (1.5f * 1.5f), walkHomeState, idle);
+		agentStateController->GetStateMachine().AddTransition(walkHomeToIdleTransition);
+
+		GenericStateTransition<float&, float>* walkHomeToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), walkHomeState, chaseState);
+		agentStateController->GetStateMachine().AddTransition(walkHomeToChaseTransition);
+
+		GenericStateTransition<float&, float>* idleToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), idle, chaseState);
+		agentStateController->GetStateMachine().AddTransition(idleToChaseTransition);
+
+		GenericStateTransition<float&, float>* chaseToWalkHomeTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::GreaterThanCondition, *distanceSqr, (5.0f * 5.0f), chaseState, walkHomeState);
+		agentStateController->GetStateMachine().AddTransition(chaseToWalkHomeTransition);
 
 		agent->AddComponent(agentStateController);
 		entityManager->AddEntity(agent);

@@ -26,6 +26,7 @@ namespace Engine {
 		NavigationPath navPath;
 
 		float* distanceSqr;
+		float* distanceToHomeSqr;
 
 		void CreateEntities();
 		void CreateSystems();
