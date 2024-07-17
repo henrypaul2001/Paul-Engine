@@ -126,13 +126,23 @@ namespace Engine {
 
 	bool NavigationGrid::FindPath(const glm::vec3& start, const glm::vec3& end, NavigationPath& out_path)
 	{
-		// find start and end node indices
-		// This can lose precision in the grid, should instead round start.x to nearest 'nodeSize' multiple to get closest node in grid
-		int startX = (start.x / nodeSize);
-		int startY = (start.z / nodeSize);
+		// Find start and end node indices
+		
+		// If this was just (start.x / nodeSize) then the value will be truncated when cast to int. This is fine for fractional parts less than 0.5
+		// However, if the fractional part is above 0.5 then it will still in effect be rounded down. To round up, without actually rounding up, add on half the node size to the initial value before dividing
+		// If start.x = 5.4 and nodeSize = 1:
+		//		5.4 + 0.5 = 5.9
+		//		5.4 should be rounded down anyway, and the result is still less than 6, so truncation will leave us with 5
+		// If start.x = 5.6 and nodeSize = 1:
+		//		(We want to round up here)
+		//		5.6 + 0.5 = 6.1
+		//		6.1 when cast to int will be 6, which is in effect the result of rounding up from 5.6
+		 
+		int startX = (start.x + nodeSize / 2) / nodeSize;
+		int startY = (start.z + nodeSize / 2) / nodeSize;
 
-		int endX = (end.x / nodeSize);
-		int endY = (end.z / nodeSize);
+		int endX = (end.x + nodeSize / 2) / nodeSize;
+		int endY = (end.z + nodeSize / 2) / nodeSize;
 
 		// Check if inside grid region
 		if (startX < 0 || startX > gridWidth - 1 || startY < 0 || startY > gridHeight - 1) {
