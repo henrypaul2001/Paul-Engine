@@ -112,6 +112,7 @@ namespace Engine {
 			isLookingAround = false;
 			isSteppingAround = false;
 			secondsWaited = 0.0f;
+			name = "Idle - Wait";
 		}
 		else if (randomNumber > 0.33f && randomNumber <= 0.66f) {
 			std::cout << "Idle sub state: LOOK" << std::endl;
@@ -121,6 +122,7 @@ namespace Engine {
 			// Create new target orientation
 			float randomAngle = Random(-90.0f, 90.0f);
 			targetOrientation = glm::angleAxis(glm::radians(randomAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+			name = "Idle - Look";
 		}
 		else {
 			std::cout << "Idle sub state: WALK" << std::endl;
@@ -135,6 +137,7 @@ namespace Engine {
 
 			targetPosition.x += randomX;
 			targetPosition.z += randomZ;
+			name = "Idle - Walk";
 		}
 	}
 }
