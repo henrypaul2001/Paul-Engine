@@ -30,7 +30,7 @@ This is currently under development. Below is a preview of what I have so far:
 ![Screen space ambient occlusion toggled on and off](https://media.giphy.com/media/SKJe2XhUz45zcfy7X0/giphy.gif)
 
 ### Instanced rendering
-42875 + 1 cubes rendered in below demo (this is not the limit)
+42875 + 1 cubes rendered in below demo
 
 ![Demo of instanced rendering showing 42875 cubes](https://media.giphy.com/media/nUt6hcCJYYGLDPbiOu/giphy.gif)
 
