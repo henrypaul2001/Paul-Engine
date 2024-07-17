@@ -88,7 +88,9 @@ namespace Engine {
 		*hasReachedDestination = agent->GetPathfinder()->HasReachedTarget();
 
 		*readyToPatrol = false;
-		if (agent->GetStateController()->GetStateMachine().GetActiveStateName() == "Idle") {
+		std::string stateName = agent->GetStateController()->GetStateMachine().GetActiveStateName();
+
+		if (std::string(stateName.begin(), stateName.begin() + 4) == "Idle") {
 			secondsWaited += Scene::dt;
 
 			if (secondsWaited >= secondsToWait) {
@@ -100,6 +102,8 @@ namespace Engine {
 		else {
 			secondsWaited = 0.0f;
 		}
+
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[2])->SetText("AI State: " + stateName);
 	}
 
 	void AIScene::Render()
@@ -421,6 +425,7 @@ namespace Engine {
 		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("AI State: "), glm::vec2(30.0f, SCR_HEIGHT - 80.0f), glm::vec2(0.35f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f), UIBackground(glm::vec4(0.03f, 0.4f, 0.1f, 0.05f), 0.035f, true, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 0.5f))));
 		entityManager->AddEntity(canvas);
 	}
 
