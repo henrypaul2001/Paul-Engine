@@ -35,19 +35,19 @@ namespace Engine
 
 	void Scene::Update()
 	{
-		glm::vec3 position = camera->Position;
-		glm::vec3 forward = camera->Front;
+		glm::vec3 position = camera->GetPosition();
+		glm::vec3 forward = camera->GetFront();
 		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
 	}
 
 	void Scene::Render()
 	{
-		glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, camera->NearClip, camera->FarClip);
+		glm::mat4 projection = glm::perspective(glm::radians(camera->GetZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, camera->GetNearClip(), camera->GetFarClip());
 
 		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
-		glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera->Position));
+		glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera->GetPosition()));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 

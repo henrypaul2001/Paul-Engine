@@ -118,7 +118,7 @@ namespace Engine {
 		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances());
 
 		if (geometry->GetModel()->ContainsTransparentMeshes()) {
-			float distanceToCamera = glm::length(activeCamera->Position - transform->GetWorldPosition());
+			float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
 
 			if (transparentGeometry.find(distanceToCamera) != transparentGeometry.end()) {
 				// Distance already exists, increment slightly
