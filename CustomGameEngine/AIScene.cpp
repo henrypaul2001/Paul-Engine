@@ -164,10 +164,7 @@ namespace Engine {
 		agentMaterial->albedo = glm::vec3(100.0f);
 
 		PBRMaterial* walkable = new PBRMaterial();
-		walkable->albedo = glm::vec3(0.0f, 100.0f, 0.0f);
-
-		PBRMaterial* nonWalkable = new PBRMaterial();
-		nonWalkable->albedo = glm::vec3(100.0f, 0.0f, 0.0f);
+		walkable->albedo = glm::vec3(100.0f, 0.0f, 0.0f);
 
 		PBRMaterial* path = new PBRMaterial();
 		path->albedo = glm::vec3(0.0f, 0.0f, 100.0f);
@@ -179,12 +176,12 @@ namespace Engine {
 		wallMaterial->albedo = glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f;
 
 		// Pathfinding debug grid
-		Entity* baseInstanceNonWalkable = new Entity("Base Instance Non Walkable");
-		baseInstanceNonWalkable->AddComponent(new ComponentTransform(0.0f, -10.0f, 0.0f));
-		baseInstanceNonWalkable->AddComponent(new ComponentGeometry(MODEL_SPHERE, true, true));
-		baseInstanceNonWalkable->GetGeometryComponent()->CastShadows(true);
-		baseInstanceNonWalkable->GetGeometryComponent()->ApplyMaterialToModel(nonWalkable);
-		entityManager->AddEntity(baseInstanceNonWalkable);
+		Entity* baseInstanceWalkable = new Entity("Base Instance Non Walkable");
+		baseInstanceWalkable->AddComponent(new ComponentTransform(0.0f, -10.0f, 0.0f));
+		baseInstanceWalkable->AddComponent(new ComponentGeometry(MODEL_SPHERE, true, true));
+		baseInstanceWalkable->GetGeometryComponent()->CastShadows(false);
+		baseInstanceWalkable->GetGeometryComponent()->ApplyMaterialToModel(walkable);
+		entityManager->AddEntity(baseInstanceWalkable);
 
 		int xNum = navGrid->GetGridWidth();
 		int zNum = navGrid->GetGridHeight();
@@ -195,6 +192,36 @@ namespace Engine {
 		float nodeSize = navGrid->GetNodeSize();
 
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
+
+		bool drawNavGridDebug = false;
+
+		if (drawNavGridDebug) {
+			std::vector<Entity*> gridEntities;
+			gridEntities.reserve((xNum / 3) * (zNum / 3));
+
+			int count = 0;
+			for (int j = 0; j < xNum; j++) {
+				for (int k = 0; k < zNum; k++) {
+					NavGridNode* currentNode = nodes[(xNum * k) + j];
+
+					if (currentNode->type == '.') {
+
+						std::string name = std::string("Sphere ") + std::string(std::to_string(count));
+						Entity* sphere = new Entity(name);
+						sphere->AddComponent(new ComponentTransform(currentNode->worldPosition.x, 0.5f, currentNode->worldPosition.z));
+						sphere->GetTransformComponent()->SetScale(nodeSize / 2.0f);
+
+						// Non walkable node
+						baseInstanceWalkable->GetGeometryComponent()->AddNewInstanceSource(sphere);
+
+						gridEntities.push_back(sphere);
+						entityManager->AddEntity(sphere);
+						std::cout << "Sphere " << count << " created" << std::endl;
+					}
+					count++;
+				}
+			}
+		}
 
 		// Construct scene based on navigation grid
 		glm::vec3 floorScale = glm::vec3(((xNum - 1.0f) * nodeSize) / 2.0f, 0.5f, ((zNum - 1.0f) * nodeSize) / 2.0f);
@@ -279,7 +306,7 @@ namespace Engine {
 						count++;
 					}
 					else {
-						 //Wall scales down
+						//Wall scales down
 						Entity* wall = new Entity(std::string("Wall ") + std::string(std::to_string(count)));
 						wall->AddComponent(new ComponentTransform(currentNode->worldPosition.x, 1.5f, (currentNode->worldPosition.z + (downExtent / 2.0f) * nodeSize) - nodeSize));
 						wall->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
