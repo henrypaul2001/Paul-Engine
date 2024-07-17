@@ -19,6 +19,7 @@ namespace Engine {
 		glm::vec4 BorderColour;
 
 		UIBackground() : LeftRightUpDownExtents(glm::vec4(0.0f)), BorderThickness(0.0f), Bordered(false), Colour(glm::vec4(1.0f)), BorderColour(glm::vec4(1.0f)) {}
+		UIBackground(const glm::vec4& leftRightUpDownExtents, const float borderThickness, const bool bordered, const glm::vec4& colour, const glm::vec4& borderColour) : LeftRightUpDownExtents(leftRightUpDownExtents), BorderThickness(borderThickness), Bordered(bordered), Colour(colour), BorderColour(borderColour) {}
 	};
 
 	class UIElement
