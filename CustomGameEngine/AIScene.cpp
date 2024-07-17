@@ -194,7 +194,6 @@ namespace Engine {
 		std::vector<NavGridNode*> nodes = navGrid->GetNodes();
 
 		bool drawNavGridDebug = false;
-
 		if (drawNavGridDebug) {
 			std::vector<Entity*> gridEntities;
 			gridEntities.reserve((xNum / 3) * (zNum / 3));
@@ -351,9 +350,7 @@ namespace Engine {
 			Entity* owner = (Entity*)data;
 
 			if (owner) {
-				if (owner->GetPathfinder()->HasReachedTarget()) {
-					bool success = owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), owner->GetEntityManager()->FindEntity("Target")->GetTransformComponent()->GetWorldPosition());
-				}
+				bool success = owner->GetPathfinder()->FindPath(owner->GetTransformComponent()->GetWorldPosition(), owner->GetEntityManager()->FindEntity("Target")->GetTransformComponent()->GetWorldPosition());
 			}
 		};
 
