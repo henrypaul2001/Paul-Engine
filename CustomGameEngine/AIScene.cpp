@@ -233,7 +233,8 @@ namespace Engine {
 		floor->GetGeometryComponent()->ApplyMaterialToModel(grass);
 		entityManager->AddEntity(floor);
 
-		camera->Position = glm::vec3(floor->GetTransformComponent()->GetWorldPosition().x, (xNum + zNum) * nodeSize, floor->GetTransformComponent()->GetWorldPosition().z + nodeSize * 3);
+		camera->SetPosition(glm::vec3(floor->GetTransformComponent()->GetWorldPosition().x, ((xNum + zNum) * nodeSize) - 20.0f, floor->GetTransformComponent()->GetWorldPosition().z + nodeSize * 3));
+		camera->SetPitch(-89.0f);
 
 		// Create walls
 		int count = 0;
@@ -329,18 +330,18 @@ namespace Engine {
 		target->GetGeometryComponent()->ApplyMaterialToModel(path);
 		target->GetTransformComponent()->SetScale(glm::vec3(0.5f)* (nodeSize * 0.5f));
 		target->AddComponent(new ComponentLight(POINT));
-		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 5.0f);
+		target->GetLightComponent()->Colour = glm::vec3(0.0f, 0.0f, 1.75f);
 		target->GetLightComponent()->CastShadows = true;
 		entityManager->AddEntity(target);
 
 		Entity* agent = new Entity("Agent");
-		agent->AddComponent(new ComponentTransform(start.x, 1.0f, start.z));
+		agent->AddComponent(new ComponentTransform(start.x, 0.75f, start.z));
 		agent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		agent->GetTransformComponent()->SetScale(glm::vec3(0.5f, 2.5f, 0.5f) * (nodeSize * 0.5f));
 		agent->AddComponent(new ComponentPathfinder(navGrid, 10.0f * nodeSize, nodeSize));
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));
-		agent->GetLightComponent()->Colour = glm::vec3(5.0f);
+		agent->GetLightComponent()->Colour = glm::vec3(1.75f);
 		agent->GetLightComponent()->CastShadows = true;
 
 		ComponentStateController* agentStateController = new ComponentStateController();
