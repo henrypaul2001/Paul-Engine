@@ -15,6 +15,7 @@ namespace Engine {
 		containsTransparentMeshes = false;
 		hasBones = false;
 		this->pbr = pbr;
+		CollectMeshMaterials();
 	}
 
 	Model::Model(const char* filepath, unsigned int assimpPostProcess)
@@ -35,13 +36,16 @@ namespace Engine {
 
 	Model::~Model()
 	{
-
+		for (Mesh* m : meshes) {
+			delete m;
+		}
 	}
 
 	void Model::Draw(Shader& shader, int instanceNum)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
+				meshes[i]->ApplyMaterial(meshMaterials[meshes[i]]);
 				meshes[i]->Draw(shader, pbr, instanceNum);
 				/*
 				if (!meshes[i]->GetMaterial()->isTransparent) {
@@ -50,6 +54,7 @@ namespace Engine {
 				*/
 			}
 			else {
+				meshes[i]->ApplyMaterial(meshPBRMaterials[meshes[i]]);
 				meshes[i]->Draw(shader, pbr, instanceNum);
 				/*
 				if (!meshes[i]->GetPBRMaterial()->isTransparent) {
@@ -64,12 +69,12 @@ namespace Engine {
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
-				if (meshes[i]->GetMaterial()->isTransparent) {
+				if (meshMaterials[meshes[i]]->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
 			}
 			else {
-				if (meshes[i]->GetPBRMaterial()->isTransparent) {
+				if (meshPBRMaterials[meshes[i]]->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
 			}
@@ -80,8 +85,9 @@ namespace Engine {
 	{
 		pbr = false;
 		containsTransparentMeshes = material->isTransparent;
+
 		for (Mesh* m : meshes) {
-			m->ApplyMaterial(material);
+			meshMaterials[m] = material;
 		}
 	}
 
@@ -89,8 +95,9 @@ namespace Engine {
 	{
 		pbr = false;
 		containsTransparentMeshes = material->isTransparent;
+
 		if (index < meshes.size()) {
-			meshes[index]->ApplyMaterial(material);
+			meshMaterials[meshes[index]] = material;
 		}
 	}
 
@@ -98,8 +105,9 @@ namespace Engine {
 	{
 		pbr = true;
 		containsTransparentMeshes = pbrMaterial->isTransparent;
+
 		for (Mesh* m : meshes) {
-			m->ApplyMaterial(pbrMaterial);
+			meshPBRMaterials[m] = pbrMaterial;
 		}
 	}
 
@@ -107,8 +115,9 @@ namespace Engine {
 	{
 		pbr = true;
 		containsTransparentMeshes = pbrMaterial->isTransparent;
+
 		if (index < meshes.size()) {
-			meshes[index]->ApplyMaterial(pbrMaterial);
+			meshPBRMaterials[meshes[index]] = pbrMaterial;
 		}
 	}
 
@@ -119,6 +128,20 @@ namespace Engine {
 		}
 		else {
 			std::cout << "ERROR::MODEL::RETARGETSKELETONROOTBONE::Bone not found" << std::endl;
+		}
+	}
+
+	void Model::CollectMeshMaterials()
+	{
+		if (pbr) {
+			for (Mesh* m : meshes) {
+				meshPBRMaterials[m] = m->GetPBRMaterial();
+			}
+		}
+		else {
+			for (Mesh* m : meshes) {
+				meshMaterials[m] = m->GetMaterial();
+			}
 		}
 	}
 
@@ -138,6 +161,8 @@ namespace Engine {
 		if (hasBones) {
 			ProcessEmptyBones(scene->mRootNode);
 		}
+
+		CollectMeshMaterials();
 	}
 
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)

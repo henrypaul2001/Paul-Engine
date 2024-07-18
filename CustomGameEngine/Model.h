@@ -89,6 +89,11 @@ namespace Engine {
 
 		bool hasBones;
 
+		std::unordered_map<Mesh*, Material*> meshMaterials;
+		std::unordered_map<Mesh*, PBRMaterial*> meshPBRMaterials;
+
+		void CollectMeshMaterials();
+
 		void LoadModel(std::string filepath, unsigned int assimpPostProcess);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
