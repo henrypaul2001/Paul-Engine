@@ -5,7 +5,15 @@ namespace Engine {
 	{
 		this->owner = nullptr;
 
-		this->model = old_component.model;
+		this->usingPremadeModel = old_component.usingPremadeModel;
+
+		if (usingPremadeModel) {
+			this->model = new Model(*old_component.model);
+		}
+		else {
+			this->model = old_component.model;
+		}
+
 		this->shader = old_component.shader;
 
 		this->textureScale = old_component.textureScale;
@@ -30,6 +38,7 @@ namespace Engine {
 		this->instanced = instanced;
 		this->pbr = pbr;
 		model = new Model(modelType, pbr);
+		usingPremadeModel = true;
 
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
@@ -57,6 +66,7 @@ namespace Engine {
 		this->instanced = instanced;
 		this->pbr = pbr;
 		model = new Model(modelType, pbr);
+		usingPremadeModel = true;
 
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
@@ -101,6 +111,7 @@ namespace Engine {
 		this->pbr = pbr;
 
 		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
+		usingPremadeModel = false;
 
 		usingDefaultShader = false;
 
@@ -129,6 +140,7 @@ namespace Engine {
 		castShadows = true;
 
 		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
+		usingPremadeModel = false;
 
 		shader = nullptr;
 		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
@@ -285,7 +297,7 @@ namespace Engine {
 
 	ComponentGeometry::~ComponentGeometry()
 	{
-
+		if (usingPremadeModel) { delete model; }
 	}
 
 	void ComponentGeometry::Close()

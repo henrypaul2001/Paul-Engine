@@ -68,6 +68,8 @@ namespace Engine {
 		Model* model;
 		Shader* shader;
 
+		bool usingPremadeModel;
+
 		glm::vec2 textureScale;
 		bool castShadows;
 
