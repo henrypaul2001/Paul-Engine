@@ -1,5 +1,15 @@
 #include "StateMachine.h"
 namespace Engine {
+	StateMachine::StateMachine(const StateMachine& old_stateMachine)
+	{
+		this->maxHistorySize = old_stateMachine.maxHistorySize;
+		
+		// Copy states
+
+		// Copy transitions
+		//		based on state indexes
+	}
+
 	StateMachine::StateMachine(const int maxHistorySize)
 	{
 		this->maxHistorySize = maxHistorySize;

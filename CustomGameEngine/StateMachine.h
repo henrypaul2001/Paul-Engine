@@ -11,6 +11,7 @@ namespace Engine {
 	class StateMachine
 	{
 	public:
+		StateMachine(const StateMachine& old_stateMachine);
 		StateMachine(const int maxHistorySize = 15);
 		~StateMachine();
 
