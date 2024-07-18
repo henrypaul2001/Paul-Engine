@@ -16,7 +16,19 @@ namespace Engine
 	void EntityManager::AddEntity(Entity* entity)
 	{
 		Entity* result = FindEntity(entity->Name());
-		_ASSERT(result == nullptr, "Entity '" + entity.Name() + "' already exists");
+		
+		std::string name = entity->Name();
+		int number = 0;
+		while (result != nullptr) {
+
+			number++;
+			entity->Name() = std::string(name + " (" + std::to_string(number) + ")");
+			result = FindEntity(entity->Name());
+		}
+
+		if (number > 0) {
+			std::cout << "Entity '" << name << "' already exists. Adding unique number: " << entity->Name() << std::endl;
+		}
 
 		ComponentTransform* transform = dynamic_cast<ComponentTransform*>(entity->GetComponent(COMPONENT_TRANSFORM));
 		ComponentLight* light = dynamic_cast<ComponentLight*>(entity->GetComponent(COMPONENT_LIGHT));
