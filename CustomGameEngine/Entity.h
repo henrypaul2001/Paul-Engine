@@ -26,6 +26,7 @@ namespace Engine
 		EntityManager* entityManager;
 
 	public:
+		Entity(const Entity& old_entity);
 		Entity(std::string name);
 		~Entity();
 

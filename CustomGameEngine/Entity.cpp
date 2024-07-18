@@ -2,6 +2,21 @@
 #include "EntityManager.h"
 namespace Engine
 {
+	Entity::Entity(const Entity& old_entity)
+	{
+		this->entityManager = old_entity.entityManager;
+		this->name = old_entity.name;
+		this->mask = COMPONENT_NONE;
+
+		// Copy components
+		componentList.reserve(old_entity.componentList.size());
+		for (Component* c : old_entity.componentList) {
+			Component* newComponent = c->Copy();
+			newComponent->SetOwner(this);
+			AddComponent(newComponent);
+		}
+	}
+
 	Entity::Entity(std::string name) {
 		this->name = name;
 		mask = COMPONENT_NONE;
