@@ -1,6 +1,30 @@
 #include "ComponentGeometry.h"
 #include "SceneManager.h"
 namespace Engine {
+	ComponentGeometry::ComponentGeometry(const ComponentGeometry& old_component)
+	{
+		this->owner = nullptr;
+
+		this->model = old_component.model;
+		this->shader = old_component.shader;
+
+		this->textureScale = old_component.textureScale;
+		this->castShadows = old_component.castShadows;
+
+		this->pbr = old_component.pbr;
+		this->usingDefaultShader = old_component.usingDefaultShader;
+
+		this->CULL_TYPE = old_component.CULL_TYPE;
+		this->CULL_FACE = old_component.CULL_FACE;
+
+		this->instanced = old_component.instanced;
+
+		if (instanced) { SetupInstanceVBO(); }
+
+		this->instanceTransforms = old_component.instanceTransforms;
+		this->instanceSources = old_component.instanceSources; // This should probably be cloned entities instead of pointing to the same original entities
+	}
+
 	ComponentGeometry::ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced)
 	{
 		this->instanced = instanced;

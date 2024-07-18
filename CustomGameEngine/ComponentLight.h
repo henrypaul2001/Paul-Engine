@@ -17,6 +17,7 @@ namespace Engine {
 		void DefaultSpot();
 		void DefaultPoint();
 	public:
+		ComponentLight(const ComponentLight& old_component);
 		ComponentLight(LightTypes type);
 		~ComponentLight();
 
@@ -24,6 +25,8 @@ namespace Engine {
 
 		ComponentTypes ComponentType() override { return COMPONENT_LIGHT; }
 		void Close() override;
+
+		Component* Copy() override { return new ComponentLight(*this); }
 
 		// Universal
 		glm::vec3 Colour;

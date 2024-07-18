@@ -8,8 +8,11 @@ namespace Engine {
 	private:
 		float sphereRadius;
 	public:
+		ComponentCollisionSphere(const ComponentCollisionSphere& old_component);
 		ComponentCollisionSphere(float sphereRadius);
 		~ComponentCollisionSphere();
+
+		Component* Copy() override { return new ComponentCollisionSphere(*this); }
 
 		float CollisionRadius() { return sphereRadius; }
 		void SetCollisionRadius(float radius) { sphereRadius = radius; }

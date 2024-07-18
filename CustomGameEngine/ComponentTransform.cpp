@@ -2,8 +2,34 @@
 #include <glm/ext/matrix_transform.hpp>
 #include "Entity.h"
 #include <iostream>
+#include "EntityManager.h"
 namespace Engine
 {
+	ComponentTransform::ComponentTransform(const ComponentTransform& old_component)
+	{
+		this->owner = nullptr;
+
+		this->position = old_component.position;
+		this->lastPosition = old_component.lastPosition;
+		this->rotationAxis = old_component.rotationAxis;
+		this->rotationAngle = old_component.rotationAngle;
+		this->scale = old_component.scale;
+		this->forwardVector = old_component.forwardVector;
+
+		this->orientation = old_component.orientation;
+
+		this->worldModelMatrix = old_component.worldModelMatrix;
+
+		this->parent = old_component.parent;
+
+		// Copy children
+		this->children.reserve(old_component.children.size());
+		for (int i = 0; i < old_component.children.size(); i++) {
+			children.push_back(new Entity(*old_component.children[i]));
+			children[i]->GetEntityManager()->AddEntity(children[i]);
+		}
+	}
+
 	ComponentTransform::ComponentTransform(glm::vec3 position, glm::vec3 rotationAxis, float rotationAngle, glm::vec3 scale) {
 		this->position = position;
 		this->lastPosition = position;

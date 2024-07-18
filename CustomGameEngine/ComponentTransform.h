@@ -24,10 +24,13 @@ namespace Engine
 		Entity* parent;
 		std::vector<Entity*> children;
 	public:
+		ComponentTransform(const ComponentTransform& old_component);
 		ComponentTransform(glm::vec3 position, glm::vec3 rotationAxis, float rotationAngle, glm::vec3 scale);
 		ComponentTransform(glm::vec3 position);
 		ComponentTransform(float posX, float posY, float posZ);
 		~ComponentTransform();
+
+		Component* Copy() override { return new ComponentTransform(*this); }
 
 		void SetPosition(glm::vec3 position);
 		void SetLastPosition(glm::vec3 position);

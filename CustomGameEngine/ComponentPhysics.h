@@ -7,8 +7,11 @@ namespace Engine {
     class ComponentPhysics : public Component
     {
 	public:
+		ComponentPhysics(const ComponentPhysics& old_component);
 		ComponentPhysics(float mass = 10.0f, float drag = 1.05f, float surfaceArea = 1.0f, float elasticity = 0.5f, bool gravity = true, bool cuboidIntertiaTensor = false);
 		~ComponentPhysics();
+
+		Component* Copy() override { return new ComponentPhysics(*this); }
 
 		void ClearForces() { force = glm::vec3(0.0f); }
 		void AddForce(glm::vec3 force) { this->force += force; }

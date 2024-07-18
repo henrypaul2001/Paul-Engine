@@ -2,6 +2,39 @@
 #include <glm/trigonometric.hpp>
 #include "LightManager.h"
 namespace Engine {
+	ComponentLight::ComponentLight(const ComponentLight& old_component)
+	{
+		this->owner = nullptr;
+
+		this->type = old_component.type;
+
+		this->Colour = old_component.Colour;
+		this->Ambient = old_component.Ambient;
+		this->Specular = old_component.Specular;
+
+		this->CastShadows = old_component.CastShadows;
+		this->Active = old_component.Active;
+
+		this->MinShadowBias = old_component.MinShadowBias;
+		this->MaxShadowBias = old_component.MaxShadowBias;
+		this->Near = old_component.Near;
+		this->Far = old_component.Far;
+
+		this->Linear = old_component.Linear;
+		this->Quadratic = old_component.Quadratic;
+		this->Constant = old_component.Constant;
+
+		this->Cutoff = old_component.Cutoff;
+		this->OuterCutoff = old_component.OuterCutoff;
+
+		this->Direction = old_component.Direction;
+
+		this->WorldDirection = old_component.WorldDirection;
+
+		this->ShadowProjectionSize = old_component.ShadowProjectionSize;
+		this->DirectionalLightDistance = old_component.DirectionalLightDistance;
+	}
+
 	ComponentLight::ComponentLight(LightTypes type)
 	{
 		this->type = type;

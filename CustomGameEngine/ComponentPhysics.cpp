@@ -1,6 +1,30 @@
 #include "ComponentPhysics.h"
 #include <glm/gtc/quaternion.hpp>
 namespace Engine {
+	ComponentPhysics::ComponentPhysics(const ComponentPhysics& old_component)
+	{
+		this->owner = nullptr;
+
+		this->gravity = old_component.gravity;
+
+		this->surfaceArea = old_component.surfaceArea;
+		this->dragCoefficient = old_component.dragCoefficient;
+		this->inverseMass = old_component.inverseMass;
+		this->mass = old_component.mass;
+		this->elasticity = old_component.elasticity;
+
+		this->velocity = old_component.velocity;
+
+		this->angularVelocity = old_component.angularVelocity;
+		this->torque = old_component.torque;
+		this->inertiaTensor = old_component.inertiaTensor;
+
+		this->inverseInertiaTensor = old_component.inverseInertiaTensor;
+		this->inverseInertia = old_component.inverseInertia;
+
+		this->force = old_component.force;
+	}
+
 	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, float elasticity, bool gravity, bool cuboidInertiaTensor)
 	{
 		SetMass(mass);

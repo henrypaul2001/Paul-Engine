@@ -33,11 +33,14 @@ namespace Engine {
 	class ComponentParticleGenerator : public Component
 	{
 	public:
+		ComponentParticleGenerator(const ComponentParticleGenerator& old_component);
 		ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles = 500, glm::vec3 offset = glm::vec3(0.0f), float particlesPerSecond = 2.0f, float particleLifespan = 1.0f, float decayRate = 0.5f, glm::vec3 particleScale = glm::vec3(1.0f), float velocityScale = 0.5f, float chanceToGenerateNewAccelerationPerParticle = 0.0f, float accelerationChangeScale = 1.0f, GLenum srcFactor = GL_SRC_ALPHA, GLenum dstFactor = GL_ONE);
 		~ComponentParticleGenerator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_PARTICLE_GENERATOR; }
 		void Close() override;
+
+		Component* Copy() override { return new ComponentParticleGenerator(*this); }
 
 		unsigned int MaxParticles() const { return maxParticles; }
 		const float ParticlesPerSecond() const { return particlesPerSecond; }

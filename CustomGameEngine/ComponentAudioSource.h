@@ -6,11 +6,14 @@ namespace Engine {
 	class ComponentAudioSource : public Component
 	{
 	public:
+		ComponentAudioSource(const ComponentAudioSource& old_component);
 		ComponentAudioSource(AudioFile* activeAudio, bool is3D = true, bool startPaused = false, bool isLooped = true, bool enableSoundEffects = true);
 		~ComponentAudioSource();
 
 		ComponentTypes ComponentType() override { return COMPONENT_AUDIO_SOURCE; }
 		void Close() override;
+
+		Component* Copy() override { return new ComponentAudioSource(*this); }
 
 		bool Is3D() const { return is3D; }
 		void Set3D(bool newValue) { 

@@ -187,6 +187,8 @@ namespace Engine {
 		virtual ComponentTypes ComponentType() override = 0;
 		virtual void Close() override = 0;
 		
+        virtual Component* Copy() override = 0;
+
 		void ClearEntitiesCheckedThisFrame() { EntitiesCheckedThisFrame.clear(); }
 		void AddToEntitiesCheckedThisFrame(Entity* e);
 

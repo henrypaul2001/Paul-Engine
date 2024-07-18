@@ -1,5 +1,17 @@
 #include "ComponentCollisionAABB.h"
 namespace Engine {
+	ComponentCollisionAABB::ComponentCollisionAABB(const ComponentCollisionAABB& old_component)
+	{
+		this->owner = nullptr;
+
+		this->localBounds = old_component.localBounds;
+		this->boundingBox = old_component.boundingBox;
+
+		this->EntitiesCheckedThisFrame = old_component.EntitiesCheckedThisFrame;
+		this->EntitiesCollidingWith = old_component.EntitiesCollidingWith;
+		this->isMovedByCollisions = old_component.isMovedByCollisions;
+	}
+
 	ComponentCollisionAABB::ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 	{
 		localBounds = AABBPoints();

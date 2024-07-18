@@ -25,8 +25,11 @@ namespace Engine {
     class ComponentCollisionBox : public ComponentCollision
     {
     public:
+        ComponentCollisionBox(const ComponentCollisionBox& old_component);
         ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
         ~ComponentCollisionBox();
+
+        Component* Copy() override { return new ComponentCollisionBox(*this); }
 
         BoxExtents GetLocalPoints() { return localExtents; }
         void SetLocalPoints(BoxExtents newPoints) { localExtents = newPoints; }

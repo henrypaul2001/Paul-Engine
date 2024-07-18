@@ -5,11 +5,14 @@ namespace Engine {
 	class ComponentAnimator : public Component
 	{
 	public:
+		ComponentAnimator(const ComponentAnimator& old_component);
 		ComponentAnimator(SkeletalAnimation* animation, bool paused = false);
 		~ComponentAnimator();
 
 		ComponentTypes ComponentType() override { return COMPONENT_ANIMATOR; }
 		void Close() override;
+
+		Component* Copy() override { return new ComponentAnimator(*this); }
 
 		const std::vector<glm::mat4>& GetFinalBonesMatrices() const { return finalBoneMatrices; }
 

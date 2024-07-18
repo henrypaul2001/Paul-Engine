@@ -29,8 +29,11 @@ namespace Engine {
 
 		void ConstructCube();
 	public:
+		ComponentCollisionAABB(const ComponentCollisionAABB& old_component);
 		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 		~ComponentCollisionAABB();
+
+		Component* Copy() override { return new ComponentCollisionAABB(*this); }
 
 		AABBPoints GetBoundary() { return localBounds; }
 		BoundingBox& GetBoundingBox() { return boundingBox; }

@@ -9,6 +9,7 @@ namespace Engine
 		glm::vec3 velocity;
 
 	public:
+		ComponentVelocity(const ComponentVelocity& old_component);
 		ComponentVelocity(float x, float y, float z);
 		ComponentVelocity(glm::vec3 velocity);
 		~ComponentVelocity();
@@ -18,5 +19,7 @@ namespace Engine
 
 		ComponentTypes ComponentType() override { return COMPONENT_VELOCITY; }
 		void Close() override;
+
+		Component* Copy() override { return new ComponentVelocity(*this); }
 	};
 }

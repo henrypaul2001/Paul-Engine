@@ -32,6 +32,7 @@ namespace Engine
 	{
 	protected:
 		Entity* owner;
+
 	public:
 		Entity* GetOwner();
 		void SetOwner(Entity* newOwner);
@@ -40,6 +41,8 @@ namespace Engine
 		virtual void Close() = 0;
 
 		virtual void OnAddedToEntity() {}
+
+		virtual Component* Copy() = 0;
 	};
 }
 

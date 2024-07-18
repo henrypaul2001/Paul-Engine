@@ -1,5 +1,17 @@
 #include "ComponentAnimator.h"
 namespace Engine {
+	ComponentAnimator::ComponentAnimator(const ComponentAnimator& old_component)
+	{
+		this->owner = nullptr;
+
+		this->currentTime = old_component.currentTime;
+		this->currentAnimation = old_component.currentAnimation;
+		this->paused = old_component.paused;
+		this->deltaTime = old_component.deltaTime;
+		this->speedModifier = old_component.speedModifier;
+		this->finalBoneMatrices = old_component.finalBoneMatrices;
+	}
+
 	ComponentAnimator::ComponentAnimator(SkeletalAnimation* animation, bool paused)
 	{
 		currentTime = 0.0f;

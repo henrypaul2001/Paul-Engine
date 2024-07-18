@@ -6,6 +6,7 @@ namespace Engine {
 	class ComponentGeometry : public Component
 	{
 	public:
+		ComponentGeometry(const ComponentGeometry& old_component);
 		ComponentGeometry(PremadeModel modelType, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false);
 		ComponentGeometry(PremadeModel modelType, bool pbr = false, bool instanced = false);
 		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false, bool persistentStorage = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
@@ -14,6 +15,8 @@ namespace Engine {
 
 		ComponentTypes ComponentType() override { return COMPONENT_GEOMETRY; }
 		void Close() override;
+
+		Component* Copy() override { return new ComponentGeometry(*this); }
 
 		bool PBR() { return pbr; }
 		void PBR(bool PBR) { 

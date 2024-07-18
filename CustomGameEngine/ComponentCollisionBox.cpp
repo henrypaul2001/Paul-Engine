@@ -1,5 +1,20 @@
 #include "ComponentCollisionBox.h"
 namespace Engine {
+	ComponentCollisionBox::ComponentCollisionBox(const ComponentCollisionBox& old_component)
+	{
+		this->owner = nullptr;
+
+		this->localExtents = old_component.localExtents;
+		this->boundingBox = old_component.boundingBox;
+		
+		this->checkBroadPhaseFirst = old_component.checkBroadPhaseFirst;
+
+		this->EntitiesCheckedThisFrame = old_component.EntitiesCheckedThisFrame;
+		this->EntitiesCollidingWith = old_component.EntitiesCollidingWith;
+
+		this->isMovedByCollisions = old_component.isMovedByCollisions;
+	}
+
 	ComponentCollisionBox::ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 	{
 		localExtents = BoxExtents();
