@@ -36,6 +36,13 @@ namespace Engine
 		return nullptr;
 	}
 
+	Entity* Entity::Clone()
+	{
+		Entity* cloned = new Entity(*this);
+		entityManager->AddEntity(cloned);
+		return cloned;
+	}
+
 	EntityManager* Entity::GetEntityManager()
 	{
 		return entityManager;

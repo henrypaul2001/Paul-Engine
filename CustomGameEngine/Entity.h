@@ -35,6 +35,8 @@ namespace Engine
 		std::vector<Component*>& Components() { return componentList; }
 		Component* GetComponent(ComponentTypes type);
 
+		Entity* Clone();
+
 		ComponentTransform* GetTransformComponent() { return dynamic_cast<ComponentTransform*>(GetComponent(COMPONENT_TRANSFORM)); }
 		ComponentGeometry* GetGeometryComponent() { return dynamic_cast<ComponentGeometry*>(GetComponent(COMPONENT_GEOMETRY)); }
 		ComponentLight* GetLightComponent() { return dynamic_cast<ComponentLight*>(GetComponent(COMPONENT_LIGHT)); }

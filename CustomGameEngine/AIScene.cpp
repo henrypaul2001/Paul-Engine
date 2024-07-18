@@ -444,6 +444,17 @@ namespace Engine {
 		agent->AddComponent(agentStateController);
 		entityManager->AddEntity(agent);
 
+		Entity* cloneTestBase = new Entity("Clone Test Base");
+		cloneTestBase->AddComponent(new ComponentTransform(25.0f, 15.0f, 25.0f));
+		cloneTestBase->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		cloneTestBase->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
+		cloneTestBase->GetTransformComponent()->SetScale(5.0f);
+		entityManager->AddEntity(cloneTestBase);
+
+		Entity* cloneTest1 = cloneTestBase->Clone();
+		cloneTest1->GetTransformComponent()->SetPosition(cloneTest1->GetTransformComponent()->GetWorldPosition() + glm::vec3(15.0f, 0.0f, 0.0f));
+		cloneTest1->GetGeometryComponent()->ApplyMaterialToModel(path);
+
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		canvas->GetTransformComponent()->SetScale(1.0f);
