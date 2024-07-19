@@ -24,24 +24,42 @@ namespace Engine {
 
         // Generic condition functions
         static bool GreaterThanCondition(T dataA, U dataB) {
-            return dataA > dataB;
+            return Compare(dataA, dataB, std::greater<>{});
         }
         static bool LessThanCondition(T dataA, U dataB) {
-            return dataA < dataB;
+            return Compare(dataA, dataB, std::less<>{});
         }
         static bool EqualToCondition(T dataA, U dataB) {
-            return dataA == dataB;
+            return Compare(dataA, dataB, std::equal_to<>{});
         }
         static bool NotEqualToCondition(T dataA, U dataB) {
-            return dataA != dataB;
+            return Compare(dataA, dataB, std::not_equal_to<>{});
         }
 
-        void SetDataA(T dataA) { this->dataA = dataA; }
-        void SetDataB(U dataB) { this->dataB = dataB; }
+        void SetDataA(T newDataA) { this->dataA = newDataA; }
+        void SetDataB(U newDataB) { this->dataB = newDataB; }
     protected:
         GenericTransitionFunc function;
         T dataA;
         U dataB;
+
+    private:
+        // Helper function to compare pointers or values
+        template <typename V, typename W, typename Comp>
+        static bool Compare(V a, W b, Comp comp) {
+            if constexpr (std::is_pointer_v<V> && std::is_pointer_v<W>) {
+                return comp(*a, *b);
+            }
+            else if constexpr (std::is_pointer_v<V>) {
+                return comp(*a, b);
+            }
+            else if constexpr (std::is_pointer_v<W>) {
+                return comp(a, *b);
+            }
+            else {
+                return comp(a, b);
+            }
+        }
     };
 
     template<class T, class U>

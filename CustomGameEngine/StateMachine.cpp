@@ -6,7 +6,6 @@ namespace Engine {
 		this->maxHistorySize = old_stateMachine.maxHistorySize;
 
 		std::unordered_map<State*, State*> stateMap; // <original state, copied state>
-		std::vector<StateTransition*> newTransitions;
 
 		std::vector<State*> originalStates = old_stateMachine.states;
 		
@@ -19,18 +18,13 @@ namespace Engine {
 
 		// Copy transitions
 		std::vector<StateTransition*> originalTransitions = old_stateMachine.transitions;
-		newTransitions.reserve(originalTransitions.size());
 		for (StateTransition* t : originalTransitions) {
 			StateTransition* newTransition = t->Copy();
 
 			newTransition->SetSourceState(stateMap[t->GetSourceState()]);
 			newTransition->SetDestinationState(stateMap[t->GetDestinationState()]);
 
-			newTransitions.push_back(newTransition);
-		}
-
-		for (StateTransition* t : newTransitions) {
-			this->AddTransition(t);
+			this->AddTransition(newTransition);
 		}
 
 		// Copy state history
