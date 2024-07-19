@@ -14,16 +14,31 @@ namespace Engine {
 		distanceToHomeSqr = new float;
 		hasReachedDestination = new bool;
 		readyToPatrol = new bool;
+
+		distanceSqrClone = new float;
+		distanceToHomeSqrClone = new float;
+		hasReachedDestinationClone = new bool;
+		readyToPatrolClone = new bool;
+
 		secondsToWait = Random(3.5f, 10.0f);
+		secondsToWaitClone = Random(3.5f, 10.0f);
 		SetupScene();
 	}
 
 	AIScene::~AIScene()
 	{
 		delete navGrid;
+
 		delete distanceSqr;
 		delete distanceToHomeSqr;
 		delete hasReachedDestination;
+		delete readyToPatrol;
+
+
+		delete distanceSqrClone;
+		delete distanceToHomeSqrClone;
+		delete hasReachedDestinationClone;
+		delete readyToPatrolClone;
 	}
 
 	void AIScene::ChangePostProcessEffect()
@@ -61,7 +76,8 @@ namespace Engine {
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 		
 		// Player movement
-		Entity * agent = entityManager->FindEntity("Agent");
+		Entity* agent = entityManager->FindEntity("Agent");
+		Entity* agentClone = entityManager->FindEntity("Agent (1)");
 		Entity* target = entityManager->FindEntity("Target");
 
 		float moveSpeed = 2.5f * Scene::dt;
@@ -83,12 +99,20 @@ namespace Engine {
 			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -moveSpeed));
 		}
 
+		// This is rough
+		// Consider adding another function parameter to state transitions that retrieve the data it needs instead of manually tracking it all here
 		*distanceSqr = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agent->GetTransformComponent()->GetWorldPosition());
 		*distanceToHomeSqr = glm::distance2(agent->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
 		*hasReachedDestination = agent->GetPathfinder()->HasReachedTarget();
 
+		*distanceSqrClone = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agentClone->GetTransformComponent()->GetWorldPosition());
+		*distanceToHomeSqrClone = glm::distance2(agentClone->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
+		*hasReachedDestinationClone = agentClone->GetPathfinder()->HasReachedTarget();
+
 		*readyToPatrol = false;
+		*readyToPatrolClone = false;
 		std::string stateName = agent->GetStateController()->GetStateMachine().GetActiveStateName();
+		std::string stateNameClone = agentClone->GetStateController()->GetStateMachine().GetActiveStateName();
 
 		if (std::string(stateName.begin(), stateName.begin() + 4) == "Idle") {
 			secondsWaited += Scene::dt;
@@ -103,7 +127,21 @@ namespace Engine {
 			secondsWaited = 0.0f;
 		}
 
+		if (std::string(stateNameClone.begin(), stateNameClone.begin() + 4) == "Idle") {
+			secondsWaitedClone += Scene::dt;
+
+			if (secondsWaitedClone >= secondsToWaitClone) {
+				*readyToPatrolClone = true;
+				secondsWaitedClone = 0.0f;
+				secondsToWaitClone = Random(5.5f, 10.0f);
+			}
+		}
+		else {
+			secondsWaitedClone = 0.0f;
+		}
+
 		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[2])->SetText("AI State: " + stateName);
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[3])->SetText("AI State: " + stateNameClone);
 	}
 
 	void AIScene::Render()
@@ -420,26 +458,29 @@ namespace Engine {
 		GenericState* patrolState = new GenericState("Patrol", nullptr, agent, patrolEnter);
 		agentStateController->GetStateMachine().AddState(patrolState);
 
-		GenericStateTransition<bool&, bool>* patrolToIdleTransition = new GenericStateTransition<bool&, bool>(GenericStateTransition<bool&, bool>::EqualToCondition, *hasReachedDestination, true, patrolState, idle);
+		GenericStateTransition<bool*, bool>* patrolToIdleTransition = new GenericStateTransition<bool*, bool>(GenericStateTransition<bool*, bool>::EqualToCondition, hasReachedDestination, true, patrolState, idle);
 		agentStateController->GetStateMachine().AddTransition(patrolToIdleTransition);
 
-		GenericStateTransition<float&, float>* patrolToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), patrolState, chaseState);
+		GenericStateTransition<float*, float>* patrolToChaseTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceSqr, (5.0f * 5.0f), patrolState, chaseState);
 		agentStateController->GetStateMachine().AddTransition(patrolToChaseTransition);
 
-		GenericStateTransition<float&, float>* walkHomeToIdleTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceToHomeSqr, (1.5f * 1.5f), walkHomeState, idle);
+		GenericStateTransition<float*, float>* walkHomeToIdleTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceToHomeSqr, (1.5f * 1.5f), walkHomeState, idle);
 		agentStateController->GetStateMachine().AddTransition(walkHomeToIdleTransition);
 
-		GenericStateTransition<float&, float>* walkHomeToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), walkHomeState, chaseState);
+		GenericStateTransition<float*, float>* walkHomeToChaseTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceSqr, (5.0f * 5.0f), walkHomeState, chaseState);
 		agentStateController->GetStateMachine().AddTransition(walkHomeToChaseTransition);
 
-		GenericStateTransition<float&, float>* idleToChaseTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::LessThanCondition, *distanceSqr, (5.0f * 5.0f), idle, chaseState);
+		GenericStateTransition<float*, float>* idleToChaseTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceSqr, (5.0f * 5.0f), idle, chaseState);
 		agentStateController->GetStateMachine().AddTransition(idleToChaseTransition);
 
-		GenericStateTransition<bool&, bool>* idleToPatrolTransition = new GenericStateTransition<bool&, bool>(GenericStateTransition<bool&, bool>::EqualToCondition, *readyToPatrol, true, idle, patrolState);
+		GenericStateTransition<bool*, bool>* idleToPatrolTransition = new GenericStateTransition<bool*, bool>(GenericStateTransition<bool*, bool>::EqualToCondition, readyToPatrol, true, idle, patrolState);
 		agentStateController->GetStateMachine().AddTransition(idleToPatrolTransition);
 
-		GenericStateTransition<float&, float>* chaseToWalkHomeTransition = new GenericStateTransition<float&, float>(GenericStateTransition<float&, float>::GreaterThanCondition, *distanceSqr, (5.0f * 5.0f), chaseState, walkHomeState);
+		GenericStateTransition<float*, float>* chaseToWalkHomeTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::GreaterThanCondition, distanceSqr, (5.0f * 5.0f), chaseState, walkHomeState);
 		agentStateController->GetStateMachine().AddTransition(chaseToWalkHomeTransition);
+
+		GenericStateTransition<float*, float>* idleToWalkHomeTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::GreaterThanCondition, distanceToHomeSqr, (7.5f * 7.5f), idle, walkHomeState);
+		agentStateController->GetStateMachine().AddTransition(idleToWalkHomeTransition);
 
 		agent->AddComponent(agentStateController);
 		entityManager->AddEntity(agent);
@@ -457,8 +498,25 @@ namespace Engine {
 
 		Entity* agentCloneTest = agent->Clone();
 		agentCloneTest->GetTransformComponent()->SetPosition(glm::vec3(35.0f, agentCloneTest->GetTransformComponent()->GetWorldPosition().y, start.z));
-		delete agentCloneTest->RemoveGetComponent(COMPONENT_STATE_CONTROLLER);
-		agentCloneTest->GetPathfinder()->FindPath(agentCloneTest->GetTransformComponent()->GetWorldPosition(), glm::vec3(start.x, 0.0f, 35.0f));
+
+		// Retarget state machine data for cloned agent
+		std::vector<StateTransition*> transitions = agentCloneTest->GetStateController()->GetStateMachine().GetTransitions();
+		dynamic_cast<GenericStateTransition<bool*, bool>*>(transitions[0])->SetDataA(hasReachedDestinationClone);
+		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[1])->SetDataA(distanceSqrClone);
+		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[2])->SetDataA(distanceToHomeSqrClone);
+		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[3])->SetDataA(distanceSqrClone);
+		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[4])->SetDataA(distanceSqrClone);
+		dynamic_cast<GenericStateTransition<bool*, bool>*>(transitions[5])->SetDataA(readyToPatrolClone);
+		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[6])->SetDataA(distanceSqrClone);
+		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[7])->SetDataA(distanceToHomeSqrClone);
+
+		std::vector<State*> states = agentCloneTest->GetStateController()->GetStateMachine().GetStates();
+		dynamic_cast<IdleState*>(states[0])->SetOwner(agentCloneTest);
+		dynamic_cast<GenericState*>(states[1])->SetData(agentCloneTest);
+		dynamic_cast<GenericState*>(states[2])->SetData(agentCloneTest);
+		dynamic_cast<GenericState*>(states[3])->SetData(agentCloneTest);
+
+		//dynamic_cast<GenericStateTransition<float&, float>*>(agent->GetStateController()->GetStateMachine().GetTransitions()[1])->SetDataA(*distanceSqrClone);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -467,6 +525,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(30.0f, 80.0f), glm::vec2(0.25f, 0.25f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(30.0f, 30.0f), glm::vec2(0.20f, 0.20f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f, 0.0f, 0.0f)));
 		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("AI State: "), glm::vec2(30.0f, SCR_HEIGHT - 80.0f), glm::vec2(0.35f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f), UIBackground(glm::vec4(0.03f, 0.4f, 0.1f, 0.05f), 0.035f, true, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 0.5f))));
+		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("AI State: "), glm::vec2(30.0f, SCR_HEIGHT - 190.0f), glm::vec2(0.35f), ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf"), glm::vec3(0.0f), UIBackground(glm::vec4(0.03f, 0.4f, 0.1f, 0.05f), 0.035f, true, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 0.5f))));
 		entityManager->AddEntity(canvas);
 	}
 

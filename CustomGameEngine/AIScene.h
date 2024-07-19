@@ -30,8 +30,16 @@ namespace Engine {
 		bool* hasReachedDestination;
 		bool* readyToPatrol;
 
+		float* distanceSqrClone;
+		float* distanceToHomeSqrClone;
+		bool* hasReachedDestinationClone;
+		bool* readyToPatrolClone;
+
 		float secondsToWait;
 		float secondsWaited;
+
+		float secondsToWaitClone;
+		float secondsWaitedClone;
 
 		void CreateEntities();
 		void CreateSystems();
