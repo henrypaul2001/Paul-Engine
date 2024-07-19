@@ -23,9 +23,14 @@ namespace Engine {
 		const std::queue<State*>& GetStateHistory() const { return stateHistory; }
 
 		const std::string& GetActiveStateName() const { return activeState->GetName(); }
+	
+		std::vector<State*> GetStates() const { return states; }
+		std::vector<StateTransition*> GetTransitions() const { return transitions; }
+
 	private:
 		State* activeState;
 		std::vector<State*> states;
+		std::vector<StateTransition*> transitions;
 		std::multimap<State*, StateTransition*> statesToTransitions;
 		std::queue<State*> stateHistory;
 		int maxHistorySize;

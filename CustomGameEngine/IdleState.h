@@ -7,6 +7,7 @@ namespace Engine {
 	class IdleState : public State
 	{
 	public:
+		IdleState(const IdleState& old_state);
 		IdleState(Entity* owner);
 		~IdleState();
 
@@ -14,6 +15,9 @@ namespace Engine {
 		void Enter() override;
 		void Exit() override;
 
+		State* Copy() override { return new IdleState(*this); }
+
+		void SetOwner(Entity* newOwner) { this->owner = newOwner; }
 	private:
 		Entity* owner;
 

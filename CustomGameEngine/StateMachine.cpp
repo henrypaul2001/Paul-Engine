@@ -1,13 +1,45 @@
 #include "StateMachine.h"
+#include <unordered_map>
 namespace Engine {
 	StateMachine::StateMachine(const StateMachine& old_stateMachine)
 	{
 		this->maxHistorySize = old_stateMachine.maxHistorySize;
+
+		std::unordered_map<State*, State*> stateMap; // <original state, copied state>
+		std::vector<StateTransition*> newTransitions;
+
+		std::vector<State*> originalStates = old_stateMachine.states;
 		
 		// Copy states
+		for (State* s : originalStates) {
+			stateMap[s] = s->Copy();
+			this->AddState(stateMap[s]);
+		}
+		this->activeState = stateMap[old_stateMachine.activeState];
 
 		// Copy transitions
-		//		based on state indexes
+		std::vector<StateTransition*> originalTransitions = old_stateMachine.transitions;
+		newTransitions.reserve(originalTransitions.size());
+		for (StateTransition* t : originalTransitions) {
+			StateTransition* newTransition = t->Copy();
+
+			newTransition->SetSourceState(stateMap[t->GetSourceState()]);
+			newTransition->SetDestinationState(stateMap[t->GetDestinationState()]);
+
+			newTransitions.push_back(newTransition);
+		}
+
+		for (StateTransition* t : newTransitions) {
+			this->AddTransition(t);
+		}
+
+		// Copy state history
+		std::queue<State*> oldHistory = old_stateMachine.stateHistory;
+		while (!oldHistory.empty()) {
+			State* s = oldHistory.front();
+			this->stateHistory.push(stateMap[s]);
+			oldHistory.pop();
+		}
 	}
 
 	StateMachine::StateMachine(const int maxHistorySize)
@@ -40,6 +72,7 @@ namespace Engine {
 	void StateMachine::AddTransition(StateTransition* newTransition)
 	{
 		statesToTransitions.insert(std::make_pair(newTransition->GetSourceState(), newTransition));
+		transitions.push_back(newTransition);
 	}
 
 	void StateMachine::Update()

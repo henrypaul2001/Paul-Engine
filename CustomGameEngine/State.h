@@ -12,6 +12,8 @@ namespace Engine {
 		virtual void Enter();
 		virtual void Exit();
 
+		virtual State* Copy() = 0;
+
 		const std::string& GetName() const { return name; }
 	protected:
 		std::string name;

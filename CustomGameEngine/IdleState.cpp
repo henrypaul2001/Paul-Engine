@@ -1,6 +1,26 @@
 #include "IdleState.h"
 #include "Scene.h"
 namespace Engine {
+	IdleState::IdleState(const IdleState& old_state) : State(old_state.name)
+	{
+		this->owner = nullptr;
+
+		this->isLookingAround = old_state.isLookingAround;
+		this->isSteppingAround = old_state.isSteppingAround;
+
+		this->startPosition = old_state.startPosition;
+		this->startOrientation = old_state.startOrientation;
+
+		this->targetOrientation = old_state.targetOrientation;
+		this->targetPosition = old_state.targetPosition;
+
+		this->moveSpeed = old_state.moveSpeed;
+		this->rotateSpeed = old_state.rotateSpeed;
+
+		this->secondsToWait = old_state.secondsToWait;
+		this->secondsWaited = old_state.secondsWaited;
+	}
+
 	IdleState::IdleState(Entity* owner) : State("Idle")
 	{
 		if (owner && owner->GetTransformComponent()) {
@@ -19,10 +39,6 @@ namespace Engine {
 			secondsWaited = 0.0f;
 
 			srand(Scene::dt);
-		}
-		else {
-			std::cout << "ERROR::IdleState::Cannot assign null entity to idle state" << std::endl;
-			throw std::invalid_argument("ERROR::IdleState::Cannot assign null entity to idle state");
 		}
 	}
 
@@ -89,13 +105,15 @@ namespace Engine {
 	void IdleState::Enter()
 	{
 		State::Enter();
-		startPosition = owner->GetTransformComponent()->GetWorldPosition();
-		startOrientation = owner->GetTransformComponent()->GetOrientation();
-		owner->GetPathfinder()->Reset();
-		secondsWaited = 0.0f;
-		isLookingAround = false;
-		isSteppingAround = false;
-		DecideNextActivity();
+		if (owner && owner->GetTransformComponent()) {
+			startPosition = owner->GetTransformComponent()->GetWorldPosition();
+			startOrientation = owner->GetTransformComponent()->GetOrientation();
+			owner->GetPathfinder()->Reset();
+			secondsWaited = 0.0f;
+			isLookingAround = false;
+			isSteppingAround = false;
+			DecideNextActivity();
+		}
 	}
 
 	void IdleState::Exit()
