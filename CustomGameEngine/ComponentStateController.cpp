@@ -5,11 +5,13 @@ namespace Engine {
 		this->owner = nullptr;
 
 		this->stateMachine = new StateMachine(*old_component.stateMachine);
+		stateMachine->SetParentComponent(this);
 	}
 
 	ComponentStateController::ComponentStateController(const int maxStateHistorySize)
 	{
 		stateMachine = new StateMachine(maxStateHistorySize);
+		stateMachine->SetParentComponent(this);
 	}
 
 	ComponentStateController::~ComponentStateController()

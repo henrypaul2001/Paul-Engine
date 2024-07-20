@@ -1,4 +1,6 @@
 #include "State.h"
+#include "StateMachine.h"
+#include "ComponentStateController.h"
 namespace Engine {
     void State::Enter()
     {

@@ -1,5 +1,6 @@
 #include "StateMachine.h"
 #include <unordered_map>
+#include "ComponentStateController.h"
 namespace Engine {
 	StateMachine::StateMachine(const StateMachine& old_stateMachine)
 	{
@@ -12,6 +13,7 @@ namespace Engine {
 		// Copy states
 		for (State* s : originalStates) {
 			stateMap[s] = s->Copy();
+			stateMap[s]->SetParentStateMachine(this);
 			this->AddState(stateMap[s]);
 		}
 		this->activeState = stateMap[old_stateMachine.activeState];
@@ -34,12 +36,15 @@ namespace Engine {
 			this->stateHistory.push(stateMap[s]);
 			oldHistory.pop();
 		}
+
+		firstIteration = old_stateMachine.firstIteration;
 	}
 
 	StateMachine::StateMachine(const int maxHistorySize)
 	{
 		this->maxHistorySize = maxHistorySize;
 		activeState = nullptr;
+		firstIteration = true;
 	}
 
 	StateMachine::~StateMachine()
@@ -57,9 +62,9 @@ namespace Engine {
 	void StateMachine::AddState(State* newState)
 	{
 		states.emplace_back(newState);
+		newState->SetParentStateMachine(this);
 		if (activeState == nullptr) {
 			activeState = newState;
-			activeState->Enter();
 		}
 	}
 
@@ -72,6 +77,12 @@ namespace Engine {
 	void StateMachine::Update()
 	{
 		if (activeState) {
+
+			if (firstIteration) {
+				firstIteration = false;
+				activeState->Enter();
+			}
+
 			// Update state
 			activeState->Update();
 
