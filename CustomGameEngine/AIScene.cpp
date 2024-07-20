@@ -443,19 +443,19 @@ namespace Engine {
 		};
 
 		// Idle state
-		IdleState* idle = new IdleState(agent);
+		IdleState* idle = new IdleState();
 		agentStateController->GetStateMachine().AddState(idle);
 
 		// Chase state
-		GenericState* chaseState = new GenericState("Chase", chase, agent, chaseEnter);
+		GenericState* chaseState = new GenericState("Chase", chase, nullptr, chaseEnter);
 		agentStateController->GetStateMachine().AddState(chaseState);
 
 		// Walk home state
-		GenericState* walkHomeState = new GenericState("Walk Home", nullptr, agent, walkHomeEnter);
+		GenericState* walkHomeState = new GenericState("Walk Home", nullptr, nullptr, walkHomeEnter);
 		agentStateController->GetStateMachine().AddState(walkHomeState);
 
 		// Patrol state
-		GenericState* patrolState = new GenericState("Patrol", nullptr, agent, patrolEnter);
+		GenericState* patrolState = new GenericState("Patrol", nullptr, nullptr, patrolEnter);
 		agentStateController->GetStateMachine().AddState(patrolState);
 
 		GenericStateTransition<bool*, bool>* patrolToIdleTransition = new GenericStateTransition<bool*, bool>(GenericStateTransition<bool*, bool>::EqualToCondition, hasReachedDestination, true, patrolState, idle);
@@ -497,7 +497,7 @@ namespace Engine {
 		cloneTest1->GetGeometryComponent()->ApplyMaterialToModel(path);
 
 		Entity* agentCloneTest = agent->Clone();
-		agentCloneTest->GetTransformComponent()->SetPosition(glm::vec3(35.0f, agentCloneTest->GetTransformComponent()->GetWorldPosition().y, start.z));
+		agentCloneTest->GetTransformComponent()->SetPosition(glm::vec3(start.x, agentCloneTest->GetTransformComponent()->GetWorldPosition().y, start.z + 35.0f));
 
 		// Retarget state machine data for cloned agent
 		std::vector<StateTransition*> transitions = agentCloneTest->GetStateController()->GetStateMachine().GetTransitions();
@@ -509,14 +509,6 @@ namespace Engine {
 		dynamic_cast<GenericStateTransition<bool*, bool>*>(transitions[5])->SetDataA(readyToPatrolClone);
 		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[6])->SetDataA(distanceSqrClone);
 		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[7])->SetDataA(distanceToHomeSqrClone);
-
-		std::vector<State*> states = agentCloneTest->GetStateController()->GetStateMachine().GetStates();
-		dynamic_cast<IdleState*>(states[0])->SetOwner(agentCloneTest);
-		dynamic_cast<GenericState*>(states[1])->SetData(agentCloneTest);
-		dynamic_cast<GenericState*>(states[2])->SetData(agentCloneTest);
-		dynamic_cast<GenericState*>(states[3])->SetData(agentCloneTest);
-
-		//dynamic_cast<GenericStateTransition<float&, float>*>(agent->GetStateController()->GetStateMachine().GetTransitions()[1])->SetDataA(*distanceSqrClone);
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

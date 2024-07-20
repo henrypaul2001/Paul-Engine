@@ -8,7 +8,7 @@ namespace Engine {
 	{
 	public:
 		IdleState(const IdleState& old_state);
-		IdleState(Entity* owner);
+		IdleState();
 		~IdleState();
 
 		void Update() override;
@@ -17,9 +17,7 @@ namespace Engine {
 
 		State* Copy() override { return new IdleState(*this); }
 
-		void SetOwner(Entity* newOwner) { this->owner = newOwner; }
 	private:
-		Entity* owner;
 
 		bool isLookingAround;
 		bool isSteppingAround;

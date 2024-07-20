@@ -1,10 +1,10 @@
 #include "IdleState.h"
 #include "Scene.h"
+#include "StateMachine.h"
+#include "ComponentStateController.h"
 namespace Engine {
 	IdleState::IdleState(const IdleState& old_state) : State(old_state.name)
 	{
-		this->owner = nullptr;
-
 		this->isLookingAround = old_state.isLookingAround;
 		this->isSteppingAround = old_state.isSteppingAround;
 
@@ -21,25 +21,23 @@ namespace Engine {
 		this->secondsWaited = old_state.secondsWaited;
 	}
 
-	IdleState::IdleState(Entity* owner) : State("Idle")
+	IdleState::IdleState() : State("Idle")
 	{
-		if (owner && owner->GetTransformComponent()) {
-			this->owner = owner;
+		startPosition = glm::vec3();
+		startOrientation = glm::quat();
 
-			startPosition = owner->GetTransformComponent()->GetWorldPosition();
-			startOrientation = owner->GetTransformComponent()->GetOrientation();
+		targetOrientation = glm::quat();
+		targetPosition = glm::vec3();
 
-			targetOrientation = glm::quat();
-			targetPosition = glm::vec3();
-			isLookingAround = false;
-			isSteppingAround = false;
-			moveSpeed = 0.15f;
-			rotateSpeed = 0.5f;
-			secondsToWait = 2.5f;
-			secondsWaited = 0.0f;
+		isLookingAround = false;
+		isSteppingAround = false;
 
-			srand(Scene::dt);
-		}
+		moveSpeed = 0.15f;
+		rotateSpeed = 0.5f;
+		secondsToWait = 2.5f;
+		secondsWaited = 0.0f;
+
+		srand(Scene::dt);
 	}
 
 	IdleState::~IdleState()
@@ -49,6 +47,7 @@ namespace Engine {
 
 	void IdleState::Update()
 	{
+		Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
 		if (owner && owner->GetTransformComponent()) {
 			ComponentTransform* transform = owner->GetTransformComponent();
 			if (isLookingAround) {
@@ -105,13 +104,25 @@ namespace Engine {
 	void IdleState::Enter()
 	{
 		State::Enter();
+		Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
 		if (owner && owner->GetTransformComponent()) {
 			startPosition = owner->GetTransformComponent()->GetWorldPosition();
 			startOrientation = owner->GetTransformComponent()->GetOrientation();
-			owner->GetPathfinder()->Reset();
-			secondsWaited = 0.0f;
+
+			targetOrientation = glm::quat();
+			targetPosition = glm::vec3();
+
 			isLookingAround = false;
 			isSteppingAround = false;
+
+			moveSpeed = 0.15f;
+			rotateSpeed = 0.5f;
+			secondsToWait = 2.5f;
+			secondsWaited = 0.0f;
+
+			srand(Scene::dt);
+
+			owner->GetPathfinder()->Reset();
 			DecideNextActivity();
 		}
 	}
