@@ -115,12 +115,7 @@ namespace Engine {
 			isLookingAround = false;
 			isSteppingAround = false;
 
-			moveSpeed = 0.15f;
-			rotateSpeed = 0.5f;
-			secondsToWait = 2.5f;
 			secondsWaited = 0.0f;
-
-			srand(Scene::dt);
 
 			owner->GetPathfinder()->Reset();
 			DecideNextActivity();

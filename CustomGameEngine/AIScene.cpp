@@ -10,35 +10,12 @@ namespace Engine {
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
-		distanceSqr = new float;
-		distanceToHomeSqr = new float;
-		hasReachedDestination = new bool;
-		readyToPatrol = new bool;
-
-		distanceSqrClone = new float;
-		distanceToHomeSqrClone = new float;
-		hasReachedDestinationClone = new bool;
-		readyToPatrolClone = new bool;
-
-		secondsToWait = Random(3.5f, 10.0f);
-		secondsToWaitClone = Random(3.5f, 10.0f);
 		SetupScene();
 	}
 
 	AIScene::~AIScene()
 	{
 		delete navGrid;
-
-		delete distanceSqr;
-		delete distanceToHomeSqr;
-		delete hasReachedDestination;
-		delete readyToPatrol;
-
-
-		delete distanceSqrClone;
-		delete distanceToHomeSqrClone;
-		delete hasReachedDestinationClone;
-		delete readyToPatrolClone;
 	}
 
 	void AIScene::ChangePostProcessEffect()
@@ -99,49 +76,8 @@ namespace Engine {
 			target->GetTransformComponent()->SetPosition(target->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -moveSpeed));
 		}
 
-		// This is rough
-		// Consider adding another function parameter to state transitions that retrieve the data it needs instead of manually tracking it all here
-		*distanceSqr = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agent->GetTransformComponent()->GetWorldPosition());
-		*distanceToHomeSqr = glm::distance2(agent->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
-		*hasReachedDestination = agent->GetPathfinder()->HasReachedTarget();
-
-		*distanceSqrClone = glm::distance2(target->GetTransformComponent()->GetWorldPosition(), agentClone->GetTransformComponent()->GetWorldPosition());
-		*distanceToHomeSqrClone = glm::distance2(agentClone->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
-		*hasReachedDestinationClone = agentClone->GetPathfinder()->HasReachedTarget();
-
-		*readyToPatrol = false;
-		*readyToPatrolClone = false;
-		std::string stateName = agent->GetStateController()->GetStateMachine().GetActiveStateName();
-		std::string stateNameClone = agentClone->GetStateController()->GetStateMachine().GetActiveStateName();
-
-		if (std::string(stateName.begin(), stateName.begin() + 4) == "Idle") {
-			secondsWaited += Scene::dt;
-
-			if (secondsWaited >= secondsToWait) {
-				*readyToPatrol = true;
-				secondsWaited = 0.0f;
-				secondsToWait = Random(3.5f, 10.0f);
-			}
-		}
-		else {
-			secondsWaited = 0.0f;
-		}
-
-		if (std::string(stateNameClone.begin(), stateNameClone.begin() + 4) == "Idle") {
-			secondsWaitedClone += Scene::dt;
-
-			if (secondsWaitedClone >= secondsToWaitClone) {
-				*readyToPatrolClone = true;
-				secondsWaitedClone = 0.0f;
-				secondsToWaitClone = Random(5.5f, 10.0f);
-			}
-		}
-		else {
-			secondsWaitedClone = 0.0f;
-		}
-
-		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[2])->SetText("AI State: " + stateName);
-		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[3])->SetText("AI State: " + stateNameClone);
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[2])->SetText("AI State: " + agent->GetStateController()->GetStateMachine().GetActiveStateName());
+		dynamic_cast<UIText*>(entityManager->FindEntity("Canvas")->GetUICanvasComponent()->UIElements()[3])->SetText("AI State: " + agentClone->GetStateController()->GetStateMachine().GetActiveStateName());
 	}
 
 	void AIScene::Render()
@@ -458,28 +394,84 @@ namespace Engine {
 		GenericState* patrolState = new GenericState("Patrol", nullptr, nullptr, patrolEnter);
 		agentStateController->GetStateMachine().AddState(patrolState);
 
-		GenericStateTransition<bool*, bool>* patrolToIdleTransition = new GenericStateTransition<bool*, bool>(GenericStateTransition<bool*, bool>::EqualToCondition, hasReachedDestination, true, patrolState, idle);
+		using EntityBoolBoolBool = GenericStateTransition<Entity*, bool, bool, bool>;
+		using EntityFloatFloatFloat = GenericStateTransition<Entity*, float, float, float>;
+		using FloatFloatBoolBool = GenericStateTransition<float, float, bool, bool>;
+
+		EntityBoolBoolBool::GenericDataRetrieverFuncA hasReachedDestination = [](EntityBoolBoolBool* owner) -> bool {
+			Entity* agent = owner->GetSourceState()->GetParentStateMachine()->GetParentComponent()->GetOwner();
+			if (agent) {
+				return agent->GetPathfinder()->HasReachedTarget();
+			}
+			else {
+				return true;
+			}
+		};
+
+		EntityFloatFloatFloat::GenericDataRetrieverFuncA distanceToHome = [](EntityFloatFloatFloat* owner) -> float {
+			Entity* agent = owner->GetSourceState()->GetParentStateMachine()->GetParentComponent()->GetOwner();
+			if (agent) {
+				return glm::distance(agent->GetTransformComponent()->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
+			}
+			else {
+				return 0.0f;
+			}
+		};
+
+		EntityFloatFloatFloat::GenericDataRetrieverFuncA distanceToTarget = [](EntityFloatFloatFloat* owner) -> float {
+			Entity* agent = owner->GetSourceState()->GetParentStateMachine()->GetParentComponent()->GetOwner();
+			if (agent) {
+				Entity* target = owner->GetBaseDataA();
+
+				return glm::distance(agent->GetTransformComponent()->GetWorldPosition(), target->GetTransformComponent()->GetWorldPosition());
+			}
+			else {
+				return 5.0f;
+			}
+		};
+
+		FloatFloatBoolBool::GenericDataRetrieverFuncA updateSecondsWaited = [](FloatFloatBoolBool* owner) -> bool {
+			float secondsWaited = owner->GetBaseDataA();
+			float secondsToWait = owner->GetBaseDataB();
+
+			secondsWaited += Scene::dt;
+
+			bool readyToPatrol = false;
+			if (secondsWaited >= secondsToWait) {
+				readyToPatrol = true;
+				secondsWaited = 0.0f;
+				secondsToWait = Random(3.5f, 10.0f);
+				owner->SetBaseDataB(secondsToWait);
+			}
+
+			owner->SetBaseDataA(secondsWaited);
+
+			return readyToPatrol;
+		};
+
+		FloatFloatBoolBool::GenericDataRetrieverFuncB truePassthrough = [](FloatFloatBoolBool* owner) -> bool {
+			return true;
+		};
+
+		EntityBoolBoolBool* patrolToIdleTransition = new EntityBoolBoolBool(EntityBoolBoolBool::EqualToCondition, nullptr, true, patrolState, idle, hasReachedDestination, EntityBoolBoolBool::PassthroughB);
 		agentStateController->GetStateMachine().AddTransition(patrolToIdleTransition);
 
-		GenericStateTransition<float*, float>* patrolToChaseTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceSqr, (5.0f * 5.0f), patrolState, chaseState);
-		agentStateController->GetStateMachine().AddTransition(patrolToChaseTransition);
-
-		GenericStateTransition<float*, float>* walkHomeToIdleTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceToHomeSqr, (1.5f * 1.5f), walkHomeState, idle);
+		EntityFloatFloatFloat* walkHomeToIdleTransition = new EntityFloatFloatFloat(EntityFloatFloatFloat::LessThanCondition, nullptr, 1.5f, walkHomeState, idle, distanceToHome, EntityFloatFloatFloat::PassthroughB);
 		agentStateController->GetStateMachine().AddTransition(walkHomeToIdleTransition);
 
-		GenericStateTransition<float*, float>* walkHomeToChaseTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceSqr, (5.0f * 5.0f), walkHomeState, chaseState);
+		EntityFloatFloatFloat* walkHomeToChaseTransition = new EntityFloatFloatFloat(EntityFloatFloatFloat::LessThanCondition, target, 5.0f, walkHomeState, chaseState, distanceToTarget, EntityFloatFloatFloat::PassthroughB);
 		agentStateController->GetStateMachine().AddTransition(walkHomeToChaseTransition);
 
-		GenericStateTransition<float*, float>* idleToChaseTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::LessThanCondition, distanceSqr, (5.0f * 5.0f), idle, chaseState);
+		EntityFloatFloatFloat* idleToChaseTransition = new EntityFloatFloatFloat(EntityFloatFloatFloat::LessThanCondition, target, 5.0f, idle, chaseState, distanceToTarget, EntityFloatFloatFloat::PassthroughB);
 		agentStateController->GetStateMachine().AddTransition(idleToChaseTransition);
 
-		GenericStateTransition<bool*, bool>* idleToPatrolTransition = new GenericStateTransition<bool*, bool>(GenericStateTransition<bool*, bool>::EqualToCondition, readyToPatrol, true, idle, patrolState);
+		FloatFloatBoolBool* idleToPatrolTransition = new FloatFloatBoolBool(FloatFloatBoolBool::EqualToCondition, 0.0f, 3.5f, idle, patrolState, updateSecondsWaited, truePassthrough);
 		agentStateController->GetStateMachine().AddTransition(idleToPatrolTransition);
 
-		GenericStateTransition<float*, float>* chaseToWalkHomeTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::GreaterThanCondition, distanceSqr, (5.0f * 5.0f), chaseState, walkHomeState);
+		EntityFloatFloatFloat* chaseToWalkHomeTransition = new EntityFloatFloatFloat(EntityFloatFloatFloat::GreaterThanCondition, target, 5.0f, chaseState, walkHomeState, distanceToTarget, EntityFloatFloatFloat::PassthroughB);
 		agentStateController->GetStateMachine().AddTransition(chaseToWalkHomeTransition);
 
-		GenericStateTransition<float*, float>* idleToWalkHomeTransition = new GenericStateTransition<float*, float>(GenericStateTransition<float*, float>::GreaterThanCondition, distanceToHomeSqr, (7.5f * 7.5f), idle, walkHomeState);
+		EntityFloatFloatFloat* idleToWalkHomeTransition = new EntityFloatFloatFloat(EntityFloatFloatFloat::GreaterThanCondition, nullptr, 7.5f, idle, walkHomeState, distanceToHome, EntityFloatFloatFloat::PassthroughB);
 		agentStateController->GetStateMachine().AddTransition(idleToWalkHomeTransition);
 
 		agent->AddComponent(agentStateController);
@@ -499,16 +491,8 @@ namespace Engine {
 		Entity* agentCloneTest = agent->Clone();
 		agentCloneTest->GetTransformComponent()->SetPosition(glm::vec3(start.x, agentCloneTest->GetTransformComponent()->GetWorldPosition().y, start.z + 35.0f));
 
-		// Retarget state machine data for cloned agent
-		std::vector<StateTransition*> transitions = agentCloneTest->GetStateController()->GetStateMachine().GetTransitions();
-		dynamic_cast<GenericStateTransition<bool*, bool>*>(transitions[0])->SetDataA(hasReachedDestinationClone);
-		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[1])->SetDataA(distanceSqrClone);
-		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[2])->SetDataA(distanceToHomeSqrClone);
-		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[3])->SetDataA(distanceSqrClone);
-		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[4])->SetDataA(distanceSqrClone);
-		dynamic_cast<GenericStateTransition<bool*, bool>*>(transitions[5])->SetDataA(readyToPatrolClone);
-		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[6])->SetDataA(distanceSqrClone);
-		dynamic_cast<GenericStateTransition<float*, float>*>(transitions[7])->SetDataA(distanceToHomeSqrClone);
+		Entity* agentCloneTest2 = agentCloneTest->Clone();
+		agentCloneTest2->GetTransformComponent()->SetPosition(glm::vec3(start.x + 25.0f, agentCloneTest2->GetTransformComponent()->GetWorldPosition().y, start.z + 35.0f));
 
 		Entity* canvas = new Entity("Canvas");
 		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
