@@ -9,7 +9,7 @@ namespace Engine {
 
 		virtual StateTransition* Copy() = 0;
 
-		virtual bool Condition() const = 0;
+		virtual bool Condition() = 0;
 
 		State* GetDestinationState() const { return destinationState; }
 		State* GetSourceState() const { return sourceState; }
