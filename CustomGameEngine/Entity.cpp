@@ -13,6 +13,11 @@ namespace Engine
 		for (Component* c : old_entity.componentList) {
 			Component* newComponent = c->Copy();
 			newComponent->SetOwner(this);
+			if (newComponent->ComponentType() == COMPONENT_TRANSFORM) {
+				for (Entity* child : dynamic_cast<ComponentTransform*>(newComponent)->GetChildren()) {
+					child->GetTransformComponent()->SetParent(this);
+				}
+			}
 			AddComponent(newComponent);
 		}
 	}

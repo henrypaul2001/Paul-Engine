@@ -160,6 +160,9 @@ namespace Engine {
 		fireLight->GetTransformComponent()->SetParent(campfire);
 		entityManager->AddEntity(fireLight);
 
+		Entity* campfireClone = campfire->Clone();
+		campfireClone->GetTransformComponent()->SetPosition(campfireClone->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -25.0f));
+
 		Entity* boulder = new Entity("Boulder");
 		boulder->AddComponent(new ComponentTransform(-8.0f, 0.0f, 20.0f));
 		boulder->GetTransformComponent()->SetScale(10.0f);

@@ -25,8 +25,8 @@ namespace Engine
 		// Copy children
 		this->children.reserve(old_component.children.size());
 		for (int i = 0; i < old_component.children.size(); i++) {
-			children.push_back(new Entity(*old_component.children[i]));
-			children[i]->GetEntityManager()->AddEntity(children[i]);
+			Entity* child = old_component.children[i]->Clone();
+			children.push_back(child);
 		}
 	}
 
@@ -218,6 +218,11 @@ namespace Engine
 
 	void ComponentTransform::AddChild(Entity* entityPtr)
 	{
+		for (Entity* child : children) {
+			if (child == entityPtr) {
+				return;
+			}
+		}
 		children.push_back(entityPtr);
 	}
 
