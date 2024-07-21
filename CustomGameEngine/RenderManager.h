@@ -29,12 +29,24 @@ namespace Engine {
 		MAP_CUBE
 	};
 
+	enum AnisotropicFiltering {
+		ANISO_NONE = 0,
+		ANISO_2X = 2,
+		ANISO_4X = 4,
+		ANISO_6X = 6,
+		ANISO_8X = 8,
+		ANISO_10X = 10,
+		ANISO_12X = 12,
+		ANISO_14X = 14,
+		ANISO_16X = 16,
+	};
+
 	struct RenderParams {
 	public:
 		RenderParams(float exposure = 1.0f, float gamma = 1.2f, float bloomThreshold = 15.0f, int bloomPasses = 10, float advBloomThreshold = 1.0f, float advBloomSoftThreshold = 0.5f, int advBloomChainLength = 6, float advBloomFilterRadius = 0.005f, 
-			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f, float postProcessStrength = 1.0f) 
+			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f, float postProcessStrength = 1.0f, AnisotropicFiltering defaultAnisoFilter = ANISO_4X) 
 			: exposure(exposure), gamma(gamma), bloomThreshold(bloomThreshold), bloomPasses(bloomPasses), advBloomThreshold(advBloomThreshold), advBloomSoftThreshold(advBloomSoftThreshold), advBloomChainLength(advBloomChainLength), advBloomFilterRadius(advBloomFilterRadius), 
-			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias), postProcessStrength(postProcessStrength)
+			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias), postProcessStrength(postProcessStrength), anisotropicFiltering(defaultAnisoFilter)
 		{
 			SetRenderOptions(RENDER_UI | RENDER_SSAO | RENDER_SHADOWS | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT | RENDER_TONEMAPPING | RENDER_PARTICLES);
 			EnableRenderOptions(RENDER_SKYBOX);
@@ -81,6 +93,9 @@ namespace Engine {
 		
 		void SetSSAORadius(const float newRadius) { ssaoRadius = newRadius; }
 		void SetSSAOBias(const float newBias) { ssaoBias = newBias; }
+
+		const AnisotropicFiltering GetDefaultAnisoFiltering() const { return anisotropicFiltering; }
+		void SetDefaultAnisotropicFiltering(const AnisotropicFiltering newAnisoFilter) { this->anisotropicFiltering = newAnisoFilter; }
 	private:
 		RenderOptions renderOptions;
 		
@@ -107,6 +122,9 @@ namespace Engine {
 		int ssaoSamples;
 		float ssaoRadius;
 		float ssaoBias;
+
+		// Texture filtering
+		AnisotropicFiltering anisotropicFiltering;
 	};
 
 	struct AdvBloomMip {
