@@ -79,17 +79,13 @@ namespace Engine {
 			ChangePostProcessEffect();
 		}
 		else if (key == GLFW_KEY_KP_8) {
-			std::string name = std::string("Ball ") + std::string(std::to_string(ballCount));
+			Entity* baseBall = entityManager->FindEntity("Ball");
+			Entity* clonedBall = baseBall->Clone();
+			clonedBall->GetTransformComponent()->SetPosition(glm::vec3(6.5f, 8.5f, -20.0f));
+			clonedBall->GetPhysicsComponent()->SetVelocity(glm::vec3(0.0f));
+
+			std::string name = clonedBall->Name();
 			std::cout << "Creating " << name << std::endl;
-			Entity* newBall = new Entity(name);
-			newBall->AddComponent(new ComponentTransform(6.5f, 8.5f, -20.0f));
-			newBall->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-			newBall->AddComponent(new ComponentCollisionSphere(1.0f));
-			newBall->AddComponent(new ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
-			dynamic_cast<ComponentCollisionSphere*>(newBall->GetComponent(COMPONENT_COLLISION_SPHERE))->IsMovedByCollisions(true);
-			entityManager->AddEntity(newBall);
-			std::cout << "Created " << name << std::endl;
-			ballCount++;
 		}
 		else if (key == GLFW_KEY_G) {
 			SystemPhysics* physics = dynamic_cast<SystemPhysics*>(systemManager->FindSystem(SYSTEM_PHYSICS, UPDATE_SYSTEMS));
@@ -99,8 +95,8 @@ namespace Engine {
 		}
 		else if (key == GLFW_KEY_KP_9) {
 			Entity* torqueEntity = entityManager->FindEntity("Link 0");
-			torqueEntity->GetPhysicsComponent()->SetTorque(glm::vec3(0.0f, 2.0f, 0.0f));
-			//constraintManager->RemoveConstraint(constraintManager->GetConstraints().size() - 1);
+			//torqueEntity->GetPhysicsComponent()->SetTorque(glm::vec3(0.0f, 2.0f, 0.0f));
+			constraintManager->RemoveConstraint(constraintManager->GetConstraints().size() - 1);
 		}
 		else if (key == GLFW_KEY_KP_3) {
 			Entity* cube = entityManager->FindEntity("Test Cube 2");
@@ -183,7 +179,7 @@ namespace Engine {
 		physicsBall->AddComponent(new ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
 		entityManager->AddEntity(physicsBall);
 
-		Entity* physicsBall2 = new Entity("Physics Ball 2");
+		Entity* physicsBall2 = new Entity("Ball");
 		physicsBall2->AddComponent(new ComponentTransform(6.5f, 8.5f, -20.0f));
 		physicsBall2->AddComponent(new ComponentGeometry(MODEL_SPHERE));
 		physicsBall2->AddComponent(new ComponentCollisionSphere(1.0f));
