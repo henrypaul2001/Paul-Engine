@@ -32,6 +32,8 @@ namespace Engine {
 		std::unordered_map<std::string, AudioFile*> audioFiles;
 	};
 
+	enum AnisotropicFiltering;
+	class RenderManager;
 	class ResourceManager
 	{
 	private:
@@ -115,7 +117,7 @@ namespace Engine {
 		Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources = false);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
-		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false);
+		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false, AnisotropicFiltering anisoFilter = (AnisotropicFiltering)-1);
 		Texture* LoadTextureEmbedded(const aiTexture* embeddedTexture, const std::string& filename, TextureTypes type, bool srgb, bool loadInPersistentResources = false);
 		Cubemap* LoadCubemap(std::string rootFilepath, bool loadInPersistentResources = false);
 		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false, bool loadInPersistentResources = false);

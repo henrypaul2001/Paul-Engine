@@ -735,7 +735,7 @@ namespace Engine {
 		return it->second;
 	}
 
-	Texture* ResourceManager::LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources)
+	Texture* ResourceManager::LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources, AnisotropicFiltering anisoFilter)
 	{
 		// First check if already loaded
 		std::unordered_map<std::string, Texture*>::iterator persistentIt = persistentResources.textures.find(filepath);
@@ -785,6 +785,11 @@ namespace Engine {
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				if (anisoFilter == ANISO_DEFAULT) { anisoFilter = RenderManager::GetInstance()->GetRenderParams()->GetDefaultAnisoFiltering(); }
+				float maxAnisoFilter;
+				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisoFilter);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, std::min(maxAnisoFilter, (float)anisoFilter));
 
 				stbi_image_free(data);
 			}
@@ -871,6 +876,10 @@ namespace Engine {
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				float maxAnisoFilter;
+				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisoFilter);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, std::min(maxAnisoFilter, (float)RenderManager::GetInstance()->GetRenderParams()->GetDefaultAnisoFiltering()));
 
 				stbi_image_free(data);
 			}

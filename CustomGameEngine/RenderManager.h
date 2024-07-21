@@ -30,6 +30,7 @@ namespace Engine {
 	};
 
 	enum AnisotropicFiltering {
+		ANISO_DEFAULT = -1,
 		ANISO_NONE = 0,
 		ANISO_2X = 2,
 		ANISO_4X = 4,
