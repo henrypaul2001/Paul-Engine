@@ -93,6 +93,11 @@ namespace Engine {
 
 			anim->ChangeAnimation(animations[animIndex]);
 		}
+
+		if (key == GLFW_KEY_KP_3) {
+			Entity* clone = entityManager->FindEntity("Swat")->Clone();
+			clone->GetTransformComponent()->SetPosition(clone->GetTransformComponent()->GetWorldPosition() + glm::vec3(-5.0f, 0.0f, 0.0f));
+		}
 	}
 
 	void AnimationScene::keyDown(int key)
@@ -137,37 +142,22 @@ namespace Engine {
 		float xDistance = 2.25f;
 		float zDistance = -2.25f;
 
-		int count = 0;
+		Entity* vampire = new Entity("Vampire");
+		vampire->AddComponent(new ComponentTransform(originX, originY, originZ));
+		vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+		vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
+		entityManager->AddEntity(vampire);
+
+		int count = 1;
 		for (int j = 0; j < xNum; j++) {
 			for (int k = 0; k < zNum; k++) {
-				std::string name = std::string("Vampire ") + std::string(std::to_string(count));
-
-				Entity* vampire = new Entity(name);
-				vampire->AddComponent(new ComponentTransform(originX + (j * xDistance), originY, originZ + (k * zDistance)));
-				vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-				vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
-				entityManager->AddEntity(vampire);
-
+				if (count != 1) {
+					Entity* clone = vampire->Clone();
+					clone->GetTransformComponent()->SetPosition(glm::vec3(originX + (j * xDistance), originY, originZ + (k * zDistance)));
+				}
 				count++;
-				std::cout << "vampire " << count << " created" << std::endl;
 			}
 		}
-
-		//Entity* nurse = new Entity("Nurse");
-		//nurse->AddComponent(new ComponentTransform(glm::vec3(-4.0f, -0.5f, 0.0f)));
-		//nurse->AddComponent(new ComponentGeometry("Models/nurseNew/nurseMeshNew.dae", true));
-		//nurse->AddComponent(new ComponentAnimator(nurseTestAnim));
-		//nurse->GetTransformComponent()->SetScale(0.015f);
-		//nurse->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 90.0f);
-		//entityManager->AddEntity(nurse);
-
-		//Entity* man = new Entity("Man");
-		//man->AddComponent(new ComponentTransform(-4.0f, -0.5f, 3.0f));
-		//man->AddComponent(new ComponentGeometry("Models/man/man.fbx", true));
-		//man->AddComponent(new ComponentAnimator(gunRun));
-		//man->GetTransformComponent()->SetScale(0.015f);
-		//man->GetTransformComponent()->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
-		//entityManager->AddEntity(man);
 
 		Entity* swat = new Entity("Swat");
 		swat->AddComponent(new ComponentTransform(-4.0f, -0.5f, 0.0f));
