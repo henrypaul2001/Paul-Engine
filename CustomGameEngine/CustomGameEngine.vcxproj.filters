@@ -402,6 +402,9 @@
     <ClInclude Include="ReflectionProbe.h">
       <Filter>Header Files\Engine\Utility\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="BakedData.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -691,6 +694,9 @@
     </ClCompile>
     <ClCompile Include="ReflectionProbe.cpp">
       <Filter>Source Files\Engine\Utility\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="BakedData.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

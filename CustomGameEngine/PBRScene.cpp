@@ -1606,6 +1606,18 @@ namespace Engine {
 		nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
 		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
 		entityManager->AddEntity(nonPBRTest);
+
+
+
+		// Reflection probes
+		std::vector<glm::vec3> positions;
+		positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
+		positions.push_back(glm::vec3(7.5f, 2.0f, -7.5f));
+		positions.push_back(glm::vec3(-7.5f, 2.0f, -7.5f));
+		positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
+		positions.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
+
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions);
 	}
 
 	void PBRScene::CreateSystems()
