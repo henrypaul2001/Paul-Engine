@@ -2,6 +2,9 @@
 #include <glm/ext/vector_float3.hpp>
 #include "ReflectionProbe.h"
 #include <vector>
+#include <filesystem>
+#include <string>
+#include <iostream>
 namespace Engine {
 	class BakedData
 	{
@@ -11,11 +14,28 @@ namespace Engine {
 			ClearReflectionProbes();
 		}
 
-		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions) {
+		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions, const std::string& sceneName) {
 			ClearReflectionProbes();
 
-			for (const glm::vec3& position : positions) {
-				reflectionProbes.push_back(new ReflectionProbe(reflectionProbes.size(), position));
+			std::string filePath = "Data/ReflectionProbe/" + sceneName;
+			std::filesystem::path directoryPath = filePath;
+
+			// Create directory if it doesn't already exist
+			if (!std::filesystem::exists(directoryPath)) {
+				std::filesystem::create_directory(directoryPath);
+				std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << filePath << std::endl;
+			}
+
+			for (int i = 0; i < positions.size(); i++) {
+				reflectionProbes.push_back(new ReflectionProbe(i, positions[i]));
+
+				// Create file for this reflection probe if it doesn't already exist
+				std::filesystem::path probePath = filePath + "/" + std::to_string(i);
+
+				if (!std::filesystem::exists(probePath)) {
+					std::filesystem::create_directory(probePath);
+					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << probePath << std::endl;
+				}
 			}
 		}
 
