@@ -195,6 +195,7 @@
     <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="PBRScene.h" />
     <ClInclude Include="PhysicsScene.h" />
+    <ClInclude Include="ReflectionProbe.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="RenderPipeline.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -292,6 +293,7 @@
     <ClCompile Include="ParticleScene.cpp" />
     <ClCompile Include="PBRScene.cpp" />
     <ClCompile Include="PhysicsScene.cpp" />
+    <ClCompile Include="ReflectionProbe.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="RenderPipeline.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

@@ -112,6 +112,12 @@
     <Filter Include="Header Files\Game\Utility\AI">
       <UniqueIdentifier>{bcba806a-1873-4b07-b71b-5400b5e1a52b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Lighting">
+      <UniqueIdentifier>{e244450b-d41d-454a-ae2d-0696605b4235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\Lighting">
+      <UniqueIdentifier>{456499ef-35ac-434a-a2df-cf55004f7ef0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -392,6 +398,9 @@
     </ClInclude>
     <ClInclude Include="SystemStateMachineUpdater.h">
       <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionProbe.h">
+      <Filter>Header Files\Engine\Utility\Lighting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -679,6 +688,9 @@
     </ClCompile>
     <ClCompile Include="SystemStateMachineUpdater.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionProbe.cpp">
+      <Filter>Source Files\Engine\Utility\Lighting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

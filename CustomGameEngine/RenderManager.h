@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "ResourceManager.h"
 #include "RenderPipeline.h"
+#include "ReflectionProbe.h"
 namespace Engine {
 
 	enum RenderOptions {
@@ -42,6 +43,32 @@ namespace Engine {
 		ANISO_16X = 16,
 	};
 
+	struct BakedData {
+	public:
+		BakedData() {}
+		~BakedData() {
+			ClearReflectionProbes();
+		}
+
+		void InitialiseReflectionProbes(const std::vector<const glm::vec3&>& positions) {
+			ClearReflectionProbes();
+
+			for (const glm::vec3& position : positions) {
+				reflectionProbes.push_back(new ReflectionProbe(reflectionProbes.size(), position));
+			}
+		}
+
+	private:
+		void ClearReflectionProbes() {
+			for (ReflectionProbe* probe : reflectionProbes) {
+				delete probe;
+			}
+			reflectionProbes.clear();
+		}
+
+		std::vector<ReflectionProbe*> reflectionProbes;
+	};
+
 	struct RenderParams {
 	public:
 		RenderParams(float exposure = 1.0f, float gamma = 1.2f, float bloomThreshold = 15.0f, int bloomPasses = 10, float advBloomThreshold = 1.0f, float advBloomSoftThreshold = 0.5f, int advBloomChainLength = 6, float advBloomFilterRadius = 0.005f, 
@@ -58,6 +85,8 @@ namespace Engine {
 		void SetRenderOptions(const RenderOptions& options) { renderOptions = options; }
 		void EnableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions | options; }
 		void DisableRenderOptions(const RenderOptions& options) { renderOptions = renderOptions & ~options; }
+
+		BakedData& GetBakedData() { return bakedData; }
 
 		const float GetPostProcessStrength() const { return postProcessStrength; }
 		const float GetGamma() const { return gamma; }
@@ -99,7 +128,8 @@ namespace Engine {
 		void SetDefaultAnisotropicFiltering(const AnisotropicFiltering newAnisoFilter) { this->anisotropicFiltering = newAnisoFilter; }
 	private:
 		RenderOptions renderOptions;
-		
+		BakedData bakedData;
+
 		// Post processing
 		float postProcessStrength;
 
