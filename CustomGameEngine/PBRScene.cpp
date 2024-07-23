@@ -931,6 +931,9 @@ namespace Engine {
 		goblet->AddComponent(new ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
 		entityManager->AddEntity(goblet);
 
+		Entity* gobletClone = goblet->Clone();
+		gobletClone->GetTransformComponent()->SetPosition(gobletClone->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, 5.0f, 0.0f));
+
 		Entity* cart = new Entity("Cart");
 		cart->AddComponent(new ComponentTransform(5.0f, -1.0f, 2.0f));
 		dynamic_cast<ComponentTransform*>(cart->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(2.0f));

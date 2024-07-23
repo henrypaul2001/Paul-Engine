@@ -24,6 +24,8 @@ namespace Engine {
 		void ParameterGroupRelease(UIButton* button);
 		void ParameterIncreaseOptionHold(UIButton* button);
 		void ParameterDecreaseOptionHold(UIButton* button);
+
+		const std::string& GetName() override { return "PBRScene"; }
 	private:
 		int currentEnvMapIndex;
 		std::vector<std::string> envMaps;

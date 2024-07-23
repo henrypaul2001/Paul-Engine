@@ -17,5 +17,7 @@ namespace Engine {
 
 		void keyUp(int key) override;
 		void keyDown(int key) override;
+
+		const std::string& GetName() override { return "SponzaScene"; }
 	};
 }

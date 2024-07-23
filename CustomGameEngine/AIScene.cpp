@@ -316,7 +316,7 @@ namespace Engine {
 		agent->GetGeometryComponent()->ApplyMaterialToModel(agentMaterial);
 		agent->AddComponent(new ComponentLight(POINT));
 		agent->GetLightComponent()->Colour = glm::vec3(1.75f);
-		agent->GetLightComponent()->CastShadows = true;
+		agent->GetLightComponent()->CastShadows = false;
 
 		ComponentStateController* agentStateController = new ComponentStateController();
 

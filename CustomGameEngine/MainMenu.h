@@ -32,6 +32,8 @@ namespace Engine {
 		void ButtonPress(UIButton* button);
 		void ButtonEnter(UIButton* button);
 		void ButtonExit(UIButton* button);
+
+		const std::string& GetName() override { return "MainMenu"; }
 	private:
 		void CreateEntities();
 		void CreateSystems();
