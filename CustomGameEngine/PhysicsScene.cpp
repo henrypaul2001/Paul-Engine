@@ -11,7 +11,7 @@
 #include "ConstraintPosition.h"
 #include "ConstraintRotation.h"
 namespace Engine {
-	PhysicsScene::PhysicsScene(SceneManager* sceneManager) : Scene(sceneManager)
+	PhysicsScene::PhysicsScene(SceneManager* sceneManager) : Scene(sceneManager, "PhysicsScene")
 	{
 		ballCount = 0;
 		inputManager = new GameInputManager(this);

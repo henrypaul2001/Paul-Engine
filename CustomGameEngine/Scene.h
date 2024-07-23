@@ -28,10 +28,12 @@ namespace Engine
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
 
+		std::string name;
+
 		Camera* camera;
 	public:
 		static float dt;
-		Scene(SceneManager* sceneManager);
+		Scene(SceneManager* sceneManager, const std::string& name);
 		~Scene();
 
 		virtual void Render();
@@ -42,7 +44,7 @@ namespace Engine
 		virtual void keyUp(int key) = 0;
 		virtual void keyDown(int key) = 0;
 
-		virtual const std::string& GetName() = 0;
+		const std::string& GetName() { return name; }
 
 		InputManager* GetInputManager() const;
 		SystemManager* GetSystemManager() const;

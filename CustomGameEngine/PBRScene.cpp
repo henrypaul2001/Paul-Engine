@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <sstream>
 namespace Engine {
-	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager)
+	PBRScene::PBRScene(SceneManager* sceneManager) : Scene(sceneManager, "PBRScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
@@ -1607,8 +1607,6 @@ namespace Engine {
 		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
 		entityManager->AddEntity(nonPBRTest);
 
-
-
 		// Reflection probes
 		std::vector<glm::vec3> positions;
 		positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
@@ -1617,7 +1615,7 @@ namespace Engine {
 		positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
 		positions.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions);
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, name);
 	}
 
 	void PBRScene::CreateSystems()

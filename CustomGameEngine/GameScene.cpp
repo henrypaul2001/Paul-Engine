@@ -8,7 +8,7 @@
 #include "GameInputManager.h"
 namespace Engine
 {
-	GameScene::GameScene(SceneManager* sceneManager) : Scene(sceneManager)
+	GameScene::GameScene(SceneManager* sceneManager) : Scene(sceneManager, "GameScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

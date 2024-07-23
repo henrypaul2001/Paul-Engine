@@ -2,7 +2,7 @@
 #include "GameInputManager.h"
 #include "SystemPhysics.h"
 namespace Engine {
-	AOScene::AOScene(SceneManager* sceneManager) : Scene(sceneManager)
+	AOScene::AOScene(SceneManager* sceneManager) : Scene(sceneManager, "AOScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

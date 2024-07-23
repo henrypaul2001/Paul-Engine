@@ -7,7 +7,7 @@
 #include "UITextButton.h"
 #include "UIImageButton.h"
 namespace Engine {
-	SponzaScene::SponzaScene(SceneManager* sceneManager) : Scene(sceneManager)
+	SponzaScene::SponzaScene(SceneManager* sceneManager) : Scene(sceneManager, "SponzaScene")
 	{
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();

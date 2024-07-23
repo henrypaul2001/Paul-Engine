@@ -9,7 +9,7 @@
 #include "SystemCollisionSphere.h"
 #include "SystemPhysics.h"
 namespace Engine {
-	ParticleScene::ParticleScene(SceneManager* sceneManager) : Scene(sceneManager)
+	ParticleScene::ParticleScene(SceneManager* sceneManager) : Scene(sceneManager, "ParticleScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

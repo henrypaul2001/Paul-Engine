@@ -6,7 +6,7 @@
 #include "IdleState.h"
 #include "SystemStateMachineUpdater.h"
 namespace Engine {
-	AIScene::AIScene(SceneManager* sceneManager) : Scene(sceneManager)
+	AIScene::AIScene(SceneManager* sceneManager) : Scene(sceneManager, "AIScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

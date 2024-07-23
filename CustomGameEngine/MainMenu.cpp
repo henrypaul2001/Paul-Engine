@@ -4,7 +4,7 @@
 #include "SystemUIMouseInteraction.h"
 #include "GameSceneManager.h"
 namespace Engine {
-	MainMenu::MainMenu(SceneManager* sceneManager) : Scene(sceneManager)
+	MainMenu::MainMenu(SceneManager* sceneManager) : Scene(sceneManager, "MainMenu")
 	{
 		inputManager = new GameInputManager(this, true);
 		inputManager->SetCameraPointer(camera);

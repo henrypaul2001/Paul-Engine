@@ -5,7 +5,7 @@
 #include "UIText.h"
 #include "SystemUIRender.h"
 namespace Engine {
-	AnimationScene::AnimationScene(SceneManager* sceneManager) : Scene(sceneManager)
+	AnimationScene::AnimationScene(SceneManager* sceneManager) : Scene(sceneManager, "AnimationScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

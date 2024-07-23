@@ -9,7 +9,7 @@
 #include "SystemCollisionBoxAABB.h"
 #include "SystemCollisionSphereBox.h"
 namespace Engine {
-	CollisionScene::CollisionScene(SceneManager* sceneManager) : Scene(sceneManager)
+	CollisionScene::CollisionScene(SceneManager* sceneManager) : Scene(sceneManager, "CollisionScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

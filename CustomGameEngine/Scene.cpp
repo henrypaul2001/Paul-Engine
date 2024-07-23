@@ -6,7 +6,7 @@ namespace Engine
 {
 	float Scene::dt;
 
-	Scene::Scene(SceneManager* sceneManager) {
+	Scene::Scene(SceneManager* sceneManager, const std::string& name) {
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
@@ -20,6 +20,8 @@ namespace Engine
 		constraintManager = new ConstraintManager();
 		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
+
+		this->name = name;
 
 		this->collisionManager = new CollisionManager();
 	}

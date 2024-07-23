@@ -5,7 +5,7 @@
 #include "AudioManager.h"
 #include "SystemAudio.h"
 namespace Engine {
-	AudioScene::AudioScene(SceneManager* sceneManager) : Scene(sceneManager)
+	AudioScene::AudioScene(SceneManager* sceneManager) : Scene(sceneManager, "AudioScene")
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
