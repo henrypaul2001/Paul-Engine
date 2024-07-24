@@ -22,6 +22,7 @@ namespace Engine
 		SYSTEM_PARTICLE_RENDER = 1 << 14,
 		SYSTEM_PATHFINDING = 1 << 15,
 		SYSTEM_STATE_UPDATER = 1 << 16,
+		SYSTEM_REFLECTION_BAKING = 1 << 17,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }
