@@ -22,6 +22,7 @@ namespace Engine {
 		SetupGBuffer();
 		SetupSSAOBuffers();
 		SetupEnvironmentMapFBO();
+		SetupCubemapFBO();
 
 		renderParams = new RenderParams;
 		SetupAdvBloom();
@@ -728,6 +729,20 @@ namespace Engine {
 		if (status != GL_FRAMEBUFFER_COMPLETE) {
 			std::cout << "ERROR::RENDERMANAGER::Advanced bloom FBO incomplete, status: 0x\%x\n" << status << std::endl;
 			delete advBloomFBO;
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void RenderManager::SetupCubemapFBO()
+	{
+		glGenFramebuffers(1, &cubemapFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, cubemapFBO);
+
+		// error check
+		int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "ERROR::RENDERMANAGER::Cubemap FBO incomplete, status: 0x\%x\n" << status << std::endl;
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

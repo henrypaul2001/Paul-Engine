@@ -154,6 +154,7 @@ namespace Engine {
 		unsigned int* GetFlatDepthFBO() const { return flatDepthMapFBO; }
 		unsigned int* GetCubeDepthFBO() const { return cubeDepthMapFBO; }
 		unsigned int* GetTexturedFBO() const { return texturedFBO; }
+		unsigned int GetCubemapFBO() const { return cubemapFBO; }
 
 		unsigned int* GetGBuffer() const { return gBuffer; }
 		unsigned int* GPosition() const { return gPosition; }
@@ -219,6 +220,7 @@ namespace Engine {
 		void SetupBloomPingPongFBO();
 		void SetupEnvironmentMapFBO();
 		void SetupAdvBloom();
+		void SetupCubemapFBO();
 
 		void SetupGBuffer();
 
@@ -240,6 +242,8 @@ namespace Engine {
 
 		unsigned int* screenTexture;
 		unsigned int* alternateScreenTexture;
+
+		unsigned int cubemapFBO;
 
 		// Forward rendering
 		unsigned int* texturedFBO;
