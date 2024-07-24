@@ -405,6 +405,9 @@
     <ClInclude Include="BakedData.h">
       <Filter>Header Files\Engine\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="SystemReflectionBaking.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -697,6 +700,9 @@
     </ClCompile>
     <ClCompile Include="BakedData.cpp">
       <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemReflectionBaking.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
