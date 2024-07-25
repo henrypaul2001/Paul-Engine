@@ -64,6 +64,9 @@ namespace Engine {
 
 		void ApplyMaterialToModel(Material* newMaterial);
 		void ApplyMaterialToModel(PBRMaterial* newMaterial);
+
+		const bool IsIncludedInReflectionProbes() const { return includeInReflectionProbes; }
+		void SetIsIncludedInReflectionProbes(const bool included) { includeInReflectionProbes = included; }
 	private:
 		Model* model;
 		Shader* shader;
@@ -83,7 +86,9 @@ namespace Engine {
 		bool instanced;
 		std::vector<glm::mat4> instanceTransforms;
 		std::vector<Entity*> instanceSources;
-	
+		
+		bool includeInReflectionProbes;
+
 		void SetupInstanceVBO();
 	};
 }

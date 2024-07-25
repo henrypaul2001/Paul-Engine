@@ -14,6 +14,8 @@ namespace Engine {
 			this->model = old_component.model;
 		}
 
+		includeInReflectionProbes = true;
+
 		this->shader = old_component.shader;
 
 		this->textureScale = old_component.textureScale;
@@ -43,6 +45,8 @@ namespace Engine {
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
 
+		includeInReflectionProbes = true;
+
 		if (modelType == MODEL_PLANE) {
 			//CULL_FACE = false;
 			CULL_TYPE = GL_BACK;
@@ -70,6 +74,8 @@ namespace Engine {
 
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
+
+		includeInReflectionProbes = true;
 
 		if (modelType == MODEL_PLANE) {
 			//CULL_FACE = false;
@@ -110,6 +116,8 @@ namespace Engine {
 		this->instanced = instanced;
 		this->pbr = pbr;
 
+		includeInReflectionProbes = true;
+
 		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
 		usingPremadeModel = false;
 
@@ -132,6 +140,8 @@ namespace Engine {
 		this->instanced = instanced;
 		CULL_FACE = true;
 		CULL_TYPE = GL_BACK;
+
+		includeInReflectionProbes = true;
 
 		this->pbr = pbr;
 
