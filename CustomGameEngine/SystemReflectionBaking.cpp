@@ -1,4 +1,6 @@
 #include "SystemReflectionBaking.h"
+#include "RenderManager.h"
+#include "LightManager.h"
 namespace Engine {
 	SystemReflectionBaking::SystemReflectionBaking()
 	{
@@ -12,10 +14,56 @@ namespace Engine {
 
 	void SystemReflectionBaking::Run(const std::vector<Entity*>& entityList)
 	{
+		std::cout << "SYSTEMREFLECTIONBAKING::Baking reflection probes" << std::endl;
+		RenderManager* renderManager = RenderManager::GetInstance();
+		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
+		Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
 
-		for (Entity* entity : entityList) {
-			OnAction(entity);
+		reflectionShader->Use();
+		LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, reflectionFBO);
+		
+		std::vector<glm::mat4> cubemapTransforms;
+		unsigned int width, height;
+		std::vector<ReflectionProbe*> probes = renderManager->GetBakedData().GetReflectionProbes();
+		int numProbes = probes.size();
+
+		for (int i = 0; i < numProbes; i++) {
+			ReflectionProbe* probe = probes[i];
+			std::cout << "        Baking probe " << i + 1 << " / " << numProbes << std::endl;
+
+			width = probe->GetFaceWidth();
+			height = probe->GetFaceHeight();
+
+			glViewport(0, 0, width, height);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, probe->GetProbeEnvMap().cubemapID, 0);
+
+			glm::vec3 position = probe->GetWorldPosition();
+			glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, probe->GetNearClip(), probe->GetFarClip());
+
+			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+			for (unsigned int i = 0; i < 6; ++i) {
+				reflectionShader->setMat4("shadowMatrices[" + std::to_string(i) + "]", cubemapTransforms[i]);
+			}
+
+			reflectionShader->setVec3("viewPos", position);
+
+			for (Entity* entity : entityList) {
+				OnAction(entity);
+			}
+
+			cubemapTransforms.clear();
 		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, renderManager->ScreenWidth(), renderManager->ScreenHeight());
 	}
 
 	void SystemReflectionBaking::OnAction(Entity* entity)
@@ -50,16 +98,19 @@ namespace Engine {
 
 	void SystemReflectionBaking::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
-		// if geometry included in reflection probes
-			// get reflection probe shader
-			Shader* reflectionShader = new Shader("null", "null");
+		if (geometry->IsIncludedInReflectionProbes()) {
+			Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
+			reflectionShader->Use();
 
 			// setup shader uniforms
-			reflectionShader->setMat4("model", transform->GetWorldModelMatrix());
+			glm::mat4 model = transform->GetWorldModelMatrix();
+			reflectionShader->setMat4("model", model);
+			reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 			reflectionShader->setBool("instanced", geometry->Instanced());
 			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			reflectionShader->setVec2("textureScale", geometry->GetTextureScale());
 			reflectionShader->setBool("hasBones", false);
+			reflectionShader->setBool("OpaqueRenderPass", true);
 
 			// Bones
 			if (geometry->GetModel()->HasBones()) {
@@ -91,5 +142,6 @@ namespace Engine {
 
 			// Draw geometry
 			geometry->GetModel()->Draw(*reflectionShader, geometry->NumInstances());
+		}
 	}
 }
