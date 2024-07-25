@@ -459,6 +459,21 @@ namespace Engine {
 		defaultLitPBRShader->setInt("prefilterMap", 10 + textureOffset);
 		defaultLitPBRShader->setInt("brdfLUT", 11 + textureOffset);
 
+		reflectionProbeBaking->Use();
+		reflectionProbeBaking->setInt("dirLight.ShadowMap", 0);
+		for (int i = 0; i <= 8; i++) {
+			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+		}
+
+		reflectionProbeBaking->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_AO1", 5 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_OPACITY1", 7 + textureOffset);
+
 		defaultTextShader->Use();
 		defaultTextShader->setInt("text", 0);
 
