@@ -13,7 +13,7 @@ in VERTEX_VERT_OUTPUT {
     mat3 TBN;
 
 	vec3 TangentFragPos;
-} vertex_data;
+} vertex_data[3];
 
 out GEOMETRY_VERT_OUTPUT {
 	vec3 WorldPos;
@@ -37,13 +37,13 @@ void main()
         gl_Layer = face;
         for(int i = 0; i < 3; ++i)
         {
-            out_vertex_data.WorldPos = vertex_data.WorldPos;
-            out_vertex_data.Normal = vertex_data.Normal;
-            out_vertex_data.TexCoords = vertex_data.TexCoords;
-            out_vertex_data.TBN = vertex_data.TBN;
-            out_vertex_data.TangentFragPos = vertex_data.TangentFragPos;
+            out_vertex_data.WorldPos = vertex_data[i].WorldPos;
+            out_vertex_data.Normal = vertex_data[i].Normal;
+            out_vertex_data.TexCoords = vertex_data[i].TexCoords;
+            out_vertex_data.TBN = vertex_data[i].TBN;
+            out_vertex_data.TangentFragPos = vertex_data[i].TangentFragPos;
 
-            view_data.TangentViewPos = vertex_data.TBN * viewPos;
+            view_data.TangentViewPos = vertex_data[i].TBN * viewPos;
 
             view_data.ViewPos = viewPos;
 
