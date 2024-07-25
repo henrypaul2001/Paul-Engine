@@ -1,11 +1,13 @@
 #include "ReflectionProbe.h"
 namespace Engine {
-	ReflectionProbe::ReflectionProbe(unsigned int id, const glm::vec3& position, const unsigned int faceResWidth, const unsigned int faceResHeight)
+	ReflectionProbe::ReflectionProbe(unsigned int id, const glm::vec3& position, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip)
 	{
 		this->fileID = id;
 		this->worldPosition = position;
 		this->faceHeight = faceResHeight;
 		this->faceWidth = faceResWidth;
+		this->nearClip = nearClip;
+		this->farClip = farClip;
 
 		SetupCubemapTexture();
 	}

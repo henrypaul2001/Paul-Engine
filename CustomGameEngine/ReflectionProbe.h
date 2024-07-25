@@ -14,7 +14,7 @@ namespace Engine {
 	class ReflectionProbe
 	{
 	public:
-		ReflectionProbe(const unsigned int id, const glm::vec3& position, const unsigned int faceResWidth = 800, const unsigned int faceResHeight = 800);
+		ReflectionProbe(const unsigned int id, const glm::vec3& position, const unsigned int faceResWidth = 800, const unsigned int faceResHeight = 800, float nearClip = 1.0f, float farClip = 150.0f);
 		~ReflectionProbe();
 
 		const ReflectionProbeEnvironmentMap& GetProbeEnvMap() const { return envMap; }
@@ -24,12 +24,18 @@ namespace Engine {
 		const unsigned int GetFaceHeight() const { return faceHeight; }
 		const unsigned int GetFileID() const { return fileID; }
 
+		const float GetNearClip() const { return nearClip; }
+		const float GetFarClip() const { return farClip; }
+
 	private:
 		unsigned int fileID;
 		glm::vec3 worldPosition;
 
 		unsigned int faceWidth;
 		unsigned int faceHeight;
+
+		float nearClip;
+		float farClip;
 
 		ReflectionProbeEnvironmentMap envMap;
 
