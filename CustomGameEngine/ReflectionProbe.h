@@ -18,6 +18,11 @@ namespace Engine {
 		~ReflectionProbe();
 
 		const ReflectionProbeEnvironmentMap& GetProbeEnvMap() const { return envMap; }
+		const glm::vec3& GetWorldPosition() const { return worldPosition; }
+
+		const unsigned int GetFaceWidth() const { return faceWidth; }
+		const unsigned int GetFaceHeight() const { return faceHeight; }
+		const unsigned int GetFileID() const { return fileID; }
 
 	private:
 		unsigned int fileID;
