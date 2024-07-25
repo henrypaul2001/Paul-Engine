@@ -343,7 +343,7 @@ namespace Engine {
 		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag", true);
 		advBloomUpsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomUpsample.frag", true);
 		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag", true);
-		reflectionProbeBaking = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/reflectionProbeBaking.frag", "Shaders/cubeDepthMap.geom", true);
+		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBaking.vert", "Shaders/reflectionProbeBaking.frag", "Shaders/reflectionProbeBaking.geom", true);
 
 		advBloomCombineShader->Use();
 		advBloomCombineShader->setInt("screenTexture", 0);

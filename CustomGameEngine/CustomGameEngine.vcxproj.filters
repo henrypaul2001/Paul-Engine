@@ -850,5 +850,14 @@
     <None Include="irrKlang.dll">
       <Filter>Source Files\Engine\Utility</Filter>
     </None>
+    <None Include="Shaders\reflectionProbeBaking.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBaking.geom">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBaking.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

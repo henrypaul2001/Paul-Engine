@@ -61,12 +61,12 @@ uniform int activeLights;
 
 // -------------|   INPUT  |-----------------
 // ------------------------------------------
-in VIEW_DATA {
+in GEOMETRY_VIEW_OUTPUT {
     flat vec3 TangentViewPos;
     flat vec3 ViewPos;
 } view_data;
 
-in VERTEX_DATA {
+in GEOMETRY_VERT_OUTPUT {
 	vec3 WorldPos;
 	vec3 Normal;
 	vec2 TexCoords;
