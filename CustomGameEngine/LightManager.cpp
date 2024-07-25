@@ -171,7 +171,7 @@ namespace Engine {
 
 		// Image based lighting
 		shader->setBool("useIBL", false);
-		if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0 && (renderOptions & RENDER_IBL) != 0) {
+		if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0 && (renderOptions & RENDER_IBL) != 0 && activeCamera != nullptr) {
 			SetIBLUniforms(shader, activeCamera);
 		}
 	}
