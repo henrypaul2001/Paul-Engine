@@ -155,6 +155,7 @@ namespace Engine {
 		unsigned int* GetCubeDepthFBO() const { return cubeDepthMapFBO; }
 		unsigned int* GetTexturedFBO() const { return texturedFBO; }
 		unsigned int GetCubemapFBO() const { return cubemapFBO; }
+		unsigned int GetCubemapDepthBuffer() const { return cubemapDepthBuffer; }
 
 		unsigned int* GetGBuffer() const { return gBuffer; }
 		unsigned int* GPosition() const { return gPosition; }
@@ -244,6 +245,7 @@ namespace Engine {
 		unsigned int* alternateScreenTexture;
 
 		unsigned int cubemapFBO;
+		unsigned int cubemapDepthBuffer;
 
 		// Forward rendering
 		unsigned int* texturedFBO;
