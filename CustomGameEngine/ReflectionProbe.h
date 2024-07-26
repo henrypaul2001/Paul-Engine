@@ -5,19 +5,19 @@ namespace Engine {
 
 	struct ReflectionProbeEnvironmentMap {
 		unsigned int cubemapID;
-		// irradiance id
-		// irradianceID;
-		// prefilterID;
-		// brdf_lutID;
+		unsigned int irradianceID;
+		unsigned int prefilterID;
+		unsigned int brdf_lutID;
 	};
 
 	class ReflectionProbe
 	{
 	public:
-		ReflectionProbe(const unsigned int id, const glm::vec3& position, const unsigned int faceResWidth = 800, const unsigned int faceResHeight = 800, float nearClip = 1.0f, float farClip = 150.0f);
+		ReflectionProbe(const unsigned int id, const glm::vec3& position, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f);
 		~ReflectionProbe();
 
-		const ReflectionProbeEnvironmentMap& GetProbeEnvMap() const { return envMap; }
+		const ReflectionProbeEnvironmentMap& GetProbeEnvMapConst() const { return envMap; }
+		ReflectionProbeEnvironmentMap& GetProbeEnvMap() { return envMap; }
 		const glm::vec3& GetWorldPosition() const { return worldPosition; }
 
 		const unsigned int GetFaceWidth() const { return faceWidth; }
@@ -39,6 +39,7 @@ namespace Engine {
 
 		ReflectionProbeEnvironmentMap envMap;
 
-		void SetupCubemapTexture();
+		void SetupTextureMaps();
+		void LoadBakedReflectionProbe();
 	};
 }
