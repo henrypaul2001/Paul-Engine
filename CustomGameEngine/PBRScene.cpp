@@ -23,6 +23,8 @@ namespace Engine {
 
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
+
+		systemManager->BakeReflectionProbes(entityManager->Entities());
 	}
 
 	PBRScene::~PBRScene()
@@ -41,24 +43,24 @@ namespace Engine {
 		CreateEntities();
 
 		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/st_peters_square_night.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_noord.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/laufenurg_church.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/golden_bay.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_vijzelgracht.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/starsky.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/studio.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_noord.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/laufenurg_church.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/golden_bay.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/metro_vijzelgracht.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/starsky.hdr", true);
+		//ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/studio.hdr", true);
 
 		envMaps.push_back("Textures/Environment Maps/st_peters_square_night.hdr");
-		envMaps.push_back("Textures/Environment Maps/newport_loft.hdr");
-		envMaps.push_back("Textures/Environment Maps/sky.hdr");
-		envMaps.push_back("Textures/Environment Maps/metro_noord.hdr");
-		envMaps.push_back("Textures/Environment Maps/laufenurg_church.hdr");
-		envMaps.push_back("Textures/Environment Maps/golden_bay.hdr");
-		envMaps.push_back("Textures/Environment Maps/metro_vijzelgracht.hdr");
-		envMaps.push_back("Textures/Environment Maps/starsky.hdr");
-		envMaps.push_back("Textures/Environment Maps/studio.hdr");
+		//envMaps.push_back("Textures/Environment Maps/newport_loft.hdr");
+		//envMaps.push_back("Textures/Environment Maps/sky.hdr");
+		//envMaps.push_back("Textures/Environment Maps/metro_noord.hdr");
+		//envMaps.push_back("Textures/Environment Maps/laufenurg_church.hdr");
+		//envMaps.push_back("Textures/Environment Maps/golden_bay.hdr");
+		//envMaps.push_back("Textures/Environment Maps/metro_vijzelgracht.hdr");
+		//envMaps.push_back("Textures/Environment Maps/starsky.hdr");
+		//envMaps.push_back("Textures/Environment Maps/studio.hdr");
 		currentEnvMapIndex = 0;
 
 		renderManager->SetEnvironmentMap(envMaps[0]);
@@ -676,12 +678,12 @@ namespace Engine {
 		rusted_iron->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rusted_iron/roughness.png", TEXTURE_ROUGHNESS, false));
 		rusted_iron->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rusted_iron/ao.png", TEXTURE_AO, false));
 
-		PBRMaterial* plastic = new PBRMaterial();
-		plastic->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/albedo.png", TEXTURE_ALBEDO, true));
-		plastic->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/normal.png", TEXTURE_NORMAL, false));
-		plastic->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/metallic.png", TEXTURE_METALLIC, false));
-		plastic->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/roughness.png", TEXTURE_ROUGHNESS, false));
-		plastic->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/ao.png", TEXTURE_AO, false));
+		//PBRMaterial* plastic = new PBRMaterial();
+		//plastic->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/albedo.png", TEXTURE_ALBEDO, true));
+		//plastic->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/normal.png", TEXTURE_NORMAL, false));
+		//plastic->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/metallic.png", TEXTURE_METALLIC, false));
+		//plastic->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/roughness.png", TEXTURE_ROUGHNESS, false));
+		//plastic->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/ao.png", TEXTURE_AO, false));
 
 		PBRMaterial* bricks = new PBRMaterial();
 		bricks->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
@@ -692,26 +694,26 @@ namespace Engine {
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
 
-		PBRMaterial* grass = new PBRMaterial();
-		grass->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/albedo.png", TEXTURE_ALBEDO, true));
-		grass->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/normal.png", TEXTURE_NORMAL, false));
-		grass->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/metallic.png", TEXTURE_METALLIC, false));
-		grass->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/roughness.png", TEXTURE_ROUGHNESS, false));
-		grass->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/ao.png", TEXTURE_AO, false));
+		//PBRMaterial* grass = new PBRMaterial();
+		//grass->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/albedo.png", TEXTURE_ALBEDO, true));
+		//grass->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/normal.png", TEXTURE_NORMAL, false));
+		//grass->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/metallic.png", TEXTURE_METALLIC, false));
+		//grass->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/roughness.png", TEXTURE_ROUGHNESS, false));
+		//grass->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/ao.png", TEXTURE_AO, false));
 
-		PBRMaterial* leather = new PBRMaterial();
-		leather->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/leather/albedo.png", TEXTURE_ALBEDO, true));
-		leather->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/leather/normal.png", TEXTURE_NORMAL, false));
-		leather->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/leather/roughness.png", TEXTURE_ROUGHNESS, false));
+		//PBRMaterial* leather = new PBRMaterial();
+		//leather->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/leather/albedo.png", TEXTURE_ALBEDO, true));
+		//leather->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/leather/normal.png", TEXTURE_NORMAL, false));
+		//leather->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/leather/roughness.png", TEXTURE_ROUGHNESS, false));
 
-		PBRMaterial* metal_plate = new PBRMaterial();
-		metal_plate->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/albedo.png", TEXTURE_ALBEDO, true));
-		metal_plate->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/normal.png", TEXTURE_NORMAL, false));
-		metal_plate->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/metallic.png", TEXTURE_METALLIC, false));
-		metal_plate->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/roughness.png", TEXTURE_ROUGHNESS, false));
-		metal_plate->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/ao.png", TEXTURE_AO, false));
-		metal_plate->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/displacement.png", TEXTURE_DISPLACE, false));
-		metal_plate->height_scale = -0.1;
+		//PBRMaterial* metal_plate = new PBRMaterial();
+		//metal_plate->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/albedo.png", TEXTURE_ALBEDO, true));
+		//metal_plate->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/normal.png", TEXTURE_NORMAL, false));
+		//metal_plate->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/metallic.png", TEXTURE_METALLIC, false));
+		//metal_plate->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/roughness.png", TEXTURE_ROUGHNESS, false));
+		//metal_plate->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/ao.png", TEXTURE_AO, false));
+		//metal_plate->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/metal_plate/displacement.png", TEXTURE_DISPLACE, false));
+		//metal_plate->height_scale = -0.1;
 
 		PBRMaterial* scifi = new PBRMaterial();
 		scifi->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/scifi/albedo.png", TEXTURE_ALBEDO, true));
@@ -745,19 +747,19 @@ namespace Engine {
 		wall->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/wall/roughness.png", TEXTURE_ROUGHNESS, false));
 		wall->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/wall/ao.png", TEXTURE_AO, false));
 
-		PBRMaterial* worn_corrugated_iron = new PBRMaterial();
-		worn_corrugated_iron->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/albedo.png", TEXTURE_ALBEDO, true));
-		worn_corrugated_iron->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/normal.png", TEXTURE_NORMAL, false));
-		worn_corrugated_iron->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/roughness.png", TEXTURE_ROUGHNESS, false));
-		worn_corrugated_iron->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/ao.png", TEXTURE_AO, false));
-		worn_corrugated_iron->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/displacement.png", TEXTURE_DISPLACE, false));
-		worn_corrugated_iron->height_scale = -0.1;
+		//PBRMaterial* worn_corrugated_iron = new PBRMaterial();
+		//worn_corrugated_iron->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/albedo.png", TEXTURE_ALBEDO, true));
+		//worn_corrugated_iron->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/normal.png", TEXTURE_NORMAL, false));
+		//worn_corrugated_iron->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/roughness.png", TEXTURE_ROUGHNESS, false));
+		//worn_corrugated_iron->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/ao.png", TEXTURE_AO, false));
+		//worn_corrugated_iron->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/displacement.png", TEXTURE_DISPLACE, false));
+		//worn_corrugated_iron->height_scale = -0.1;
 
-		PBRMaterial* earth = new PBRMaterial();
-		earth->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/albedo.jpg", TEXTURE_ALBEDO, true));
-		earth->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/displacement.jpg", TEXTURE_DISPLACE, false));
-		earth->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/specular.jpg", TEXTURE_METALLIC, false));
-		earth->height_scale = -0.1;
+		//PBRMaterial* earth = new PBRMaterial();
+		//earth->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/albedo.jpg", TEXTURE_ALBEDO, true));
+		//earth->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/displacement.jpg", TEXTURE_DISPLACE, false));
+		//earth->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/earth/specular.jpg", TEXTURE_METALLIC, false));
+		//earth->height_scale = -0.1;
 
 		PBRMaterial* raindrops = new PBRMaterial();
 		raindrops->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
@@ -779,6 +781,15 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
+
+		Entity* ceiling = new Entity("Cieling");
+		ceiling->AddComponent(new ComponentTransform(0.0f, 5.5f, 0.0));
+		ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
+		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
+		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
+		entityManager->AddEntity(ceiling);
 
 		Entity* rainFloor = new Entity("Rain Floor");
 		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
@@ -1629,6 +1640,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemReflectionBaking(), RENDER_SYSTEMS);
 	}
 
 	void PBRScene::Update()
