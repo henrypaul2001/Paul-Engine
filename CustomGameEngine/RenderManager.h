@@ -183,6 +183,7 @@ namespace Engine {
 
 		// Env hdr map
 		unsigned int* GetHDRCubeCaptureFBO() const { return hdrCubeCaptureFBO; }
+		unsigned int* GetHDRCubeCaptureRBO() const { return hdrCubeCaptureRBO; }
 		unsigned int* GetEnvironmentCubemapTexture() const { return envCubemapTexture; }
 
 		unsigned int ShadowWidth() const { return shadowWidth; }
