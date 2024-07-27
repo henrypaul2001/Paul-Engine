@@ -85,22 +85,12 @@ namespace Engine {
 
 			// Process capture
 			glDisable(GL_CULL_FACE);
-			unsigned int irradianceMap;
-			unsigned int prefilterMap;
-			unsigned int brdf_LUT;
 
 			ConvoluteEnvironmentMap(probe);
 			PrefilterMap(probe);
+			BakeBRDF(probe);
 
-
-			//irradianceMap = renderManager->CreateIrradianceMap();
-			//renderManager->ConvoluteEnvironmentMap(probe->GetProbeEnvMap().cubemapID, irradianceMap);
-			//prefilterMap = renderManager->CreatePrefilterMap(probe->GetProbeEnvMap().cubemapID);
-			brdf_LUT = renderManager->CreateBRDF();
-
-			//probe->GetProbeEnvMap().irradianceID = irradianceMap;
-			//probe->GetProbeEnvMap().brdf_lutID = brdf_LUT;
-			//probe->GetProbeEnvMap().prefilterID = prefilterMap;
+			glEnable(GL_CULL_FACE);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -177,7 +167,7 @@ namespace Engine {
 
 		// Capture prefilter mipmap levels
 		// -------------------------------
-		Shader* prefilterShader = ResourceManager::GetInstance()->CreatePrefilterShader();
+		Shader* prefilterShader = resourceManager->CreatePrefilterShader();
 		prefilterShader->Use();
 		prefilterShader->setInt("environmentMap", 0);
 		prefilterShader->setMat4("projection", captureProjection);
@@ -205,9 +195,37 @@ namespace Engine {
 				prefilterShader->setMat4("view", captureViews[i]);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
+				resourceManager->DefaultCube().DrawWithNoMaterial();
 			}
 		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void SystemReflectionBaking::BakeBRDF(ReflectionProbe* probe)
+	{
+		RenderManager* renderManager = RenderManager::GetInstance();
+		ResourceManager* resourceManager = ResourceManager::GetInstance();
+
+		unsigned int brdfLUTTexture = probe->GetProbeEnvMap().brdf_lutID;
+
+		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
+		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
+
+		unsigned int width = probe->GetFaceWidth();
+		unsigned int height = probe->GetFaceHeight();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, cubeCaptureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
+
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+		glViewport(0, 0, width, height);
+		resourceManager->CreateBRDFShader()->Use();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		resourceManager->DefaultCube().DrawWithNoMaterial();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

@@ -20,5 +20,6 @@ namespace Engine {
 
 		void ConvoluteEnvironmentMap(ReflectionProbe* probe);
 		void PrefilterMap(ReflectionProbe* probe);
+		void BakeBRDF(ReflectionProbe* probe);
 	};
 }
