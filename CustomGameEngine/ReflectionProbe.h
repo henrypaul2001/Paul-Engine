@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/ext/vector_float3.hpp>
 #include <glad/glad.h>
+#include <string>
 namespace Engine {
 
 	struct ReflectionProbeEnvironmentMap {
@@ -13,7 +14,7 @@ namespace Engine {
 	class ReflectionProbe
 	{
 	public:
-		ReflectionProbe(const unsigned int id, const glm::vec3& position, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f);
+		ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f);
 		~ReflectionProbe();
 
 		const ReflectionProbeEnvironmentMap& GetProbeEnvMapConst() const { return envMap; }
@@ -27,15 +28,19 @@ namespace Engine {
 		const float GetNearClip() const { return nearClip; }
 		const float GetFarClip() const { return farClip; }
 
+		const std::string& GetSceneName() const { return sceneName; }
 	private:
 		unsigned int fileID;
-		glm::vec3 worldPosition;
 
 		unsigned int faceWidth;
 		unsigned int faceHeight;
 
 		float nearClip;
 		float farClip;
+
+		glm::vec3 worldPosition;
+
+		std::string sceneName;
 
 		ReflectionProbeEnvironmentMap envMap;
 

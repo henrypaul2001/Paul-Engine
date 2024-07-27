@@ -1,7 +1,7 @@
 #include "ReflectionProbe.h"
 #include "RenderManager.h"
 namespace Engine {
-	ReflectionProbe::ReflectionProbe(unsigned int id, const glm::vec3& position, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip)
+	ReflectionProbe::ReflectionProbe(unsigned int id, const glm::vec3& position, const std::string& sceneName, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip)
 	{
 		this->fileID = id;
 		this->worldPosition = position;
@@ -9,6 +9,7 @@ namespace Engine {
 		this->faceWidth = faceResWidth;
 		this->nearClip = nearClip;
 		this->farClip = farClip;
+		this->sceneName = sceneName;
 
 		SetupTextureMaps();
 	}
