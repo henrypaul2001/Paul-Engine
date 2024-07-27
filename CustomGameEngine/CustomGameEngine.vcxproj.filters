@@ -408,6 +408,9 @@
     <ClInclude Include="SystemReflectionBaking.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image_write.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -703,6 +706,9 @@
     </ClCompile>
     <ClCompile Include="SystemReflectionBaking.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image_write.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

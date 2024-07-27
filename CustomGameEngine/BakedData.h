@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <string>
 #include <iostream>
+#include "stb_image_write.h"
 namespace Engine {
 	class BakedData
 	{
@@ -29,7 +30,7 @@ namespace Engine {
 			}
 
 			for (int i = 0; i < positions.size(); i++) {
-				reflectionProbes.push_back(new ReflectionProbe(i, positions[i]));
+				reflectionProbes.push_back(new ReflectionProbe(i, positions[i], sceneName));
 
 				// Create file for this reflection probe if it doesn't already exist
 				std::filesystem::path probePath = filePath + "/" + std::to_string(i);
@@ -40,6 +41,8 @@ namespace Engine {
 				}
 			}
 		}
+
+		void WriteReflectionProbesToFile();
 
 	private:
 		void ClearReflectionProbes() {

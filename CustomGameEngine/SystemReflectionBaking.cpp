@@ -14,6 +14,8 @@ namespace Engine {
 
 	void SystemReflectionBaking::Run(const std::vector<Entity*>& entityList)
 	{
+		// Capture scene and process capture
+		// ---------------------------------
 		std::cout << "SYSTEMREFLECTIONBAKING::Baking reflection probes" << std::endl;
 		RenderManager* renderManager = RenderManager::GetInstance();
 		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
@@ -32,7 +34,7 @@ namespace Engine {
 
 		for (int i = 0; i < numProbes; i++) {
 			ReflectionProbe* probe = probes[i];
-			std::cout << "        Baking probe " << i + 1 << " / " << numProbes << std::endl;
+			std::cout << "        - Baking probe " << i + 1 << " / " << numProbes << std::endl;
 
 			// Capture scene
 			width = probe->GetFaceWidth();
@@ -95,6 +97,10 @@ namespace Engine {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, renderManager->ScreenWidth(), renderManager->ScreenHeight());
+
+		// Write to file
+		// -------------
+		renderManager->GetBakedData().WriteReflectionProbesToFile();
 	}
 
 	void SystemReflectionBaking::ConvoluteEnvironmentMap(ReflectionProbe* probe)
