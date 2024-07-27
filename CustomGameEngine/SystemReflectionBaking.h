@@ -1,5 +1,6 @@
 #pragma once
 #include "System.h"
+#include "ReflectionProbe.h"
 namespace Engine {
 	class SystemReflectionBaking : public System
 	{
@@ -16,5 +17,7 @@ namespace Engine {
 	private:
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
+
+		void ConvoluteEnvironmentMap(ReflectionProbe* probe);
 	};
 }
