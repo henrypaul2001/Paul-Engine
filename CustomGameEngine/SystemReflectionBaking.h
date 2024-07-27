@@ -19,5 +19,6 @@ namespace Engine {
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
 
 		void ConvoluteEnvironmentMap(ReflectionProbe* probe);
+		void PrefilterMap(ReflectionProbe* probe);
 	};
 }
