@@ -6,11 +6,20 @@
 #include <string>
 #include <iostream>
 #include "stb_image_write.h"
+#include <unordered_map>
 namespace Engine {
 	class BakedData
 	{
 	public:
-		BakedData() {}
+		BakedData() {
+			cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X] = "PositiveX";
+			cubemapFaceToString[GL_TEXTURE_CUBE_MAP_NEGATIVE_X] = "NegativeX";
+			cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_Y] = "PositiveY";
+			cubemapFaceToString[GL_TEXTURE_CUBE_MAP_NEGATIVE_Y] = "NegativeY";
+			cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_Z] = "PositiveZ";
+			cubemapFaceToString[GL_TEXTURE_CUBE_MAP_NEGATIVE_Z] = "NegativeZ";
+		}
+
 		~BakedData() {
 			ClearReflectionProbes();
 		}
@@ -74,6 +83,8 @@ namespace Engine {
 			}
 			reflectionProbes.clear();
 		}
+
+		std::unordered_map<GLenum, std::string> cubemapFaceToString;
 
 		std::vector<ReflectionProbe*> reflectionProbes;
 	};
