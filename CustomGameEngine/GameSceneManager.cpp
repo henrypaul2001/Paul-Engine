@@ -90,6 +90,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_MAIN_MENU);
+		ChangeScene(SCENE_PBR);
 	}
 }

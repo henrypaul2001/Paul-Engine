@@ -384,6 +384,8 @@
     <None Include="Shaders\reflectionProbeBaking.frag" />
     <None Include="Shaders\reflectionProbeBaking.geom" />
     <None Include="Shaders\reflectionProbeBaking.vert" />
+    <None Include="Shaders\renderCubemapTo2D.frag" />
+    <None Include="Shaders\renderCubemapTo2D.vert" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />
     <None Include="Shaders\skybox.frag" />
