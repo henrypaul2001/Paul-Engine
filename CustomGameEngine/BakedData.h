@@ -32,12 +32,35 @@ namespace Engine {
 			for (int i = 0; i < positions.size(); i++) {
 				reflectionProbes.push_back(new ReflectionProbe(i, positions[i], sceneName));
 
-				// Create file for this reflection probe if it doesn't already exist
-				std::filesystem::path probePath = filePath + "/" + std::to_string(i);
+				std::string probeString = std::to_string(i);
 
+				// Create file for this reflection probe if it doesn't already exist
+				std::filesystem::path probePath = filePath + "/" + probeString;
 				if (!std::filesystem::exists(probePath)) {
 					std::filesystem::create_directory(probePath);
 					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << probePath << std::endl;
+				}
+
+				// Create files for each cubemap type
+				// Skybox
+				std::filesystem::path skyboxPath = filePath + "/" + probeString + "/Skybox";
+				if (!std::filesystem::exists(skyboxPath)) {
+					std::filesystem::create_directory(skyboxPath);
+					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << skyboxPath << std::endl;
+				}
+
+				// Irradiance map
+				std::filesystem::path irradiancePath = filePath + "/" + probeString + "/Irradiance";
+				if (!std::filesystem::exists(irradiancePath)) {
+					std::filesystem::create_directory(irradiancePath);
+					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << irradiancePath << std::endl;
+				}
+
+				// Prefilter map
+				std::filesystem::path prefilterPath = filePath + "/" + probeString + "/Prefilter";
+				if (!std::filesystem::exists(prefilterPath)) {
+					std::filesystem::create_directory(prefilterPath);
+					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << prefilterPath << std::endl;
 				}
 			}
 		}
