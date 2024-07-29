@@ -47,7 +47,7 @@ namespace Engine {
 			glm::vec3 position = probe->GetWorldPosition();
 
 			// Set up projections for each cubemap face
-			glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 150.0f);
+			glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, probe->GetNearClip(), probe->GetFarClip());
 			glm::mat4 captureViews[] = {
 				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
