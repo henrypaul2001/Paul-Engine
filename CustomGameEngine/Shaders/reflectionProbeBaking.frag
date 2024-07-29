@@ -61,19 +61,19 @@ uniform int activeLights;
 
 // -------------|   INPUT  |-----------------
 // ------------------------------------------
-in GEOMETRY_VIEW_OUTPUT {
+in VIEW_OUTPUT {
     flat vec3 TangentViewPos;
     flat vec3 ViewPos;
 } view_data;
 
-in GEOMETRY_VERT_OUTPUT {
-	vec3 WorldPos;
-	vec3 Normal;
-	vec2 TexCoords;
+in VERTEX_OUTPUT {
+    vec3 WorldPos;
+    vec3 Normal;
+    vec2 TexCoords;
 
     mat3 TBN;
 
-	vec3 TangentFragPos;
+    vec3 TangentFragPos;
 } vertex_data;
 
 // -------------| Material |-----------------

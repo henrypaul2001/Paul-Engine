@@ -20,15 +20,24 @@ uniform bool hasBones;
 
 uniform vec2 textureScale;
 
-out VERTEX_VERT_OUTPUT {
-	vec3 WorldPos;
-	vec3 Normal;
-	vec2 TexCoords;
+out VIEW_OUTPUT {
+    flat vec3 TangentViewPos;
+    flat vec3 ViewPos;
+} view_data;
+
+out VERTEX_OUTPUT {
+    vec3 WorldPos;
+    vec3 Normal;
+    vec2 TexCoords;
 
     mat3 TBN;
 
-	vec3 TangentFragPos;
+    vec3 TangentFragPos;
 } vertex_data;
+
+uniform mat4 view;
+uniform mat4 projection;
+uniform vec3 viewPos;
 
 void main() {
 	mat3 NormalMatrix = normalMatrix;
@@ -71,8 +80,12 @@ void main() {
     vec3 B = cross(N, T);
     mat3 TBN = transpose(mat3(T, B, N));
 
-    vertex_data.TBN = TBN;
     vertex_data.TangentFragPos = TBN * vertex_data.WorldPos;
+    vertex_data.TBN = TBN;
 
-	gl_Position = Model * transformedLocalPos;
+    view_data.TangentViewPos = TBN * viewPos;
+
+    view_data.ViewPos = viewPos;
+
+	gl_Position = projection * view * Model * transformedLocalPos;
 }
