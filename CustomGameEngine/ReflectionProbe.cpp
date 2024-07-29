@@ -17,6 +17,9 @@ namespace Engine {
 	ReflectionProbe::~ReflectionProbe()
 	{
 		glDeleteTextures(1, &envMap.cubemapID);
+		glDeleteTextures(1, &envMap.irradianceID);
+		glDeleteTextures(1, &envMap.prefilterID);
+		glDeleteTextures(1, &envMap.brdf_lutID);
 	}
 
 	void ReflectionProbe::SetupTextureMaps()
@@ -34,7 +37,6 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		// ----- Set up irradiance map -----
