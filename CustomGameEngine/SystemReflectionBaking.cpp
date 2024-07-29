@@ -18,21 +18,25 @@ namespace Engine {
 		// ---------------------------------
 		std::cout << "SYSTEMREFLECTIONBAKING::Baking reflection probes" << std::endl;
 		RenderManager* renderManager = RenderManager::GetInstance();
-		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
-		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
-		Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
 
+		Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
 		reflectionShader->Use();
+
 		LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, reflectionFBO);
-		
-		std::vector<glm::mat4> cubemapTransforms;
+		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
+		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
+
 		unsigned int width, height;
 		std::vector<ReflectionProbe*> probes = renderManager->GetBakedData().GetReflectionProbes();
 		int numProbes = probes.size();
-
 		for (int i = 0; i < numProbes; i++) {
+			// error check
+			int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			if (status != GL_FRAMEBUFFER_COMPLETE) {
+				std::cout << "ERROR::RENDERMANAGER::Cubemap FBO incomplete, status: 0x\%x\n" << status << std::endl;
+			}
+
 			ReflectionProbe* probe = probes[i];
 			std::cout << "        - Baking probe " << i + 1 << " / " << numProbes << std::endl;
 
@@ -40,10 +44,23 @@ namespace Engine {
 			width = probe->GetFaceWidth();
 			height = probe->GetFaceHeight();
 
-			glViewport(0, 0, width, height);
-			glBindFramebuffer(GL_FRAMEBUFFER, reflectionFBO);
+			glm::vec3 position = probe->GetWorldPosition();
 
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, probe->GetProbeEnvMap().cubemapID, 0);
+			// Set up projections for each cubemap face
+			glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 150.0f);
+			glm::mat4 captureViews[] = {
+				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+			};
+
+			reflectionShader->setMat4("projection", captureProjection);
+			reflectionShader->setVec3("viewPos", position);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, reflectionFBO);
 
 			// Resize depth texture buffer
 			glBindTexture(GL_TEXTURE_CUBE_MAP, depthBuffer);
@@ -51,39 +68,22 @@ namespace Engine {
 				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
 			}
 			glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthBuffer, 0);
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-			// error check
-			int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-			if (status != GL_FRAMEBUFFER_COMPLETE) {
-				std::cout << "ERROR::RENDERMANAGER::Cubemap FBO incomplete, status: 0x\%x\n" << status << std::endl;
+			glViewport(0, 0, width, height);
+			for (unsigned int j = 0; j < 6; ++j)
+			{
+				reflectionShader->setMat4("view", captureViews[j]);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, probe->GetProbeEnvMap().cubemapID, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, depthBuffer, 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				for (Entity* entity : entityList) {
+					OnAction(entity);
+				}
 			}
-
-			reflectionShader->Use();
-
-			glm::vec3 position = probe->GetWorldPosition();
-			glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, probe->GetNearClip(), probe->GetFarClip());
-
-			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
-			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			cubemapTransforms.push_back(projection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-
-			for (unsigned int i = 0; i < 6; ++i) {
-				reflectionShader->setMat4("shadowMatrices[" + std::to_string(i) + "]", cubemapTransforms[i]);
-			}
-
-			reflectionShader->setVec3("viewPos", position);
-
-			for (Entity* entity : entityList) {
-				OnAction(entity);
-			}
-
-			cubemapTransforms.clear();
 
 			// Process capture
 			glDisable(GL_CULL_FACE);
