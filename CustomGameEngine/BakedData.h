@@ -71,6 +71,17 @@ namespace Engine {
 					std::filesystem::create_directory(prefilterPath);
 					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << prefilterPath << std::endl;
 				}
+
+				// Prefilter mip levels
+				std::string prefilterPathString = prefilterPath.string();
+				std::filesystem::path prefilterMipPath;
+				for (unsigned int mip = 0; mip < 5; mip++) {
+					prefilterMipPath = prefilterPathString + "/Mip " + std::to_string(mip);
+					if (!std::filesystem::exists(prefilterMipPath)) {
+						std::filesystem::create_directory(prefilterMipPath);
+						std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << prefilterMipPath << std::endl;
+					}
+				}
 			}
 		}
 
