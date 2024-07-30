@@ -153,15 +153,16 @@ namespace Engine {
 				// Load from file
 				float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
-				// Check output
-				if (width != faceWidth || height != faceHeight) {
-					std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading skybox cubemap for probe " << probeID << std::endl;
-					stbi_image_free(floatData);
-					break;
-				}
-
-				// Read into texture
+				// Check result
 				if (floatData) {
+					// Check dimensions
+					if (width != faceWidth || height != faceHeight) {
+						std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading skybox cubemap for probe " << probeID << std::endl;
+						stbi_image_free(floatData);
+						break;
+					}
+
+					// Read into texture
 					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, faceWidth, faceHeight, 0, GL_RGB, GL_FLOAT, floatData);
 				}
 				else {
@@ -183,15 +184,16 @@ namespace Engine {
 				// Load from file
 				float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
-				// Check output
-				if (width != 32 || height != 32) {
-					std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading irradiance cubemap for probe " << probeID << std::endl;
-					stbi_image_free(floatData);
-					break;
-				}
-
-				// Read into texture
+				// Check result
 				if (floatData) {
+					// Check dimensions
+					if (width != 32 || height != 32) {
+						std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading irradiance cubemap for probe " << probeID << std::endl;
+						stbi_image_free(floatData);
+						break;
+					}
+
+					// Read into texture
 					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, floatData);
 				}
 				else {
@@ -201,47 +203,41 @@ namespace Engine {
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-			// BRDFLUT
-			// Load texture
-			//unsigned int textureID;
-			//glGenTextures(1, &textureID);
+			// -- Load prefilter --
+			// --------------------
+			std::string prefilterFilepath = probeFilepath + "/Prefilter/Mip ";
+			unsigned int prefilter = envMap.prefilterID;
+			glBindTexture(GL_TEXTURE_CUBE_MAP, prefilter);
+			unsigned int mipWidth = faceWidth / 2;
+			unsigned int mipHeight = faceHeight / 2;
+			for (unsigned int mip = 0; mip < 5; mip++) {
+				for (unsigned int j = 0; j < 6; j++) {
+					filepath = prefilterFilepath + std::to_string(mip) + faces[j];
 
-			//int width, height, nrComponents;
-			//unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrComponents, 0);
-			//if (data) {
-			//	GLenum internalFormat = GL_RGB;
-			//	GLenum dataFormat = GL_RGB;
-			//	if (nrComponents == 1) {
-			//		internalFormat = GL_RED;
-			//		dataFormat = GL_RED;
-			//	}
-			//	else if (nrComponents == 2) {
-			//		internalFormat = GL_RG;
-			//		dataFormat = GL_RG;
-			//	}
-			//	else if (nrComponents == 3) {
-			//		internalFormat = srgb ? GL_SRGB : GL_RGB;
-			//		dataFormat = GL_RGB;
-			//	}
-			//	else if (nrComponents == 4) {
-			//		internalFormat = srgb ? GL_SRGB_ALPHA : GL_RGBA;
-			//		dataFormat = GL_RGBA;
-			//	}
-			//	glBindTexture(GL_TEXTURE_2D, textureID);
-			//	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-			//	glGenerateMipmap(GL_TEXTURE_2D);
+					// Load from file
+					float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
-			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Check result
+					if (floatData) {
+						// Check dimensions
+						if (width != mipWidth || height != mipHeight) {
+							std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading prefilter cubemap for probe " << probeID << std::endl;
+							stbi_image_free(floatData);
+							break;
+						}
 
-			//	stbi_image_free(data);
-			//}
-			//else {
-			//	std::cout << "ERROR::RESOURCEMANAGER::TEXTURELOAD::Texture failed to load at path: " << filepath << std::endl;
-			//	stbi_image_free(data);
-			//}
+						// Read into texture
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, mip, GL_RGB16F, mipWidth, mipHeight, 0, GL_RGB, GL_FLOAT, floatData);
+					}
+					else {
+						std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
+					}
+					stbi_image_free(floatData);
+				}
+				mipWidth /= 2;
+				mipHeight /= 2;
+			}
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 		}
 	}
 }
