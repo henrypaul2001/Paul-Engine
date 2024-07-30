@@ -62,24 +62,27 @@ namespace Engine {
 
 			// -- Write prefilter --
 			// ---------------------
-
-			// Instead of saving mip level 0, this should save each cubemap face at each mip level
-			floatData = new GLfloat[(faceWidth / 2) * (faceHeight / 2) * 3];
-
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
 			glFinish();
 
-			for (unsigned int j = 0; j < 6; j++) {
-				path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/Prefilter/" += cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + j] + ".hdr";
+			std::string mipString;
+			unsigned int mipWidth = faceWidth / 2;
+			unsigned int mipHeight = faceHeight / 2;
+			for (unsigned int mip = 0; mip < 5; mip++) {
+				floatData = new GLfloat[mipWidth * mipHeight * 3];
+				for (unsigned int j = 0; j < 6; j++) {
+					path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/Prefilter/Mip " + std::to_string(mip) + "/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + j] + ".hdr";
 
-				glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB, GL_FLOAT, floatData);
-				glFinish();
+					glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, mip, GL_RGB, GL_FLOAT, floatData);
+					glFinish();
 
-				stbi_write_hdr(path.c_str(), (faceWidth / 2), (faceHeight / 2), 3, floatData);
+					stbi_write_hdr(path.c_str(), mipWidth, mipHeight, 3, floatData);
+				}
+				mipWidth /= 2;
+				mipHeight /= 2;
+				delete[] floatData;
 			}
-
-			delete[] floatData;
 
 			// --- Write BRDFLUT ---
 			// ---------------------
