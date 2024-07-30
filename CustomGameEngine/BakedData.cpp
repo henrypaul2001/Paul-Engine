@@ -238,6 +238,32 @@ namespace Engine {
 				mipHeight /= 2;
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+			// --- Load BRDFLUT ---
+			// --------------------
+
+			// This is mostly pointless anyway, in future, there will be a single BRDFLUT texture always loaded in the resource manager as they are not dependant on specific probes
+			std::string brdfFilepath = probeFilepath + "/BRDFLut.png";
+			unsigned int brdf = envMap.brdf_lutID;
+			glBindTexture(GL_TEXTURE_2D, brdf);
+
+			float* floatData = stbi_loadf(brdfFilepath.c_str(), &width, &height, &nrChannels, 0);
+
+			float* floatDataModified = new float[width * height * 2];
+			for (int j = 0; j < width * height; j++) {
+				floatDataModified[j * 2] = floatData[j * 4];
+				floatDataModified[j * 2 + 1] = floatData[j * 4 + 1];
+			}
+
+			if (floatData) {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, width, height, 0, GL_RG, GL_FLOAT, floatDataModified);
+			}
+			else {
+				std::cout << "ERROR::BAKEDDATA::Failed to load BRDFLut texture for probe " << probeID << " at path: " << brdfFilepath << std::endl;
+			}
+			stbi_image_free(floatData);
+			delete[] floatDataModified;
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
 }
