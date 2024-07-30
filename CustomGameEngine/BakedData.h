@@ -86,7 +86,7 @@ namespace Engine {
 		}
 
 		void WriteReflectionProbesToFile();
-
+		void LoadReflectionProbesFromFile();
 	private:
 		void ClearReflectionProbes() {
 			for (ReflectionProbe* probe : reflectionProbes) {

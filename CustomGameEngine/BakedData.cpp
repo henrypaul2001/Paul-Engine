@@ -111,4 +111,64 @@ namespace Engine {
 			delete[] byteData;
 		}
 	}
+
+	void BakedData::LoadReflectionProbesFromFile()
+	{
+		stbi_set_flip_vertically_on_load(true);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		std::cout << "BAKEDDATA::Loading reflection probes from file" << std::endl;
+
+		std::string faces[6] =
+		{
+			"/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0] + ".hdr",
+			"/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1] + ".hdr",
+			"/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2] + ".hdr",
+			"/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3] + ".hdr",
+			"/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4] + ".hdr",
+			"/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5] + ".hdr",
+		};
+
+		unsigned int numProbes = reflectionProbes.size();
+		for (unsigned int i = 0; i < numProbes; i++) {
+			std::cout << "		- Loading probe " << i + 1 << " / " << numProbes << std::endl;
+
+			ReflectionProbe* probe = reflectionProbes[i];
+			unsigned int probeID = probe->GetFileID();
+			unsigned int faceWidth = probe->GetFaceWidth();
+			unsigned int faceHeight = probe->GetFaceHeight();
+			ReflectionProbeEnvironmentMap envMap = probe->GetProbeEnvMap();
+			std::string probeFilepath = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + std::to_string(probeID);
+
+			// Cubemaps
+			// Load skybox
+			std::string cubemapFilepath = probeFilepath + "/Skybox";
+			unsigned int skybox = envMap.cubemapID;
+			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
+			std::string filepath = cubemapFilepath;
+			int width, height, nrChannels;
+			for (unsigned int j = 0; j < 6; j++) {
+				filepath = cubemapFilepath + faces[j];
+
+				// Load from file
+				float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+				// Check output
+				if (width != faceWidth || height != faceHeight) {
+					std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading skybox cubemap for probe " << probeID << std::endl;
+					stbi_image_free(floatData);
+					break;
+				}
+
+				// Read into texture
+				if (floatData) {
+					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, faceWidth, faceHeight, 0, GL_RGB, GL_FLOAT, floatData);
+				}
+				else {
+					std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
+				}
+				stbi_image_free(floatData);
+			}
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		}
+	}
 }
