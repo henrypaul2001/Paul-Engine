@@ -20,8 +20,8 @@ namespace Engine {
 
 			probeString = std::to_string(probeID);
 
-			// --- Write cubemap ---
-			// ---------------------
+			// --- Write skybox ---
+			// --------------------
 			stbi_flip_vertically_on_write(false);
 
 			faceWidth = probe->GetFaceWidth();
@@ -42,8 +42,8 @@ namespace Engine {
 
 			delete[] floatData;
 
-			// -  Write irradiance -
-			// ---------------------
+			// - Write irradiance -
+			// --------------------
 			floatData = new GLfloat[32 * 32 * 3];
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
@@ -140,7 +140,8 @@ namespace Engine {
 			std::string probeFilepath = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + std::to_string(probeID);
 
 			// Cubemaps
-			// Load skybox
+			// --- Load skybox ---
+			// -------------------
 			std::string cubemapFilepath = probeFilepath + "/Skybox";
 			unsigned int skybox = envMap.cubemapID;
 			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
@@ -169,6 +170,78 @@ namespace Engine {
 				stbi_image_free(floatData);
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+			// - Load irradiance -
+			// -------------------
+			std::string irradianceFilepath = probeFilepath + "/Irradiance";
+			unsigned int irradiance = envMap.irradianceID;
+			glBindTexture(GL_TEXTURE_CUBE_MAP, irradiance);
+			filepath = irradianceFilepath;
+			for (unsigned int j = 0; j < 6; j++) {
+				filepath = irradianceFilepath + faces[j];
+
+				// Load from file
+				float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+				// Check output
+				if (width != 32 || height != 32) {
+					std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading irradiance cubemap for probe " << probeID << std::endl;
+					stbi_image_free(floatData);
+					break;
+				}
+
+				// Read into texture
+				if (floatData) {
+					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, floatData);
+				}
+				else {
+					std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
+				}
+				stbi_image_free(floatData);
+			}
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+			// BRDFLUT
+			// Load texture
+			//unsigned int textureID;
+			//glGenTextures(1, &textureID);
+
+			//int width, height, nrComponents;
+			//unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrComponents, 0);
+			//if (data) {
+			//	GLenum internalFormat = GL_RGB;
+			//	GLenum dataFormat = GL_RGB;
+			//	if (nrComponents == 1) {
+			//		internalFormat = GL_RED;
+			//		dataFormat = GL_RED;
+			//	}
+			//	else if (nrComponents == 2) {
+			//		internalFormat = GL_RG;
+			//		dataFormat = GL_RG;
+			//	}
+			//	else if (nrComponents == 3) {
+			//		internalFormat = srgb ? GL_SRGB : GL_RGB;
+			//		dataFormat = GL_RGB;
+			//	}
+			//	else if (nrComponents == 4) {
+			//		internalFormat = srgb ? GL_SRGB_ALPHA : GL_RGBA;
+			//		dataFormat = GL_RGBA;
+			//	}
+			//	glBindTexture(GL_TEXTURE_2D, textureID);
+			//	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+			//	glGenerateMipmap(GL_TEXTURE_2D);
+
+			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			//	stbi_image_free(data);
+			//}
+			//else {
+			//	std::cout << "ERROR::RESOURCEMANAGER::TEXTURELOAD::Texture failed to load at path: " << filepath << std::endl;
+			//	stbi_image_free(data);
+			//}
 		}
 	}
 }
