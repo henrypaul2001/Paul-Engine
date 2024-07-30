@@ -160,6 +160,9 @@ namespace Engine {
 		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
 		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
 
+		unsigned int faceWidth = probe->GetFaceWidth();
+		unsigned int faceHeight = probe->GetFaceHeight();
+
 		// Set up projections for each cubemap face
 		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 		glm::mat4 captureViews[] = {
@@ -187,8 +190,8 @@ namespace Engine {
 		unsigned int maxMipLevels = 5;
 		for (unsigned int mip = 0; mip < maxMipLevels; mip++) {
 			// resize framebuffer
-			unsigned int mipWidth = (128 * 2) * std::pow(0.5, mip);
-			unsigned int mipHeight = (128 * 2) * std::pow(0.5, mip);
+			unsigned int mipWidth = (faceWidth / 2) * std::pow(0.5, mip);
+			unsigned int mipHeight = (faceHeight / 2) * std::pow(0.5, mip);
 
 			glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);

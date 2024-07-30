@@ -64,7 +64,7 @@ namespace Engine {
 			// ---------------------
 
 			// Instead of saving mip level 0, this should save each cubemap face at each mip level
-			floatData = new GLfloat[(128 * 2) * (128 * 2) * 3];
+			floatData = new GLfloat[(faceWidth / 2) * (faceHeight / 2) * 3];
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
@@ -76,7 +76,7 @@ namespace Engine {
 				glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB, GL_FLOAT, floatData);
 				glFinish();
 
-				stbi_write_hdr(path.c_str(), 128 * 2, 128 * 2, 3, floatData);
+				stbi_write_hdr(path.c_str(), (faceWidth / 2), (faceHeight / 2), 3, floatData);
 			}
 
 			delete[] floatData;
