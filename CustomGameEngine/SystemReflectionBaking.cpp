@@ -31,6 +31,8 @@ namespace Engine {
 		std::vector<ReflectionProbe*> probes = renderManager->GetBakedData().GetReflectionProbes();
 		int numProbes = probes.size();
 		for (int i = 0; i < numProbes; i++) {
+			reflectionShader->Use();
+
 			// error check
 			int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			if (status != GL_FRAMEBUFFER_COMPLETE) {
@@ -49,12 +51,12 @@ namespace Engine {
 			// Set up projections for each cubemap face
 			glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, probe->GetNearClip(), probe->GetFarClip());
 			glm::mat4 captureViews[] = {
-				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-				glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+				glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+				glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+				glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
 			};
 
 			reflectionShader->setMat4("projection", captureProjection);
@@ -195,11 +197,14 @@ namespace Engine {
 
 			glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cubeCaptureRBO);
 
 			glViewport(0, 0, mipWidth, mipHeight);
 
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
 			prefilterShader->setFloat("roughness", roughness);
+			prefilterShader->setUInt("faceWidth", faceWidth);
+			prefilterShader->setUInt("faceHeight", faceHeight);
 			for (unsigned int i = 0; i < 6; i++) {
 				prefilterShader->setMat4("view", captureViews[i]);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
