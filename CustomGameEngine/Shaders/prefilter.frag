@@ -4,6 +4,8 @@ in vec3 localPos;
 
 uniform samplerCube environmentMap;
 uniform float roughness;
+uniform unsigned int faceWidth;
+uniform unsigned int faceHeight;
 
 const float PI = 3.14159265359;
 
@@ -83,8 +85,7 @@ void main()
 			float HdotV = max(dot(H, V), 0.0);
 			float pdf = D * NdotH / (4.0 * HdotV) + 0.0001;
 
-			float resolution = 512.0; // source cupemap per face
-			float saTexel = 4.0 * PI / (6.0 * resolution * resolution);
+			float saTexel = 4.0 * PI / (6.0 * faceWidth * faceHeight);
             float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
 
 			float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
