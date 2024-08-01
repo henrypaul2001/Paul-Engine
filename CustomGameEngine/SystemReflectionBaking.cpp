@@ -20,9 +20,6 @@ namespace Engine {
 		RenderManager* renderManager = RenderManager::GetInstance();
 
 		Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
-		reflectionShader->Use();
-
-		LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
 
 		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
 		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
@@ -32,6 +29,8 @@ namespace Engine {
 		int numProbes = probes.size();
 		for (int i = 0; i < numProbes; i++) {
 			reflectionShader->Use();
+
+			LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
 
 			// error check
 			int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -149,6 +148,7 @@ namespace Engine {
 			resourceManager->DefaultCube().DrawWithNoMaterial();
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
 	void SystemReflectionBaking::PrefilterMap(ReflectionProbe* probe)
@@ -189,15 +189,15 @@ namespace Engine {
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, cubeCaptureFBO);
+
 		unsigned int maxMipLevels = 5;
+
+		glDisable(GL_DEPTH_TEST);
+
 		for (unsigned int mip = 0; mip < maxMipLevels; mip++) {
 			// resize framebuffer
 			unsigned int mipWidth = (faceWidth / 2) * std::pow(0.5, mip);
 			unsigned int mipHeight = (faceHeight / 2) * std::pow(0.5, mip);
-
-			glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cubeCaptureRBO);
 
 			glViewport(0, 0, mipWidth, mipHeight);
 
@@ -213,7 +213,10 @@ namespace Engine {
 			}
 		}
 
+		glEnable(GL_DEPTH_TEST);
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
 	void SystemReflectionBaking::BakeBRDF(ReflectionProbe* probe)

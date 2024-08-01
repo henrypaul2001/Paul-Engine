@@ -514,7 +514,12 @@ void CalculateLighting() {
 
     vec3 Colour = ambient + Lo;
 
-    FragColour = vec4(Colour, Alpha);
+    if (any(isnan(Colour))) {
+        FragColour = vec4(0.0, 0.0, 0.0, Alpha);
+    }
+    else {
+        FragColour = vec4(Colour, Alpha);
+    }
 }
 
 void main() {
