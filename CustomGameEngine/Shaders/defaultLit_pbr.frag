@@ -66,10 +66,10 @@ uniform int activeLights;
 struct GlobalIBL {
     samplerCube irradianceMap;
     samplerCube prefilterMap;
-    sampler2D brdfLUT;
 };
 uniform GlobalIBL globalIBL;
 uniform bool useGlobalIBL;
+uniform sampler2D brdfLUT;
 
 struct AABB {
     float leftExtent;
@@ -552,7 +552,7 @@ void CalculateLighting() {
 
         const float MAX_REFLECTION_LOD = 4.0;
         vec3 prefilteredColour = textureLod(globalIBL.prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
-        vec2 brdf = texture(globalIBL.brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
         vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
 
         ambient = (kD * diffuse + specular) * AO;

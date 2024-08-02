@@ -424,7 +424,7 @@ namespace Engine {
 
 		deferredLightingPassPBR->setInt("globalIBL.irradianceMap", 9 + textureOffset);
 		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", 10 + textureOffset);
-		deferredLightingPassPBR->setInt("globalIBL.brdfLUT", 11 + textureOffset);
+		deferredLightingPassPBR->setInt("brdfLUT", 11 + textureOffset);
 
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
@@ -457,7 +457,7 @@ namespace Engine {
 		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", 7 + textureOffset);
 		defaultLitPBRShader->setInt("globalIBL.irradianceMap", 9 + textureOffset);
 		defaultLitPBRShader->setInt("globalIBL.prefilterMap", 10 + textureOffset);
-		defaultLitPBRShader->setInt("globalIBL.brdfLUT", 11 + textureOffset);
+		defaultLitPBRShader->setInt("brdfLUT", 11 + textureOffset);
 
 		reflectionProbeBaking->Use();
 		reflectionProbeBaking->setInt("dirLight.ShadowMap", 0);
