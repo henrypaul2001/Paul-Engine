@@ -343,7 +343,7 @@ namespace Engine {
 		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag", true);
 		advBloomUpsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomUpsample.frag", true);
 		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag", true);
-		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBaking.vert", "Shaders/reflectionProbeBaking.frag", "Shaders/reflectionProbeBaking.geom", true);
+		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBaking.vert", "Shaders/reflectionProbeBaking.frag", true);
 
 		advBloomCombineShader->Use();
 		advBloomCombineShader->setInt("screenTexture", 0);
@@ -422,9 +422,9 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("gPBRFLAG", 22);
 		deferredLightingPassPBR->setInt("SSAO", 23);
 
-		deferredLightingPassPBR->setInt("irradianceMap", 9 + textureOffset);
-		deferredLightingPassPBR->setInt("prefilterMap", 10 + textureOffset);
-		deferredLightingPassPBR->setInt("brdfLUT", 11 + textureOffset);
+		deferredLightingPassPBR->setInt("globalIBL.irradianceMap", 9 + textureOffset);
+		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", 10 + textureOffset);
+		deferredLightingPassPBR->setInt("globalIBL.brdfLUT", 11 + textureOffset);
 
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
@@ -455,9 +455,9 @@ namespace Engine {
 		defaultLitPBRShader->setInt("material.TEXTURE_AO1", 5 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
 		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", 7 + textureOffset);
-		defaultLitPBRShader->setInt("irradianceMap", 9 + textureOffset);
-		defaultLitPBRShader->setInt("prefilterMap", 10 + textureOffset);
-		defaultLitPBRShader->setInt("brdfLUT", 11 + textureOffset);
+		defaultLitPBRShader->setInt("globalIBL.irradianceMap", 9 + textureOffset);
+		defaultLitPBRShader->setInt("globalIBL.prefilterMap", 10 + textureOffset);
+		defaultLitPBRShader->setInt("globalIBL.brdfLUT", 11 + textureOffset);
 
 		reflectionProbeBaking->Use();
 		reflectionProbeBaking->setInt("dirLight.ShadowMap", 0);

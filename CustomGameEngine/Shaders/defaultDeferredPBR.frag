@@ -4,6 +4,7 @@ layout (location = 1) out vec4 BrightColour;
 
 in vec2 TexCoords;
 
+#define NR_LOCAL_REFLECTION_PROBES;
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
     vec3 Direction;
@@ -67,10 +68,13 @@ uniform sampler2D gArm;
 uniform sampler2D gPBRFLAG;
 uniform sampler2D SSAO;
 
-uniform bool useIBL;
-uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
-uniform sampler2D brdfLUT;
+struct GlobalIBL {
+    samplerCube irradianceMap;
+    samplerCube prefilterMap;
+    sampler2D brdfLUT;
+};
+uniform GlobalIBL globalIBL;
+uniform bool useGlobalIBL;
 
 uniform sampler2D nonPBRResult;
 uniform sampler2D nonPBRBrightResult;
@@ -408,19 +412,19 @@ void main() {
             ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
         }
     
-        if (useIBL) {
+        if (useGlobalIBL) {
             vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
         
             vec3 kS = F;
             vec3 kD = 1.0 - kS;
             kD *= 1.0 - Metallic;
 
-            vec3 irradiance = texture(irradianceMap, N).rgb;
+            vec3 irradiance = texture(globalIBL.irradianceMap, N).rgb;
             vec3 diffuse = irradiance * Albedo;
 
             const float MAX_REFLECTION_LOD = 4.0;
-            vec3 prefilteredColour = textureLod(prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
-            vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+            vec3 prefilteredColour = textureLod(globalIBL.prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
+            vec2 brdf = texture(globalIBL.brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
             vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
 
             ambient = ((kD * diffuse + specular) * AO) * AmbientOcclusion;

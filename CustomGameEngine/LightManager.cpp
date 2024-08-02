@@ -81,7 +81,7 @@ namespace Engine {
 	{
 		int textureOffset = 18;
 
-		shader->setBool("useIBL", true);
+		shader->setBool("useGlobalIBL", true);
 
 		glActiveTexture(GL_TEXTURE0 + 9 + textureOffset);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->irradianceID);
