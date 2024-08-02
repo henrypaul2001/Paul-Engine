@@ -62,6 +62,7 @@ uniform int activeLights;
 
 // -------------|    IBL   |-----------------
 // ------------------------------------------
+#define NR_LOCAL_REFLECTION_PROBES 5
 struct GlobalIBL {
     samplerCube irradianceMap;
     samplerCube prefilterMap;
@@ -69,6 +70,28 @@ struct GlobalIBL {
 };
 uniform GlobalIBL globalIBL;
 uniform bool useGlobalIBL;
+
+struct AABB {
+    float leftExtent;
+    float rightExtent;
+
+    float upExtent;
+    float downExtent;
+
+    float frontExtent;
+    float backExtent;
+};
+
+struct LocalIBL {
+    samplerCube irradianceMap;
+    samplerCube prefilterMap;
+    vec3 worldPos;
+    float soiRadius; // Sphere of influence
+
+    AABB geoApproximationAABB; // Bounding box representing approximation of surrounding geometry for parrallax correction
+};
+uniform LocalIBL localIBLProbes[NR_LOCAL_REFLECTION_PROBES];
+uniform int activeLocalIBLProbes;
 
 // -------------|   INPUT  |-----------------
 // ------------------------------------------

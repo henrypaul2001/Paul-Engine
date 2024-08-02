@@ -4,7 +4,7 @@ layout (location = 1) out vec4 BrightColour;
 
 in vec2 TexCoords;
 
-#define NR_LOCAL_REFLECTION_PROBES;
+#define NR_LOCAL_REFLECTION_PROBES 5
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
     vec3 Direction;
@@ -75,6 +75,28 @@ struct GlobalIBL {
 };
 uniform GlobalIBL globalIBL;
 uniform bool useGlobalIBL;
+
+struct AABB {
+    float leftExtent;
+    float rightExtent;
+
+    float upExtent;
+    float downExtent;
+
+    float frontExtent;
+    float backExtent;
+};
+
+struct LocalIBL {
+    samplerCube irradianceMap;
+    samplerCube prefilterMap;
+    vec3 worldPos;
+    float soiRadius; // Sphere of influence
+
+    AABB geoApproximationAABB; // Bounding box representing approximation of surrounding geometry for parrallax correction
+};
+uniform LocalIBL localIBLProbes[NR_LOCAL_REFLECTION_PROBES];
+uniform int activeLocalIBLProbes;
 
 uniform sampler2D nonPBRResult;
 uniform sampler2D nonPBRBrightResult;
