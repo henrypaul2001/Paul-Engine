@@ -25,6 +25,7 @@ namespace Engine {
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 
 		systemManager->BakeReflectionProbes(entityManager->Entities());
+		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
 
 	PBRScene::~PBRScene()
@@ -782,15 +783,6 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
 
-		Entity* ceiling = new Entity("Cieling");
-		ceiling->AddComponent(new ComponentTransform(0.0f, 5.5f, 0.0));
-		ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
-		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
-		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
-		entityManager->AddEntity(ceiling);
-
 		Entity* rainFloor = new Entity("Rain Floor");
 		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
 		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
@@ -951,17 +943,17 @@ namespace Engine {
 		cart->AddComponent(new ComponentGeometry("Models/PBR/cart/cart.obj", true));
 		entityManager->AddEntity(cart);
 
-		Entity* bloomCube = new Entity("Bloom Cube");
-		bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
-		dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
-		bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		ComponentLight* bloomLight = new ComponentLight(POINT);
-		bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
-		//bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
-		bloomLight->CastShadows = false;
-		bloomCube->AddComponent(bloomLight);
-		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
-		entityManager->AddEntity(bloomCube);
+		//Entity* bloomCube = new Entity("Bloom Cube");
+		//bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
+		//dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		//bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		//ComponentLight* bloomLight = new ComponentLight(POINT);
+		//bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
+		////bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
+		//bloomLight->CastShadows = false;
+		//bloomCube->AddComponent(bloomLight);
+		//dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
+		//entityManager->AddEntity(bloomCube);
 #pragma endregion
 
 #pragma region ui
@@ -1612,11 +1604,11 @@ namespace Engine {
 		nonPBRMat->specular = glm::vec3(1.0f, 0.0f, 0.0f);
 		nonPBRMat->shininess = 100.0f;
 
-		Entity* nonPBRTest = new Entity("NON PBR TEST");
-		nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
-		nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
-		entityManager->AddEntity(nonPBRTest);
+		//Entity* nonPBRTest = new Entity("NON PBR TEST");
+		//nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
+		//nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		//nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
+		//entityManager->AddEntity(nonPBRTest);
 
 		// Reflection probes
 		std::vector<glm::vec3> positions;
@@ -1640,7 +1632,9 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemReflectionBaking(), RENDER_SYSTEMS);
+		SystemReflectionBaking* reflectionSystem = new SystemReflectionBaking();
+		reflectionSystem->SetActiveCamera(camera);
+		systemManager->AddSystem(reflectionSystem, RENDER_SYSTEMS);
 	}
 
 	void PBRScene::Update()

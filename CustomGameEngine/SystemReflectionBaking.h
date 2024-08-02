@@ -1,6 +1,7 @@
 #pragma once
 #include "System.h"
 #include "ReflectionProbe.h"
+#include "Camera.h"
 namespace Engine {
 	class SystemReflectionBaking : public System
 	{
@@ -14,6 +15,7 @@ namespace Engine {
 
 		void Run(const std::vector<Entity*>& entityList);
 
+		void SetActiveCamera(Camera* newCamera) { activeCamera = newCamera; }
 	private:
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
@@ -21,5 +23,7 @@ namespace Engine {
 		void ConvoluteEnvironmentMap(ReflectionProbe* probe);
 		void PrefilterMap(ReflectionProbe* probe);
 		void BakeBRDF(ReflectionProbe* probe);
+
+		Camera* activeCamera;
 	};
 }

@@ -18,6 +18,7 @@ namespace Engine {
 		// ---------------------------------
 		std::cout << "SYSTEMREFLECTIONBAKING::Baking reflection probes" << std::endl;
 		RenderManager* renderManager = RenderManager::GetInstance();
+		RenderOptions renderOptions = renderManager->GetRenderParams()->GetRenderOptions();
 
 		Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
 
@@ -76,13 +77,49 @@ namespace Engine {
 			glViewport(0, 0, width, height);
 			for (unsigned int j = 0; j < 6; ++j)
 			{
+				reflectionShader->Use();
 				reflectionShader->setMat4("view", captureViews[j]);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, probe->GetProbeEnvMap().cubemapID, 0);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, depthBuffer, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+				// Render scene
 				for (Entity* entity : entityList) {
 					OnAction(entity);
+				}
+
+				// Render skybox
+				if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+					Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+					skyShader->Use();
+
+					glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+					glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(captureProjection));
+					glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(captureViews[j]))));
+					glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(probe->GetWorldPosition()));
+					glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+					glDepthFunc(GL_LEQUAL);
+					glCullFace(GL_FRONT);
+
+					glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+					glActiveTexture(GL_TEXTURE0);
+					if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+						glBindTexture(GL_TEXTURE_CUBE_MAP, renderManager->GetEnvironmentMap()->cubemapID);
+					}
+					else if ((renderOptions & RENDER_SKYBOX) != 0) {
+						glBindTexture(GL_TEXTURE_CUBE_MAP, renderManager->GetSkybox()->id);
+					}
+					ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
+					glCullFace(GL_BACK);
+					glDepthFunc(GL_LESS);
+
+					glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+					glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(activeCamera->GetProjection()));
+					glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
+					glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(activeCamera->GetPosition()));
+					glBindBuffer(GL_UNIFORM_BUFFER, 0);
 				}
 			}
 
