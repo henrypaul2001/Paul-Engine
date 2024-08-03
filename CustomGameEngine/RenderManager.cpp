@@ -24,6 +24,8 @@ namespace Engine {
 		SetupEnvironmentMapFBO();
 		SetupCubemapFBO();
 
+		flatShadowmapAtlas = new TextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+
 		renderParams = new RenderParams;
 		SetupAdvBloom();
 
@@ -52,6 +54,7 @@ namespace Engine {
 	RenderManager::~RenderManager()
 	{
 		delete renderPipeline;
+		delete flatShadowmapAtlas;
 
 		delete depthMap;
 		delete flatDepthMapFBO;
@@ -350,8 +353,6 @@ namespace Engine {
 			float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
 		}*/
-
-		flatShadowmapAtlas = TextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
 
 		// Generate cube map textures for point lights
 		for (int i = 0; i < 8; i++) {

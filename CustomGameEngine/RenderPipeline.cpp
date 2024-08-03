@@ -88,13 +88,55 @@ namespace Engine {
 	{
 		// Spot and point lights
 		std::vector<glm::mat4> shadowTransforms;
+
+		const TextureAtlas* flatShadowAtlas = renderInstance->GetFlatShadowmapTextureAtlas();
+		unsigned int numFlatShadowColumns = flatShadowAtlas->GetNumColumns();
+		unsigned int flatDepthMapFBO = *renderInstance->GetFlatDepthFBO();
+
 		float aspect = (float)shadowWidth / (float)shadowHeight;
 		std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
 			ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
 			ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
+
 			if (lightComponent->CastShadows) {
 				if (lightComponent->GetLightType() == SPOT) {
+					glBindTexture(GL_TEXTURE_2D, 0);
+					glBindFramebuffer(GL_FRAMEBUFFER, flatDepthMapFBO);
+					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, flatShadowAtlas->GetTextureID(), 0);
+					glDrawBuffer(GL_NONE);
+					glReadBuffer(GL_NONE);
+
+					glm::vec3 lightPos = transformComponent->GetWorldPosition();
+					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+					glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
+					glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+					depthShader->Use();
+					depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+					unsigned int slotRow, slotColumn;
+					if (i < numFlatShadowColumns) {
+						slotRow = 0;
+						slotColumn = i;
+					}
+					else {
+						slotRow = i / numFlatShadowColumns;
+						slotColumn = i % numFlatShadowColumns;
+					}
+					glm::uvec2 startXY = flatShadowAtlas->GetSlotStartXY(slotRow, slotColumn);
+
+					glViewport(startXY.x, startXY.y, shadowWidth, shadowHeight);
+					//glBindFramebuffer(GL_FRAMEBUFFER, flatDepthMapFBO);
+					glClear(GL_DEPTH_BUFFER_BIT);
+
+					shadowmapSystem->SetDepthMapType(MAP_2D);
+					for (Entity* e : entities) {
+						shadowmapSystem->OnAction(e);
+					}
+					shadowmapSystem->AfterAction();
+					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+					/*
 					renderInstance->BindShadowMapTextureToFramebuffer(i, MAP_2D);
 
 					glm::vec3 lightPos = transformComponent->GetWorldPosition();
@@ -114,6 +156,8 @@ namespace Engine {
 						shadowmapSystem->OnAction(e);
 					}
 					shadowmapSystem->AfterAction();
+					glBindFramebuffer(GL_FRAMEBUFFER, 0);
+					*/
 				}
 				else if (lightComponent->GetLightType() == POINT) {
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);

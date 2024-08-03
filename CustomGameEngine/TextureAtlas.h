@@ -5,10 +5,8 @@ namespace Engine {
 	class TextureAtlas
 	{
 	public:
-		TextureAtlas(const unsigned int rows = 2, const unsigned int columns = 2, const unsigned int slotWidth = 256, const unsigned int slotHeight = 256, const GLenum internalFormat = GL_RGBA, const GLenum format = GL_RGBA, const GLenum type = GL_UNSIGNED_BYTE);
-		~TextureAtlas() {
-			glDeleteTextures(1, &textureID);
-		}
+		TextureAtlas(const unsigned int rows, const unsigned int columns, const unsigned int slotWidth, const unsigned int slotHeight, const GLenum internalFormat = GL_RGBA, const GLenum format = GL_RGBA, const GLenum type = GL_UNSIGNED_BYTE);
+		~TextureAtlas();
 
 		const unsigned int GetTextureID() const { return textureID; }
 		const unsigned int GetSlotWidth() const { return slotWidth; }
@@ -18,7 +16,7 @@ namespace Engine {
 		const unsigned int GetWidth() const { return width; }
 		const unsigned int GetHeight() const { return height; }
 
-		const glm::uvec2& GetSlotStartXY(const unsigned int row, const unsigned int column) { return glm::uvec2(column * slotWidth, row * slotHeight); }
+		const glm::uvec2& GetSlotStartXY(const unsigned int row, const unsigned int column) const { return glm::uvec2(column * slotWidth, row * slotHeight); }
 
 		void ResizeTexture(const unsigned int rows, const unsigned int columns, const unsigned int slotWidth, const unsigned int slotHeight);
 		void ResizeTextureResolution(const unsigned int newWidth, const unsigned int newHeight);
