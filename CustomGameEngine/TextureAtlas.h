@@ -1,5 +1,6 @@
 #pragma once
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 namespace Engine {
 	class TextureAtlas
 	{
@@ -10,6 +11,14 @@ namespace Engine {
 		}
 
 		const unsigned int GetTextureID() const { return textureID; }
+		const unsigned int GetSlotWidth() const { return slotWidth; }
+		const unsigned int GetSlotHeight() const { return slotHeight; }
+		const unsigned int GetNumRows() const { return numRows; }
+		const unsigned int GetNumColumns() const { return numColumns; }
+		const unsigned int GetWidth() const { return width; }
+		const unsigned int GetHeight() const { return height; }
+
+		const glm::uvec2& GetSlotStartXY(const unsigned int row, const unsigned int column) { return glm::uvec2(column * slotWidth, row * slotHeight); }
 
 		void ResizeTexture(const unsigned int rows, const unsigned int columns, const unsigned int slotWidth, const unsigned int slotHeight);
 		void ResizeTextureResolution(const unsigned int newWidth, const unsigned int newHeight);
