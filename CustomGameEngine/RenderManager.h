@@ -150,6 +150,7 @@ namespace Engine {
 		RenderParams* GetRenderParams() const { return renderParams; }
 		BakedData& GetBakedData() { return bakedData; }
 
+		const TextureAtlas& GetFlatShadowmapTextureAtlas() const { return flatShadowmapAtlas; }
 		unsigned int* GetDepthMap(int index, DepthMapType type);
 		unsigned int* GetFlatDepthFBO() const { return flatDepthMapFBO; }
 		unsigned int* GetCubeDepthFBO() const { return cubeDepthMapFBO; }
@@ -232,7 +233,10 @@ namespace Engine {
 		void BindCubeMap(unsigned int* map);
 
 		unsigned int* depthMap;
-		std::vector<unsigned int*> flatDepthMaps;
+		//std::vector<unsigned int*> flatDepthMaps;
+
+		TextureAtlas flatShadowmapAtlas;
+
 		std::vector<unsigned int*> cubeDepthMaps; // consider using hashmap <mapIndex, texture pointer*> in future. That way, a single collection can hold both types of shadow map
 
 		RenderPipeline* renderPipeline;

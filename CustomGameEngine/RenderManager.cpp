@@ -88,7 +88,7 @@ namespace Engine {
 		}
 
 		for (int i = 0; i < 8; i++) {
-			delete flatDepthMaps[i];
+			//delete flatDepthMaps[i];
 			delete cubeDepthMaps[i];
 		}
 
@@ -260,6 +260,8 @@ namespace Engine {
 
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
 			prefilterShader->setFloat("roughness", roughness);
+			prefilterShader->setUInt("faceWidth", 512);
+			prefilterShader->setUInt("faceHeight", 512);
 			for (unsigned int i = 0; i < 6; i++) {
 				prefilterShader->setMat4("view", captureViews[i]);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
@@ -334,7 +336,7 @@ namespace Engine {
 		// value = unsigned int, texture, can be either cube or 2d
 
 		// Generate 2D textures for spot lights
-		for (int i = 0; i < 8; i++) {
+	/*	for (int i = 0; i < 8; i++) {
 			flatDepthMaps.push_back(new unsigned int);
 
 			glActiveTexture(GL_TEXTURE0 + i + 1);
@@ -347,7 +349,9 @@ namespace Engine {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 			float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
-		}
+		}*/
+
+		flatShadowmapAtlas = TextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
 
 		// Generate cube map textures for point lights
 		for (int i = 0; i < 8; i++) {
@@ -514,7 +518,7 @@ namespace Engine {
 		}
 		else if (mapIndex < 8) {
 			if (type == MAP_2D) {
-				Bind2DMap(flatDepthMaps[mapIndex]);
+				//Bind2DMap(flatDepthMaps[mapIndex]);
 			}
 			else if (type == MAP_CUBE) {
 				BindCubeMap(cubeDepthMaps[mapIndex]);
@@ -554,10 +558,7 @@ namespace Engine {
 			return depthMap;
 		}
 		else {
-			if (type == MAP_2D) {
-				return flatDepthMaps[index];
-			}
-			else if (type == MAP_CUBE) {
+			if (type == MAP_CUBE) {
 				return cubeDepthMaps[index];
 			}
 		}
@@ -749,6 +750,7 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubemapDepthBuffer, 0);
 

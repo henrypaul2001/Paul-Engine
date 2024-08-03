@@ -4,7 +4,7 @@ namespace Engine {
 	class TextureAtlas
 	{
 	public:
-		TextureAtlas(const unsigned int rows, const unsigned int columns, const unsigned int slotWidth, const unsigned int slotHeight, const GLenum internalFormat = GL_RGBA, const GLenum format = GL_RGBA, const GLenum type = GL_UNSIGNED_BYTE);
+		TextureAtlas(const unsigned int rows = 2, const unsigned int columns = 2, const unsigned int slotWidth = 256, const unsigned int slotHeight = 256, const GLenum internalFormat = GL_RGBA, const GLenum format = GL_RGBA, const GLenum type = GL_UNSIGNED_BYTE);
 		~TextureAtlas() {
 			glDeleteTextures(1, &textureID);
 		}
