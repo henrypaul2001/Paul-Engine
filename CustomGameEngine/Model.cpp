@@ -37,6 +37,7 @@ namespace Engine {
 	Model::~Model()
 	{
 		for (Mesh* m : meshes) {
+			glDeleteVertexArrays(1, &m->VAO);
 			delete m;
 		}
 	}

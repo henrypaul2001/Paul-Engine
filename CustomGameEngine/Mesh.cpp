@@ -33,10 +33,6 @@ namespace Engine {
 
 	Mesh::~Mesh()
 	{
-		if (material != nullptr) {
-			// TODO: COME BACK TO THIS LATER DONT FORGET
-			//delete material;
-		}
 	}
 
 	void Mesh::ApplyMaterial(Material* material)

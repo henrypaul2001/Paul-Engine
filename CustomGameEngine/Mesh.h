@@ -26,6 +26,8 @@ namespace Engine {
 		unsigned int id;
 		TextureTypes type;
 		std::string filepath;
+
+		~Texture() { glDeleteTextures(1, &id); }
 	};
 
 	struct Vertex {
