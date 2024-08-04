@@ -81,7 +81,7 @@ namespace Engine {
 
 	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
 	{
-		int textureOffset = 18;
+		int textureOffset = 10;
 
 		shader->setBool("useGlobalIBL", true);
 
@@ -156,7 +156,7 @@ namespace Engine {
 			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Active")), lightComponent->Active);
 
 			if (lightComponent->GetLightType() == POINT) {
-				glActiveTexture(GL_TEXTURE0 + i + 9);
+				glActiveTexture(GL_TEXTURE0 + i + 2);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, *renderInstance->GetDepthMap(i, MAP_CUBE));
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);

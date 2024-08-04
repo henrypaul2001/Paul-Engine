@@ -315,7 +315,7 @@ namespace Engine {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		int textureOffset = 18;
+		int textureOffset = 10;
 
 		shadowMapShader = LoadShader("Shaders/depthMap.vert", "Shaders/depthMap.frag", true);
 		cubeShadowMapShader = LoadShader("Shaders/cubeDepthMap.vert", "Shaders/cubeDepthMap.frag", "Shaders/cubeDepthMap.geom", true);
@@ -371,7 +371,7 @@ namespace Engine {
 		defaultLitShader->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
 			//defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
 		}
 
 		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
@@ -400,30 +400,30 @@ namespace Engine {
 		deferredLightingPass->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
 			//deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
 		}
 
-		deferredLightingPass->setInt("gPosition", 18);
-		deferredLightingPass->setInt("gNormal", 19);
-		deferredLightingPass->setInt("gAlbedo", 20);
-		deferredLightingPass->setInt("gSpecular", 21);
-		deferredLightingPass->setInt("gPBRFLAG", 22);
-		deferredLightingPass->setInt("SSAO", 23);
+		deferredLightingPass->setInt("gPosition", 10);
+		deferredLightingPass->setInt("gNormal", 11);
+		deferredLightingPass->setInt("gAlbedo", 12);
+		deferredLightingPass->setInt("gSpecular", 13);
+		deferredLightingPass->setInt("gPBRFLAG", 14);
+		deferredLightingPass->setInt("SSAO", 15);
 
 		deferredLightingPassPBR->Use();
 		deferredLightingPassPBR->setInt("dirLight.ShadowMap", 0);
 		deferredLightingPassPBR->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
 			//deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
 		}
 
-		deferredLightingPassPBR->setInt("gPosition", 18);
-		deferredLightingPassPBR->setInt("gNormal", 19);
-		deferredLightingPassPBR->setInt("gAlbedo", 20);
-		deferredLightingPassPBR->setInt("gArm", 21);
-		deferredLightingPassPBR->setInt("gPBRFLAG", 22);
-		deferredLightingPassPBR->setInt("SSAO", 23);
+		deferredLightingPassPBR->setInt("gPosition", 10);
+		deferredLightingPassPBR->setInt("gNormal", 11);
+		deferredLightingPassPBR->setInt("gAlbedo", 12);
+		deferredLightingPassPBR->setInt("gArm", 13);
+		deferredLightingPassPBR->setInt("gPBRFLAG", 14);
+		deferredLightingPassPBR->setInt("SSAO", 15);
 
 		deferredLightingPassPBR->setInt("globalIBL.irradianceMap", 9 + textureOffset);
 		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", 10 + textureOffset);
@@ -454,7 +454,7 @@ namespace Engine {
 		defaultLitPBRShader->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
 			//defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
 		}
 
 		defaultLitPBRShader->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
@@ -478,7 +478,7 @@ namespace Engine {
 		reflectionProbeBaking->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
 			//reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
+			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
 		}
 
 		reflectionProbeBaking->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);

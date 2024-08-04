@@ -47,7 +47,7 @@ namespace Engine {
 
 	void Mesh::Draw(Shader& shader, bool pbr, int instanceNum)
 	{
-		int offset = 18;
+		int offset = 10;
 		if (!pbr) {
 			shader.setBool("material.useDiffuseMap", false);
 			shader.setBool("material.useSpecularMap", false);

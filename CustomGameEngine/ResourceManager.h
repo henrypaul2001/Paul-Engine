@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "Model.h"
+#include "TextureAtlas.h"
 #include "TextFont.h"
 
 #include <ft2build.h>

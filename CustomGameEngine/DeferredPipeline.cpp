@@ -97,20 +97,20 @@ namespace Engine {
 			const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 			glDrawBuffers(2, buffers);
 
-			glActiveTexture(GL_TEXTURE18);
+			glActiveTexture(GL_TEXTURE10);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
-			glActiveTexture(GL_TEXTURE19);
+			glActiveTexture(GL_TEXTURE11);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
-			glActiveTexture(GL_TEXTURE20);
+			glActiveTexture(GL_TEXTURE12);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
 
-			glActiveTexture(GL_TEXTURE21);
+			glActiveTexture(GL_TEXTURE13);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular()); // non pbr specific
 
-			glActiveTexture(GL_TEXTURE22);
+			glActiveTexture(GL_TEXTURE14);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPBRFLAG());
 
-			glActiveTexture(GL_TEXTURE23);
+			glActiveTexture(GL_TEXTURE15);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 
 			// First pass
@@ -129,7 +129,7 @@ namespace Engine {
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetBloomBrightnessTexture(), 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glActiveTexture(GL_TEXTURE21);
+			glActiveTexture(GL_TEXTURE13);
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm()); // pbr specific
 
 			glActiveTexture(GL_TEXTURE30);
