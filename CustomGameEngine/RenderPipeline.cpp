@@ -93,6 +93,11 @@ namespace Engine {
 		unsigned int numFlatShadowColumns = flatShadowAtlas->GetNumColumns();
 		unsigned int flatDepthMapFBO = *renderInstance->GetFlatDepthFBO();
 
+		glBindFramebuffer(GL_FRAMEBUFFER, flatDepthMapFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, flatShadowAtlas->GetTextureID(), 0);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		float aspect = (float)shadowWidth / (float)shadowHeight;
 		std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
@@ -127,8 +132,6 @@ namespace Engine {
 					glm::uvec2 startXY = flatShadowAtlas->GetSlotStartXY(slotRow, slotColumn);
 
 					glViewport(startXY.x, startXY.y, shadowWidth, shadowHeight);
-					//glBindFramebuffer(GL_FRAMEBUFFER, flatDepthMapFBO);
-					glClear(GL_DEPTH_BUFFER_BIT);
 
 					shadowmapSystem->SetDepthMapType(MAP_2D);
 					for (Entity* e : entities) {
@@ -136,28 +139,6 @@ namespace Engine {
 					}
 					shadowmapSystem->AfterAction();
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
-					/*
-					renderInstance->BindShadowMapTextureToFramebuffer(i, MAP_2D);
-
-					glm::vec3 lightPos = transformComponent->GetWorldPosition();
-					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
-					glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
-					glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
-					depthShader->Use();
-					depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-					glViewport(0, 0, shadowWidth, shadowHeight);
-					glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
-					glClear(GL_DEPTH_BUFFER_BIT);
-
-					shadowmapSystem->SetDepthMapType(MAP_2D);
-					for (Entity* e : entities) {
-						shadowmapSystem->OnAction(e);
-					}
-					shadowmapSystem->AfterAction();
-					glBindFramebuffer(GL_FRAMEBUFFER, 0);
-					*/
 				}
 				else if (lightComponent->GetLightType() == POINT) {
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
