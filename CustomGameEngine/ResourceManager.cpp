@@ -368,8 +368,9 @@ namespace Engine {
 
 		defaultLitShader->Use();
 		defaultLitShader->setInt("dirLight.ShadowMap", 0);
+		defaultLitShader->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
-			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			//defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
 			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 
@@ -396,8 +397,9 @@ namespace Engine {
 
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("dirLight.ShadowMap", 0);
+		deferredLightingPass->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
-			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			//deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
 			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 
@@ -410,8 +412,9 @@ namespace Engine {
 
 		deferredLightingPassPBR->Use();
 		deferredLightingPassPBR->setInt("dirLight.ShadowMap", 0);
+		deferredLightingPassPBR->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
-			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			//deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
 			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 
@@ -429,6 +432,11 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
 
+		//for (int i = 0; i < 5; i++) {
+		//	deferredLightingPassPBR->setInt("localIBLProbes[" + std::to_string(i) + "].irradianceMap", 32 + (i * 2));
+		//	deferredLightingPassPBR->setInt("localIBLProbes[" + std::to_string(i) + "].prefilterMap", 32 + (i * 2) + 1);
+		//}
+
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
 		ssaoShader->setInt("gNormal", 1);
@@ -443,8 +451,9 @@ namespace Engine {
 		defaultLitPBRShader->Use();
 
 		defaultLitPBRShader->setInt("dirLight.ShadowMap", 0);
+		defaultLitPBRShader->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
-			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			//defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
 			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 
@@ -459,10 +468,16 @@ namespace Engine {
 		defaultLitPBRShader->setInt("globalIBL.prefilterMap", 10 + textureOffset);
 		defaultLitPBRShader->setInt("brdfLUT", 11 + textureOffset);
 
+		//for (int i = 0; i < 5; i++) {
+		//	defaultLitPBRShader->setInt("localIBLProbes[" + std::to_string(i) + "].irradianceMap", 32 + (i * 2));
+		//	defaultLitPBRShader->setInt("localIBLProbes[" + std::to_string(i) + "].prefilterMap", 32 + (i * 2) + 1);
+		//}
+
 		reflectionProbeBaking->Use();
 		reflectionProbeBaking->setInt("dirLight.ShadowMap", 0);
+		reflectionProbeBaking->setInt("spotlightShadowAtlas", 1);
 		for (int i = 0; i <= 8; i++) {
-			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
+			//reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
 			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 8 + 1);
 		}
 

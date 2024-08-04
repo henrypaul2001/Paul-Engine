@@ -234,6 +234,7 @@
     <ClInclude Include="SystemUIMouseInteraction.h" />
     <ClInclude Include="SystemUIRender.h" />
     <ClInclude Include="TextFont.h" />
+    <ClInclude Include="TextureAtlas.h" />
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIImage.h" />
@@ -335,6 +336,7 @@
     <ClCompile Include="SystemUIMouseInteraction.cpp" />
     <ClCompile Include="SystemUIRender.cpp" />
     <ClCompile Include="TextFont.cpp" />
+    <ClCompile Include="TextureAtlas.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIImage.cpp" />
@@ -382,7 +384,6 @@
     <None Include="Shaders\pointParticles.vert" />
     <None Include="Shaders\prefilter.frag" />
     <None Include="Shaders\reflectionProbeBaking.frag" />
-    <None Include="Shaders\reflectionProbeBaking.geom" />
     <None Include="Shaders\reflectionProbeBaking.vert" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />

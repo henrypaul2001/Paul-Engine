@@ -11,10 +11,12 @@ struct DirLight {
     float LightDistance;
 
     bool CastShadows;
+    bool Active;
 
     float MinShadowBias;
 	float MaxShadowBias;
 
+    vec2 shadowResolution;
     sampler2D ShadowMap;
 
     vec3 Colour;
@@ -34,13 +36,17 @@ struct Light {
     float Constant; // universal
 
     mat4 LightSpaceMatrix;
+    
     bool CastShadows;
+    bool Active;
 
     float MinShadowBias;
 	float MaxShadowBias;
     float ShadowFarPlane; // point light specific
 
-    sampler2D ShadowMap; // spot light specific
+    //sampler2D ShadowMap; // spot light specific
+    vec2 spotShadowAtlasTexOffset;
+    vec2 shadowResolution;
     samplerCube CubeShadowMap; // point light specific
 
     bool SpotLight;
@@ -54,6 +60,7 @@ struct Light {
 uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
+uniform sampler2D spotlightShadowAtlas;
 
 in VIEW_DATA {
     flat vec3 TangentViewPos;
@@ -150,7 +157,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir) {
     return finalTexCoords;
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias, vec2 shadowRes, vec2 atlasOffset) {
     // perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -161,6 +168,12 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
         return 0.0;
     }
     
+    // offset texcoords for texture atlas
+    vec2 startCoords = atlasOffset / textureSize(shadowMap, 0);
+    vec2 slotRes = shadowRes / textureSize(shadowMap, 0);
+
+    projCoords.xy = projCoords.xy * slotRes + startCoords;
+
     // get closes depth value from lights perspective
     float closestDepth = texture(shadowMap, projCoords.xy).r;
 
@@ -173,7 +186,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
 
     // pcf soft shadows (simple solution but more advanced solutions out there)
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = slotRes / shadowRes;
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
@@ -244,7 +257,7 @@ vec3 BlinnPhongDirLight(DirLight light, vec3 viewDir) {
     vec3 lighting;
     if (light.CastShadows) {
         // Calculate shadow
-        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), light.ShadowMap, -light.Direction * light.LightDistance, light.MinShadowBias, light.MaxShadowBias);
+        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), light.ShadowMap, -light.Direction * light.LightDistance, light.MinShadowBias, light.MaxShadowBias, light.shadowResolution, vec2(0.0, 0.0));
         lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
     }
     else {
@@ -293,7 +306,7 @@ vec3 BlinnPhongSpotLight(Light light) {
     vec3 lighting;
     if (light.CastShadows) {
         // Calculate shadow
-        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), light.ShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias);
+        float shadow = ShadowCalculation(light.LightSpaceMatrix * vec4(vertex_data.WorldPos, 1.0), spotlightShadowAtlas, light.Position, light.MinShadowBias, light.MaxShadowBias, light.shadowResolution, light.spotShadowAtlasTexOffset);
         lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
     }
     else {

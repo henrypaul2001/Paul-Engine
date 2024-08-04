@@ -118,6 +118,12 @@
     <Filter Include="Source Files\Engine\Utility\Lighting">
       <UniqueIdentifier>{456499ef-35ac-434a-a2df-cf55004f7ef0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Resources">
+      <UniqueIdentifier>{aff3e822-65ac-426b-88f7-901f7ae5fffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\Resources">
+      <UniqueIdentifier>{55f2d1fe-f1b9-4625-83bd-af6dde8c2d68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -410,6 +416,9 @@
     </ClInclude>
     <ClInclude Include="stb_image_write.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureAtlas.h">
+      <Filter>Header Files\Engine\Utility\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -710,6 +719,9 @@
     <ClCompile Include="stb_image_write.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="TextureAtlas.cpp">
+      <Filter>Source Files\Engine\Utility\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -856,13 +868,10 @@
     <None Include="irrKlang.dll">
       <Filter>Source Files\Engine\Utility</Filter>
     </None>
-    <None Include="Shaders\reflectionProbeBaking.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\reflectionProbeBaking.geom">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
     <None Include="Shaders\reflectionProbeBaking.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBaking.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
   </ItemGroup>
