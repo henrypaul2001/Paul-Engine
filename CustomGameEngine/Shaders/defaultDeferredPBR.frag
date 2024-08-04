@@ -19,6 +19,7 @@ struct DirLight {
     float MinShadowBias;
 	float MaxShadowBias;
 
+    vec2 shadowResolution;
     sampler2D ShadowMap;
 
     vec3 Colour;
@@ -46,7 +47,9 @@ struct Light {
 	float MaxShadowBias;
     float ShadowFarPlane; // point light specific
 
-    sampler2D ShadowMap; // spot light specific
+    //sampler2D ShadowMap; // spot light specific
+    vec2 spotShadowAtlasTexOffset;
+    vec2 shadowResolution;
     samplerCube CubeShadowMap; // point light specific
 
     bool SpotLight;
@@ -60,6 +63,7 @@ struct Light {
 uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
+uniform sampler2D spotlightShadowAtlas;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
@@ -125,7 +129,7 @@ vec3 F0;
 
 const float PI = 3.14159265359;
 
-float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias) {
+float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightPos, float minBias, float maxBias, vec2 shadowRes, vec2 atlasOffset) {
     // perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -136,6 +140,12 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
         return 0.0;
     }
     
+    // offset texcoords for texture atlas
+    vec2 startCoords = atlasOffset / textureSize(shadowMap, 0);
+    vec2 slotRes = shadowRes / textureSize(shadowMap, 0);
+
+    projCoords.xy = projCoords.xy * slotRes + startCoords;
+
     // get closes depth value from lights perspective
     float closestDepth = texture(shadowMap, projCoords.xy).r;
 
@@ -148,7 +158,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadowMap, vec3 lightP
 
     // pcf soft shadows (simple solution but more advanced solutions out there)
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = slotRes / shadowRes;
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
@@ -279,7 +289,7 @@ vec3 PerLightReflectance_SpotLight(int lightIndex) {
 
     if (lights[lightIndex].CastShadows) {
         // Calculate shadow
-        float shadow = ShadowCalculation(lights[lightIndex].LightSpaceMatrix * vec4(FragPos, 1.0), lights[lightIndex].ShadowMap, lights[lightIndex].Position, lights[lightIndex].MinShadowBias, lights[lightIndex].MaxShadowBias);
+        float shadow = ShadowCalculation(lights[lightIndex].LightSpaceMatrix * vec4(FragPos, 1.0), spotlightShadowAtlas, lights[lightIndex].Position, lights[lightIndex].MinShadowBias, lights[lightIndex].MaxShadowBias, lights[lightIndex].shadowResolution, lights[lightIndex].spotShadowAtlasTexOffset);
         kD *= (1.0 - shadow);
         specular *= (1.0 - shadow);
         radiance *= (1.0 - shadow);
@@ -324,7 +334,7 @@ vec3 PerLightReflectance_DirLight() {
 
     if (dirLight.CastShadows) {
         // Calculate shadow
-        float shadow = ShadowCalculation(dirLight.LightSpaceMatrix * vec4(FragPos, 1.0), dirLight.ShadowMap, -dirLight.Direction * dirLight.LightDistance, dirLight.MinShadowBias, dirLight.MaxShadowBias);
+        float shadow = ShadowCalculation(dirLight.LightSpaceMatrix * vec4(FragPos, 1.0), dirLight.ShadowMap, -dirLight.Direction * dirLight.LightDistance, dirLight.MinShadowBias, dirLight.MaxShadowBias, dirLight.shadowResolution, vec2(0.0, 0.0));
         kD *= (1.0 - shadow);
         specular *= (1.0 - shadow);
         radiance *= (1.0 - shadow);

@@ -24,7 +24,7 @@ namespace Engine {
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 
-		systemManager->BakeReflectionProbes(entityManager->Entities());
+		//systemManager->BakeReflectionProbes(entityManager->Entities());
 		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
 
@@ -845,6 +845,28 @@ namespace Engine {
 		pointLight->AddComponent(light);
 		entityManager->AddEntity(pointLight);
 
+		Entity* spotTest = new Entity("Spot Test");
+		spotTest->AddComponent(new ComponentTransform(3.5f, 2.5f, 2.0f));
+		spotTest->GetTransformComponent()->SetScale(0.25f);
+		spotTest->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		spotTest->GetGeometryComponent()->ApplyMaterialToModel(gold);
+		ComponentLight* spotTestLight = new ComponentLight(SPOT);
+		spotTestLight->Colour = glm::vec3(70.0f, 20.0f, 40.0f);
+		//spot->Colour = glm::vec3(0.7f, 0.2f, 0.4f);
+		spotTestLight->CastShadows = true;
+		spotTestLight->Direction = glm::vec3(-1.0f, 0.0f, 0.0f);
+		spotTestLight->Cutoff = glm::cos(glm::radians(20.0f));
+		spotTestLight->OuterCutoff = glm::cos(glm::radians(32.0f));
+		spotTest->AddComponent(spotTestLight);
+		entityManager->AddEntity(spotTest);
+
+		Entity* spotTestClone = spotTest->Clone();
+		spotTestClone->GetTransformComponent()->SetPosition(spotTest->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, -1.0f, -2.5f));
+
+		Entity* spotTestCloneTwo = spotTest->Clone();
+		spotTestCloneTwo->GetTransformComponent()->SetPosition(spotTest->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.0f, -1.0f, 2.5f));
+		spotTestCloneTwo->GetTransformComponent()->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), 90.0f);
+
 		Entity* pointLight2 = new Entity("Point Light2");
 		pointLight2->AddComponent(new ComponentTransform(-8.5f, 4.0f, 8.5f));
 		pointLight2->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
@@ -873,35 +895,35 @@ namespace Engine {
 		pointLight3->AddComponent(light3);
 		entityManager->AddEntity(pointLight3);
 
-		Entity* pointLight4 = new Entity("Point Light4");
-		pointLight4->AddComponent(new ComponentTransform(-6.5f, 2.0f, -6.5f));
-		pointLight4->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
-		dynamic_cast<ComponentTransform*>(pointLight4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
-		ComponentLight* light4 = new ComponentLight(POINT);
-		light4->Colour = glm::vec3(50.0, 50.0, 50.0);
-		//light4->Colour = glm::vec3(1.0, 1.0, 1.0);
-		light4->CastShadows = true;
-		light4->Active = true;
-		pointLight4->AddComponent(light4);
-		entityManager->AddEntity(pointLight4);
+		//Entity* pointLight4 = new Entity("Point Light4");
+		//pointLight4->AddComponent(new ComponentTransform(-6.5f, 2.0f, -6.5f));
+		//pointLight4->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		//dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+		//dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
+		//dynamic_cast<ComponentTransform*>(pointLight4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
+		//ComponentLight* light4 = new ComponentLight(POINT);
+		//light4->Colour = glm::vec3(50.0, 50.0, 50.0);
+		////light4->Colour = glm::vec3(1.0, 1.0, 1.0);
+		//light4->CastShadows = true;
+		//light4->Active = true;
+		//pointLight4->AddComponent(light4);
+		//entityManager->AddEntity(pointLight4);
 
-		Entity* pointLight5 = new Entity("Point Light5");
-		pointLight5->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
-		pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
-		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
-		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
-		ComponentLight* light5 = new ComponentLight(POINT);
-		light5->Colour = glm::vec3(25.0f, 25.0f, 25.0f);
-		//light5->Colour = glm::vec3(0.5, 0.5, 0.5);
-		light5->Linear = 0.027f;
-		light5->Quadratic = 0.0028f;
-		light5->CastShadows = true;
-		light5->Active = true;
-		pointLight5->AddComponent(light5);
-		entityManager->AddEntity(pointLight5);
+		//Entity* pointLight5 = new Entity("Point Light5");
+		//pointLight5->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
+		//pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		//dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+		//dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
+		//dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
+		//ComponentLight* light5 = new ComponentLight(POINT);
+		//light5->Colour = glm::vec3(25.0f, 25.0f, 25.0f);
+		////light5->Colour = glm::vec3(0.5, 0.5, 0.5);
+		//light5->Linear = 0.027f;
+		//light5->Quadratic = 0.0028f;
+		//light5->CastShadows = true;
+		//light5->Active = true;
+		//pointLight5->AddComponent(light5);
+		//entityManager->AddEntity(pointLight5);
 
 		Entity* spotParent = new Entity("Spot Parent");
 		spotParent->AddComponent(new ComponentTransform(1.0f, 0.0f, 4.6f));
@@ -927,6 +949,9 @@ namespace Engine {
 		spot->OuterCutoff = glm::cos(glm::radians(32.0f));
 		spotLight->AddComponent(spot);
 		entityManager->AddEntity(spotLight);
+
+		Entity* spotClone = spotLight->Clone();
+		spotClone->GetTransformComponent()->SetPosition(spotLight->GetTransformComponent()->GetWorldPosition() + glm::vec3(1.0f, -0.5f, 0.0f));
 
 		Entity* goblet = new Entity("Goblet");
 		goblet->AddComponent(new ComponentTransform(0.0f, 0.35f, 0.0f));

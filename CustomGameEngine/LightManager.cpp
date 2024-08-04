@@ -47,6 +47,7 @@ namespace Engine {
 
 	void LightManager::SetDirectionalLightUniforms(Shader* shader, Entity* directionalLight)
 	{
+		RenderManager* renderInstance = RenderManager::GetInstance();
 		ComponentLight* directional = dynamic_cast<ComponentLight*>(directionalLight->GetComponent(COMPONENT_LIGHT));
 		shader->setVec3("dirLight.Direction", directional->Direction);
 		shader->setVec3("dirLight.Colour", directional->Colour);
@@ -54,7 +55,7 @@ namespace Engine {
 		shader->setVec3("dirLight.Ambient", directional->Ambient);
 		shader->setFloat("dirLight.LightDistance", directional->DirectionalLightDistance);
 
-		if ((RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0) {
+		if ((renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0) {
 			shader->setBool("dirLight.CastShadows", directional->CastShadows);
 		}
 		else {
@@ -72,9 +73,10 @@ namespace Engine {
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 		shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
+		shader->setVec2(std::string("dirLight.shadowResolution"), glm::vec2(renderInstance->ShadowWidth(), renderInstance->ShadowHeight()));
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap(-1, MAP_2D));
+		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetDepthMap(-1, MAP_2D));
 	}
 
 	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
@@ -91,10 +93,24 @@ namespace Engine {
 
 		glActiveTexture(GL_TEXTURE0 + 11 + textureOffset);
 		glBindTexture(GL_TEXTURE_2D, RenderManager::GetInstance()->GetEnvironmentMap()->brdf_lutID);
+
+		//std::vector<ReflectionProbe*> probes = RenderManager::GetInstance()->GetBakedData().GetReflectionProbes();
+		//for (int i = 0; i < probes.size() && i < 5; i++) {
+		//	ReflectionProbeEnvironmentMap envMap = probes[i]->GetProbeEnvMap();
+		//	glActiveTexture(GL_TEXTURE0 + 32 + (i * 2));
+		//	glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
+
+		//	glActiveTexture(GL_TEXTURE0 + 32 + (i * 2) + 1);
+		//	glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
+		//}
 	}
 
 	void LightManager::SetShaderUniforms(Shader* shader, Camera* activeCamera)
 	{
+		RenderManager* renderInstance = RenderManager::GetInstance();
+		const TextureAtlas* spotShadowAtlas = renderInstance->GetFlatShadowmapTextureAtlas();
+		unsigned int slotRow, slotColumn;
+		unsigned int numFlatShadowColumns = spotShadowAtlas->GetNumColumns();
 		shader->Use();
 
 		// First set directional light
@@ -106,10 +122,14 @@ namespace Engine {
 		}
 
 		shader->setInt("activeLights", lightEntities.size());
+		if (lightEntities.size() > 0) {
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, spotShadowAtlas->GetTextureID());
+		}
 
-		shader->setFloat("BloomThreshold", RenderManager::GetInstance()->GetRenderParams()->GetBloomThreshold());
+		shader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
 
-		bool globalShadows = (RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0;
+		bool globalShadows = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0;
 
 		// Now spot and point lights
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
@@ -137,13 +157,13 @@ namespace Engine {
 
 			if (lightComponent->GetLightType() == POINT) {
 				glActiveTexture(GL_TEXTURE0 + i + 9);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, *RenderManager::GetInstance()->GetDepthMap(i, MAP_CUBE));
+				glBindTexture(GL_TEXTURE_CUBE_MAP, *renderInstance->GetDepthMap(i, MAP_CUBE));
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);
 			}
 			else if (lightComponent->GetLightType() == SPOT) {
-				glActiveTexture(GL_TEXTURE0 + i + 1);
-				glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap(i, MAP_2D));
+				//glActiveTexture(GL_TEXTURE0 + i + 1);
+				//glBindTexture(GL_TEXTURE_2D, *RenderManager::GetInstance()->GetDepthMap(i, MAP_2D));
 				
 				// Rotate light direction based on transform matrix
 				glm::mat4 model = glm::mat4(glm::mat3(transformComponent->GetWorldModelMatrix()));
@@ -153,21 +173,32 @@ namespace Engine {
 				rotatedDirection = glm::normalize(rotatedDirection);
 				lightComponent->WorldDirection = rotatedDirection;
 
-				float aspect = (float)RenderManager::GetInstance()->ShadowWidth() / (float)RenderManager::GetInstance()->ShadowHeight();
+				float aspect = (float)renderInstance->ShadowWidth() / (float)renderInstance->ShadowHeight();
 				glm::vec3 lightPos = transformComponent->GetWorldPosition();
 				glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
 				glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
 				glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+				if (i < numFlatShadowColumns) {
+					slotRow = 0;
+					slotColumn = i;
+				}
+				else {
+					slotRow = i / numFlatShadowColumns;
+					slotColumn = i % numFlatShadowColumns;
+				}
 
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), true);
 				shader->setVec3(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Direction")), lightComponent->WorldDirection);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Cutoff")), lightComponent->Cutoff);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].OuterCutoff")), lightComponent->OuterCutoff);
 				shader->setMat4(std::string("lights[" + std::string(std::to_string(i)) + std::string("].LightSpaceMatrix")), lightSpaceMatrix);
+				shader->setVec2(std::string("lights[" + std::string(std::to_string(i)) + std::string("].spotShadowAtlasTexOffset")), spotShadowAtlas->GetSlotStartXY(slotRow, slotColumn));
+				shader->setVec2(std::string("lights[" + std::string(std::to_string(i)) + std::string("].shadowResolution")), glm::vec2(renderInstance->ShadowWidth(), renderInstance->ShadowHeight()));
 			}
 		}
 
-		RenderOptions renderOptions = RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions();
+		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 
 		// Image based lighting
 		shader->setBool("useIBL", false);
