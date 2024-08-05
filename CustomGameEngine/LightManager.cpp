@@ -7,6 +7,7 @@ namespace Engine {
 	LightManager::LightManager() {
 		directionalLight = nullptr;
 		lightEntities = std::vector<Entity*>();
+		textureSlots = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
 	}
 
 	LightManager::~LightManager() {
@@ -75,23 +76,21 @@ namespace Engine {
 		shader->setMat4("dirLight.LightSpaceMatrix", lightSpaceMatrix);
 		shader->setVec2(std::string("dirLight.shadowResolution"), glm::vec2(renderInstance->ShadowWidth(), renderInstance->ShadowHeight()));
 
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0 + textureSlots->at("dirLight.ShadowMap"));
 		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetDepthMap(-1, MAP_2D));
 	}
 
 	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
 	{
-		int textureOffset = 10;
-
 		shader->setBool("useGlobalIBL", true);
 
-		glActiveTexture(GL_TEXTURE0 + 9 + textureOffset);
+		glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.irradianceMap"));
 		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->irradianceID);
 
-		glActiveTexture(GL_TEXTURE0 + 10 + textureOffset);
+		glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.prefilterMap"));
 		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->prefilterID);
 
-		glActiveTexture(GL_TEXTURE0 + 11 + textureOffset);
+		glActiveTexture(GL_TEXTURE0 + textureSlots->at("brdfLUT"));
 		glBindTexture(GL_TEXTURE_2D, RenderManager::GetInstance()->GetEnvironmentMap()->brdf_lutID);
 
 		//std::vector<ReflectionProbe*> probes = RenderManager::GetInstance()->GetBakedData().GetReflectionProbes();
@@ -123,14 +122,14 @@ namespace Engine {
 
 		shader->setInt("activeLights", lightEntities.size());
 		if (lightEntities.size() > 0) {
-			glActiveTexture(GL_TEXTURE1);
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at("spotlightShadowAtlas"));
 			glBindTexture(GL_TEXTURE_2D, spotShadowAtlas->GetTextureID());
 		}
 
 		shader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
 
 		bool globalShadows = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0;
-
+		std::string name;
 		// Now spot and point lights
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
 			ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
@@ -156,8 +155,10 @@ namespace Engine {
 			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Active")), lightComponent->Active);
 
 			if (lightComponent->GetLightType() == POINT) {
-				glActiveTexture(GL_TEXTURE0 + i + 2);
+				name = "lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap");
+				glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
 				glBindTexture(GL_TEXTURE_CUBE_MAP, *renderInstance->GetDepthMap(i, MAP_CUBE));
+
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);
 			}

@@ -203,8 +203,8 @@ namespace Engine {
 		aiTextureType GetTranslatedTexture(const TextureTypes target) { return modelLoaderTextureTranslations[target]; }
 		const std::unordered_map<TextureTypes, aiTextureType>& GetTextureTranslations() { return modelLoaderTextureTranslations; }
 		
-		//const std::unordered_map<const std::string, const unsigned int>& GetTextureSlotLookupMap() const { return textureSlotLookup; }
-		//const unsigned int GetTextureSlot(const std::string& samplerName) const { return textureSlotLookup.at(samplerName); }
+		const std::unordered_map<std::string, unsigned int>& GetTextureSlotLookupMap() const { return textureSlotLookup; }
+		const unsigned int GetTextureSlot(const std::string& samplerName) const { return textureSlotLookup.at(samplerName); }
 
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};
