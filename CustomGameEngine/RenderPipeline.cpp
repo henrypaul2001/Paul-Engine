@@ -9,7 +9,7 @@
 namespace Engine {
 	RenderPipeline::RenderPipeline()
 	{
-
+		textureLookups = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
 	}
 
 	RenderPipeline::~RenderPipeline()

@@ -57,6 +57,8 @@ namespace Engine {
 
 		unsigned int finalBloomTexture;
 
+		const std::unordered_map<std::string, unsigned int>* textureLookups;
+
 	private:
 		void AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold);
 		void AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius);
