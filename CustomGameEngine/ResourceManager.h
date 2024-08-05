@@ -38,6 +38,8 @@ namespace Engine {
 	class ResourceManager
 	{
 	private:
+		std::unordered_map<std::string, unsigned int> textureSlotLookup;
+
 		std::unordered_map<TextureTypes, aiTextureType> modelLoaderTextureTranslations;
 
 		Resources persistentResources;
@@ -200,6 +202,9 @@ namespace Engine {
 		void SetModelLoaderTextureTranslation(const TextureTypes target, const aiTextureType translation) { modelLoaderTextureTranslations[target] = translation; }
 		aiTextureType GetTranslatedTexture(const TextureTypes target) { return modelLoaderTextureTranslations[target]; }
 		const std::unordered_map<TextureTypes, aiTextureType>& GetTextureTranslations() { return modelLoaderTextureTranslations; }
+		
+		//const std::unordered_map<const std::string, const unsigned int>& GetTextureSlotLookupMap() const { return textureSlotLookup; }
+		//const unsigned int GetTextureSlot(const std::string& samplerName) const { return textureSlotLookup.at(samplerName); }
 
 		FT_Library& GetFreeTypeLibrary() { return freetypeLib; }
 	};

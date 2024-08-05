@@ -8,6 +8,41 @@ namespace Engine {
 	{
 		ResetModelLoaderTextureTranslationsToDefault();
 
+		textureSlotLookup = {
+			{ "dirLight.ShadowMap", 0 },
+			{ "spotlightShadowAtlas", 1 },
+			{ "lights[0].CubeShadowMap", 2 },
+			{ "lights[1].CubeShadowMap", 3 },
+			{ "lights[2].CubeShadowMap", 4 },
+			{ "lights[3].CubeShadowMap", 5 },
+			{ "lights[4].CubeShadowMap", 6 },
+			{ "lights[5].CubeShadowMap", 7 },
+			{ "lights[6].CubeShadowMap", 8 },
+			{ "lights[7].CubeShadowMap", 9 },
+
+			{ "material.TEXTURE_ALBEDO1", 10 },
+			{ "material.TEXTURE_DIFFUSE1", 10 },
+			{ "material.TEXTURE_NORMAL1", 11 },
+			{ "material.TEXTURE_METALLIC1", 12 },
+			{ "material.TEXTURE_SPECULAR1", 12 },
+			{ "material.TEXTURE_ROUGHNESS1", 13 },
+			{ "material.TEXTURE_AO1", 14 },
+			{ "material.TEXTURE_DISPLACE1", 15 },
+			{ "material.TEXTURE_OPACITY1", 16 },
+
+			{ "gPosition", 10 },
+			{ "gNormal", 11 },
+			{ "gAlbedo", 12 },
+			{ "gSpecular", 13 },
+			{ "gArm", 13 },
+			{ "gPBRFLAG", 14 },
+			{ "SSAO", 15 },
+
+			{ "globalIBL.irradianceMap", 17 },
+			{ "globalIBL.prefilterMap", 18 },
+			{ "brdfLUT", 19 },
+		};
+
 		// Setup freetype
 		if (FT_Init_FreeType(&freetypeLib)) {
 			std::cout << "FAIL::RESOURCEMANAGER::Failed to initialize FreeType Library" << std::endl;
@@ -366,68 +401,71 @@ namespace Engine {
 		hdrTonemappingShader->setInt("screenTexture", 0);
 		hdrTonemappingShader->setInt("bloomTexture", 1);
 
+		// Default lit
+		// -----------
 		defaultLitShader->Use();
-		defaultLitShader->setInt("dirLight.ShadowMap", 0);
-		defaultLitShader->setInt("spotlightShadowAtlas", 1);
-		for (int i = 0; i <= 8; i++) {
-			//defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			defaultLitShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
+		defaultLitShader->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
+		defaultLitShader->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
+		std::string name;
+		for (int i = 0; i < 8; i++) {
+			name = "lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap");
+			defaultLitShader->setInt(name, textureSlotLookup.at(name));
 		}
 
-		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
-		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
-		defaultLitShader->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
-		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
-		defaultLitShader->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
+		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", textureSlotLookup.at("material.TEXTURE_DIFFUSE1"));
+		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", textureSlotLookup.at("material.TEXTURE_SPECULAR1"));
+		defaultLitShader->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
+		defaultLitShader->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
+		defaultLitShader->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
 
 		deferredGeometryPass->Use();
-		deferredGeometryPass->setInt("material.TEXTURE_DIFFUSE1", 1 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_SPECULAR1", 2 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", 3 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", 4 + textureOffset);
-		deferredGeometryPass->setInt("material.TEXTURE_OPACITY1", 5 + textureOffset);
+		deferredGeometryPass->setInt("material.TEXTURE_DIFFUSE1", textureSlotLookup.at("material.TEXTURE_DIFFUSE1"));
+		deferredGeometryPass->setInt("material.TEXTURE_SPECULAR1", textureSlotLookup.at("material.TEXTURE_SPECULAR1"));
+		deferredGeometryPass->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
+		deferredGeometryPass->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
+		deferredGeometryPass->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
 
 		deferredGeometryPassPBR->Use();
-		deferredGeometryPassPBR->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
-		deferredGeometryPassPBR->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
-		deferredGeometryPassPBR->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
-		deferredGeometryPassPBR->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
-		deferredGeometryPassPBR->setInt("material.TEXTURE_AO1", 5 + textureOffset);
-		deferredGeometryPassPBR->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
+		deferredGeometryPassPBR->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
+		deferredGeometryPassPBR->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
+		deferredGeometryPassPBR->setInt("material.TEXTURE_METALLIC1", textureSlotLookup.at("material.TEXTURE_METALLIC1"));
+		deferredGeometryPassPBR->setInt("material.TEXTURE_ROUGHNESS1", textureSlotLookup.at("material.TEXTURE_ROUGHNESS1"));
+		deferredGeometryPassPBR->setInt("material.TEXTURE_AO1", textureSlotLookup.at("material.TEXTURE_AO1"));
+		deferredGeometryPassPBR->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
 
 		deferredLightingPass->Use();
-		deferredLightingPass->setInt("dirLight.ShadowMap", 0);
-		deferredLightingPass->setInt("spotlightShadowAtlas", 1);
-		for (int i = 0; i <= 8; i++) {
-			//deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			deferredLightingPass->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
+		deferredLightingPass->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
+		deferredLightingPass->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
+		for (int i = 0; i < 8; i++) {
+			name = "lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap");
+			deferredLightingPass->setInt(name, textureSlotLookup.at(name));
 		}
 
-		deferredLightingPass->setInt("gPosition", 10);
-		deferredLightingPass->setInt("gNormal", 11);
-		deferredLightingPass->setInt("gAlbedo", 12);
-		deferredLightingPass->setInt("gSpecular", 13);
-		deferredLightingPass->setInt("gPBRFLAG", 14);
-		deferredLightingPass->setInt("SSAO", 15);
+		deferredLightingPass->setInt("gPosition", textureSlotLookup.at("gPosition"));
+		deferredLightingPass->setInt("gNormal", textureSlotLookup.at("gNormal"));
+		deferredLightingPass->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
+		deferredLightingPass->setInt("gSpecular", textureSlotLookup.at("gSpecular"));
+		deferredLightingPass->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
+		deferredLightingPass->setInt("SSAO", textureSlotLookup.at("SSAO"));
 
 		deferredLightingPassPBR->Use();
-		deferredLightingPassPBR->setInt("dirLight.ShadowMap", 0);
-		deferredLightingPassPBR->setInt("spotlightShadowAtlas", 1);
-		for (int i = 0; i <= 8; i++) {
-			//deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			deferredLightingPassPBR->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
+		deferredLightingPassPBR->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
+		deferredLightingPassPBR->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
+		for (int i = 0; i < 8; i++) {
+			name = "lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap");
+			deferredLightingPassPBR->setInt(name, textureSlotLookup.at(name));
 		}
 
-		deferredLightingPassPBR->setInt("gPosition", 10);
-		deferredLightingPassPBR->setInt("gNormal", 11);
-		deferredLightingPassPBR->setInt("gAlbedo", 12);
-		deferredLightingPassPBR->setInt("gArm", 13);
-		deferredLightingPassPBR->setInt("gPBRFLAG", 14);
-		deferredLightingPassPBR->setInt("SSAO", 15);
+		deferredLightingPassPBR->setInt("gPosition", textureSlotLookup.at("gPosition"));
+		deferredLightingPassPBR->setInt("gNormal", textureSlotLookup.at("gNormal"));
+		deferredLightingPassPBR->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
+		deferredLightingPassPBR->setInt("gArm", textureSlotLookup.at("gArm"));
+		deferredLightingPassPBR->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
+		deferredLightingPassPBR->setInt("SSAO", textureSlotLookup.at("SSAO"));
 
-		deferredLightingPassPBR->setInt("globalIBL.irradianceMap", 9 + textureOffset);
-		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", 10 + textureOffset);
-		deferredLightingPassPBR->setInt("brdfLUT", 11 + textureOffset);
+		deferredLightingPassPBR->setInt("globalIBL.irradianceMap", textureSlotLookup.at("globalIBL.irradianceMap"));
+		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
+		deferredLightingPassPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
@@ -450,23 +488,24 @@ namespace Engine {
 
 		defaultLitPBRShader->Use();
 
-		defaultLitPBRShader->setInt("dirLight.ShadowMap", 0);
-		defaultLitPBRShader->setInt("spotlightShadowAtlas", 1);
-		for (int i = 0; i <= 8; i++) {
-			//defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			defaultLitPBRShader->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
+		defaultLitPBRShader->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
+		defaultLitPBRShader->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
+		for (int i = 0; i < 8; i++) {
+			name = "lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap");
+			defaultLitPBRShader->setInt(name, textureSlotLookup.at(name));
 		}
 
-		defaultLitPBRShader->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_AO1", 5 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
-		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", 7 + textureOffset);
-		defaultLitPBRShader->setInt("globalIBL.irradianceMap", 9 + textureOffset);
-		defaultLitPBRShader->setInt("globalIBL.prefilterMap", 10 + textureOffset);
-		defaultLitPBRShader->setInt("brdfLUT", 11 + textureOffset);
+		defaultLitPBRShader->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
+		defaultLitPBRShader->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
+		defaultLitPBRShader->setInt("material.TEXTURE_METALLIC1", textureSlotLookup.at("material.TEXTURE_METALLIC1"));
+		defaultLitPBRShader->setInt("material.TEXTURE_ROUGHNESS1", textureSlotLookup.at("material.TEXTURE_ROUGHNESS1"));
+		defaultLitPBRShader->setInt("material.TEXTURE_AO1", textureSlotLookup.at("material.TEXTURE_AO1"));
+		defaultLitPBRShader->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
+		defaultLitPBRShader->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
+
+		defaultLitPBRShader->setInt("globalIBL.irradianceMap", textureSlotLookup.at("globalIBL.irradianceMap"));
+		defaultLitPBRShader->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
+		defaultLitPBRShader->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
 		//for (int i = 0; i < 5; i++) {
 		//	defaultLitPBRShader->setInt("localIBLProbes[" + std::to_string(i) + "].irradianceMap", 32 + (i * 2));
@@ -474,20 +513,20 @@ namespace Engine {
 		//}
 
 		reflectionProbeBaking->Use();
-		reflectionProbeBaking->setInt("dirLight.ShadowMap", 0);
-		reflectionProbeBaking->setInt("spotlightShadowAtlas", 1);
-		for (int i = 0; i <= 8; i++) {
-			//reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowMap"))), i + 1);
-			reflectionProbeBaking->setInt((std::string("lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap"))), i + 1 + 1);
+		reflectionProbeBaking->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
+		reflectionProbeBaking->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
+		for (int i = 0; i < 8; i++) {
+			name = "lights[" + std::string(std::to_string(i)) + std::string("].CubeShadowMap");
+			reflectionProbeBaking->setInt(name, textureSlotLookup.at(name));
 		}
 
-		reflectionProbeBaking->setInt("material.TEXTURE_ALBEDO1", 1 + textureOffset);
-		reflectionProbeBaking->setInt("material.TEXTURE_NORMAL1", 2 + textureOffset);
-		reflectionProbeBaking->setInt("material.TEXTURE_METALLIC1", 3 + textureOffset);
-		reflectionProbeBaking->setInt("material.TEXTURE_ROUGHNESS1", 4 + textureOffset);
-		reflectionProbeBaking->setInt("material.TEXTURE_AO1", 5 + textureOffset);
-		reflectionProbeBaking->setInt("material.TEXTURE_DISPLACE1", 6 + textureOffset);
-		reflectionProbeBaking->setInt("material.TEXTURE_OPACITY1", 7 + textureOffset);
+		reflectionProbeBaking->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_METALLIC1", textureSlotLookup.at("material.TEXTURE_METALLIC1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_ROUGHNESS1", textureSlotLookup.at("material.TEXTURE_ROUGHNESS1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_AO1", textureSlotLookup.at("material.TEXTURE_AO1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
 
 		defaultTextShader->Use();
 		defaultTextShader->setInt("text", 0);
