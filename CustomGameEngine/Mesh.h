@@ -125,6 +125,8 @@ namespace Engine {
 		Material* material;
 		PBRMaterial* PBRmaterial;
 
+		const std::unordered_map<std::string, unsigned int>* textureSlots;
+
 		void SetupMesh();
 	};
 }

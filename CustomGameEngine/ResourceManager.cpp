@@ -432,6 +432,7 @@ namespace Engine {
 		deferredGeometryPassPBR->setInt("material.TEXTURE_ROUGHNESS1", textureSlotLookup.at("material.TEXTURE_ROUGHNESS1"));
 		deferredGeometryPassPBR->setInt("material.TEXTURE_AO1", textureSlotLookup.at("material.TEXTURE_AO1"));
 		deferredGeometryPassPBR->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
+		deferredGeometryPassPBR->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
 
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
