@@ -100,7 +100,7 @@ namespace Engine {
 
 		// Run any other render systems that may have been added
 		for (System* s : renderSystems) {
-			if (s->Name() != SYSTEM_RENDER && s->Name() != SYSTEM_UI_RENDER && s->Name() != SYSTEM_SHADOWMAP && s->Name() != SYSTEM_PARTICLE_RENDER) {
+			if (s->Name() != SYSTEM_RENDER && s->Name() != SYSTEM_UI_RENDER && s->Name() != SYSTEM_SHADOWMAP && s->Name() != SYSTEM_PARTICLE_RENDER && s->Name() != SYSTEM_REFLECTION_BAKING) {
 				for (Entity* e : entities) {
 					s->OnAction(e);
 				}
