@@ -26,7 +26,7 @@ namespace Engine {
 
 		const std::vector<ReflectionProbe*>& GetReflectionProbes() const { return reflectionProbes; }
 
-		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions, const std::string& sceneName) {
+		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions, const std::vector<AABBPoints>& localGeometryBounds, const std::vector<float>& soiRadii, const std::string& sceneName) {
 			ClearReflectionProbes();
 
 			std::string filePath = "Data/ReflectionProbe/" + sceneName;
@@ -39,7 +39,7 @@ namespace Engine {
 			}
 
 			for (int i = 0; i < positions.size(); i++) {
-				reflectionProbes.push_back(new ReflectionProbe(i, positions[i], sceneName));
+				reflectionProbes.push_back(new ReflectionProbe(i, positions[i], sceneName, localGeometryBounds[i], soiRadii[i]));
 
 				std::string probeString = std::to_string(i);
 

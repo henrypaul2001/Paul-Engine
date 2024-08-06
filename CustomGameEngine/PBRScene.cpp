@@ -24,7 +24,7 @@ namespace Engine {
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 
-		//systemManager->BakeReflectionProbes(entityManager->Entities());
+		systemManager->BakeReflectionProbes(entityManager->Entities());
 		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
 
@@ -1643,7 +1643,22 @@ namespace Engine {
 		positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
 		positions.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, name);
+		// Temporary values
+		std::vector<AABBPoints> localBounds;
+		localBounds.push_back(AABBPoints(-17.5f, -2.0f, -17.5f, 2.5f, 3.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+
+		std::vector<float> soiRadii;
+		soiRadii.push_back(5.0f);
+		soiRadii.push_back(5.0f);
+		soiRadii.push_back(5.0f);
+		soiRadii.push_back(5.0f);
+		soiRadii.push_back(5.0f);
+
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
 	}
 
 	void PBRScene::CreateSystems()

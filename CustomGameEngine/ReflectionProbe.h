@@ -2,6 +2,7 @@
 #include <glm/ext/vector_float3.hpp>
 #include <glad/glad.h>
 #include <string>
+#include "ComponentCollisionAABB.h"
 namespace Engine {
 
 	struct ReflectionProbeEnvironmentMap {
@@ -14,7 +15,7 @@ namespace Engine {
 	class ReflectionProbe
 	{
 	public:
-		ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f);
+		ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f);
 		~ReflectionProbe();
 
 		const ReflectionProbeEnvironmentMap& GetProbeEnvMapConst() const { return envMap; }
@@ -27,8 +28,11 @@ namespace Engine {
 
 		const float GetNearClip() const { return nearClip; }
 		const float GetFarClip() const { return farClip; }
+		
+		const float GetSOIRadius() const { return sphereOfInfluenceRadius; }
 
 		const std::string& GetSceneName() const { return sceneName; }
+		const AABBPoints& GetLocalGeometryBounds() const { return localGeometryBounds; }
 	private:
 		unsigned int fileID;
 
@@ -38,13 +42,15 @@ namespace Engine {
 		float nearClip;
 		float farClip;
 
+		float sphereOfInfluenceRadius;
+
 		glm::vec3 worldPosition;
 
 		std::string sceneName;
 
 		ReflectionProbeEnvironmentMap envMap;
+		AABBPoints localGeometryBounds;
 
 		void SetupTextureMaps();
-		void LoadBakedReflectionProbe();
 	};
 }

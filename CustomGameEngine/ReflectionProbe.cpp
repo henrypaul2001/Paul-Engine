@@ -1,7 +1,7 @@
 #include "ReflectionProbe.h"
 #include "RenderManager.h"
 namespace Engine {
-	ReflectionProbe::ReflectionProbe(unsigned int id, const glm::vec3& position, const std::string& sceneName, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip)
+	ReflectionProbe::ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip)
 	{
 		this->fileID = id;
 		this->worldPosition = position;
@@ -10,6 +10,8 @@ namespace Engine {
 		this->nearClip = nearClip;
 		this->farClip = farClip;
 		this->sceneName = sceneName;
+		this->localGeometryBounds = localGeometryBounds;
+		this->sphereOfInfluenceRadius = soiRadius;
 
 		SetupTextureMaps();
 	}
@@ -76,27 +78,5 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-
-	void ReflectionProbe::LoadBakedReflectionProbe()
-	{
-		unsigned int environmentMap;
-		unsigned int irradianceMap;
-		unsigned int prefilterMap;
-		unsigned int brdf_LUT;
-
-		//RenderManager* renderInstance = RenderManager::GetInstance();
-		//environmentMap = loadFromFile;
-		//irradianceMap = renderInstance->CreateIrradianceMap();
-		//renderInstance->ConvoluteEnvironmentMap(environmentMap, irradianceMap);
-		//prefilterMap = renderInstance->CreatePrefilterMap(environmentMap);
-		//brdf_LUT = renderInstance->CreateBRDF();
-
-		//HDREnvironment* cubemap = new HDREnvironment();
-		//cubemap->cubemapID = environmentMap;
-		//cubemap->irradianceID = irradianceMap;
-		//cubemap->brdf_lutID = brdf_LUT;
-		//cubemap->prefilterID = prefilterMap;
-		//cubemap->filepath = filepath;
 	}
 }
