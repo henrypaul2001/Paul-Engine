@@ -21,6 +21,7 @@ namespace Engine {
 		}
 
 		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
+		AABBPoints() : minX(-5.0f), minY(-5.0f), minZ(-5.0f), maxX(5.0f), maxY(5.0f), maxZ(5.0f) {}
 	};
 
 	class ComponentCollisionAABB : public ComponentCollision

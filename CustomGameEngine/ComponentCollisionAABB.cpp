@@ -14,13 +14,7 @@ namespace Engine {
 
 	ComponentCollisionAABB::ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 	{
-		localBounds = AABBPoints();
-		localBounds.minX = minX;
-		localBounds.minY = minY;
-		localBounds.minZ = minZ;
-		localBounds.maxX = maxX;
-		localBounds.maxY = maxY;
-		localBounds.maxZ = maxZ;
+		localBounds = AABBPoints(minX, minY, minZ, maxX, maxY, maxZ);
 
 		isMovedByCollisions = true;
 
