@@ -82,26 +82,47 @@ namespace Engine {
 
 	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
 	{
-		shader->setBool("useGlobalIBL", true);
+		RenderOptions renderOptions = RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions();
+		if ((renderOptions & RENDER_ENVIRONMENT_MAP)) {
+			shader->setBool("useGlobalIBL", true);
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.irradianceMap"));
+			glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->irradianceID);
 
-		glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.irradianceMap"));
-		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->irradianceID);
-
-		glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.prefilterMap"));
-		glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->prefilterID);
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.prefilterMap"));
+			glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->prefilterID);
+		}
 
 		glActiveTexture(GL_TEXTURE0 + textureSlots->at("brdfLUT"));
 		glBindTexture(GL_TEXTURE_2D, RenderManager::GetInstance()->GetEnvironmentMap()->brdf_lutID);
 
-		//std::vector<ReflectionProbe*> probes = RenderManager::GetInstance()->GetBakedData().GetReflectionProbes();
-		//for (int i = 0; i < probes.size() && i < 5; i++) {
-		//	ReflectionProbeEnvironmentMap envMap = probes[i]->GetProbeEnvMap();
-		//	glActiveTexture(GL_TEXTURE0 + 32 + (i * 2));
-		//	glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
+		std::string name;
+		std::vector<ReflectionProbe*> probes = RenderManager::GetInstance()->GetBakedData().GetReflectionProbes();
+		for (int i = 0; i < probes.size() && i < 3; i++) {
+			ReflectionProbe* probe = probes[i];
+			ReflectionProbeEnvironmentMap envMap = probe->GetProbeEnvMap();
 
-		//	glActiveTexture(GL_TEXTURE0 + 32 + (i * 2) + 1);
-		//	glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
-		//}
+			name = "localIBLProbes[" + std::to_string(i) + "].irradianceMap";
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
+			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
+
+			name = "localIBLProbes[" + std::to_string(i) + "].prefilterMap";
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
+			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
+
+			shader->setVec3("localIBLProbes[" + std::to_string(i) + "].worldPos", probe->GetWorldPosition());
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].soiRadius", probe->GetSOIRadius());
+
+			AABBPoints geoBounds = probe->GetLocalGeometryBounds();
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].geoApproximationAABB.minX", geoBounds.minX);
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].geoApproximationAABB.minY", geoBounds.minY);
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].geoApproximationAABB.minZ", geoBounds.minZ);
+
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].geoApproximationAABB.maxX", geoBounds.maxX);
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].geoApproximationAABB.maxY", geoBounds.maxY);
+			shader->setFloat("localIBLProbes[" + std::to_string(i) + "].geoApproximationAABB.maxZ", geoBounds.maxZ);
+
+			shader->setInt("activeLocalIBLProbes", i + 1);
+		}
 	}
 
 	void LightManager::SetShaderUniforms(Shader* shader, Camera* activeCamera)
@@ -127,6 +148,7 @@ namespace Engine {
 		}
 
 		shader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
+		shader->setVec3("localIBLProbes[0].worldPos", glm::vec3(10.0f, 0.0f, 0.0f));
 
 		bool globalShadows = (renderInstance->GetRenderParams()->GetRenderOptions() & RENDER_SHADOWS) != 0;
 		std::string name;
@@ -202,8 +224,8 @@ namespace Engine {
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 
 		// Image based lighting
-		shader->setBool("useIBL", false);
-		if ((renderOptions & RENDER_ENVIRONMENT_MAP) != 0 && (renderOptions & RENDER_IBL) != 0 && activeCamera != nullptr) {
+		shader->setBool("useGlobalIBL", false);
+		if ((renderOptions & RENDER_IBL) != 0 && activeCamera != nullptr) {
 			SetIBLUniforms(shader, activeCamera);
 		}
 	}

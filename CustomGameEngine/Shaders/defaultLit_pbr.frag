@@ -66,7 +66,7 @@ uniform sampler2D spotlightShadowAtlas;
 
 // -------------|    IBL   |-----------------
 // ------------------------------------------
-#define NR_LOCAL_REFLECTION_PROBES 5
+#define NR_LOCAL_REFLECTION_PROBES 3
 struct GlobalIBL {
     samplerCube irradianceMap;
     samplerCube prefilterMap;
@@ -76,14 +76,13 @@ uniform bool useGlobalIBL;
 uniform sampler2D brdfLUT;
 
 struct AABB {
-    float leftExtent;
-    float rightExtent;
+    float minX;
+    float minY;
+    float minZ;
 
-    float upExtent;
-    float downExtent;
-
-    float frontExtent;
-    float backExtent;
+    float maxX;
+    float maxY;
+    float maxZ;
 };
 
 struct LocalIBL {
@@ -549,7 +548,15 @@ void CalculateLighting() {
     else {
         ambient = vec3(0.01) * Albedo * AO;
     }
-    
+
+    vec3 prefilterSample;
+    vec3 irradianceSample;
+    for (int i = 0; i < activeLocalIBLProbes && i < NR_LOCAL_REFLECTION_PROBES; i++) {
+        prefilterSample = texture(localIBLProbes[i].prefilterMap, vec3(1.0, 0.0, 0.0)).rgb;
+        irradianceSample = texture(localIBLProbes[i].irradianceMap, vec3(1.0, 0.0, 0.0)).rgb;
+        ambient *= prefilterSample * irradianceSample;
+    }
+
     if (useGlobalIBL) {
         vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
         
