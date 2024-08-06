@@ -236,6 +236,10 @@ namespace Engine {
 			unsigned int mipWidth = (faceWidth / 2) * std::pow(0.5, mip);
 			unsigned int mipHeight = (faceHeight / 2) * std::pow(0.5, mip);
 
+			glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cubeCaptureRBO);
+
 			glViewport(0, 0, mipWidth, mipHeight);
 
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
