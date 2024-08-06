@@ -19,6 +19,8 @@ namespace Engine {
 			if (z > biggest) { biggest = z; }
 			return biggest;
 		}
+
+		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
 	};
 
 	class ComponentCollisionAABB : public ComponentCollision
