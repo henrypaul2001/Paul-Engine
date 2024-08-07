@@ -225,6 +225,7 @@ namespace Engine {
 
 		// Image based lighting
 		shader->setBool("useGlobalIBL", false);
+		shader->setInt("activeLocalIBLProbes", 0);
 		if ((renderOptions & RENDER_IBL) != 0 && activeCamera != nullptr) {
 			SetIBLUniforms(shader, activeCamera);
 		}

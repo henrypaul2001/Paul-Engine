@@ -5,6 +5,7 @@
 #include <string>
 #include "SystemRender.h"
 #include "SystemShadowMapping.h"
+#include "SystemReflectionBaking.h"
 #include "CollisionResolver.h"
 #include "ConstraintSolver.h"
 namespace Engine
@@ -22,6 +23,7 @@ namespace Engine
 
 		SystemRender* renderSystem;
 		SystemShadowMapping* shadowmapSystem;
+		SystemReflectionBaking* reflectionProbeSystem;
 		CollisionResolver* collisionResponseSystem;
 		ConstraintSolver* constraintSolver;
 	public:
@@ -34,6 +36,8 @@ namespace Engine
 		void AddSystem(System* system, SystemLists list);
 		void AddCollisionResponseSystem(CollisionResolver* collisionResponder) { this->collisionResponseSystem = collisionResponder; }
 		void AddConstraintSolver(ConstraintSolver* constraintSolver) { this->constraintSolver = constraintSolver; }
+
+		void BakeReflectionProbes(const std::vector<Entity*>& entities);
 	};
 }
 

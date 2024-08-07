@@ -41,6 +41,13 @@ namespace Engine {
 			{ "globalIBL.irradianceMap", 17 },
 			{ "globalIBL.prefilterMap", 18 },
 			{ "brdfLUT", 19 },
+
+			{ "localIBLProbes[0].irradianceMap", 20 },
+			{ "localIBLProbes[0].prefilterMap", 21 },
+			{ "localIBLProbes[1].irradianceMap", 22 },
+			{ "localIBLProbes[1].prefilterMap", 23 },
+			{ "localIBLProbes[2].irradianceMap", 24 },
+			{ "localIBLProbes[2].prefilterMap", 25 },
 		};
 
 		// Setup freetype
@@ -468,6 +475,13 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
 		deferredLightingPassPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
+		for (int i = 0; i < 3; i++) {
+			name = "localIBLProbes[" + std::to_string(i) + "].irradianceMap";
+			deferredLightingPassPBR->setInt(name, textureSlotLookup.at(name));
+			name = "localIBLProbes[" + std::to_string(i) + "].prefilterMap";
+			deferredLightingPassPBR->setInt(name, textureSlotLookup.at(name));
+		}
+
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
 
@@ -508,10 +522,12 @@ namespace Engine {
 		defaultLitPBRShader->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
 		defaultLitPBRShader->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
-		//for (int i = 0; i < 5; i++) {
-		//	defaultLitPBRShader->setInt("localIBLProbes[" + std::to_string(i) + "].irradianceMap", 32 + (i * 2));
-		//	defaultLitPBRShader->setInt("localIBLProbes[" + std::to_string(i) + "].prefilterMap", 32 + (i * 2) + 1);
-		//}
+		for (int i = 0; i < 3; i++) {
+			name = "localIBLProbes[" + std::to_string(i) + "].irradianceMap";
+			defaultLitPBRShader->setInt(name, textureSlotLookup.at(name));
+			name = "localIBLProbes[" + std::to_string(i) + "].prefilterMap";
+			defaultLitPBRShader->setInt(name, textureSlotLookup.at(name));
+		}
 
 		reflectionProbeBaking->Use();
 		reflectionProbeBaking->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));

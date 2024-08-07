@@ -83,6 +83,9 @@ struct AABB {
     float maxX;
     float maxY;
     float maxZ;
+
+    vec3 TransformMinToWorldSpace(vec3 origin) { return vec3(minX, minY, minZ) + origin; }
+    vec3 TransformMaxToWorldSpace(vec3 origin) { return vec3(maxX, maxY, maxZ) + origin; }
 };
 
 struct LocalIBL {
@@ -481,6 +484,62 @@ vec3 GetNormalFromMap() {
     return normalize(TBN * tangentNormal);
 }
 
+bool IntersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax, out vec3 intersectPoint) {
+    vec3 invDir = 1.0 / rayDir; // Usefel to inverse the vector as it means we can now use multiplication ops instead of division
+
+    vec3 t0 = (aabbMin - rayOrigin) * invDir; // Intersect near planes
+    vec3 t1 = (aabbMax - rayOrigin) * invDir; // Intersect far planes
+    
+    vec3 tMin = min(t0, t1);
+    vec3 tMax = max(t0, t1);
+
+    float tNear = max(max(tMin.x, tMin.y), tMin.z);
+    float tFar = min(min(tMax.x, tMax.y), tMax.z);
+
+    if (tNear > tFar || tFar < 0.0) {
+        return false; // No collision
+    }
+
+    intersectPoint = rayOrigin + tFar * rayDir;
+    return true;
+}
+
+vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap) {
+        vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
+        
+        vec3 kS = F;
+        vec3 kD = 1.0 - kS;
+        kD *= 1.0 - Metallic;
+
+        vec3 irradiance = texture(irradianceMap, N).rgb;
+        vec3 diffuse = irradiance * Albedo;
+
+        const float MAX_REFLECTION_LOD = 4.0;
+        vec3 prefilteredColour = textureLod(prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
+        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+        vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
+
+        return (kD * diffuse + specular) * AO;
+}
+
+vec3 ParallaxCorrectReflection(AABB aabb, vec3 original, vec3 correctionCenter) {
+    vec3 rayOrigin = vertex_data.WorldPos;
+    vec3 rayDir = normalize(R);
+    vec3 intersectPoint;
+
+    if (IntersectAABB(rayOrigin, rayDir, aabb.TransformMinToWorldSpace(correctionCenter), aabb.TransformMaxToWorldSpace(correctionCenter), intersectPoint)) {
+       return normalize(intersectPoint - correctionCenter);
+    }
+
+    return original;
+}
+
+vec3 CalculateAmbienceFromIBL(LocalIBL iblProbe) {
+    // Run parallax correction
+    R = ParallaxCorrectReflection(iblProbe.geoApproximationAABB, R, iblProbe.worldPos);
+    return CalculateAmbienceFromIBL(iblProbe.prefilterMap, iblProbe.irradianceMap);
+}
+
 void CalculateLighting() {
     // Get material colour
     Albedo = material.ALBEDO;
@@ -549,30 +608,30 @@ void CalculateLighting() {
         ambient = vec3(0.01) * Albedo * AO;
     }
 
-    vec3 prefilterSample;
-    vec3 irradianceSample;
-    for (int i = 0; i < activeLocalIBLProbes && i < NR_LOCAL_REFLECTION_PROBES; i++) {
-        prefilterSample = texture(localIBLProbes[i].prefilterMap, vec3(1.0, 0.0, 0.0)).rgb;
-        irradianceSample = texture(localIBLProbes[i].irradianceMap, vec3(1.0, 0.0, 0.0)).rgb;
-        ambient *= prefilterSample * irradianceSample;
+    // Local IBL
+    float localIBLTotalContribution = 0.0;
+    vec3 accumulatedAmbient = vec3(0.0);
+    if (activeLocalIBLProbes > 0) {
+        for (int i = 0; i < activeLocalIBLProbes && i < NR_LOCAL_REFLECTION_PROBES; i++) {
+            float distanceToProbe = distance(vertex_data.WorldPos, localIBLProbes[i].worldPos);
+
+            float contribution = 1.0 - (distanceToProbe / localIBLProbes[i].soiRadius);
+
+            if (contribution > 0.0) {
+                vec3 probeAmbient = CalculateAmbienceFromIBL(localIBLProbes[i]);
+                accumulatedAmbient += probeAmbient * contribution;
+                localIBLTotalContribution += contribution;
+            }
+        }
     }
 
-    if (useGlobalIBL) {
-        vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
-        
-        vec3 kS = F;
-        vec3 kD = 1.0 - kS;
-        kD *= 1.0 - Metallic;
-
-        vec3 irradiance = texture(globalIBL.irradianceMap, N).rgb;
-        vec3 diffuse = irradiance * Albedo;
-
-        const float MAX_REFLECTION_LOD = 4.0;
-        vec3 prefilteredColour = textureLod(globalIBL.prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
-        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
-        vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
-
-        ambient = (kD * diffuse + specular) * AO;
+    if (localIBLTotalContribution > 0.0) {
+        ambient += (accumulatedAmbient / localIBLTotalContribution);
+    }
+    
+    // Global IBL fallback
+    if (useGlobalIBL && localIBLTotalContribution == 0.0) {
+        ambient = CalculateAmbienceFromIBL(globalIBL.prefilterMap, globalIBL.irradianceMap);
     }
 
     vec3 Colour = ambient + Lo;

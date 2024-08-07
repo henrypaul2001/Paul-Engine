@@ -665,6 +665,12 @@ namespace Engine {
 		bloomTest->roughness = 0.0f;
 		bloomTest->ao = 0.0f;
 
+		PBRMaterial* mirror = new PBRMaterial();
+		mirror->albedo = glm::vec3(0.0f);
+		mirror->metallic = 0.1f;
+		mirror->roughness = 0.0f;
+		mirror->ao = 1.0f;
+
 		PBRMaterial* gold = new PBRMaterial();
 		gold->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
 		gold->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/normal.png", TEXTURE_NORMAL, false));
@@ -1637,26 +1643,26 @@ namespace Engine {
 
 		// Reflection probes
 		std::vector<glm::vec3> positions;
-		positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
-		positions.push_back(glm::vec3(7.5f, 2.0f, -7.5f));
-		positions.push_back(glm::vec3(-7.5f, 2.0f, -7.5f));
-		positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
+		//positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
+		//positions.push_back(glm::vec3(7.5f, 2.0f, -7.5f));
+		//positions.push_back(glm::vec3(-7.5f, 2.0f, -7.5f));
+		//positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
 		positions.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
-		localBounds.push_back(AABBPoints(-17.5f, -2.0f, -17.5f, 2.5f, 3.0f, 17.5f));
-		localBounds.push_back(AABBPoints(-17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
-		localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
-		localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
-		localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		//localBounds.push_back(AABBPoints(-17.5f, -2.0f, -17.5f, 2.5f, 3.0f, 17.5f));
+		//localBounds.push_back(AABBPoints(-17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		//localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		//localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 3.0f, 10.0f));
 
 		std::vector<float> soiRadii;
-		soiRadii.push_back(5.0f);
-		soiRadii.push_back(5.0f);
-		soiRadii.push_back(5.0f);
-		soiRadii.push_back(5.0f);
-		soiRadii.push_back(5.0f);
+		//soiRadii.push_back(5.0f);
+		//soiRadii.push_back(5.0f);
+		//soiRadii.push_back(5.0f);
+		//soiRadii.push_back(5.0f);
+		soiRadii.push_back(10.0f);
 
 		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
 	}

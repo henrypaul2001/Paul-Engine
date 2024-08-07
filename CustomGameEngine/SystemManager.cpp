@@ -69,6 +69,19 @@ namespace Engine
 			else if (system->Name() == SYSTEM_SHADOWMAP) {
 				shadowmapSystem = dynamic_cast<SystemShadowMapping*>(system);
 			}
+			else if (system->Name() == SYSTEM_REFLECTION_BAKING) {
+				reflectionProbeSystem = dynamic_cast<SystemReflectionBaking*>(system);
+			}
+		}
+	}
+
+	void SystemManager::BakeReflectionProbes(const std::vector<Entity*>& entities)
+	{
+		if (reflectionProbeSystem != nullptr) {
+			reflectionProbeSystem->Run(entities);
+		}
+		else {
+			std::cout << "SYSTEMMANAGER::BakeReflectionProbes::Cannot bake reflection probes, reflection probe system missing" << std::endl;
 		}
 	}
 
