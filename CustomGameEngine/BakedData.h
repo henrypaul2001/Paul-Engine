@@ -39,7 +39,7 @@ namespace Engine {
 			}
 
 			for (int i = 0; i < positions.size(); i++) {
-				reflectionProbes.push_back(new ReflectionProbe(i, positions[i], sceneName, localGeometryBounds[i], soiRadii[i]));
+				reflectionProbes.push_back(new ReflectionProbe(i, positions[i], sceneName, localGeometryBounds[i], soiRadii[i], 1280u, 1280u, 0.5f, soiRadii[i]));
 
 				std::string probeString = std::to_string(i);
 
