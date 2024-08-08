@@ -10,7 +10,7 @@ namespace Engine {
 		float maxY;
 		float maxZ;
 
-		float GetBiggestExtent() {
+		float GetBiggestExtent() const {
 			float x = maxX - minX;
 			float y = maxY - minY;
 			float z = maxZ - minZ;
