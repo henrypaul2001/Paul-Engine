@@ -156,6 +156,7 @@ vec2 TexCoords;
 vec3 N;
 vec3 V;
 vec3 R;
+vec3 RParallaxed;
 vec3 F0;
 
 uniform float BloomThreshold;
@@ -515,7 +516,7 @@ vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMa
         vec3 diffuse = irradiance * Albedo;
 
         const float MAX_REFLECTION_LOD = 4.0;
-        vec3 prefilteredColour = textureLod(prefilterMap, R, Roughness * MAX_REFLECTION_LOD).rgb;
+        vec3 prefilteredColour = textureLod(prefilterMap, RParallaxed, Roughness * MAX_REFLECTION_LOD).rgb;
         vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
         vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
 
@@ -524,7 +525,7 @@ vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMa
 
 vec3 ParallaxCorrectReflection(AABB aabb, vec3 original, vec3 correctionCenter) {
     vec3 rayOrigin = vertex_data.WorldPos;
-    vec3 rayDir = normalize(R);
+    vec3 rayDir = normalize(original);
     vec3 intersectPoint;
 
     if (IntersectAABB(rayOrigin, rayDir, aabb.TransformMinToWorldSpace(correctionCenter), aabb.TransformMaxToWorldSpace(correctionCenter), intersectPoint)) {
@@ -536,7 +537,7 @@ vec3 ParallaxCorrectReflection(AABB aabb, vec3 original, vec3 correctionCenter) 
 
 vec3 CalculateAmbienceFromIBL(LocalIBL iblProbe) {
     // Run parallax correction
-    R = ParallaxCorrectReflection(iblProbe.geoApproximationAABB, R, iblProbe.worldPos);
+    RParallaxed = ParallaxCorrectReflection(iblProbe.geoApproximationAABB, R, iblProbe.worldPos);
     return CalculateAmbienceFromIBL(iblProbe.prefilterMap, iblProbe.irradianceMap);
 }
 
@@ -617,6 +618,8 @@ void CalculateLighting() {
 
             float contribution = 1.0 - (distanceToProbe / localIBLProbes[i].soiRadius);
 
+            //float contribution = 1.0 / (1.0 + distanceToProbe * distanceToProbe / (localIBLProbes[i].soiRadius * localIBLProbes[i].soiRadius));
+
             if (contribution > 0.0) {
                 vec3 probeAmbient = CalculateAmbienceFromIBL(localIBLProbes[i]);
                 accumulatedAmbient += probeAmbient * contribution;
@@ -631,6 +634,7 @@ void CalculateLighting() {
     
     // Global IBL fallback
     if (useGlobalIBL && localIBLTotalContribution == 0.0) {
+        RParallaxed = R;
         ambient = CalculateAmbienceFromIBL(globalIBL.prefilterMap, globalIBL.irradianceMap);
     }
 
