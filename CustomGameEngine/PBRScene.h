@@ -4,8 +4,6 @@
 namespace Engine {
 	class PBRScene : public Scene
 	{
-		void CreateEntities();
-		void CreateSystems();
 	public:
 		PBRScene(SceneManager* sceneManager);
 		~PBRScene();
@@ -25,6 +23,9 @@ namespace Engine {
 		void ParameterIncreaseOptionHold(UIButton* button);
 		void ParameterDecreaseOptionHold(UIButton* button);
 	private:
+		void CreateEntities();
+		void CreateSystems();
+
 		int currentEnvMapIndex;
 		std::vector<std::string> envMaps;
 

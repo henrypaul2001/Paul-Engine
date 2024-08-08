@@ -801,7 +801,7 @@ namespace Engine {
 		Entity* rainFloor = new Entity("Rain Floor");
 		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
 		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		rainFloor->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(raindrops);
+		rainFloor->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(mirror);
 		rainFloor->GetGeometryComponent()->SetTextureScale(10.0f);
 		rainFloor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
@@ -1635,14 +1635,14 @@ namespace Engine {
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -5.5f, 2.5f, 3.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -5.0f, 2.5f, 3.0f, 2.5f));
 		//localBounds.push_back(AABBPoints(-17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
 		//localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
 		//localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
 		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 3.0f, 10.0f));
 
 		std::vector<float> soiRadii;
-		soiRadii.push_back(6.0f);
+		soiRadii.push_back(7.0f);
 		//soiRadii.push_back(5.0f);
 		//soiRadii.push_back(5.0f);
 		//soiRadii.push_back(5.0f);

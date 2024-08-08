@@ -399,9 +399,6 @@
     <ClInclude Include="ComponentStateController.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="IdleState.h">
-      <Filter>Header Files\Game\Utility\AI</Filter>
-    </ClInclude>
     <ClInclude Include="SystemStateMachineUpdater.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
@@ -419,6 +416,12 @@
     </ClInclude>
     <ClInclude Include="TextureAtlas.h">
       <Filter>Header Files\Engine\Utility\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="IdleState.h">
+      <Filter>Header Files\Game\Utility\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="IBLScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -721,6 +724,9 @@
     </ClCompile>
     <ClCompile Include="TextureAtlas.cpp">
       <Filter>Source Files\Engine\Utility\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="IBLScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
