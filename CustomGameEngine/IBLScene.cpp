@@ -15,7 +15,7 @@ namespace Engine {
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 		renderManager->GetRenderParams()->SetAdvBloomLensDirtMaskStrength(0.5f);
 
-		//systemManager->BakeReflectionProbes(entityManager->Entities());
+		systemManager->BakeReflectionProbes(entityManager->Entities());
 		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
 
@@ -32,7 +32,7 @@ namespace Engine {
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
 		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
-		directional->Ambient = directional->Colour * 0.08f;
+		directional->Ambient = glm::vec3(0.0f);
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		directional->MinShadowBias = 0.0f;
 		directional->MaxShadowBias = 0.003f;
@@ -42,7 +42,17 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 #pragma region Materials
+		PBRMaterial* geoBallMaterial = new PBRMaterial();
+		geoBallMaterial->albedo = glm::vec3(0.15f);
+		geoBallMaterial->ao = 1.0f;
+		geoBallMaterial->roughness = 0.0f;
+		geoBallMaterial->metallic = 0.2f;
 
+		PBRMaterial* ballMaterial = new PBRMaterial();
+		ballMaterial->albedo = glm::vec3(0.0f);
+		ballMaterial->ao = 1.0f;
+		ballMaterial->roughness = 0.0f;
+		ballMaterial->metallic = 0.1f;
 #pragma endregion
 
 #pragma region Scene
@@ -101,7 +111,28 @@ namespace Engine {
 		}
 		entityManager->AddEntity(scifiInterior);
 
-		scifiInterior->GetGeometryComponent()->GetModel();
+		Entity* geoBall = new Entity("Geo Ball");
+		geoBall->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		geoBall->AddComponent(new ComponentGeometry("Models/PBR/scifiInterior/coolGeoSphere.obj", true));
+		geoBall->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
+		geoBall->GetGeometryComponent()->ApplyMaterialToModel(geoBallMaterial);
+		entityManager->AddEntity(geoBall);
+
+		//Entity* ball = new Entity("Ball");
+		//ball->AddComponent(new ComponentTransform(0.0f, 8.0f, 0.0f));
+		//ball->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		//ball->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
+		//ball->GetGeometryComponent()->ApplyMaterialToModel(ballMaterial);
+		//entityManager->AddEntity(ball);
+
+		Entity* light = new Entity("Light");
+		light->AddComponent(new ComponentTransform(0.0f, 2.5f, 0.0f));
+		ComponentLight* pointLight = new ComponentLight(POINT);
+		pointLight->CastShadows = false;
+		pointLight->Colour = glm::vec3(25.0f);
+		pointLight->Ambient = glm::vec3(0.0f);
+		light->AddComponent(pointLight);
+		entityManager->AddEntity(light);
 #pragma endregion
 
 #pragma region UI
@@ -127,16 +158,16 @@ namespace Engine {
 
 		// Reflection probes
 		std::vector<glm::vec3> positions;
-		positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
+		positions.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -5.0f, 2.5f, 3.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-5.25f, -5.0f, -5.25f, 5.25f, 4.0f, 5.25f));
 
 		std::vector<float> soiRadii;
-		soiRadii.push_back(7.0f);
+		soiRadii.push_back(10.0f);
 
-		//RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
 	}
 
 	void IBLScene::CreateSystems()
