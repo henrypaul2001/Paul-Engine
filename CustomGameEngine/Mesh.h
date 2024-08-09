@@ -73,7 +73,8 @@ namespace Engine {
 
 		bool isTransparent;
 		bool useDiffuseAlphaAsOpacity;
-		// I have no idea how to delete this properly without causing an error. Come back later
+		
+		glm::vec2 textureScaling = glm::vec2(1.0f);
 	};
 
 	struct PBRMaterial {
@@ -95,6 +96,8 @@ namespace Engine {
 
 		bool isTransparent;
 		bool useDiffuseAlphaAsOpacity;
+
+		glm::vec2 textureScaling = glm::vec2(1.0f);
 	};
 
 	class Mesh
