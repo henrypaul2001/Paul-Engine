@@ -46,12 +46,17 @@ namespace Engine {
 
 #pragma region Scene
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
+		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
 		floor->GetGeometryComponent()->SetTextureScale(10.0f);
 		floor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		floor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
+
+		Entity* scifiInterior = new Entity("Scifi Interior");
+		scifiInterior->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		scifiInterior->AddComponent(new ComponentGeometry("Models/PBR/scifiInterior/scifiInterior.obj", true));
+		entityManager->AddEntity(scifiInterior);
 #pragma endregion
 
 #pragma region UI
