@@ -56,7 +56,51 @@ namespace Engine {
 		Entity* scifiInterior = new Entity("Scifi Interior");
 		scifiInterior->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		scifiInterior->AddComponent(new ComponentGeometry("Models/PBR/scifiInterior/scifiInterior.obj", true));
+
+		std::vector<Mesh*> meshes = scifiInterior->GetGeometryComponent()->GetModel()->meshes;
+
+		std::vector<glm::vec2> textureScales = {
+			glm::vec2(10.0f),
+			glm::vec2(5.0f),
+			glm::vec2(5.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(5.0f),
+			glm::vec2(5.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.0f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(10.4f, 11.1f),
+			glm::vec2(2.1f, 0.2f),
+			glm::vec2(2.1f, 0.2f),
+			glm::vec2(2.1f, 0.2f),
+			glm::vec2(2.1f, 0.2f),
+			glm::vec2(10.0f),
+			glm::vec2(1.2f, 1.0f),
+			glm::vec2(1.0f),
+			glm::vec2(10.0f),
+		};
+
+		for (int i = 0; i < meshes.size(); i++) {
+			meshes[i]->GetPBRMaterial()->textureScaling = textureScales[i];
+		}
 		entityManager->AddEntity(scifiInterior);
+
+		scifiInterior->GetGeometryComponent()->GetModel();
 #pragma endregion
 
 #pragma region UI
