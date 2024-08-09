@@ -63,9 +63,9 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd albedo.png
-map_Ks roughness.png
-map_Bump albedo.png
-map_ns metallic.png
+map_Ns roughness.png
+map_d albedo.png
+map_refl metallic.png
 
 newmtl Scifi.001
 Ns 250.000000
