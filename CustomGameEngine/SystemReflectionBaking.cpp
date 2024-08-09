@@ -89,6 +89,7 @@ namespace Engine {
 				}
 
 				// Render skybox
+				/*
 				if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
 					Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
 					skyShader->Use();
@@ -121,6 +122,7 @@ namespace Engine {
 					glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(activeCamera->GetPosition()));
 					glBindBuffer(GL_UNIFORM_BUFFER, 0);
 				}
+				*/
 			}
 
 			// Process capture

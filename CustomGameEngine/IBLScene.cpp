@@ -13,6 +13,7 @@ namespace Engine {
 
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
+		renderManager->GetRenderParams()->SetAdvBloomLensDirtMaskStrength(0.5f);
 
 		//systemManager->BakeReflectionProbes(entityManager->Entities());
 		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
