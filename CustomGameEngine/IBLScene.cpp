@@ -10,6 +10,7 @@ namespace Engine {
 		renderManager->GetRenderParams()->SetBloomPasses(10);
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
@@ -42,6 +43,16 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 #pragma region Materials
+		PBRMaterial* bricks = new PBRMaterial();
+		bricks->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
+		bricks->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/normal.png", TEXTURE_NORMAL, false));
+		bricks->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/specular.png", TEXTURE_METALLIC, false));
+		bricks->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/roughness.png", TEXTURE_ROUGHNESS, false));
+		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
+		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
+		bricks->height_scale = -0.1;
+		bricks->textureScaling = glm::vec2(5.0f, 10.0f);
+
 		PBRMaterial* geoBallMaterial = new PBRMaterial();
 		geoBallMaterial->albedo = glm::vec3(0.5f, 0.5f, 0.65f);
 		geoBallMaterial->ao = 1.0f;
@@ -56,14 +67,6 @@ namespace Engine {
 #pragma endregion
 
 #pragma region Scene
-		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0f));
-		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		floor->GetGeometryComponent()->SetTextureScale(10.0f);
-		floor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		floor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
-		entityManager->AddEntity(floor);
-
 		Entity* scifiInterior = new Entity("Scifi Interior");
 		scifiInterior->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		scifiInterior->AddComponent(new ComponentGeometry("Models/PBR/scifiInterior/scifiInterior.obj", true));
@@ -133,6 +136,19 @@ namespace Engine {
 		pointLight->Ambient = glm::vec3(0.0f);
 		light->AddComponent(pointLight);
 		entityManager->AddEntity(light);
+
+		Entity* floor = new Entity("Floor");
+		floor->AddComponent(new ComponentTransform(20.0f, 0.0f, 0.0f));
+		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 10.0f, 1.0f));
+		floor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		floor->GetGeometryComponent()->ApplyMaterialToModel(bricks);
+		entityManager->AddEntity(floor);
+
+		Entity* street = new Entity("Street");
+		street->AddComponent(new ComponentTransform(20.0f, 0.0f, 0.0f));
+		street->AddComponent(new ComponentGeometry("Models/simpleStreet/street.obj", true));
+		entityManager->AddEntity(street);
 #pragma endregion
 
 #pragma region UI
@@ -165,7 +181,7 @@ namespace Engine {
 		localBounds.push_back(AABBPoints(-5.25f, -5.0f, -5.25f, 5.25f, 4.0f, 5.25f));
 
 		std::vector<float> soiRadii;
-		soiRadii.push_back(10.0f);
+		soiRadii.push_back(8.0f);
 
 		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
 	}
