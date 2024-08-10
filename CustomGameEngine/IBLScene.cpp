@@ -10,7 +10,7 @@ namespace Engine {
 		renderManager->GetRenderParams()->SetBloomPasses(10);
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
-		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL);
 
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
@@ -32,7 +32,8 @@ namespace Engine {
 
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
 		directional->CastShadows = true;
-		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		//directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		directional->Colour = glm::vec3(0.0f);
 		directional->Ambient = glm::vec3(0.0f);
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		directional->MinShadowBias = 0.0f;
@@ -64,6 +65,17 @@ namespace Engine {
 		ballMaterial->ao = 1.0f;
 		ballMaterial->roughness = 0.0f;
 		ballMaterial->metallic = 0.1f;
+
+		PBRMaterial* raindrops = new PBRMaterial();
+		raindrops->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
+		raindrops->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/normal.png", TEXTURE_NORMAL, false));
+		raindrops->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/roughness.jpg", TEXTURE_ROUGHNESS, false));
+		raindrops->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/ao.jpg", TEXTURE_AO, false));
+		raindrops->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/height.png", TEXTURE_DISPLACE, false));
+		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
+		raindrops->isTransparent = true;
+		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
+		raindrops->textureScaling = glm::vec2(5.0f, 10.0f);
 #pragma endregion
 
 #pragma region Scene
@@ -145,6 +157,41 @@ namespace Engine {
 		floor->GetGeometryComponent()->ApplyMaterialToModel(bricks);
 		entityManager->AddEntity(floor);
 
+		Entity* rainFloor = new Entity("Rain Floor");
+		rainFloor->AddComponent(new ComponentTransform(20.0f, 0.01f, 0.0f));
+		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		rainFloor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 10.0f, 1.0f));
+		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		rainFloor->GetGeometryComponent()->ApplyMaterialToModel(raindrops);
+		rainFloor->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
+		rainFloor->GetGeometryComponent()->CastShadows(false);
+		entityManager->AddEntity(rainFloor);
+
+		Entity* streetLight = new Entity("StreetLight");
+		streetLight->AddComponent(new ComponentTransform(20.0f, 2.5f, 0.0f));
+		ComponentLight* streetPoint = new ComponentLight(POINT);
+		streetPoint->CastShadows = false;
+		streetPoint->Colour = glm::vec3(200.0f);
+		streetPoint->Ambient = glm::vec3(0.0f);
+		streetPoint->Specular = streetPoint->Colour;
+		streetLight->AddComponent(streetPoint);
+		streetLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		streetLight->GetTransformComponent()->SetScale(0.25f);
+		entityManager->AddEntity(streetLight);
+
+		//Entity* streetSpotLight = new Entity("StreetSpotLight");
+		//streetSpotLight->AddComponent(new ComponentTransform(22.5f, 2.5f, 7.5f));
+		//streetSpotLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		//streetSpotLight->GetTransformComponent()->SetScale(0.25f);
+		//ComponentLight* streetSpot = new ComponentLight(SPOT);
+		//streetSpot->CastShadows = false;
+		//streetSpot->Colour = glm::vec3(50.0f, 100.0f, 50.0f);
+		//streetSpot->Specular = streetSpot->Colour;
+		//streetSpot->Ambient = glm::vec3(0.0f);
+		//streetSpot->Direction = glm::vec3(-1.0f, 0.0f, -0.5f);
+		//streetSpotLight->AddComponent(streetSpot);
+		//entityManager->AddEntity(streetSpotLight);
+
 		Entity* street = new Entity("Street");
 		street->AddComponent(new ComponentTransform(20.0f, 0.0f, 0.0f));
 		street->AddComponent(new ComponentGeometry("Models/simpleStreet/street.obj", true));
@@ -175,13 +222,16 @@ namespace Engine {
 		// Reflection probes
 		std::vector<glm::vec3> positions;
 		positions.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
+		positions.push_back(glm::vec3(20.0f, 2.5f, 0.0f));
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
 		localBounds.push_back(AABBPoints(-5.25f, -5.0f, -5.25f, 5.25f, 4.0f, 5.25f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -10.0f, 5.0f, 8.5f, 10.0f));
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(8.0f);
+		soiRadii.push_back(15.0f);
 
 		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
 	}
@@ -210,7 +260,6 @@ namespace Engine {
 		CreateEntities();
 
 		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
-
 		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
