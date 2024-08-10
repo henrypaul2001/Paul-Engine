@@ -43,10 +43,10 @@ namespace Engine {
 
 #pragma region Materials
 		PBRMaterial* geoBallMaterial = new PBRMaterial();
-		geoBallMaterial->albedo = glm::vec3(0.15f);
+		geoBallMaterial->albedo = glm::vec3(0.5f, 0.5f, 0.65f);
 		geoBallMaterial->ao = 1.0f;
 		geoBallMaterial->roughness = 0.0f;
-		geoBallMaterial->metallic = 0.2f;
+		geoBallMaterial->metallic = 1.0f;
 
 		PBRMaterial* ballMaterial = new PBRMaterial();
 		ballMaterial->albedo = glm::vec3(0.0f);
@@ -129,7 +129,7 @@ namespace Engine {
 		light->AddComponent(new ComponentTransform(0.0f, 2.5f, 0.0f));
 		ComponentLight* pointLight = new ComponentLight(POINT);
 		pointLight->CastShadows = false;
-		pointLight->Colour = glm::vec3(25.0f);
+		pointLight->Colour = glm::vec3(25.0f, 25.0f, 32.5f);
 		pointLight->Ambient = glm::vec3(0.0f);
 		light->AddComponent(pointLight);
 		entityManager->AddEntity(light);
@@ -218,6 +218,12 @@ namespace Engine {
 	{
 		Scene::Update();
 		systemManager->ActionUpdateSystems(entityManager);
+
+		Entity* geoBall = entityManager->FindEntity("Geo Ball");
+		glm::quat currentOrientation = geoBall->GetTransformComponent()->GetOrientation();
+		glm::quat rotationIncrement = glm::angleAxis(1.0f * Scene::dt, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		geoBall->GetTransformComponent()->SetOrientation(currentOrientation * rotationIncrement);
 
 		float time = (float)glfwGetTime();
 		float fps = 1.0f / Scene::dt;
