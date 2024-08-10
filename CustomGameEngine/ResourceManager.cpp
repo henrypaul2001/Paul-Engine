@@ -995,7 +995,7 @@ namespace Engine {
 		return it->second;
 	}
 
-	Cubemap* ResourceManager::LoadCubemap(std::string rootFilepath, bool loadInPersistentResources)
+	Cubemap* ResourceManager::LoadCubemap(const std::string& rootFilepath, const std::string& extension, bool loadInPersistentResources)
 	{
 		// First check if already loaded
 		std::unordered_map<std::string, Cubemap*>::iterator persistentIt = persistentResources.cubemaps.find(rootFilepath);
@@ -1019,12 +1019,12 @@ namespace Engine {
 
 			std::string faces[6] =
 			{
-				rootFilepath + "/right.png",
-				rootFilepath + "/left.png",
-				rootFilepath + "/top.png",
-				rootFilepath + "/bottom.png",
-				rootFilepath + "/front.png",
-				rootFilepath + "/back.png"
+				rootFilepath + "/right" + extension,
+				rootFilepath + "/left" + extension,
+				rootFilepath + "/top" + extension,
+				rootFilepath + "/bottom" + extension,
+				rootFilepath + "/front" + extension,
+				rootFilepath + "/back" + extension,
 			};
 
 			int width, height, nrChannels;

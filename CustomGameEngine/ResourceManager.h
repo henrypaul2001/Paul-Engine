@@ -124,7 +124,7 @@ namespace Engine {
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
 		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false, AnisotropicFiltering anisoFilter = (AnisotropicFiltering)-1);
 		Texture* LoadTextureEmbedded(const aiTexture* embeddedTexture, const std::string& filename, TextureTypes type, bool srgb, bool loadInPersistentResources = false);
-		Cubemap* LoadCubemap(std::string rootFilepath, bool loadInPersistentResources = false);
+		Cubemap* LoadCubemap(const std::string& rootFilepath, const std::string& extension = ".png", bool loadInPersistentResources = false);
 		HDREnvironment* LoadHDREnvironmentMap(std::string filepath, bool flipVertically = false, bool skipConversionAndBRDFLutGeneration = false, bool loadInPersistentResources = false);
 		TextFont* LoadTextFont(std::string filepath, bool loadInPersistentResources = false);
 		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0, bool loadInPersistentResources = false);

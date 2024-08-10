@@ -34,7 +34,7 @@ namespace Engine {
 		defaultTextShader->Use();
 		defaultTextShader->setMat4("projection", textProjection);
 
-		ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space", true);
+		ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space", ".png", true);
 		SetSkyboxTexture("Textures/Cubemaps/Space");
 	}
 
