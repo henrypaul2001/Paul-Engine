@@ -52,7 +52,7 @@ namespace Engine {
 		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
-		bricks->textureScaling = glm::vec2(5.0f, 10.0f);
+		bricks->textureScaling = glm::vec2(5.0f, 15.0f);
 
 		PBRMaterial* geoBallMaterial = new PBRMaterial();
 		geoBallMaterial->albedo = glm::vec3(0.5f, 0.5f, 0.65f);
@@ -75,7 +75,7 @@ namespace Engine {
 		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->isTransparent = true;
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
-		raindrops->textureScaling = glm::vec2(5.0f, 10.0f);
+		raindrops->textureScaling = glm::vec2(5.0f, 15.0f);
 #pragma endregion
 
 #pragma region Scene
@@ -150,17 +150,17 @@ namespace Engine {
 		entityManager->AddEntity(light);
 
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(20.0f, 0.0f, 0.0f));
+		floor->AddComponent(new ComponentTransform(40.0f, 0.0f, -10.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 10.0f, 1.0f));
+		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 20.0f, 1.0f));
 		floor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		floor->GetGeometryComponent()->ApplyMaterialToModel(bricks);
 		entityManager->AddEntity(floor);
 
 		Entity* rainFloor = new Entity("Rain Floor");
-		rainFloor->AddComponent(new ComponentTransform(20.0f, 0.01f, 0.0f));
+		rainFloor->AddComponent(new ComponentTransform(40.0f, 0.01f, -10.0f));
 		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		rainFloor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 10.0f, 1.0f));
+		rainFloor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 20.0f, 1.0f));
 		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		rainFloor->GetGeometryComponent()->ApplyMaterialToModel(raindrops);
 		rainFloor->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
@@ -168,7 +168,7 @@ namespace Engine {
 		entityManager->AddEntity(rainFloor);
 
 		Entity* streetLight = new Entity("StreetLight");
-		streetLight->AddComponent(new ComponentTransform(20.0f, 2.5f, 0.0f));
+		streetLight->AddComponent(new ComponentTransform(40.0f, 2.5f, 0.0f));
 		ComponentLight* streetPoint = new ComponentLight(POINT);
 		streetPoint->CastShadows = false;
 		streetPoint->Colour = glm::vec3(200.0f);
@@ -179,23 +179,18 @@ namespace Engine {
 		streetLight->GetTransformComponent()->SetScale(0.25f);
 		entityManager->AddEntity(streetLight);
 
-		//Entity* streetSpotLight = new Entity("StreetSpotLight");
-		//streetSpotLight->AddComponent(new ComponentTransform(22.5f, 2.5f, 7.5f));
-		//streetSpotLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-		//streetSpotLight->GetTransformComponent()->SetScale(0.25f);
-		//ComponentLight* streetSpot = new ComponentLight(SPOT);
-		//streetSpot->CastShadows = false;
-		//streetSpot->Colour = glm::vec3(50.0f, 100.0f, 50.0f);
-		//streetSpot->Specular = streetSpot->Colour;
-		//streetSpot->Ambient = glm::vec3(0.0f);
-		//streetSpot->Direction = glm::vec3(-1.0f, 0.0f, -0.5f);
-		//streetSpotLight->AddComponent(streetSpot);
-		//entityManager->AddEntity(streetSpotLight);
-
 		Entity* street = new Entity("Street");
-		street->AddComponent(new ComponentTransform(20.0f, 0.0f, 0.0f));
+		street->AddComponent(new ComponentTransform(40.0f, 0.0f, 0.0f));
 		street->AddComponent(new ComponentGeometry("Models/simpleStreet/street.obj", true));
 		entityManager->AddEntity(street);
+
+		Entity* streetClone = street->Clone();
+		streetClone->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, -20.0f));
+
+		Entity* streetLightClone = streetLight->Clone();
+		streetLightClone->GetTransformComponent()->SetPosition(glm::vec3(42.5f, 2.5f, -20.0f));
+		streetLightClone->GetLightComponent()->Colour = glm::vec3(125.0f, 200.0f, 125.0f);
+		streetLightClone->GetLightComponent()->Specular = streetLightClone->GetLightComponent()->Colour;
 #pragma endregion
 
 #pragma region UI
@@ -222,16 +217,19 @@ namespace Engine {
 		// Reflection probes
 		std::vector<glm::vec3> positions;
 		positions.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
-		positions.push_back(glm::vec3(20.0f, 2.5f, 0.0f));
+		positions.push_back(glm::vec3(40.0f, 2.5f, 0.0f));
+		positions.push_back(glm::vec3(40.0f, 2.5f, -20.0f));
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
 		localBounds.push_back(AABBPoints(-5.25f, -5.0f, -5.25f, 5.25f, 4.0f, 5.25f));
-		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -10.0f, 5.0f, 8.5f, 10.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -30.0f, 5.0f, 8.5f, 10.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -10.0f, 5.0f, 8.5f, 30.0f));
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(8.0f);
-		soiRadii.push_back(15.0f);
+		soiRadii.push_back(30.0f);
+		soiRadii.push_back(30.0f);
 
 		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
 	}
