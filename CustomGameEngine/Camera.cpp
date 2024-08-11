@@ -17,6 +17,7 @@ namespace Engine {
 		this->SCR_WIDTH = scr_width;
 		this->SCR_HEIGHT = scr_height;
 		UpdateCameraVectors();
+		UpdateViewFrustum();
 	}
 
 	Camera::~Camera()
@@ -63,6 +64,8 @@ namespace Engine {
 		else if (direction == DOWN_WORLD) {
 			position -= worldUp * velocity;
 		}
+
+		UpdateViewFrustum();
 	}
 
 	void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
@@ -84,6 +87,7 @@ namespace Engine {
 		}
 
 		UpdateCameraVectors();
+		UpdateViewFrustum();
 	}
 
 	void Camera::ProcessMouseScroll(float yoffset)
@@ -95,6 +99,28 @@ namespace Engine {
 		else if (zoom > 120.0f) {
 			zoom = 120.0f;
 		}
+
+		UpdateViewFrustum();
+	}
+
+	const ViewFrustum& Camera::UpdateViewFrustum()
+	{
+		float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
+		float fovY = zoom;
+		const float halfVSide = farClip * tanf(fovY * 0.5f);
+		const float halfHSide = halfVSide * aspect;
+		const glm::vec3 frontFar = farClip * front;
+
+		viewFrustum.near = ViewPlane(position + nearClip * front, front);
+		viewFrustum.far = ViewPlane(position + frontFar, -front);
+
+		viewFrustum.right = ViewPlane(position, glm::cross(frontFar - right * halfHSide, up));
+		viewFrustum.left = ViewPlane(position, glm::cross(up, frontFar + right * halfHSide));
+
+		viewFrustum.top = ViewPlane(position, glm::cross(right, frontFar - up * halfVSide));
+		viewFrustum.bottom = ViewPlane(position, glm::cross(frontFar + up * halfVSide, right));
+
+		return viewFrustum;
 	}
 
 	void Camera::UpdateCameraVectors()
