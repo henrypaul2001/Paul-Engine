@@ -106,7 +106,7 @@ namespace Engine {
 	const ViewFrustum& Camera::UpdateViewFrustum()
 	{
 		float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
-		float fovY = zoom;
+		float fovY = glm::radians(zoom);
 		const float halfVSide = farClip * tanf(fovY * 0.5f);
 		const float halfHSide = halfVSide * aspect;
 		const glm::vec3 frontFar = farClip * front;

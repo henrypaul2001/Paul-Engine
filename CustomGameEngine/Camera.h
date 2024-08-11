@@ -22,7 +22,7 @@ namespace Engine {
 
 		ViewPlane(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& normal = glm::vec3(0.0f, 1.0f, 0.0f)) {
 			this->normal = glm::normalize(normal);
-			this->distance = glm::dot(normal, position);
+			this->distance = glm::dot(this->normal, position);
 		}
 	};
 
@@ -65,7 +65,7 @@ namespace Engine {
 		float GetZoom() const { return zoom; }
 		float GetNearClip() const { return nearClip; }
 		float GetFarClip() const { return farClip; }
-		const ViewFrustum& GetViewFrustum() const { return viewFrustum; }
+		const ViewFrustum& GetViewFrustum() { return viewFrustum; }
 
 		// ------------------------ Set ------------------------
 		// -----------------------------------------------------
