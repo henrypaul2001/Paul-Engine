@@ -1,5 +1,6 @@
 #include "IBLScene.h"
 #include "UIText.h"
+#include "SystemFrustumCulling.h"
 namespace Engine {
 	IBLScene::IBLScene(SceneManager* sceneManager) : Scene(sceneManager, "IBLScene")
 	{
@@ -214,6 +215,20 @@ namespace Engine {
 		entityManager->AddEntity(canvas);
 #pragma endregion
 
+		//Entity* probeDebug = new Entity("Probe Debug");
+		//probeDebug->AddComponent(new ComponentTransform(glm::vec3(0.0f, 5.0f, 0.0f)));
+		//probeDebug->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		//probeDebug->GetTransformComponent()->SetScale(8.0f);
+		//entityManager->AddEntity(probeDebug);
+
+		//Entity* probeDebugClone = probeDebug->Clone();
+		//probeDebugClone->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 2.5f, 0.0f));
+		//probeDebugClone->GetTransformComponent()->SetScale(30.0f);
+
+		//Entity* probeDebugCloneTwo = probeDebug->Clone();
+		//probeDebugCloneTwo->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 2.5f, -20.0f));
+		//probeDebugCloneTwo->GetTransformComponent()->SetScale(30.0f);
+
 		// Reflection probes
 		std::vector<glm::vec3> positions;
 		positions.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
@@ -236,6 +251,7 @@ namespace Engine {
 
 	void IBLScene::CreateSystems()
 	{
+		systemManager->AddSystem(new SystemFrustumCulling(camera), UPDATE_SYSTEMS);
 		SystemRender* renderSystem = new SystemRender();
 		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
 		renderSystem->SetActiveCamera(camera);
