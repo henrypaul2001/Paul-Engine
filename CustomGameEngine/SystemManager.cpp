@@ -42,10 +42,12 @@ namespace Engine
 				}
 			}
 
-			for (Entity* e : entityList) {
-				s->OnAction(e);
-			}
-			s->AfterAction();
+			s->Run(entityList);
+
+			//for (Entity* e : entityList) {
+			//	s->OnAction(e);
+			//}
+			//s->AfterAction();
 		}
 	}
 

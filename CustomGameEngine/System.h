@@ -23,6 +23,7 @@ namespace Engine
 		SYSTEM_PATHFINDING = 1 << 15,
 		SYSTEM_STATE_UPDATER = 1 << 16,
 		SYSTEM_REFLECTION_BAKING = 1 << 17,
+		SYSTEM_FRUSTUM_CULLING = 1 << 18,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }
@@ -30,6 +31,12 @@ namespace Engine
 	class System
 	{
 	public:
+		virtual void Run(const std::vector<Entity*>& entityList) {
+			for (Entity* e : entityList) {
+				OnAction(e);
+			}
+			AfterAction();
+		}
 		virtual void OnAction(Entity* entity) = 0;
 		virtual void AfterAction() = 0;
 		virtual SystemTypes Name() = 0;
