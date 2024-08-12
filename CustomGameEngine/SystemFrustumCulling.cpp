@@ -73,7 +73,12 @@ namespace Engine {
 				SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->top) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->bottom))
 			{
 				// Probe is inside view frustum
-				culledProbeList[glm::distance2(activeCamera->GetPosition(), worldPos)] = probe;
+				float distanceToCameraSquared = glm::distance2(activeCamera->GetPosition(), worldPos);
+				if (culledProbeList.find(distanceToCameraSquared) != culledProbeList.end()) {
+					// Distance already exists, increment slightly
+					distanceToCameraSquared += 0.00001f;
+				}
+				culledProbeList[distanceToCameraSquared] = probe;
 				culledProbes++;
 			}
 		}
