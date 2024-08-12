@@ -2,6 +2,7 @@
 #include "System.h"
 #include "Camera.h"
 #include "RenderManager.h"
+#include <map>
 namespace Engine {
 	class SystemFrustumCulling : public System
 	{
@@ -25,5 +26,7 @@ namespace Engine {
 
 		Camera* activeCamera;
 		const ViewFrustum* viewFrustum;
+
+		std::map<float, ReflectionProbe*> culledProbeList;
 	};
 }

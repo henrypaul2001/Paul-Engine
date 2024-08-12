@@ -60,7 +60,8 @@ namespace Engine {
 	{
 		RenderManager* renderManager = RenderManager::GetInstance();
 		std::vector<ReflectionProbe*> reflectionProbes = renderManager->GetBakedData().GetReflectionProbes();
-		std::vector<ReflectionProbe*> visibleProbes;
+		unsigned int culledProbes = 0;
+		culledProbeList.clear();
 
 		for (ReflectionProbe* probe : reflectionProbes) {
 			float soiRadius = probe->GetSOIRadius();
@@ -72,10 +73,13 @@ namespace Engine {
 				SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->top) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->bottom))
 			{
 				// Probe is inside view frustum
-				visibleProbes.push_back(probe);
+				culledProbeList[glm::distance2(activeCamera->GetPosition(), worldPos)] = probe;
+				culledProbes++;
 			}
 		}
 
-		std::cout << "Reflection probes in view frustum: " << visibleProbes.size() << std::endl;
+		renderManager->GetBakedData().SetCulledProbeList(culledProbeList);
+
+		std::cout << "Reflection probes in view frustum: " << culledProbes << std::endl;
 	}
 }

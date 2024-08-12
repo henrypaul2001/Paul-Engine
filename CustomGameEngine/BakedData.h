@@ -7,6 +7,7 @@
 #include <iostream>
 #include "stb_image_write.h"
 #include <unordered_map>
+#include <map>
 namespace Engine {
 	class BakedData
 	{
@@ -87,6 +88,9 @@ namespace Engine {
 
 		void WriteReflectionProbesToFile();
 		void LoadReflectionProbesFromFile();
+
+		void SetCulledProbeList(const std::map<float, ReflectionProbe*>& newProbeList) { this->culledProbeList = newProbeList; }
+		const std::map<float, ReflectionProbe*>& GetCulledProbeList() const { return culledProbeList; }
 	private:
 		void ClearReflectionProbes() {
 			for (ReflectionProbe* probe : reflectionProbes) {
@@ -98,5 +102,6 @@ namespace Engine {
 		std::unordered_map<GLenum, std::string> cubemapFaceToString;
 
 		std::vector<ReflectionProbe*> reflectionProbes;
+		std::map<float, ReflectionProbe*> culledProbeList; // <distance to probe squared, probe>
 	};
 }
