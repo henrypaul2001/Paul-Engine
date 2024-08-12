@@ -53,7 +53,7 @@ namespace Engine {
 		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
-		bricks->textureScaling = glm::vec2(5.0f, 15.0f);
+		bricks->textureScaling = glm::vec2(5.0f, 30.0f);
 
 		PBRMaterial* geoBallMaterial = new PBRMaterial();
 		geoBallMaterial->albedo = glm::vec3(0.5f, 0.5f, 0.65f);
@@ -76,7 +76,7 @@ namespace Engine {
 		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->isTransparent = true;
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
-		raindrops->textureScaling = glm::vec2(5.0f, 15.0f);
+		raindrops->textureScaling = glm::vec2(5.0f, 30.0f);
 #pragma endregion
 
 #pragma region Scene
@@ -151,17 +151,17 @@ namespace Engine {
 		entityManager->AddEntity(light);
 
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(40.0f, 0.0f, -10.0f));
+		floor->AddComponent(new ComponentTransform(40.0f, 0.0f, 0.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 20.0f, 1.0f));
+		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 50.0f, 1.0f));
 		floor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		floor->GetGeometryComponent()->ApplyMaterialToModel(bricks);
 		entityManager->AddEntity(floor);
 
 		Entity* rainFloor = new Entity("Rain Floor");
-		rainFloor->AddComponent(new ComponentTransform(40.0f, 0.01f, -10.0f));
+		rainFloor->AddComponent(new ComponentTransform(40.0f, 0.01f, 0.0f));
 		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		rainFloor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 20.0f, 1.0f));
+		rainFloor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 50.0f, 1.0f));
 		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		rainFloor->GetGeometryComponent()->ApplyMaterialToModel(raindrops);
 		rainFloor->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
@@ -187,6 +187,15 @@ namespace Engine {
 
 		Entity* streetClone = street->Clone();
 		streetClone->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, -20.0f));
+
+		Entity* streetCloneTwo = street->Clone();
+		streetCloneTwo->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, -40.0f));
+
+		Entity* streetCloneThree = street->Clone();
+		streetCloneThree->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, 20.0f));
+
+		Entity* streetCloneFour = street->Clone();
+		streetCloneFour->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, 40.0f));
 
 		Entity* streetLightClone = streetLight->Clone();
 		streetLightClone->GetTransformComponent()->SetPosition(glm::vec3(42.5f, 2.5f, -20.0f));
@@ -234,20 +243,32 @@ namespace Engine {
 		positions.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 		positions.push_back(glm::vec3(40.0f, 2.5f, 0.0f));
 		positions.push_back(glm::vec3(40.0f, 2.5f, -20.0f));
+		positions.push_back(glm::vec3(40.0f, 2.5f, 20.0f));
+		positions.push_back(glm::vec3(40.0f, 2.5f, -40.0f));
+		positions.push_back(glm::vec3(40.0f, 2.5f, 40.0f));
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
 		localBounds.push_back(AABBPoints(-5.25f, -5.0f, -5.25f, 5.25f, 4.0f, 5.25f));
-		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -30.0f, 5.0f, 8.5f, 10.0f));
-		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -10.0f, 5.0f, 8.5f, 30.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -50.0f, 5.0f, 8.5f, 50.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -30.0f, 5.0f, 8.5f, 70.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -70.0f, 5.0f, 8.5f, 30.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -10.0f, 5.0f, 8.5f, 90.0f));
+		localBounds.push_back(AABBPoints(-5.0f, -2.5f, -90.0f, 5.0f, 8.5f, 10.0f));
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(8.0f);
-		soiRadii.push_back(30.0f);
-		soiRadii.push_back(30.0f);
+		soiRadii.push_back(40.0f);
+		soiRadii.push_back(40.0f);
+		soiRadii.push_back(40.0f);
+		soiRadii.push_back(40.0f);
+		soiRadii.push_back(40.0f);
 
 		std::vector<unsigned int> faceRes;
 		faceRes.push_back(512);
+		faceRes.push_back(1024);
+		faceRes.push_back(1024);
+		faceRes.push_back(1024);
 		faceRes.push_back(1024);
 		faceRes.push_back(1024);
 
