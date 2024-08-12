@@ -128,7 +128,6 @@ namespace Engine {
 
 			ConvoluteEnvironmentMap(probe);
 			PrefilterMap(probe);
-			BakeBRDF(probe);
 
 			glEnable(GL_CULL_FACE);
 		}
@@ -258,34 +257,6 @@ namespace Engine {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	}
-
-	void SystemReflectionBaking::BakeBRDF(ReflectionProbe* probe)
-	{
-		RenderManager* renderManager = RenderManager::GetInstance();
-		ResourceManager* resourceManager = ResourceManager::GetInstance();
-
-		unsigned int brdfLUTTexture = probe->GetProbeEnvMap().brdf_lutID;
-
-		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
-		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
-
-		unsigned int width = probe->GetFaceWidth();
-		unsigned int height = probe->GetFaceHeight();
-
-		glBindFramebuffer(GL_FRAMEBUFFER, cubeCaptureFBO);
-		glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
-
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_BLEND);
-		glViewport(0, 0, width, height);
-		resourceManager->CreateBRDFShader()->Use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		resourceManager->DefaultCube().DrawWithNoMaterial();
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	void SystemReflectionBaking::OnAction(Entity* entity)

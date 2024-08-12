@@ -83,32 +83,6 @@ namespace Engine {
 				mipHeight /= 2;
 				delete[] floatData;
 			}
-
-			// --- Write BRDFLUT ---
-			// ---------------------
-			stbi_flip_vertically_on_write(true);
-			path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/BRDFLut.png";
-
-			// Get texture data as float array
-			floatData = new GLfloat[faceWidth * faceHeight * 2]; // 2 channels (R, G)
-
-			glBindTexture(GL_TEXTURE_2D, envMap.brdf_lutID);
-			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, floatData);
-
-			// Convert to bytes
-			unsigned char* byteData = new unsigned char[faceWidth * faceHeight * 4]; // 4 channels for PNG (R, G, B, A)
-
-			for (unsigned int j = 0; j < faceWidth * faceHeight; j++) {
-				byteData[j * 4] = static_cast<unsigned char>(floatData[j * 2] * 255.0f); // R channel
-				byteData[j * 4 + 1] = static_cast<unsigned char>(floatData[j * 2 + 1] * 255.0f); // G channel
-				byteData[j * 4 + 2] = 0; // B channel hard set to 0
-				byteData[j * 4 + 3] = 255; // A channel hard set to fully opaque
-			}
-
-			stbi_write_png(path.c_str(), probe->GetFaceWidth(), probe->GetFaceHeight(), 4, byteData, faceWidth * 4);
-
-			delete[] floatData;
-			delete[] byteData;
 		}
 	}
 
@@ -238,31 +212,6 @@ namespace Engine {
 				mipHeight /= 2;
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-			// --- Load BRDFLUT ---
-			// --------------------
-
-			// This is mostly pointless anyway, in future, there will be a single BRDFLUT texture always loaded in the resource manager as they are not dependant on specific probes
-			std::string brdfFilepath = probeFilepath + "/BRDFLut.png";
-			unsigned int brdf = envMap.brdf_lutID;
-			glBindTexture(GL_TEXTURE_2D, brdf);
-
-			float* floatData = stbi_loadf(brdfFilepath.c_str(), &width, &height, &nrChannels, 0);
-
-			float* floatDataModified = new float[width * height * 2];
-			for (int j = 0; j < width * height; j++) {
-				floatDataModified[j * 2] = floatData[j * 4];
-				floatDataModified[j * 2 + 1] = floatData[j * 4 + 1];
-			}
-
-			if (floatData) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, width, height, 0, GL_RG, GL_FLOAT, floatDataModified);
-			}
-			else {
-				std::cout << "ERROR::BAKEDDATA::Failed to load BRDFLut texture for probe " << probeID << " at path: " << brdfFilepath << std::endl;
-			}
-			stbi_image_free(floatData);
-			delete[] floatDataModified;
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}

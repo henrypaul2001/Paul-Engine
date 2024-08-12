@@ -34,6 +34,8 @@ namespace Engine {
 		defaultTextShader->Use();
 		defaultTextShader->setMat4("projection", textProjection);
 
+		global_brdf_lutID = CreateBRDF();
+
 		ResourceManager::GetInstance()->LoadCubemap("Textures/Cubemaps/Space", ".png", true);
 		SetSkyboxTexture("Textures/Cubemaps/Space");
 	}
@@ -107,6 +109,8 @@ namespace Engine {
 		delete advBloomFBO;
 
 		delete renderParams;
+
+		glDeleteTextures(1, &global_brdf_lutID);
 
 		delete instance;
 	}

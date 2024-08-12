@@ -21,7 +21,6 @@ namespace Engine {
 		glDeleteTextures(1, &envMap.cubemapID);
 		glDeleteTextures(1, &envMap.irradianceID);
 		glDeleteTextures(1, &envMap.prefilterID);
-		glDeleteTextures(1, &envMap.brdf_lutID);
 	}
 
 	void ReflectionProbe::SetupTextureMaps()
@@ -67,16 +66,5 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-		// ------ Set up brdf_lut map ------
-		// ---------------------------------
-		glGenTextures(1, &envMap.brdf_lutID);
-
-		glBindTexture(GL_TEXTURE_2D, envMap.brdf_lutID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, faceWidth, faceHeight, 0, GL_RG, GL_FLOAT, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }

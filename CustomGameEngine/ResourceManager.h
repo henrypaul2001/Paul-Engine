@@ -18,7 +18,6 @@ namespace Engine {
 		unsigned int cubemapID;
 		unsigned int irradianceID;
 		unsigned int prefilterID;
-		unsigned int brdf_lutID;
 		std::string filepath;
 	};
 

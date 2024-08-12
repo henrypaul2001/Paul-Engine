@@ -82,22 +82,23 @@ namespace Engine {
 
 	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
 	{
-		RenderOptions renderOptions = RenderManager::GetInstance()->GetRenderParams()->GetRenderOptions();
+		RenderManager* renderManager = RenderManager::GetInstance();
+		RenderOptions renderOptions = renderManager->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_ENVIRONMENT_MAP)) {
 			shader->setBool("useGlobalIBL", true);
 			glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.irradianceMap"));
-			glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->irradianceID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, renderManager->GetEnvironmentMap()->irradianceID);
 
 			glActiveTexture(GL_TEXTURE0 + textureSlots->at("globalIBL.prefilterMap"));
-			glBindTexture(GL_TEXTURE_CUBE_MAP, RenderManager::GetInstance()->GetEnvironmentMap()->prefilterID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, renderManager->GetEnvironmentMap()->prefilterID);
 		}
 
 		glActiveTexture(GL_TEXTURE0 + textureSlots->at("brdfLUT"));
-		glBindTexture(GL_TEXTURE_2D, RenderManager::GetInstance()->GetEnvironmentMap()->brdf_lutID);
+		glBindTexture(GL_TEXTURE_2D, renderManager->GetGlobalBRDF_LUT());
 
 		std::string name;
-		std::map<float, ReflectionProbe*> culledReflectionProbes = RenderManager::GetInstance()->GetBakedData().GetCulledProbeList();
-		std::map<float, ReflectionProbe*>::iterator it = culledReflectionProbes.begin();
+		const std::map<float, ReflectionProbe*> culledReflectionProbes = renderManager->GetBakedData().GetCulledProbeList();
+		std::map<float, ReflectionProbe*>::const_iterator it = culledReflectionProbes.begin();
 		int index = 0;
 
 		while (index < 3 && it != culledReflectionProbes.end()) {

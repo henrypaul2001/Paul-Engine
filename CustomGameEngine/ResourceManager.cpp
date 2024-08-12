@@ -1106,7 +1106,6 @@ namespace Engine {
 			stbi_set_flip_vertically_on_load(false);
 
 			unsigned int irradianceMap = 0;
-			unsigned int brdf_LUT = 0;
 			unsigned int environmentMap = 0;
 			unsigned int prefilterMap = 0;
 			if (!skipConversionAndBRDFLutGeneration) {
@@ -1115,13 +1114,11 @@ namespace Engine {
 				irradianceMap = renderInstance->CreateIrradianceMap();
 				renderInstance->ConvoluteEnvironmentMap(environmentMap, irradianceMap);
 				prefilterMap = renderInstance->CreatePrefilterMap(environmentMap);
-				brdf_LUT = renderInstance->CreateBRDF();
 			}
 
 			HDREnvironment* cubemap = new HDREnvironment();
 			cubemap->cubemapID = environmentMap;
 			cubemap->irradianceID = irradianceMap;
-			cubemap->brdf_lutID = brdf_LUT;
 			cubemap->prefilterID = prefilterMap;
 			cubemap->filepath = filepath;
 

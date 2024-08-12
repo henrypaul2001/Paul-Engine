@@ -186,6 +186,7 @@ namespace Engine {
 		unsigned int* GetHDRCubeCaptureFBO() const { return hdrCubeCaptureFBO; }
 		unsigned int* GetHDRCubeCaptureRBO() const { return hdrCubeCaptureRBO; }
 		unsigned int* GetEnvironmentCubemapTexture() const { return envCubemapTexture; }
+		const unsigned int GetGlobalBRDF_LUT() const { return global_brdf_lutID; }
 
 		unsigned int ShadowWidth() const { return shadowWidth; }
 		unsigned int ShadowHeight() const { return shadowHeight; }
@@ -280,6 +281,7 @@ namespace Engine {
 		unsigned int* hdrCubeCaptureFBO;
 		unsigned int* hdrCubeCaptureRBO;
 		unsigned int* envCubemapTexture;
+		unsigned int global_brdf_lutID;
 
 		unsigned int shadowWidth;
 		unsigned int shadowHeight;
