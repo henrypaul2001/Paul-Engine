@@ -7,7 +7,7 @@
 #include "UIImage.h"
 #include "UITextButton.h"
 #include "UIImageButton.h"
-
+#include "SystemFrustumCulling.h"
 #include <iomanip>
 #include <sstream>
 namespace Engine {
@@ -1648,7 +1648,11 @@ namespace Engine {
 		//soiRadii.push_back(5.0f);
 		soiRadii.push_back(15.0f);
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
+		std::vector<unsigned int> faceRes;
+		faceRes.push_back(512);
+		faceRes.push_back(1024);
+
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, faceRes, name);
 	}
 
 	void PBRScene::CreateSystems()
@@ -1662,6 +1666,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemFrustumCulling(camera), UPDATE_SYSTEMS);
 		SystemReflectionBaking* reflectionSystem = new SystemReflectionBaking();
 		reflectionSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(reflectionSystem, RENDER_SYSTEMS);

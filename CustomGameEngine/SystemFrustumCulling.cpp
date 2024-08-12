@@ -60,7 +60,6 @@ namespace Engine {
 	{
 		RenderManager* renderManager = RenderManager::GetInstance();
 		std::vector<ReflectionProbe*> reflectionProbes = renderManager->GetBakedData().GetReflectionProbes();
-		unsigned int culledProbes = 0;
 		culledProbeList.clear();
 
 		for (ReflectionProbe* probe : reflectionProbes) {
@@ -79,12 +78,9 @@ namespace Engine {
 					distanceToCameraSquared += 0.00001f;
 				}
 				culledProbeList[distanceToCameraSquared] = probe;
-				culledProbes++;
 			}
 		}
 
 		renderManager->GetBakedData().SetCulledProbeList(culledProbeList);
-
-		std::cout << "Reflection probes in view frustum: " << culledProbes << std::endl;
 	}
 }

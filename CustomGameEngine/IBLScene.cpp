@@ -246,7 +246,12 @@ namespace Engine {
 		soiRadii.push_back(30.0f);
 		soiRadii.push_back(30.0f);
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, name);
+		std::vector<unsigned int> faceRes;
+		faceRes.push_back(512);
+		faceRes.push_back(1024);
+		faceRes.push_back(1024);
+
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, faceRes, name);
 	}
 
 	void IBLScene::CreateSystems()
