@@ -151,9 +151,24 @@ namespace Engine {
 		glDisable(GL_CULL_FACE);
 		glViewport(0, 0, 512, 512);
 		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, *hdrCubeCaptureRBO);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		unsigned int depthBuffer = cubemapDepthBuffer;
+		// Resize depth texture buffer
+		glBindTexture(GL_TEXTURE_CUBE_MAP, depthBuffer);
+		for (unsigned int i = 0; i < 6; i++) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT24, 512, 512, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+		}
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
+
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
 		for (unsigned int i = 0; i < 6; i++) {
 			convertToCubemapShader->setMat4("view", captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemapTexture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 		}
@@ -203,12 +218,27 @@ namespace Engine {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		unsigned int depthBuffer = cubemapDepthBuffer;
+		// Resize depth texture buffer
+		glBindTexture(GL_TEXTURE_CUBE_MAP, depthBuffer);
+		for (unsigned int i = 0; i < 6; i++) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT24, 32, 32, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+		}
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
 		glViewport(0, 0, 32, 32);
 		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, *hdrCubeCaptureRBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
+
 		for (unsigned int i = 0; i < 6; ++i)
 		{
 			irradianceShader->setMat4("view", captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 		}
@@ -255,6 +285,8 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
+		unsigned int depthBuffer = cubemapDepthBuffer;
+
 		glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
 		unsigned int maxMipLevels = 5;
 		for (unsigned int mip = 0; mip < maxMipLevels; mip++) {
@@ -263,6 +295,17 @@ namespace Engine {
 			unsigned int mipHeight = (128 * 2) * std::pow(0.5, mip);
 			glBindRenderbuffer(GL_RENDERBUFFER, *hdrCubeCaptureRBO);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// Resize depth texture buffer
+			glBindTexture(GL_TEXTURE_CUBE_MAP, depthBuffer);
+			for (unsigned int i = 0; i < 6; i++) {
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT24, mipWidth, mipHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+			}
+			glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap);
+			glBindFramebuffer(GL_FRAMEBUFFER, *hdrCubeCaptureFBO);
+
 			glViewport(0, 0, mipWidth, mipHeight);
 
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
@@ -272,6 +315,7 @@ namespace Engine {
 			for (unsigned int i = 0; i < 6; i++) {
 				prefilterShader->setMat4("view", captureViews[i]);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
 			}

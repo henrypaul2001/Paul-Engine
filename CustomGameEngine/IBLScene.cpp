@@ -17,6 +17,11 @@ namespace Engine {
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 		renderManager->GetRenderParams()->SetAdvBloomLensDirtMaskStrength(0.5f);
 
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
+		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true);
+		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+
 		systemManager->BakeReflectionProbes(entityManager->Entities());
 		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
@@ -322,10 +327,6 @@ namespace Engine {
 
 		CreateSystems();
 		CreateEntities();
-
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
-		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
-		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
 	void IBLScene::ChangePostProcessEffect()
