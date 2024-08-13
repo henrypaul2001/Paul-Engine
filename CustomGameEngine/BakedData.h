@@ -91,8 +91,14 @@ namespace Engine {
 
 		void SetCulledProbeList(const std::map<float, ReflectionProbe*>& newProbeList) { this->culledProbeList = newProbeList; }
 		const std::map<float, ReflectionProbe*>& GetCulledProbeList() const { return culledProbeList; }
+
+		void ClearBakedData() {
+			ClearReflectionProbes();
+		}
 	private:
 		void ClearReflectionProbes() {
+			culledProbeList.clear();
+
 			for (ReflectionProbe* probe : reflectionProbes) {
 				delete probe;
 			}

@@ -29,6 +29,7 @@ namespace Engine
 	Scene::~Scene()
 	{
 		ResourceManager::GetInstance()->ClearTempResources();
+		renderManager->GetBakedData().ClearBakedData();
 		delete camera;
 		delete systemManager;
 		delete constraintManager;
