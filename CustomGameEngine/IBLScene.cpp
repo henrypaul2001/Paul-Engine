@@ -272,7 +272,31 @@ namespace Engine {
 		faceRes.push_back(1024);
 		faceRes.push_back(1024);
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, faceRes, name);
+		std::vector<float> nearClips;
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+
+		std::vector<float> farClips;
+		farClips.push_back(8.0f);
+		farClips.push_back(100.0f);
+		farClips.push_back(100.0f);
+		farClips.push_back(100.0f);
+		farClips.push_back(100.0f);
+		farClips.push_back(100.0f);
+
+		std::vector<bool> renderSkybox;
+		renderSkybox.push_back(false);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, faceRes, nearClips, farClips, renderSkybox, name);
 	}
 
 	void IBLScene::CreateSystems()

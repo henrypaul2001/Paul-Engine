@@ -1,7 +1,7 @@
 #include "ReflectionProbe.h"
 #include "RenderManager.h"
 namespace Engine {
-	ReflectionProbe::ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip)
+	ReflectionProbe::ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth, const unsigned int faceResHeight, float nearClip, float farClip, bool renderSkybox)
 	{
 		this->fileID = id;
 		this->worldPosition = position;
@@ -12,6 +12,7 @@ namespace Engine {
 		this->sceneName = sceneName;
 		this->localGeometryBounds = localGeometryBounds;
 		this->sphereOfInfluenceRadius = soiRadius;
+		this->renderSkybox = renderSkybox;
 
 		SetupTextureMaps();
 	}

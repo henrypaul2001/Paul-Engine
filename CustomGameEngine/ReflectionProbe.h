@@ -14,7 +14,7 @@ namespace Engine {
 	class ReflectionProbe
 	{
 	public:
-		ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f);
+		ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f, bool renderSkybox = true);
 		~ReflectionProbe();
 
 		const ReflectionProbeEnvironmentMap& GetProbeEnvMapConst() const { return envMap; }
@@ -24,6 +24,8 @@ namespace Engine {
 		const unsigned int GetFaceWidth() const { return faceWidth; }
 		const unsigned int GetFaceHeight() const { return faceHeight; }
 		const unsigned int GetFileID() const { return fileID; }
+
+		const bool GetRenderSkybox() const { return renderSkybox; }
 
 		const float GetNearClip() const { return nearClip; }
 		const float GetFarClip() const { return farClip; }
@@ -37,6 +39,8 @@ namespace Engine {
 
 		unsigned int faceWidth;
 		unsigned int faceHeight;
+
+		bool renderSkybox;
 
 		float nearClip;
 		float farClip;
