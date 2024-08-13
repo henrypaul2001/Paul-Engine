@@ -12,6 +12,10 @@ namespace Engine {
 	struct Cubemap {
 		unsigned int id;
 		std::string rootFilepath;
+
+		~Cubemap() {
+			glDeleteTextures(1, &id);
+		}
 	};
 
 	struct HDREnvironment {
@@ -19,6 +23,12 @@ namespace Engine {
 		unsigned int irradianceID;
 		unsigned int prefilterID;
 		std::string filepath;
+
+		~HDREnvironment() {
+			glDeleteTextures(1, &cubemapID);
+			glDeleteTextures(1, &irradianceID);
+			glDeleteTextures(1, &prefilterID);
+		}
 	};
 
 	struct Resources {

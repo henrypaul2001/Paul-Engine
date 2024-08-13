@@ -184,11 +184,6 @@ namespace Engine {
 		glDeleteShader(geometry);
 	}
 
-	Shader::~Shader()
-	{
-
-	}
-
 	void Shader::Use()
 	{
 		glUseProgram(ID);

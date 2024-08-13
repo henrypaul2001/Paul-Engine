@@ -16,7 +16,9 @@ namespace Engine {
 	public:
 		Shader(const char* vPath, const char* fPath);
 		Shader(const char* vPath, const char* fPath, const char* gPath);
-		~Shader();
+		~Shader() {
+			glDeleteShader(ID);
+		}
 
 		void Use();
 
