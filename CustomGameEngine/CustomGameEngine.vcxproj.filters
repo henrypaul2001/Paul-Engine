@@ -426,6 +426,12 @@
     <ClInclude Include="SystemFrustumCulling.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="CubeTextureAtlas.h">
+      <Filter>Header Files\Engine\Utility\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatTextureAtlas.h">
+      <Filter>Header Files\Engine\Utility\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -733,6 +739,12 @@
     </ClCompile>
     <ClCompile Include="SystemFrustumCulling.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeTextureAtlas.cpp">
+      <Filter>Source Files\Engine\Utility\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="FlatTextureAtlas.cpp">
+      <Filter>Source Files\Engine\Utility\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -175,10 +175,12 @@
     <ClInclude Include="ConstraintPosition.h" />
     <ClInclude Include="ConstraintRotation.h" />
     <ClInclude Include="ConstraintSolver.h" />
+    <ClInclude Include="CubeTextureAtlas.h" />
     <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="FlatTextureAtlas.h" />
     <ClInclude Include="ForwardPipeline.h" />
     <ClInclude Include="GameInputManager.h" />
     <ClInclude Include="GameScene.h" />
@@ -277,10 +279,12 @@
     <ClCompile Include="ConstraintPosition.cpp" />
     <ClCompile Include="ConstraintRotation.cpp" />
     <ClCompile Include="ConstraintSolver.cpp" />
+    <ClCompile Include="CubeTextureAtlas.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="FlatTextureAtlas.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="GameInputManager.cpp" />
     <ClCompile Include="GameScene.cpp" />

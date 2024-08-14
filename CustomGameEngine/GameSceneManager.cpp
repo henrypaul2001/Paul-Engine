@@ -94,6 +94,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_IBL);
+		ChangeScene(SCENE_MAIN_MENU);
 	}
 }

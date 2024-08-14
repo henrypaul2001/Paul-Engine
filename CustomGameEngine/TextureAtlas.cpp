@@ -1,15 +1,19 @@
 #include "TextureAtlas.h"
 namespace Engine {
-	TextureAtlas::TextureAtlas(const unsigned int rows, const unsigned int columns, const unsigned int slotWidth, const unsigned int slotHeight, const GLenum internalFormat, const GLenum format, const GLenum type)
+	TextureAtlas::TextureAtlas(const unsigned int rows, const unsigned int columns, const unsigned int slotWidth, const unsigned int slotHeight, const GLenum internalFormat, 
+										const GLenum format, const GLenum type, const GLenum minFilter, const GLenum magFilter, const GLenum wrapS, const GLenum wrapT, const glm::vec4& borderColour)
 	{
 		this->internalFormat = internalFormat;
 		this->format = format;
 		this->type = type;
+		this->minFilter = minFilter;
+		this->magFilter = magFilter;
+		this->wrapS = wrapS;
+		this->wrapT = wrapT;
+		this->borderColour = borderColour;
 
 		textureID = 0;
 		glGenTextures(1, &textureID);
-
-		ResizeTexture(rows, columns, slotWidth, slotHeight);
 	}
 
 	TextureAtlas::~TextureAtlas()
@@ -68,20 +72,5 @@ namespace Engine {
 		height = numRows * slotHeight;
 	
 		InitialiseTexture();
-	}
-
-	void TextureAtlas::InitialiseTexture()
-	{
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, 0);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
-	
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

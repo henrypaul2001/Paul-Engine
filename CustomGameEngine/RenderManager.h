@@ -4,6 +4,8 @@
 #include "ResourceManager.h"
 #include "RenderPipeline.h"
 #include "BakedData.h"
+#include "CubeTextureAtlas.h"
+#include "FlatTextureAtlas.h"
 namespace Engine {
 
 	enum RenderOptions {
@@ -236,7 +238,8 @@ namespace Engine {
 		unsigned int* depthMap;
 		//std::vector<unsigned int*> flatDepthMaps;
 
-		TextureAtlas* flatShadowmapAtlas;
+		FlatTextureAtlas* flatShadowmapAtlas;
+		CubeTextureAtlas* cubeShadowmapAtlas;
 
 		std::vector<unsigned int*> cubeDepthMaps; // consider using hashmap <mapIndex, texture pointer*> in future. That way, a single collection can hold both types of shadow map
 

@@ -24,7 +24,8 @@ namespace Engine {
 		SetupEnvironmentMapFBO();
 		SetupCubemapFBO();
 
-		flatShadowmapAtlas = new TextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+		flatShadowmapAtlas = new FlatTextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		cubeShadowmapAtlas = new CubeTextureAtlas(8, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER);
 
 		renderParams = new RenderParams;
 		SetupAdvBloom();
@@ -57,6 +58,7 @@ namespace Engine {
 	{
 		delete renderPipeline;
 		delete flatShadowmapAtlas;
+		delete cubeShadowmapAtlas;
 
 		delete depthMap;
 		delete flatDepthMapFBO;
