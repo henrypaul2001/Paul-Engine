@@ -93,8 +93,8 @@ namespace Engine {
 		const CubeTextureAtlas* cubeShadowAtlas = renderInstance->GetCubeShadowmapTextureAtlas();
 		unsigned int numFlatShadowColumns = flatShadowAtlas->GetNumColumns();
 		unsigned int numCubeShadowColumns = cubeShadowAtlas->GetNumColumns();
-		//unsigned int flatDepthMapFBO = *renderInstance->GetFlatDepthFBO();
 
+		// Clear depth textures
 		glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, flatShadowAtlas->GetTextureID(), 0);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -183,7 +183,6 @@ namespace Engine {
 					}
 					glm::uvec2 startXY = cubeShadowAtlas->GetSlotStartXY(slotRow, slotColumn);
 
-					//renderInstance->BindShadowMapTextureToFramebuffer(i, MAP_CUBE);
 					glViewport(startXY.x, startXY.y, shadowWidth, shadowHeight);
 
 					shadowmapSystem->SetDepthMapType(MAP_CUBE);
