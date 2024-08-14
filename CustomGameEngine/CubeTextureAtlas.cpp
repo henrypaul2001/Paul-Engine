@@ -1,10 +1,11 @@
 #include "CubeTextureAtlas.h"
 namespace Engine {
 	CubeTextureAtlas::CubeTextureAtlas(const unsigned int slotsPerFace, const unsigned int slotWidth, const unsigned int slotHeight, const GLenum internalFormat,
-		const GLenum format, const GLenum type, const GLenum minFilter, const GLenum magFilter, const GLenum wrapS, const GLenum wrapT, const GLenum wrapR, const glm::vec4& borderColour) : TextureAtlas(slotsPerFace / 2, slotsPerFace / 2, slotWidth, slotHeight, internalFormat, format, type, minFilter, magFilter, wrapS, wrapT, borderColour)
+		const GLenum format, const GLenum type, const GLenum minFilter, const GLenum magFilter, const GLenum wrapS, const GLenum wrapT, const GLenum wrapR, const glm::vec4& borderColour) : TextureAtlas(sqrt(slotsPerFace), sqrt(slotsPerFace), slotWidth, slotHeight, internalFormat, format, type, minFilter, magFilter, wrapS, wrapT, borderColour)
 	{
 		this->wrapR = wrapR;
-		ResizeTexture(slotsPerFace / 2, slotsPerFace / 2, slotWidth, slotHeight);
+		unsigned int rowsAndColumns = sqrt(slotsPerFace);
+		ResizeTexture(rowsAndColumns, rowsAndColumns, slotWidth, slotHeight);
 	}
 
 	void CubeTextureAtlas::InitialiseTexture()

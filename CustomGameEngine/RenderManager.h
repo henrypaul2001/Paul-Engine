@@ -152,7 +152,8 @@ namespace Engine {
 		RenderParams* GetRenderParams() const { return renderParams; }
 		BakedData& GetBakedData() { return bakedData; }
 
-		const TextureAtlas* GetFlatShadowmapTextureAtlas() const { return flatShadowmapAtlas; }
+		const FlatTextureAtlas* GetFlatShadowmapTextureAtlas() const { return flatShadowmapAtlas; }
+		const CubeTextureAtlas* GetCubeShadowmapTextureAtlas() const { return cubeShadowmapAtlas; }
 		unsigned int* GetDepthMap(int index, DepthMapType type);
 		unsigned int* GetFlatDepthFBO() const { return flatDepthMapFBO; }
 		unsigned int* GetCubeDepthFBO() const { return cubeDepthMapFBO; }
