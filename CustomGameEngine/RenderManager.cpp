@@ -25,7 +25,6 @@ namespace Engine {
 		SetupCubemapFBO();
 
 		flatShadowmapAtlas = new FlatTextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		cubeShadowmapAtlas = new CubeTextureAtlas(9, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER);
 
 		renderParams = new RenderParams;
 		SetupAdvBloom();
@@ -58,7 +57,7 @@ namespace Engine {
 	{
 		delete renderPipeline;
 		delete flatShadowmapAtlas;
-		delete cubeShadowmapAtlas;
+		glDeleteTextures(1, &pointShadowArray);
 
 		delete depthMap;
 		delete flatDepthMapFBO;
@@ -92,11 +91,6 @@ namespace Engine {
 
 		for (glm::vec3* v : ssaoKernel) {
 			delete v;
-		}
-
-		for (int i = 0; i < 8; i++) {
-			//delete flatDepthMaps[i];
-			delete cubeDepthMaps[i];
 		}
 
 		delete hdrCubeCaptureFBO;
@@ -383,47 +377,16 @@ namespace Engine {
 		float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
 
-		// Solution
-		// use hashmap for textures
-		// key = light index, 8 maximum
-		// value = unsigned int, texture, can be either cube or 2d
-
-		// Generate 2D textures for spot lights
-	/*	for (int i = 0; i < 8; i++) {
-			flatDepthMaps.push_back(new unsigned int);
-
-			glActiveTexture(GL_TEXTURE0 + i + 1);
-			glGenTextures(1, flatDepthMaps[i]);
-			glBindTexture(GL_TEXTURE_2D, *flatDepthMaps[i]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-			float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
-		}*/
-
-		// Generate cube map textures for point lights
-		for (int i = 0; i < 8; i++) {
-			cubeDepthMaps.push_back(new unsigned int);
-
-			glActiveTexture(GL_TEXTURE0 + i + 9);
-			glGenTextures(1, cubeDepthMaps[i]);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, *cubeDepthMaps[i]);
-
-			// for each side of cubemap
-			for (unsigned int j = 0; j < 6; j++) {
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-			}
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			//float borderColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColour);
-		}
+		// Set up cubemap array for point shadows
+		glGenTextures(1, &pointShadowArray);
+		glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, pointShadowArray);
+		glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 8 * 6, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
 	}
 
 	void RenderManager::SetupGBuffer()
@@ -562,59 +525,6 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
-	void RenderManager::BindShadowMapTextureToFramebuffer(int mapIndex, DepthMapType type)
-	{
-		if (mapIndex == -1) {
-			Bind2DMap(depthMap);
-		}
-		else if (mapIndex < 8) {
-			if (type == MAP_2D) {
-				//Bind2DMap(flatDepthMaps[mapIndex]);
-			}
-			else if (type == MAP_CUBE) {
-				BindCubeMap(cubeDepthMaps[mapIndex]);
-			}
-		}
-		else {
-			return;
-		}
-	}
-
-	void RenderManager::Bind2DMap(unsigned int* map)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, *flatDepthMapFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *map, 0);
-
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	void RenderManager::BindCubeMap(unsigned int* map)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *map, 0);
-
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	unsigned int* RenderManager::GetDepthMap(int index, DepthMapType type)
-	{
-		if (index >= 8) {
-			return nullptr;
-		}
-		else if (index == -1) {
-			return depthMap;
-		}
-		else {
-			if (type == MAP_CUBE) {
-				return cubeDepthMaps[index];
-			}
-		}
-	}
-
 	void RenderManager::SetupFlatShadowMapFBO()
 	{
 		glGenFramebuffers(1, flatDepthMapFBO);
@@ -631,7 +541,6 @@ namespace Engine {
 		glGenFramebuffers(1, cubeDepthMapFBO);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *cubeDepthMaps[0], 0);
 
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
