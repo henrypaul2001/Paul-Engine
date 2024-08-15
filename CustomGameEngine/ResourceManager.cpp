@@ -11,15 +11,7 @@ namespace Engine {
 		textureSlotLookup = {
 			{ "dirLight.ShadowMap", 0 },
 			{ "spotlightShadowAtlas", 1 },
-			{ "pointlightShadowAtlas", 2},
-			{ "lights[0].CubeShadowMap", 3 },
-			{ "lights[1].CubeShadowMap", 3 },
-			{ "lights[2].CubeShadowMap", 4 },
-			{ "lights[3].CubeShadowMap", 5 },
-			{ "lights[4].CubeShadowMap", 6 },
-			{ "lights[5].CubeShadowMap", 7 },
-			{ "lights[6].CubeShadowMap", 8 },
-			{ "lights[7].CubeShadowMap", 9 },
+			{ "pointLightShadowArray", 2},
 
 			{ "material.TEXTURE_ALBEDO1", 10 },
 			{ "material.TEXTURE_DIFFUSE1", 10 },
@@ -414,7 +406,7 @@ namespace Engine {
 		defaultLitShader->Use();
 		defaultLitShader->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
 		defaultLitShader->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
-		defaultLitShader->setInt("pointlightShadowAtlas", textureSlotLookup.at("pointlightShadowAtlas"));
+		defaultLitShader->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
 
 		defaultLitShader->setInt("material.TEXTURE_DIFFUSE1", textureSlotLookup.at("material.TEXTURE_DIFFUSE1"));
 		defaultLitShader->setInt("material.TEXTURE_SPECULAR1", textureSlotLookup.at("material.TEXTURE_SPECULAR1"));
@@ -441,7 +433,7 @@ namespace Engine {
 		deferredLightingPass->Use();
 		deferredLightingPass->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
 		deferredLightingPass->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
-		deferredLightingPass->setInt("pointlightShadowAtlas", textureSlotLookup.at("pointlightShadowAtlas"));
+		deferredLightingPass->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
 
 		deferredLightingPass->setInt("gPosition", textureSlotLookup.at("gPosition"));
 		deferredLightingPass->setInt("gNormal", textureSlotLookup.at("gNormal"));
@@ -453,7 +445,7 @@ namespace Engine {
 		deferredLightingPassPBR->Use();
 		deferredLightingPassPBR->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
 		deferredLightingPassPBR->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
-		deferredLightingPassPBR->setInt("pointlightShadowAtlas", textureSlotLookup.at("pointlightShadowAtlas"));
+		deferredLightingPassPBR->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
 
 		deferredLightingPassPBR->setInt("gPosition", textureSlotLookup.at("gPosition"));
 		deferredLightingPassPBR->setInt("gNormal", textureSlotLookup.at("gNormal"));
@@ -492,7 +484,7 @@ namespace Engine {
 
 		defaultLitPBRShader->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
 		defaultLitPBRShader->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
-		defaultLitPBRShader->setInt("pointlightShadowAtlas", textureSlotLookup.at("pointlightShadowAtlas"));
+		defaultLitPBRShader->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
 
 		defaultLitPBRShader->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
 		defaultLitPBRShader->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
@@ -516,7 +508,7 @@ namespace Engine {
 		reflectionProbeBaking->Use();
 		reflectionProbeBaking->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
 		reflectionProbeBaking->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
-		reflectionProbeBaking->setInt("pointlightShadowAtlas", textureSlotLookup.at("pointlightShadowAtlas"));
+		reflectionProbeBaking->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
 
 		reflectionProbeBaking->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
 		reflectionProbeBaking->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
