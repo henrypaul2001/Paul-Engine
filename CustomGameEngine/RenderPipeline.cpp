@@ -100,6 +100,11 @@ namespace Engine {
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointShadowArray, 0);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		float aspect = (float)shadowWidth / (float)shadowHeight;
 		std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
@@ -144,8 +149,7 @@ namespace Engine {
 				}
 				else if (lightComponent->GetLightType() == POINT) {
 					glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
-					glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointShadowArray, 0, i * 6);
-					glClear(GL_DEPTH_BUFFER_BIT);
+					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointShadowArray, 0);
 					glDrawBuffer(GL_NONE);
 					glReadBuffer(GL_NONE);
 
