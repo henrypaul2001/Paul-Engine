@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 layout (location = 0) out vec4 FragColour;
 layout (location = 1) out vec4 BrightColour;
 
@@ -46,10 +46,8 @@ struct Light {
 	float MaxShadowBias;
     float ShadowFarPlane; // point light specific
 
-    //sampler2D ShadowMap; // spot light specific
     vec2 spotShadowAtlasTexOffset;
     vec2 shadowResolution;
-    samplerCube CubeShadowMap; // point light specific
 
     bool SpotLight;
     vec3 Direction; // spotlight specific
@@ -63,6 +61,7 @@ uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
 uniform sampler2D spotlightShadowAtlas;
+uniform samplerCubeArray pointLightShadowArray;
 
 // -------------|    IBL   |-----------------
 // ------------------------------------------
@@ -258,6 +257,7 @@ vec3 gridSamplingDisk[20] = vec3[]
    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
+
 float CubeShadowCalculation(int lightIndex) {
     vec3 fragToLight = vertex_data.WorldPos - lights[lightIndex].Position;
 
@@ -272,7 +272,7 @@ float CubeShadowCalculation(int lightIndex) {
     float diskRadius = (1.0 + (viewDistance / lights[lightIndex].ShadowFarPlane)) / 25.0;
 
     for (int i = 0; i < samples; i++) {
-        float closestDepth = texture(lights[lightIndex].CubeShadowMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        float closestDepth = texture(pointLightShadowArray, vec4(fragToLight + gridSamplingDisk[i] * diskRadius, lightIndex)).r;
         closestDepth *= lights[lightIndex].ShadowFarPlane;
 
         if (currentDepth - bias > closestDepth) {

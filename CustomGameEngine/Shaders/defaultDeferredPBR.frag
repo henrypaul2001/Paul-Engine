@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 layout (location = 0) out vec4 FragColour;
 layout (location = 1) out vec4 BrightColour;
 
@@ -47,11 +47,8 @@ struct Light {
 	float MaxShadowBias;
     float ShadowFarPlane; // point light specific
 
-    //sampler2D ShadowMap; // spot light specific
     vec2 spotShadowAtlasTexOffset;
     vec2 shadowResolution;
-    vec2 shadowAtlasOffset;
-    //samplerCube CubeShadowMap; // point light specific
 
     bool SpotLight;
     vec3 Direction; // spotlight specific
@@ -65,7 +62,7 @@ uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
 uniform sampler2D spotlightShadowAtlas;
-uniform samplerCube pointlightShadowAtlas;
+uniform samplerCubeArray pointLightShadowArray;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
@@ -184,69 +181,7 @@ vec3 gridSamplingDisk[20] = vec3[]
    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
-
-vec3 UVToDirection(vec2 uv, int faceIndex) {
-    vec3 direction;
-
-    float x, y, z;
-
-    if (faceIndex == 0) { // Positive X
-        x = 1.0;
-        y = 2.0 * uv.y - 1.0;
-        z = 2.0 * uv.x - 1.0;
-    } else if (faceIndex == 1) { // Negative X
-        x = -1.0;
-        y = 2.0 * uv.y - 1.0;
-        z = 2.0 * uv.x - 1.0;
-    } else if (faceIndex == 2) { // Positive Y
-        x = 2.0 * uv.x - 1.0;
-        y = 1.0;
-        z = 2.0 * uv.y - 1.0;
-    } else if (faceIndex == 3) { // Negative Y
-        x = 2.0 * uv.x - 1.0;
-        y = -1.0;
-        z = 2.0 * uv.y - 1.0;
-    } else if (faceIndex == 4) { // Positive Z
-        x = 2.0 * uv.x - 1.0;
-        y = 2.0 * uv.y - 1.0;
-        z = 1.0;
-    } else if (faceIndex == 5) { // Negative Z
-        x = 2.0 * uv.x - 1.0;
-        y = 2.0 * uv.y - 1.0;
-        z = -1.0;
-    }
-
-    return normalize(vec3(x, y, z));
-}
-
-vec2 TransformDirectionToAtlasUV(vec3 dir, int faceIndex, vec2 atlasOffset, vec2 faceSize) {
-    vec2 uv;
-
-    // Convert direction vector to face-specific UV
-    if (faceIndex == 0) {
-        uv = vec2(dir.z / dir.x, dir.y / dir.x) * 0.5 + 0.5; // +X
-    } else if (faceIndex == 1) {
-        uv = vec2(-dir.z / -dir.x, dir.y / -dir.x) * 0.5 + 0.5;  // -X
-    } else if (faceIndex == 2) {
-        uv = vec2(dir.x / dir.y, -dir.z / dir.y) * 0.5 + 0.5; // +Y
-    } else if (faceIndex == 3) {
-        uv = vec2(dir.x / -dir.y, dir.z / -dir.y) * 0.5 + 0.5; // -Y
-    } else if (faceIndex == 4) {
-        uv = vec2(dir.x / dir.z, dir.y / dir.z) * 0.5 + 0.5; // +Z
-    } else if (faceIndex == 5) {
-        uv = vec2(-dir.x / -dir.z, dir.y / -dir.z) * 0.5 + 0.5;  // -Z
-    }
-
-    // Adjust UV for atlas layout
-    uv = uv * faceSize + atlasOffset;
-
-    return uv;
-}
-
 float CubeShadowCalculation(int lightIndex) {
-    vec2 slotRes = lights[lightIndex].shadowResolution / textureSize(pointlightShadowAtlas, 0);
-    vec2 atlasOffset = lights[lightIndex].shadowAtlasOffset  / textureSize(pointlightShadowAtlas, 0);
-
     vec3 fragToLight = FragPos - lights[lightIndex].Position;
 
     float currentDepth = length(fragToLight);
@@ -260,30 +195,7 @@ float CubeShadowCalculation(int lightIndex) {
     float diskRadius = (1.0 + (viewDistance / lights[lightIndex].ShadowFarPlane)) / 25.0;
 
     for (int i = 0; i < samples; i++) {
-        vec3 sampleVector = fragToLight + gridSamplingDisk[i] * diskRadius;
-
-        // Determine cubemap face
-        int faceIndex;
-        vec2 faceUV = vec2(0.5, 0.5);
-
-        if (abs(sampleVector.x) >= max(abs(sampleVector.y), abs(sampleVector.z))) {
-            faceIndex = sampleVector.x > 0.0 ? 0 : 1; // +x or -x
-            faceUV = vec2(sampleVector.z / sampleVector.x, sampleVector.y / sampleVector.x) * 0.5 + 0.5;
-        } else if (abs(sampleVector.y) >= max(abs(sampleVector.x), abs(sampleVector.z))) {
-            faceIndex = sampleVector.y > 0.0 ? 2 : 3; // +Y or -Y
-            faceUV = vec2(sampleVector.x / sampleVector.y, sampleVector.z / sampleVector.y) * 0.5 + 0.5;
-        } else {
-            faceIndex = sampleVector.z > 0.0 ? 4 : 5; // +Z or -Z
-            faceUV = vec2(sampleVector.x / sampleVector.z, sampleVector.y / sampleVector.z) * 0.5 + 0.5;
-        }
-
-        // Transform faceUV to atlasUV
-        vec2 atlasUV = TransformDirectionToAtlasUV(sampleVector, faceIndex, atlasOffset, slotRes);
-
-        // Transform atlasUV back to 3D vector
-        vec3 finalDirection = UVToDirection(atlasUV, faceIndex);
-        finalDirection.z = finalDirection.z;
-        float closestDepth = texture(pointlightShadowAtlas, finalDirection).r;
+        float closestDepth = texture(pointLightShadowArray, vec4(fragToLight + gridSamplingDisk[i] * diskRadius, lightIndex)).r;
         closestDepth *= lights[lightIndex].ShadowFarPlane;
 
         if (currentDepth - bias > closestDepth) {
@@ -379,7 +291,7 @@ vec3 PerLightReflectance_SpotLight(int lightIndex) {
 
     if (lights[lightIndex].CastShadows) {
         // Calculate shadow
-        float shadow = ShadowCalculation(lights[lightIndex].LightSpaceMatrix * vec4(FragPos, 1.0), spotlightShadowAtlas, lights[lightIndex].Position, lights[lightIndex].MinShadowBias, lights[lightIndex].MaxShadowBias, lights[lightIndex].shadowResolution, lights[lightIndex].shadowAtlasOffset);
+        float shadow = ShadowCalculation(lights[lightIndex].LightSpaceMatrix * vec4(FragPos, 1.0), spotlightShadowAtlas, lights[lightIndex].Position, lights[lightIndex].MinShadowBias, lights[lightIndex].MaxShadowBias, lights[lightIndex].shadowResolution, lights[lightIndex].spotShadowAtlasTexOffset);
         kD *= (1.0 - shadow);
         specular *= (1.0 - shadow);
         radiance *= (1.0 - shadow);

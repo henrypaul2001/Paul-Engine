@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 layout (location = 0) out vec4 FragColour;
 layout (location = 1) out vec4 BrightColour;
 
@@ -44,10 +44,8 @@ struct Light {
 	float MaxShadowBias;
     float ShadowFarPlane; // point light specific
 
-    //sampler2D ShadowMap; // spot light specific
     vec2 spotShadowAtlasTexOffset;
     vec2 shadowResolution;
-    samplerCube CubeShadowMap; // point light specific
 
     bool SpotLight;
     vec3 Direction; // spotlight specific
@@ -61,6 +59,7 @@ uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
 uniform sampler2D spotlightShadowAtlas;
+uniform samplerCubeArray pointLightShadowArray;
 
 in VIEW_DATA {
     flat vec3 TangentViewPos;
@@ -207,7 +206,13 @@ vec3 gridSamplingDisk[20] = vec3[]
    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
-float CubeShadowCalculation(vec3 fragPos, samplerCube shadowMap, vec3 lightPos, float minBias, float maxBias, float far_plane) {
+float CubeShadowCalculation(int lightIndex) {
+    vec3 fragPos = vertex_data.WorldPos;
+    vec3 lightPos = lights[lightIndex].Position;
+    float minBias = lights[lightIndex].MinShadowBias;
+    float maxBias = lights[lightIndex].MaxShadowBias;
+    float far_plane = lights[lightIndex].ShadowFarPlane;
+
     vec3 fragToLight = fragPos - lightPos;
 
     float currentDepth = length(fragToLight);
@@ -221,7 +226,7 @@ float CubeShadowCalculation(vec3 fragPos, samplerCube shadowMap, vec3 lightPos, 
     float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
 
     for (int i = 0; i < samples; i++) {
-        float closestDepth = texture(shadowMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+        float closestDepth = texture(pointLightShadowArray, vec4(fragToLight + gridSamplingDisk[i] * diskRadius, lightIndex)).r;
         closestDepth *= far_plane;
 
         if (currentDepth - bias > closestDepth) {
@@ -317,7 +322,7 @@ vec3 BlinnPhongSpotLight(Light light) {
     return lighting;
 }
 
-vec3 BlinnPhongPointLight(Light light) {
+vec3 BlinnPhongPointLight(Light light, int lightIndex) {
     light.TangentPosition = vertex_data.TBN * light.Position;
     vec3 lightDir = normalize(light.TangentPosition - vertex_data.TangentFragPos);
     
@@ -347,7 +352,7 @@ vec3 BlinnPhongPointLight(Light light) {
     vec3 lighting;
     if (light.CastShadows) {
         // Calculate shadow
-        float shadow = CubeShadowCalculation(vertex_data.WorldPos, light.CubeShadowMap, light.Position, light.MinShadowBias, light.MaxShadowBias, light.ShadowFarPlane);
+        float shadow = CubeShadowCalculation(lightIndex);
         lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * Colour;
     }
     else {
@@ -390,7 +395,7 @@ void CalculateLighting() {
             Lighting += BlinnPhongSpotLight(lights[i]);
         }
         else {
-            Lighting += BlinnPhongPointLight(lights[i]);
+            Lighting += BlinnPhongPointLight(lights[i], i);
         }
     }
 

@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 layout (location = 0) out vec4 FragColour;
 
 // -------------|  Lights  |-----------------
@@ -62,6 +62,7 @@ uniform DirLight dirLight;
 uniform Light lights[NR_REAL_TIME_LIGHTS];
 uniform int activeLights;
 uniform sampler2D spotlightShadowAtlas;
+uniform samplerCubeArray pointLightShadowArray;
 
 // -------------|   INPUT  |-----------------
 // ------------------------------------------
