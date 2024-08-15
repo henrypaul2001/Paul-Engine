@@ -53,9 +53,8 @@ namespace Engine {
 	{
 		if (LightManager::GetInstance()->GetDirectionalLightEntity() != nullptr) {
 			// Directional light
-			renderInstance->BindShadowMapTextureToFramebuffer(-1, MAP_2D); // bind the dir light shadowmap to framebuffer
-			unsigned int shadowWidth = renderInstance->ShadowWidth(); // in future, these will be stored in the light component
-			unsigned int shadowHeight = renderInstance->ShadowHeight(); // <--/
+			unsigned int shadowWidth = renderInstance->ShadowWidth();
+			unsigned int shadowHeight = renderInstance->ShadowHeight();
 
 			ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
 
@@ -73,6 +72,7 @@ namespace Engine {
 
 				glViewport(0, 0, shadowWidth, shadowHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderInstance->GetDirectionalShadowMap(), 0);
 				glClear(GL_DEPTH_BUFFER_BIT);
 
 				shadowmapSystem->SetDepthMapType(MAP_2D);
@@ -90,18 +90,13 @@ namespace Engine {
 		std::vector<glm::mat4> shadowTransforms;
 
 		const FlatTextureAtlas* flatShadowAtlas = renderInstance->GetFlatShadowmapTextureAtlas();
-		const CubeTextureAtlas* cubeShadowAtlas = renderInstance->GetCubeShadowmapTextureAtlas();
 		unsigned int numFlatShadowColumns = flatShadowAtlas->GetNumColumns();
-		unsigned int numCubeShadowColumns = cubeShadowAtlas->GetNumColumns();
 
-		// Clear depth textures
+		unsigned int pointShadowArray = renderInstance->GetPointLightCubemapShadowArray();
+
+		// Clear spotlight texture atlas
 		glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, flatShadowAtlas->GetTextureID(), 0);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeShadowAtlas->GetTextureID(), 0);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -148,9 +143,9 @@ namespace Engine {
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				}
 				else if (lightComponent->GetLightType() == POINT) {
-					glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 					glBindFramebuffer(GL_FRAMEBUFFER, *cubeDepthMapFBO);
-					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeShadowAtlas->GetTextureID(), 0);
+					glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointShadowArray, 0, i * 6);
+					glClear(GL_DEPTH_BUFFER_BIT);
 					glDrawBuffer(GL_NONE);
 					glReadBuffer(GL_NONE);
 
@@ -166,24 +161,14 @@ namespace Engine {
 					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
 					cubeDepthShader->Use();
-					for (unsigned int i = 0; i < 6; ++i) {
-						cubeDepthShader->setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+					for (unsigned int j = 0; j < 6; ++j) {
+						cubeDepthShader->setMat4("shadowMatrices[" + std::to_string(j) + "]", shadowTransforms[j]);
 						cubeDepthShader->setFloat("far_plane", lightComponent->Far);
 						cubeDepthShader->setVec3("lightPos", lightPos);
 					}
+					cubeDepthShader->setInt("cubemapIndex", i);
 
-					unsigned int slotRow, slotColumn;
-					if (i < numCubeShadowColumns) {
-						slotRow = 0;
-						slotColumn = i;
-					}
-					else {
-						slotRow = i / numCubeShadowColumns;
-						slotColumn = i % numCubeShadowColumns;
-					}
-					glm::uvec2 startXY = cubeShadowAtlas->GetSlotStartXY(slotRow, slotColumn);
-
-					glViewport(startXY.x, startXY.y, shadowWidth, shadowHeight);
+					glViewport(0, 0, shadowWidth, shadowHeight);
 
 					shadowmapSystem->SetDepthMapType(MAP_CUBE);
 					for (Entity* e : entities) {
