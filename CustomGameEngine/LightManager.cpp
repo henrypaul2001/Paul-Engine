@@ -77,7 +77,7 @@ namespace Engine {
 		shader->setVec2(std::string("dirLight.shadowResolution"), glm::vec2(renderInstance->ShadowWidth(), renderInstance->ShadowHeight()));
 
 		glActiveTexture(GL_TEXTURE0 + textureSlots->at("dirLight.ShadowMap"));
-		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetDepthMap(-1, MAP_2D));
+		glBindTexture(GL_TEXTURE_2D, renderInstance->GetDirectionalShadowMap());
 	}
 
 	void LightManager::SetIBLUniforms(Shader* shader, Camera* activeCamera)
@@ -137,10 +137,10 @@ namespace Engine {
 	{
 		RenderManager* renderInstance = RenderManager::GetInstance();
 		const FlatTextureAtlas* spotShadowAtlas = renderInstance->GetFlatShadowmapTextureAtlas();
-		const CubeTextureAtlas* pointShadowAtlas = renderInstance->GetCubeShadowmapTextureAtlas();
+		//const CubeTextureAtlas* pointShadowAtlas = renderInstance->GetCubeShadowmapTextureAtlas();
 		unsigned int slotRow, slotColumn;
 		unsigned int numFlatShadowColumns = spotShadowAtlas->GetNumColumns();
-		unsigned int numCubeShadowColumns = pointShadowAtlas->GetNumColumns();
+		//unsigned int numCubeShadowColumns = pointShadowAtlas->GetNumColumns();
 		shader->Use();
 
 		// First set directional light
@@ -156,8 +156,8 @@ namespace Engine {
 			glActiveTexture(GL_TEXTURE0 + textureSlots->at("spotlightShadowAtlas"));
 			glBindTexture(GL_TEXTURE_2D, spotShadowAtlas->GetTextureID());
 
-			glActiveTexture(GL_TEXTURE0 + textureSlots->at("pointlightShadowAtlas"));
-			glBindTexture(GL_TEXTURE_CUBE_MAP, pointShadowAtlas->GetTextureID());
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at("pointLightShadowArray"));
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, renderInstance->GetPointLightCubemapShadowArray());
 		}
 
 		shader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
@@ -190,16 +190,6 @@ namespace Engine {
 			shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].Active")), lightComponent->Active);
 
 			if (lightComponent->GetLightType() == POINT) {
-				if (i < numCubeShadowColumns) {
-					slotRow = 0;
-					slotColumn = i;
-				}
-				else {
-					slotRow = i / numCubeShadowColumns;
-					slotColumn = i % numCubeShadowColumns;
-				}
-
-				shader->setVec2(std::string("lights[" + std::string(std::to_string(i)) + std::string("].shadowAtlasOffset")), pointShadowAtlas->GetSlotStartXY(slotRow, slotColumn));
 				shader->setVec2(std::string("lights[" + std::string(std::to_string(i)) + std::string("].shadowResolution")), glm::vec2(renderInstance->ShadowWidth(), renderInstance->ShadowHeight()));
 				shader->setBool(std::string("lights[" + std::string(std::to_string(i)) + std::string("].SpotLight")), false);
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);
