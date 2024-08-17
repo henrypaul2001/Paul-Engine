@@ -20,9 +20,13 @@ namespace Engine {
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
 
+		void DrawTransparentGeometry();
+
 		void ConvoluteEnvironmentMap(ReflectionProbe* probe);
 		void PrefilterMap(ReflectionProbe* probe);
 
 		Camera* activeCamera;
+	
+		std::map<float, ComponentGeometry*> transparentGeometry;
 	};
 }

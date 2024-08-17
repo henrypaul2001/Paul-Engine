@@ -124,6 +124,10 @@ namespace Engine {
 						glBindBuffer(GL_UNIFORM_BUFFER, 0);
 					}
 				}
+
+				glEnable(GL_BLEND);
+				DrawTransparentGeometry();
+				glDisable(GL_BLEND);
 			}
 
 			// Process capture
@@ -360,6 +364,71 @@ namespace Engine {
 
 			// Draw geometry
 			geometry->GetModel()->Draw(*reflectionShader, geometry->NumInstances());
+
+			if (geometry->GetModel()->ContainsTransparentMeshes()) {
+				float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
+
+				if (transparentGeometry.find(distanceToCamera) != transparentGeometry.end()) {
+					// Distance already exists, increment slightly
+					distanceToCamera += 0.00001f;
+				}
+				transparentGeometry[distanceToCamera] = geometry;
+			}
 		}
+	}
+
+	void SystemReflectionBaking::DrawTransparentGeometry()
+	{
+		// Geometry is already sorted in ascending order
+		for (std::map<float, ComponentGeometry*>::reverse_iterator it = transparentGeometry.rbegin(); it != transparentGeometry.rend(); ++it) {
+			ComponentGeometry* geometry = it->second;
+
+			if (geometry->IsIncludedInReflectionProbes()) {
+				Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
+				reflectionShader->Use();
+
+				// setup shader uniforms
+				glm::mat4 model = geometry->GetOwner()->GetTransformComponent()->GetWorldModelMatrix();
+				reflectionShader->setMat4("model", model);
+				reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+				reflectionShader->setBool("instanced", geometry->Instanced());
+				if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+				reflectionShader->setVec2("textureScale", geometry->GetTextureScale());
+				reflectionShader->setBool("hasBones", false);
+				reflectionShader->setBool("OpaqueRenderPass", false);
+
+				// Bones
+				if (geometry->GetModel()->HasBones()) {
+					if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+						reflectionShader->setBool("hasBones", true);
+						std::vector<glm::mat4> transforms = geometry->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+						for (int i = 0; i < transforms.size(); i++) {
+							reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+						}
+					}
+				}
+
+				// Apply face culling
+				if (geometry->Cull_Face()) {
+					glEnable(GL_CULL_FACE);
+				}
+				else {
+					glDisable(GL_CULL_FACE);
+				}
+
+				if (geometry->Cull_Type() == GL_BACK) {
+					///glCullFace(GL_FRONT);
+					glCullFace(GL_BACK);
+				}
+				else if (geometry->Cull_Type() == GL_FRONT) {
+					//glCullFace(GL_BACK);
+					glCullFace(GL_FRONT);
+				}
+
+				geometry->GetModel()->DrawTransparentMeshes(*reflectionShader, geometry->NumInstances());
+			}
+		}
+
+		transparentGeometry.clear();
 	}
 }
