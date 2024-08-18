@@ -28,5 +28,9 @@ namespace Engine {
 		Camera* activeCamera;
 	
 		std::map<float, ComponentGeometry*> transparentGeometry;
+		
+		glm::mat4 currentView;
+		glm::mat4 currentProjection;
+		glm::vec3 currentViewPos;
 	};
 }

@@ -20,8 +20,6 @@ namespace Engine {
 		RenderManager* renderManager = RenderManager::GetInstance();
 		RenderOptions renderOptions = renderManager->GetRenderParams()->GetRenderOptions();
 
-		Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
-
 		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
 		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
 
@@ -29,10 +27,6 @@ namespace Engine {
 		std::vector<ReflectionProbe*> probes = renderManager->GetBakedData().GetReflectionProbes();
 		int numProbes = probes.size();
 		for (int i = 0; i < numProbes; i++) {
-			reflectionShader->Use();
-
-			LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
-
 			// error check
 			int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			if (status != GL_FRAMEBUFFER_COMPLETE) {
@@ -46,21 +40,18 @@ namespace Engine {
 			width = probe->GetFaceWidth();
 			height = probe->GetFaceHeight();
 
-			glm::vec3 position = probe->GetWorldPosition();
+			currentViewPos = probe->GetWorldPosition();
 
 			// Set up projections for each cubemap face
-			glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, probe->GetNearClip(), probe->GetFarClip());
+			currentProjection = glm::perspective(glm::radians(90.0f), 1.0f, probe->GetNearClip(), probe->GetFarClip());
 			glm::mat4 captureViews[] = {
-				glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-				glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-				glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-				glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-				glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-				glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
 			};
-
-			reflectionShader->setMat4("projection", captureProjection);
-			reflectionShader->setVec3("viewPos", position);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			// Resize depth texture buffer
@@ -78,8 +69,7 @@ namespace Engine {
 			glViewport(0, 0, width, height);
 			for (unsigned int j = 0; j < 6; ++j)
 			{
-				reflectionShader->Use();
-				reflectionShader->setMat4("view", captureViews[j]);
+				currentView = captureViews[j];
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, probe->GetProbeEnvMap().cubemapID, 0);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, depthBuffer, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -96,7 +86,7 @@ namespace Engine {
 						skyShader->Use();
 
 						glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
-						glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(captureProjection));
+						glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(currentProjection));
 						glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(captureViews[j]))));
 						glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(probe->GetWorldPosition()));
 						glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -321,8 +311,16 @@ namespace Engine {
 	void SystemReflectionBaking::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
 		if (geometry->IsIncludedInReflectionProbes()) {
-			Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
+			Shader* reflectionShader;
+			if (geometry->PBR()) { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShaderPBR(); }
+			else { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader(); }
 			reflectionShader->Use();
+
+			LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
+
+			reflectionShader->setMat4("projection", currentProjection);
+			reflectionShader->setVec3("viewPos", currentViewPos);
+			reflectionShader->setMat4("view", currentView);
 
 			// setup shader uniforms
 			glm::mat4 model = transform->GetWorldModelMatrix();
@@ -384,7 +382,9 @@ namespace Engine {
 			ComponentGeometry* geometry = it->second;
 
 			if (geometry->IsIncludedInReflectionProbes()) {
-				Shader* reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader();
+				Shader* reflectionShader;
+				if (geometry->PBR()) { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShaderPBR(); }
+				else { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader(); }
 				reflectionShader->Use();
 
 				// setup shader uniforms

@@ -378,7 +378,8 @@ namespace Engine {
 		advBloomDownsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomDownsample.frag", true);
 		advBloomUpsampleShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomUpsample.frag", true);
 		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag", true);
-		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBaking.vert", "Shaders/reflectionProbeBaking.frag", true);
+		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBaking.frag", true);
+		reflectionProbeBakingPBR = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBakingPBR.frag", true);
 
 		advBloomCombineShader->Use();
 		advBloomCombineShader->setInt("screenTexture", 0);
@@ -505,16 +506,27 @@ namespace Engine {
 			defaultLitPBRShader->setInt(name, textureSlotLookup.at(name));
 		}
 
+		reflectionProbeBakingPBR->Use();
+		reflectionProbeBakingPBR->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
+		reflectionProbeBakingPBR->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
+		reflectionProbeBakingPBR->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
+
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_METALLIC1", textureSlotLookup.at("material.TEXTURE_METALLIC1"));
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_ROUGHNESS1", textureSlotLookup.at("material.TEXTURE_ROUGHNESS1"));
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_AO1", textureSlotLookup.at("material.TEXTURE_AO1"));
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
+		reflectionProbeBakingPBR->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
+
 		reflectionProbeBaking->Use();
 		reflectionProbeBaking->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));
 		reflectionProbeBaking->setInt("spotlightShadowAtlas", textureSlotLookup.at("spotlightShadowAtlas"));
 		reflectionProbeBaking->setInt("pointLightShadowArray", textureSlotLookup.at("pointLightShadowArray"));
 
-		reflectionProbeBaking->setInt("material.TEXTURE_ALBEDO1", textureSlotLookup.at("material.TEXTURE_ALBEDO1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_DIFFUSE1", textureSlotLookup.at("material.TEXTURE_DIFFUSE1"));
+		reflectionProbeBaking->setInt("material.TEXTURE_SPECULAR1", textureSlotLookup.at("material.TEXTURE_SPECULAR1"));
 		reflectionProbeBaking->setInt("material.TEXTURE_NORMAL1", textureSlotLookup.at("material.TEXTURE_NORMAL1"));
-		reflectionProbeBaking->setInt("material.TEXTURE_METALLIC1", textureSlotLookup.at("material.TEXTURE_METALLIC1"));
-		reflectionProbeBaking->setInt("material.TEXTURE_ROUGHNESS1", textureSlotLookup.at("material.TEXTURE_ROUGHNESS1"));
-		reflectionProbeBaking->setInt("material.TEXTURE_AO1", textureSlotLookup.at("material.TEXTURE_AO1"));
 		reflectionProbeBaking->setInt("material.TEXTURE_DISPLACE1", textureSlotLookup.at("material.TEXTURE_DISPLACE1"));
 		reflectionProbeBaking->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
 

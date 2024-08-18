@@ -892,7 +892,10 @@
     <None Include="irrKlang.dll">
       <Filter>Source Files\Engine\Utility</Filter>
     </None>
-    <None Include="Shaders\reflectionProbeBaking.vert">
+    <None Include="Shaders\reflectionProbeBakingPBR.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBakingPBR.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="Shaders\reflectionProbeBaking.frag">

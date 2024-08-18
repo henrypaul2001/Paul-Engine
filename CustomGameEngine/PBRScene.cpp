@@ -700,6 +700,7 @@ namespace Engine {
 		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
+		bricks->textureScaling = glm::vec2(10.0f);
 
 		//PBRMaterial* grass = new PBRMaterial();
 		//grass->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/albedo.png", TEXTURE_ALBEDO, true));
@@ -777,6 +778,7 @@ namespace Engine {
 		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->isTransparent = true;
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
+		raindrops->textureScaling = glm::vec2(10.0f);
 #pragma endregion
 
 #pragma region scene
@@ -801,7 +803,7 @@ namespace Engine {
 		Entity* rainFloor = new Entity("Rain Floor");
 		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
 		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		rainFloor->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(mirror);
+		rainFloor->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(raindrops);
 		rainFloor->GetGeometryComponent()->SetTextureScale(10.0f);
 		rainFloor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
@@ -958,17 +960,17 @@ namespace Engine {
 		cart->AddComponent(new ComponentGeometry("Models/PBR/cart/cart.obj", true));
 		entityManager->AddEntity(cart);
 
-		//Entity* bloomCube = new Entity("Bloom Cube");
-		//bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
-		//dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
-		//bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		//ComponentLight* bloomLight = new ComponentLight(POINT);
+		Entity* bloomCube = new Entity("Bloom Cube");
+		bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
+		dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		ComponentLight* bloomLight = new ComponentLight(POINT);
 		//bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
-		////bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
-		//bloomLight->CastShadows = false;
-		//bloomCube->AddComponent(bloomLight);
-		//dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
-		//entityManager->AddEntity(bloomCube);
+		bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
+		bloomLight->CastShadows = false;
+		bloomCube->AddComponent(bloomLight);
+		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
+		entityManager->AddEntity(bloomCube);
 #pragma endregion
 
 #pragma region ui
@@ -1619,11 +1621,11 @@ namespace Engine {
 		nonPBRMat->specular = glm::vec3(1.0f, 0.0f, 0.0f);
 		nonPBRMat->shininess = 100.0f;
 
-		//Entity* nonPBRTest = new Entity("NON PBR TEST");
-		//nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
-		//nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		//nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
-		//entityManager->AddEntity(nonPBRTest);
+		Entity* nonPBRTest = new Entity("NON PBR TEST");
+		nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
+		nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
+		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
+		entityManager->AddEntity(nonPBRTest);
 
 		// Reflection probes
 		std::vector<glm::vec3> positions;

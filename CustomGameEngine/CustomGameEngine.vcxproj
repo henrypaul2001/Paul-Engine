@@ -392,7 +392,8 @@
     <None Include="Shaders\pointParticles.vert" />
     <None Include="Shaders\prefilter.frag" />
     <None Include="Shaders\reflectionProbeBaking.frag" />
-    <None Include="Shaders\reflectionProbeBaking.vert" />
+    <None Include="Shaders\reflectionProbeBakingPBR.frag" />
+    <None Include="Shaders\reflectionProbeBakingPBR.vert" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />
     <None Include="Shaders\skybox.frag" />
