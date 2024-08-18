@@ -791,14 +791,14 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
 
-		Entity* ceiling = new Entity("Cieling");
-		ceiling->AddComponent(new ComponentTransform(0.0f, 5.0f, 0.0));
-		ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
-		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
-		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
-		entityManager->AddEntity(ceiling);
+		//Entity* ceiling = new Entity("Cieling");
+		//ceiling->AddComponent(new ComponentTransform(0.0f, 5.0f, 0.0));
+		//ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		//dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
+		//dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
+		//dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		//dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
+		//entityManager->AddEntity(ceiling);
 
 		Entity* rainFloor = new Entity("Rain Floor");
 		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
@@ -960,17 +960,17 @@ namespace Engine {
 		cart->AddComponent(new ComponentGeometry("Models/PBR/cart/cart.obj", true));
 		entityManager->AddEntity(cart);
 
-		Entity* bloomCube = new Entity("Bloom Cube");
-		bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
-		dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
-		bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		ComponentLight* bloomLight = new ComponentLight(POINT);
-		//bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
-		bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
-		bloomLight->CastShadows = false;
-		bloomCube->AddComponent(bloomLight);
-		dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
-		entityManager->AddEntity(bloomCube);
+		//Entity* bloomCube = new Entity("Bloom Cube");
+		//bloomCube->AddComponent(new ComponentTransform(-2.5f, 0.35f, 2.5f));
+		//dynamic_cast<ComponentTransform*>(bloomCube->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
+		//bloomCube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		//ComponentLight* bloomLight = new ComponentLight(POINT);
+		////bloomLight->Colour = glm::vec3(50.0f, 50.0f, 50.0f);
+		//bloomLight->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
+		//bloomLight->CastShadows = false;
+		//bloomCube->AddComponent(bloomLight);
+		//dynamic_cast<ComponentGeometry*>(bloomCube->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bloomTest);
+		//entityManager->AddEntity(bloomCube);
 #pragma endregion
 
 #pragma region ui
@@ -1630,41 +1630,53 @@ namespace Engine {
 		// Reflection probes
 		std::vector<glm::vec3> positions;
 		positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
-		//positions.push_back(glm::vec3(7.5f, 2.0f, -7.5f));
-		//positions.push_back(glm::vec3(-7.5f, 2.0f, -7.5f));
-		//positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
+		positions.push_back(glm::vec3(7.5f, 2.0f, -7.5f));
+		positions.push_back(glm::vec3(-7.5f, 2.0f, -7.5f));
+		positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
 		positions.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -5.0f, 2.5f, 3.0f, 2.5f));
-		//localBounds.push_back(AABBPoints(-17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
-		//localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
-		//localBounds.push_back(AABBPoints(17.5f, -2.0f, 17.5f, 2.5f, 3.0f, -17.5f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -17.5f, 2.5f, 3.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -2.5f, 2.5f, 3.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -2.5f, 17.5f, 3.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -17.5f, 17.5f, 3.0f, 2.5f));
 		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 3.0f, 10.0f));
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(7.0f);
-		//soiRadii.push_back(5.0f);
-		//soiRadii.push_back(5.0f);
-		//soiRadii.push_back(5.0f);
+		soiRadii.push_back(7.0f);
+		soiRadii.push_back(7.0f);
+		soiRadii.push_back(7.0f);
 		soiRadii.push_back(15.0f);
 
 		std::vector<unsigned int> faceRes;
+		faceRes.push_back(512);
+		faceRes.push_back(512);
+		faceRes.push_back(512);
 		faceRes.push_back(512);
 		faceRes.push_back(1024);
 
 		std::vector<float> nearClips;
 		nearClips.push_back(0.5f);
 		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
+		nearClips.push_back(0.5f);
 
 		std::vector<float> farClips;
 		farClips.push_back(30.0f);
 		farClips.push_back(30.0f);
+		farClips.push_back(30.0f);
+		farClips.push_back(30.0f);
+		farClips.push_back(30.0f);
 
 		std::vector<bool> renderSkybox;
-		renderSkybox.push_back(false);
-		renderSkybox.push_back(false);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
+		renderSkybox.push_back(true);
 
 		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, faceRes, nearClips, farClips, renderSkybox, name);
 	}
