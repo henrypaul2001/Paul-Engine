@@ -1650,13 +1650,6 @@ namespace Engine {
 		soiRadii.push_back(7.0f);
 		soiRadii.push_back(15.0f);
 
-		std::vector<unsigned int> faceRes;
-		faceRes.push_back(512);
-		faceRes.push_back(512);
-		faceRes.push_back(512);
-		faceRes.push_back(512);
-		faceRes.push_back(1024);
-
 		std::vector<float> nearClips;
 		nearClips.push_back(0.5f);
 		nearClips.push_back(0.5f);
@@ -1678,7 +1671,7 @@ namespace Engine {
 		renderSkybox.push_back(true);
 		renderSkybox.push_back(true);
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, faceRes, nearClips, farClips, renderSkybox, name);
+		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, nearClips, farClips, renderSkybox, name, 1024u);
 	}
 
 	void PBRScene::CreateSystems()

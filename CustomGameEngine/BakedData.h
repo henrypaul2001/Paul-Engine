@@ -27,18 +27,12 @@ namespace Engine {
 
 		const std::vector<ReflectionProbe*>& GetReflectionProbes() const { return reflectionProbes; }
 
-		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions, const std::vector<AABBPoints>& localGeometryBounds, const std::vector<float>& soiRadii, const std::vector<unsigned int>& faceRes, const std::vector<float>& nearClips, const std::vector<float>& farClips, const std::vector<bool>& renderSkybox, const std::string& sceneName) {
+		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions, const std::vector<AABBPoints>& localGeometryBounds, const std::vector<float>& soiRadii, const std::vector<float>& nearClips, const std::vector<float>& farClips, const std::vector<bool>& renderSkybox, const std::string& sceneName, const unsigned int faceRes = 512u) {
 			ClearReflectionProbes();
 
 			for (int i = 0; i < positions.size(); i++) {
-				InitialiseReflectionProbe(positions[i], localGeometryBounds[i], sceneName, soiRadii[i], faceRes[i], nearClips[i], farClips[i], renderSkybox[i]);
+				InitialiseReflectionProbe(positions[i], localGeometryBounds[i], sceneName, soiRadii[i], faceRes, nearClips[i], farClips[i], renderSkybox[i]);
 			}
-		}
-
-		void InitialiseReflectionProbe(const glm::vec3& position, const AABBPoints& localGeometryBounds, const std::string& sceneName, const float sphereOfInfluenceRadius = 30.0f, const unsigned int faceResolution = 512u, const float nearClip = 0.5f, const float farClip = 30.0f, const bool renderSkybox = true) {
-			unsigned int index = reflectionProbes.size();
-			InitialiseProbeDirectory(sceneName, index);
-			reflectionProbes.push_back(new ReflectionProbe(index, position, sceneName, localGeometryBounds, sphereOfInfluenceRadius, faceResolution, faceResolution, nearClip, farClip, renderSkybox));
 		}
 
 		void WriteReflectionProbesToFile();
@@ -109,6 +103,11 @@ namespace Engine {
 					std::cout << "BAKEDDATA::REFLECTIONPROBES::Created directory: " << prefilterMipPath << std::endl;
 				}
 			}
+		}
+		void InitialiseReflectionProbe(const glm::vec3& position, const AABBPoints& localGeometryBounds, const std::string& sceneName, const float sphereOfInfluenceRadius, const unsigned int faceResolution, const float nearClip, const float farClip, const bool renderSkybox) {
+			unsigned int index = reflectionProbes.size();
+			InitialiseProbeDirectory(sceneName, index);
+			reflectionProbes.push_back(new ReflectionProbe(index, position, sceneName, localGeometryBounds, sphereOfInfluenceRadius, faceResolution, faceResolution, nearClip, farClip, renderSkybox));
 		}
 
 		std::unordered_map<GLenum, std::string> cubemapFaceToString;
