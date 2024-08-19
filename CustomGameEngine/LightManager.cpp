@@ -103,15 +103,17 @@ namespace Engine {
 
 		while (index < 3 && it != culledReflectionProbes.end()) {
 			ReflectionProbe* probe = it->second;
-			ReflectionProbeEnvironmentMap envMap = probe->GetProbeEnvMap();
 
+			/*
 			name = "localIBLProbes[" + std::to_string(index) + "].irradianceMap";
+
 			glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
-
+			
 			name = "localIBLProbes[" + std::to_string(index) + "].prefilterMap";
 			glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
+			*/
 
 			shader->setVec3("localIBLProbes[" + std::to_string(index) + "].worldPos", probe->GetWorldPosition());
 			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].soiRadius", probe->GetSOIRadius());

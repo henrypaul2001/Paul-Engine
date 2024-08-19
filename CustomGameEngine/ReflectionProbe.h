@@ -4,26 +4,18 @@
 #include <string>
 #include "ComponentCollisionAABB.h"
 namespace Engine {
-
-	struct ReflectionProbeEnvironmentMap {
-		unsigned int cubemapID;
-		unsigned int irradianceID;
-		unsigned int prefilterID;
-	};
-
 	class ReflectionProbe
 	{
 	public:
 		ReflectionProbe(const unsigned int id, const glm::vec3& position, const std::string& sceneName, AABBPoints localGeometryBounds, float soiRadius, const unsigned int faceResWidth = 1280, const unsigned int faceResHeight = 1280, float nearClip = 1.0f, float farClip = 150.0f, bool renderSkybox = true);
 		~ReflectionProbe();
 
-		const ReflectionProbeEnvironmentMap& GetProbeEnvMapConst() const { return envMap; }
-		ReflectionProbeEnvironmentMap& GetProbeEnvMap() { return envMap; }
 		const glm::vec3& GetWorldPosition() const { return worldPosition; }
 
 		const unsigned int GetFaceWidth() const { return faceWidth; }
 		const unsigned int GetFaceHeight() const { return faceHeight; }
 		const unsigned int GetFileID() const { return fileID; }
+		const unsigned int GetCubemapTextureID() const { return cubemapCaptureID; }
 
 		const bool GetRenderSkybox() const { return renderSkybox; }
 
@@ -51,9 +43,7 @@ namespace Engine {
 
 		std::string sceneName;
 
-		ReflectionProbeEnvironmentMap envMap;
+		unsigned int cubemapCaptureID;
 		AABBPoints localGeometryBounds;
-
-		void SetupTextureMaps();
 	};
 }

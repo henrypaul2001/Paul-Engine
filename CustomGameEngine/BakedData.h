@@ -30,6 +30,32 @@ namespace Engine {
 		void InitialiseReflectionProbes(const std::vector<glm::vec3>& positions, const std::vector<AABBPoints>& localGeometryBounds, const std::vector<float>& soiRadii, const std::vector<float>& nearClips, const std::vector<float>& farClips, const std::vector<bool>& renderSkybox, const std::string& sceneName, const unsigned int faceRes = 512u) {
 			ClearReflectionProbes();
 
+			unsigned int numProbes = positions.size();
+
+			// ----- Set up irradiance map -----
+			// ---------------------------------
+			glGenTextures(1, &reflectionProbeIrradianceMapArray);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbeIrradianceMapArray);
+			glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, GL_RGB16F, 32u, 32u, numProbes * 6, 0, GL_RGB, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
+
+			// ----- Set up pre-filter map -----
+			// ---------------------------------
+			glGenTextures(1, &reflectionProbePrefilterMapArray);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbePrefilterMapArray);
+			glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, GL_RGB16F, faceRes / 2u, faceRes / 2u, numProbes * 6, 0, GL_RGB, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glGenerateMipmap(GL_TEXTURE_CUBE_MAP_ARRAY);
+
 			for (int i = 0; i < positions.size(); i++) {
 				InitialiseReflectionProbe(positions[i], localGeometryBounds[i], sceneName, soiRadii[i], faceRes, nearClips[i], farClips[i], renderSkybox[i]);
 			}
@@ -45,6 +71,8 @@ namespace Engine {
 			ClearReflectionProbes();
 		}
 	private:
+		// Reflection probes
+		// -----------------
 		void ClearReflectionProbes() {
 			culledProbeList.clear();
 
@@ -111,6 +139,9 @@ namespace Engine {
 		}
 
 		std::unordered_map<GLenum, std::string> cubemapFaceToString;
+
+		unsigned int reflectionProbeIrradianceMapArray;
+		unsigned int reflectionProbePrefilterMapArray;
 
 		std::vector<ReflectionProbe*> reflectionProbes;
 		std::map<float, ReflectionProbe*> culledProbeList; // <distance to probe squared, probe>

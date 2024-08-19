@@ -15,7 +15,6 @@ namespace Engine {
 			ReflectionProbe* probe = reflectionProbes[i];
 			std::cout << "		- Writing probe " << i + 1 << " / " << numProbes << std::endl;
 
-			ReflectionProbeEnvironmentMap envMap = probe->GetProbeEnvMap();
 			unsigned int probeID = probe->GetFileID();
 
 			probeString = std::to_string(probeID);
@@ -28,7 +27,7 @@ namespace Engine {
 			faceHeight = probe->GetFaceHeight();
 			GLfloat* floatData = new GLfloat[faceWidth * faceHeight * 3];
 
-			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.cubemapID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, probe->GetCubemapTextureID());
 			glFinish();
 
 			for (unsigned int j = 0; j < 6; j++) {
@@ -44,6 +43,7 @@ namespace Engine {
 
 			// - Write irradiance -
 			// --------------------
+			/*
 			floatData = new GLfloat[32 * 32 * 3];
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
@@ -59,9 +59,11 @@ namespace Engine {
 			}
 
 			delete[] floatData;
+			*/
 
 			// -- Write prefilter --
 			// ---------------------
+			/*
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
 			glFinish();
@@ -83,6 +85,7 @@ namespace Engine {
 				mipHeight /= 2;
 				delete[] floatData;
 			}
+			*/
 		}
 	}
 
@@ -110,14 +113,13 @@ namespace Engine {
 			unsigned int probeID = probe->GetFileID();
 			unsigned int faceWidth = probe->GetFaceWidth();
 			unsigned int faceHeight = probe->GetFaceHeight();
-			ReflectionProbeEnvironmentMap envMap = probe->GetProbeEnvMap();
 			std::string probeFilepath = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + std::to_string(probeID);
 
 			// Cubemaps
 			// --- Load skybox ---
 			// -------------------
 			std::string cubemapFilepath = probeFilepath + "/Skybox";
-			unsigned int skybox = envMap.cubemapID;
+			unsigned int skybox = probe->GetCubemapTextureID();
 			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
 			std::string filepath = cubemapFilepath;
 			int width, height, nrChannels;
@@ -148,6 +150,7 @@ namespace Engine {
 
 			// - Load irradiance -
 			// -------------------
+			/*
 			std::string irradianceFilepath = probeFilepath + "/Irradiance";
 			unsigned int irradiance = envMap.irradianceID;
 			glBindTexture(GL_TEXTURE_CUBE_MAP, irradiance);
@@ -176,9 +179,11 @@ namespace Engine {
 				stbi_image_free(floatData);
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			*/
 
 			// -- Load prefilter --
 			// --------------------
+			/*
 			std::string prefilterFilepath = probeFilepath + "/Prefilter/Mip ";
 			unsigned int prefilter = envMap.prefilterID;
 			glBindTexture(GL_TEXTURE_CUBE_MAP, prefilter);
@@ -213,6 +218,7 @@ namespace Engine {
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
+			*/
 		}
 	}
 }

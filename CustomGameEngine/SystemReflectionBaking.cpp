@@ -39,6 +39,7 @@ namespace Engine {
 			// Capture scene
 			width = probe->GetFaceWidth();
 			height = probe->GetFaceHeight();
+			unsigned int cubemapID = probe->GetCubemapTextureID();
 
 			currentViewPos = probe->GetWorldPosition();
 
@@ -70,7 +71,7 @@ namespace Engine {
 			for (unsigned int j = 0; j < 6; ++j)
 			{
 				currentView = captureViews[j];
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, probe->GetProbeEnvMap().cubemapID, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, cubemapID, 0);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, depthBuffer, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -123,8 +124,8 @@ namespace Engine {
 			// Process capture
 			glDisable(GL_CULL_FACE);
 
-			ConvoluteEnvironmentMap(probe);
-			PrefilterMap(probe);
+			//ConvoluteEnvironmentMap(probe);
+			//PrefilterMap(probe);
 
 			glEnable(GL_CULL_FACE);
 		}
@@ -146,8 +147,8 @@ namespace Engine {
 		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
 		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
 
-		unsigned int envCubemap = probe->GetProbeEnvMap().cubemapID;
-		unsigned int irradianceMap = probe->GetProbeEnvMap().irradianceID;
+		unsigned int envCubemap = probe->GetCubemapTextureID();
+		//unsigned int irradianceMap = probe->GetProbeEnvMap().irradianceID;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Resize depth texture buffer
@@ -185,7 +186,7 @@ namespace Engine {
 		for (unsigned int i = 0; i < 6; ++i)
 		{
 			irradianceShader->setMat4("view", captureViews[i]);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+			//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			resourceManager->DefaultCube().DrawWithNoMaterial();
@@ -199,8 +200,8 @@ namespace Engine {
 		RenderManager* renderManager = RenderManager::GetInstance();
 		ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-		unsigned int envCubemap = probe->GetProbeEnvMap().cubemapID;
-		unsigned int prefilterMap = probe->GetProbeEnvMap().prefilterID;
+		unsigned int envCubemap = probe->GetCubemapTextureID();
+		//unsigned int prefilterMap = probe->GetProbeEnvMap().prefilterID;
 
 		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
 		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
@@ -265,7 +266,7 @@ namespace Engine {
 			prefilterShader->setUInt("faceHeight", faceHeight);
 			for (unsigned int i = 0; i < 6; i++) {
 				prefilterShader->setMat4("view", captureViews[i]);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
+				//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				resourceManager->DefaultCube().DrawWithNoMaterial();

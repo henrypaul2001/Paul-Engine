@@ -14,22 +14,10 @@ namespace Engine {
 		this->sphereOfInfluenceRadius = soiRadius;
 		this->renderSkybox = renderSkybox;
 
-		SetupTextureMaps();
-	}
-
-	ReflectionProbe::~ReflectionProbe()
-	{
-		glDeleteTextures(1, &envMap.cubemapID);
-		glDeleteTextures(1, &envMap.irradianceID);
-		glDeleteTextures(1, &envMap.prefilterID);
-	}
-
-	void ReflectionProbe::SetupTextureMaps()
-	{
 		// ------ Set up base cubemap ------
 		// ---------------------------------
-		glGenTextures(1, &envMap.cubemapID);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.cubemapID);
+		glGenTextures(1, &cubemapCaptureID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapCaptureID);
 
 		for (unsigned int i = 0; i < 6; i++) {
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, faceWidth, faceHeight, 0, GL_RGB, GL_FLOAT, nullptr);
@@ -40,32 +28,10 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	}
 
-		// ----- Set up irradiance map -----
-		// ---------------------------------
-		glGenTextures(1, &envMap.irradianceID);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
-		for (unsigned int i = 0; i < 6; i++) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
-		}
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		// ----- Set up pre-filter map -----
-		// ---------------------------------
-		glGenTextures(1, &envMap.prefilterID);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
-		for (unsigned int i = 0; i < 6; i++) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, faceWidth / 2, faceHeight / 2, 0, GL_RGB, GL_FLOAT, nullptr);
-		}
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	ReflectionProbe::~ReflectionProbe()
+	{
+		glDeleteTextures(1, &cubemapCaptureID);
 	}
 }
