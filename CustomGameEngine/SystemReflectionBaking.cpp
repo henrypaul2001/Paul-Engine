@@ -124,8 +124,8 @@ namespace Engine {
 			// Process capture
 			glDisable(GL_CULL_FACE);
 
-			//ConvoluteEnvironmentMap(probe);
-			//PrefilterMap(probe);
+			ConvoluteEnvironmentMap(probe);
+			PrefilterMap(probe);
 
 			glEnable(GL_CULL_FACE);
 		}
@@ -148,7 +148,9 @@ namespace Engine {
 		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
 
 		unsigned int envCubemap = probe->GetCubemapTextureID();
-		//unsigned int irradianceMap = probe->GetProbeEnvMap().irradianceID;
+		unsigned int irradianceMapArray = renderManager->GetBakedData().GetProbeIrradianceMapArray();
+
+		unsigned int probeID = probe->GetFileID();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Resize depth texture buffer
@@ -186,7 +188,7 @@ namespace Engine {
 		for (unsigned int i = 0; i < 6; ++i)
 		{
 			irradianceShader->setMat4("view", captureViews[i]);
-			//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+			glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, irradianceMapArray, 0, probeID * 6 + i);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			resourceManager->DefaultCube().DrawWithNoMaterial();
@@ -201,7 +203,7 @@ namespace Engine {
 		ResourceManager* resourceManager = ResourceManager::GetInstance();
 
 		unsigned int envCubemap = probe->GetCubemapTextureID();
-		//unsigned int prefilterMap = probe->GetProbeEnvMap().prefilterID;
+		unsigned int prefilterMapArray = renderManager->GetBakedData().GetProbePrefilterMapArray();
 
 		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
 		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
@@ -209,6 +211,8 @@ namespace Engine {
 
 		unsigned int faceWidth = probe->GetFaceWidth();
 		unsigned int faceHeight = probe->GetFaceHeight();
+
+		unsigned int probeID = probe->GetFileID();
 
 		// Set up projections for each cubemap face
 		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
@@ -266,7 +270,7 @@ namespace Engine {
 			prefilterShader->setUInt("faceHeight", faceHeight);
 			for (unsigned int i = 0; i < 6; i++) {
 				prefilterShader->setMat4("view", captureViews[i]);
-				//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap, mip);
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, prefilterMapArray, mip, probeID * 6 + i);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, depthBuffer, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				resourceManager->DefaultCube().DrawWithNoMaterial();

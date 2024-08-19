@@ -22,6 +22,8 @@ namespace Engine {
 		}
 
 		~BakedData() {
+			glDeleteTextures(1, &reflectionProbeIrradianceMapArray);
+			glDeleteTextures(1, &reflectionProbePrefilterMapArray);
 			ClearReflectionProbes();
 		}
 
@@ -70,6 +72,9 @@ namespace Engine {
 		void ClearBakedData() {
 			ClearReflectionProbes();
 		}
+
+		const unsigned int GetProbeIrradianceMapArray() const { return reflectionProbeIrradianceMapArray; }
+		const unsigned int GetProbePrefilterMapArray() const { return reflectionProbePrefilterMapArray; }
 	private:
 		// Reflection probes
 		// -----------------
