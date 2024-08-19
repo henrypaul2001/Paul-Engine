@@ -35,12 +35,8 @@ namespace Engine {
 			{ "globalIBL.prefilterMap", 11 },
 			{ "brdfLUT", 12 },
 
-			{ "localIBLProbes[0].irradianceMap", 13 },
-			{ "localIBLProbes[0].prefilterMap", 14 },
-			{ "localIBLProbes[1].irradianceMap", 15 },
-			{ "localIBLProbes[1].prefilterMap", 16 },
-			{ "localIBLProbes[2].irradianceMap", 17 },
-			{ "localIBLProbes[2].prefilterMap", 18 },
+			{ "localIBLIrradianceMapArray", 13 },
+			{ "localIBLPrefilterMapArray", 14 },
 		};
 
 		// Setup freetype
@@ -459,13 +455,8 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
 		deferredLightingPassPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
-		std::string name;
-		for (int i = 0; i < 3; i++) {
-			name = "localIBLProbes[" + std::to_string(i) + "].irradianceMap";
-			deferredLightingPassPBR->setInt(name, textureSlotLookup.at(name));
-			name = "localIBLProbes[" + std::to_string(i) + "].prefilterMap";
-			deferredLightingPassPBR->setInt(name, textureSlotLookup.at(name));
-		}
+		deferredLightingPassPBR->setInt("localIBLIrradianceMapArray", textureSlotLookup.at("localIBLIrradianceMapArray"));
+		deferredLightingPassPBR->setInt("localIBLPrefilterMapArray", textureSlotLookup.at("localIBLPrefilterMapArray"));
 
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
@@ -499,12 +490,8 @@ namespace Engine {
 		defaultLitPBRShader->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
 		defaultLitPBRShader->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
-		for (int i = 0; i < 3; i++) {
-			name = "localIBLProbes[" + std::to_string(i) + "].irradianceMap";
-			defaultLitPBRShader->setInt(name, textureSlotLookup.at(name));
-			name = "localIBLProbes[" + std::to_string(i) + "].prefilterMap";
-			defaultLitPBRShader->setInt(name, textureSlotLookup.at(name));
-		}
+		defaultLitPBRShader->setInt("localIBLIrradianceMapArray", textureSlotLookup.at("localIBLIrradianceMapArray"));
+		defaultLitPBRShader->setInt("localIBLPrefilterMapArray", textureSlotLookup.at("localIBLPrefilterMapArray"));
 
 		reflectionProbeBakingPBR->Use();
 		reflectionProbeBakingPBR->setInt("dirLight.ShadowMap", textureSlotLookup.at("dirLight.ShadowMap"));

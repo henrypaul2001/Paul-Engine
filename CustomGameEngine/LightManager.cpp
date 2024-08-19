@@ -100,38 +100,38 @@ namespace Engine {
 		const std::map<float, ReflectionProbe*> culledReflectionProbes = renderManager->GetBakedData().GetCulledProbeList();
 		std::map<float, ReflectionProbe*>::const_iterator it = culledReflectionProbes.begin();
 		int index = 0;
+		unsigned int numProbes = culledReflectionProbes.size();
 
-		while (index < 3 && it != culledReflectionProbes.end()) {
-			ReflectionProbe* probe = it->second;
+		if (numProbes > 0) {
+			shader->setInt("activeLocalIBLProbes", numProbes);
 
-			/*
-			name = "localIBLProbes[" + std::to_string(index) + "].irradianceMap";
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at("localIBLIrradianceMapArray"));
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, renderManager->GetBakedData().GetProbeIrradianceMapArray());
 
-			glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
-			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
-			
-			name = "localIBLProbes[" + std::to_string(index) + "].prefilterMap";
-			glActiveTexture(GL_TEXTURE0 + textureSlots->at(name));
-			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
-			*/
+			glActiveTexture(GL_TEXTURE0 + textureSlots->at("localIBLPrefilterMapArray"));
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, renderManager->GetBakedData().GetProbePrefilterMapArray());
 
-			shader->setVec3("localIBLProbes[" + std::to_string(index) + "].worldPos", probe->GetWorldPosition());
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].soiRadius", probe->GetSOIRadius());
+			while (index < 3 && it != culledReflectionProbes.end()) {
+				ReflectionProbe* probe = it->second;
 
-			AABBPoints geoBounds = probe->GetLocalGeometryBounds();
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.minX", geoBounds.minX);
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.minY", geoBounds.minY);
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.minZ", geoBounds.minZ);
+				shader->setUInt("localIBLProbes[" + std::to_string(index) + "].iblID", probe->GetFileID());
 
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.maxX", geoBounds.maxX);
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.maxY", geoBounds.maxY);
-			shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.maxZ", geoBounds.maxZ);
+				shader->setVec3("localIBLProbes[" + std::to_string(index) + "].worldPos", probe->GetWorldPosition());
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].soiRadius", probe->GetSOIRadius());
 
-			shader->setInt("activeLocalIBLProbes", index + 1);
+				AABBPoints geoBounds = probe->GetLocalGeometryBounds();
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.minX", geoBounds.minX);
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.minY", geoBounds.minY);
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.minZ", geoBounds.minZ);
 
-			// Increment iterator
-			it++;
-			index = std::distance(culledReflectionProbes.begin(), it);
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.maxX", geoBounds.maxX);
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.maxY", geoBounds.maxY);
+				shader->setFloat("localIBLProbes[" + std::to_string(index) + "].geoApproximationAABB.maxZ", geoBounds.maxZ);
+
+				// Increment iterator
+				it++;
+				index = std::distance(culledReflectionProbes.begin(), it);
+			}
 		}
 	}
 

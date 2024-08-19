@@ -88,8 +88,7 @@ struct AABB {
 };
 
 struct LocalIBL {
-    samplerCube irradianceMap;
-    samplerCube prefilterMap;
+    uint iblID;
     vec3 worldPos;
     float soiRadius; // Sphere of influence
 
@@ -97,6 +96,8 @@ struct LocalIBL {
 };
 uniform LocalIBL localIBLProbes[NR_LOCAL_REFLECTION_PROBES];
 uniform int activeLocalIBLProbes;
+uniform samplerCubeArray localIBLIrradianceMapArray;
+uniform samplerCubeArray localIBLPrefilterMapArray;
 
 // -------------|   INPUT  |-----------------
 // ------------------------------------------
@@ -505,6 +506,24 @@ bool IntersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax, out 
     return true;
 }
 
+vec3 CalculateAmbienceFromIBL(uint iblIndex) {
+        vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
+        
+        vec3 kS = F;
+        vec3 kD = 1.0 - kS;
+        kD *= 1.0 - Metallic;
+
+        vec3 irradiance = texture(localIBLIrradianceMapArray, vec4(N, iblIndex)).rgb;
+        vec3 diffuse = irradiance * Albedo;
+
+        const float MAX_REFLECTION_LOD = 4.0;
+        vec3 prefilteredColour = textureLod(localIBLPrefilterMapArray, vec4(RParallaxed, iblIndex), Roughness * MAX_REFLECTION_LOD).rgb;
+        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+        vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
+
+        return (kD * diffuse + specular) * AO;
+}
+
 vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap) {
         vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
         
@@ -538,7 +557,7 @@ vec3 ParallaxCorrectReflection(AABB aabb, vec3 original, vec3 correctionCenter) 
 vec3 CalculateAmbienceFromIBL(LocalIBL iblProbe) {
     // Run parallax correction
     RParallaxed = ParallaxCorrectReflection(iblProbe.geoApproximationAABB, R, iblProbe.worldPos);
-    return CalculateAmbienceFromIBL(iblProbe.prefilterMap, iblProbe.irradianceMap);
+    return CalculateAmbienceFromIBL(iblProbe.iblID);
 }
 
 void CalculateLighting() {
