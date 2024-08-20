@@ -151,11 +151,10 @@ namespace Engine {
 
 			// - Load irradiance -
 			// -------------------
-			/*
 			std::string irradianceFilepath = probeFilepath + "/Irradiance";
-			unsigned int irradiance = envMap.irradianceID;
-			glBindTexture(GL_TEXTURE_CUBE_MAP, irradiance);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbeIrradianceMapArray);
 			filepath = irradianceFilepath;
+			unsigned int layer;
 			for (unsigned int j = 0; j < 6; j++) {
 				filepath = irradianceFilepath + faces[j];
 
@@ -171,8 +170,10 @@ namespace Engine {
 						break;
 					}
 
+					layer = i * 6 + j;
+
 					// Read into texture
-					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, floatData);
+					glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, 0, 0, layer, 32, 32, 1, GL_RGB, GL_FLOAT, floatData);
 				}
 				else {
 					std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
@@ -180,7 +181,6 @@ namespace Engine {
 				stbi_image_free(floatData);
 			}
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-			*/
 
 			// -- Load prefilter --
 			// --------------------

@@ -24,8 +24,8 @@ namespace Engine {
 		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 
-		systemManager->BakeReflectionProbes(entityManager->Entities());
-		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
+		//systemManager->BakeReflectionProbes(entityManager->Entities());
+		renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
 
 	PBRScene::~PBRScene()
