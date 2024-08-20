@@ -43,23 +43,24 @@ namespace Engine {
 
 			// - Write irradiance -
 			// --------------------
-			/*
 			floatData = new GLfloat[32 * 32 * 3];
 
-			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.irradianceID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbeIrradianceMapArray);
 			glFinish();
 
+			unsigned int layer;
 			for (unsigned int j = 0; j < 6; j++) {
 				path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/Irradiance/" += cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + j] + ".hdr";
 
-				glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB, GL_FLOAT, floatData);
+				layer = i * 6 + j;
+
+				glGetTextureSubImage(reflectionProbeIrradianceMapArray, 0, 0, 0, layer, 32, 32, 1, GL_RGB, GL_FLOAT, 32 * 32 * 3 * sizeof(GLfloat), floatData);
 				glFinish();
 
 				stbi_write_hdr(path.c_str(), 32, 32, 3, floatData);
 			}
 
 			delete[] floatData;
-			*/
 
 			// -- Write prefilter --
 			// ---------------------
