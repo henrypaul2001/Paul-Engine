@@ -180,14 +180,13 @@ namespace Engine {
 				}
 				stbi_image_free(floatData);
 			}
-			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
 
 			// -- Load prefilter --
 			// --------------------
-			/*
+			stbi_set_flip_vertically_on_load(false);
 			std::string prefilterFilepath = probeFilepath + "/Prefilter/Mip ";
-			unsigned int prefilter = envMap.prefilterID;
-			glBindTexture(GL_TEXTURE_CUBE_MAP, prefilter);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbePrefilterMapArray);
 			unsigned int mipWidth = faceWidth / 2;
 			unsigned int mipHeight = faceHeight / 2;
 			for (unsigned int mip = 0; mip < 5; mip++) {
@@ -205,9 +204,11 @@ namespace Engine {
 							stbi_image_free(floatData);
 							break;
 						}
+						
+						layer = i * 6 + j;
 
 						// Read into texture
-						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, mip, GL_RGB16F, mipWidth, mipHeight, 0, GL_RGB, GL_FLOAT, floatData);
+						glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, mip, 0, 0, layer, mipWidth, mipHeight, 1, GL_RGB, GL_FLOAT, floatData);
 					}
 					else {
 						std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
@@ -217,9 +218,8 @@ namespace Engine {
 				mipWidth /= 2;
 				mipHeight /= 2;
 			}
-			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-			*/
 		}
 	}
 }
