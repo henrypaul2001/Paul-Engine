@@ -4,7 +4,7 @@ layout (location = 1) out vec4 BrightColour;
 
 in vec2 TexCoords;
 
-#define NR_LOCAL_REFLECTION_PROBES 3
+#define NR_LOCAL_REFLECTION_PROBES 32
 #define NR_REAL_TIME_LIGHTS 8
 struct DirLight {
     vec3 Direction;

@@ -65,7 +65,7 @@ uniform samplerCubeArray pointLightShadowArray;
 
 // -------------|    IBL   |-----------------
 // ------------------------------------------
-#define NR_LOCAL_REFLECTION_PROBES 3
+#define NR_LOCAL_REFLECTION_PROBES 32
 struct GlobalIBL {
     samplerCube irradianceMap;
     samplerCube prefilterMap;

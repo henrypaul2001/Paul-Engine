@@ -101,7 +101,7 @@ namespace Engine {
 		std::map<float, ReflectionProbe*>::const_iterator it = culledReflectionProbes.begin();
 		int index = 0;
 		unsigned int numProbes = culledReflectionProbes.size();
-
+		const unsigned int maxProbes = 32u;
 		if (numProbes > 0) {
 			shader->setInt("activeLocalIBLProbes", numProbes);
 
@@ -111,7 +111,7 @@ namespace Engine {
 			glActiveTexture(GL_TEXTURE0 + textureSlots->at("localIBLPrefilterMapArray"));
 			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, renderManager->GetBakedData().GetProbePrefilterMapArray());
 
-			while (index < 3 && it != culledReflectionProbes.end()) {
+			while (index < maxProbes && it != culledReflectionProbes.end()) {
 				ReflectionProbe* probe = it->second;
 
 				shader->setUInt("localIBLProbes[" + std::to_string(index) + "].iblID", probe->GetFileID());

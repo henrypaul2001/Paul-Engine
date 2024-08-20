@@ -22,8 +22,8 @@ namespace Engine {
 		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 
-		systemManager->BakeReflectionProbes(entityManager->Entities());
-		//renderManager->GetBakedData().LoadReflectionProbesFromFile();
+		//systemManager->BakeReflectionProbes(entityManager->Entities());
+		renderManager->GetBakedData().LoadReflectionProbesFromFile();
 	}
 
 	IBLScene::~IBLScene()
