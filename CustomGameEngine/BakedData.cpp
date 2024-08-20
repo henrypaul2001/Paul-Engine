@@ -64,9 +64,8 @@ namespace Engine {
 
 			// -- Write prefilter --
 			// ---------------------
-			/*
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, envMap.prefilterID);
+			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbePrefilterMapArray);
 			glFinish();
 
 			std::string mipString;
@@ -77,7 +76,9 @@ namespace Engine {
 				for (unsigned int j = 0; j < 6; j++) {
 					path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/Prefilter/Mip " + std::to_string(mip) + "/" + cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + j] + ".hdr";
 
-					glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, mip, GL_RGB, GL_FLOAT, floatData);
+					layer = i * 6 + j;
+
+					glGetTextureSubImage(reflectionProbePrefilterMapArray, mip, 0, 0, layer, mipWidth, mipHeight, 1, GL_RGB, GL_FLOAT, mipWidth * mipHeight * 3 * sizeof(GLfloat), floatData);
 					glFinish();
 
 					stbi_write_hdr(path.c_str(), mipWidth, mipHeight, 3, floatData);
@@ -86,7 +87,6 @@ namespace Engine {
 				mipHeight /= 2;
 				delete[] floatData;
 			}
-			*/
 		}
 	}
 
