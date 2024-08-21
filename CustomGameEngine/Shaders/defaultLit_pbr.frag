@@ -635,9 +635,9 @@ void CalculateLighting() {
         for (int i = 0; i < activeLocalIBLProbes && i < NR_LOCAL_REFLECTION_PROBES; i++) {
             float distanceToProbe = distance(vertex_data.WorldPos, localIBLProbes[i].worldPos);
 
-            float contribution = 1.0 - (distanceToProbe / localIBLProbes[i].soiRadius);
+            //float contribution = 1.0 - (distanceToProbe / localIBLProbes[i].soiRadius);
 
-            //float contribution = 1.0 / (1.0 + distanceToProbe * distanceToProbe / (localIBLProbes[i].soiRadius * localIBLProbes[i].soiRadius));
+            float contribution = 1.0 / (1.0 + distanceToProbe * distanceToProbe / (localIBLProbes[i].soiRadius * localIBLProbes[i].soiRadius));
 
             if (contribution > 0.0) {
                 vec3 probeAmbient = CalculateAmbienceFromIBL(localIBLProbes[i]);
