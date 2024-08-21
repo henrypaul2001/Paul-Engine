@@ -791,14 +791,14 @@ namespace Engine {
 		dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		entityManager->AddEntity(floor);
 
-		//Entity* ceiling = new Entity("Cieling");
-		//ceiling->AddComponent(new ComponentTransform(0.0f, 5.0f, 0.0));
-		//ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		//dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
-		//dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
-		//dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
-		//dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
-		//entityManager->AddEntity(ceiling);
+		Entity* ceiling = new Entity("Cieling");
+		ceiling->AddComponent(new ComponentTransform(0.0f, 5.0f, 0.0));
+		ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
+		dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
+		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+		dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
+		entityManager->AddEntity(ceiling);
 
 		Entity* rainFloor = new Entity("Rain Floor");
 		rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
@@ -1645,17 +1645,17 @@ namespace Engine {
 
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -17.5f, 2.5f, 10.0f, 2.5f));
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -2.5f, 2.5f, 10.0f, 17.5f));
-		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -2.5f, 17.5f, 10.0f, 17.5f));
-		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -17.5f, 17.5f, 10.0f, 2.5f));
-		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 10.0f, 10.0f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -17.5f, 2.5f, 3.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -2.5f, 2.5f, 3.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -2.5f, 17.5f, 3.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -17.5f, 17.5f, 3.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 3.0f, 10.0f));
 
 		localBounds.push_back(AABBPoints(-15.0f, -1.0f, -0.25f, 5.0f, 5.0f, 6.5f));
 		localBounds.push_back(AABBPoints(-15.0f, -1.0f, -9.5f, 5.0f, 5.0f, 1.25f));
 		localBounds.push_back(AABBPoints(-1.5f, -1.0f, -12.0f, 2.5f, 5.0f, 9.0f));
 		localBounds.push_back(AABBPoints(-12.5f, -1.0f, -12.0f, 1.5f, 5.0f, 9.0f));
-		localBounds.push_back(AABBPoints(-1.0f, -0.2f, -0.75f, 1.5f, 0.5f, 0.75f));
+		localBounds.push_back(AABBPoints(-1.0f, -0.2f, -0.75f, 1.5f, 5.8f, 0.75f));
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(7.0f);
