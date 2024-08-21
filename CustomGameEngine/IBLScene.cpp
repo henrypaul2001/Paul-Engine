@@ -58,7 +58,7 @@ namespace Engine {
 		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
-		bricks->textureScaling = glm::vec2(5.0f, 30.0f);
+		bricks->textureScaling = glm::vec2(5.0f, 50.0f);
 
 		PBRMaterial* geoBallMaterial = new PBRMaterial();
 		geoBallMaterial->albedo = glm::vec3(0.5f, 0.5f, 0.65f);
@@ -81,7 +81,7 @@ namespace Engine {
 		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->isTransparent = true;
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
-		raindrops->textureScaling = glm::vec2(5.0f, 30.0f);
+		raindrops->textureScaling = glm::vec2(5.0f, 50.0f);
 #pragma endregion
 
 #pragma region Scene
@@ -263,11 +263,11 @@ namespace Engine {
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(8.0f);
-		soiRadii.push_back(40.0f);
-		soiRadii.push_back(40.0f);
-		soiRadii.push_back(40.0f);
-		soiRadii.push_back(40.0f);
-		soiRadii.push_back(40.0f);
+		soiRadii.push_back(25.0f);
+		soiRadii.push_back(25.0f);
+		soiRadii.push_back(25.0f);
+		soiRadii.push_back(25.0f);
+		soiRadii.push_back(25.0f);
 
 		std::vector<float> nearClips;
 		nearClips.push_back(0.5f);
