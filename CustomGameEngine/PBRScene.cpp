@@ -1627,6 +1627,8 @@ namespace Engine {
 		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
 		entityManager->AddEntity(nonPBRTest);
 
+		// (5.0f, -1.0f, 2.0f)
+
 		// Reflection probes
 		std::vector<glm::vec3> positions;
 		positions.push_back(glm::vec3(7.5f, 2.0f, 7.5f));
@@ -1635,13 +1637,25 @@ namespace Engine {
 		positions.push_back(glm::vec3(-7.5f, 2.0f, 7.5f));
 		positions.push_back(glm::vec3(0.0f, 2.0f, 0.0f));
 
+		positions.push_back(glm::vec3(5.0f, 0.0f, 3.5f)); // behind cart
+		positions.push_back(glm::vec3(5.0f, 0.0f, 0.5f)); // infront cart
+		positions.push_back(glm::vec3(7.5f, 0.0f, 2.0f)); // right cart
+		positions.push_back(glm::vec3(2.5f, 0.0f, 2.0f)); // left cart
+		positions.push_back(glm::vec3(5.0f, -0.8f, 2.25f)); // below cart
+
 		// Temporary values
 		std::vector<AABBPoints> localBounds;
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -17.5f, 2.5f, 3.0f, 2.5f));
-		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -2.5f, 2.5f, 3.0f, 17.5f));
-		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -2.5f, 17.5f, 3.0f, 17.5f));
-		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -17.5f, 17.5f, 3.0f, 2.5f));
-		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 3.0f, 10.0f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -17.5f, 2.5f, 10.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-17.5f, -3.0f, -2.5f, 2.5f, 10.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -2.5f, 17.5f, 10.0f, 17.5f));
+		localBounds.push_back(AABBPoints(-2.5f, -3.0f, -17.5f, 17.5f, 10.0f, 2.5f));
+		localBounds.push_back(AABBPoints(-10.0f, -3.0f, -10.0f, 10.0f, 10.0f, 10.0f));
+
+		localBounds.push_back(AABBPoints(-15.0f, -1.0f, -0.25f, 5.0f, 5.0f, 6.5f));
+		localBounds.push_back(AABBPoints(-15.0f, -1.0f, -9.5f, 5.0f, 5.0f, 1.25f));
+		localBounds.push_back(AABBPoints(-1.5f, -1.0f, -12.0f, 2.5f, 5.0f, 9.0f));
+		localBounds.push_back(AABBPoints(-12.5f, -1.0f, -12.0f, 1.5f, 5.0f, 9.0f));
+		localBounds.push_back(AABBPoints(-1.0f, -0.2f, -0.75f, 1.5f, 0.5f, 0.75f));
 
 		std::vector<float> soiRadii;
 		soiRadii.push_back(7.0f);
@@ -1649,6 +1663,11 @@ namespace Engine {
 		soiRadii.push_back(7.0f);
 		soiRadii.push_back(7.0f);
 		soiRadii.push_back(15.0f);
+		soiRadii.push_back(2.5f);
+		soiRadii.push_back(2.5f);
+		soiRadii.push_back(2.5f);
+		soiRadii.push_back(2.5f);
+		soiRadii.push_back(0.75f);
 
 		std::vector<float> nearClips;
 		nearClips.push_back(0.5f);
@@ -1656,6 +1675,11 @@ namespace Engine {
 		nearClips.push_back(0.5f);
 		nearClips.push_back(0.5f);
 		nearClips.push_back(0.5f);
+		nearClips.push_back(0.25f);
+		nearClips.push_back(0.05f);
+		nearClips.push_back(0.25f);
+		nearClips.push_back(0.25f);
+		nearClips.push_back(0.01f);
 
 		std::vector<float> farClips;
 		farClips.push_back(30.0f);
@@ -1663,6 +1687,11 @@ namespace Engine {
 		farClips.push_back(30.0f);
 		farClips.push_back(30.0f);
 		farClips.push_back(30.0f);
+		farClips.push_back(4.5f);
+		farClips.push_back(4.5f);
+		farClips.push_back(4.5f);
+		farClips.push_back(4.5f);
+		farClips.push_back(2.5f);
 
 		std::vector<bool> renderSkybox;
 		renderSkybox.push_back(true);
@@ -1670,6 +1699,11 @@ namespace Engine {
 		renderSkybox.push_back(true);
 		renderSkybox.push_back(true);
 		renderSkybox.push_back(true);
+		renderSkybox.push_back(false);
+		renderSkybox.push_back(false);
+		renderSkybox.push_back(false);
+		renderSkybox.push_back(false);
+		renderSkybox.push_back(false);
 
 		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, nearClips, farClips, renderSkybox, name, 1024u);
 	}
