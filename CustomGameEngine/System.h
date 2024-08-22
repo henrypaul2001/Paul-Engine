@@ -24,6 +24,7 @@ namespace Engine
 		SYSTEM_STATE_UPDATER = 1 << 16,
 		SYSTEM_REFLECTION_BAKING = 1 << 17,
 		SYSTEM_FRUSTUM_CULLING = 1 << 18,
+		SYSTEM_RENDER_COLLIDERS = 1 << 19,
 	};
 	inline SystemTypes operator| (SystemTypes a, SystemTypes b) { return (SystemTypes)((int)a | (int)b); }
 	inline SystemTypes operator|= (SystemTypes a, SystemTypes b) { return (SystemTypes)((int&)a |= (int)b); }

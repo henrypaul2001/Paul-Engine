@@ -123,6 +123,8 @@ namespace Engine {
 
 		void Draw(Shader& shader, bool pbr, int instanceNum = 0);
 		void DrawWithNoMaterial(int instanceNum = 0);
+
+		AABBPoints& GetGeometryAABB() { return geometryAABB; }
 	private:
 		GLenum drawPrimitive;
 		unsigned int VBO, EBO;

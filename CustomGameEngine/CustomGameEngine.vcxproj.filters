@@ -432,6 +432,9 @@
     <ClInclude Include="FlatTextureAtlas.h">
       <Filter>Header Files\Engine\Utility\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="SystemRenderColliders.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -746,6 +749,9 @@
     <ClCompile Include="FlatTextureAtlas.cpp">
       <Filter>Source Files\Engine\Utility\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="SystemRenderColliders.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\defaultLit.frag">
@@ -899,6 +905,15 @@
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="Shaders\reflectionProbeBaking.frag">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\colliderDebug.vert">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\colliderDebug.geom">
+      <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\colliderDebug.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
     </None>
   </ItemGroup>
