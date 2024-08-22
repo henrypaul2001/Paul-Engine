@@ -9,10 +9,10 @@ layout (std140) uniform Common
     vec3 viewPos;
 };
 
-out mat4 Projection;
+out mat4[] Projection;
 
 void main() {
-    Projection = projection;
+    Projection[0] = projection;
 
     gl_Position = view * vec4(aPos, 1.0);
 }
