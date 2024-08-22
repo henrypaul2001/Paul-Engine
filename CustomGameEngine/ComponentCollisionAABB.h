@@ -37,6 +37,31 @@ namespace Engine {
 			return corners;
 		}
 
+		void TransformAABB(const glm::mat3& rotationMatrix, const glm::vec3& scale) {
+			const std::vector<glm::vec3> corners = m->GetGeometryAABB().GetCorners();
+			std::vector<glm::vec3> transformedCorners(8);
+
+			for (int i = 0; i < 8; i++) {
+				transformedCorners[i] = rotationMatrix * (corners[i] * scale);
+			}
+
+			glm::vec3 newMin = transformedCorners[0];
+			glm::vec3 newMax = transformedCorners[0];
+
+			// Find the new min/max extents
+			for (int i = 1; i < 8; i++) {
+				newMin = glm::min(newMin, transformedCorners[i]);
+				newMax = glm::max(newMax, transformedCorners[i]);
+			}
+
+			minX = newMin.x;
+			minY = newMin.y;
+			minZ = newMin.z;
+			maxX = newMax.x;
+			maxY = newMax.y;
+			maxZ = newMax.z;
+		}
+
 		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
 		AABBPoints() : minX(-5.0f), minY(-5.0f), minZ(-5.0f), maxX(5.0f), maxY(5.0f), maxZ(5.0f) {}
 	};
