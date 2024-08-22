@@ -21,6 +21,7 @@ namespace Engine {
 		this->indices = indices;
 		this->PBRmaterial = pbrMaterial;
 		SetupMesh();
+		SetupGeometryAABB();
 	}
 
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material)
@@ -29,6 +30,7 @@ namespace Engine {
 		this->indices = indices;
 		this->material = material;
 		SetupMesh();
+		SetupGeometryAABB();
 	}
 
 	Mesh::~Mesh()
@@ -375,5 +377,23 @@ namespace Engine {
 		glBindVertexArray(0);
 
 		// 7, 8, 9, 10 reserved for instancing
+	}
+
+	void Mesh::SetupGeometryAABB()
+	{
+		float minX = 0.0f, minY = 0.0f, minZ = 0.0f, maxX = 0.0f, maxY = 0.0f, maxZ = 0.0f;
+		for (const Vertex& v : vertices) {
+			const float x = v.Position.x, y = v.Position.y, z = v.Position.z;
+			if (x < minX) { minX = x; }
+			else if (x > maxX) { maxX = x; }
+
+			if (y < minY) { minY = y; }
+			else if (y > maxY) { maxY = y; }
+
+			if (z < minZ) { minZ = z; }
+			else if (z > maxZ) { maxZ = z; }
+		}
+
+		geometryAABB = AABBPoints(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 }

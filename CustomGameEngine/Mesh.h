@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include "ComponentCollisionAABB.h"
 namespace Engine {
 
 	static constexpr int MaxBoneInfluence() { return 8; }
@@ -127,9 +128,11 @@ namespace Engine {
 		unsigned int VBO, EBO;
 		Material* material;
 		PBRMaterial* PBRmaterial;
+		AABBPoints geometryAABB;
 
 		const std::unordered_map<std::string, unsigned int>* textureSlots;
 
 		void SetupMesh();
+		void SetupGeometryAABB();
 	};
 }
