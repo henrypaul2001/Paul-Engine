@@ -376,6 +376,7 @@ namespace Engine {
 		advBloomCombineShader = LoadShader("Shaders/screenQuad.vert", "Shaders/advBloomCombine.frag", true);
 		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBaking.frag", true);
 		reflectionProbeBakingPBR = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBakingPBR.frag", true);
+		colliderDebug = LoadShader("Shaders/colliderDebug.vert", "Shaders/colliderDebug.frag", "Shaders/colliderDebug.geom", true);
 
 		advBloomCombineShader->Use();
 		advBloomCombineShader->setInt("screenTexture", 0);
@@ -540,6 +541,7 @@ namespace Engine {
 		unsigned int defaultLitPBRBlockLocation = glGetUniformBlockIndex(defaultLitPBRShader->GetID(), "Common");
 		unsigned int defaultParticleLocation = glGetUniformBlockIndex(particleShader->GetID(), "Common");
 		unsigned int defaultPointParticleLocation = glGetUniformBlockIndex(pointParticleShader->GetID(), "Common");
+		unsigned int colliderDebugLocation = glGetUniformBlockIndex(colliderDebug->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
@@ -550,6 +552,7 @@ namespace Engine {
 		glUniformBlockBinding(defaultLitPBRShader->GetID(), defaultLitPBRBlockLocation, 0);
 		glUniformBlockBinding(particleShader->GetID(), defaultParticleLocation, 0);
 		glUniformBlockBinding(pointParticleShader->GetID(), defaultPointParticleLocation, 0);
+		glUniformBlockBinding(colliderDebug->GetID(), colliderDebugLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);

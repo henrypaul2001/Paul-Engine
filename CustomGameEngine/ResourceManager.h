@@ -75,6 +75,8 @@ namespace Engine {
 		Shader* reflectionProbeBaking;
 		Shader* reflectionProbeBakingPBR;
 
+		Shader* colliderDebug;
+
 		// Deferred shaders
 		// ----------------
 		Shader* deferredGeometryPass;
@@ -186,6 +188,7 @@ namespace Engine {
 		Shader* AdvBloomCombineShader() const { return advBloomCombineShader; }
 		Shader* ReflectionProbeBakingShader() const { return reflectionProbeBaking; }
 		Shader* ReflectionProbeBakingShaderPBR() const { return reflectionProbeBakingPBR; }
+		Shader* ColliderDebugShader() const { return colliderDebug; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
