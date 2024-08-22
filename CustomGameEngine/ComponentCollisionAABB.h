@@ -20,6 +20,23 @@ namespace Engine {
 			return biggest;
 		}
 
+		const std::vector<glm::vec3>& GetCorners() const {
+			glm::vec3 minExtent = glm::vec3(minX, minY, minZ);
+			glm::vec3 maxExtent = glm::vec3(maxX, maxY, maxZ);
+
+			std::vector<glm::vec3> corners(8);
+			corners[0] = glm::vec3(minExtent.x, minExtent.y, minExtent.z);
+			corners[1] = glm::vec3(maxExtent.x, minExtent.y, minExtent.z);
+			corners[2] = glm::vec3(minExtent.x, maxExtent.y, minExtent.z);
+			corners[3] = glm::vec3(maxExtent.x, maxExtent.y, minExtent.z);
+			corners[4] = glm::vec3(minExtent.x, minExtent.y, maxExtent.z);
+			corners[5] = glm::vec3(maxExtent.x, minExtent.y, maxExtent.z);
+			corners[6] = glm::vec3(minExtent.x, maxExtent.y, maxExtent.z);
+			corners[7] = glm::vec3(maxExtent.x, maxExtent.y, maxExtent.z);
+
+			return corners;
+		}
+
 		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
 		AABBPoints() : minX(-5.0f), minY(-5.0f), minZ(-5.0f), maxX(5.0f), maxY(5.0f), maxZ(5.0f) {}
 	};
