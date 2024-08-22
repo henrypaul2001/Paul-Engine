@@ -4,13 +4,19 @@ layout (line_strip, max_vertices = 24) out;
 
 uniform float MinX, MinY, MinZ, MaxX, MaxY, MaxZ;
 
-in mat4[] Projection;
+// uniform block
+layout (std140) uniform Common
+{
+    mat4 projection;
+    mat4 view;
+    vec3 viewPos;
+};
 
 void EmitLine(vec3 start, vec3 end) {
-	gl_Position = Projection[0] * vec4(start, 1.0);
+	gl_Position = projection * view * vec4(start, 1.0);
 	EmitVertex();
 
-	gl_Position = Projection[0] * vec4(end, 1.0);
+	gl_Position = projection * view * vec4(end, 1.0);
 	EmitVertex();
 
 	EndPrimitive();
