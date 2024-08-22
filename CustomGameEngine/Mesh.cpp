@@ -381,7 +381,7 @@ namespace Engine {
 
 	void Mesh::SetupGeometryAABB()
 	{
-		float minX = 0.0f, minY = 0.0f, minZ = 0.0f, maxX = 0.0f, maxY = 0.0f, maxZ = 0.0f;
+		float minX = vertices[0].Position.x, minY = vertices[0].Position.y, minZ = vertices[0].Position.z, maxX = vertices[0].Position.x, maxY = vertices[0].Position.y, maxZ = vertices[0].Position.z;
 		for (const Vertex& v : vertices) {
 			const float x = v.Position.x, y = v.Position.y, z = v.Position.z;
 			if (x < minX) { minX = x; }

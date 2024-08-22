@@ -79,6 +79,24 @@ namespace Engine {
 
 		std::vector<Mesh*> meshes;
 		//std::vector<Texture> textures_loaded;
+
+		void UpdateGeometryBoundingBoxes(glm::mat4 modelMatrix) {
+			glm::vec3 scale;
+			scale.x = glm::length(glm::vec3(modelMatrix[0]));
+			scale.y = glm::length(glm::vec3(modelMatrix[1]));
+			scale.z = glm::length(glm::vec3(modelMatrix[2]));
+
+			glm::mat3 rotation;
+			rotation[0] = glm::vec3(modelMatrix[0]) / scale.x;
+			rotation[1] = glm::vec3(modelMatrix[1]) / scale.y;
+			rotation[2] = glm::vec3(modelMatrix[2]) / scale.z;
+
+			// Transform each AABB of each mesh in this model
+			for (Mesh* m : meshes) {
+				m->GetGeometryAABB().TransformAABB(rotation, scale);
+			}
+		}
+
 	private:
 		std::string directory;
 		bool pbr;

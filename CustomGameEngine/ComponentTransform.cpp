@@ -164,6 +164,10 @@ namespace Engine
 				childTransform->UpdateModelMatrix();
 			}
 		}
+
+		if (owner && owner->ContainsComponents(COMPONENT_GEOMETRY)) {
+			owner->GetGeometryComponent()->GetModel()->UpdateGeometryBoundingBoxes(worldModelMatrix);
+		}
 	}
 
 	glm::mat4 ComponentTransform::GetWorldModelMatrix()

@@ -10,6 +10,13 @@ namespace Engine {
 		float maxY;
 		float maxZ;
 
+		float startMinX;
+		float startMinY;
+		float startMinZ;
+		float startMaxX;
+		float startMaxY;
+		float startMaxZ;
+
 		float GetBiggestExtent() const {
 			float x = maxX - minX;
 			float y = maxY - minY;
@@ -20,7 +27,24 @@ namespace Engine {
 			return biggest;
 		}
 
-		const std::vector<glm::vec3>& GetCorners() const {
+		std::vector<glm::vec3> GetStartCorners() const {
+			glm::vec3 minExtent = glm::vec3(startMinX, startMinY, startMinZ);
+			glm::vec3 maxExtent = glm::vec3(startMaxX, startMaxY, startMaxZ);
+
+			std::vector<glm::vec3> corners(8);
+			corners[0] = glm::vec3(minExtent.x, minExtent.y, minExtent.z);
+			corners[1] = glm::vec3(maxExtent.x, minExtent.y, minExtent.z);
+			corners[2] = glm::vec3(minExtent.x, maxExtent.y, minExtent.z);
+			corners[3] = glm::vec3(maxExtent.x, maxExtent.y, minExtent.z);
+			corners[4] = glm::vec3(minExtent.x, minExtent.y, maxExtent.z);
+			corners[5] = glm::vec3(maxExtent.x, minExtent.y, maxExtent.z);
+			corners[6] = glm::vec3(minExtent.x, maxExtent.y, maxExtent.z);
+			corners[7] = glm::vec3(maxExtent.x, maxExtent.y, maxExtent.z);
+
+			return corners;
+		}
+
+		std::vector<glm::vec3> GetCorners() const {
 			glm::vec3 minExtent = glm::vec3(minX, minY, minZ);
 			glm::vec3 maxExtent = glm::vec3(maxX, maxY, maxZ);
 
@@ -38,20 +62,19 @@ namespace Engine {
 		}
 
 		void TransformAABB(const glm::mat3& rotationMatrix, const glm::vec3& scale) {
-			const std::vector<glm::vec3> corners = m->GetGeometryAABB().GetCorners();
-			std::vector<glm::vec3> transformedCorners(8);
+			std::vector<glm::vec3> corners = GetStartCorners();
 
 			for (int i = 0; i < 8; i++) {
-				transformedCorners[i] = rotationMatrix * (corners[i] * scale);
+				corners[i] = rotationMatrix * (corners[i] * scale);
 			}
 
-			glm::vec3 newMin = transformedCorners[0];
-			glm::vec3 newMax = transformedCorners[0];
+			glm::vec3 newMin = corners[0];
+			glm::vec3 newMax = corners[0];
 
 			// Find the new min/max extents
 			for (int i = 1; i < 8; i++) {
-				newMin = glm::min(newMin, transformedCorners[i]);
-				newMax = glm::max(newMax, transformedCorners[i]);
+				newMin = glm::min(newMin, corners[i]);
+				newMax = glm::max(newMax, corners[i]);
 			}
 
 			minX = newMin.x;
@@ -62,8 +85,8 @@ namespace Engine {
 			maxZ = newMax.z;
 		}
 
-		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ) {}
-		AABBPoints() : minX(-5.0f), minY(-5.0f), minZ(-5.0f), maxX(5.0f), maxY(5.0f), maxZ(5.0f) {}
+		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
+		AABBPoints() : minX(-5.0f), minY(-5.0f), minZ(-5.0f), maxX(5.0f), maxY(5.0f), maxZ(5.0f), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
 	};
 
 	class ComponentCollisionAABB : public ComponentCollision

@@ -66,5 +66,8 @@ namespace Engine
 
 		ComponentTypes ComponentType() override { return COMPONENT_TRANSFORM; }
 		void Close() override;
+		void OnAddedToEntity() override {
+			UpdateModelMatrix();
+		}
 	};
 }

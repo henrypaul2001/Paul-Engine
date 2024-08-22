@@ -206,6 +206,8 @@ namespace Engine {
 		if (instanced) {
 			AddNewInstanceSource(GetOwner());
 		}
+
+		model->UpdateGeometryBoundingBoxes(owner->GetTransformComponent()->GetWorldModelMatrix());
 	}
 
 	void ComponentGeometry::ApplyMaterialToModel(Material* newMaterial)
