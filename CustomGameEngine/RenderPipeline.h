@@ -3,6 +3,7 @@
 #include "System.h"
 #include "Shader.h"
 #include "SystemParticleRenderer.h"
+#include "SystemRenderColliders.h"
 namespace Engine {
 	class SystemRender;
 	class SystemShadowMapping;
@@ -43,6 +44,7 @@ namespace Engine {
 		SystemShadowMapping* shadowmapSystem;
 		SystemUIRender* uiRenderSystem;
 		SystemParticleRenderer* particleRenderSystem;
+		SystemRenderColliders* colliderDebugRenderSystem;
 
 		std::vector<System*> renderSystems;
 

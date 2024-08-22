@@ -46,6 +46,9 @@ namespace Engine {
 			else if (s->Name() == SYSTEM_PARTICLE_RENDER) {
 				particleRenderSystem = dynamic_cast<SystemParticleRenderer*>(s);
 			}
+			else if (s->Name() == SYSTEM_RENDER_COLLIDERS) {
+				colliderDebugRenderSystem = dynamic_cast<SystemRenderColliders*>(s);
+			}
 		}
 	}
 

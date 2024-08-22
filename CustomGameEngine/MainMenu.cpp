@@ -268,5 +268,6 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemRenderColliders(), RENDER_SYSTEMS);
 	}
 }

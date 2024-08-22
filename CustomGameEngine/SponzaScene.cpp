@@ -171,6 +171,7 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemRenderColliders(), RENDER_SYSTEMS);
 	}
 
 	void SponzaScene::Update()

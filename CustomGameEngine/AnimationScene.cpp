@@ -190,5 +190,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemSkeletalAnimationUpdater(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemRenderColliders(), RENDER_SYSTEMS);
 	}
 }

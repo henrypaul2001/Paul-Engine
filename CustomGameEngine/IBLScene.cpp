@@ -308,6 +308,7 @@ namespace Engine {
 		SystemReflectionBaking* reflectionSystem = new SystemReflectionBaking();
 		reflectionSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(reflectionSystem, RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemRenderColliders(), RENDER_SYSTEMS);
 	}
 
 	void IBLScene::SetupScene()

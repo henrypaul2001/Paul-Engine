@@ -90,6 +90,12 @@ namespace Engine {
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
+		// Render debug colliders
+		// ----------------------
+		if (colliderDebugRenderSystem != nullptr) {
+			colliderDebugRenderSystem->Run(entities);
+		}
+
 		// Render transparent objects
 		renderSystem->DrawTransparentGeometry(false);
 
@@ -100,7 +106,7 @@ namespace Engine {
 
 		// Run any other render systems that may have been added
 		for (System* s : renderSystems) {
-			if (s->Name() != SYSTEM_RENDER && s->Name() != SYSTEM_UI_RENDER && s->Name() != SYSTEM_SHADOWMAP && s->Name() != SYSTEM_PARTICLE_RENDER && s->Name() != SYSTEM_REFLECTION_BAKING) {
+			if (s->Name() != SYSTEM_RENDER && s->Name() != SYSTEM_UI_RENDER && s->Name() != SYSTEM_SHADOWMAP && s->Name() != SYSTEM_PARTICLE_RENDER && s->Name() != SYSTEM_REFLECTION_BAKING && s->Name() != SYSTEM_RENDER_COLLIDERS) {
 				for (Entity* e : entities) {
 					s->OnAction(e);
 				}

@@ -304,5 +304,6 @@ namespace Engine {
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 40));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemRenderColliders(), RENDER_SYSTEMS);
 	}
 }

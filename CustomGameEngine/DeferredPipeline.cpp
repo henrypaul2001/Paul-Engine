@@ -183,6 +183,12 @@ namespace Engine {
 				glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			}
 
+			// Render debug colliders using forward rendering
+			// ----------------------------------------------
+			if (colliderDebugRenderSystem != nullptr) {
+				colliderDebugRenderSystem->Run(entities);
+			}
+
 			// Transparency using forward rendering
 			// ------------------------------------
 			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader(), activeCamera);

@@ -516,5 +516,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemStateMachineUpdater(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemPathfinding(), UPDATE_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
+		systemManager->AddSystem(new SystemRenderColliders(), RENDER_SYSTEMS);
 	}
 }
