@@ -110,7 +110,7 @@ namespace Engine {
 			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPBRFLAG"));
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPBRFLAG());
 
-			glActiveTexture(GL_TEXTURE15);
+			glActiveTexture(GL_TEXTURE0 + textureLookups->at("SSAO"));
 			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 
 			// First pass
