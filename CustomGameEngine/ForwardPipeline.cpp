@@ -92,7 +92,7 @@ namespace Engine {
 
 		// Render debug colliders
 		// ----------------------
-		if (colliderDebugRenderSystem != nullptr) {
+		if (colliderDebugRenderSystem != nullptr && (renderOptions & RENDER_GEOMETRY_COLLIDERS) != 0) {
 			colliderDebugRenderSystem->Run(entities);
 		}
 

@@ -162,6 +162,17 @@ namespace Engine {
 		if (key == GLFW_KEY_C) {
 			SetCursorLock(!GetCursorLock());
 		}
+		if (key == GLFW_KEY_G) {
+			bool renderGeometryColliders = (renderOptions & RENDER_GEOMETRY_COLLIDERS) != 0;
+			if (renderGeometryColliders) {
+				renderParams->DisableRenderOptions(RENDER_GEOMETRY_COLLIDERS);
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Geometry colliders debug" << std::endl;
+			}
+			else {
+				renderParams->EnableRenderOptions(RENDER_GEOMETRY_COLLIDERS);
+				std::cout << "GAMEINPUTMANAGER::ENABLE::Geometry colliders debug" << std::endl;
+			}
+		}
 	}
 
 	void GameInputManager::keyDown(int key)

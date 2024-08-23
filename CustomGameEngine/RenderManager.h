@@ -20,6 +20,7 @@ namespace Engine {
 		RENDER_PARTICLES = 1 << 8,
 		RENDER_ADVANCED_BLOOM = 1 << 9,
 		RENDER_ADVANCED_BLOOM_LENS_DIRT = 1 << 10,
+		RENDER_GEOMETRY_COLLIDERS = 1 << 11,
 	};
 	inline RenderOptions operator| (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a | (int)b); }
 	inline RenderOptions operator|= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a |= (int)b); }
@@ -54,7 +55,7 @@ namespace Engine {
 		{
 			SetRenderOptions(RENDER_UI | RENDER_SSAO | RENDER_SHADOWS | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT | RENDER_TONEMAPPING | RENDER_PARTICLES);
 			EnableRenderOptions(RENDER_SKYBOX);
-			DisableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
+			DisableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP | RENDER_GEOMETRY_COLLIDERS);
 		}
 
 		const RenderOptions& GetRenderOptions() const { return renderOptions; }
