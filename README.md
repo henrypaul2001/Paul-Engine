@@ -16,6 +16,8 @@ This is currently under development. Below is a preview of what I have so far:
 ![IBL Example 1](https://media.giphy.com/media/CTt6aJbcVOLRFhYJOJ/giphy.gif)
 ![IBL Example 2](https://media.giphy.com/media/3VV7CBy65UmpP9WGtU/giphy.gif)
 
+### Local IBL Reflection Probes
+
 ### Bloom
 ![Bloom toggled on and off on a bright cube](https://media.giphy.com/media/0a4tMIFENGIDgynLXy/giphy.gif)
 
