@@ -9,4 +9,9 @@ namespace Engine {
 	{
 
 	}
+
+	void CollisionManager::ConstructBVHTree(const std::vector<Entity*>& entityList)
+	{
+
+	}
 }

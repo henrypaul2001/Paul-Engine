@@ -124,6 +124,18 @@
     <Filter Include="Source Files\Engine\Utility\Resources">
       <UniqueIdentifier>{55f2d1fe-f1b9-4625-83bd-af6dde8c2d68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\AccelerationStructures">
+      <UniqueIdentifier>{ab4cb18a-886a-4252-9941-15277c9d2664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\AccelerationStructures">
+      <UniqueIdentifier>{51d92689-5df2-4efd-9e43-c7dc9c0d2521}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\AccelerationStructures\BVH">
+      <UniqueIdentifier>{1ba947a0-cebf-47ae-a601-1029d2b1c6d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Utility\AccelerationStructures\BVH">
+      <UniqueIdentifier>{0ccd1704-d762-4371-8bc5-cda37dee5c13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -434,6 +446,12 @@
     </ClInclude>
     <ClInclude Include="SystemRenderColliders.h">
       <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="BVHTree.h">
+      <Filter>Header Files\Engine\Utility\AccelerationStructures\BVH</Filter>
+    </ClInclude>
+    <ClInclude Include="BVHNode.h">
+      <Filter>Header Files\Engine\Utility\AccelerationStructures\BVH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -751,6 +769,12 @@
     </ClCompile>
     <ClCompile Include="SystemRenderColliders.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="BVHTree.cpp">
+      <Filter>Source Files\Engine\Utility\AccelerationStructures\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="BVHNode.cpp">
+      <Filter>Source Files\Engine\Utility\AccelerationStructures\BVH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

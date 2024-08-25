@@ -151,6 +151,8 @@
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="AudioScene.h" />
     <ClInclude Include="BakedData.h" />
+    <ClInclude Include="BVHNode.h" />
+    <ClInclude Include="BVHTree.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CollisionResolver.h" />
@@ -256,6 +258,8 @@
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="AudioScene.cpp" />
     <ClCompile Include="BakedData.cpp" />
+    <ClCompile Include="BVHNode.cpp" />
+    <ClCompile Include="BVHTree.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionResolver.cpp" />

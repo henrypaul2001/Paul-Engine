@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include <glm/ext/vector_float3.hpp>
+#include "BVHTree.h"
 namespace Engine {
 	struct ContactPoint {
 		ContactPoint(glm::vec3 contactA, glm::vec3 contactB, glm::vec3 collisionNormal, float collisionPenetration) : contactPointA(contactA), contactPointB(contactB), normal(collisionNormal), penetration(collisionPenetration), b_term(0.0f), sumImpulseContact(0.0f), sumImpulseFriction(glm::vec3(0.0f)) {}
@@ -40,7 +41,11 @@ namespace Engine {
 		void ClearUnresolvedCollisions() { unresolvedCollisions.clear(); }
 
 		void AddToCollisionList(CollisionData newCollision) { unresolvedCollisions.push_back(newCollision); }
+
+		void ConstructBVHTree(const std::vector<Entity*>& entityList);
 	private:
 		std::vector<CollisionData> unresolvedCollisions;
+
+		BVHTree bvhTree;
 	};
 }
