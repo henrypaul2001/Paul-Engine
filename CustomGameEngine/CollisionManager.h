@@ -46,6 +46,6 @@ namespace Engine {
 	private:
 		std::vector<CollisionData> unresolvedCollisions;
 
-		BVHTree bvhTree;
+		BVHTree* bvhTree;
 	};
 }

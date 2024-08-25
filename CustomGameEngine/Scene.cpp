@@ -38,7 +38,7 @@ namespace Engine
 
 	void Scene::OnSceneCreated()
 	{
-
+		collisionManager->ConstructBVHTree(entityManager->Entities());
 	}
 
 	void Scene::Update()

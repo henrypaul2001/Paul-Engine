@@ -1,5 +1,6 @@
 #pragma once
 #include "BVHNode.h"
+#include "Mesh.h"
 namespace Engine {
 	class BVHTree
 	{
@@ -7,7 +8,9 @@ namespace Engine {
 		BVHTree();
 		~BVHTree();
 
+		void BuildTree(const std::vector<std::pair<const glm::vec3, Mesh*>>& unsortedObjects);
+
 	private:
-		BVHNode rootNode;
+		BVHNode* rootNode;
 	};
 }

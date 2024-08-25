@@ -85,8 +85,7 @@ namespace Engine {
 			maxZ = newMax.z;
 		}
 
-		AABBPoints(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
-		AABBPoints() : minX(-5.0f), minY(-5.0f), minZ(-5.0f), maxX(5.0f), maxY(5.0f), maxZ(5.0f), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
+		AABBPoints(float minX = -5.0f, float minY = -5.0f, float minZ = -5.0f, float maxX = 5.0f, float maxY = 5.0f, float maxZ = 5.0f) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
 	};
 
 	class ComponentCollisionAABB : public ComponentCollision
