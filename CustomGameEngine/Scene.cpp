@@ -36,6 +36,11 @@ namespace Engine
 		delete entityManager;
 	}
 
+	void Scene::OnSceneCreated()
+	{
+
+	}
+
 	void Scene::Update()
 	{
 		glm::vec3 position = camera->GetPosition();

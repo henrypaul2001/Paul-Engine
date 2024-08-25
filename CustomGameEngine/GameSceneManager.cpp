@@ -85,6 +85,7 @@ namespace Engine
 		}
 		std::cout << "Scene '" << sceneType << "' created" << std::endl;
 		scene = newScene;
+		scene->OnSceneCreated();
 	}
 
 	void GameSceneManager::StartMenu()

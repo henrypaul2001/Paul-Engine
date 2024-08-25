@@ -36,6 +36,8 @@ namespace Engine
 		Scene(SceneManager* sceneManager, const std::string& name);
 		~Scene();
 
+		virtual void OnSceneCreated();
+
 		virtual void Render();
 		virtual void Update();
 		virtual void Close() = 0;
