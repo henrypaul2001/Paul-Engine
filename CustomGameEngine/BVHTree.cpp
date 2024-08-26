@@ -14,24 +14,27 @@ namespace Engine {
 	{
 		if (unsortedObjects.size() > 0) {
 			// Calculate root bounding box
-			float minX = unsortedObjects[0].second->GetGeometryAABB().minX;
-			float minY = unsortedObjects[0].second->GetGeometryAABB().minY;
-			float minZ = unsortedObjects[0].second->GetGeometryAABB().minZ;
-			float maxX = unsortedObjects[0].second->GetGeometryAABB().maxX;
-			float maxY = unsortedObjects[0].second->GetGeometryAABB().maxY;
-			float maxZ = unsortedObjects[0].second->GetGeometryAABB().maxZ;
+			glm::vec3 position = unsortedObjects[0].first;
+			AABBPoints geoBounds = unsortedObjects[0].second->GetGeometryAABB();
+			float minX = position.x + geoBounds.minX;
+			float minY = position.y + geoBounds.minY;
+			float minZ = position.z + geoBounds.minZ;
+			float maxX = position.x + geoBounds.maxX;
+			float maxY = position.y + geoBounds.maxY;
+			float maxZ = position.z + geoBounds.maxZ;
 
 			for (int i = 1; i < unsortedObjects.size(); i++) {
-				AABBPoints geoBounds = unsortedObjects[i].second->GetGeometryAABB();
+				geoBounds = unsortedObjects[i].second->GetGeometryAABB();
+				position = unsortedObjects[i].first;
 
-				if (geoBounds.minX < minX) { minX = geoBounds.minX; }
-				if (geoBounds.maxX > maxX) { maxX = geoBounds.maxX; }
+				if (position.x + geoBounds.minX < minX) { minX = position.x + geoBounds.minX; }
+				if (position.x + geoBounds.maxX > maxX) { maxX = position.x + geoBounds.maxX; }
 
-				if (geoBounds.minY < minY) { minY = geoBounds.minY; }
-				if (geoBounds.maxY > maxY) { maxY = geoBounds.maxY; }
+				if (position.y + geoBounds.minY < minY) { minY = position.y + geoBounds.minY; }
+				if (position.y + geoBounds.maxY > maxY) { maxY = position.y + geoBounds.maxY; }
 
-				if (geoBounds.minZ < minZ) { minZ = geoBounds.minZ; }
-				if (geoBounds.maxZ > maxZ) { maxZ = geoBounds.maxZ; }
+				if (position.z + geoBounds.minZ < minZ) { minZ = position.z + geoBounds.minZ; }
+				if (position.z + geoBounds.maxZ > maxZ) { maxZ = position.z + geoBounds.maxZ; }
 			}
 
 			AABBPoints worldAABB = AABBPoints(minX, minY, minZ, maxX, maxY, maxZ);
