@@ -10,7 +10,7 @@ namespace Engine {
 		delete rootNode;
 	}
 
-	void BVHTree::BuildTree(const std::vector<std::pair<const glm::vec3, Mesh*>>& unsortedObjects)
+	void BVHTree::BuildTree(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects)
 	{
 		if (unsortedObjects.size() > 0) {
 			// Calculate root bounding box
@@ -41,6 +41,20 @@ namespace Engine {
 			rootNode->SetBoundingBox(worldAABB);
 
 			// Build tree recursively
+			BuildTreeRecursive(unsortedObjects, rootNode);
 		}
+	}
+
+	BVHNode* BVHTree::BuildTreeRecursive(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects, BVHNode* parentNode)
+	{
+		// Find biggest extent
+		std::pair<unsigned, float> axisIndexAndExtent = GetBiggestExtentAxis(parentNode->GetBoundingBox()); // 0 = X, 1 = Y, 2 = Z
+
+		// Sort meshes from smallest position to biggest position on biggest extent axis
+		std::vector<std::pair<glm::vec3, Mesh*>> sortedObjects = SortMeshesOnAxis(unsortedObjects, axisIndexAndExtent.first);
+
+		// Split meshes into left and right
+
+		return nullptr;
 	}
 }
