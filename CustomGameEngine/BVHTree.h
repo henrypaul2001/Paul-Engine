@@ -62,6 +62,16 @@ namespace Engine {
 			return sorted;
 		}
 
+		unsigned int GetSplitIndex(const std::vector<std::pair<glm::vec3, Mesh*>>& sortedObjects, float halfExtent, unsigned int axisIndex) {
+			for (int i = 0; i < sortedObjects.size(); i++) {
+				glm::vec3 position = sortedObjects[i].first;
+				if (position[axisIndex] >= halfExtent) {
+					return i;
+				}
+			}
+			return sortedObjects.size() - 1;
+		}
+
 		BVHNode* rootNode;
 	};
 }
