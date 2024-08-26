@@ -10,6 +10,7 @@ namespace Engine {
 
 		void BuildTree(const std::vector<std::pair<const glm::vec3, Mesh*>>& unsortedObjects);
 
+		BVHNode* GetRootNode() { return rootNode; }
 	private:
 		BVHNode* rootNode;
 	};

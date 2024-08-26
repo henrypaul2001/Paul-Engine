@@ -44,7 +44,7 @@ namespace Engine {
 
 		void ConstructBVHTree(const std::vector<Entity*>& entityList);
 
-		const BVHTree* GetBVHTree() const { return bvhTree; }
+		BVHTree* GetBVHTree() { return bvhTree; }
 	private:
 		std::vector<CollisionData> unresolvedCollisions;
 

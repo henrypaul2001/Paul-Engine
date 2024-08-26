@@ -29,9 +29,8 @@ namespace Engine {
 		System::Run(entityList);
 
 		// Render BVH Tree
-		const BVHTree* bvhTree = collisionManager->GetBVHTree();
-
-
+		BVHTree* bvhTree = collisionManager->GetBVHTree();
+		DrawAABB(glm::vec3(0.0f), bvhTree->GetRootNode()->GetBoundingBox(), ResourceManager::GetInstance()->ColliderDebugShader(), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	void SystemRenderColliders::OnAction(Entity* entity)
