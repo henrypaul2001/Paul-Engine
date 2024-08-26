@@ -1,8 +1,10 @@
 #include "SystemRenderColliders.h"
 #include "ResourceManager.h"
 namespace Engine {
-	SystemRenderColliders::SystemRenderColliders()
+	SystemRenderColliders::SystemRenderColliders(CollisionManager* collisionManager)
 	{
+		this->collisionManager = collisionManager;
+
 		VAO = 0;
 		VBO = 0;
 		glGenVertexArrays(1, &VAO);
@@ -25,6 +27,11 @@ namespace Engine {
 	void SystemRenderColliders::Run(const std::vector<Entity*>& entityList)
 	{
 		System::Run(entityList);
+
+		// Render BVH Tree
+		const BVHTree* bvhTree = collisionManager->GetBVHTree();
+
+
 	}
 
 	void SystemRenderColliders::OnAction(Entity* entity)
@@ -48,7 +55,7 @@ namespace Engine {
 				}
 			}
 
-			DrawAABB(transform, geometry);
+			DrawEntityColliders(transform, geometry);
 		}
 	}
 
@@ -57,35 +64,40 @@ namespace Engine {
 
 	}
 
-	void SystemRenderColliders::DrawAABB(ComponentTransform* transform, ComponentGeometry* geometry)
+	void SystemRenderColliders::DrawAABB(const glm::vec3& position, const AABBPoints& aabb, Shader* shader)
 	{
-		Shader* debugShader = ResourceManager::GetInstance()->ColliderDebugShader();
-		debugShader->Use();
-
-		Model* model = geometry->GetModel();
+		shader->Use();
 
 		glBindVertexArray(VAO);
-		for (Mesh* mesh : model->meshes) {
-			AABBPoints geometryAABB = mesh->GetGeometryAABB();
 
-			debugShader->setFloat("MinX", geometryAABB.minX);
-			debugShader->setFloat("MinY", geometryAABB.minY);
-			debugShader->setFloat("MinZ", geometryAABB.minZ);
+		shader->setFloat("MinX", aabb.minX);
+		shader->setFloat("MinY", aabb.minY);
+		shader->setFloat("MinZ", aabb.minZ);
 
-			debugShader->setFloat("MaxX", geometryAABB.maxX);
-			debugShader->setFloat("MaxY", geometryAABB.maxY);
-			debugShader->setFloat("MaxZ", geometryAABB.maxZ);
+		shader->setFloat("MaxX", aabb.maxX);
+		shader->setFloat("MaxY", aabb.maxY);
+		shader->setFloat("MaxZ", aabb.maxZ);
 
-			glm::vec3 position = transform->GetWorldPosition();
+		// Buffer single point
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3), &position);
 
-			// Buffer single point
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3), &position);
-
-			// Draw point using geometry shader to construct AABB
-			glDrawArrays(GL_POINTS, 0, 1);
-		}
+		// Draw point using geometry shader to construct AABB
+		glDrawArrays(GL_POINTS, 0, 1);
 
 		glBindVertexArray(0);
+	}
+
+	void SystemRenderColliders::DrawEntityColliders(ComponentTransform* transform, ComponentGeometry* geometry)
+	{
+		Shader* debugShader = ResourceManager::GetInstance()->ColliderDebugShader();
+		Model* model = geometry->GetModel();
+
+		for (Mesh* mesh : model->meshes) {
+			AABBPoints geometryAABB = mesh->GetGeometryAABB();
+			glm::vec3 position = transform->GetWorldPosition();
+
+			DrawAABB(position, geometryAABB, debugShader);
+		}
 	}
 }
