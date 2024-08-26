@@ -13,7 +13,7 @@ namespace Engine {
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 
-		void DrawAABB(const glm::vec3& position, const AABBPoints& aabb, Shader* shader);
+		void DrawAABB(const glm::vec3& position, const AABBPoints& aabb, Shader* shader, const glm::vec3& colliderColour = glm::vec3(0.0f, 1.0f, 0.0f));
 	private:
 		const ComponentTypes GEOMETRY_MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 

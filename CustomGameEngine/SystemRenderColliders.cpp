@@ -64,7 +64,7 @@ namespace Engine {
 
 	}
 
-	void SystemRenderColliders::DrawAABB(const glm::vec3& position, const AABBPoints& aabb, Shader* shader)
+	void SystemRenderColliders::DrawAABB(const glm::vec3& position, const AABBPoints& aabb, Shader* shader, const glm::vec3& colliderColour)
 	{
 		shader->Use();
 
@@ -77,6 +77,8 @@ namespace Engine {
 		shader->setFloat("MaxX", aabb.maxX);
 		shader->setFloat("MaxY", aabb.maxY);
 		shader->setFloat("MaxZ", aabb.maxZ);
+
+		shader->setVec3("Colour", colliderColour);
 
 		// Buffer single point
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
