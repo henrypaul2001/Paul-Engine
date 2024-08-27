@@ -1,6 +1,6 @@
 #include "BVHTree.h"
 namespace Engine {
-	BVHTree::BVHTree()
+	BVHTree::BVHTree(unsigned int maxObjectsPerNode) : maxObjectsPerNode(maxObjectsPerNode)
 	{
 		rootNode = new BVHNode();
 	}
@@ -12,60 +12,55 @@ namespace Engine {
 
 	void BVHTree::BuildTree(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects)
 	{
-		if (unsortedObjects.size() > 0) {
-			// Calculate root bounding box
-			glm::vec3 position = unsortedObjects[0].first;
-			AABBPoints geoBounds = unsortedObjects[0].second->GetGeometryAABB();
-			float minX = position.x + geoBounds.minX;
-			float minY = position.y + geoBounds.minY;
-			float minZ = position.z + geoBounds.minZ;
-			float maxX = position.x + geoBounds.maxX;
-			float maxY = position.y + geoBounds.maxY;
-			float maxZ = position.z + geoBounds.maxZ;
+		AABBPoints worldAABB;
 
-			for (int i = 1; i < unsortedObjects.size(); i++) {
-				geoBounds = unsortedObjects[i].second->GetGeometryAABB();
-				position = unsortedObjects[i].first;
-
-				if (position.x + geoBounds.minX < minX) { minX = position.x + geoBounds.minX; }
-				if (position.x + geoBounds.maxX > maxX) { maxX = position.x + geoBounds.maxX; }
-
-				if (position.y + geoBounds.minY < minY) { minY = position.y + geoBounds.minY; }
-				if (position.y + geoBounds.maxY > maxY) { maxY = position.y + geoBounds.maxY; }
-
-				if (position.z + geoBounds.minZ < minZ) { minZ = position.z + geoBounds.minZ; }
-				if (position.z + geoBounds.maxZ > maxZ) { maxZ = position.z + geoBounds.maxZ; }
-			}
-
-			AABBPoints worldAABB = AABBPoints(minX, minY, minZ, maxX, maxY, maxZ);
+		if (CreateNodeAABB(unsortedObjects, worldAABB)) {
 			rootNode->SetBoundingBox(worldAABB);
+			rootNode->SetParent(nullptr);
 
 			// Build tree recursively
 			BuildTreeRecursive(unsortedObjects, rootNode);
 		}
 	}
 
-	BVHNode* BVHTree::BuildTreeRecursive(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects, BVHNode* parentNode)
+	bool BVHTree::BuildTreeRecursive(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects, BVHNode* parentNode)
 	{
-		// Find biggest extent
-		AABBPoints parentBounds = parentNode->GetBoundingBox();
-		std::pair<unsigned int, float> axisIndexAndExtent = GetBiggestExtentAxis(parentBounds); // 0 = X, 1 = Y, 2 = Z
+		if (unsortedObjects.size() > 0u) {
+			unsigned int excludedAxis = 3u;
+			unsigned int attempts = 0u;
 
-		// Sort meshes from smallest position to biggest position on biggest extent axis
-		std::vector<std::pair<glm::vec3, Mesh*>> sortedObjects = SortMeshesOnAxis(unsortedObjects, axisIndexAndExtent.first);
+			AABBPoints parentBounds = parentNode->GetBoundingBox();
 
-		// Split meshes into left and right
-		// --------------------------------
-		glm::vec3 parentMin = glm::vec3(parentBounds.minX, parentBounds.minY, parentBounds.minZ);
-		float halfExtent = parentMin[axisIndexAndExtent.first] + axisIndexAndExtent.second * 0.5f;
+			bool success = false;
+			bool attemptedX = false, attemptedY = false, attemptedZ = false;
+			while (attempts < 2u && !success) {
+				// Find biggest extent
+				std::pair<unsigned int, float> axisIndexAndExtent = GetBiggestExtentAxis(parentBounds, excludedAxis); // 0 = X, 1 = Y, 2 = Z
 
-		// Find split index
-		unsigned int leftIndex = 0;
-		unsigned int rightIndex = sortedObjects.size() - 1;
-		unsigned int splitIndex = GetSplitIndex(sortedObjects, halfExtent, axisIndexAndExtent.first);
+				success = SplitNode(axisIndexAndExtent.first, axisIndexAndExtent.second, unsortedObjects, parentBounds, parentNode);
 
+				excludedAxis = axisIndexAndExtent.first;
 
+				if (excludedAxis == 0) { attemptedX = true; }
+				else if (excludedAxis == 1) { attemptedY = true; }
+				else if (excludedAxis == 2) { attemptedZ = true; }
 
-		return nullptr;
+				attempts++;
+			}
+
+			if (!success) {
+				if (!attemptedX) {
+					success = SplitNode(0, parentBounds.maxX - parentBounds.minX, unsortedObjects, parentBounds, parentNode);
+				}
+				else if (!attemptedY) {
+					success = SplitNode(1, parentBounds.maxY - parentBounds.minY, unsortedObjects, parentBounds, parentNode);
+				}
+				else if (!attemptedZ) {
+					success = SplitNode(2, parentBounds.maxZ - parentBounds.minZ, unsortedObjects, parentBounds, parentNode);
+				}
+			}
+
+			return success;
+		}
 	}
 }

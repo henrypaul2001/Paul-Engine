@@ -1,5 +1,6 @@
 #pragma once
 #include "ComponentCollisionAABB.h"
+#include "Mesh.h"
 namespace Engine {
 	class BVHNode
 	{
@@ -17,6 +18,12 @@ namespace Engine {
 		const BVHNode* GetLeftChild() const { return leftChildNode; }
 		const BVHNode* GetRightChild() const { return rightChildNode; }
 
+		const bool IsLeaf() const { return isLeaf; }
+		void SetIsLeaf(const bool isLeaf) { this->isLeaf = isLeaf; }
+
+		const std::vector<std::pair<glm::vec3, Mesh*>>& GetObjects() const { return objects; }
+		void SetObjects(std::vector<std::pair<glm::vec3, Mesh*>> newObjects) { objects = newObjects; }
+
 		const AABBPoints& GetBoundingBox() const { return boundingBox; }
 	private:
 		AABBPoints boundingBox;
@@ -24,5 +31,9 @@ namespace Engine {
 		BVHNode* parentNode;
 		BVHNode* leftChildNode;
 		BVHNode* rightChildNode;
+
+		std::vector<std::pair<glm::vec3, Mesh*>> objects;
+
+		bool isLeaf;
 	};
 }

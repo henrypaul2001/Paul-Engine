@@ -5,6 +5,7 @@ namespace Engine {
 		this->parentNode = parent;
 		this->leftChildNode = nullptr;
 		this->rightChildNode = nullptr;
+		isLeaf = false;
 	}
 
 	BVHNode::~BVHNode()
