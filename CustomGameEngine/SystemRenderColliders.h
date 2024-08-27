@@ -18,6 +18,7 @@ namespace Engine {
 		const ComponentTypes GEOMETRY_MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 
 		void DrawEntityColliders(ComponentTransform* transform, ComponentGeometry* geometry);
+		void RenderBVHNode(const BVHNode* node);
 
 		unsigned int VAO, VBO;
 

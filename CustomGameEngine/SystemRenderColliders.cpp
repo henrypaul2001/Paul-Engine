@@ -30,7 +30,7 @@ namespace Engine {
 
 		// Render BVH Tree
 		BVHTree* bvhTree = collisionManager->GetBVHTree();
-		DrawAABB(glm::vec3(0.0f), bvhTree->GetRootNode()->GetBoundingBox(), ResourceManager::GetInstance()->ColliderDebugShader(), glm::vec3(1.0f, 0.0f, 0.0f));
+		RenderBVHNode(bvhTree->GetRootNode());
 	}
 
 	void SystemRenderColliders::OnAction(Entity* entity)
@@ -100,5 +100,21 @@ namespace Engine {
 
 			DrawAABB(position, geometryAABB, debugShader);
 		}
+	}
+
+	void SystemRenderColliders::RenderBVHNode(const BVHNode* node)
+	{
+		const BVHNode* leftChild = node->GetLeftChild();
+		const BVHNode* rightChild = node->GetRightChild();
+
+		if (leftChild) {
+			RenderBVHNode(leftChild);
+		}
+
+		if (rightChild) {
+			RenderBVHNode(rightChild);
+		}
+
+		DrawAABB(glm::vec3(0.0f), node->GetBoundingBox(), ResourceManager::GetInstance()->ColliderDebugShader(), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 }
