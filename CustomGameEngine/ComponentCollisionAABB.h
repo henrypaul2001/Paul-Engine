@@ -96,6 +96,16 @@ namespace Engine {
 
 			return (thisMin == otherMin && thisMax == otherMax);
 		}
+
+		bool operator!=(AABBPoints const& aabb) {
+			glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
+			glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
+
+			glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
+			glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
+
+			return (thisMin != otherMin || thisMax != otherMax);
+		}
 	};
 
 	class ComponentCollisionAABB : public ComponentCollision
