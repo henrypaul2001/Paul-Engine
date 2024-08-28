@@ -1719,7 +1719,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
 		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemFrustumCulling(camera), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
 		SystemReflectionBaking* reflectionSystem = new SystemReflectionBaking();
 		reflectionSystem->SetActiveCamera(camera);
 		systemManager->AddSystem(reflectionSystem, RENDER_SYSTEMS);

@@ -2,12 +2,13 @@
 #include "System.h"
 #include "Camera.h"
 #include "RenderManager.h"
+#include "CollisionManager.h"
 #include <map>
 namespace Engine {
 	class SystemFrustumCulling : public System
 	{
 	public:
-		SystemFrustumCulling(Camera* activeCamera) { this->activeCamera = activeCamera; this->viewFrustum = &activeCamera->GetViewFrustum(); }
+		SystemFrustumCulling(Camera* activeCamera, CollisionManager* collisionManager) { this->activeCamera = activeCamera; this->viewFrustum = &activeCamera->GetViewFrustum(); this->collisionManager = collisionManager; }
 		~SystemFrustumCulling();
 
 		SystemTypes Name() override { return SYSTEM_FRUSTUM_CULLING; }
@@ -17,16 +18,23 @@ namespace Engine {
 
 		void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
 	private:
-		const ComponentTypes GEOMETRY_MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
-
+		bool AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
+		bool TestAABBAndViewPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
+		bool AABBIsInFrustum(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin);
 		bool SphereIsOnOrInFrontOfPlane(const glm::vec3& spherePos, const float sphereRadius, const ViewPlane& plane);
 
-		void CheckGeometry(ComponentTransform* transform, ComponentGeometry* geometry);
+		void CullMeshes();
+		void TestBVHNodeRecursive(const BVHNode* node);
 		void CullReflectionProbes();
 
 		Camera* activeCamera;
 		const ViewFrustum* viewFrustum;
+		
+		CollisionManager* collisionManager;
 
 		std::map<float, ReflectionProbe*> culledProbeList;
+
+		unsigned int visibleMeshes;
+		unsigned int geometryAABBTests;
 	};
 }

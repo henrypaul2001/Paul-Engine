@@ -305,5 +305,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemCollisionSphere(entityManager, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
 	}
 }

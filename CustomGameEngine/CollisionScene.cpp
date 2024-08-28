@@ -133,5 +133,6 @@ namespace Engine {
 		systemManager->AddConstraintSolver(new ConstraintSolver(constraintManager, 40));
 		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
 	}
 }

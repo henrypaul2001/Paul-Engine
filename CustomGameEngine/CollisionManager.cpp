@@ -12,6 +12,10 @@ namespace Engine {
 
 	void CollisionManager::ConstructBVHTree(const std::vector<Entity*>& entityList)
 	{
+		if (bvhTree) {
+			delete bvhTree;
+			bvhTree = new BVHTree();
+		}
 		std::vector<std::pair<glm::vec3, Mesh*>> centrePosAndMeshesList;
 		centrePosAndMeshesList.reserve(entityList.size());
 

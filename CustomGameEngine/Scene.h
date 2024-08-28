@@ -11,6 +11,8 @@
 #include "RenderManager.h"
 #include "CollisionManager.h"
 #include "ConstraintManager.h"
+
+#include "SystemFrustumCulling.h"
 namespace Engine 
 {
 	class SceneManager;

@@ -298,7 +298,7 @@ namespace Engine {
 
 	void IBLScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemFrustumCulling(camera), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
 		SystemRender* renderSystem = new SystemRender();
 		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
 		renderSystem->SetActiveCamera(camera);
