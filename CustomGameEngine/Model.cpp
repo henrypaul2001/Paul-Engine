@@ -42,12 +42,12 @@ namespace Engine {
 		}
 	}
 
-	void Model::Draw(Shader& shader, int instanceNum)
+	void Model::Draw(Shader& shader, int instanceNum, bool ignoreCulling)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				meshes[i]->ApplyMaterial(meshMaterials[meshes[i]]);
-				meshes[i]->Draw(shader, pbr, instanceNum);
+				meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
 				/*
 				if (!meshes[i]->GetMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
@@ -56,7 +56,7 @@ namespace Engine {
 			}
 			else {
 				meshes[i]->ApplyMaterial(meshPBRMaterials[meshes[i]]);
-				meshes[i]->Draw(shader, pbr, instanceNum);
+				meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
 				/*
 				if (!meshes[i]->GetPBRMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
@@ -66,17 +66,17 @@ namespace Engine {
 		}
 	}
 
-	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum)
+	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum, bool ignoreCulling)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (meshMaterials[meshes[i]]->isTransparent) {
-					meshes[i]->Draw(shader, pbr, instanceNum);
+					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
 				}
 			}
 			else {
 				if (meshPBRMaterials[meshes[i]]->isTransparent) {
-					meshes[i]->Draw(shader, pbr, instanceNum);
+					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
 				}
 			}
 		}

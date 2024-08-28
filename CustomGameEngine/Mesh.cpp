@@ -49,9 +49,15 @@ namespace Engine {
 		this->PBRmaterial = pbrMaterial;
 	}
 
-	void Mesh::Draw(Shader& shader, bool pbr, int instanceNum)
+	void Mesh::Draw(Shader& shader, bool pbr, bool ignoreCulling, int instanceNum)
 	{
-		if (isVisible) {
+		bool visible = ignoreCulling;
+		
+		if (!ignoreCulling) {
+			visible = isVisible;
+		}
+
+		if (visible) {
 			textureSlots = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
 			int offset = 10;
 			if (!pbr) {
@@ -321,19 +327,27 @@ namespace Engine {
 		}
 	}
 
-	void Mesh::DrawWithNoMaterial(int instanceNum)
+	void Mesh::DrawWithNoMaterial(int instanceNum, bool ignoreCulling)
 	{
-		// draw
-		glBindVertexArray(VAO);
-		if (instanceNum == 0) {
-			glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
-		}
-		else if (instanceNum > 0) {
-			glDrawElementsInstanced(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, instanceNum);
+		bool visible = ignoreCulling;
+
+		if (!ignoreCulling) {
+			visible = isVisible;
 		}
 
-		glBindVertexArray(0);
-		glActiveTexture(GL_TEXTURE0);
+		if (visible) {
+			// draw
+			glBindVertexArray(VAO);
+			if (instanceNum == 0) {
+				glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+			}
+			else if (instanceNum > 0) {
+				glDrawElementsInstanced(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, instanceNum);
+			}
+
+			glBindVertexArray(0);
+			glActiveTexture(GL_TEXTURE0);
+		}
 	}
 
 	void Mesh::SetupMesh()

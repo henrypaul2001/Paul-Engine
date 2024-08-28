@@ -121,8 +121,8 @@ namespace Engine {
 		Material* GetMaterial() { return material; }
 		PBRMaterial* GetPBRMaterial() { return PBRmaterial; }
 
-		void Draw(Shader& shader, bool pbr, int instanceNum = 0);
-		void DrawWithNoMaterial(int instanceNum = 0);
+		void Draw(Shader& shader, bool pbr, bool ignoreCulling = true, int instanceNum = 0);
+		void DrawWithNoMaterial(int instanceNum = 0, bool ignoreCulling = true);
 
 		AABBPoints& GetGeometryAABB() { return geometryAABB; }
 
