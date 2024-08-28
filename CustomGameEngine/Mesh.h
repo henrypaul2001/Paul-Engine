@@ -125,6 +125,9 @@ namespace Engine {
 		void DrawWithNoMaterial(int instanceNum = 0);
 
 		AABBPoints& GetGeometryAABB() { return geometryAABB; }
+
+		void SetIsVisible(const bool isVisible) { this->isVisible = isVisible; }
+		const bool IsVisible() const { return isVisible; }
 	private:
 		GLenum drawPrimitive;
 		unsigned int VBO, EBO;
@@ -133,6 +136,8 @@ namespace Engine {
 		AABBPoints geometryAABB;
 
 		const std::unordered_map<std::string, unsigned int>* textureSlots;
+
+		bool isVisible;
 
 		void SetupMesh();
 		void SetupGeometryAABB();

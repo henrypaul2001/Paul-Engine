@@ -8,16 +8,37 @@ namespace Engine {
 	void SystemFrustumCulling::Run(const std::vector<Entity*>& entityList)
 	{
 		viewFrustum = &activeCamera->GetViewFrustum();
-
+		totalMeshes = 0;
+		visibleMeshes = 0;
+		geometryAABBTests = 0;
 		System::Run(entityList);
 
 		CullMeshes();
 		CullReflectionProbes();
+
+		std::cout << "Meshes rendered: " << visibleMeshes << "/" << totalMeshes << std::endl;
 	}
 
 	void SystemFrustumCulling::OnAction(Entity* entity)
 	{
+		// Reset isVisible flag on all meshes
+		if ((entity->Mask() & GEOMETRY_MASK) == GEOMETRY_MASK) {
+			std::vector<Component*> components = entity->Components();
 
+			ComponentGeometry* geometry = nullptr;
+			for (Component* c : components) {
+				geometry = dynamic_cast<ComponentGeometry*>(c);
+				if (geometry != nullptr) {
+					break;
+				}
+			}
+
+			Model* model = geometry->GetModel();
+			for (Mesh* m : model->meshes) {
+				totalMeshes++;
+				m->SetIsVisible(false);
+			}
+		}
 	}
 
 	void SystemFrustumCulling::AfterAction()
@@ -88,8 +109,6 @@ namespace Engine {
 
 	void SystemFrustumCulling::CullMeshes()
 	{
-		visibleMeshes = 0;
-		geometryAABBTests = 0;
 		// Traverse BVH tree and check collisions with each node until a leaf node is found or no collision
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
 		BVHNode* rootNode = geometryBVH->GetRootNode();
@@ -103,8 +122,6 @@ namespace Engine {
 			if (leftChild) { TestBVHNodeRecursive(leftChild, nodeResult); }
 			if (rightChild) { TestBVHNodeRecursive(rightChild, nodeResult); }
 		}
-
-		std::cout << "Visible meshes: " << visibleMeshes << " || Number of AABB tests: " << geometryAABBTests << std::endl;
 	}
 
 	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult)
@@ -129,12 +146,16 @@ namespace Engine {
 
 						if (geometryAABB == nodeAABB || AABBIsInFrustum(geometryAABB, origin)) {
 							visibleMeshes++;
+							mesh->SetIsVisible(true);
 						}
 					}
 				}
 				else {
 					// Skip checks, all will be true
-					visibleMeshes += nodeObjects.size();
+					for (const std::pair<glm::vec3, Mesh*>& pair : nodeObjects) {
+						visibleMeshes++;
+						pair.second->SetIsVisible(true);
+					}
 				}
 			}
 			else {

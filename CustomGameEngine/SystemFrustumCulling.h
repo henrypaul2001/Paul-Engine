@@ -33,6 +33,8 @@ namespace Engine {
 		void TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult);
 		void CullReflectionProbes();
 
+		const ComponentTypes GEOMETRY_MASK = (COMPONENT_GEOMETRY);
+
 		Camera* activeCamera;
 		const ViewFrustum* viewFrustum;
 		
@@ -41,6 +43,7 @@ namespace Engine {
 		std::map<float, ReflectionProbe*> culledProbeList;
 
 		unsigned int visibleMeshes;
+		unsigned int totalMeshes;
 		unsigned int geometryAABBTests;
 	};
 }
