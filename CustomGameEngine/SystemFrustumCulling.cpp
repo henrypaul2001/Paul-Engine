@@ -25,7 +25,7 @@ namespace Engine {
 
 	}
 
-	bool SystemFrustumCulling::AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane)
+	FrustumIntersection SystemFrustumCulling::AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane)
 	{
 		// Convert min / max structuer to world space centre and centre to edge extents
 		glm::vec3 worldMin = boxWorldOrigin + glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
@@ -40,7 +40,9 @@ namespace Engine {
 		// Find distance of box centre from plane
 		float distanceToPlane = glm::dot(plane.normal, c) - plane.distance;
 
-		return -r <= distanceToPlane;
+		if (-r > distanceToPlane) { return OUTSIDE_FRUSTUM; }
+		else if (r >= distanceToPlane) { return PARTIAL_FRUSTUM; }
+		else { return INSIDE_FRUSTUM; }
 	}
 
 	bool SystemFrustumCulling::TestAABBAndViewPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane)
@@ -62,12 +64,18 @@ namespace Engine {
 		return glm::abs(distanceToPlane) <= r;
 	}
 
-	bool SystemFrustumCulling::AABBIsInFrustum(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin)
+	FrustumIntersection SystemFrustumCulling::AABBIsInFrustum(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin)
 	{
 		geometryAABBTests++;
-		return (AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, viewFrustum->left) && AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, viewFrustum->right) &&
-				AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, viewFrustum->far) && AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, viewFrustum->near) &&
-				AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, viewFrustum->top) && AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, viewFrustum->bottom));
+		bool fullyInside = true;
+		for (const ViewPlane& plane : { viewFrustum->left, viewFrustum->right, viewFrustum->far, viewFrustum->near, viewFrustum->top, viewFrustum->bottom }) {
+			FrustumIntersection planeResult = AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, plane);
+
+			if (planeResult == OUTSIDE_FRUSTUM) { return planeResult; }
+			else if (planeResult == PARTIAL_FRUSTUM) { fullyInside = false; }
+		}
+
+		return fullyInside ? INSIDE_FRUSTUM : PARTIAL_FRUSTUM;
 	}
 
 	bool SystemFrustumCulling::SphereIsOnOrInFrontOfPlane(const glm::vec3& spherePos, const float sphereRadius, const ViewPlane& plane)
@@ -84,34 +92,57 @@ namespace Engine {
 		geometryAABBTests = 0;
 		// Traverse BVH tree and check collisions with each node until a leaf node is found or no collision
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
-		TestBVHNodeRecursive(geometryBVH->GetRootNode());
+		BVHNode* rootNode = geometryBVH->GetRootNode();
+
+		FrustumIntersection nodeResult = AABBIsInFrustum(rootNode->GetBoundingBox(), glm::vec3(0.0f));
+
+		if (nodeResult != OUTSIDE_FRUSTUM) {
+			// Check child nodes
+			const BVHNode* leftChild = rootNode->GetLeftChild();
+			const BVHNode* rightChild = rootNode->GetRightChild();
+			if (leftChild) { TestBVHNodeRecursive(leftChild, nodeResult); }
+			if (rightChild) { TestBVHNodeRecursive(rightChild, nodeResult); }
+		}
 
 		std::cout << "Visible meshes: " << visibleMeshes << " || Number of AABB tests: " << geometryAABBTests << std::endl;
 	}
 
-	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node)
+	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult)
 	{
 		AABBPoints nodeAABB = node->GetBoundingBox();
-		if (AABBIsInFrustum(nodeAABB, glm::vec3(0.0f))) {
-			if (node->IsLeaf()) {
-				// Check meshes
-				std::vector<std::pair<glm::vec3, Mesh*>> nodeObjects = node->GetObjects();
-				for (unsigned int i = 0; i < nodeObjects.size(); i++) {
-					glm::vec3 origin = nodeObjects[i].first;
-					Mesh* mesh = nodeObjects[i].second;
-					AABBPoints geometryAABB = mesh->GetGeometryAABB();
 
-					if (geometryAABB == nodeAABB || AABBIsInFrustum(geometryAABB, origin)) {
-						visibleMeshes++;
+		// Only test node AABB if parent result was partially inside frustum
+		FrustumIntersection nodeIsInFrustum = parentResult;
+		if (nodeIsInFrustum == PARTIAL_FRUSTUM) {
+			nodeIsInFrustum = AABBIsInFrustum(nodeAABB, glm::vec3(0.0f));
+		}
+
+		if (nodeIsInFrustum != OUTSIDE_FRUSTUM) {
+			if (node->IsLeaf()) {
+				std::vector<std::pair<glm::vec3, Mesh*>> nodeObjects = node->GetObjects();
+				if (nodeIsInFrustum == PARTIAL_FRUSTUM) {
+					// Check all meshes
+					for (unsigned int i = 0; i < nodeObjects.size(); i++) {
+						glm::vec3 origin = nodeObjects[i].first;
+						Mesh* mesh = nodeObjects[i].second;
+						AABBPoints geometryAABB = mesh->GetGeometryAABB();
+
+						if (geometryAABB == nodeAABB || AABBIsInFrustum(geometryAABB, origin)) {
+							visibleMeshes++;
+						}
 					}
+				}
+				else {
+					// Skip checks, all will be true
+					visibleMeshes += nodeObjects.size();
 				}
 			}
 			else {
 				// Check child nodes
 				const BVHNode* leftChild = node->GetLeftChild();
 				const BVHNode* rightChild = node->GetRightChild();
-				if (leftChild) { TestBVHNodeRecursive(leftChild); }
-				if (rightChild) { TestBVHNodeRecursive(rightChild); }
+				if (leftChild) { TestBVHNodeRecursive(leftChild, nodeIsInFrustum); }
+				if (rightChild) { TestBVHNodeRecursive(rightChild, nodeIsInFrustum); }
 			}
 		}
 	}

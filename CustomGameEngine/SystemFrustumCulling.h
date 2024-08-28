@@ -5,6 +5,12 @@
 #include "CollisionManager.h"
 #include <map>
 namespace Engine {
+	enum FrustumIntersection {
+		OUTSIDE_FRUSTUM,
+		INSIDE_FRUSTUM,
+		PARTIAL_FRUSTUM,
+	};
+
 	class SystemFrustumCulling : public System
 	{
 	public:
@@ -18,13 +24,13 @@ namespace Engine {
 
 		void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
 	private:
-		bool AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
+		FrustumIntersection AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
 		bool TestAABBAndViewPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
-		bool AABBIsInFrustum(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin);
+		FrustumIntersection AABBIsInFrustum(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin);
 		bool SphereIsOnOrInFrontOfPlane(const glm::vec3& spherePos, const float sphereRadius, const ViewPlane& plane);
 
 		void CullMeshes();
-		void TestBVHNodeRecursive(const BVHNode* node);
+		void TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult);
 		void CullReflectionProbes();
 
 		Camera* activeCamera;
