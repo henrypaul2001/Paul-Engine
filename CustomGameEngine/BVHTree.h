@@ -25,6 +25,8 @@ namespace Engine {
 		void BuildTree(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects);
 
 		BVHNode* GetRootNode() { return rootNode; }
+
+		const unsigned int GetNodeCount() const { return nodeCount; }
 	private:
 		// Returns false if parent node could not be split on any axis
 		bool BuildTreeRecursive(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects, BVHNode* parentNode);
@@ -179,6 +181,7 @@ namespace Engine {
 		BVHNode* BuildNode(BVHNode* parent, const std::vector<std::pair<glm::vec3, Mesh*>>& objects, const AABBPoints aabb) {
 			BVHNode* node = nullptr;
 			if (objects.size() > 0u) {
+				nodeCount++;
 				node = new BVHNode();
 				node->SetBoundingBox(aabb);
 				node->SetParent(parent);
@@ -202,5 +205,6 @@ namespace Engine {
 
 		BVHNode* rootNode;
 		unsigned int maxObjectsPerNode;
+		unsigned int nodeCount;
 	};
 }

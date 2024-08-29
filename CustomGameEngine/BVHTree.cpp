@@ -3,6 +3,7 @@ namespace Engine {
 	BVHTree::BVHTree(unsigned int maxObjectsPerNode) : maxObjectsPerNode(maxObjectsPerNode)
 	{
 		rootNode = new BVHNode();
+		nodeCount = 0;
 	}
 
 	BVHTree::~BVHTree()
@@ -13,6 +14,7 @@ namespace Engine {
 	void BVHTree::BuildTree(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects)
 	{
 		AABBPoints worldAABB;
+		nodeCount = 0;
 
 		if (CreateNodeAABB(unsortedObjects, worldAABB)) {
 			rootNode->SetBoundingBox(worldAABB);
