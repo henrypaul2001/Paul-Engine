@@ -14,13 +14,24 @@ namespace Engine {
 	class SystemFrustumCulling : public System
 	{
 	public:
-		SystemFrustumCulling(Camera* activeCamera, CollisionManager* collisionManager) { this->activeCamera = activeCamera; this->viewFrustum = &activeCamera->GetViewFrustum(); this->collisionManager = collisionManager; }
+		SystemFrustumCulling(Camera* activeCamera, CollisionManager* collisionManager) { 
+			this->activeCamera = activeCamera;
+			this->viewFrustum = &activeCamera->GetViewFrustum();
+			this->collisionManager = collisionManager;
+			visibleMeshes = 0;
+			totalMeshes = 0;
+			geometryAABBTests = 0;
+		}
 		~SystemFrustumCulling();
 
 		SystemTypes Name() override { return SYSTEM_FRUSTUM_CULLING; }
 		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
+
+		const unsigned int GetVisibleMeshes() const { return visibleMeshes; }
+		const unsigned int GetTotalMeshes() const { return totalMeshes; }
+		const unsigned int GetTotalAABBTests() const { return geometryAABBTests; }
 
 		void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
 	private:
