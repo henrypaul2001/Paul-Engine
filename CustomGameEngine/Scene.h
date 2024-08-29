@@ -13,6 +13,8 @@
 #include "ConstraintManager.h"
 
 #include "SystemFrustumCulling.h"
+#include "UIText.h"
+#include "SystemUIRender.h"
 namespace Engine 
 {
 	class SceneManager;

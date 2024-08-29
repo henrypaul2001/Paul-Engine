@@ -15,8 +15,6 @@ namespace Engine {
 
 		CullMeshes();
 		CullReflectionProbes();
-
-		std::cout << "Meshes rendered: " << visibleMeshes << "/" << totalMeshes << std::endl;
 	}
 
 	void SystemFrustumCulling::OnAction(Entity* entity)
