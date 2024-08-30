@@ -189,6 +189,7 @@
     <ClInclude Include="GameSceneManager.h" />
     <ClInclude Include="GenericState.h" />
     <ClInclude Include="GenericStateTransition.h" />
+    <ClInclude Include="GeoCullingScene.h" />
     <ClInclude Include="IBLScene.h" />
     <ClInclude Include="IdleState.h" />
     <ClInclude Include="InputManager.h" />
@@ -296,6 +297,7 @@
     <ClCompile Include="GameSceneManager.cpp" />
     <ClCompile Include="GenericState.cpp" />
     <ClCompile Include="GenericStateTransition.cpp" />
+    <ClCompile Include="GeoCullingScene.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="IBLScene.cpp" />
     <ClCompile Include="IdleState.cpp" />

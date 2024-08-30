@@ -12,6 +12,7 @@
 #include "ParticleScene.h"
 #include "AIScene.h"
 #include "IBLScene.h"
+#include "GeoCullingScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -78,6 +79,9 @@ namespace Engine
 			break;
 		case SCENE_IBL:
 			newScene = new IBLScene(this);
+			break;
+		case SCENE_GEO_CULLING:
+			newScene = new GeoCullingScene(this);
 			break;
 		case SCENE_NONE:
 			newScene = nullptr;

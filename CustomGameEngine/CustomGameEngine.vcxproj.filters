@@ -453,6 +453,9 @@
     <ClInclude Include="BVHNode.h">
       <Filter>Header Files\Engine\Utility\AccelerationStructures\BVH</Filter>
     </ClInclude>
+    <ClInclude Include="GeoCullingScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -775,6 +778,9 @@
     </ClCompile>
     <ClCompile Include="BVHNode.cpp">
       <Filter>Source Files\Engine\Utility\AccelerationStructures\BVH</Filter>
+    </ClCompile>
+    <ClCompile Include="GeoCullingScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

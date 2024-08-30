@@ -23,6 +23,7 @@ namespace Engine
 		SCENE_PARTICLES,
 		SCENE_AI,
 		SCENE_IBL,
+		SCENE_GEO_CULLING,
 	};
 
 	using SceneDelegate = std::function<void()>;
