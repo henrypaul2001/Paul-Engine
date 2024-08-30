@@ -153,6 +153,14 @@ namespace Engine {
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_IBL);
 	}
 
+	void MainMenu::GeoCullingSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch IBL scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading Culling Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_GEO_CULLING);
+	}
+
 	void MainMenu::ButtonPress(UIButton* button)
 	{
 
@@ -256,6 +264,13 @@ namespace Engine {
 		iblButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		iblButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(iblButton);
+
+		UITextButton* cullingButton = new UITextButton(std::string("Culling Scene"), glm::vec2((SCR_WIDTH / 6.0f) - 145.0f, SCR_HEIGHT * 0.35f), glm::vec2(0.4f, 0.4f), glm::vec2(380.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		cullingButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		cullingButton->SetMouseUpCallback(std::bind(&MainMenu::GeoCullingSceneButtonRelease, this, std::placeholders::_1));
+		cullingButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		cullingButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(cullingButton);
 
 		entityManager->AddEntity(canvas);
 	}

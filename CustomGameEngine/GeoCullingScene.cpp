@@ -99,6 +99,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(visibleCountText);
 		canvas->GetUICanvasComponent()->AddUIElement(bvhCountText);
 		canvas->GetUICanvasComponent()->AddUIElement(aabbTestCountText);
+		entityManager->AddEntity(canvas);
 	}
 	void GeoCullingScene::CreateSystems()
 	{
