@@ -44,7 +44,7 @@ namespace Engine {
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
-		directional->CastShadows = true;
+		directional->CastShadows = false;
 		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
 		directional->Ambient = directional->Colour * 0.1f;
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
@@ -54,9 +54,27 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		// Scene
+#pragma region Scene
+		unsigned int width = 15u, height = 15u, depth = 15u;
 
-		// UI
+		glm::vec3 startPos = glm::vec3(-50.0f, -25.0f, -25.0f);
+
+		float distanceX = 5.0f, distanceY = 5.0f, distanceZ = 5.0f;
+
+		unsigned int count = 0;
+		for (unsigned int z = 0; z < depth; z++) {
+			for (unsigned int y = 0; y < height; y++) {
+				for (unsigned int x = 0; x < width; x++) {
+					Entity* cube = new Entity("Cube");
+					cube->AddComponent(new ComponentTransform(startPos + glm::vec3(x * distanceX, y * distanceY, z * distanceZ)));
+					cube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+					entityManager->AddEntity(cube);
+				}
+			}
+		}
+#pragma endregion
+
+#pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
 
 		Entity* canvas = new Entity("Canvas");
@@ -100,6 +118,7 @@ namespace Engine {
 		canvas->GetUICanvasComponent()->AddUIElement(bvhCountText);
 		canvas->GetUICanvasComponent()->AddUIElement(aabbTestCountText);
 		entityManager->AddEntity(canvas);
+#pragma endregion
 	}
 	void GeoCullingScene::CreateSystems()
 	{
