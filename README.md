@@ -63,3 +63,6 @@ This is currently under development. Below is a preview of what I have so far:
 ### A* pathfinding
 
 ### 2D navigation grid read from text files
+
+## Optimisations
+### Frustum culling for geometry
