@@ -173,6 +173,17 @@ namespace Engine {
 				std::cout << "GAMEINPUTMANAGER::ENABLE::Geometry colliders debug" << std::endl;
 			}
 		}
+
+		if (key == GLFW_KEY_F2) {
+			Profiling::Profiler* profiler = Profiling::Profiler::GetInstance();
+
+			if (profiler->IsSessionActive()) {
+				profiler->EndSession();
+			}
+			else {
+				profiler->BeginSession("Manual Session");
+			}
+		}
 	}
 
 	void GameInputManager::keyDown(int key)

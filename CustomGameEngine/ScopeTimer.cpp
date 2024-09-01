@@ -14,12 +14,10 @@ namespace Engine::Profiling {
 	{
 		auto endTimepoint = std::chrono::high_resolution_clock::now();
 
-		std::chrono::microseconds start = std::chrono::time_point_cast<std::chrono::microseconds>(startTimepoint).time_since_epoch();
-		std::chrono::microseconds end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch();
+		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(startTimepoint).time_since_epoch().count();
+		long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
-		std::chrono::duration<double, std::micro> duration = end - start;
-		double ms = duration.count() * 0.001;
-
-		std::cout << ms << "ms: " << name << std::endl;
+		uint32_t threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
+		Profiling::Profiler::GetInstance()->WriteProfile(ProfileResult(name, start, end, threadID));
 	}
 }

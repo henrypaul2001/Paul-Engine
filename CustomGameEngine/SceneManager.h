@@ -4,6 +4,7 @@
 #include <thread>
 #include <iostream>
 #include "AudioManager.h"
+#include "ScopeTimer.h"
 namespace Engine
 {
 	enum SceneTypes {

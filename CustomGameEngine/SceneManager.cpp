@@ -125,6 +125,8 @@ namespace Engine
 
 		RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
 
+		Profiling::Profiler::GetInstance();
+
 		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
 
