@@ -11,6 +11,10 @@ namespace Engine {
 
 	}
 
+	void SystemParticleUpdater::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemParticleUpdater::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

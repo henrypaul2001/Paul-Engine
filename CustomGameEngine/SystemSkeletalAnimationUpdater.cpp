@@ -11,6 +11,11 @@ namespace Engine {
 
 	}
 
+	void SystemSkeletalAnimationUpdater::Run(const std::vector<Entity*>& entityList)
+	{
+
+	}
+
 	void SystemSkeletalAnimationUpdater::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

@@ -14,6 +14,7 @@ namespace Engine {
 
 		ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_UICANVAS);
 
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 	private:

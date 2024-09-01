@@ -10,6 +10,7 @@ namespace Engine {
         ~SystemParticleRenderer();
 
         SystemTypes Name() override { return SYSTEM_PARTICLE_RENDER; }
+        void Run(const std::vector<Entity*>& entityList) override;
         void OnAction(Entity* entity) override;
         void AfterAction() override;
 

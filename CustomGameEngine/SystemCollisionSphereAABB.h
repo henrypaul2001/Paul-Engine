@@ -16,6 +16,7 @@ namespace Engine {
 		~SystemCollisionSphereAABB();
 
 		SystemTypes Name() override { return SYSTEM_COLLISION_SPHERE_AABB; }
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 	};

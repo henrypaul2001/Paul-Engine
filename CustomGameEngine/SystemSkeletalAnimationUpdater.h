@@ -11,6 +11,7 @@ namespace Engine {
 		~SystemSkeletalAnimationUpdater();
 
 		SystemTypes Name() override { return SYSTEM_SKELETAL_ANIM_UPDATE; }
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 

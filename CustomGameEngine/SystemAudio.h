@@ -10,6 +10,7 @@ namespace Engine {
         ~SystemAudio();
 
         SystemTypes Name() override { return SYSTEM_AUDIO; }
+        void Run(const std::vector<Entity*>& entityList) override;
         void OnAction(Entity* entity) override;
         void AfterAction() override;
 

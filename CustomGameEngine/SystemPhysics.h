@@ -25,6 +25,7 @@ namespace Engine
 		void AirDensity(float airDensity) { this->airDensity = airDensity; }
 
 		SystemTypes Name() override { return SYSTEM_PHYSICS; }
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 

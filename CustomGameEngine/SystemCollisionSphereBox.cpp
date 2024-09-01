@@ -10,6 +10,10 @@ namespace Engine {
 
 	}
 
+	void SystemCollisionSphereBox::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemCollisionSphereBox::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & BOX_MASK) == BOX_MASK) {

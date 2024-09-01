@@ -10,6 +10,10 @@ namespace Engine {
 
 	}
 
+	void SystemCollisionSphereAABB::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemCollisionSphereAABB::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & SPHERE_MASK) == SPHERE_MASK) {

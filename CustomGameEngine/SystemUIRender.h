@@ -9,6 +9,7 @@ namespace Engine {
 		~SystemUIRender();
 
 		SystemTypes Name() override { return SYSTEM_UI_RENDER; }
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 

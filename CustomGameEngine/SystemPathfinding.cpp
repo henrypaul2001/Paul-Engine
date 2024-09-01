@@ -11,6 +11,10 @@ namespace Engine {
 
 	}
 
+	void SystemPathfinding::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemPathfinding::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

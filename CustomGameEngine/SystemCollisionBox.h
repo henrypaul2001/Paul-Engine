@@ -12,6 +12,7 @@ namespace Engine {
 		~SystemCollisionBox();
 
 		SystemTypes Name() override { return SYSTEM_COLLISION_BOX; }
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
     };

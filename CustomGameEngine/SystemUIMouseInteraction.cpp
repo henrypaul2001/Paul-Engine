@@ -11,6 +11,10 @@ namespace Engine {
 
 	}
 
+	void SystemUIMouseInteraction::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemUIMouseInteraction::OnAction(Entity* entity)
 	{
 		if (inputManager->GetCursorLock() == false) {

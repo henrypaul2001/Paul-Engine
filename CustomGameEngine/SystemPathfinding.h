@@ -9,6 +9,7 @@ namespace Engine {
         ~SystemPathfinding();
 
         SystemTypes Name() override { return SYSTEM_PATHFINDING; }
+        void Run(const std::vector<Entity*>& entityList) override;
         void OnAction(Entity* entity) override;
         void AfterAction() override;
 

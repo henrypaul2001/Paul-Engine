@@ -17,6 +17,10 @@ namespace Engine
 
 	}
 
+	void SystemPhysics::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemPhysics::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

@@ -8,6 +8,7 @@ namespace Engine {
 		~SystemStateMachineUpdater() {}
 
 		SystemTypes Name() override { return SYSTEM_STATE_UPDATER; }
+		void Run(const std::vector<Entity*>& entityList) override;
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 

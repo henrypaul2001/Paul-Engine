@@ -10,6 +10,7 @@ namespace Engine {
         ~SystemParticleUpdater();
 
         SystemTypes Name() override { return SYSTEM_PARTICLE_UPDATE; }
+		void Run(const std::vector<Entity*>& entityList) override;
         void OnAction(Entity* entity) override;
         void AfterAction() override;
 

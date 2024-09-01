@@ -23,6 +23,10 @@ namespace Engine {
 
 	}
 
+	void SystemRender::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemRender::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

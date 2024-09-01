@@ -10,6 +10,10 @@ namespace Engine {
 
 	}
 
+	void SystemUIRender::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemUIRender::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

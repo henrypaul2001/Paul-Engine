@@ -10,6 +10,10 @@ namespace Engine {
 
 	}
 
+	void SystemAudio::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemAudio::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

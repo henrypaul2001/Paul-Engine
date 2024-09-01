@@ -1,5 +1,10 @@
 #include "SystemStateMachineUpdater.h"
 namespace Engine {
+	void SystemStateMachineUpdater::Run(const std::vector<Entity*>& entityList)
+	{
+
+	}
+
 	void SystemStateMachineUpdater::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {

@@ -11,6 +11,10 @@ namespace Engine {
 
 	}
 
+	void SystemShadowMapping::Run(const std::vector<Entity*>& entityList)
+	{
+	}
+
 	void SystemShadowMapping::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
