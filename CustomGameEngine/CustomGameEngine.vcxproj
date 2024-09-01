@@ -210,6 +210,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="ScopeTimer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalAnimation.h" />
     <ClInclude Include="SponzaScene.h" />
@@ -320,6 +321,7 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="ScopeTimer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalAnimation.cpp" />
     <ClCompile Include="SponzaScene.cpp" />

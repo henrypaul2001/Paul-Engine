@@ -136,6 +136,12 @@
     <Filter Include="Header Files\Engine\Utility\AccelerationStructures\BVH">
       <UniqueIdentifier>{0ccd1704-d762-4371-8bc5-cda37dee5c13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Profiling">
+      <UniqueIdentifier>{4da55caf-1827-4870-a10a-211ee50d08e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\Profiling">
+      <UniqueIdentifier>{49bad90b-4936-42b4-b15e-38a72dbd48c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -455,6 +461,9 @@
     </ClInclude>
     <ClInclude Include="GeoCullingScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="ScopeTimer.h">
+      <Filter>Header Files\Engine\Utility\Profiling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -781,6 +790,9 @@
     </ClCompile>
     <ClCompile Include="GeoCullingScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="ScopeTimer.cpp">
+      <Filter>Source Files\Engine\Utility\Profiling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
