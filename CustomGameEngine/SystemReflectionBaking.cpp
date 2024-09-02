@@ -14,6 +14,7 @@ namespace Engine {
 
 	void SystemReflectionBaking::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemReflectionBaking::Run");
 		// Capture scene and process capture
 		// ---------------------------------
 		std::cout << "SYSTEMREFLECTIONBAKING::Baking reflection probes" << std::endl;

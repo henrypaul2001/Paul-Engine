@@ -26,6 +26,7 @@ namespace Engine {
 
 	void SystemRenderColliders::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemRenderColliders::Run");
 		System::Run(entityList);
 
 		// Render BVH Tree

@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include <string>
+#include "ScopeTimer.h"
 namespace Engine 
 {
 	enum SystemTypes {

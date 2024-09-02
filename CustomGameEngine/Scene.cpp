@@ -7,6 +7,7 @@ namespace Engine
 	float Scene::dt;
 
 	Scene::Scene(SceneManager* sceneManager, const std::string& name) {
+		SCOPE_TIMER("Scene::Scene()");
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
@@ -43,6 +44,7 @@ namespace Engine
 
 	void Scene::Update()
 	{
+		SCOPE_TIMER("Scene::Update()");
 		glm::vec3 position = camera->GetPosition();
 		glm::vec3 forward = camera->GetFront();
 		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
@@ -51,6 +53,7 @@ namespace Engine
 
 	void Scene::Render()
 	{
+		SCOPE_TIMER("Scene::Render()");
 		glm::mat4 projection = glm::perspective(glm::radians(camera->GetZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, camera->GetNearClip(), camera->GetFarClip());
 
 		glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());

@@ -11,6 +11,8 @@ namespace Engine {
 
 	void SystemCollisionSphere::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemCollisionSphere::Run");
+		System::Run(entityList);
 	}
 
 	void SystemCollisionSphere::OnAction(Entity* entity)

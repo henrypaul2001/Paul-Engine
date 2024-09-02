@@ -13,6 +13,8 @@ namespace Engine {
 
 	void SystemParticleRenderer::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemParticleRenderer::Run");
+		System::Run(entityList);
 	}
 
 	void SystemParticleRenderer::OnAction(Entity* entity)

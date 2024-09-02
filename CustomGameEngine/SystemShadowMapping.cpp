@@ -13,6 +13,8 @@ namespace Engine {
 
 	void SystemShadowMapping::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemShadowMapping::Run");
+		System::Run(entityList);
 	}
 
 	void SystemShadowMapping::OnAction(Entity* entity)

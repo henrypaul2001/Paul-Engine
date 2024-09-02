@@ -12,6 +12,8 @@ namespace Engine {
 
 	void SystemUIRender::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemUIRender::Run");
+		System::Run(entityList);
 	}
 
 	void SystemUIRender::OnAction(Entity* entity)

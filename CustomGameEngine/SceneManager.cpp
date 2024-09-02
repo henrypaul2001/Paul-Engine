@@ -152,6 +152,7 @@ namespace Engine
 		Scene::dt = 0.0f;
 		while (!glfwWindowShouldClose(window))
 		{
+			SCOPE_TIMER("SceneManager::Run::Frame");
 			currentFrame = static_cast<float>(glfwGetTime()) + 0.0001f;
 			Scene::dt = currentFrame - lastFrame;
 			lastFrame = currentFrame;

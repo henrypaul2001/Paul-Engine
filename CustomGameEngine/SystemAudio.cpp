@@ -12,6 +12,8 @@ namespace Engine {
 
 	void SystemAudio::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemAudio::Run");
+		System::Run(entityList);
 	}
 
 	void SystemAudio::OnAction(Entity* entity)

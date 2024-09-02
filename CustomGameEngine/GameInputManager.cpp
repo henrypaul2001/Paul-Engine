@@ -17,6 +17,7 @@ namespace Engine {
 
 	void GameInputManager::ProcessInputs()
 	{
+		SCOPE_TIMER("GameInputManager::ProcessInputs");
 		if (keysPressed[GLFW_KEY_ESCAPE]) {
 			std::cout << "GAMEINPUTMANAGER::KEYCHECK::ESCAPE::TRUE" << std::endl;
 
@@ -122,6 +123,7 @@ namespace Engine {
 
 	void GameInputManager::keyUp(int key)
 	{
+		SCOPE_TIMER("GameInputManager::keyUp");
 		std::cout << "Key num: " << key << "| UP" << std::endl;
 		owner->keyUp(key);
 		RenderManager* renderInstance = RenderManager::GetInstance();
@@ -188,6 +190,7 @@ namespace Engine {
 
 	void GameInputManager::keyDown(int key)
 	{
+		SCOPE_TIMER("GameInputManager::keyDown");
 		std::cout << "Key num: " << key << "| DOWN" << std::endl;
 		owner->keyDown(key);
 	}

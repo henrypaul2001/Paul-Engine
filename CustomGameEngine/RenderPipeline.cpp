@@ -19,6 +19,7 @@ namespace Engine {
 
 	void RenderPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
+		SCOPE_TIMER("RenderPipeline::Run");
 		this->entities = entities;
 
 		shadowmapSystem = nullptr;
@@ -54,6 +55,7 @@ namespace Engine {
 
 	void RenderPipeline::DirLightShadowStep()
 	{
+		SCOPE_TIMER("RenderPipeline::DirLightShadowStep");
 		if (LightManager::GetInstance()->GetDirectionalLightEntity() != nullptr) {
 			// Directional light
 			unsigned int shadowWidth = renderInstance->ShadowWidth();
@@ -89,6 +91,7 @@ namespace Engine {
 
 	void RenderPipeline::ActiveLightsShadowStep()
 	{
+		SCOPE_TIMER("RenderPipeline::ActiveLightsShadowStep");
 		// Spot and point lights
 		std::vector<glm::mat4> shadowTransforms;
 
@@ -190,6 +193,7 @@ namespace Engine {
 
 	void RenderPipeline::RunShadowMapSteps()
 	{
+		SCOPE_TIMER("RenderPipeline::RunShadowMapSteps");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_SHADOWS) != 0) {
 			depthShader = ResourceManager::GetInstance()->ShadowMapShader();
@@ -205,6 +209,7 @@ namespace Engine {
 
 	void RenderPipeline::BloomStep()
 	{
+		SCOPE_TIMER("RenderPipeline::BloomStep");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_BLOOM) != 0 && (renderOptions & RENDER_ADVANCED_BLOOM) == 0) {
 			bool horizontal = true;
@@ -239,6 +244,7 @@ namespace Engine {
 
 	void RenderPipeline::UIRenderStep()
 	{
+		SCOPE_TIMER("RenderPipeline::UIRenderStep");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_UI) != 0) {
 			if (uiRenderSystem != nullptr) {
@@ -256,6 +262,7 @@ namespace Engine {
 
 	void RenderPipeline::ForwardParticleRenderStep()
 	{
+		SCOPE_TIMER("RenderPipeline::ForwardParticleRenderStep");
 		if (particleRenderSystem) {
 			// Render particles
 			for (Entity* e : entities) {
@@ -267,6 +274,7 @@ namespace Engine {
 
 	void RenderPipeline::AdvBloomCombineStep(const bool renderDirtMask, const float bloomStrength, const float lensDirtStrength)
 	{
+		SCOPE_TIMER("RenderPipeline::AdvBloomCombineStep");
 		glViewport(0, 0, screenWidth, screenHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -297,6 +305,7 @@ namespace Engine {
 
 	void RenderPipeline::AdvancedBloomStep()
 	{
+		SCOPE_TIMER("RenderPipeline::AdvancedBloomStep");
 		RenderParams* renderParams = renderInstance->GetRenderParams();
 		RenderOptions renderOptions = renderParams->GetRenderOptions();
 		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
@@ -319,6 +328,7 @@ namespace Engine {
 
 	void RenderPipeline::AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold)
 	{
+		SCOPE_TIMER("RenderPipeline::AdvBloomDownsampleStep");
 		Shader* downsampleShader = ResourceManager::GetInstance()->AdvBloomDownsampleShader();
 		downsampleShader->Use();
 		downsampleShader->setVec2("srcResolution", glm::vec2((float)screenWidth, (float)screenHeight));
@@ -355,6 +365,7 @@ namespace Engine {
 
 	void RenderPipeline::AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius)
 	{
+		SCOPE_TIMER("RenderPipeline::AdvBloomUpsampleStep");
 		Shader* upsampleShader = ResourceManager::GetInstance()->AdvBloomUpsampleShader();
 		upsampleShader->Use();
 		upsampleShader->setFloat("filterRadius", filterRadius);

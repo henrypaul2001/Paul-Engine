@@ -11,6 +11,7 @@ namespace Engine {
 
 	void DeferredPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
+		SCOPE_TIMER("DeferredPipeline::Run");
 		RenderPipeline::Run(renderSystems, entities);
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 
@@ -25,18 +26,22 @@ namespace Engine {
 			// Geometry pass
 			// -------------
 			//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glViewport(0, 0, screenWidth, screenHeight);
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glDisable(GL_BLEND);
-			for (Entity* e : entities) {
-				renderSystem->OnAction(e);
+			{
+				SCOPE_TIMER("DeferredPipeline::Geometry Pass");
+				glViewport(0, 0, screenWidth, screenHeight);
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glDisable(GL_BLEND);
+				for (Entity* e : entities) {
+					renderSystem->OnAction(e);
+				}
+				renderSystem->AfterAction();
 			}
-			renderSystem->AfterAction();
 
 			// SSAO Pass
 			// ---------
 			if ((renderOptions & RENDER_SSAO) != 0) {
+				SCOPE_TIMER("DeferredPipeline::SSAO Pass");
 				// SSAO Texture
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetSSAOFBO());
 				glClear(GL_COLOR_BUFFER_BIT);
@@ -86,69 +91,72 @@ namespace Engine {
 
 			// Two lighting passes, first, non pbr will light all non pbr pixels
 			// Second pass will light all pbr pixels
+			{
+				SCOPE_TIMER("DeferredPipeline::Lighting Pass");
+				glViewport(0, 0, screenWidth, screenHeight);
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glViewport(0, 0, screenWidth, screenHeight);
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetAlternateScreenTexture(), 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetAlternateBloomBrightnessTexture(), 0);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetAlternateScreenTexture(), 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetAlternateBloomBrightnessTexture(), 0);
+				const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+				glDrawBuffers(2, buffers);
 
-			const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-			glDrawBuffers(2, buffers);
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPosition"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gNormal"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gAlbedo"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
 
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPosition"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gNormal"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gAlbedo"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gSpecular"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular()); // non pbr specific
 
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gSpecular"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular()); // non pbr specific
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPBRFLAG"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPBRFLAG());
 
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPBRFLAG"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GPBRFLAG());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("SSAO"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("SSAO"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
+				// First pass
+				Shader* lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
+				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_CULL_FACE);
+				lightingPass->Use();
+				lightingPass->setBool("useSSAO", ((renderOptions & RENDER_SSAO) != 0));
+				LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
+				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
-			// First pass
-			Shader* lightingPass = ResourceManager::GetInstance()->DeferredLightingPass();
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
-			lightingPass->Use();
-			lightingPass->setBool("useSSAO", ((renderOptions & RENDER_SSAO) != 0));
-			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+				// Second pass (pbr)
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 
-			// Second pass (pbr)
-			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetScreenTexture(), 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetBloomBrightnessTexture(), 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetScreenTexture(), 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetBloomBrightnessTexture(), 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gArm"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm()); // pbr specific
 
-			glActiveTexture(GL_TEXTURE0 + textureLookups->at("gArm"));
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm()); // pbr specific
+				glActiveTexture(GL_TEXTURE30);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GetAlternateScreenTexture());
 
-			glActiveTexture(GL_TEXTURE30);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetAlternateScreenTexture());
+				glActiveTexture(GL_TEXTURE31);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GetAlternateBloomBrightnessTexture());
 
-			glActiveTexture(GL_TEXTURE31);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetAlternateBloomBrightnessTexture());
-
-			lightingPass = ResourceManager::GetInstance()->DeferredLightingPassPBR();
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_CULL_FACE);
-			lightingPass->Use();
-			lightingPass->setBool("useSSAO", ((renderOptions& RENDER_SSAO) != 0));
-			LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+				lightingPass = ResourceManager::GetInstance()->DeferredLightingPassPBR();
+				glEnable(GL_DEPTH_TEST);
+				glEnable(GL_CULL_FACE);
+				lightingPass->Use();
+				lightingPass->setBool("useSSAO", ((renderOptions & RENDER_SSAO) != 0));
+				LightManager::GetInstance()->SetShaderUniforms(lightingPass, activeCamera);
+				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+			}
 
 			// Skybox
 			// ------
 			if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
+				SCOPE_TIMER("DeferredPipeline::Skybox");
 				// Retrieve depth and stencil information from gBuffer
 				glBindFramebuffer(GL_READ_FRAMEBUFFER, *renderInstance->GetGBuffer());
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -191,11 +199,14 @@ namespace Engine {
 
 			// Transparency using forward rendering
 			// ------------------------------------
-			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader(), activeCamera);
-			LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitPBR(), activeCamera);
-			glEnable(GL_BLEND);
-			renderSystem->DrawTransparentGeometry(true);
-			glDisable(GL_BLEND);
+			{
+				SCOPE_TIMER("DeferredPipeline::Transparency Pass");
+				LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader(), activeCamera);
+				LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitPBR(), activeCamera);
+				glEnable(GL_BLEND);
+				renderSystem->DrawTransparentGeometry(true);
+				glDisable(GL_BLEND);
+			}
 
 			// Particle render using forward rendering
 			// ---------------------------------------
@@ -214,6 +225,7 @@ namespace Engine {
 			// Post Processing
 			// ---------------
 			if ((renderOptions & RENDER_TONEMAPPING) != 0) {
+				SCOPE_TIMER("DeferredPipeline::Post Processing");
 				// HDR Tonemapping
 				glViewport(0, 0, screenWidth, screenHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -241,35 +253,38 @@ namespace Engine {
 			}
 
 			// Final post process output
-			glViewport(0, 0, screenWidth, screenHeight);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glClear(GL_COLOR_BUFFER_BIT);
+			{
+				SCOPE_TIMER("DeferredPipeline::Final Screen");
+				glViewport(0, 0, screenWidth, screenHeight);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glClear(GL_COLOR_BUFFER_BIT);
 
-			Shader* screenQuadShader = ResourceManager::GetInstance()->ScreenQuadShader();
-			screenQuadShader->Use();
+				Shader* screenQuadShader = ResourceManager::GetInstance()->ScreenQuadShader();
+				screenQuadShader->Use();
 
-			screenQuadShader->setUInt("postProcess", renderSystem->GetPostProcess());
-			screenQuadShader->setFloat("postProcessStrength", renderInstance->GetRenderParams()->GetPostProcessStrength());
+				screenQuadShader->setUInt("postProcess", renderSystem->GetPostProcess());
+				screenQuadShader->setFloat("postProcessStrength", renderInstance->GetRenderParams()->GetPostProcessStrength());
 
-			if (renderSystem->GetPostProcess() == CUSTOM_KERNEL) {
-				screenQuadShader->setFloat("customKernel[0]", renderSystem->PostProcessKernel[0]);
-				screenQuadShader->setFloat("customKernel[1]", renderSystem->PostProcessKernel[1]);
-				screenQuadShader->setFloat("customKernel[2]", renderSystem->PostProcessKernel[2]);
-				screenQuadShader->setFloat("customKernel[3]", renderSystem->PostProcessKernel[3]);
-				screenQuadShader->setFloat("customKernel[4]", renderSystem->PostProcessKernel[4]);
-				screenQuadShader->setFloat("customKernel[5]", renderSystem->PostProcessKernel[5]);
-				screenQuadShader->setFloat("customKernel[6]", renderSystem->PostProcessKernel[6]);
-				screenQuadShader->setFloat("customKernel[7]", renderSystem->PostProcessKernel[7]);
-				screenQuadShader->setFloat("customKernel[8]", renderSystem->PostProcessKernel[8]);
+				if (renderSystem->GetPostProcess() == CUSTOM_KERNEL) {
+					screenQuadShader->setFloat("customKernel[0]", renderSystem->PostProcessKernel[0]);
+					screenQuadShader->setFloat("customKernel[1]", renderSystem->PostProcessKernel[1]);
+					screenQuadShader->setFloat("customKernel[2]", renderSystem->PostProcessKernel[2]);
+					screenQuadShader->setFloat("customKernel[3]", renderSystem->PostProcessKernel[3]);
+					screenQuadShader->setFloat("customKernel[4]", renderSystem->PostProcessKernel[4]);
+					screenQuadShader->setFloat("customKernel[5]", renderSystem->PostProcessKernel[5]);
+					screenQuadShader->setFloat("customKernel[6]", renderSystem->PostProcessKernel[6]);
+					screenQuadShader->setFloat("customKernel[7]", renderSystem->PostProcessKernel[7]);
+					screenQuadShader->setFloat("customKernel[8]", renderSystem->PostProcessKernel[8]);
+				}
+
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_CULL_FACE);
+				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+				glEnable(GL_DEPTH_TEST);
+				glEnable(GL_CULL_FACE);
 			}
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_CULL_FACE);
 
 			// UI Render
 			UIRenderStep();

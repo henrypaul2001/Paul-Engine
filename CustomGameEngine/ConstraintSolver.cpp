@@ -3,6 +3,7 @@
 namespace Engine {
 	void ConstraintSolver::OnAction()
 	{
+		SCOPE_TIMER("ConstraintSolver::OnAction");
 		std::vector<Constraint*> constraints = constraintManager->GetConstraints();
 		float dividedDeltaTime = Scene::dt / float(numIterations);
 

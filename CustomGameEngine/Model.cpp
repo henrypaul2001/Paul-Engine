@@ -44,6 +44,7 @@ namespace Engine {
 
 	void Model::Draw(Shader& shader, int instanceNum, bool ignoreCulling)
 	{
+		SCOPE_TIMER("Model::Draw");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				meshes[i]->ApplyMaterial(meshMaterials[meshes[i]]);
@@ -68,6 +69,7 @@ namespace Engine {
 
 	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum, bool ignoreCulling)
 	{
+		SCOPE_TIMER("Model::DrawTransparentMeshes");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (meshMaterials[meshes[i]]->isTransparent) {

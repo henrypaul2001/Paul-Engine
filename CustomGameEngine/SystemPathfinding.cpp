@@ -13,6 +13,8 @@ namespace Engine {
 
 	void SystemPathfinding::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemPathfinding::Run");
+		System::Run(entityList);
 	}
 
 	void SystemPathfinding::OnAction(Entity* entity)

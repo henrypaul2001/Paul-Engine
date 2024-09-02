@@ -3,6 +3,9 @@
 #include <iostream>
 #include <thread>
 #include "Profiler.h"
+
+#define SCOPE_TIMER(name) Engine::Profiling::ScopeTimer scopeTimer = Engine::Profiling::ScopeTimer(name)
+
 namespace Engine::Profiling {
 	class ScopeTimer
 	{

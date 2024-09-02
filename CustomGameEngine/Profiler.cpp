@@ -59,16 +59,16 @@ namespace Engine::Profiling {
 	void Profiler::WriteProfile(const ProfileResult& profile)
 	{
 		if (activeSession) {
-			profileCount++;
 			if (profileCount > 0) { outputStream << ","; }
+			profileCount++;
 
 			std::string name = profile.profileName;
 			std::replace(name.begin(), name.end(), '"', '\'');
 
 			outputStream << "{";
 			outputStream << "\"cat\":\"function\",";
-			outputStream << "\dur\":" << (profile.end - profile.start) << ',';
-			outputStream << "\name\":\"" << name << "\",";
+			outputStream << "\"dur\":" << (profile.end - profile.start) << ',';
+			outputStream << "\"name\":\"" << name << "\",";
 			outputStream << "\"ph\":\"X\",";
 			outputStream << "\"pid\":0,";
 			outputStream << "\"tid\":" << profile.threadID << ",";

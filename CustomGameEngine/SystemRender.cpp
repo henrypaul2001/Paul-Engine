@@ -25,10 +25,13 @@ namespace Engine {
 
 	void SystemRender::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemRender::Run");
+		System::Run(entityList);
 	}
 
 	void SystemRender::OnAction(Entity* entity)
 	{
+		SCOPE_TIMER("SystemRender::OnAction");
 		if ((entity->Mask() & MASK) == MASK) {
 			std::vector<Component*> components = entity->Components();
 
@@ -54,49 +57,61 @@ namespace Engine {
 
 	void SystemRender::AfterAction()
 	{
+		SCOPE_TIMER("SystemRender::AfterAction");
 		shadersUsedThisFrame.clear();
 	}
 
 	void SystemRender::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
 	{
+		SCOPE_TIMER("SystemRender::Draw");
 		Shader* shader = geometry->GetShader();
-		if (shadersUsedThisFrame.size() > 0) {
-			for (Shader* s : shadersUsedThisFrame) {
-				if (s->GetID() == shader->GetID()) {
-					// lighting uniforms already set
-				}
-				else {
-					// add shader to list and set lighting uniforms
-					shadersUsedThisFrame.push_back(s);
-					shader->Use();
-					LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
-					break;
+
+		{
+			SCOPE_TIMER("SystemRender::Draw::Check shader used this frame");
+			if (shadersUsedThisFrame.size() > 0) {
+				for (Shader* s : shadersUsedThisFrame) {
+					if (s->GetID() == shader->GetID()) {
+						// lighting uniforms already set
+					}
+					else {
+						// add shader to list and set lighting uniforms
+						shadersUsedThisFrame.push_back(s);
+						shader->Use();
+						LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+						break;
+					}
 				}
 			}
+			else {
+				shadersUsedThisFrame.push_back(shader);
+				shader->Use();
+				LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+			}
 		}
-		else {
-			shadersUsedThisFrame.push_back(shader);
+
+		{
+			SCOPE_TIMER("SystemRender::Draw::Set base uniforms");
 			shader->Use();
-			LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+
+			glm::mat4 model = transform->GetWorldModelMatrix();
+			shader->setMat4("model", model);
+			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			shader->setBool("instanced", geometry->Instanced());
+			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			shader->setBool("hasBones", false);
+			shader->setBool("OpaqueRenderPass", true);
 		}
 
-		shader->Use();
-
-		glm::mat4 model = transform->GetWorldModelMatrix();
-		shader->setMat4("model", model);
-		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-		shader->setBool("instanced", geometry->Instanced());
-		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
-		shader->setBool("hasBones", false);
-		shader->setBool("OpaqueRenderPass", true);
-
-		// Bones
-		if (geometry->GetModel()->HasBones()) {
-			if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-				shader->setBool("hasBones", true);
-				std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-				for (int i = 0; i < transforms.size(); i++) {
-					shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+		{
+			SCOPE_TIMER("SystemRender::Draw::Set bone transforms");
+			// Bones
+			if (geometry->GetModel()->HasBones()) {
+				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+					shader->setBool("hasBones", true);
+					std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+					for (int i = 0; i < transforms.size(); i++) {
+						shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+					}
 				}
 			}
 		}
@@ -133,6 +148,7 @@ namespace Engine {
 
 	void SystemRender::DrawTransparentGeometry(bool useDefaultForwardShader)
 	{
+		SCOPE_TIMER("SystemRender::DrawTransparentGeometry");
 		// Geometry is already sorted in ascending order
 		for (std::map<float, ComponentGeometry*>::reverse_iterator it = transparentGeometry.rbegin(); it != transparentGeometry.rend(); ++it) {
 			ComponentGeometry* geometry = it->second;

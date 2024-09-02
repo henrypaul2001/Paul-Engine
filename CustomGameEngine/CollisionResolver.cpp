@@ -13,6 +13,7 @@ namespace Engine {
 
 	void CollisionResolver::OnAction()
 	{
+		SCOPE_TIMER("CollisionResolver::OnAction");
 		for (CollisionData collision : collisionManager->GetUnresolvedCollisions()) {
 			Entity* objectA = collision.objectA;
 			Entity* objectB = collision.objectB;
@@ -61,6 +62,7 @@ namespace Engine {
 
 	void CollisionResolver::AfterAction()
 	{
+		SCOPE_TIMER("CollisionResolver::AfterAction");
 		collisionManager->ClearUnresolvedCollisions();
 	}
 

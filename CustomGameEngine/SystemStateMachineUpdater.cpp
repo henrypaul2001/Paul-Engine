@@ -2,7 +2,8 @@
 namespace Engine {
 	void SystemStateMachineUpdater::Run(const std::vector<Entity*>& entityList)
 	{
-
+		SCOPE_TIMER("SystemStateMachineUpdater::Run");
+		System::Run(entityList);
 	}
 
 	void SystemStateMachineUpdater::OnAction(Entity* entity)

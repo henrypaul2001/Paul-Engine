@@ -7,6 +7,7 @@ namespace Engine {
 
 	void SystemFrustumCulling::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemFrustumCulling::Run");
 		viewFrustum = &activeCamera->GetViewFrustum();
 		totalMeshes = 0;
 		visibleMeshes = 0;
@@ -19,6 +20,7 @@ namespace Engine {
 
 	void SystemFrustumCulling::OnAction(Entity* entity)
 	{
+		SCOPE_TIMER("SystemFrustumCulling::OnAction");
 		// Reset isVisible flag on all meshes
 		if ((entity->Mask() & GEOMETRY_MASK) == GEOMETRY_MASK) {
 			std::vector<Component*> components = entity->Components();
@@ -85,6 +87,7 @@ namespace Engine {
 
 	FrustumIntersection SystemFrustumCulling::AABBIsInFrustum(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin)
 	{
+		SCOPE_TIMER("SystemFrustumCulling::AABBIsInFrustum");
 		geometryAABBTests++;
 		bool fullyInside = true;
 		for (const ViewPlane& plane : { viewFrustum->left, viewFrustum->right, viewFrustum->far, viewFrustum->near, viewFrustum->top, viewFrustum->bottom }) {
@@ -107,6 +110,7 @@ namespace Engine {
 
 	void SystemFrustumCulling::CullMeshes()
 	{
+		SCOPE_TIMER("SystemFrustumCulling::CullMeshes");
 		// Traverse BVH tree and check collisions with each node until a leaf node is found or no collision
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
 		BVHNode* rootNode = geometryBVH->GetRootNode();
@@ -124,6 +128,7 @@ namespace Engine {
 
 	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult)
 	{
+		SCOPE_TIMER("SystemFrustumCulling::TestBVHNodeRecursive");
 		AABBPoints nodeAABB = node->GetBoundingBox();
 
 		// Only test node AABB if parent result was partially inside frustum
@@ -168,11 +173,13 @@ namespace Engine {
 
 	void SystemFrustumCulling::CullReflectionProbes()
 	{
+		SCOPE_TIMER("SystemFrustumCulling::CullReflectionProbes");
 		RenderManager* renderManager = RenderManager::GetInstance();
 		std::vector<ReflectionProbe*> reflectionProbes = renderManager->GetBakedData().GetReflectionProbes();
 		culledProbeList.clear();
 
 		for (ReflectionProbe* probe : reflectionProbes) {
+			SCOPE_TIMER("SystemFrustumCulling::CullReflectionProbes::TestProbe");
 			float soiRadius = probe->GetSOIRadius();
 			glm::vec3 worldPos = probe->GetWorldPosition();
 

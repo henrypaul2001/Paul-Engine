@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "ComponentCollisionAABB.h"
+#include "ScopeTimer.h"
 namespace Engine {
 
 	static constexpr int MaxBoneInfluence() { return 8; }

@@ -9,7 +9,7 @@ namespace Engine {
 	{
 
 	}
-
+	 
 	ForwardPipeline::~ForwardPipeline()
 	{
 
@@ -17,6 +17,7 @@ namespace Engine {
 
 	void ForwardPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
 	{
+		SCOPE_TIMER("ForwardPipeline::Run");
 		RenderPipeline::Run(renderSystems, entities);
 
 		this->renderSystems = renderSystems;
@@ -43,6 +44,7 @@ namespace Engine {
 
 	void ForwardPipeline::SceneRenderStep()
 	{
+		SCOPE_TIMER("ForwardPipeline::SceneRenderStep");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		glViewport(0, 0, screenWidth, screenHeight);
 
@@ -117,6 +119,7 @@ namespace Engine {
 
 	void ForwardPipeline::ScreenTextureStep()
 	{
+		SCOPE_TIMER("ForwardPipeline::ScreenTextureStep");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_TONEMAPPING) != 0) {
 			// HDR tonemapping step

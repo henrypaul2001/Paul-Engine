@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "SystemParticleRenderer.h"
 #include "SystemRenderColliders.h"
+#include "ScopeTimer.h"
 namespace Engine {
 	class SystemRender;
 	class SystemShadowMapping;

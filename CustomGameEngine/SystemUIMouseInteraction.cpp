@@ -13,6 +13,8 @@ namespace Engine {
 
 	void SystemUIMouseInteraction::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemUIMouseInteraction::Run");
+		System::Run(entityList);
 	}
 
 	void SystemUIMouseInteraction::OnAction(Entity* entity)

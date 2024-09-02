@@ -27,27 +27,26 @@ namespace Engine
 
 	void SystemManager::ActionUpdateSystems(EntityManager* entityManager)
 	{
+		SCOPE_TIMER("SystemManager::ActionUpdateSystems");
 		std::vector<Entity*> entityList = entityManager->Entities();
 		for (System* s : updateSystemList) {
-			if (s->Name() == SYSTEM_PHYSICS) {
-				if (collisionResponseSystem != nullptr) {
-					// Collision response
-					collisionResponseSystem->OnAction();
-					collisionResponseSystem->AfterAction();
-				}
-				if (constraintSolver != nullptr) {
-					// Solve constraints
-					constraintSolver->OnAction();
-					constraintSolver->AfterAction();
+			{
+				SCOPE_TIMER("SystemManager::ActionUpdateSystems::Check if physics system");
+				if (s->Name() == SYSTEM_PHYSICS) {
+					if (collisionResponseSystem != nullptr) {
+						// Collision response
+						collisionResponseSystem->OnAction();
+						collisionResponseSystem->AfterAction();
+					}
+					if (constraintSolver != nullptr) {
+						// Solve constraints
+						constraintSolver->OnAction();
+						constraintSolver->AfterAction();
+					}
 				}
 			}
 
 			s->Run(entityList);
-
-			//for (Entity* e : entityList) {
-			//	s->OnAction(e);
-			//}
-			//s->AfterAction();
 		}
 	}
 
@@ -58,6 +57,7 @@ namespace Engine
 
 	void SystemManager::AddSystem(System* system, SystemLists list)
 	{
+		SCOPE_TIMER("SystemManager::AddSystem");
 		System* result = FindSystem(system->Name(), list);
 		_ASSERT(result == nullptr, "System '" + system.Name() + "' already exists");
 		if (list == UPDATE_SYSTEMS) {
@@ -89,6 +89,7 @@ namespace Engine
 
 	System* SystemManager::FindSystem(SystemTypes name, SystemLists list)
 	{
+		SCOPE_TIMER("SystemManager::FindSystem");
 		std::vector<System*>* search = nullptr;
 		if (list == RENDER_SYSTEMS) {
 			search = &renderSystemList;

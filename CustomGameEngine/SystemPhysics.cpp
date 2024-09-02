@@ -19,6 +19,8 @@ namespace Engine
 
 	void SystemPhysics::Run(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("SystemPhysics::Run");
+		System::Run(entityList);
 	}
 
 	void SystemPhysics::OnAction(Entity* entity)

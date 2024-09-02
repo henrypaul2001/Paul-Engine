@@ -13,7 +13,8 @@ namespace Engine {
 
 	void SystemSkeletalAnimationUpdater::Run(const std::vector<Entity*>& entityList)
 	{
-
+		SCOPE_TIMER("SystemSkeletalAnimationUpdater::Run");
+		System::Run(entityList);
 	}
 
 	void SystemSkeletalAnimationUpdater::OnAction(Entity* entity)

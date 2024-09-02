@@ -51,6 +51,7 @@ namespace Engine {
 
 	void Mesh::Draw(Shader& shader, bool pbr, bool ignoreCulling, int instanceNum)
 	{
+		SCOPE_TIMER("Mesh::Draw");
 		bool visible = ignoreCulling;
 		
 		if (!ignoreCulling) {
@@ -329,6 +330,7 @@ namespace Engine {
 
 	void Mesh::DrawWithNoMaterial(int instanceNum, bool ignoreCulling)
 	{
+		SCOPE_TIMER("Mesh::DrawWithNoMaterial");
 		bool visible = ignoreCulling;
 
 		if (!ignoreCulling) {
