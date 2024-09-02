@@ -62,7 +62,6 @@ namespace Engine
 	void EntityManager::Close()
 	{
 		for (Entity* e : entityList) {
-			e->Close();
 			delete e;
 		}
 	}

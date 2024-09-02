@@ -19,23 +19,8 @@ namespace Engine {
 	void SystemAudio::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
-			std::vector<Component*> components = entity->Components();
-
-			ComponentTransform* transform = nullptr;
-			for (Component* c : components) {
-				transform = dynamic_cast<ComponentTransform*>(c);
-				if (transform != nullptr) {
-					break;
-				}
-			}
-
-			ComponentAudioSource* audio = nullptr;
-			for (Component* c : components) {
-				audio = dynamic_cast<ComponentAudioSource*>(c);
-				if (audio != nullptr) {
-					break;
-				}
-			}
+			ComponentTransform* transform = entity->GetTransformComponent();
+			ComponentAudioSource* audio = entity->GetAudioComponent();
 
 			UpdateAudio(transform, audio);
 		}

@@ -20,23 +20,8 @@ namespace Engine {
 	void SystemParticleRenderer::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
-			std::vector<Component*> components = entity->Components();
-
-			ComponentTransform* transform = nullptr;
-			for (Component* c : components) {
-				transform = dynamic_cast<ComponentTransform*>(c);
-				if (transform != nullptr) {
-					break;
-				}
-			}
-
-			ComponentParticleGenerator* generator = nullptr;
-			for (Component* c : components) {
-				generator = dynamic_cast<ComponentParticleGenerator*>(c);
-				if (generator != nullptr) {
-					break;
-				}
-			}
+			ComponentTransform* transform = entity->GetTransformComponent();
+			ComponentParticleGenerator* generator = entity->GetParticleGenerator();
 
 			Draw(transform, generator);
 		}

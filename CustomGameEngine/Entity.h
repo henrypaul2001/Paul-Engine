@@ -12,15 +12,63 @@
 #include "ComponentParticleGenerator.h"
 #include "ComponentPathfinder.h"
 #include "ComponentStateController.h"
+
 namespace Engine
 {
+	static constexpr unsigned int GetComponentContainerSize() { return 13; }
+	static constexpr unsigned int GetComponentIndex(Engine::ComponentTypes type) {
+		unsigned int componentIndex = 0;
+		switch (type) {
+		case COMPONENT_TRANSFORM:
+			componentIndex = 0;
+			break;
+		case COMPONENT_GEOMETRY:
+			componentIndex = 1;
+			break;
+		case COMPONENT_LIGHT:
+			componentIndex = 2;
+			break;
+		case COMPONENT_COLLISION_AABB:
+			componentIndex = 3;
+			break;
+		case COMPONENT_COLLISION_SPHERE:
+			componentIndex = 4;
+			break;
+		case COMPONENT_COLLISION_BOX:
+			componentIndex = 5;
+			break;
+		case COMPONENT_PHYSICS:
+			componentIndex = 6;
+			break;
+		case COMPONENT_UICANVAS:
+			componentIndex = 7;
+			break;
+		case COMPONENT_ANIMATOR:
+			componentIndex = 8;
+			break;
+		case COMPONENT_AUDIO_SOURCE:
+			componentIndex = 9;
+			break;
+		case COMPONENT_PARTICLE_GENERATOR:
+			componentIndex = 10;
+			break;
+		case COMPONENT_STATE_CONTROLLER:
+			componentIndex = 11;
+			break;
+		case COMPONENT_PATHFINDER:
+			componentIndex = 12;
+			break;
+		}
+		return componentIndex;
+	}
+
 	class EntityManager;
 
 	class Entity
 	{
 	private:
 		std::string name;
-		std::vector<Component*> componentList;
+		Component* components[13];
 		ComponentTypes mask;
 
 		EntityManager* entityManager;
@@ -32,7 +80,7 @@ namespace Engine
 
 		std::string& Name() { return name; }
 		ComponentTypes& Mask() { return mask; }
-		std::vector<Component*>& Components() { return componentList; }
+		Component* Components() { return components[0]; }
 		Component* GetComponent(ComponentTypes type);
 
 		Entity* Clone();
@@ -59,6 +107,9 @@ namespace Engine
 		Component* RemoveGetComponent(int componentIndex);
 		Component* RemoveGetComponent(ComponentTypes type);
 		void RemoveComponent(Component* component);
+
+		void RemoveAndDeleteComponent(const ComponentTypes type);
+		void RemoveAndDeleteComponent(const unsigned int componentIndex);
 
 		void AddComponent(Component* component);
 		void Close();

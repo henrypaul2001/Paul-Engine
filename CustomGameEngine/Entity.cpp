@@ -9,16 +9,21 @@ namespace Engine
 		this->mask = COMPONENT_NONE;
 
 		// Copy components
-		componentList.reserve(old_entity.componentList.size());
-		for (Component* c : old_entity.componentList) {
-			Component* newComponent = c->Copy();
-			newComponent->SetOwner(this);
-			if (newComponent->ComponentType() == COMPONENT_TRANSFORM) {
-				for (Entity* child : dynamic_cast<ComponentTransform*>(newComponent)->GetChildren()) {
-					child->GetTransformComponent()->SetParent(this);
+		for (unsigned int i = 0; i < GetComponentContainerSize(); i++) {
+			Component* oldComponent = old_entity.components[i];
+			if (oldComponent != nullptr) {
+				Component* newComponent = oldComponent->Copy();
+				newComponent->SetOwner(this);
+				if (newComponent->ComponentType() == COMPONENT_TRANSFORM) {
+					for (Entity* child : dynamic_cast<ComponentTransform*>(newComponent)->GetChildren()) {
+						child->GetTransformComponent()->SetParent(this);
+					}
 				}
+				AddComponent(newComponent);
 			}
-			AddComponent(newComponent);
+			else {
+				components[i] = nullptr;
+			}
 		}
 	}
 
@@ -28,17 +33,13 @@ namespace Engine
 	}
 
 	Entity::~Entity() {
-
+		Close();
 	}
 
 	Component* Entity::GetComponent(ComponentTypes type)
 	{
-		for (Component* c : componentList) {
-			if (c->ComponentType() == type) {
-				return c;
-			}
-		}
-		return nullptr;
+		unsigned int index = GetComponentIndex(type);
+		return components[index];
 	}
 
 	Entity* Entity::Clone()
@@ -66,41 +67,56 @@ namespace Engine
 	Component* Entity::RemoveGetComponent(int componentIndex)
 	{
 		Component* result = nullptr;
-		if (componentIndex < componentList.size()) {
-			result = componentList[componentIndex];
+		if (componentIndex < GetComponentContainerSize()) {
+			result = components[componentIndex];
 			mask = mask & ~result->ComponentType();
-			componentList.erase(componentList.begin() + componentIndex);
+			components[componentIndex] = nullptr;
 		}
 		return result;
 	}
 
 	Component* Entity::RemoveGetComponent(ComponentTypes type)
 	{
-		for (int i = 0; i < componentList.size(); i++) {
-			if (componentList[i]->ComponentType() == type) {
-				Component* result = componentList[i];
-				mask = mask & ~result->ComponentType();
-				componentList.erase(componentList.begin() + i);
-			}
-		}
+		unsigned int index = GetComponentIndex(type);
+
+		Component* result = components[index];
+		mask = mask & ~result->ComponentType();
+		components[index] = nullptr;
+
 		return nullptr;
 	}
 
 	void Entity::RemoveComponent(Component* component)
 	{
-		for (int i = 0; i < componentList.size(); i++) {
-			if (componentList[i] == component) {
-				mask = mask & ~component->ComponentType();
-				componentList.erase(componentList.begin() + i);
-				return;
-			}
+		unsigned int index = GetComponentIndex(component->ComponentType());
+		mask = mask & ~component->ComponentType();
+		components[index] = nullptr;
+	}
+
+	void Entity::RemoveAndDeleteComponent(const ComponentTypes type)
+	{
+		unsigned int index = GetComponentIndex(type);
+		Component* component = components[index];
+		mask = mask & ~component->ComponentType();
+		delete component;
+		components[index] = nullptr;
+	}
+
+	void Entity::RemoveAndDeleteComponent(const unsigned int componentIndex)
+	{
+		if (componentIndex < GetComponentContainerSize()) {
+			Component* component = components[componentIndex];
+			mask = mask & ~component->ComponentType();
+			delete component;
+			components[componentIndex] = nullptr;
 		}
 	}
 
 	void Entity::AddComponent(Component* component) {
 		_ASSERT(&component != nullptr, "Component cannot be null");
 
-		componentList.push_back(component);
+		components[GetComponentIndex(component->ComponentType())] = component;
+
 		mask = mask | component->ComponentType();
 
 		component->SetOwner(this);
@@ -108,9 +124,11 @@ namespace Engine
 	}
 
 	void Entity::Close() {
-		for (Component* c : componentList) {
-			c->Close();
-			delete c;
+		for (unsigned int i = 0; i < GetComponentContainerSize(); i++) {
+			if (components[i]) {
+				components[i]->Close();
+				delete components[i];
+			}
 		}
 	}
 }

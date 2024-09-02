@@ -23,15 +23,7 @@ namespace Engine {
 		SCOPE_TIMER("SystemFrustumCulling::OnAction");
 		// Reset isVisible flag on all meshes
 		if ((entity->Mask() & GEOMETRY_MASK) == GEOMETRY_MASK) {
-			std::vector<Component*> components = entity->Components();
-
-			ComponentGeometry* geometry = nullptr;
-			for (Component* c : components) {
-				geometry = dynamic_cast<ComponentGeometry*>(c);
-				if (geometry != nullptr) {
-					break;
-				}
-			}
+			ComponentGeometry* geometry = entity->GetGeometryComponent();
 
 			Model* model = geometry->GetModel();
 			for (Mesh* m : model->meshes) {

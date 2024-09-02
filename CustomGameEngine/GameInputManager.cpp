@@ -183,7 +183,7 @@ namespace Engine {
 				profiler->EndSession();
 			}
 			else {
-				profiler->BeginSession("Manual Session");
+				profiler->BeginSession("Manual Session", "results2.json");
 			}
 		}
 	}

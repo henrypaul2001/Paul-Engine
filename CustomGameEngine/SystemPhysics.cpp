@@ -26,23 +26,8 @@ namespace Engine
 	void SystemPhysics::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
-			std::vector<Component*> components = entity->Components();
-
-			ComponentTransform* transform = nullptr;
-			for (Component* c : components) {
-				transform = dynamic_cast<ComponentTransform*>(c);
-				if (transform != nullptr) {
-					break;
-				}
-			}
-
-			ComponentPhysics* physics = nullptr;
-			for (Component* c : components) {
-				physics = dynamic_cast<ComponentPhysics*>(c);
-				if (physics != nullptr) {
-					break;
-				}
-			}
+			ComponentTransform* transform = entity->GetTransformComponent();
+			ComponentPhysics* physics = entity->GetPhysicsComponent();
 
 			Physics(transform, physics);
 		}

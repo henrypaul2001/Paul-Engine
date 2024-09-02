@@ -20,27 +20,10 @@ namespace Engine {
 	void SystemSkeletalAnimationUpdater::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
-			std::vector<Component*> components = entity->Components();
 
-			ComponentGeometry* geometry = nullptr;
-			ComponentAnimator* animator = nullptr;
+			ComponentGeometry* geometry = entity->GetGeometryComponent();
+			ComponentAnimator* animator = entity->GetAnimator();
 			
-			for (Component* c : components) {
-				if (c->ComponentType() == COMPONENT_GEOMETRY) {
-					geometry = dynamic_cast<ComponentGeometry*>(c);
-					continue;
-				}
-				else if (c->ComponentType() == COMPONENT_ANIMATOR) {
-					animator = dynamic_cast<ComponentAnimator*>(c);
-					continue;
-				}
-
-				if (geometry != nullptr && animator != nullptr) {
-					UpdateAnimator(geometry, animator);
-					return;
-				}
-			}
-
 			if (geometry != nullptr && animator != nullptr) {
 				UpdateAnimator(geometry, animator);
 			}

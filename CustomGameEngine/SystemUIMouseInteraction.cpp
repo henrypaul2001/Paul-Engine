@@ -21,23 +21,8 @@ namespace Engine {
 	{
 		if (inputManager->GetCursorLock() == false) {
 			if ((entity->Mask() & MASK) == MASK) {
-				std::vector<Component*> components = entity->Components();
-
-				ComponentTransform* transform = nullptr;
-				for (Component* c : components) {
-					transform = dynamic_cast<ComponentTransform*>(c);
-					if (transform != nullptr) {
-						break;
-					}
-				}
-
-				ComponentUICanvas* canvas = nullptr;
-				for (Component* c : components) {
-					canvas = dynamic_cast<ComponentUICanvas*>(c);
-					if (canvas != nullptr) {
-						break;
-					}
-				}
+				ComponentTransform* transform = entity->GetTransformComponent();
+				ComponentUICanvas* canvas = entity->GetUICanvasComponent();
 
 				if (canvas != nullptr) {
 					for (UIElement* ui : canvas->UIElements()) {

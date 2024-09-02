@@ -20,23 +20,8 @@ namespace Engine {
 	void SystemShadowMapping::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
-			std::vector<Component*> components = entity->Components();
-
-			ComponentTransform* transform = nullptr;
-			for (Component* c : components) {
-				transform = dynamic_cast<ComponentTransform*>(c);
-				if (transform != nullptr) {
-					break;
-				}
-			}
-
-			ComponentGeometry* geometry = nullptr;
-			for (Component* c : components) {
-				geometry = dynamic_cast<ComponentGeometry*>(c);
-				if (geometry != nullptr) {
-					break;
-				}
-			}
+			ComponentTransform* transform = entity->GetTransformComponent();
+			ComponentGeometry* geometry = entity->GetGeometryComponent();
 
 			Draw(transform, geometry);
 		}

@@ -20,23 +20,8 @@ namespace Engine {
 	void SystemPathfinding::OnAction(Entity* entity)
 	{
 		if ((entity->Mask() & MASK) == MASK) {
-			std::vector<Component*> components = entity->Components();
-
-			ComponentTransform* transform = nullptr;
-			for (Component* c : components) {
-				transform = dynamic_cast<ComponentTransform*>(c);
-				if (transform != nullptr) {
-					break;
-				}
-			}
-
-			ComponentPathfinder* pathfinder = nullptr;
-			for (Component* c : components) {
-				pathfinder = dynamic_cast<ComponentPathfinder*>(c);
-				if (pathfinder != nullptr) {
-					break;
-				}
-			}
+			ComponentTransform* transform = entity->GetTransformComponent();
+			ComponentPathfinder* pathfinder = entity->GetPathfinder();
 
 			Update(transform, pathfinder);
 		}
