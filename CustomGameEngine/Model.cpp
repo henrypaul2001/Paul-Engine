@@ -37,18 +37,23 @@ namespace Engine {
 	Model::~Model()
 	{
 		for (Mesh* m : meshes) {
-			glDeleteVertexArrays(1, &m->VAO);
+			//glDeleteVertexArrays(1, &m->VAO);
 			delete m;
 		}
 	}
 
-	void Model::Draw(Shader& shader, int instanceNum, bool ignoreCulling)
+	void Model::Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling)
 	{
 		SCOPE_TIMER("Model::Draw");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				meshes[i]->ApplyMaterial(meshMaterials[meshes[i]]);
-				meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+				if (instanceNum > 0) {
+					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
+				}
+				else {
+					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+				}
 				/*
 				if (!meshes[i]->GetMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
@@ -57,7 +62,12 @@ namespace Engine {
 			}
 			else {
 				meshes[i]->ApplyMaterial(meshPBRMaterials[meshes[i]]);
-				meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+				if (instanceNum > 0) {
+					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
+				}
+				else {
+					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+				}
 				/*
 				if (!meshes[i]->GetPBRMaterial()->isTransparent) {
 					meshes[i]->Draw(shader, pbr, instanceNum);
@@ -67,18 +77,28 @@ namespace Engine {
 		}
 	}
 
-	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum, bool ignoreCulling)
+	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling)
 	{
 		SCOPE_TIMER("Model::DrawTransparentMeshes");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
 				if (meshMaterials[meshes[i]]->isTransparent) {
-					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+					if (instanceNum > 0) {
+						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
+					}
+					else {
+						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+					}
 				}
 			}
 			else {
 				if (meshPBRMaterials[meshes[i]]->isTransparent) {
-					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+					if (instanceNum > 0) {
+						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
+					}
+					else {
+						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
+					}
 				}
 			}
 		}

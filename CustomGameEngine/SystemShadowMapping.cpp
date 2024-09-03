@@ -76,7 +76,7 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->Draw(*depthShader, geometry->NumInstances());
+			geometry->GetModel()->Draw(*depthShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
 		}
 	}
 }

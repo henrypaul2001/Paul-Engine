@@ -45,8 +45,8 @@ namespace Engine {
 		Model(const char* filepath, unsigned int assimpPostProcess, bool pbr);
 		~Model();
 
-		void Draw(Shader& shader, int instanceNum, bool ignoreCulling = true);
-		void DrawTransparentMeshes(Shader& shader, int instanceNum, bool ignoreCulling = true);
+		void Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling = true);
+		void DrawTransparentMeshes(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling = true);
 
 		bool PBR() { return pbr; }
 		void PBR(bool PBR) { pbr = PBR; }

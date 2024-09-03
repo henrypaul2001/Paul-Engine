@@ -12,6 +12,7 @@ namespace Engine {
 
 	void CollisionManager::ConstructBVHTree(const std::vector<Entity*>& entityList)
 	{
+		SCOPE_TIMER("CollisionManager::ConstructBVHTree");
 		if (bvhTree) {
 			delete bvhTree;
 			bvhTree = new BVHTree();

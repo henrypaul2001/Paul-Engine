@@ -17,21 +17,19 @@ namespace Engine {
 
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial)
 	{
-		this->vertices = vertices;
-		this->indices = indices;
 		this->PBRmaterial = pbrMaterial;
 		isVisible = true;
-		SetupMesh();
+		drawPrimitive = GL_TRIANGLES;
+		meshData = new MeshData(vertices, indices);
 		SetupGeometryAABB();
 	}
 
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material)
 	{
-		this->vertices = vertices;
-		this->indices = indices;
 		this->material = material;
 		isVisible = true;
-		SetupMesh();
+		drawPrimitive = GL_TRIANGLES;
+		meshData = new MeshData(vertices, indices);
 		SetupGeometryAABB();
 	}
 
@@ -49,7 +47,7 @@ namespace Engine {
 		this->PBRmaterial = pbrMaterial;
 	}
 
-	void Mesh::Draw(Shader& shader, bool pbr, bool ignoreCulling, int instanceNum)
+	void Mesh::Draw(Shader& shader, bool pbr, bool ignoreCulling, int instanceNum, const unsigned int instanceVAO)
 	{
 		SCOPE_TIMER("Mesh::Draw");
 		bool visible = ignoreCulling;
@@ -315,20 +313,12 @@ namespace Engine {
 			}
 
 			// draw
-			glBindVertexArray(VAO);
-			if (instanceNum == 0) {
-				glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
-			}
-			else if (instanceNum > 0) {
-				glDrawElementsInstanced(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, instanceNum);
-			}
-
-			glBindVertexArray(0);
+			meshData->DrawMeshData(instanceNum, drawPrimitive, instanceVAO);
 			glActiveTexture(GL_TEXTURE0);
 		}
 	}
 
-	void Mesh::DrawWithNoMaterial(int instanceNum, bool ignoreCulling)
+	void Mesh::DrawWithNoMaterial(int instanceNum, const unsigned int instanceVAO, bool ignoreCulling)
 	{
 		SCOPE_TIMER("Mesh::DrawWithNoMaterial");
 		bool visible = ignoreCulling;
@@ -339,68 +329,14 @@ namespace Engine {
 
 		if (visible) {
 			// draw
-			glBindVertexArray(VAO);
-			if (instanceNum == 0) {
-				glDrawElements(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
-			}
-			else if (instanceNum > 0) {
-				glDrawElementsInstanced(drawPrimitive, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0, instanceNum);
-			}
-
-			glBindVertexArray(0);
+			meshData->DrawMeshData(instanceNum, drawPrimitive, instanceVAO);
 			glActiveTexture(GL_TEXTURE0);
 		}
 	}
 
-	void Mesh::SetupMesh()
-	{
-		drawPrimitive = GL_TRIANGLES;
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-		// vertex positions
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-
-		// normals
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-
-		// texture coords
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-
-		// vertex tangent
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
-
-		// vertex bitangent
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
-
-		// ids
-		glEnableVertexAttribArray(5);
-		glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, BoneIDs));
-
-		// weights
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, BoneWeights));
-		glBindVertexArray(0);
-
-		// 7, 8, 9, 10 reserved for instancing
-	}
-
 	void Mesh::SetupGeometryAABB()
 	{
+		const std::vector<Vertex>& vertices = meshData->GetVertices();
 		float minX = vertices[0].Position.x, minY = vertices[0].Position.y, minZ = vertices[0].Position.z, maxX = vertices[0].Position.x, maxY = vertices[0].Position.y, maxZ = vertices[0].Position.z;
 		for (const Vertex& v : vertices) {
 			const float x = v.Position.x, y = v.Position.y, z = v.Position.z;

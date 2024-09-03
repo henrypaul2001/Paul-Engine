@@ -43,11 +43,12 @@ namespace Engine {
 		void SetTextureScale(float newScale) { textureScale = glm::vec2(newScale); }
 		void SetTextureScale(glm::vec2 newScale) { textureScale = newScale; }
 
+		const std::vector<unsigned int>& GetInstanceVAOs() const { return instanceVAOs; }
+		const std::vector<unsigned int>& GetInstanceVBOs() const { return instanceVBOs; }
 		bool Instanced() { return instanced; }
 		const int NumInstances() { return instanceSources.size(); }
 		const std::vector<Entity*>& InstanceSources() { return instanceSources; }
 		const std::vector<glm::mat4>& InstanceTransforms() { return instanceTransforms; }
-		unsigned int InstanceVBO() { return instanceVBO; }
 
 		void AddNewInstanceSource(Entity* newSource) { instanceSources.push_back(newSource); }
 		void RemoveInstanceSource(Entity* sourceToRemove);
@@ -82,7 +83,8 @@ namespace Engine {
 		GLenum CULL_TYPE;
 		bool CULL_FACE;
 
-		unsigned int instanceVBO;
+		std::vector<unsigned int> instanceVAOs;
+		std::vector<unsigned int> instanceVBOs;
 		bool instanced;
 		std::vector<glm::mat4> instanceTransforms;
 		std::vector<Entity*> instanceSources;

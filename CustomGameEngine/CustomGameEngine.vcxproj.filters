@@ -142,6 +142,12 @@
     <Filter Include="Source Files\Engine\Utility\Profiling">
       <UniqueIdentifier>{49bad90b-4936-42b4-b15e-38a72dbd48c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Utility\Geometry">
+      <UniqueIdentifier>{b8c696ba-555b-44b8-b163-08616eb49bc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Utility\Geometry">
+      <UniqueIdentifier>{34285957-394a-4f10-aa1a-c8623dad81cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -194,12 +200,6 @@
     </ClInclude>
     <ClInclude Include="ComponentGeometry.h">
       <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Engine\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files\Engine\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Header Files\Engine\Utility</Filter>
@@ -468,6 +468,15 @@
     <ClInclude Include="Profiler.h">
       <Filter>Header Files\Engine\Utility\Profiling</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\Engine\Utility\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Engine\Utility\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshData.h">
+      <Filter>Header Files\Engine\Utility\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -526,12 +535,6 @@
     </ClCompile>
     <ClCompile Include="ComponentGeometry.cpp">
       <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Engine\Utility</Filter>
@@ -799,6 +802,15 @@
     </ClCompile>
     <ClCompile Include="Profiler.cpp">
       <Filter>Source Files\Engine\Utility\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Engine\Utility\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Engine\Utility\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshData.cpp">
+      <Filter>Source Files\Engine\Utility\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

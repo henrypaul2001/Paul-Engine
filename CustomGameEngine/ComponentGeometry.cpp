@@ -196,9 +196,11 @@ namespace Engine {
 			UpdateInstanceTransform(i, instanceSources[i]->GetTransformComponent()->GetWorldModelMatrix());
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-		glBufferData(GL_ARRAY_BUFFER, instanceSources.size() * sizeof(glm::mat4), &instanceTransforms[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		for (unsigned int i = 0; i < instanceVBOs.size(); i++) {
+			glBindBuffer(GL_ARRAY_BUFFER, instanceVBOs[i]);
+			glBufferData(GL_ARRAY_BUFFER, instanceSources.size() * sizeof(glm::mat4), &instanceTransforms[0], GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
 	}
 
 	void ComponentGeometry::OnAddedToEntity()
@@ -280,30 +282,76 @@ namespace Engine {
 
 	void ComponentGeometry::SetupInstanceVBO()
 	{
-		glGenBuffers(1, &instanceVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		instanceVAOs.resize(model->meshes.size());
+		instanceVBOs.resize(model->meshes.size());
 
 		for (int i = 0; i < model->meshes.size(); i++) {
-			unsigned int VAO = model->meshes[i]->VAO;
-			glBindVertexArray(VAO);
+			glGenBuffers(1, &instanceVBOs[i]);
+			glBindBuffer(GL_ARRAY_BUFFER, instanceVBOs[i]);
 
-			glEnableVertexAttribArray(7);
-			glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-			glEnableVertexAttribArray(8);
-			glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-			glEnableVertexAttribArray(9);
-			glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-			glEnableVertexAttribArray(10);
-			glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+			const MeshData& meshData = model->meshes[i]->GetMeshData();
+			const unsigned int meshVAO = meshData.GetVAO();
+			const unsigned int meshVBO = meshData.GetVBO();
+			const unsigned int meshEBO = meshData.GetEBO();
 
-			glVertexAttribDivisor(7, 1);
-			glVertexAttribDivisor(8, 1);
-			glVertexAttribDivisor(9, 1);
-			glVertexAttribDivisor(10, 1);
+			// Generate new VAO for instanced rendering
+			glGenVertexArrays(1, &instanceVAOs[i]);
+			glBindVertexArray(instanceVAOs[i]);
 
-			glBindVertexArray(0);
+			// Bind mesh VBO and set up vertex attributes
+			glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshEBO);
+
+			// base
+			{
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+				// normals
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+
+				// texture coords
+				glEnableVertexAttribArray(2);
+				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+
+				// vertex tangent
+				glEnableVertexAttribArray(3);
+				glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+
+				// vertex bitangent
+				glEnableVertexAttribArray(4);
+				glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+				// ids
+				glEnableVertexAttribArray(5);
+				glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, BoneIDs));
+
+				// weights
+				glEnableVertexAttribArray(6);
+				glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, BoneWeights));
+			}
+
+			// instancing
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, instanceVBOs[i]);
+				glEnableVertexAttribArray(7);
+				glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+				glEnableVertexAttribArray(8);
+				glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+				glEnableVertexAttribArray(9);
+				glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+				glEnableVertexAttribArray(10);
+				glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+				glVertexAttribDivisor(7, 1);
+				glVertexAttribDivisor(8, 1);
+				glVertexAttribDivisor(9, 1);
+				glVertexAttribDivisor(10, 1);
+
+				glBindVertexArray(0);
+			}
 		}
-
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 

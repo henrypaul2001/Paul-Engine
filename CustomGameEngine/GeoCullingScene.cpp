@@ -68,6 +68,8 @@ namespace Engine {
 					Entity* cube = new Entity("Cube");
 					cube->AddComponent(new ComponentTransform(startPos + glm::vec3(x * distanceX, y * distanceY, z * distanceZ)));
 					cube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+					cube->AddComponent(new ComponentPhysics());
+					cube->GetPhysicsComponent()->Gravity(false);
 					entityManager->AddEntity(cube);
 				}
 			}

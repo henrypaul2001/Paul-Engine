@@ -5,11 +5,8 @@
 #include <unordered_map>
 #include "ComponentCollisionAABB.h"
 #include "ScopeTimer.h"
+#include "MeshData.h"
 namespace Engine {
-
-	static constexpr int MaxBoneInfluence() { return 8; }
-	static constexpr int MaxBoneCount() { return 200; }
-
 	enum TextureTypes {
 		TEXTURE_NONE,
 		TEXTURE_DIFFUSE,
@@ -30,33 +27,6 @@ namespace Engine {
 		std::string filepath;
 
 		~Texture() { glDeleteTextures(1, &id); }
-	};
-
-	struct Vertex {
-		glm::vec3 Position;
-		glm::vec3 Normal;
-		glm::vec2 TexCoords;
-		glm::vec3 Tangent;
-		glm::vec3 Bitangent;
-
-		int BoneIDs[MaxBoneInfluence()] = { -1, -1, -1, -1, -1, -1, -1, -1 };
-		float BoneWeights[MaxBoneInfluence()] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-
-		void AddBoneData(int boneID, float boneWeight) {
-			if (boneWeight == 0.0f) {
-				// skip bone
-				return;
-			}
-
-			for (int i = 0; i < MaxBoneInfluence(); i++) {
-				if (BoneIDs[i] == -1 && BoneIDs[i] != boneID) {
-					// empty bone slot found
-					BoneIDs[i] = boneID;
-					BoneWeights[i] = boneWeight;
-					return;
-				}
-			}
-		}
 	};
 
 	struct Material {
@@ -107,10 +77,6 @@ namespace Engine {
 	public:
 		static const std::unordered_map<TextureTypes, std::string> TextureTypeToString;
 
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
-		unsigned int VAO;
-
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial);
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material);
 		~Mesh();
@@ -122,25 +88,27 @@ namespace Engine {
 		Material* GetMaterial() { return material; }
 		PBRMaterial* GetPBRMaterial() { return PBRmaterial; }
 
-		void Draw(Shader& shader, bool pbr, bool ignoreCulling = true, int instanceNum = 0);
-		void DrawWithNoMaterial(int instanceNum = 0, bool ignoreCulling = true);
+		void Draw(Shader& shader, bool pbr, bool ignoreCulling = true, int instanceNum = 0, const unsigned int instanceVAO = 0);
+		void DrawWithNoMaterial(int instanceNum = 0, const unsigned int instanceVAO = 0, bool ignoreCulling = true);
 
 		AABBPoints& GetGeometryAABB() { return geometryAABB; }
+
+		const MeshData& GetMeshData() const { return *meshData; }
 
 		void SetIsVisible(const bool isVisible) { this->isVisible = isVisible; }
 		const bool IsVisible() const { return isVisible; }
 	private:
 		GLenum drawPrimitive;
-		unsigned int VBO, EBO;
 		Material* material;
 		PBRMaterial* PBRmaterial;
 		AABBPoints geometryAABB;
+
+		MeshData* meshData;
 
 		const std::unordered_map<std::string, unsigned int>* textureSlots;
 
 		bool isVisible;
 
-		void SetupMesh();
 		void SetupGeometryAABB();
 	};
 }

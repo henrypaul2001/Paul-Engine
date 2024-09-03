@@ -53,15 +53,17 @@ namespace Engine {
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
 		SystemFrustumCulling* culling = dynamic_cast<SystemFrustumCulling*>(systemManager->FindSystem(SYSTEM_FRUSTUM_CULLING, UPDATE_SYSTEMS));
 
-		unsigned int meshCount = culling->GetTotalMeshes();
-		unsigned int visibleMeshes = culling->GetVisibleMeshes();
-		unsigned int nodeCount = geometryBVH->GetNodeCount();
-		unsigned int aabbTests = culling->GetTotalAABBTests();
+		if (culling) {
+			unsigned int meshCount = culling->GetTotalMeshes();
+			unsigned int visibleMeshes = culling->GetVisibleMeshes();
+			unsigned int nodeCount = geometryBVH->GetNodeCount();
+			unsigned int aabbTests = culling->GetTotalAABBTests();
 
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+			dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
+			dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
+			dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
+			dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+		}
 	}
 
 	void InstanceScene::Render()
@@ -258,7 +260,7 @@ namespace Engine {
 		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
+		//systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 	}
 }
