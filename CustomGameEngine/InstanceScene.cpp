@@ -186,10 +186,10 @@ namespace Engine {
 			}
 		}
 
-		/*
 		Entity* baseInstance2 = new Entity("Base Instance 2");
 		baseInstance2->AddComponent(new ComponentTransform(0.0f, 0.0f, 2.5f));
-		baseInstance2->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		baseInstance2->AddComponent(new ComponentGeometry(MODEL_CUBE, true, true));
+		baseInstance2->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(bricks);
 		entityManager->AddEntity(baseInstance2);
 
 		for (int i = 0; i < yNum; i++) {
@@ -205,7 +205,6 @@ namespace Engine {
 				}
 			}
 		}
-		*/
 		std::cout << count << " box instances created" << std::endl;
 
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
