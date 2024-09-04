@@ -1,6 +1,13 @@
 #include "Model.h"
 #include "ResourceManager.h"
 namespace Engine {
+	Model::Model(const std::vector<Mesh*>& meshes, bool pbr)
+	{
+		this->meshes = meshes;
+		this->hasBones = false;
+		this->pbr = pbr;
+	}
+
 	Model::Model(PremadeModel modelType, bool pbr)
 	{
 		if (modelType == MODEL_PLANE) {
@@ -47,7 +54,10 @@ namespace Engine {
 		SCOPE_TIMER("Model::Draw");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
-				meshes[i]->ApplyMaterial(meshMaterials[meshes[i]]);
+				Material* material = meshMaterials[meshes[i]];
+				if (!material) { material = ResourceManager::GetInstance()->DefaultMaterial(); }
+				meshes[i]->ApplyMaterial(material);
+
 				if (instanceNum > 0) {
 					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 				}
@@ -61,7 +71,10 @@ namespace Engine {
 				*/
 			}
 			else {
-				meshes[i]->ApplyMaterial(meshPBRMaterials[meshes[i]]);
+				PBRMaterial* pbrMaterial = meshPBRMaterials[meshes[i]];
+				if (!pbrMaterial) { pbrMaterial = ResourceManager::GetInstance()->DefaultMaterialPBR(); }
+				meshes[i]->ApplyMaterial(pbrMaterial);
+
 				if (instanceNum > 0) {
 					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 				}
