@@ -147,6 +147,7 @@
     <ClInclude Include="AnimationChannel.h" />
     <ClInclude Include="AnimationScene.h" />
     <ClInclude Include="AOScene.h" />
+    <ClInclude Include="ASSIMPModelLoader.h" />
     <ClInclude Include="AudioFile.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="AudioScene.h" />
@@ -258,6 +259,7 @@
     <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AnimationScene.cpp" />
     <ClCompile Include="AOScene.cpp" />
+    <ClCompile Include="ASSIMPModelLoader.cpp" />
     <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="AudioScene.cpp" />

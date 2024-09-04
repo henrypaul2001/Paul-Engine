@@ -477,6 +477,9 @@
     <ClInclude Include="MeshData.h">
       <Filter>Header Files\Engine\Utility\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="ASSIMPModelLoader.h">
+      <Filter>Header Files\Engine\Utility\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -810,6 +813,9 @@
       <Filter>Source Files\Engine\Utility\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="MeshData.cpp">
+      <Filter>Source Files\Engine\Utility\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="ASSIMPModelLoader.cpp">
       <Filter>Source Files\Engine\Utility\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
