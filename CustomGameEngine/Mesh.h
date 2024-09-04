@@ -77,6 +77,7 @@ namespace Engine {
 	public:
 		static const std::unordered_map<TextureTypes, std::string> TextureTypeToString;
 
+		Mesh(MeshData* meshData);
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial);
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material);
 		~Mesh();

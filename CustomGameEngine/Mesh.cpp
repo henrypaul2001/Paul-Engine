@@ -15,6 +15,16 @@ namespace Engine {
 		{ TEXTURE_OPACITY, "TEXTURE_OPACITY" }
 	};
 
+	Mesh::Mesh(MeshData* meshData)
+	{
+		this->material = nullptr;
+		this->PBRmaterial = nullptr;
+		isVisible = true;
+		drawPrimitive = GL_TRIANGLES;
+		this->meshData = meshData;
+		SetupGeometryAABB();
+	}
+
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial)
 	{
 		this->PBRmaterial = pbrMaterial;

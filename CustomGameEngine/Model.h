@@ -40,6 +40,7 @@ namespace Engine {
 	class Model
 	{
 	public:
+		Model(const std::vector<Mesh*>& meshes, bool pbr = false);
 		Model(PremadeModel modelType, bool pbr = false);
 		Model(const char* filepath, unsigned int assimpPostProcess);
 		Model(const char* filepath, unsigned int assimpPostProcess, bool pbr);
@@ -96,7 +97,6 @@ namespace Engine {
 				m->GetGeometryAABB().TransformAABB(rotation, scale);
 			}
 		}
-
 	private:
 		std::string directory;
 		bool pbr;

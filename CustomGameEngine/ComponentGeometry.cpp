@@ -118,7 +118,7 @@ namespace Engine {
 
 		includeInReflectionProbes = true;
 
-		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
+		model = ResourceManager::GetInstance()->CreateModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
 		usingPremadeModel = false;
 
 		usingDefaultShader = false;
@@ -149,7 +149,7 @@ namespace Engine {
 
 		castShadows = true;
 
-		model = ResourceManager::GetInstance()->LoadModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
+		model = ResourceManager::GetInstance()->CreateModel(modelFilepath, pbr, persistentStorage, assimpPostProcess);
 		usingPremadeModel = false;
 
 		shader = nullptr;
@@ -357,7 +357,7 @@ namespace Engine {
 
 	ComponentGeometry::~ComponentGeometry()
 	{
-		if (usingPremadeModel) { delete model; }
+		if (model) { delete model; }
 	}
 
 	void ComponentGeometry::Close()
