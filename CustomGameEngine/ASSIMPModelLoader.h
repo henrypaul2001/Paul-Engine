@@ -9,7 +9,7 @@ namespace Engine {
 	class ASSIMPModelLoader
 	{
 	public:
-		static const std::vector<MeshData*>& LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources = false);
+		static const std::vector<MeshData*> LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources = false);
 		static std::vector<MeshData*> ProcessNode(const std::string& filepath, aiNode* node, const aiScene* scene, bool persistentResources = false);
 		static MeshData* ProcessMesh(const std::string& filepath, aiMesh* mesh, const aiScene* scene, bool persistentResources = false);
 		//static void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);

@@ -1,7 +1,7 @@
 #include "ASSIMPModelLoader.h"
 #include "ResourceManager.h"
 namespace Engine {
-	const std::vector<MeshData*>& ASSIMPModelLoader::LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources)
+	const std::vector<MeshData*> ASSIMPModelLoader::LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources)
 	{
 		std::vector<MeshData*> meshList;
 		Assimp::Importer importer;
