@@ -697,6 +697,20 @@ namespace Engine {
 		resources.audioFiles.clear();
 	}
 
+
+	Model* ResourceManager::CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
+	{
+		std::vector<MeshData*> meshData = ASSIMPModelLoader::LoadMeshData(filepath, assimpPostProcess, loadInPersistentResources);
+		std::vector<Mesh*> meshes;
+		meshes.reserve(meshData.size());
+
+		for (unsigned int i = 0; i < meshData.size(); i++) {
+			meshes.push_back(new Mesh(meshData[i]));
+		}
+
+		return new Model(meshes, pbr);
+	}
+
 	Model* ResourceManager::LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
 	{
 		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);

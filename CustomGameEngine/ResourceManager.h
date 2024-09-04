@@ -7,6 +7,7 @@
 #include <ft2build.h>
 #include "SkeletalAnimation.h"
 #include "AudioFile.h"
+#include "ASSIMPModelLoader.h"
 #include FT_FREETYPE_H
 namespace Engine {
 	struct Cubemap {
@@ -132,6 +133,9 @@ namespace Engine {
 
 		static ResourceManager* GetInstance();
 
+		// Creates model without adding to resource list. Instead references previously loaded MeshData in case of duplicate models. This will be the main way of loading models moving forward
+		Model* CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
+		
 		Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources = false);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
