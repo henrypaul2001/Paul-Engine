@@ -143,13 +143,34 @@ namespace Engine {
 		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0, bool loadInPersistentResources = false);
 		AudioFile* LoadAudio(std::string filepath, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX, bool loadInPersistentResources = false);
 
-		MeshData* AddMeshData(const std::string& fileNamePlusMeshName, MeshData* meshData, bool persistentResources = false) {
+		bool AddMeshData(const std::string& fileNamePlusMeshName, MeshData* meshData, bool persistentResources = false) {
+			std::unordered_map<std::string, MeshData*>::iterator persistentIt = this->persistentResources.meshes.find(fileNamePlusMeshName);
+			std::unordered_map<std::string, MeshData*>::iterator tempIt = this->tempResources.meshes.find(fileNamePlusMeshName);
+
 			if (persistentResources) {
-				this->persistentResources.meshes[fileNamePlusMeshName] = meshData;
+				bool exists = (persistentIt != this->persistentResources.meshes.end());
+
+				if (!exists) {
+					this->persistentResources.meshes[fileNamePlusMeshName] = meshData;
+				}
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::AddMeshData::Mesh data already exists in persistent resources" << std::endl;
+					return false;
+				}
 			}
 			else {
-				this->tempResources.meshes[fileNamePlusMeshName] = meshData;
+				bool exists = (tempIt != this->tempResources.meshes.end());
+
+				if (!exists) {
+					this->tempResources.meshes[fileNamePlusMeshName] = meshData;
+				}
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::AddMeshData::Mesh data already exists in temp resources" << std::endl;
+					return false;
+				}
 			}
+
+			return true;
 		}
 		MeshData* GetMeshData(const std::string& fileNamePlusMeshName);
 		Model* GetModel(const std::string& filepath);
