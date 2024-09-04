@@ -32,6 +32,7 @@ namespace Engine {
 	};
 
 	struct Resources {
+		std::unordered_map<std::string, MeshData*> meshes;
 		std::unordered_map<std::string, Model*> models;
 		std::unordered_map<std::string, Shader*> shaders;
 		std::unordered_map<std::string, Texture*> textures;
@@ -142,6 +143,15 @@ namespace Engine {
 		SkeletalAnimation* LoadAnimation(std::string filepath, int fileAnimationIndex = 0, bool loadInPersistentResources = false);
 		AudioFile* LoadAudio(std::string filepath, float defaultVolume = 1.0f, float defaultPan = 0.0f, float defaultMinAttenuationDistance = 1.0f, float defaultMaxAttenuationDistance = FLT_MAX, bool loadInPersistentResources = false);
 
+		MeshData* AddMeshData(const std::string& fileNamePlusMeshName, MeshData* meshData, bool persistentResources = false) {
+			if (persistentResources) {
+				this->persistentResources.meshes[fileNamePlusMeshName] = meshData;
+			}
+			else {
+				this->tempResources.meshes[fileNamePlusMeshName] = meshData;
+			}
+		}
+		MeshData* GetMeshData(const std::string& fileNamePlusMeshName);
 		Model* GetModel(const std::string& filepath);
 		Shader* GetShader(const std::string& vertexPath, const std::string& fragmentPath);
 		Shader* GetShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);

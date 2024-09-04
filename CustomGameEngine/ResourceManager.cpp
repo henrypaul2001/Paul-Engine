@@ -624,6 +624,14 @@ namespace Engine {
 
 	void ResourceManager::ClearResources(Resources& resources)
 	{
+		// delete meshes
+		std::unordered_map<std::string, MeshData*>::iterator meshesIt = resources.meshes.begin();
+		while (meshesIt != resources.meshes.end()) {
+			delete meshesIt->second;
+			meshesIt++;
+		}
+		resources.models.clear();
+
 		// delete models
 		std::unordered_map<std::string, Model*>::iterator modelsIt = resources.models.begin();
 		while (modelsIt != resources.models.end()) {
@@ -706,14 +714,16 @@ namespace Engine {
 		if (!existsInPersistent && !existsInTemp) {
 			std::cout << "RESOURCEMANAGER::Loading model " << filepath << std::endl;
 			// Model not currently loaded
+			Model* model;
 			if (loadInPersistentResources) {
 				persistentResources.models[filepath] = new Model(filepath.c_str(), assimpPostProcess, pbr);
-				return persistentResources.models[filepath];
+				model = persistentResources.models[filepath];
 			}
 			else {
 				tempResources.models[filepath] = new Model(filepath.c_str(), assimpPostProcess, pbr);
-				return tempResources.models[filepath];
+				model = tempResources.models[filepath];
 			}
+			return model;
 		}
 		else {
 			std::unordered_map<std::string, Model*>::iterator it = persistentIt;
@@ -1343,6 +1353,22 @@ namespace Engine {
 		std::unordered_map<std::string, AudioFile*>::iterator it = persistentIt;
 		if (existsInTemp) { it = tempIt; }
 		return it->second;
+	}
+
+	MeshData* ResourceManager::GetMeshData(const std::string& fileNamePlusMeshName)
+	{
+		std::unordered_map<std::string, MeshData*>::iterator persistentIt = persistentResources.meshes.find(fileNamePlusMeshName);
+		std::unordered_map<std::string, MeshData*>::iterator tempIt = tempResources.meshes.find(fileNamePlusMeshName);
+
+		if (persistentIt != persistentResources.meshes.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.meshes.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
 	}
 
 	Model* ResourceManager::GetModel(const std::string& filepath)
