@@ -46,17 +46,16 @@ namespace Engine {
 
 		// Load defaults
 		defaultMaterial = new Material();
-		defaultMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+		defaultMaterial->baseColour = glm::vec3(0.8f, 0.8f, 0.8f);
 		defaultMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
 		defaultMaterial->shininess = 105.0f;
 		//defaultMaterial->shininess = 60.0f;
 
 		defaultMaterialPBR = new PBRMaterial();
-		defaultMaterialPBR->albedo = glm::vec3(1.0f, 1.0f, 1.0f);
+		defaultMaterialPBR->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		defaultMaterialPBR->metallic = 0.0f;
 		defaultMaterialPBR->roughness = 0.5f;
 		defaultMaterialPBR->ao = 1.0f;
-		defaultMaterialPBR->isTransparent = false;
 
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
@@ -630,7 +629,7 @@ namespace Engine {
 			delete meshesIt->second;
 			meshesIt++;
 		}
-		resources.models.clear();
+		resources.meshes.clear();
 
 		// delete models
 		std::unordered_map<std::string, Model*>::iterator modelsIt = resources.models.begin();
@@ -1538,12 +1537,12 @@ namespace Engine {
 	Material* ResourceManager::GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular)
 	{
 		Material* material = new Material();
-		material->diffuseMaps = diffuseMaps;
+		material->baseColourMaps = diffuseMaps;
 		material->specularMaps = specularMaps;
 		material->normalMaps = normalMaps;
 		material->heightMaps = heightMaps;
 		material->shininess = shininess;
-		material->diffuse = diffuse;
+		material->baseColour = diffuse;
 		material->specular = specular;
 		return material;
 	}
