@@ -115,6 +115,12 @@ namespace Engine
 	void Entity::AddComponent(Component* component) {
 		_ASSERT(&component != nullptr, "Component cannot be null");
 
+		if (component->ComponentType() == COMPONENT_VELOCITY) {
+			delete component;
+			std::cout << "ERROR::Entity::ComponentVelocity no longer supported. Component object deleted" << std::endl;
+			return;
+		}
+
 		components[GetComponentIndex(component->ComponentType())] = component;
 
 		mask = mask | component->ComponentType();
