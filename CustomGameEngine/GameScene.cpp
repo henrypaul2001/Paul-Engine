@@ -60,39 +60,38 @@ namespace Engine
 	void GameScene::CreateEntities()
 	{
 		Material* newMeshMaterial = new Material();
-		newMeshMaterial->diffuse = glm::vec3(0.8f, 0.0f, 0.8f);
+		newMeshMaterial->baseColour = glm::vec3(0.8f, 0.0f, 0.8f);
 		newMeshMaterial->specular = glm::vec3(1.0f, 0.0f, 1.0f);
 		newMeshMaterial->shininess = 100.0f;
 
 		Material* blue = new Material();
-		blue->diffuse = glm::vec3(0.0f, 0.0f, 0.8f);
+		blue->baseColour = glm::vec3(0.0f, 0.0f, 0.8f);
 		blue->specular = glm::vec3(0.0f, 0.0f, 1.0f);
 		blue->shininess = 100.0f;
 
 		Material* window = new Material();
-		window->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		window->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		window->specular = glm::vec3(0.8f, 0.0f, 0.0f);
 		window->shininess = 60.0f;
-		window->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
-		window->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
-		window->isTransparent = true;
+		window->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
+		window->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
 
 		Material* cobbleFloor = new Material();
-		cobbleFloor->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE, true));
+		cobbleFloor->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE, true));
 		cobbleFloor->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL, false));
 		cobbleFloor->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/specular.png", TEXTURE_SPECULAR, false));
 		cobbleFloor->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/displace.png", TEXTURE_DISPLACE, false));
-		cobbleFloor->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		cobbleFloor->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		cobbleFloor->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		cobbleFloor->shininess = 60.0f;
 		cobbleFloor->height_scale = -0.1f;
 
 		Material* brickWall = new Material();
-		brickWall->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE, true));
+		brickWall->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE, true));
 		brickWall->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/normal.jpg", TEXTURE_NORMAL, false));
 		//brickWall->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/specular.jpg", TEXTURE_SPECULAR));
 		brickWall->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/displace.jpg", TEXTURE_DISPLACE, false));
-		brickWall->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		brickWall->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		brickWall->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		brickWall->shininess = 60.0f;
 		brickWall->height_scale = 0.1f;
@@ -448,13 +447,13 @@ namespace Engine
 
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
 
-		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
+		//dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
 
 		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
 
-		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 3.5f);
+		//dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 3.5f);
 
-		dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Box One")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(0.0f, 0.0f, -1.0f) * sin(time) * 5.5f);
+		//dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Box One")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(0.0f, 0.0f, -1.0f) * sin(time) * 5.5f);
 
 		float fps = 1.0f / Scene::dt;
 

@@ -158,20 +158,15 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		PBRMaterial* agentMaterial = new PBRMaterial();
-		agentMaterial->albedo = glm::vec3(100.0f);
+		PBRMaterial* agentMaterial = new PBRMaterial(glm::vec3(100.0f));
 
-		PBRMaterial* walkable = new PBRMaterial();
-		walkable->albedo = glm::vec3(100.0f, 0.0f, 0.0f);
+		PBRMaterial* walkable = new PBRMaterial(glm::vec3(100.0f, 0.0f, 0.0f));
 
-		PBRMaterial* path = new PBRMaterial();
-		path->albedo = glm::vec3(0.0f, 0.0f, 100.0f);
+		PBRMaterial* path = new PBRMaterial(glm::vec3(0.0f, 0.0f, 100.0f));
 
-		PBRMaterial* grass = new PBRMaterial();
-		grass->albedo = glm::vec3(65.0f, 152.0f, 10.0f) / 100.0f;
+		PBRMaterial* grass = new PBRMaterial(glm::vec3(65.0f, 152.0f, 10.0f) / 100.0f);
 
-		PBRMaterial* wallMaterial = new PBRMaterial();
-		wallMaterial->albedo = glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f;
+		PBRMaterial* wallMaterial = new PBRMaterial(glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f);
 
 		// Pathfinding debug grid
 		Entity* baseInstanceWalkable = new Entity("Base Instance Non Walkable");

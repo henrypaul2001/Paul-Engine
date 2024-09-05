@@ -95,7 +95,7 @@ namespace Engine {
 		SCOPE_TIMER("Model::DrawTransparentMeshes");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
-				if (meshMaterials[meshes[i]]->isTransparent) {
+				if (meshMaterials[meshes[i]]->GetIsTransparent()) {
 					if (instanceNum > 0) {
 						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 					}
@@ -105,7 +105,7 @@ namespace Engine {
 				}
 			}
 			else {
-				if (meshPBRMaterials[meshes[i]]->isTransparent) {
+				if (meshPBRMaterials[meshes[i]]->GetIsTransparent()) {
 					if (instanceNum > 0) {
 						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 					}
@@ -120,7 +120,7 @@ namespace Engine {
 	void Model::ApplyMaterialToAllMesh(Material* material)
 	{
 		pbr = false;
-		containsTransparentMeshes = material->isTransparent;
+		containsTransparentMeshes = material->GetIsTransparent();
 
 		for (Mesh* m : meshes) {
 			meshMaterials[m] = material;
@@ -130,7 +130,7 @@ namespace Engine {
 	void Model::ApplyMaterialToMeshAtIndex(Material* material, int index)
 	{
 		pbr = false;
-		containsTransparentMeshes = material->isTransparent;
+		containsTransparentMeshes = material->GetIsTransparent();
 
 		if (index < meshes.size()) {
 			meshMaterials[meshes[index]] = material;
@@ -140,7 +140,7 @@ namespace Engine {
 	void Model::ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial)
 	{
 		pbr = true;
-		containsTransparentMeshes = pbrMaterial->isTransparent;
+		containsTransparentMeshes = pbrMaterial->GetIsTransparent();
 
 		for (Mesh* m : meshes) {
 			meshPBRMaterials[m] = pbrMaterial;
@@ -150,7 +150,7 @@ namespace Engine {
 	void Model::ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index)
 	{
 		pbr = true;
-		containsTransparentMeshes = pbrMaterial->isTransparent;
+		containsTransparentMeshes = pbrMaterial->GetIsTransparent();
 
 		if (index < meshes.size()) {
 			meshPBRMaterials[meshes[index]] = pbrMaterial;
@@ -209,7 +209,7 @@ namespace Engine {
 			Mesh* newMesh = ProcessMesh(mesh, scene);
 			meshes.push_back(newMesh);
 			if (!pbr) {
-				if (newMesh->GetMaterial()->isTransparent) {
+				if (newMesh->GetMaterial()->GetIsTransparent()) {
 					containsTransparentMeshes = true;
 				}
 			}
@@ -229,8 +229,8 @@ namespace Engine {
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<Texture*> textures;
-		Material* meshMaterial = new Material();
-		PBRMaterial* pbrMaterial = new PBRMaterial();
+		Material* meshMaterial = new Material(glm::vec3(1.0f));
+		PBRMaterial* pbrMaterial = new PBRMaterial(glm::vec3(1.0f));
 		std::unordered_map<TextureTypes, aiTextureType> textureTranslations = ResourceManager::GetInstance()->GetTextureTranslations();
 
 		// retrieve vertices
@@ -306,14 +306,14 @@ namespace Engine {
 				}
 				glm::vec3 specularColour = glm::vec3(specColour.r, specColour.b, specColour.g);
 
-				meshMaterial->diffuse = diffuseColour;
+				meshMaterial->baseColour = diffuseColour;
 				meshMaterial->specular = specularColour;
 				meshMaterial->shininess = shine;
 				meshMaterial->height_scale = 10.0f; // this should be read from the material import instead
-				meshMaterial->useDiffuseAlphaAsOpacity = true;
+				meshMaterial->SetUseDiffuseAsAlpha(true);
 
 				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_DIFFUSE], TEXTURE_DIFFUSE, scene);
-				meshMaterial->diffuseMaps = diffuseMaps;
+				meshMaterial->baseColourMaps = diffuseMaps;
 
 				std::vector<Texture*> specularMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_SPECULAR], TEXTURE_SPECULAR, scene);
 				meshMaterial->specularMaps = specularMaps;
@@ -325,11 +325,9 @@ namespace Engine {
 				meshMaterial->heightMaps = heightMaps;
 
 				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_OPACITY], TEXTURE_OPACITY, scene);
-				meshMaterial->opacityMaps = opacityMaps;
 
-				if (opacityMaps.size() > 0) {
-					meshMaterial->isTransparent = true;
-					meshMaterial->useDiffuseAlphaAsOpacity = false;
+				for (Texture* t : opacityMaps) {
+					meshMaterial->PushOpacityMap(t);
 				}
 
 				// retrieve bones
@@ -363,15 +361,15 @@ namespace Engine {
 					rough = 1.0f;
 				}
 
-				pbrMaterial->albedo = baseAlbedo;
+				pbrMaterial->baseColour = baseAlbedo;
 				pbrMaterial->metallic = metal;
 				pbrMaterial->roughness = rough;
 				pbrMaterial->ao = 1.0f;
 				pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
-				pbrMaterial->useDiffuseAlphaAsOpacity = true;
+				pbrMaterial->SetUseDiffuseAsAlpha(true);
 
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_ALBEDO], TEXTURE_ALBEDO, scene);
-				pbrMaterial->albedoMaps = albedoMaps;
+				pbrMaterial->baseColourMaps = albedoMaps;
 
 				std::vector<Texture*> normalMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_NORMAL], TEXTURE_NORMAL, scene);
 				pbrMaterial->normalMaps = normalMaps;
@@ -389,11 +387,9 @@ namespace Engine {
 				pbrMaterial->heightMaps = heightMaps;
 
 				std::vector<Texture*> opacityMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_OPACITY], TEXTURE_OPACITY, scene);
-				pbrMaterial->opacityMaps = opacityMaps;
 
-				if (opacityMaps.size() > 0) {
-					pbrMaterial->isTransparent = true;
-					pbrMaterial->useDiffuseAlphaAsOpacity = false;
+				for (Texture* t : opacityMaps) {
+					pbrMaterial->PushOpacityMap(t);
 				}
 
 				// retrieve bones

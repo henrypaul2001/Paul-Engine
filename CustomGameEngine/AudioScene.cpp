@@ -132,18 +132,14 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
-		PBRMaterial* grass = new PBRMaterial();
-		grass->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/albedo.png", TEXTURE_ALBEDO, true));
+		PBRMaterial* grass = new PBRMaterial(glm::vec3(1.0f), 0.0f, 0.0f);
+		grass->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/albedo.png", TEXTURE_ALBEDO, true));
 		grass->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/normal.png", TEXTURE_NORMAL, false));
 		grass->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/metallic.png", TEXTURE_METALLIC, false));
 		grass->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/roughness.png", TEXTURE_ROUGHNESS, false));
 		grass->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/ao.png", TEXTURE_AO, false));
 
-		PBRMaterial* water = new PBRMaterial();
-		water->albedo = glm::vec3(0.5f, 0.6f, 0.8f);
-		water->metallic = 0.1f;
-		water->roughness = 0.0f;
-		water->ao = 1.0f;
+		PBRMaterial* water = new PBRMaterial(glm::vec3(0.5f, 0.6f, 0.8f), 0.1f, 0.0f, 1.0f);
 
 		AudioFile* bell = ResourceManager::GetInstance()->LoadAudio("Audio/bell.wav");
 		AudioFile* waterAndNature = ResourceManager::GetInstance()->LoadAudio("Audio/waterAndNature.wav");

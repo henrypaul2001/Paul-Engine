@@ -154,15 +154,14 @@ namespace Engine {
 	void ParticleScene::CreateEntities()
 	{
 		Material* windowMaterial = new Material();
-		windowMaterial->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		windowMaterial->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		windowMaterial->specular = glm::vec3(0.8f, 0.0f, 0.0f);
 		windowMaterial->shininess = 60.0f;
-		windowMaterial->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
-		windowMaterial->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
-		windowMaterial->isTransparent = true;
+		windowMaterial->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
+		windowMaterial->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
 
 		Material* lava = new Material();
-		lava->diffuseMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/diffuse.png", TEXTURE_DIFFUSE, true));
+		lava->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/diffuse.png", TEXTURE_DIFFUSE, true));
 		lava->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/specular.png", TEXTURE_SPECULAR, false));
 		//lava->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/normal.png", TEXTURE_NORMAL, false));
 		lava->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/displace.png", TEXTURE_DISPLACE, false));

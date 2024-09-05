@@ -50,8 +50,8 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 #pragma region Materials
-		PBRMaterial* bricks = new PBRMaterial();
-		bricks->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
+		PBRMaterial* bricks = new PBRMaterial(glm::vec3(1.0f));
+		bricks->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
 		bricks->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/normal.png", TEXTURE_NORMAL, false));
 		bricks->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/specular.png", TEXTURE_METALLIC, false));
 		bricks->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/roughness.png", TEXTURE_ROUGHNESS, false));
@@ -60,26 +60,17 @@ namespace Engine {
 		bricks->height_scale = -0.1;
 		bricks->textureScaling = glm::vec2(5.0f, 50.0f);
 
-		PBRMaterial* geoBallMaterial = new PBRMaterial();
-		geoBallMaterial->albedo = glm::vec3(0.5f, 0.5f, 0.65f);
-		geoBallMaterial->ao = 1.0f;
-		geoBallMaterial->roughness = 0.0f;
-		geoBallMaterial->metallic = 1.0f;
+		PBRMaterial* geoBallMaterial = new PBRMaterial(glm::vec3(0.5f, 0.5f, 0.65f), 1.0f, 0.0f, 1.0f);
 
-		PBRMaterial* ballMaterial = new PBRMaterial();
-		ballMaterial->albedo = glm::vec3(0.0f);
-		ballMaterial->ao = 1.0f;
-		ballMaterial->roughness = 0.0f;
-		ballMaterial->metallic = 0.1f;
+		PBRMaterial* ballMaterial = new PBRMaterial(glm::vec3(0.0f), 0.1f, 0.0f, 1.0f);
 
-		PBRMaterial* raindrops = new PBRMaterial();
-		raindrops->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
+		PBRMaterial* raindrops = new PBRMaterial(glm::vec3(1.0f));
+		raindrops->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
 		raindrops->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/normal.png", TEXTURE_NORMAL, false));
 		raindrops->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/roughness.jpg", TEXTURE_ROUGHNESS, false));
 		raindrops->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/ao.jpg", TEXTURE_AO, false));
 		raindrops->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/height.png", TEXTURE_DISPLACE, false));
-		raindrops->opacityMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
-		raindrops->isTransparent = true;
+		raindrops->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
 		raindrops->textureScaling = glm::vec2(5.0f, 50.0f);
 #pragma endregion
