@@ -7,12 +7,7 @@ namespace Engine {
 
 		this->usingPremadeModel = old_component.usingPremadeModel;
 
-		if (usingPremadeModel) {
-			this->model = new Model(*old_component.model);
-		}
-		else {
-			this->model = old_component.model;
-		}
+		this->model = new Model(*old_component.model);
 
 		includeInReflectionProbes = true;
 
