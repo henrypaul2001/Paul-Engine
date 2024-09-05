@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "AudioManager.h"
+#include "ASSIMPModelLoader.h"
 namespace Engine {
 
 	ResourceManager* ResourceManager::instance = nullptr;
@@ -694,6 +695,14 @@ namespace Engine {
 			audioIt++;
 		}
 		resources.audioFiles.clear();
+
+		// delete materials
+		std::unordered_map<std::string, AbstractMaterial*>::iterator materialsIt = resources.materials.begin();
+		while (materialsIt != resources.materials.end()) {
+			delete materialsIt->second;
+			materialsIt++;
+		}
+		resources.materials.clear();
 	}
 
 
@@ -1366,6 +1375,22 @@ namespace Engine {
 		std::unordered_map<std::string, AudioFile*>::iterator it = persistentIt;
 		if (existsInTemp) { it = tempIt; }
 		return it->second;
+	}
+
+	AbstractMaterial* ResourceManager::GetMaterial(const std::string& materialName)
+	{
+		std::unordered_map<std::string, AbstractMaterial*>::iterator persistentIt = persistentResources.materials.find(materialName);
+		std::unordered_map<std::string, AbstractMaterial*>::iterator tempIt = tempResources.materials.find(materialName);
+
+		if (persistentIt != persistentResources.materials.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.materials.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
 	}
 
 	MeshData* ResourceManager::GetMeshData(const std::string& fileNamePlusMeshName)

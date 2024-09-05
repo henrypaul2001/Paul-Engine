@@ -7,7 +7,6 @@
 #include <ft2build.h>
 #include "SkeletalAnimation.h"
 #include "AudioFile.h"
-#include "ASSIMPModelLoader.h"
 #include FT_FREETYPE_H
 namespace Engine {
 	struct Cubemap {
@@ -42,10 +41,12 @@ namespace Engine {
 		std::unordered_map<std::string, TextFont*> textFonts;
 		std::unordered_map<std::string, SkeletalAnimation*> animations;
 		std::unordered_map<std::string, AudioFile*> audioFiles;
+		std::unordered_map<std::string, AbstractMaterial*> materials;
 	};
 
 	enum AnisotropicFiltering;
 	class RenderManager;
+	class ASSIMPModelLoader;
 	class ResourceManager
 	{
 	private:
@@ -186,6 +187,7 @@ namespace Engine {
 		TextFont* GetTextFont(const std::string& filepath);
 		SkeletalAnimation* GetAnimation(const std::string& filepath, const int animationIndex = 0);
 		AudioFile* GetAudio(const std::string& filepath);
+		AbstractMaterial* GetMaterial(const std::string& materialName);
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	
