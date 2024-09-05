@@ -188,6 +188,35 @@ namespace Engine {
 		SkeletalAnimation* GetAnimation(const std::string& filepath, const int animationIndex = 0);
 		AudioFile* GetAudio(const std::string& filepath);
 		AbstractMaterial* GetMaterial(const std::string& materialName);
+		bool AddMaterial(const std::string& materialName, AbstractMaterial* material, bool persistentResources = false) {
+			std::unordered_map<std::string, AbstractMaterial*>::iterator persistentIt = this->persistentResources.materials.find(materialName);
+			std::unordered_map<std::string, AbstractMaterial*>::iterator tempIt = this->tempResources.materials.find(materialName);
+
+			if (persistentResources) {
+				bool exists = (persistentIt != this->persistentResources.materials.end());
+
+				if (!exists) {
+					this->persistentResources.materials[materialName] = material;
+				}
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::AddMaterial::Material already exists in persistent resources" << std::endl;
+					return false;
+				}
+			}
+			else {
+				bool exists = (tempIt != this->tempResources.materials.end());
+
+				if (!exists) {
+					this->tempResources.materials[materialName] = material;
+				}
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::AddMaterial::Material already exists in temp resources" << std::endl;
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 		Material* GenerateMaterial(std::vector<Texture*> diffuseMaps, std::vector<Texture*> specularMaps, std::vector<Texture*> normalMaps, std::vector<Texture*> heightMaps, float shininess, glm::vec3 diffuse, glm::vec3 specular);
 	

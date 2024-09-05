@@ -119,7 +119,7 @@ namespace Engine {
 		};
 
 		for (int i = 0; i < meshes.size(); i++) {
-			meshes[i]->GetPBRMaterial()->textureScaling = textureScales[i];
+			//meshes[i]->GetPBRMaterial()->textureScaling = textureScales[i]; // commented out as materials are not currently applied to meshes with new system
 		}
 		entityManager->AddEntity(scifiInterior);
 

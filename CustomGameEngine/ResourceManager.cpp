@@ -708,6 +708,7 @@ namespace Engine {
 
 	Model* ResourceManager::CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
 	{
+		ASSIMPModelLoader::loadMaterialsAsPBR = pbr;
 		std::vector<MeshData*> meshData = ASSIMPModelLoader::LoadMeshData(filepath, assimpPostProcess, loadInPersistentResources);
 		std::vector<Mesh*> meshes;
 		meshes.reserve(meshData.size());
