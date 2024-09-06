@@ -153,12 +153,14 @@ namespace Engine {
 
 	void ParticleScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		Material* windowMaterial = new Material();
 		windowMaterial->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		windowMaterial->specular = glm::vec3(0.8f, 0.0f, 0.0f);
 		windowMaterial->shininess = 60.0f;
 		windowMaterial->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
 		windowMaterial->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
+		resources->AddMaterial("windowMaterial", windowMaterial);
 
 		Material* lava = new Material();
 		lava->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/diffuse.png", TEXTURE_DIFFUSE, true));
@@ -167,6 +169,7 @@ namespace Engine {
 		lava->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/Lava/displace.png", TEXTURE_DISPLACE, false));
 		lava->height_scale = -0.001f;
 		lava->shininess = 0.2f;
+		resources->AddMaterial("lava", lava);
 
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

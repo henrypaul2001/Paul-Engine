@@ -59,15 +59,18 @@ namespace Engine
 
 	void GameScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		Material* newMeshMaterial = new Material();
 		newMeshMaterial->baseColour = glm::vec3(0.8f, 0.0f, 0.8f);
 		newMeshMaterial->specular = glm::vec3(1.0f, 0.0f, 1.0f);
 		newMeshMaterial->shininess = 100.0f;
+		resources->AddMaterial("newMeshMaterial", newMeshMaterial);
 
 		Material* blue = new Material();
 		blue->baseColour = glm::vec3(0.0f, 0.0f, 0.8f);
 		blue->specular = glm::vec3(0.0f, 0.0f, 1.0f);
 		blue->shininess = 100.0f;
+		resources->AddMaterial("blue", blue);
 
 		Material* window = new Material();
 		window->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -75,6 +78,7 @@ namespace Engine
 		window->shininess = 60.0f;
 		window->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
 		window->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
+		resources->AddMaterial("window", window);
 
 		Material* cobbleFloor = new Material();
 		cobbleFloor->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/diffuse.png", TEXTURE_DIFFUSE, true));
@@ -85,6 +89,7 @@ namespace Engine
 		cobbleFloor->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		cobbleFloor->shininess = 60.0f;
 		cobbleFloor->height_scale = -0.1f;
+		resources->AddMaterial("cobbleFloor", cobbleFloor);
 
 		Material* brickWall = new Material();
 		brickWall->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/brick_wall/diffuse.jpg", TEXTURE_DIFFUSE, true));
@@ -95,6 +100,7 @@ namespace Engine
 		brickWall->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		brickWall->shininess = 60.0f;
 		brickWall->height_scale = 0.1f;
+		resources->AddMaterial("brickWall", brickWall);
 
 		Entity* defaultCube = new Entity("Default Cube");
 		defaultCube->AddComponent(new ComponentTransform(3.0f, -1.5f, 0.0f));

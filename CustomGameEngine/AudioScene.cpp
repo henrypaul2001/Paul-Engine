@@ -119,6 +119,7 @@ namespace Engine {
 
 	void AudioScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
@@ -138,8 +139,10 @@ namespace Engine {
 		grass->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/metallic.png", TEXTURE_METALLIC, false));
 		grass->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/roughness.png", TEXTURE_ROUGHNESS, false));
 		grass->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/ao.png", TEXTURE_AO, false));
+		resources->AddMaterial("Grass", grass);
 
 		PBRMaterial* water = new PBRMaterial(glm::vec3(0.5f, 0.6f, 0.8f), 0.1f, 0.0f, 1.0f);
+		resources->AddMaterial("Water", water);
 
 		AudioFile* bell = ResourceManager::GetInstance()->LoadAudio("Audio/bell.wav");
 		AudioFile* waterAndNature = ResourceManager::GetInstance()->LoadAudio("Audio/waterAndNature.wav");

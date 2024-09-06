@@ -8,6 +8,7 @@ namespace Engine
 
 	Scene::Scene(SceneManager* sceneManager, const std::string& name) {
 		SCOPE_TIMER("Scene::Scene()");
+		this->resources = ResourceManager::GetInstance();
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);

@@ -29,6 +29,7 @@ namespace Engine
 		RenderManager* renderManager;
 		CollisionManager* collisionManager;
 		ConstraintManager* constraintManager;
+		ResourceManager* resources;
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
 

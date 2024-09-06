@@ -113,6 +113,7 @@ namespace Engine {
 
 	void InstanceScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
@@ -130,6 +131,7 @@ namespace Engine {
 		textured->specularMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/specular.png", TEXTURE_SPECULAR, false));
 		textured->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/cobble_floor/normal.png", TEXTURE_NORMAL, false));
 		textured->shininess = 5.0f;
+		resources->AddMaterial("textured", textured);
 
 		PBRMaterial* bricks = new PBRMaterial();
 		bricks->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
@@ -139,6 +141,7 @@ namespace Engine {
 		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
+		resources->AddMaterial("bricks", bricks);
 
 		PBRMaterial* gold = new PBRMaterial();
 		gold->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
@@ -146,6 +149,7 @@ namespace Engine {
 		gold->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/metallic.png", TEXTURE_METALLIC, false));
 		gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS, false));
 		gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
+		resources->AddMaterial("gold", gold);
 
 		Entity* baseInstance = new Entity("Base Instance");
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

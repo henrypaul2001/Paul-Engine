@@ -66,12 +66,14 @@ namespace Engine {
 
 	void SponzaScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		PBRMaterial* gold = new PBRMaterial();
 		gold->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
 		gold->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/normal.png", TEXTURE_NORMAL, false));
 		gold->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/metallic.png", TEXTURE_METALLIC, false));
 		gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS, false));
 		gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
+		resources->AddMaterial("gold", gold);
 
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -82,7 +84,6 @@ namespace Engine {
 		dirLight->GetLightComponent()->ShadowProjectionSize = 30.0f;
 		entityManager->AddEntity(dirLight);
 
-		ResourceManager* resources = ResourceManager::GetInstance();
 		resources->SetModelLoaderTextureTranslation(TEXTURE_NORMAL, aiTextureType_NORMALS);
 		resources->SetModelLoaderTextureTranslation(TEXTURE_METALLIC, aiTextureType_METALNESS);
 		resources->SetModelLoaderTextureTranslation(TEXTURE_ROUGHNESS, aiTextureType_DIFFUSE_ROUGHNESS);

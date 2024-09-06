@@ -33,6 +33,7 @@ namespace Engine {
 
 	void IBLScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 
@@ -59,10 +60,13 @@ namespace Engine {
 		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
 		bricks->textureScaling = glm::vec2(5.0f, 50.0f);
+		resources->AddMaterial("bricks", bricks);
 
 		PBRMaterial* geoBallMaterial = new PBRMaterial(glm::vec3(0.5f, 0.5f, 0.65f), 1.0f, 0.0f, 1.0f);
+		resources->AddMaterial("geoBallMaterial", geoBallMaterial);
 
 		PBRMaterial* ballMaterial = new PBRMaterial(glm::vec3(0.0f), 0.1f, 0.0f, 1.0f);
+		resources->AddMaterial("ballMaterial", ballMaterial);
 
 		PBRMaterial* raindrops = new PBRMaterial(glm::vec3(1.0f));
 		raindrops->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
@@ -73,6 +77,7 @@ namespace Engine {
 		raindrops->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
 		raindrops->textureScaling = glm::vec2(5.0f, 50.0f);
+		resources->AddMaterial("raindrops", raindrops);
 #pragma endregion
 
 #pragma region Scene

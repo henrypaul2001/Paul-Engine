@@ -51,16 +51,19 @@ namespace Engine {
 
 	void AOScene::CreateEntities()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		Material* bloomTest = new Material();
 		bloomTest->baseColour = glm::vec3(10.0f, 10.0f, 10.0f);
 		bloomTest->specular = glm::vec3(10.0f, 10.0f, 10.0f);
 		bloomTest->shininess = 10.0f;
+		resources->AddMaterial("Bloom Test", bloomTest);
 
 		Material* lightCubeMaterial = new Material();
 		lightCubeMaterial->baseColour = glm::vec3(8.0f, 0.0f, 15.0f);
 		//lightCubeMaterial->diffuse = glm::vec3(1.0f, 0.0f, 2.0f);
 		lightCubeMaterial->specular = lightCubeMaterial->baseColour;
 		lightCubeMaterial->shininess = 100.0f;
+		resources->AddMaterial("Light Cube Material", lightCubeMaterial);
 
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));

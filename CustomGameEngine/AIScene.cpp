@@ -162,26 +162,31 @@ namespace Engine {
 		agentMaterial->roughness = 1.0f;
 		agentMaterial->metallic = 0.0f;
 		agentMaterial->ao = 0.0f;
+		resources->AddMaterial("agentMaterial", agentMaterial);
 
 		PBRMaterial* walkable = new PBRMaterial(glm::vec3(100.0f, 0.0f, 0.0f));
 		walkable->roughness = 1.0f;
 		walkable->metallic = 0.0f;
 		walkable->ao = 1.0f;
+		resources->AddMaterial("walkable", walkable);
 
 		PBRMaterial* path = new PBRMaterial(glm::vec3(0.0f, 0.0f, 100.0f));
 		path->roughness = 1.0f;
 		path->metallic = 0.0f;
 		path->ao = 0.0f;
+		resources->AddMaterial("path", path);
 
 		PBRMaterial* grass = new PBRMaterial(glm::vec3(65.0f, 152.0f, 10.0f) / 100.0f);
 		grass->roughness = 1.0f;
 		grass->metallic = 0.0f;
 		grass->ao = 0.0f;
+		resources->AddMaterial("grass", grass);
 
 		PBRMaterial* wallMaterial = new PBRMaterial(glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f);
 		wallMaterial->roughness = 1.0f;
 		wallMaterial->metallic = 0.0f;
 		wallMaterial->ao = 0.0f;
+		resources->AddMaterial("wallMaterial", wallMaterial);
 
 		// Pathfinding debug grid
 		Entity* baseInstanceWalkable = new Entity("Base Instance Non Walkable");

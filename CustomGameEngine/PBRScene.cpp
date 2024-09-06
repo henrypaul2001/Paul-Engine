@@ -640,6 +640,7 @@ namespace Engine {
 	{
 		SCOPE_TIMER("PBRScene::CreateEntities");
 		ambientStrength = 0.08f;
+		ResourceManager* resources = ResourceManager::GetInstance();
 
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
@@ -676,11 +677,13 @@ namespace Engine {
 			bloomTest->metallic = 0.0f;
 			bloomTest->roughness = 0.0f;
 			bloomTest->ao = 0.0f;
+			resources->AddMaterial("Bloom Test", bloomTest);
 
 			mirror = new PBRMaterial(glm::vec3(0.0f));
 			mirror->metallic = 0.1f;
 			mirror->roughness = 0.0f;
 			mirror->ao = 1.0f;
+			resources->AddMaterial("Mirror", mirror);
 
 			gold = new PBRMaterial();
 			gold->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
@@ -688,6 +691,7 @@ namespace Engine {
 			gold->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/metallic.png", TEXTURE_METALLIC, false));
 			gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS, false));
 			gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
+			resources->AddMaterial("Gold", gold);
 
 			rusted_iron = new PBRMaterial();
 			rusted_iron->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rusted_iron/albedo.png", TEXTURE_ALBEDO, true));
@@ -695,6 +699,7 @@ namespace Engine {
 			rusted_iron->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rusted_iron/metallic.png", TEXTURE_METALLIC, false));
 			rusted_iron->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rusted_iron/roughness.png", TEXTURE_ROUGHNESS, false));
 			rusted_iron->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rusted_iron/ao.png", TEXTURE_AO, false));
+			resources->AddMaterial("Rusted Iron", rusted_iron);
 
 			//PBRMaterial* plastic = new PBRMaterial();
 			//plastic->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/plastic/albedo.png", TEXTURE_ALBEDO, true));
@@ -712,6 +717,7 @@ namespace Engine {
 			bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 			bricks->height_scale = -0.1;
 			bricks->textureScaling = glm::vec2(10.0f);
+			resources->AddMaterial("Bricks", bricks);
 
 			//PBRMaterial* grass = new PBRMaterial();
 			//grass->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/grass/albedo.png", TEXTURE_ALBEDO, true));
@@ -742,6 +748,7 @@ namespace Engine {
 			scifi->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/scifi/ao.png", TEXTURE_AO, false));
 			//scifi->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/scifi/displacement.png", TEXTURE_DISPLACE));
 			//scifi->height_scale = -0.1;
+			resources->AddMaterial("SciFi", scifi);
 
 			snow = new PBRMaterial();
 			snow->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/snow/albedo.png", TEXTURE_ALBEDO, true));
@@ -751,6 +758,7 @@ namespace Engine {
 			snow->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/snow/ao.png", TEXTURE_AO, false));
 			snow->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/snow/displacement.png", TEXTURE_DISPLACE, false));
 			snow->height_scale = -0.1;
+			resources->AddMaterial("Snow", snow);
 
 			space_blanket = new PBRMaterial();
 			space_blanket->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/space_blanket/albedo.png", TEXTURE_ALBEDO, true));
@@ -758,6 +766,7 @@ namespace Engine {
 			space_blanket->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/space_blanket/metallic.png", TEXTURE_METALLIC, false));
 			space_blanket->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/space_blanket/roughness.png", TEXTURE_ROUGHNESS, false));
 			space_blanket->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/space_blanket/ao.png", TEXTURE_AO, false));
+			resources->AddMaterial("Space Blanket", space_blanket);
 
 			wall = new PBRMaterial();
 			wall->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/wall/albedo.png", TEXTURE_ALBEDO, false));
@@ -765,6 +774,7 @@ namespace Engine {
 			wall->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/wall/metallic.png", TEXTURE_METALLIC, false));
 			wall->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/wall/roughness.png", TEXTURE_ROUGHNESS, false));
 			wall->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/wall/ao.png", TEXTURE_AO, false));
+			resources->AddMaterial("Wall", wall);
 
 			//PBRMaterial* worn_corrugated_iron = new PBRMaterial();
 			//worn_corrugated_iron->albedoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/worn_corrugated_iron/albedo.png", TEXTURE_ALBEDO, true));
@@ -789,6 +799,7 @@ namespace Engine {
 			raindrops->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 			raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
 			raindrops->textureScaling = glm::vec2(10.0f);
+			resources->AddMaterial("Raindrops", raindrops);
 #pragma endregion
 		}
 
@@ -1664,6 +1675,7 @@ namespace Engine {
 		nonPBRMat->baseColour = glm::vec3(1.0f, 0.0f, 0.0f);
 		nonPBRMat->specular = glm::vec3(1.0f, 0.0f, 0.0f);
 		nonPBRMat->shininess = 100.0f;
+		resources->AddMaterial("Non PBR Mat", nonPBRMat);
 
 		Entity* nonPBRTest = new Entity("NON PBR TEST");
 		nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
