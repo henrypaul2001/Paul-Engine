@@ -64,7 +64,8 @@ namespace Engine {
 
 		if (visible) {
 			textureSlots = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
-			AbstractMaterial* firstMaterial = meshMaterials[0];
+			AbstractMaterial* firstMaterial = nullptr;
+			if (meshMaterials.size() > 0) { firstMaterial = meshMaterials[0]; }
 
 			if (!firstMaterial) { if (pbr) { firstMaterial = ResourceManager::GetInstance()->DefaultMaterialPBR(); } else { firstMaterial = ResourceManager::GetInstance()->DefaultMaterial(); } }
 
