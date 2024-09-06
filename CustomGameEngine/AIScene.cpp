@@ -159,14 +159,29 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 		PBRMaterial* agentMaterial = new PBRMaterial(glm::vec3(100.0f));
+		agentMaterial->roughness = 1.0f;
+		agentMaterial->metallic = 0.0f;
+		agentMaterial->ao = 0.0f;
 
 		PBRMaterial* walkable = new PBRMaterial(glm::vec3(100.0f, 0.0f, 0.0f));
+		walkable->roughness = 1.0f;
+		walkable->metallic = 0.0f;
+		walkable->ao = 1.0f;
 
 		PBRMaterial* path = new PBRMaterial(glm::vec3(0.0f, 0.0f, 100.0f));
+		path->roughness = 1.0f;
+		path->metallic = 0.0f;
+		path->ao = 0.0f;
 
 		PBRMaterial* grass = new PBRMaterial(glm::vec3(65.0f, 152.0f, 10.0f) / 100.0f);
+		grass->roughness = 1.0f;
+		grass->metallic = 0.0f;
+		grass->ao = 0.0f;
 
 		PBRMaterial* wallMaterial = new PBRMaterial(glm::vec3(248.0f, 229.0f, 187.0f) / 100.0f);
+		wallMaterial->roughness = 1.0f;
+		wallMaterial->metallic = 0.0f;
+		wallMaterial->ao = 0.0f;
 
 		// Pathfinding debug grid
 		Entity* baseInstanceWalkable = new Entity("Base Instance Non Walkable");
