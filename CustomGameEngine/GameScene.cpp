@@ -109,7 +109,7 @@ namespace Engine
 		bricktransform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -90.0f);
 		brickPlane->AddComponent(bricktransform);
 		brickPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		dynamic_cast<ComponentGeometry*>(brickPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(brickWall);
+		dynamic_cast<ComponentGeometry*>(brickPlane->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(brickWall);
 		entityManager->AddEntity(brickPlane);
 
 		Entity* defaultPlane = new Entity("Default Plane");
@@ -118,7 +118,7 @@ namespace Engine
 		transform->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), -25.0f);
 		defaultPlane->AddComponent(transform);
 		defaultPlane->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(cobbleFloor);
+		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(cobbleFloor);
 		dynamic_cast<ComponentGeometry*>(defaultPlane->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 		entityManager->AddEntity(defaultPlane);
 
@@ -174,7 +174,7 @@ namespace Engine
 		spotLight->AddComponent(new ComponentTransform(0.0f, 3.0f, -9.0f));
 		spotLight->AddComponent(new ComponentLight(SPOT));
 		spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(blue);
+		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(blue);
 		dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.5f));
 		dynamic_cast<ComponentLight*>(spotLight->GetComponent(COMPONENT_LIGHT))->Colour = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -198,7 +198,7 @@ namespace Engine
 		Entity* testSphere = new Entity("Test Sphere");
 		testSphere->AddComponent(new ComponentTransform(-2.0f, 0.0f, 3.0f));
 		testSphere->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(window);
 		dynamic_cast<ComponentGeometry*>(testSphere->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(5.0f);
 		entityManager->AddEntity(testSphere);
 
@@ -341,25 +341,25 @@ namespace Engine
 		Entity* window1 = new Entity("Window 1");
 		window1->AddComponent(new ComponentTransform(10.0f, 3.0f, 2.5f));
 		window1->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		dynamic_cast<ComponentGeometry*>(window1->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		dynamic_cast<ComponentGeometry*>(window1->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(window);
 		entityManager->AddEntity(window1);
 
 		Entity* window2 = new Entity("Window 2");
 		window2->AddComponent(new ComponentTransform(9.0f, 3.0f, 1.5f));
 		window2->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		dynamic_cast<ComponentGeometry*>(window2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		dynamic_cast<ComponentGeometry*>(window2->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(window);
 		entityManager->AddEntity(window2);
 
 		Entity* window3 = new Entity("Window 3");
 		window3->AddComponent(new ComponentTransform(10.0f, 3.0f, 0.5f));
 		window3->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		dynamic_cast<ComponentGeometry*>(window3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		dynamic_cast<ComponentGeometry*>(window3->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(window);
 		entityManager->AddEntity(window3);
 
 		Entity* window4 = new Entity("Window 4");
 		window4->AddComponent(new ComponentTransform(9.5f, 2.5f, -0.5f));
 		window4->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		dynamic_cast<ComponentGeometry*>(window4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(window);
+		dynamic_cast<ComponentGeometry*>(window4->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(window);
 		entityManager->AddEntity(window4);
 
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");

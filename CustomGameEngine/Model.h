@@ -40,6 +40,7 @@ namespace Engine {
 	class Model
 	{
 	public:
+		Model(const Model& old_model);
 		Model(const std::vector<Mesh*>& meshes, bool pbr = false);
 		Model(PremadeModel modelType, bool pbr = false);
 		Model(const char* filepath, unsigned int assimpPostProcess);
@@ -52,11 +53,8 @@ namespace Engine {
 		bool PBR() { return pbr; }
 		void PBR(bool PBR) { pbr = PBR; }
 
-		void ApplyMaterialToAllMesh(Material* material);
-		void ApplyMaterialToMeshAtIndex(Material* material, int index);
-
-		void ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial);
-		void ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index);
+		void ApplyMaterialsToAllMesh(const std::vector<AbstractMaterial*>& materials);
+		void ApplyMaterialsToMeshAtIndex(const std::vector<AbstractMaterial*>& materials, const unsigned int index);
 
 		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
 
@@ -106,11 +104,6 @@ namespace Engine {
 		AnimationSkeleton skeleton;
 
 		bool hasBones;
-
-		std::unordered_map<Mesh*, Material*> meshMaterials;
-		std::unordered_map<Mesh*, PBRMaterial*> meshPBRMaterials;
-
-		void CollectMeshMaterials();
 
 		void LoadModel(std::string filepath, unsigned int assimpPostProcess);
 		void ProcessNode(aiNode* node, const aiScene* scene);

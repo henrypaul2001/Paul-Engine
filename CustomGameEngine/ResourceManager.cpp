@@ -198,8 +198,12 @@ namespace Engine {
 		};
 
 		GenerateBitangentTangentVectors(vertices, indices, 0);
+
 #pragma endregion
-		defaultCube = new Mesh(vertices, indices, defaultMaterial);
+		MeshData* defaultCubeData = new MeshData(vertices, indices);
+		AddMeshData("DefaultCubeMesh", defaultCubeData, true);
+
+		defaultCube = new Mesh(defaultCubeData);
 		defaultCube->SetDrawPrimitive(GL_TRIANGLES);
 		vertices.clear();
 		indices.clear();
@@ -232,7 +236,10 @@ namespace Engine {
 
 		GenerateBitangentTangentVectors(vertices, indices, 0);
 #pragma endregion
-		defaultPlane = new Mesh(vertices, indices, defaultMaterial);
+		MeshData* defaultPlaneData = new MeshData(vertices, indices);
+		AddMeshData("DefaultPlaneMesh", defaultPlaneData, true);
+
+		defaultPlane = new Mesh(defaultPlaneData);
 		defaultPlane->SetDrawPrimitive(GL_TRIANGLES);
 		vertices.clear();
 		indices.clear();
@@ -294,7 +301,10 @@ namespace Engine {
 
 		GenerateBitangentTangentVectors(vertices, indices, 1);
 #pragma endregion
-		defaultSphere = new Mesh(vertices, indices, defaultMaterial);
+		MeshData* defaultSphereData = new MeshData(vertices, indices);
+		AddMeshData("DefaultSphereMesh", defaultSphereData, true);
+
+		defaultSphere = new Mesh(vertices, indices);
 		defaultSphere->SetDrawPrimitive(GL_TRIANGLE_STRIP);
 
 		vertices.clear();
@@ -709,12 +719,12 @@ namespace Engine {
 	Model* ResourceManager::CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
 	{
 		ASSIMPModelLoader::loadMaterialsAsPBR = pbr;
-		std::vector<MeshData*> meshData = ASSIMPModelLoader::LoadMeshData(filepath, assimpPostProcess, loadInPersistentResources);
+		std::vector<ProcessMeshResult> meshData = ASSIMPModelLoader::LoadMeshData(filepath, assimpPostProcess, loadInPersistentResources);
 		std::vector<Mesh*> meshes;
 		meshes.reserve(meshData.size());
 
 		for (unsigned int i = 0; i < meshData.size(); i++) {
-			meshes.push_back(new Mesh(meshData[i]));
+			meshes.push_back(new Mesh(meshData[i].meshData, meshData[i].meshMaterials));
 		}
 
 		return new Model(meshes, pbr);

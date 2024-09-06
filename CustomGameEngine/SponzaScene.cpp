@@ -108,9 +108,9 @@ namespace Engine {
 		trees->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		trees->AddComponent(new ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		trees->GetGeometryComponent()->SetCulling(false, GL_BACK);
-		trees->GetGeometryComponent()->GetModel()->meshes[0]->GetPBRMaterial()->SetUseDiffuseAsAlpha(false);
-		trees->GetGeometryComponent()->GetModel()->meshes[1]->GetPBRMaterial()->SetUseDiffuseAsAlpha(true);
-		trees->GetGeometryComponent()->GetModel()->meshes[2]->GetPBRMaterial()->SetUseDiffuseAsAlpha(false);
+		trees->GetGeometryComponent()->GetModel()->meshes[0]->GetMaterial()->SetUseColourMapAsAlpha(false);
+		trees->GetGeometryComponent()->GetModel()->meshes[1]->GetMaterial()->SetUseColourMapAsAlpha(true);
+		trees->GetGeometryComponent()->GetModel()->meshes[2]->GetMaterial()->SetUseColourMapAsAlpha(false);
 		entityManager->AddEntity(trees);
 
 		resources->ResetModelLoaderTextureTranslationsToDefault();

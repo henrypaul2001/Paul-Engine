@@ -17,26 +17,32 @@ namespace Engine {
 
 	Mesh::Mesh(MeshData* meshData)
 	{
-		this->material = nullptr;
-		this->PBRmaterial = nullptr;
 		isVisible = true;
 		drawPrimitive = GL_TRIANGLES;
 		this->meshData = meshData;
 		SetupGeometryAABB();
 	}
 
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, PBRMaterial* pbrMaterial)
+	Mesh::Mesh(MeshData* meshData, const std::vector<AbstractMaterial*>& materials)
 	{
-		this->PBRmaterial = pbrMaterial;
+		this->meshData = meshData;
+		this->meshMaterials = materials;
+
+		drawPrimitive = GL_TRIANGLES;
+		SetupGeometryAABB();
+	}
+
+	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, const std::vector<AbstractMaterial*>& materials)
+	{
+		this->meshMaterials = materials;
 		isVisible = true;
 		drawPrimitive = GL_TRIANGLES;
 		meshData = new MeshData(vertices, indices);
 		SetupGeometryAABB();
 	}
 
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material)
+	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 	{
-		this->material = material;
 		isVisible = true;
 		drawPrimitive = GL_TRIANGLES;
 		meshData = new MeshData(vertices, indices);
@@ -45,16 +51,6 @@ namespace Engine {
 
 	Mesh::~Mesh()
 	{
-	}
-
-	void Mesh::ApplyMaterial(Material* material)
-	{
-		this->material = material;
-	}
-
-	void Mesh::ApplyMaterial(PBRMaterial* pbrMaterial)
-	{
-		this->PBRmaterial = pbrMaterial;
 	}
 
 	void Mesh::Draw(Shader& shader, bool pbr, bool ignoreCulling, int instanceNum, const unsigned int instanceVAO)
@@ -68,32 +64,80 @@ namespace Engine {
 
 		if (visible) {
 			textureSlots = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
-			int offset = 10;
-			if (!pbr) {
+			AbstractMaterial* firstMaterial = meshMaterials[0];
+
+			if (!firstMaterial) { if (pbr) { firstMaterial = ResourceManager::GetInstance()->DefaultMaterialPBR(); } else { firstMaterial = ResourceManager::GetInstance()->DefaultMaterial(); } }
+
+			std::string number;
+			std::string name;
+			std::string nameAndNumber;
+
+			// Set base material properties
+			// ----------------------------
+			shader.setBool("material.useNormalMap", false);
+			shader.setBool("material.useHeightMap", false);
+			shader.setBool("material.useOpacityMap", false);
+
+			shader.setFloat("material.HEIGHT_SCALE", firstMaterial->height_scale);
+			shader.setFloat("material.shadowCastAlphaDiscardThreshold", firstMaterial->shadowCastAlphaDiscardThreshold);
+			shader.setVec2("textureScale", firstMaterial->textureScaling);
+
+			unsigned int normalNr = 1;
+			unsigned int heightNr = 1;
+			unsigned int opacityNr = 1;
+
+			// normal maps
+			for (int i = 0; i < firstMaterial->normalMaps.size(); i++) {
+				name = TextureTypeToString.at(firstMaterial->normalMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_NORMAL)) {
+					nameAndNumber = "material." + name + std::to_string(normalNr);
+					glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
+					glBindTexture(GL_TEXTURE_2D, firstMaterial->normalMaps[i]->id);
+					normalNr++;
+					shader.setBool("material.useNormalMap", true);
+				}
+			}
+
+			// height maps
+			for (int i = 0; i < firstMaterial->heightMaps.size(); i++) {
+				name = TextureTypeToString.at(firstMaterial->heightMaps[i]->type);
+				if (name == TextureTypeToString.at(TEXTURE_DISPLACE)) {
+					nameAndNumber = "material." + name + std::to_string(heightNr);
+					glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
+					glBindTexture(GL_TEXTURE_2D, firstMaterial->heightMaps[i]->id);
+					heightNr++;
+					shader.setBool("material.useHeightMap", true);
+				}
+			}
+
+			// opacity maps
+			if (!firstMaterial->GetUseColourMapAsAlpha()) {
+				const std::vector<Texture*>& opacityMaps = firstMaterial->GetOpacityMaps();
+				for (int i = 0; i < opacityMaps.size(); i++) {
+					name = TextureTypeToString.at(opacityMaps[i]->type);
+					if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_DIFFUSE) || name == TextureTypeToString.at(TEXTURE_ALBEDO)) {
+						name = TextureTypeToString.at(TEXTURE_OPACITY);
+						nameAndNumber = "material." + name + std::to_string(opacityNr);
+						glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
+						glBindTexture(GL_TEXTURE_2D, opacityMaps[i]->id);
+						opacityNr++;
+						shader.setBool("material.useOpacityMap", true);
+					}
+				}
+			}
+
+			if (!firstMaterial->IsPBR()) {
+				Material* material = dynamic_cast<Material*>(firstMaterial);
+
 				shader.setBool("material.useDiffuseMap", false);
 				shader.setBool("material.useSpecularMap", false);
-				shader.setBool("material.useNormalMap", false);
-				shader.setBool("material.useHeightMap", false);
-				shader.setBool("material.useOpacityMap", false);
 
 				unsigned int diffuseNr = 1;
 				unsigned int specularNr = 1;
-				unsigned int normalNr = 1;
-				unsigned int heightNr = 1;
-				unsigned int opacityNr = 1;
-
-				std::string number;
-				std::string name;
-				std::string nameAndNumber;
-
-				int count = 0;
 
 				shader.setVec3("material.DIFFUSE", material->baseColour);
 				shader.setVec3("material.SPECULAR", material->specular);
 				shader.setFloat("material.SHININESS", material->shininess);
-				shader.setFloat("material.HEIGHT_SCALE", material->height_scale);
-				shader.setFloat("material.shadowCastAlphaDiscardThreshold", material->shadowCastAlphaDiscardThreshold);
-				shader.setVec2("textureScale", material->textureScaling);
 
 				// diffuse maps
 				for (int i = 0; i < material->baseColourMaps.size(); i++) {
@@ -105,7 +149,6 @@ namespace Engine {
 						diffuseNr++;
 						shader.setBool("material.useDiffuseMap", true);
 					}
-					count++;
 				}
 
 				// specular maps
@@ -118,52 +161,10 @@ namespace Engine {
 						specularNr++;
 						shader.setBool("material.useSpecularMap", true);
 					}
-					count++;
 				}
 
-				// normal maps
-				for (int i = 0; i < material->normalMaps.size(); i++) {
-					name = TextureTypeToString.at(material->normalMaps[i]->type);
-					if (name == TextureTypeToString.at(TEXTURE_NORMAL)) {
-						nameAndNumber = "material." + name + std::to_string(normalNr);
-						glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
-						glBindTexture(GL_TEXTURE_2D, material->normalMaps[i]->id);
-						normalNr++;
-						shader.setBool("material.useNormalMap", true);
-					}
-					count++;
-				}
-
-				// height maps
-				for (int i = 0; i < material->heightMaps.size(); i++) {
-					name = TextureTypeToString.at(material->heightMaps[i]->type);
-					if (name == TextureTypeToString.at(TEXTURE_DISPLACE)) {
-						nameAndNumber = "material." + name + std::to_string(heightNr);
-						glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
-						glBindTexture(GL_TEXTURE_2D, material->heightMaps[i]->id);
-						heightNr++;
-						shader.setBool("material.useHeightMap", true);
-					}
-					count++;
-				}
-
-				// opacity maps
-				if (!material->GetUseDiffuseAsAlpha()) {
-					const std::vector<Texture*>& opacityMaps = material->GetOpacityMaps();
-					for (int i = 0; i < opacityMaps.size(); i++) {
-						name = TextureTypeToString.at(opacityMaps[i]->type);
-						if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_DIFFUSE)) {
-							name = TextureTypeToString.at(TEXTURE_OPACITY);
-							nameAndNumber = "material." + name + std::to_string(opacityNr);
-							glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
-							glBindTexture(GL_TEXTURE_2D, opacityMaps[i]->id);
-							opacityNr++;
-							shader.setBool("material.useOpacityMap", true);
-						}
-						count++;
-					}
-				}
-				else {
+				// diffuse as opacity
+				if (material->GetUseColourMapAsAlpha()) {
 					for (int i = 0; i < material->baseColourMaps.size(); i++) {
 						name = TextureTypeToString.at(material->baseColourMaps[i]->type);
 						if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_DIFFUSE)) {
@@ -174,40 +175,28 @@ namespace Engine {
 							opacityNr++;
 							shader.setBool("material.useOpacityMap", true);
 						}
-						count++;
 					}
 				}
 
 				glActiveTexture(GL_TEXTURE0);
 			}
 			else {
+				PBRMaterial* PBRmaterial = dynamic_cast<PBRMaterial*>(firstMaterial);
+
 				shader.setBool("material.useAlbedoMap", false);
-				shader.setBool("material.useNormalMap", false);
 				shader.setBool("material.useMetallicMap", false);
 				shader.setBool("material.useRoughnessMap", false);
 				shader.setBool("material.useAoMap", false);
-				shader.setBool("material.useHeightMap", false);
-				shader.setBool("material.useOpacityMap", false);
 
 				unsigned int albedoNr = 1;
-				unsigned int normalNr = 1;
 				unsigned int metallicNr = 1;
 				unsigned int roughnessNr = 1;
 				unsigned int aoNr = 1;
-				unsigned int heightNr = 1;
-				unsigned int opacityNr = 1;
-
-				std::string number;
-				std::string name;
-				std::string nameAndNumber;
 
 				shader.setVec3("material.ALBEDO", PBRmaterial->baseColour);
 				shader.setFloat("material.METALNESS", PBRmaterial->metallic);
 				shader.setFloat("material.ROUGHNESS", PBRmaterial->roughness);
 				shader.setFloat("material.AO", PBRmaterial->ao);
-				shader.setFloat("material.HEIGHT_SCALE", PBRmaterial->height_scale);
-				shader.setFloat("material.shadowCastAlphaDiscardThreshold", PBRmaterial->shadowCastAlphaDiscardThreshold);
-				shader.setVec2("textureScale", PBRmaterial->textureScaling);
 
 				int count = 0;
 
@@ -221,21 +210,8 @@ namespace Engine {
 						albedoNr++;
 						shader.setBool("material.useAlbedoMap", true);
 					}
-					count++;
 				}
 
-				// normal maps
-				for (int i = 0; i < PBRmaterial->normalMaps.size(); i++) {
-					name = TextureTypeToString.at(PBRmaterial->normalMaps[i]->type);
-					if (name == TextureTypeToString.at(TEXTURE_NORMAL)) {
-						nameAndNumber = "material." + name + std::to_string(normalNr);
-						glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
-						glBindTexture(GL_TEXTURE_2D, PBRmaterial->normalMaps[i]->id);
-						normalNr++;
-						shader.setBool("material.useNormalMap", true);
-					}
-					count++;
-				}
 
 				// metallic maps
 				for (int i = 0; i < PBRmaterial->metallicMaps.size(); i++) {
@@ -247,7 +223,6 @@ namespace Engine {
 						metallicNr++;
 						shader.setBool("material.useMetallicMap", true);
 					}
-					count++;
 				}
 
 				// roughness maps
@@ -260,7 +235,6 @@ namespace Engine {
 						roughnessNr++;
 						shader.setBool("material.useRoughnessMap", true);
 					}
-					count++;
 				}
 
 				// ao maps
@@ -273,40 +247,10 @@ namespace Engine {
 						aoNr++;
 						shader.setBool("material.useAoMap", true);
 					}
-					count++;
 				}
 
-				// height maps
-				for (int i = 0; i < PBRmaterial->heightMaps.size(); i++) {
-					glActiveTexture(GL_TEXTURE0 + count + offset);
-					name = TextureTypeToString.at(PBRmaterial->heightMaps[i]->type);
-					if (name == TextureTypeToString.at(TEXTURE_DISPLACE)) {
-						nameAndNumber = "material." + name + std::to_string(heightNr);
-						glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
-						glBindTexture(GL_TEXTURE_2D, PBRmaterial->heightMaps[i]->id);
-						heightNr++;
-						shader.setBool("material.useHeightMap", true);
-					}
-					count++;
-				}
-
-				// opacity maps
-				if (!PBRmaterial->GetUseDiffuseAsAlpha()) {
-					const std::vector<Texture*>& opacityMaps = PBRmaterial->GetOpacityMaps();
-					for (int i = 0; i < opacityMaps.size(); i++) {
-						name = TextureTypeToString.at(opacityMaps[i]->type);
-						if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_ALBEDO)) {
-							name = TextureTypeToString.at(TEXTURE_OPACITY);
-							nameAndNumber = "material." + name + std::to_string(opacityNr);
-							glActiveTexture(GL_TEXTURE0 + textureSlots->at(nameAndNumber));
-							glBindTexture(GL_TEXTURE_2D, opacityMaps[i]->id);
-							opacityNr++;
-							shader.setBool("material.useOpacityMap", true);
-						}
-						count++;
-					}
-				}
-				else {
+				// albedo as opacity
+				if (PBRmaterial->GetUseColourMapAsAlpha()) {
 					for (int i = 0; i < PBRmaterial->baseColourMaps.size(); i++) {
 						name = TextureTypeToString.at(PBRmaterial->baseColourMaps[i]->type);
 						if (name == TextureTypeToString.at(TEXTURE_OPACITY) || name == TextureTypeToString.at(TEXTURE_ALBEDO)) {
@@ -317,7 +261,6 @@ namespace Engine {
 							opacityNr++;
 							shader.setBool("material.useOpacityMap", true);
 						}
-						count++;
 					}
 				}
 

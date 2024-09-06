@@ -150,7 +150,7 @@ namespace Engine {
 		Entity* baseInstance = new Entity("Base Instance");
 		baseInstance->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		baseInstance->AddComponent(new ComponentGeometry(MODEL_CUBE, true, true));
-		baseInstance->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(gold);
+		baseInstance->GetGeometryComponent()->ApplyMaterialToModel(gold);
 		entityManager->AddEntity(baseInstance);
 
 		Entity* pointLight = new Entity("Point Light");
@@ -189,7 +189,7 @@ namespace Engine {
 		Entity* baseInstance2 = new Entity("Base Instance 2");
 		baseInstance2->AddComponent(new ComponentTransform(0.0f, 0.0f, 2.5f));
 		baseInstance2->AddComponent(new ComponentGeometry(MODEL_CUBE, true, true));
-		baseInstance2->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(bricks);
+		baseInstance2->GetGeometryComponent()->ApplyMaterialToModel(bricks);
 		entityManager->AddEntity(baseInstance2);
 
 		for (int i = 0; i < yNum; i++) {

@@ -63,8 +63,11 @@ namespace Engine {
 
 		void OnAddedToEntity() override;
 
-		void ApplyMaterialToModel(Material* newMaterial);
-		void ApplyMaterialToModel(PBRMaterial* newMaterial);
+		void ApplyMaterialToModel(AbstractMaterial* newMaterial) { ApplyMaterialSetToModel({ newMaterial }); }
+		void ApplyMaterialSetToModel(const std::vector<AbstractMaterial*>& newMaterials);
+
+		//void ApplyMaterialToModel(Material* newMaterial);
+		//void ApplyMaterialToModel(PBRMaterial* newMaterial);
 
 		const bool IsIncludedInReflectionProbes() const { return includeInReflectionProbes; }
 		void SetIsIncludedInReflectionProbes(const bool included) { includeInReflectionProbes = included; }

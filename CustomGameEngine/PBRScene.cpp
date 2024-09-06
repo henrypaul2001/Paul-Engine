@@ -798,7 +798,7 @@ namespace Engine {
 			Entity* floor = new Entity("Floor");
 			floor->AddComponent(new ComponentTransform(0.0f, -1.0f, 0.0));
 			floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
+			dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(bricks);
 			dynamic_cast<ComponentGeometry*>(floor->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
 			dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 			dynamic_cast<ComponentTransform*>(floor->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
@@ -807,7 +807,7 @@ namespace Engine {
 			Entity* ceiling = new Entity("Cieling");
 			ceiling->AddComponent(new ComponentTransform(0.0f, 5.0f, 0.0));
 			ceiling->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(bricks);
+			dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(bricks);
 			dynamic_cast<ComponentGeometry*>(ceiling->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(10.0f);
 			dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 			dynamic_cast<ComponentTransform*>(ceiling->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
@@ -816,7 +816,7 @@ namespace Engine {
 			Entity* rainFloor = new Entity("Rain Floor");
 			rainFloor->AddComponent(new ComponentTransform(0.0f, -0.99f, 0.0f));
 			rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			rainFloor->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(raindrops);
+			rainFloor->GetGeometryComponent()->ApplyMaterialToModel(raindrops);
 			rainFloor->GetGeometryComponent()->SetTextureScale(10.0f);
 			rainFloor->GetTransformComponent()->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 			rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
@@ -825,7 +825,7 @@ namespace Engine {
 			Entity* wall1 = new Entity("Wall 1");
 			wall1->AddComponent(new ComponentTransform(0.0f, 0.0f, 10.0f));
 			wall1->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(snow);
+			dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(snow);
 			dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 			dynamic_cast<ComponentGeometry*>(wall1->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 			dynamic_cast<ComponentTransform*>(wall1->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -835,7 +835,7 @@ namespace Engine {
 			Entity* wall2 = new Entity("Wall 2");
 			wall2->AddComponent(new ComponentTransform(0.0f, 0.0f, -10.0f));
 			wall2->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(space_blanket);
+			dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(space_blanket);
 			dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 			dynamic_cast<ComponentGeometry*>(wall2->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 			dynamic_cast<ComponentTransform*>(wall2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -844,7 +844,7 @@ namespace Engine {
 			Entity* wall3 = new Entity("Wall 3");
 			wall3->AddComponent(new ComponentTransform(10.0f, 0.0f, 0.0f));
 			wall3->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+			dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(rusted_iron);
 			dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 			dynamic_cast<ComponentGeometry*>(wall3->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 			dynamic_cast<ComponentTransform*>(wall3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -854,7 +854,7 @@ namespace Engine {
 			Entity* wall4 = new Entity("Wall 4");
 			wall4->AddComponent(new ComponentTransform(-10.0f, 0.0f, 0.0f));
 			wall4->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-			dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(scifi);
+			dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(scifi);
 			dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->SetTextureScale(2.0f);
 			dynamic_cast<ComponentGeometry*>(wall4->GetComponent(COMPONENT_GEOMETRY))->SetCulling(false, GL_BACK);
 			dynamic_cast<ComponentTransform*>(wall4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
@@ -864,7 +864,7 @@ namespace Engine {
 			Entity* pointLight = new Entity("Point Light");
 			pointLight->AddComponent(new ComponentTransform(6.5f, 4.0f, -6.5f));
 			pointLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-			dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+			dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(rusted_iron);
 			dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 			ComponentLight* light = new ComponentLight(POINT);
@@ -878,7 +878,7 @@ namespace Engine {
 			Entity* pointLight2 = new Entity("Point Light2");
 			pointLight2->AddComponent(new ComponentTransform(-8.5f, 4.0f, 8.5f));
 			pointLight2->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-			dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+			dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(rusted_iron);
 			dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(pointLight2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 			ComponentLight* light2 = new ComponentLight(POINT);
@@ -892,7 +892,7 @@ namespace Engine {
 			Entity* pointLight3 = new Entity("Point Light3");
 			pointLight3->AddComponent(new ComponentTransform(6.5f, 4.0f, 6.5f));
 			pointLight3->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-			dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+			dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(rusted_iron);
 			dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(pointLight3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 			ComponentLight* light3 = new ComponentLight(POINT);
@@ -906,7 +906,7 @@ namespace Engine {
 			Entity* pointLight4 = new Entity("Point Light4");
 			pointLight4->AddComponent(new ComponentTransform(-6.5f, 2.0f, -6.5f));
 			pointLight4->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-			dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+			dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(rusted_iron);
 			dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(pointLight4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 			ComponentLight* light4 = new ComponentLight(POINT);
@@ -920,7 +920,7 @@ namespace Engine {
 			Entity* pointLight5 = new Entity("Point Light5");
 			pointLight5->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
 			pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-			dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(rusted_iron);
+			dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(rusted_iron);
 			dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 			ComponentLight* light5 = new ComponentLight(POINT);
@@ -936,7 +936,7 @@ namespace Engine {
 			Entity* spotParent = new Entity("Spot Parent");
 			spotParent->AddComponent(new ComponentTransform(1.0f, 0.0f, 4.6f));
 			spotParent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-			dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(raindrops);
+			dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(raindrops);
 			dynamic_cast<ComponentGeometry*>(spotParent->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(spotParent->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(1.0f));
 			entityManager->AddEntity(spotParent);
@@ -944,7 +944,7 @@ namespace Engine {
 			Entity* spotLight = new Entity("Spot Light");
 			spotLight->AddComponent(new ComponentTransform(-5.5f, 1.0f, 0.0f));
 			spotLight->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-			dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(gold);
+			dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(gold);
 			dynamic_cast<ComponentGeometry*>(spotLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(true);
 			dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 			//dynamic_cast<ComponentTransform*>(spotLight->GetComponent(COMPONENT_TRANSFORM))->SetParent(spotParent);
@@ -1668,7 +1668,7 @@ namespace Engine {
 		Entity* nonPBRTest = new Entity("NON PBR TEST");
 		nonPBRTest->AddComponent(new ComponentTransform(-5.0f, 0.35f, 2.5f));
 		nonPBRTest->AddComponent(new ComponentGeometry(MODEL_CUBE));
-		nonPBRTest->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(nonPBRMat);
+		nonPBRTest->GetGeometryComponent()->ApplyMaterialToModel(nonPBRMat);
 		entityManager->AddEntity(nonPBRTest);
 
 		{

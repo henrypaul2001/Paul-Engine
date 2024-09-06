@@ -1,6 +1,17 @@
 #include "Model.h"
 #include "ResourceManager.h"
 namespace Engine {
+	Model::Model(const Model& old_model)
+	{
+		for (Mesh* oldMesh : old_model.meshes) {
+			this->meshes.push_back(new Mesh(*oldMesh));
+		}
+		this->pbr = old_model.pbr;
+		this->hasBones = old_model.hasBones;
+		this->containsTransparentMeshes = old_model.containsTransparentMeshes;
+		this->directory = old_model.directory;
+	}
+
 	Model::Model(const std::vector<Mesh*>& meshes, bool pbr)
 	{
 		this->meshes = meshes;
@@ -22,7 +33,6 @@ namespace Engine {
 		containsTransparentMeshes = false;
 		hasBones = false;
 		this->pbr = pbr;
-		CollectMeshMaterials();
 	}
 
 	Model::Model(const char* filepath, unsigned int assimpPostProcess)
@@ -54,10 +64,6 @@ namespace Engine {
 		SCOPE_TIMER("Model::Draw");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
-				Material* material = meshMaterials[meshes[i]];
-				if (!material) { material = ResourceManager::GetInstance()->DefaultMaterial(); }
-				meshes[i]->ApplyMaterial(material);
-
 				if (instanceNum > 0) {
 					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 				}
@@ -71,10 +77,6 @@ namespace Engine {
 				*/
 			}
 			else {
-				PBRMaterial* pbrMaterial = meshPBRMaterials[meshes[i]];
-				if (!pbrMaterial) { pbrMaterial = ResourceManager::GetInstance()->DefaultMaterialPBR(); }
-				meshes[i]->ApplyMaterial(pbrMaterial);
-
 				if (instanceNum > 0) {
 					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 				}
@@ -95,7 +97,7 @@ namespace Engine {
 		SCOPE_TIMER("Model::DrawTransparentMeshes");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			if (!pbr) {
-				if (meshMaterials[meshes[i]]->GetIsTransparent()) {
+				if (meshes[i]->GetMaterial()->GetIsTransparent()) {
 					if (instanceNum > 0) {
 						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 					}
@@ -105,7 +107,7 @@ namespace Engine {
 				}
 			}
 			else {
-				if (meshPBRMaterials[meshes[i]]->GetIsTransparent()) {
+				if (meshes[i]->GetMaterial()->GetIsTransparent()) {
 					if (instanceNum > 0) {
 						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
 					}
@@ -117,43 +119,31 @@ namespace Engine {
 		}
 	}
 
-	void Model::ApplyMaterialToAllMesh(Material* material)
+	void Model::ApplyMaterialsToAllMesh(const std::vector<AbstractMaterial*>& materials)
 	{
-		pbr = false;
-		containsTransparentMeshes = material->GetIsTransparent();
+		pbr = materials[0]->IsPBR();
+		for (AbstractMaterial* m : materials) {
+			if (m->GetIsTransparent()) {
+				containsTransparentMeshes = true;
+			}
+		}
 
 		for (Mesh* m : meshes) {
-			meshMaterials[m] = material;
+			m->SetMaterials(materials);
 		}
 	}
 
-	void Model::ApplyMaterialToMeshAtIndex(Material* material, int index)
+	void Model::ApplyMaterialsToMeshAtIndex(const std::vector<AbstractMaterial*>& materials, const unsigned int index)
 	{
-		pbr = false;
-		containsTransparentMeshes = material->GetIsTransparent();
+		pbr = materials[0]->IsPBR();
+		for (AbstractMaterial* m : materials) {
+			if (m->GetIsTransparent()) {
+				containsTransparentMeshes = true;
+			}
+		}
 
 		if (index < meshes.size()) {
-			meshMaterials[meshes[index]] = material;
-		}
-	}
-
-	void Model::ApplyMaterialToAllMesh(PBRMaterial* pbrMaterial)
-	{
-		pbr = true;
-		containsTransparentMeshes = pbrMaterial->GetIsTransparent();
-
-		for (Mesh* m : meshes) {
-			meshPBRMaterials[m] = pbrMaterial;
-		}
-	}
-
-	void Model::ApplyMaterialToMeshAtIndex(PBRMaterial* pbrMaterial, int index)
-	{
-		pbr = true;
-		containsTransparentMeshes = pbrMaterial->GetIsTransparent();
-
-		if (index < meshes.size()) {
-			meshPBRMaterials[meshes[index]] = pbrMaterial;
+			meshes[index]->SetMaterials(materials);
 		}
 	}
 
@@ -167,22 +157,10 @@ namespace Engine {
 		}
 	}
 
-	void Model::CollectMeshMaterials()
-	{
-		if (pbr) {
-			for (Mesh* m : meshes) {
-				meshPBRMaterials[m] = m->GetPBRMaterial();
-			}
-		}
-		else {
-			for (Mesh* m : meshes) {
-				meshMaterials[m] = m->GetMaterial();
-			}
-		}
-	}
-
 	void Model::LoadModel(std::string filepath, unsigned int assimpPostProcess)
 	{
+		std::cout << "Model::LoadModel deprecated" << std::endl;
+		return;
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(filepath, assimpPostProcess);
 
@@ -198,7 +176,7 @@ namespace Engine {
 			ProcessEmptyBones(scene->mRootNode);
 		}
 
-		CollectMeshMaterials();
+		//CollectMeshMaterials();
 	}
 
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)
@@ -225,6 +203,9 @@ namespace Engine {
 
 	Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
+		std::cout << "Model::ProcessMesh deprecated" << std::endl;
+		return nullptr;
+
 		std::cout << "MODEL::Loading mesh " << mesh->mName.C_Str() << std::endl;
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
@@ -310,7 +291,7 @@ namespace Engine {
 				meshMaterial->specular = specularColour;
 				meshMaterial->shininess = shine;
 				meshMaterial->height_scale = 10.0f; // this should be read from the material import instead
-				meshMaterial->SetUseDiffuseAsAlpha(true);
+				meshMaterial->SetUseColourMapAsAlpha(true);
 
 				std::vector<Texture*> diffuseMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_DIFFUSE], TEXTURE_DIFFUSE, scene);
 				meshMaterial->baseColourMaps = diffuseMaps;
@@ -337,7 +318,7 @@ namespace Engine {
 					skeleton.finalBoneMatrices.insert(skeleton.finalBoneMatrices.end(), meshBones.begin(), meshBones.end());
 				}
 
-				return new Mesh(vertices, indices, meshMaterial);
+				//return new Mesh(vertices, indices, meshMaterial);
 			}
 			else {
 				delete meshMaterial;
@@ -366,7 +347,7 @@ namespace Engine {
 				pbrMaterial->roughness = rough;
 				pbrMaterial->ao = 1.0f;
 				pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
-				pbrMaterial->SetUseDiffuseAsAlpha(true);
+				pbrMaterial->SetUseColourMapAsAlpha(true);
 
 				std::vector<Texture*> albedoMaps = LoadMaterialTextures(material, textureTranslations[TEXTURE_ALBEDO], TEXTURE_ALBEDO, scene);
 				pbrMaterial->baseColourMaps = albedoMaps;
@@ -399,7 +380,7 @@ namespace Engine {
 					skeleton.finalBoneMatrices.insert(skeleton.finalBoneMatrices.end(), meshBones.begin(), meshBones.end());
 				}
 
-				return new Mesh(vertices, indices, pbrMaterial);
+				//return new Mesh(vertices, indices, pbrMaterial);
 			}
 		}
 	}

@@ -116,7 +116,7 @@ namespace Engine {
 		Entity* pointLight = new Entity("Point Light");
 		pointLight->AddComponent(new ComponentTransform(8.5f, 4.0f, -8.5f));
 		pointLight->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(lightCubeMaterial);
+		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(lightCubeMaterial);
 		dynamic_cast<ComponentGeometry*>(pointLight->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(pointLight->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light = new ComponentLight(POINT);
@@ -131,7 +131,7 @@ namespace Engine {
 		Entity* pointLight2 = new Entity("Point Light2");
 		pointLight2->AddComponent(new ComponentTransform(-8.5f, 4.0f, 8.5f));
 		pointLight2->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(lightCubeMaterial);
+		dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(lightCubeMaterial);
 		dynamic_cast<ComponentGeometry*>(pointLight2->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(pointLight2->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light2 = new ComponentLight(POINT);
@@ -146,7 +146,7 @@ namespace Engine {
 		Entity* pointLight3 = new Entity("Point Light3");
 		pointLight3->AddComponent(new ComponentTransform(8.5f, 4.0f, 8.5f));
 		pointLight3->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(lightCubeMaterial);
+		dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(lightCubeMaterial);
 		dynamic_cast<ComponentGeometry*>(pointLight3->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(pointLight3->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light3 = new ComponentLight(POINT);
@@ -161,7 +161,7 @@ namespace Engine {
 		Entity* pointLight4 = new Entity("Point Light4");
 		pointLight4->AddComponent(new ComponentTransform(-8.5f, 4.0f, -8.5f));
 		pointLight4->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(lightCubeMaterial);
+		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(lightCubeMaterial);
 		dynamic_cast<ComponentGeometry*>(pointLight4->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(pointLight4->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light4 = new ComponentLight(POINT);
@@ -176,7 +176,7 @@ namespace Engine {
 		Entity* pointLight5 = new Entity("Point Light5");
 		pointLight5->AddComponent(new ComponentTransform(0.0f, 2.0f, 0.0f));
 		pointLight5->AddComponent(new ComponentGeometry(MODEL_SPHERE));
-		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(lightCubeMaterial);
+		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(lightCubeMaterial);
 		dynamic_cast<ComponentGeometry*>(pointLight5->GetComponent(COMPONENT_GEOMETRY))->CastShadows(false);
 		dynamic_cast<ComponentTransform*>(pointLight5->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(0.25f));
 		ComponentLight* light5 = new ComponentLight(POINT);

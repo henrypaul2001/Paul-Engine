@@ -268,7 +268,7 @@ namespace Engine {
 		Entity* window = new Entity("Window");
 		window->AddComponent(new ComponentTransform(10.0f, 3.0f, 2.5f));
 		window->AddComponent(new ComponentGeometry(MODEL_PLANE));
-		window->GetGeometryComponent()->GetModel()->ApplyMaterialToAllMesh(windowMaterial);
+		window->GetGeometryComponent()->ApplyMaterialToModel(windowMaterial);
 		entityManager->AddEntity(window);
 
 		Entity* leftWall = new Entity("Left Wall");

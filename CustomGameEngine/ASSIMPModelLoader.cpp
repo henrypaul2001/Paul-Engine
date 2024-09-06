@@ -1,8 +1,8 @@
 #include "ASSIMPModelLoader.h"
 namespace Engine {
-	const std::vector<MeshData*> ASSIMPModelLoader::LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources)
+	const std::vector<ProcessMeshResult> ASSIMPModelLoader::LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources)
 	{
-		std::vector<MeshData*> meshList;
+		std::vector<ProcessMeshResult> meshList;
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(filepath, assimpPostProcess);
 
@@ -24,9 +24,9 @@ namespace Engine {
 		return meshList;
 	}
 
-	std::vector<MeshData*> ASSIMPModelLoader::ProcessNode(const std::string& filepath, aiNode* node, const aiScene* scene, bool persistentResources)
+	std::vector<ProcessMeshResult> ASSIMPModelLoader::ProcessNode(const std::string& filepath, aiNode* node, const aiScene* scene, bool persistentResources)
 	{
-		std::vector<MeshData*> meshList;
+		std::vector<ProcessMeshResult> meshList;
 		meshList.reserve(node->mNumMeshes);
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -47,14 +47,14 @@ namespace Engine {
 		}
 
 		for (unsigned int i = 0; i < node->mNumChildren; i++) {
-			std::vector<MeshData*> childMeshes = ProcessNode(filepath, node->mChildren[i], scene);
+			std::vector<ProcessMeshResult> childMeshes = ProcessNode(filepath, node->mChildren[i], scene);
 			meshList.insert(meshList.end(), childMeshes.begin(), childMeshes.end());
 		}
 
 		return meshList;
 	}
 
-	MeshData* ASSIMPModelLoader::ProcessMesh(const std::string& filepath, aiMesh* mesh, const aiScene* scene, bool persistentResources)
+	ProcessMeshResult ASSIMPModelLoader::ProcessMesh(const std::string& filepath, aiMesh* mesh, const aiScene* scene, bool persistentResources)
 	{
 		ResourceManager* resources = ResourceManager::GetInstance();
 		std::string meshName = mesh->mName.C_Str();
@@ -128,6 +128,8 @@ namespace Engine {
 			ResourceManager::GetInstance()->AddMeshData(fileAndMeshName, meshData, persistentResources);
 		}
 
+		ProcessMeshResult result;
+
 		// Load materials
 		if (mesh->mMaterialIndex >= 0) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -148,9 +150,12 @@ namespace Engine {
 				}
 				resources->AddMaterial(fileAndMaterialName, meshMaterial, persistentResources);
 			}
-		}
 
-		return meshData;
+			result.meshMaterials.push_back(meshMaterial);
+		}
+		result.meshData = meshData;
+
+		return result;
 	}
 
 	bool ASSIMPModelLoader::loadMaterialsAsPBR = false;
@@ -190,7 +195,6 @@ namespace Engine {
 
 		return standardMaterial;
 	}
-
 	PBRMaterial* ASSIMPModelLoader::LoadPBRMaterialFromaiMat(const aiMaterial* material, const aiScene* scene, const std::string& filepath)
 	{
 		std::unordered_map<TextureTypes, aiTextureType> textureTranslations = ResourceManager::GetInstance()->GetTextureTranslations();
@@ -229,7 +233,6 @@ namespace Engine {
 		pbrMaterial->height_scale = 10.0f; // this should be read from the material import instead
 		return pbrMaterial;
 	}
-
 	std::vector<Texture*> ASSIMPModelLoader::LoadMaterialTextures(const std::string& filepath, const aiMaterial* mat, const aiTextureType type, const TextureTypes name, const aiScene* scene)
 	{
 		std::string directory = filepath.substr(0, filepath.find_last_of('/'));
