@@ -209,8 +209,9 @@ namespace Engine {
 
 	void ComponentGeometry::ApplyMaterialSetToModel(const std::vector<AbstractMaterial*>& newMaterials)
 	{
-		bool changedMatType = (pbr != newMaterials[0]->IsPBR());
-
+		bool newPBR = newMaterials[0]->IsPBR();
+		bool changedMatType = (pbr != newPBR);
+		pbr = newPBR;
 		if (changedMatType && usingDefaultShader) {
 			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
 				if (pbr) {
