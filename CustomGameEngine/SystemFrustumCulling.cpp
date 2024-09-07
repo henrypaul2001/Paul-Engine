@@ -1,5 +1,6 @@
 #include "SystemFrustumCulling.h"
 namespace Engine {
+	std::map<float, Mesh*> SystemFrustumCulling::culledMeshList = std::map<float, Mesh*>();
 	SystemFrustumCulling::~SystemFrustumCulling()
 	{
 
@@ -12,7 +13,7 @@ namespace Engine {
 		totalMeshes = 0;
 		visibleMeshes = 0;
 		geometryAABBTests = 0;
-		System::Run(entityList);
+		//System::Run(entityList);
 
 		CullMeshes();
 		CullReflectionProbes();
@@ -21,6 +22,7 @@ namespace Engine {
 	void SystemFrustumCulling::OnAction(Entity* entity)
 	{
 		SCOPE_TIMER("SystemFrustumCulling::OnAction");
+		/*
 		// Reset isVisible flag on all meshes
 		if ((entity->Mask() & GEOMETRY_MASK) == GEOMETRY_MASK) {
 			ComponentGeometry* geometry = entity->GetGeometryComponent();
@@ -31,6 +33,7 @@ namespace Engine {
 				m->SetIsVisible(false);
 			}
 		}
+		*/
 	}
 
 	void SystemFrustumCulling::AfterAction()
@@ -103,6 +106,8 @@ namespace Engine {
 	void SystemFrustumCulling::CullMeshes()
 	{
 		SCOPE_TIMER("SystemFrustumCulling::CullMeshes");
+		culledMeshList.clear();
+
 		// Traverse BVH tree and check collisions with each node until a leaf node is found or no collision
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
 		BVHNode* rootNode = geometryBVH->GetRootNode();
@@ -116,6 +121,21 @@ namespace Engine {
 			if (leftChild) { TestBVHNodeRecursive(leftChild, nodeResult); }
 			if (rightChild) { TestBVHNodeRecursive(rightChild, nodeResult); }
 		}
+
+		visibleMeshes = culledMeshList.size();
+	}
+
+	void SystemFrustumCulling::AddMeshToCulledList(Mesh* mesh)
+	{
+		const glm::vec3& meshOrigin = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent()->GetWorldPosition();
+
+		// Get distance to mesh
+		float distanceToCameraSquared = glm::distance2(activeCamera->GetPosition(), meshOrigin);
+		if (culledMeshList.find(distanceToCameraSquared) != culledMeshList.end()) {
+			// Distance already exists, increment slightly
+			distanceToCameraSquared += 0.00001f;
+		}
+		culledMeshList[distanceToCameraSquared] = mesh;
 	}
 
 	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult)
@@ -140,16 +160,14 @@ namespace Engine {
 						AABBPoints geometryAABB = mesh->GetGeometryAABB();
 
 						if (geometryAABB == nodeAABB || AABBIsInFrustum(geometryAABB, origin)) {
-							visibleMeshes++;
-							mesh->SetIsVisible(true);
+							AddMeshToCulledList(mesh);
 						}
 					}
 				}
 				else {
 					// Skip checks, all will be true
 					for (const std::pair<glm::vec3, Mesh*>& pair : nodeObjects) {
-						visibleMeshes++;
-						pair.second->SetIsVisible(true);
+						AddMeshToCulledList(pair.second);
 					}
 				}
 			}

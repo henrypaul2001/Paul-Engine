@@ -34,6 +34,8 @@ namespace Engine {
 		const unsigned int GetTotalAABBTests() const { return geometryAABBTests; }
 
 		void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
+
+		static std::map<float, Mesh*> culledMeshList;
 	private:
 		FrustumIntersection AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
 		bool TestAABBAndViewPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
@@ -41,6 +43,7 @@ namespace Engine {
 		bool SphereIsOnOrInFrontOfPlane(const glm::vec3& spherePos, const float sphereRadius, const ViewPlane& plane);
 
 		void CullMeshes();
+		void AddMeshToCulledList(Mesh* mesh);
 		void TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult);
 		void CullReflectionProbes();
 

@@ -12,8 +12,10 @@ namespace Engine {
 		this->containsTransparentMeshes = old_model.containsTransparentMeshes;
 		this->directory = old_model.directory;
 
-		for (Mesh* m : this->meshes) {
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			Mesh* m = meshes[i];
 			m->SetOwner(this);
+			m->SetLocalMeshID(i);
 		}
 	}
 
@@ -23,8 +25,10 @@ namespace Engine {
 		this->hasBones = false;
 		this->pbr = pbr;
 
-		for (Mesh* m : this->meshes) {
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			Mesh* m = meshes[i];
 			m->SetOwner(this);
+			m->SetLocalMeshID(i);
 		}
 	}
 
@@ -43,8 +47,10 @@ namespace Engine {
 		hasBones = false;
 		this->pbr = pbr;
 
-		for (Mesh* m : this->meshes) {
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			Mesh* m = meshes[i];
 			m->SetOwner(this);
+			m->SetLocalMeshID(i);
 		}
 	}
 
@@ -55,8 +61,10 @@ namespace Engine {
 		hasBones = false;
 		LoadModel(filepath, assimpPostProcess);
 
-		for (Mesh* m : this->meshes) {
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			Mesh* m = meshes[i];
 			m->SetOwner(this);
+			m->SetLocalMeshID(i);
 		}
 	}
 
@@ -67,8 +75,10 @@ namespace Engine {
 		hasBones = false;
 		LoadModel(filepath, assimpPostProcess);
 
-		for (Mesh* m : this->meshes) {
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			Mesh* m = meshes[i];
 			m->SetOwner(this);
+			m->SetLocalMeshID(i);
 		}
 	}
 
@@ -80,61 +90,34 @@ namespace Engine {
 		}
 	}
 
-	void Model::Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling)
+	void Model::Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs)
 	{
 		SCOPE_TIMER("Model::Draw");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			if (!pbr) {
-				if (instanceNum > 0) {
-					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
-				}
-				else {
-					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
-				}
-				/*
-				if (!meshes[i]->GetMaterial()->isTransparent) {
-					meshes[i]->Draw(shader, pbr, instanceNum);
-				}
-				*/
+			if (instanceNum > 0) {
+				meshes[i]->Draw(shader, pbr, instanceNum, instanceVAOs[i]);
 			}
 			else {
-				if (instanceNum > 0) {
-					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
-				}
-				else {
-					meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
-				}
-				/*
-				if (!meshes[i]->GetPBRMaterial()->isTransparent) {
-					meshes[i]->Draw(shader, pbr, instanceNum);
-				}
-				*/
+				meshes[i]->Draw(shader, pbr, instanceNum);
 			}
+			/*
+			if (!meshes[i]->GetMaterial()->isTransparent) {
+				meshes[i]->Draw(shader, pbr, instanceNum);
+			}
+			*/
 		}
 	}
 
-	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling)
+	void Model::DrawTransparentMeshes(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs)
 	{
 		SCOPE_TIMER("Model::DrawTransparentMeshes");
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			if (!pbr) {
-				if (meshes[i]->GetMaterial()->GetIsTransparent()) {
-					if (instanceNum > 0) {
-						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
-					}
-					else {
-						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
-					}
+			if (meshes[i]->GetMaterial()->GetIsTransparent()) {
+				if (instanceNum > 0) {
+					meshes[i]->Draw(shader, pbr, instanceNum, instanceVAOs[i]);
 				}
-			}
-			else {
-				if (meshes[i]->GetMaterial()->GetIsTransparent()) {
-					if (instanceNum > 0) {
-						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum, instanceVAOs[i]);
-					}
-					else {
-						meshes[i]->Draw(shader, pbr, ignoreCulling, instanceNum);
-					}
+				else {
+					meshes[i]->Draw(shader, pbr, instanceNum);
 				}
 			}
 		}

@@ -4,6 +4,7 @@
 #include "SystemShadowMapping.h"
 #include "ResourceManager.h"
 #include "LightManager.h"
+#include "SystemFrustumCulling.h"
 namespace Engine {
 	DeferredPipeline::DeferredPipeline() {}
 
@@ -32,7 +33,10 @@ namespace Engine {
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetGBuffer());
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				glDisable(GL_BLEND);
-				renderSystem->Run(entities);
+				// if frustum culling active
+				renderSystem->RenderMeshes(SystemFrustumCulling::culledMeshList);
+				// else
+				//renderSystem->Run(entities);
 			}
 
 			// SSAO Pass
@@ -201,7 +205,10 @@ namespace Engine {
 				LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitShader(), activeCamera);
 				LightManager::GetInstance()->SetShaderUniforms(ResourceManager::GetInstance()->DefaultLitPBR(), activeCamera);
 				glEnable(GL_BLEND);
-				renderSystem->DrawTransparentGeometry(true);
+				// if frustum culling active
+				renderSystem->RenderMeshes(SystemRender::transparentMeshes, true, true);
+				// else
+				//renderSystem->DrawTransparentGeometry(true);
 				glDisable(GL_BLEND);
 			}
 

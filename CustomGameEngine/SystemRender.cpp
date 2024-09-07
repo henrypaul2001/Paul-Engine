@@ -2,6 +2,7 @@
 #include "LightManager.h"
 #include "ResourceManager.h"
 namespace Engine {
+	std::map<float, Mesh*> SystemRender::transparentMeshes = std::map<float, Mesh*>();
 	SystemRender::SystemRender()
 	{
 		//camera = nullptr;
@@ -118,7 +119,7 @@ namespace Engine {
 			glCullFace(GL_BACK);
 		}
 
-		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances(), geometry->GetInstanceVAOs(), false);
+		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances(), geometry->GetInstanceVAOs());
 
 		if (geometry->GetModel()->ContainsTransparentMeshes()) {
 			float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
@@ -191,9 +192,136 @@ namespace Engine {
 				glCullFace(GL_BACK);
 			}
 
-			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->NumInstances(), geometry->GetInstanceVAOs(), false);
+			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->NumInstances(), geometry->GetInstanceVAOs());
 		}
 
 		transparentGeometry.clear();
+	}
+
+	void SystemRender::RenderMeshes(const std::map<float, Mesh*>& meshesAndDistances, const bool transparencyPass, bool useDefaultForwardShader)
+	{
+		std::map<float, Mesh*>::const_iterator meshesAndDistancesIt = meshesAndDistances.begin();
+
+		while (meshesAndDistancesIt != meshesAndDistances.end()) {
+			Mesh* m = meshesAndDistancesIt->second;
+			RenderMesh(m, transparencyPass, useDefaultForwardShader);
+			if (!transparencyPass && m->GetMaterial()->GetIsTransparent()) {
+				transparentMeshes[meshesAndDistancesIt->first] = m;
+			}
+
+			meshesAndDistancesIt++;
+		}
+
+		if (transparencyPass) { transparentMeshes.clear(); }
+	}
+
+	void SystemRender::RenderMeshes(const std::vector<Mesh*>& meshList, const bool transparencyPass, bool useDefaultForwardShader)
+	{
+		for (Mesh* m : meshList) {
+			RenderMesh(m, transparencyPass, useDefaultForwardShader);
+			if (!transparencyPass && m->GetMaterial()->GetIsTransparent()) {
+				AddMeshToTransparentMeshes(m->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent(), m);
+			}
+		}
+
+		if (transparencyPass) { transparentMeshes.clear(); }
+	}
+
+	void SystemRender::RenderMesh(Mesh* mesh, const bool transparencyPass, bool useDefaultForwardShader)
+	{
+		SCOPE_TIMER("SystemRender::RenderMesh");
+		ComponentTransform* transform = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent();
+		ComponentGeometry* geometry = mesh->GetOwner()->GetOwner();
+
+		Shader* shader;
+		if (useDefaultForwardShader) { if (geometry->PBR()) { shader = ResourceManager::GetInstance()->DefaultLitPBR(); } else { shader = ResourceManager::GetInstance()->DefaultLitShader(); } }
+		else { shader = geometry->GetShader(); }
+
+		{
+			SCOPE_TIMER("SystemRender::RenderMesh::Check shader used this frame");
+			if (shadersUsedThisFrame.size() > 0) {
+				for (Shader* s : shadersUsedThisFrame) {
+					if (s->GetID() == shader->GetID()) {
+						// lighting uniforms already set
+					}
+					else {
+						// add shader to list and set lighting uniforms
+						shadersUsedThisFrame.push_back(s);
+						shader->Use();
+						LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+						break;
+					}
+				}
+			}
+			else {
+				shadersUsedThisFrame.push_back(shader);
+				shader->Use();
+				LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+			}
+		}
+
+		{
+			SCOPE_TIMER("SystemRender::RenderMesh::Set base uniforms");
+			shader->Use();
+
+			glm::mat4 model = transform->GetWorldModelMatrix();
+			shader->setMat4("model", model);
+			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			shader->setBool("instanced", geometry->Instanced());
+			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			shader->setBool("hasBones", false);
+			shader->setBool("OpaqueRenderPass", !transparencyPass);
+		}
+
+		{
+			SCOPE_TIMER("SystemRender::RenderMesh::Set bone transforms");
+			// Bones
+			if (geometry->GetModel()->HasBones()) {
+				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+					shader->setBool("hasBones", true);
+					std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+					for (int i = 0; i < transforms.size(); i++) {
+						shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+					}
+				}
+			}
+		}
+
+		if (geometry->Cull_Face()) {
+			glEnable(GL_CULL_FACE);
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+		}
+
+		if (geometry->Cull_Type() == GL_BACK) {
+			glCullFace(GL_BACK);
+		}
+		else if (geometry->Cull_Type() == GL_FRONT) {
+			glCullFace(GL_FRONT);
+		}
+		else {
+			glCullFace(GL_BACK);
+		}
+
+		unsigned int numInstances = geometry->NumInstances();
+
+		if (numInstances > 0) {
+			mesh->Draw(*shader, geometry->PBR(), numInstances, geometry->GetInstanceVAOs()[mesh->GetLocalMeshID()]);
+		}
+		else {
+			mesh->Draw(*shader, geometry->PBR());
+		}
+	}
+
+	void SystemRender::AddMeshToTransparentMeshes(ComponentTransform* transform, Mesh* mesh)
+	{
+		SCOPE_TIMER("SystemRender::AddMeshToTransparentMeshes");
+		float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
+
+		if (transparentMeshes.find(distanceToCamera) != transparentMeshes.end()) {
+			distanceToCamera += 0.00001f;
+		}
+		transparentMeshes[distanceToCamera] = mesh;
 	}
 }

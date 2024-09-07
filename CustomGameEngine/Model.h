@@ -48,8 +48,8 @@ namespace Engine {
 		Model(const char* filepath, unsigned int assimpPostProcess, bool pbr);
 		~Model();
 
-		void Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling = true);
-		void DrawTransparentMeshes(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs, bool ignoreCulling = true);
+		void Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs);
+		void DrawTransparentMeshes(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs);
 
 		bool PBR() { return pbr; }
 		void PBR(bool PBR) { pbr = PBR; }
@@ -80,7 +80,8 @@ namespace Engine {
 		std::vector<Mesh*> meshes;
 		//std::vector<Texture> textures_loaded;
 
-		const ComponentGeometry* GetOwner() const { return owner; }
+		ComponentGeometry* GetOwner() { return owner; }
+		const ComponentGeometry* GetOwnerConst() const { return owner; }
 		void SetOwner(ComponentGeometry* newOwner) { this->owner = newOwner; }
 
 		void UpdateGeometryBoundingBoxes(glm::mat4 modelMatrix) {

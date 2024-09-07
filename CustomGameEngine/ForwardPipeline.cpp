@@ -4,6 +4,7 @@
 #include "LightManager.h"
 #include "SystemRender.h"'
 #include "SystemShadowMapping.h"
+#include "SystemFrustumCulling.h"
 namespace Engine {
 	ForwardPipeline::ForwardPipeline()
 	{
@@ -57,9 +58,14 @@ namespace Engine {
 		Camera* activeCamera = renderSystem->GetActiveCamera();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		for (Entity* e : entities) {
-			renderSystem->OnAction(e);
-		}
+
+		// If frustum culling active
+		renderSystem->RenderMeshes(SystemFrustumCulling::culledMeshList);
+
+		// else
+		//for (Entity* e : entities) {
+		//	renderSystem->OnAction(e);
+		//}
 		renderSystem->AfterAction();
 
 		// Render skybox
@@ -99,7 +105,11 @@ namespace Engine {
 		}
 
 		// Render transparent objects
-		renderSystem->DrawTransparentGeometry(false);
+
+		// if frustum culling active
+		renderSystem->RenderMeshes(SystemRender::transparentMeshes, true, false);
+		// else
+		//renderSystem->DrawTransparentGeometry(false);
 
 		if ((renderOptions & RENDER_PARTICLES) != 0) {
 			// Render particles

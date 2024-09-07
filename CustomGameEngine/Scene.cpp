@@ -49,7 +49,7 @@ namespace Engine
 		glm::vec3 position = camera->GetPosition();
 		glm::vec3 forward = camera->GetFront();
 		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
-		collisionManager->ConstructBVHTree(entityManager->Entities());
+		//collisionManager->ConstructBVHTree(entityManager->Entities());
 	}
 
 	void Scene::Render()

@@ -158,18 +158,19 @@ namespace Engine {
 
 		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
 
-		void Draw(Shader& shader, bool pbr, bool ignoreCulling = true, int instanceNum = 0, const unsigned int instanceVAO = 0);
-		void DrawWithNoMaterial(int instanceNum = 0, const unsigned int instanceVAO = 0, bool ignoreCulling = true);
+		void Draw(Shader& shader, bool pbr, int instanceNum = 0, const unsigned int instanceVAO = 0);
+		void DrawWithNoMaterial(int instanceNum = 0, const unsigned int instanceVAO = 0);
 
 		AABBPoints& GetGeometryAABB() { return geometryAABB; }
 
 		const MeshData& GetMeshData() const { return *meshData; }
 
-		const Model* GetOwner() const { return owner; }
+		Model* GetOwner() { return owner; }
+		const Model* GetOwnerConst() const { return owner; }
 		void SetOwner(Model* newOwner) { this->owner = newOwner; }
 
-		void SetIsVisible(const bool isVisible) { this->isVisible = isVisible; }
-		const bool IsVisible() const { return isVisible; }
+		const unsigned int GetLocalMeshID() const { return localMeshID; }
+		void SetLocalMeshID(const unsigned int newID) { this->localMeshID = newID; }
 	private:
 		GLenum drawPrimitive;
 		std::vector<AbstractMaterial*> meshMaterials;
@@ -178,9 +179,9 @@ namespace Engine {
 		MeshData* meshData;
 		Model* owner;
 
-		const std::unordered_map<std::string, unsigned int>* textureSlots;
+		unsigned int localMeshID;
 
-		bool isVisible;
+		const std::unordered_map<std::string, unsigned int>* textureSlots;
 
 		void SetupGeometryAABB();
 	};

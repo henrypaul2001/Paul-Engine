@@ -34,7 +34,14 @@ namespace Engine {
 
 		void DrawTransparentGeometry(bool useDefaultForwardShader);
 
+		void RenderMeshes(const std::map<float, Mesh*>& meshesAndDistances, const bool transparencyPass = false, bool useDefaultForwardShader = false);
+		void RenderMeshes(const std::vector<Mesh*>& meshList, const bool transparencyPass = false, bool useDefaultForwardShader = false);
+
+		void RenderMesh(Mesh* mesh, const bool transparencyPass = false, bool useDefaultForwardShader = false);
+
 		float PostProcessKernel[9];
+
+		static std::map<float, Mesh*> transparentMeshes;
 
 		Camera* GetActiveCamera() { return activeCamera; }
 		void SetActiveCamera(Camera* camera) { activeCamera = camera; }
@@ -42,6 +49,8 @@ namespace Engine {
 		//Camera* camera;
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
 		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
+		void AddMeshToTransparentMeshes(ComponentTransform* transform, Mesh* mesh);
+
 		std::vector<Shader*> shadersUsedThisFrame;
 
 		std::map<float, ComponentGeometry*> transparentGeometry;
