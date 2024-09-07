@@ -55,6 +55,24 @@ namespace Engine {
 	{
 	}
 
+	AbstractMaterial* Mesh::GetMaterial(const unsigned int materialIndex)
+	{
+		if (meshMaterials.size() == 0) {
+			if (owner->PBR()) {
+				return ResourceManager::GetInstance()->DefaultMaterialPBR();
+			}
+			else {
+				return ResourceManager::GetInstance()->DefaultMaterial();
+			}
+		}
+		else if (materialIndex >= meshMaterials.size()) {
+			return nullptr;
+		}
+		else {
+			return meshMaterials[materialIndex];
+		}
+	}
+
 	void Mesh::Draw(Shader& shader, bool pbr, int instanceNum, const unsigned int instanceVAO)
 	{
 		SCOPE_TIMER("Mesh::Draw");
@@ -71,6 +89,7 @@ namespace Engine {
 
 		// Set base material properties
 		// ----------------------------
+		shader.Use();
 		shader.setBool("material.useNormalMap", false);
 		shader.setBool("material.useHeightMap", false);
 		shader.setBool("material.useOpacityMap", false);

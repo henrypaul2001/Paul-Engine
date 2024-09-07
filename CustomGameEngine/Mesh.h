@@ -153,7 +153,7 @@ namespace Engine {
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
 		~Mesh();
 
-		AbstractMaterial* GetMaterial(const unsigned int materialIndex = 0) { return meshMaterials[materialIndex]; }
+		AbstractMaterial* GetMaterial(const unsigned int materialIndex = 0);
 		void SetMaterials(const std::vector<AbstractMaterial*>& materials) { this->meshMaterials = materials; }
 
 		void SetDrawPrimitive(GLenum drawPrimitive) { this->drawPrimitive = drawPrimitive; }
