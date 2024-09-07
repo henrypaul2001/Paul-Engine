@@ -160,6 +160,7 @@ namespace Engine {
 		windowMaterial->shininess = 60.0f;
 		windowMaterial->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
 		windowMaterial->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
+		windowMaterial->shadowCastAlphaDiscardThreshold = 0.5f;
 		resources->AddMaterial("windowMaterial", windowMaterial);
 
 		Material* lava = new Material();

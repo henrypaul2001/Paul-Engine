@@ -76,6 +76,7 @@ namespace Engine
 		window->baseColour = glm::vec3(1.0f, 1.0f, 1.0f);
 		window->specular = glm::vec3(0.8f, 0.0f, 0.0f);
 		window->shininess = 60.0f;
+		window->shadowCastAlphaDiscardThreshold = 0.5f;
 		window->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/window/window.png", TEXTURE_DIFFUSE, true));
 		window->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/window/window_opacity.png", TEXTURE_OPACITY, false));
 		resources->AddMaterial("window", window);
