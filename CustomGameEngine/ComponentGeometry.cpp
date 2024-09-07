@@ -8,6 +8,7 @@ namespace Engine {
 		this->usingPremadeModel = old_component.usingPremadeModel;
 
 		this->model = new Model(*old_component.model);
+		this->model->SetOwner(this);
 
 		includeInReflectionProbes = true;
 
@@ -58,6 +59,7 @@ namespace Engine {
 		if (instanced) { SetupInstanceVBO(); }
 
 		if (pbr) { ApplyMaterialToModel(ResourceManager::GetInstance()->DefaultMaterialPBR()); }
+		this->model->SetOwner(this);
 	}
 
 	ComponentGeometry::ComponentGeometry(PremadeModel modelType, bool pbr, bool instanced)
@@ -104,6 +106,7 @@ namespace Engine {
 		if (instanced) { SetupInstanceVBO(); }
 
 		if (pbr) { ApplyMaterialToModel(ResourceManager::GetInstance()->DefaultMaterialPBR()); }
+		this->model->SetOwner(this);
 	}
 
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced, bool persistentStorage, const unsigned int assimpPostProcess)
@@ -128,6 +131,7 @@ namespace Engine {
 		shader = ResourceManager::GetInstance()->LoadShader(vShaderFilepath, fShaderFilepath);
 
 		if (instanced) { SetupInstanceVBO(); }
+		this->model->SetOwner(this);
 	}
 
 	ComponentGeometry::ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced, bool persistentStorage, const unsigned int assimpPostProcess)
@@ -168,6 +172,7 @@ namespace Engine {
 		textureScale = glm::vec2(1.0f);
 
 		if (instanced) { SetupInstanceVBO(); }
+		this->model->SetOwner(this);
 	}
 
 	void ComponentGeometry::RemoveInstanceSource(Entity* sourceToRemove)

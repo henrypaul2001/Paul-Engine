@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "ResourceManager.h"
+#include "ComponentGeometry.h"
 namespace Engine {
 	Model::Model(const Model& old_model)
 	{
@@ -10,6 +11,10 @@ namespace Engine {
 		this->hasBones = old_model.hasBones;
 		this->containsTransparentMeshes = old_model.containsTransparentMeshes;
 		this->directory = old_model.directory;
+
+		for (Mesh* m : this->meshes) {
+			m->SetOwner(this);
+		}
 	}
 
 	Model::Model(const std::vector<Mesh*>& meshes, bool pbr)
@@ -17,6 +22,10 @@ namespace Engine {
 		this->meshes = meshes;
 		this->hasBones = false;
 		this->pbr = pbr;
+
+		for (Mesh* m : this->meshes) {
+			m->SetOwner(this);
+		}
 	}
 
 	Model::Model(PremadeModel modelType, bool pbr)
@@ -33,6 +42,10 @@ namespace Engine {
 		containsTransparentMeshes = false;
 		hasBones = false;
 		this->pbr = pbr;
+
+		for (Mesh* m : this->meshes) {
+			m->SetOwner(this);
+		}
 	}
 
 	Model::Model(const char* filepath, unsigned int assimpPostProcess)
@@ -41,6 +54,10 @@ namespace Engine {
 		containsTransparentMeshes = false;
 		hasBones = false;
 		LoadModel(filepath, assimpPostProcess);
+
+		for (Mesh* m : this->meshes) {
+			m->SetOwner(this);
+		}
 	}
 
 	Model::Model(const char* filepath, unsigned assimpPostProcess, bool pbr)
@@ -49,6 +66,10 @@ namespace Engine {
 		containsTransparentMeshes = false;
 		hasBones = false;
 		LoadModel(filepath, assimpPostProcess);
+
+		for (Mesh* m : this->meshes) {
+			m->SetOwner(this);
+		}
 	}
 
 	Model::~Model()

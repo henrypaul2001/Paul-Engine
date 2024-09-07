@@ -37,6 +37,7 @@ namespace Engine {
 		std::vector<glm::mat4> finalBoneMatrices;
 	};
 
+	class ComponentGeometry;
 	class Model
 	{
 	public:
@@ -79,6 +80,9 @@ namespace Engine {
 		std::vector<Mesh*> meshes;
 		//std::vector<Texture> textures_loaded;
 
+		const ComponentGeometry* GetOwner() const { return owner; }
+		void SetOwner(ComponentGeometry* newOwner) { this->owner = newOwner; }
+
 		void UpdateGeometryBoundingBoxes(glm::mat4 modelMatrix) {
 			glm::vec3 scale;
 			scale.x = glm::length(glm::vec3(modelMatrix[0]));
@@ -104,6 +108,8 @@ namespace Engine {
 		AnimationSkeleton skeleton;
 
 		bool hasBones;
+
+		ComponentGeometry* owner;
 
 		void LoadModel(std::string filepath, unsigned int assimpPostProcess);
 		void ProcessNode(aiNode* node, const aiScene* scene);

@@ -141,6 +141,7 @@ namespace Engine {
 		float ao;
 	};
 
+	class Model;
 	class Mesh
 	{
 	public:
@@ -164,6 +165,9 @@ namespace Engine {
 
 		const MeshData& GetMeshData() const { return *meshData; }
 
+		const Model* GetOwner() const { return owner; }
+		void SetOwner(Model* newOwner) { this->owner = newOwner; }
+
 		void SetIsVisible(const bool isVisible) { this->isVisible = isVisible; }
 		const bool IsVisible() const { return isVisible; }
 	private:
@@ -172,6 +176,7 @@ namespace Engine {
 		AABBPoints geometryAABB;
 
 		MeshData* meshData;
+		Model* owner;
 
 		const std::unordered_map<std::string, unsigned int>* textureSlots;
 

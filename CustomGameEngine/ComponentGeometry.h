@@ -71,6 +71,7 @@ namespace Engine {
 
 		const bool IsIncludedInReflectionProbes() const { return includeInReflectionProbes; }
 		void SetIsIncludedInReflectionProbes(const bool included) { includeInReflectionProbes = included; }
+	
 	private:
 		Model* model;
 		Shader* shader;

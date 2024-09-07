@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "ResourceManager.h"
+#include "Model.h"
 namespace Engine {
 	const std::unordered_map<TextureTypes, std::string> Mesh::TextureTypeToString {
 		{ TEXTURE_NONE, "TEXTURE_NONE" },
