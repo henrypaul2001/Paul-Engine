@@ -390,6 +390,12 @@ namespace Engine {
 		reflectionProbeBakingPBR = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBakingPBR.frag", true);
 		colliderDebug = LoadShader("Shaders/colliderDebug.vert", "Shaders/colliderDebug.frag", "Shaders/colliderDebug.geom", true);
 
+		shadowMapShader->Use();
+		shadowMapShader->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
+
+		cubeShadowMapShader->Use();
+		cubeShadowMapShader->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
+
 		advBloomCombineShader->Use();
 		advBloomCombineShader->setInt("screenTexture", 0);
 		advBloomCombineShader->setInt("bloomTexture", 1);
