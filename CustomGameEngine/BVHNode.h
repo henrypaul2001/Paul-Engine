@@ -23,6 +23,9 @@ namespace Engine {
 
 		const std::vector<std::pair<glm::vec3, Mesh*>>& GetObjects() const { return objects; }
 		void SetObjects(std::vector<std::pair<glm::vec3, Mesh*>> newObjects) { objects = newObjects; }
+		
+		void SetObjectIndices(std::vector<unsigned int> indices) { this->globalObjectIndices = indices; }
+		const std::vector<unsigned int>& GetGlobalObjectIndices() const { return globalObjectIndices; }
 
 		const AABBPoints& GetBoundingBox() const { return boundingBox; }
 	private:
@@ -33,6 +36,7 @@ namespace Engine {
 		BVHNode* rightChildNode;
 
 		std::vector<std::pair<glm::vec3, Mesh*>> objects;
+		std::vector<unsigned int> globalObjectIndices;
 
 		bool isLeaf;
 	};
