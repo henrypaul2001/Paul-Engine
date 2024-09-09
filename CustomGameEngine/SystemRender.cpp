@@ -124,9 +124,14 @@ namespace Engine {
 		if (geometry->GetModel()->ContainsTransparentMeshes()) {
 			float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
 
-			if (transparentGeometry.find(distanceToCamera) != transparentGeometry.end()) {
+			int iterations = 0;
+			while (transparentGeometry.find(distanceToCamera) != transparentGeometry.end()) {
 				// Distance already exists, increment slightly
-				distanceToCamera += 0.00001f;
+				distanceToCamera += 0.001f;
+				iterations++;
+				if (iterations > 100) {
+					std::cout << "aahhhhh" << std::endl;
+				}
 			}
 			transparentGeometry[distanceToCamera] = geometry;
 		}
@@ -319,8 +324,13 @@ namespace Engine {
 		SCOPE_TIMER("SystemRender::AddMeshToTransparentMeshes");
 		float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
 
-		if (transparentMeshes.find(distanceToCamera) != transparentMeshes.end()) {
-			distanceToCamera += 0.00001f;
+		int iterations = 0;
+		while (transparentMeshes.find(distanceToCamera) != transparentMeshes.end()) {
+			distanceToCamera += 0.001f;
+			iterations++;
+			if (iterations > 100) {
+				std::cout << "ahhhhh" << std::endl;
+			}
 		}
 		transparentMeshes[distanceToCamera] = mesh;
 	}
