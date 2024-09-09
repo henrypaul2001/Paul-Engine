@@ -319,9 +319,8 @@ namespace Engine {
 			BVHNode* node = nullptr;
 			if (localIndices.size() > 0u) {
 				nodeCount++;
-				node = new BVHNode();
+				node = new BVHNode(parent);
 				node->SetBoundingBox(aabb);
-				node->SetParent(parent);
 				node->SetObjectIndices(localIndices);
 				node->SetIsLeaf(false);
 

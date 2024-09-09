@@ -107,33 +107,44 @@ namespace Engine {
 	{
 		SCOPE_TIMER("SystemFrustumCulling::CullMeshes");
 		culledMeshList.clear();
-
 		// Traverse BVH tree and check collisions with each node until a leaf node is found or no collision
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
 		BVHNode* rootNode = geometryBVH->GetRootNode();
+		globalBVHObjectList = &geometryBVH->GetGlobalObjects();
 
+		TestBVHNodeRecursive(rootNode);
+
+		/*
 		FrustumIntersection nodeResult = AABBIsInFrustum(rootNode->GetBoundingBox(), glm::vec3(0.0f));
 
 		if (nodeResult != OUTSIDE_FRUSTUM) {
 			// Check child nodes
 			const BVHNode* leftChild = rootNode->GetLeftChild();
 			const BVHNode* rightChild = rootNode->GetRightChild();
-			if (leftChild) { TestBVHNodeRecursive(leftChild, nodeResult); }
-			if (rightChild) { TestBVHNodeRecursive(rightChild, nodeResult); }
+			if (leftChild) { TestBVHNodeRecursive(leftChild); }
+			if (rightChild) { TestBVHNodeRecursive(rightChild); }
 		}
+		*/
 
 		visibleMeshes = culledMeshList.size();
+		totalMeshes = globalBVHObjectList->size();
 	}
 
 	void SystemFrustumCulling::AddMeshToCulledList(Mesh* mesh)
 	{
+		SCOPE_TIMER("SystemFrustumCulling::AddMeshToCulledList");
 		const glm::vec3& meshOrigin = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent()->GetWorldPosition();
 
 		// Get distance to mesh
 		float distanceToCameraSquared = glm::distance2(activeCamera->GetPosition(), meshOrigin);
-		if (culledMeshList.find(distanceToCameraSquared) != culledMeshList.end()) {
+		int iterations = 0;
+		while (culledMeshList.find(distanceToCameraSquared) != culledMeshList.end()) {
 			// Distance already exists, increment slightly
-			distanceToCameraSquared += 0.00001f;
+			distanceToCameraSquared += 0.001f;
+			iterations++;
+			if (iterations > 100) {
+   				std::cout << "ahhhhhh" << std::endl;
+			}
 		}
 		culledMeshList[distanceToCameraSquared] = mesh;
 	}
@@ -177,6 +188,48 @@ namespace Engine {
 				const BVHNode* rightChild = node->GetRightChild();
 				if (leftChild) { TestBVHNodeRecursive(leftChild, nodeIsInFrustum); }
 				if (rightChild) { TestBVHNodeRecursive(rightChild, nodeIsInFrustum); }
+			}
+		}
+	}
+
+	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node)
+	{
+		SCOPE_TIMER("SystemFrustumCulling::TestBVHNodeRecursive");
+		AABBPoints nodeAABB = node->GetBoundingBox();
+
+		FrustumIntersection nodeIsInFrustum = AABBIsInFrustum(nodeAABB, glm::vec3(0.0f));
+		
+		if (nodeIsInFrustum != OUTSIDE_FRUSTUM) {
+			// Full intersection, all following children will also be inside frustum
+			if (nodeIsInFrustum == INSIDE_FRUSTUM) {
+				// Add all node meshes to culled list
+				const std::vector<unsigned int>& indices = node->GetGlobalObjectIndices();
+				for (unsigned int i : indices) {
+					AddMeshToCulledList(globalBVHObjectList->at(i).mesh);
+				}
+			}
+			else {
+				// Partially inside frustum, check children
+				if (node->IsLeaf()) {
+					// Test meshes
+					const std::vector<unsigned int>& indices = node->GetGlobalObjectIndices();
+					for (unsigned int i = 0; i < indices.size(); i++) {
+						const glm::vec3& origin = globalBVHObjectList->at(indices[i]).worldPosition;
+						Mesh* mesh = globalBVHObjectList->at(indices[i]).mesh;
+						AABBPoints geometryAABB = mesh->GetGeometryAABB();
+
+						if (geometryAABB == nodeAABB || AABBIsInFrustum(geometryAABB, origin)) {
+							AddMeshToCulledList(mesh);
+						}
+					}
+				}
+				else {
+					// Test children
+					const BVHNode* leftChild = node->GetLeftChild();
+					const BVHNode* rightChild = node->GetRightChild();
+					if (leftChild) { TestBVHNodeRecursive(leftChild); }
+					if (rightChild) { TestBVHNodeRecursive(rightChild); }
+				}
 			}
 		}
 	}

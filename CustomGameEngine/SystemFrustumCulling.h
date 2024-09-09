@@ -45,6 +45,7 @@ namespace Engine {
 		void CullMeshes();
 		void AddMeshToCulledList(Mesh* mesh);
 		void TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult);
+		void TestBVHNodeRecursive(const BVHNode* node);
 		void CullReflectionProbes();
 
 		const ComponentTypes GEOMETRY_MASK = (COMPONENT_GEOMETRY);
@@ -55,6 +56,7 @@ namespace Engine {
 		CollisionManager* collisionManager;
 
 		std::map<float, ReflectionProbe*> culledProbeList;
+		const std::vector<BVHObject>* globalBVHObjectList;
 
 		unsigned int visibleMeshes;
 		unsigned int totalMeshes;
