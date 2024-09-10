@@ -13,7 +13,6 @@ namespace Engine {
 		MODEL_CUBE,
 		MODEL_PLANE
 	};
-
 	struct AnimationBone {
 		int boneID = -1;
 		std::string name;
@@ -23,7 +22,6 @@ namespace Engine {
 
 		std::vector<std::string> childNodeNames;
 	};
-
 	struct AnimationSkeleton {
 		// Map of bones attached to a mesh
 		std::map<std::string, AnimationBone> bones;
@@ -54,10 +52,6 @@ namespace Engine {
 		Model(const Model& old_model);
 		Model(const std::vector<Mesh*>& meshes, bool pbr = false);
 		Model(PremadeModel modelType, bool pbr = false);
-		/*
-		Model(const char* filepath, unsigned int assimpPostProcess);
-		Model(const char* filepath, unsigned int assimpPostProcess, bool pbr);
-		*/
 		~Model();
 
 		void Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs);
@@ -73,18 +67,6 @@ namespace Engine {
 
 		void SetHasBones(const bool hasBones) { this->hasBones = hasBones; }
 		bool HasBones() { return hasBones; }
-
-		// Helper function to convert ASSIMP aiMatrix4x4 to glm::mat4
-		static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
-		{
-			glm::mat4 to;
-			//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-			to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-			to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-			to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-			to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-			return to;
-		}
 
 		void SetAnimationSkeleton(AnimationSkeleton* newSkeleton) { this->skeleton = newSkeleton; }
 		AnimationSkeleton* GetAnimationSkeleton() { return skeleton; }
@@ -122,13 +104,5 @@ namespace Engine {
 		bool hasBones;
 
 		ComponentGeometry* owner;
-		/*
-		void LoadModel(std::string filepath, unsigned int assimpPostProcess);
-		void ProcessNode(aiNode* node, const aiScene* scene);
-		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
-		void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
-		bool ProcessEmptyBones(aiNode* node);
-		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name, const aiScene* scene);
-		*/
 	};
 }

@@ -650,14 +650,6 @@ namespace Engine {
 		}
 		resources.meshes.clear();
 
-		// delete models
-		std::unordered_map<std::string, Model*>::iterator modelsIt = resources.models.begin();
-		while (modelsIt != resources.models.end()) {
-			delete modelsIt->second;
-			modelsIt++;
-		}
-		resources.models.clear();
-
 		// delete shaders
 		std::unordered_map<std::string, Shader*>::iterator shadersIt = resources.shaders.begin();
 		while (shadersIt != resources.shaders.end()) {
@@ -749,50 +741,6 @@ namespace Engine {
 
 		return newModel;
 	}
-
-	/*
-	Model* ResourceManager::LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
-	{
-		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);
-		std::unordered_map<std::string, Model*>::iterator tempIt = tempResources.models.find(filepath);
-
-		bool existsInPersistent = true;
-		bool existsInTemp = true;
-		if (persistentIt == persistentResources.models.end()) {
-			existsInPersistent = false;
-		}
-		if (tempIt == tempResources.models.end()) {
-			existsInTemp = false;
-		}
-
-		if (!existsInPersistent && !existsInTemp) {
-			std::cout << "RESOURCEMANAGER::Loading model " << filepath << std::endl;
-			// Model not currently loaded
-			Model* model;
-			if (loadInPersistentResources) {
-				persistentResources.models[filepath] = new Model(filepath.c_str(), assimpPostProcess, pbr);
-				model = persistentResources.models[filepath];
-			}
-			else {
-				tempResources.models[filepath] = new Model(filepath.c_str(), assimpPostProcess, pbr);
-				model = tempResources.models[filepath];
-			}
-			return model;
-		}
-		else {
-			std::unordered_map<std::string, Model*>::iterator it = persistentIt;
-			if (existsInTemp) { it = tempIt; }
-
-			if (it->second->PBR() == pbr) {
-				return it->second;
-			}
-			else {
-				std::cout << "ERROR::RESOURCEMANAGER::LOADMODEL::Mismatch, requested model at path '" << filepath << "' already loaded with different PBR property" << std::endl;
-				return nullptr;
-			}
-		}
-	}
-	*/
 
 	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources)
 	{
@@ -1451,22 +1399,6 @@ namespace Engine {
 			return persistentIt->second;
 		}
 		else if (tempIt != tempResources.meshes.end()) {
-			return tempIt->second;
-		}
-		else {
-			return nullptr;
-		}
-	}
-
-	Model* ResourceManager::GetModel(const std::string& filepath)
-	{
-		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);
-		std::unordered_map<std::string, Model*>::iterator tempIt = tempResources.models.find(filepath);
-
-		if (persistentIt != persistentResources.models.end()) {
-			return persistentIt->second;
-		}
-		else if (tempIt != tempResources.models.end()) {
 			return tempIt->second;
 		}
 		else {
