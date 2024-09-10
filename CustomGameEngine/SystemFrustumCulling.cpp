@@ -13,7 +13,6 @@ namespace Engine {
 		totalMeshes = 0;
 		visibleMeshes = 0;
 		geometryAABBTests = 0;
-		//System::Run(entityList);
 
 		CullMeshes();
 		CullReflectionProbes();
@@ -22,18 +21,6 @@ namespace Engine {
 	void SystemFrustumCulling::OnAction(Entity* entity)
 	{
 		SCOPE_TIMER("SystemFrustumCulling::OnAction");
-		/*
-		// Reset isVisible flag on all meshes
-		if ((entity->Mask() & GEOMETRY_MASK) == GEOMETRY_MASK) {
-			ComponentGeometry* geometry = entity->GetGeometryComponent();
-
-			Model* model = geometry->GetModel();
-			for (Mesh* m : model->meshes) {
-				totalMeshes++;
-				m->SetIsVisible(false);
-			}
-		}
-		*/
 	}
 
 	void SystemFrustumCulling::AfterAction()
@@ -114,18 +101,6 @@ namespace Engine {
 
 		TestBVHNodeRecursive(rootNode);
 
-		/*
-		FrustumIntersection nodeResult = AABBIsInFrustum(rootNode->GetBoundingBox(), glm::vec3(0.0f));
-
-		if (nodeResult != OUTSIDE_FRUSTUM) {
-			// Check child nodes
-			const BVHNode* leftChild = rootNode->GetLeftChild();
-			const BVHNode* rightChild = rootNode->GetRightChild();
-			if (leftChild) { TestBVHNodeRecursive(leftChild); }
-			if (rightChild) { TestBVHNodeRecursive(rightChild); }
-		}
-		*/
-
 		visibleMeshes = culledMeshList.size();
 		totalMeshes = globalBVHObjectList->size();
 	}
@@ -147,49 +122,6 @@ namespace Engine {
 			}
 		}
 		culledMeshList[distanceToCameraSquared] = mesh;
-	}
-
-	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult)
-	{
-		SCOPE_TIMER("SystemFrustumCulling::TestBVHNodeRecursive");
-		AABBPoints nodeAABB = node->GetBoundingBox();
-
-		// Only test node AABB if parent result was partially inside frustum
-		FrustumIntersection nodeIsInFrustum = parentResult;
-		if (nodeIsInFrustum == PARTIAL_FRUSTUM) {
-			nodeIsInFrustum = AABBIsInFrustum(nodeAABB, glm::vec3(0.0f));
-		}
-
-		if (nodeIsInFrustum != OUTSIDE_FRUSTUM) {
-			if (node->IsLeaf()) {
-				std::vector<std::pair<glm::vec3, Mesh*>> nodeObjects = node->GetObjects();
-				if (nodeIsInFrustum == PARTIAL_FRUSTUM) {
-					// Check all meshes
-					for (unsigned int i = 0; i < nodeObjects.size(); i++) {
-						glm::vec3 origin = nodeObjects[i].first;
-						Mesh* mesh = nodeObjects[i].second;
-						AABBPoints geometryAABB = mesh->GetGeometryAABB();
-
-						if (geometryAABB == nodeAABB || AABBIsInFrustum(geometryAABB, origin)) {
-							AddMeshToCulledList(mesh);
-						}
-					}
-				}
-				else {
-					// Skip checks, all will be true
-					for (const std::pair<glm::vec3, Mesh*>& pair : nodeObjects) {
-						AddMeshToCulledList(pair.second);
-					}
-				}
-			}
-			else {
-				// Check child nodes
-				const BVHNode* leftChild = node->GetLeftChild();
-				const BVHNode* rightChild = node->GetRightChild();
-				if (leftChild) { TestBVHNodeRecursive(leftChild, nodeIsInFrustum); }
-				if (rightChild) { TestBVHNodeRecursive(rightChild, nodeIsInFrustum); }
-			}
-		}
 	}
 
 	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node)

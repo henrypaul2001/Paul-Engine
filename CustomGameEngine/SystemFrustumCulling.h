@@ -44,7 +44,6 @@ namespace Engine {
 
 		void CullMeshes();
 		void AddMeshToCulledList(Mesh* mesh);
-		void TestBVHNodeRecursive(const BVHNode* node, const FrustumIntersection& parentResult);
 		void TestBVHNodeRecursive(const BVHNode* node);
 		void CullReflectionProbes();
 
