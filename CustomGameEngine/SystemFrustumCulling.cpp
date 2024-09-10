@@ -143,7 +143,7 @@ namespace Engine {
 			distanceToCameraSquared += 0.001f;
 			iterations++;
 			if (iterations > 100) {
-   				std::cout << "ahhhhhh" << std::endl;
+				std::cout << "ahhhhhh" << std::endl;
 			}
 		}
 		culledMeshList[distanceToCameraSquared] = mesh;

@@ -188,7 +188,7 @@ namespace Engine {
 		swat->AddComponent(new ComponentGeometry("Models/swat/swat.dae", false));
 		swat->AddComponent(new ComponentAnimator(animations[animIndex]));
 		entityManager->AddEntity(swat);
-
+		
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.6f, 0.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE));

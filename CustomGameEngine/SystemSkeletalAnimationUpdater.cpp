@@ -37,7 +37,7 @@ namespace Engine {
 
 	void SystemSkeletalAnimationUpdater::UpdateAnimator(ComponentGeometry* geometry, ComponentAnimator* animator)
 	{
-		AnimationSkeleton& skeleton = geometry->GetModel()->GetAnimationSkeleton();
+		AnimationSkeleton& skeleton = *geometry->GetModel()->GetAnimationSkeleton();
 
 		if (skeleton.bones.size() > 0) {
 			animator->UpdateAnimation(Scene::dt, skeleton);

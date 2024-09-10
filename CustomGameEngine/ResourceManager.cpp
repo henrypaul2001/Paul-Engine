@@ -721,23 +721,36 @@ namespace Engine {
 			materialsIt++;
 		}
 		resources.materials.clear();
+
+		// delete skeletons
+		std::unordered_map<std::string, AnimationSkeleton*>::iterator skeletonsIt = resources.animationSkeletons.begin();
+		while (skeletonsIt != resources.animationSkeletons.end()) {
+			delete skeletonsIt->second;
+			skeletonsIt++;
+		}
+		resources.animationSkeletons.clear();
 	}
 
 
 	Model* ResourceManager::CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
 	{
 		ASSIMPModelLoader::loadMaterialsAsPBR = pbr;
-		std::vector<ProcessMeshResult> meshData = ASSIMPModelLoader::LoadMeshData(filepath, assimpPostProcess, loadInPersistentResources);
+		LoadMeshDataResult meshData = ASSIMPModelLoader::LoadMeshData(filepath, assimpPostProcess, loadInPersistentResources);
 		std::vector<Mesh*> meshes;
-		meshes.reserve(meshData.size());
+		meshes.reserve(meshData.meshResults.size());
 
-		for (unsigned int i = 0; i < meshData.size(); i++) {
-			meshes.push_back(new Mesh(meshData[i].meshData, meshData[i].meshMaterials));
+		for (unsigned int i = 0; i < meshData.meshResults.size(); i++) {
+			meshes.push_back(new Mesh(meshData.meshResults[i].meshData, meshData.meshResults[i].meshMaterials));
 		}
 
-		return new Model(meshes, pbr);
+		Model* newModel = new Model(meshes, pbr);
+		newModel->SetHasBones(meshData.hasBones);
+		newModel->SetAnimationSkeleton(meshData.skeleton);
+
+		return newModel;
 	}
 
+	/*
 	Model* ResourceManager::LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources, const unsigned int assimpPostProcess)
 	{
 		std::unordered_map<std::string, Model*>::iterator persistentIt = persistentResources.models.find(filepath);
@@ -779,6 +792,7 @@ namespace Engine {
 			}
 		}
 	}
+	*/
 
 	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources)
 	{
@@ -1405,6 +1419,22 @@ namespace Engine {
 			return persistentIt->second;
 		}
 		else if (tempIt != tempResources.materials.end()) {
+			return tempIt->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+	AnimationSkeleton* ResourceManager::GetAnimationSkeleton(const std::string& filename)
+	{
+		std::unordered_map<std::string, AnimationSkeleton*>::iterator persistentIt = persistentResources.animationSkeletons.find(filename);
+		std::unordered_map<std::string, AnimationSkeleton*>::iterator tempIt = tempResources.animationSkeletons.find(filename);
+
+		if (persistentIt != persistentResources.animationSkeletons.end()) {
+			return persistentIt->second;
+		}
+		else if (tempIt != tempResources.animationSkeletons.end()) {
 			return tempIt->second;
 		}
 		else {

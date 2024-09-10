@@ -42,6 +42,7 @@ namespace Engine {
 		std::unordered_map<std::string, SkeletalAnimation*> animations;
 		std::unordered_map<std::string, AudioFile*> audioFiles;
 		std::unordered_map<std::string, AbstractMaterial*> materials;
+		std::unordered_map<std::string, AnimationSkeleton*> animationSkeletons;
 	};
 
 	enum AnisotropicFiltering;
@@ -137,7 +138,7 @@ namespace Engine {
 		// Creates model without adding to resource list. Instead references previously loaded MeshData in case of duplicate models. This will be the main way of loading models moving forward
 		Model* CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		
-		Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
+		//Model* LoadModel(std::string filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources = false);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
 		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false, AnisotropicFiltering anisoFilter = (AnisotropicFiltering)-1);
@@ -188,6 +189,7 @@ namespace Engine {
 		SkeletalAnimation* GetAnimation(const std::string& filepath, const int animationIndex = 0);
 		AudioFile* GetAudio(const std::string& filepath);
 		AbstractMaterial* GetMaterial(const std::string& materialName);
+		AnimationSkeleton* GetAnimationSkeleton(const std::string& filename);
 		bool AddMaterial(const std::string& materialName, AbstractMaterial* material, bool persistentResources = false) {
 			std::unordered_map<std::string, AbstractMaterial*>::iterator persistentIt = this->persistentResources.materials.find(materialName);
 			std::unordered_map<std::string, AbstractMaterial*>::iterator tempIt = this->tempResources.materials.find(materialName);
@@ -211,6 +213,35 @@ namespace Engine {
 				}
 				else {
 					std::cout << "ERROR::RESOURCEMANAGER::AddMaterial::Material already exists in temp resources" << std::endl;
+					return false;
+				}
+			}
+
+			return true;
+		}
+		bool AddAnimationSkeleton(const std::string& filename, AnimationSkeleton* skeleton, bool persistentResources = false) {
+			std::unordered_map<std::string, AnimationSkeleton*>::iterator persistentIt = this->persistentResources.animationSkeletons.find(filename);
+			std::unordered_map<std::string, AnimationSkeleton*>::iterator tempIt = this->tempResources.animationSkeletons.find(filename);
+
+			if (persistentResources) {
+				bool exists = (persistentIt != this->persistentResources.animationSkeletons.end());
+
+				if (!exists) {
+					this->persistentResources.animationSkeletons[filename] = skeleton;
+				}
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::AddAnimationSkeleton::Skeleton already exists in persistent resources" << std::endl;
+					return false;
+				}
+			}
+			else {
+				bool exists = (tempIt != this->tempResources.animationSkeletons.end());
+
+				if (!exists) {
+					this->tempResources.animationSkeletons[filename] = skeleton;
+				}
+				else {
+					std::cout << "ERROR::RESOURCEMANAGER::AddAnimationSkeleton::Skeleton already exists in temp resources" << std::endl;
 					return false;
 				}
 			}

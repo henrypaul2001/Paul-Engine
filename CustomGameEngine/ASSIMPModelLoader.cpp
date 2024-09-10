@@ -1,60 +1,54 @@
 #include "ASSIMPModelLoader.h"
 namespace Engine {
-	const std::vector<ProcessMeshResult> ASSIMPModelLoader::LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources)
+	const LoadMeshDataResult ASSIMPModelLoader::LoadMeshData(const std::string& filepath, unsigned assimpPostProcess, bool persistentResources)
 	{
-		std::vector<ProcessMeshResult> meshList;
+		ResourceManager* resources = ResourceManager::GetInstance();
+		LoadMeshDataResult result;
+		result.hasBones = false;
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(filepath, assimpPostProcess);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
-			return meshList;
+			return result;
 		}
 
-		meshList = ProcessNode(filepath, scene->mRootNode, scene);
-
-		/*
-		if (hasBones) {
-			ProcessEmptyBones(scene->mRootNode);
+		// Check resource manager for existing animation skeleton
+		AnimationSkeleton* skeleton = resources->GetAnimationSkeleton(filepath);
+		if (skeleton) {
+			result.skeleton = skeleton;
+			result.skeletonAlreadyLoaded = true;
 		}
-		*/
+		else { 
+			result.skeletonAlreadyLoaded = false;
+			result.skeleton = new AnimationSkeleton();
+			resources->AddAnimationSkeleton(filepath, result.skeleton);
+		}
 
-		//CollectMeshMaterials();
+		ProcessNode(filepath, scene->mRootNode, scene, result);
 
-		return meshList;
+		if (result.hasBones && !result.skeletonAlreadyLoaded) {
+			ProcessEmptyBones(scene->mRootNode, result);
+		}
+
+		return result;
 	}
 
-	std::vector<ProcessMeshResult> ASSIMPModelLoader::ProcessNode(const std::string& filepath, aiNode* node, const aiScene* scene, bool persistentResources)
+	void ASSIMPModelLoader::ProcessNode(const std::string& filepath, aiNode* node, const aiScene* scene, LoadMeshDataResult& out_result, bool persistentResources)
 	{
-		std::vector<ProcessMeshResult> meshList;
-		meshList.reserve(node->mNumMeshes);
+		out_result.meshResults.reserve(node->mNumMeshes);
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			meshList.push_back(ProcessMesh(filepath, mesh, scene));
-
-			//meshes.push_back(newMesh);
-			/*
-			if (!pbr) {
-				if (newMesh->GetMaterial()->isTransparent) {
-					containsTransparentMeshes = true;
-				}
-			}
-			else {
-				// PBR transparency check will go here in future
-			}
-			*/
+			ProcessMesh(filepath, mesh, scene, out_result);
 		}
 
 		for (unsigned int i = 0; i < node->mNumChildren; i++) {
-			std::vector<ProcessMeshResult> childMeshes = ProcessNode(filepath, node->mChildren[i], scene);
-			meshList.insert(meshList.end(), childMeshes.begin(), childMeshes.end());
+			ProcessNode(filepath, node->mChildren[i], scene, out_result);
 		}
-
-		return meshList;
 	}
 
-	ProcessMeshResult ASSIMPModelLoader::ProcessMesh(const std::string& filepath, aiMesh* mesh, const aiScene* scene, bool persistentResources)
+	void ASSIMPModelLoader::ProcessMesh(const std::string& filepath, aiMesh* mesh, const aiScene* scene, LoadMeshDataResult& out_result, bool persistentResources)
 	{
 		ResourceManager* resources = ResourceManager::GetInstance();
 		std::string meshName = mesh->mName.C_Str();
@@ -114,21 +108,17 @@ namespace Engine {
 				}
 			}
 
-			// TODO: Create additional resource list in resource manager for animation skeletons <modelFilepath, AnimationSkeleton>
-			/*
-			// retrieve bones
-			if (mesh->HasBones()) {
-				ProcessBones(vertices, mesh, scene);
+			// Retrieve bones
+			if (mesh->HasBones() && !out_result.skeletonAlreadyLoaded) {
+				ProcessBones(vertices, mesh, scene, out_result);
 				std::vector<glm::mat4> meshBones = std::vector<glm::mat4>(mesh->mNumBones, glm::mat4(1.0f));
-				skeleton.finalBoneMatrices.insert(skeleton.finalBoneMatrices.end(), meshBones.begin(), meshBones.end());
+				out_result.skeleton->finalBoneMatrices.insert(out_result.skeleton->finalBoneMatrices.end(), meshBones.begin(), meshBones.end());
 			}
-			*/
-
 			meshData = new MeshData(vertices, indices);
-			ResourceManager::GetInstance()->AddMeshData(fileAndMeshName, meshData, persistentResources);
+			resources->AddMeshData(fileAndMeshName, meshData, persistentResources);
 		}
 
-		ProcessMeshResult result;
+		ProcessMeshResult meshResult;
 
 		// Load materials
 		if (mesh->mMaterialIndex >= 0) {
@@ -151,11 +141,104 @@ namespace Engine {
 				resources->AddMaterial(fileAndMaterialName, meshMaterial, persistentResources);
 			}
 
-			result.meshMaterials.push_back(meshMaterial);
+			meshResult.meshMaterials.push_back(meshMaterial);
 		}
-		result.meshData = meshData;
+		meshResult.meshData = meshData;
 
-		return result;
+		out_result.meshResults.push_back(meshResult);
+	}
+
+	void ASSIMPModelLoader::ProcessBones(std::vector<Vertex>& vertices, const aiMesh* mesh, const aiScene* scene, LoadMeshDataResult& out_result)
+	{
+		for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+			out_result.hasBones = true;
+			AnimationSkeleton& skeleton = *out_result.skeleton;
+
+			// Get bone ID
+			// -----------
+			int boneID = -1;
+			std::string boneName = mesh->mBones[i]->mName.C_Str();
+
+			if (skeleton.bones.find(boneName) == skeleton.bones.end()) {
+				// Create new bone
+				AnimationBone newBone;
+				boneID = skeleton.bones.size();
+				newBone.boneID = boneID;
+				newBone.offsetMatrix = ConvertMatrixToGLMFormat(mesh->mBones[i]->mOffsetMatrix);
+				newBone.nodeTransform = ConvertMatrixToGLMFormat(mesh->mBones[i]->mNode->mTransformation);
+				newBone.name = boneName;
+
+				// Get child bone names
+				for (unsigned int j = 0; j < mesh->mBones[i]->mNode->mNumChildren; j++) {
+					std::string childName = mesh->mBones[i]->mNode->mChildren[j]->mName.C_Str();
+					newBone.childNodeNames.push_back(childName);
+				}
+
+				skeleton.bones[boneName] = newBone;
+
+				if (skeleton.bones.find(mesh->mBones[i]->mNode->mParent->mName.C_Str()) == skeleton.bones.end()) {
+					// Parent node name is not in bones list, this bone must be the root bone
+					skeleton.rootBone = &skeleton.bones[boneName];
+					skeleton.originTransform = ConvertMatrixToGLMFormat(mesh->mBones[i]->mNode->mParent->mTransformation);
+				}
+			}
+			else {
+				// Bone already exists
+				boneID = skeleton.bones[boneName].boneID;
+			}
+
+			// Update vertices with IDs and weights
+			for (unsigned int j = 0; j < mesh->mBones[i]->mNumWeights; j++) {
+				const aiVertexWeight& aiWeight = mesh->mBones[i]->mWeights[j];
+				int vertexID = aiWeight.mVertexId;
+				assert(vertexID < vertices.size());
+				vertices[vertexID].AddBoneData(boneID, aiWeight.mWeight);
+			}
+		}
+	}
+
+	bool ASSIMPModelLoader::ProcessEmptyBones(aiNode* node, LoadMeshDataResult& out_result)
+	{
+		if (node) {
+			std::string nodeName = node->mName.C_Str();
+
+			if (out_result.skeleton->bones.find(nodeName) == out_result.skeleton->bones.end()) {
+
+				bool isInBoneBranch = false;
+				for (int i = 0; i < node->mNumChildren; i++) {
+					aiNode* child = node->mChildren[i];
+
+					if (ProcessEmptyBones(child, out_result)) {
+						isInBoneBranch = true;
+					}
+				}
+
+				if (isInBoneBranch) {
+					AnimationBone newBone;
+					newBone.boneID = -1;
+					newBone.nodeTransform = ConvertMatrixToGLMFormat(node->mTransformation);
+					newBone.name = nodeName;
+
+					for (int i = 0; i < node->mNumChildren; i++) {
+						newBone.childNodeNames.push_back(node->mChildren[i]->mName.C_Str());
+					}
+
+					out_result.skeleton->emptyBones[nodeName] = newBone;
+					out_result.skeleton->rootBone = &out_result.skeleton->emptyBones[nodeName];
+				}
+				return isInBoneBranch;
+			}
+			else {
+				// Bone already attached to mesh, no need to process
+				// Tell parent that this branch contains bones, thus a root node needs to be created above it. Return true
+				for (int i = 0; i < node->mNumChildren; i++) {
+					aiNode* child = node->mChildren[i];
+
+					ProcessEmptyBones(child, out_result);
+				}
+				return true;
+			}
+		}
 	}
 
 	bool ASSIMPModelLoader::loadMaterialsAsPBR = false;

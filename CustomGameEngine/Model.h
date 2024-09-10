@@ -35,6 +35,16 @@ namespace Engine {
 		glm::mat4 originTransform;
 
 		std::vector<glm::mat4> finalBoneMatrices;
+
+		void RetargetSkeletonRootBone(const std::string& boneName)
+		{
+			if (bones.find(boneName) != bones.end()) {
+				rootBone = &bones[boneName];
+			}
+			else {
+				std::cout << "ERROR::AnimationSkeleton::RetargetSkeletonRootBone::Bone not found" << std::endl;
+			}
+		}
 	};
 
 	class ComponentGeometry;
@@ -44,8 +54,10 @@ namespace Engine {
 		Model(const Model& old_model);
 		Model(const std::vector<Mesh*>& meshes, bool pbr = false);
 		Model(PremadeModel modelType, bool pbr = false);
+		/*
 		Model(const char* filepath, unsigned int assimpPostProcess);
 		Model(const char* filepath, unsigned int assimpPostProcess, bool pbr);
+		*/
 		~Model();
 
 		void Draw(Shader& shader, int instanceNum, const std::vector<unsigned int> instanceVAOs);
@@ -59,6 +71,7 @@ namespace Engine {
 
 		bool ContainsTransparentMeshes() { return containsTransparentMeshes; }
 
+		void SetHasBones(const bool hasBones) { this->hasBones = hasBones; }
 		bool HasBones() { return hasBones; }
 
 		// Helper function to convert ASSIMP aiMatrix4x4 to glm::mat4
@@ -73,12 +86,10 @@ namespace Engine {
 			return to;
 		}
 
-		AnimationSkeleton& GetAnimationSkeleton() { return skeleton; }
-
-		void RetargetSkeletonRootBone(const std::string& boneName);
+		void SetAnimationSkeleton(AnimationSkeleton* newSkeleton) { this->skeleton = newSkeleton; }
+		AnimationSkeleton* GetAnimationSkeleton() { return skeleton; }
 
 		std::vector<Mesh*> meshes;
-		//std::vector<Texture> textures_loaded;
 
 		ComponentGeometry* GetOwner() { return owner; }
 		const ComponentGeometry* GetOwnerConst() const { return owner; }
@@ -106,17 +117,18 @@ namespace Engine {
 
 		bool containsTransparentMeshes;
 
-		AnimationSkeleton skeleton;
+		AnimationSkeleton* skeleton;
 
 		bool hasBones;
 
 		ComponentGeometry* owner;
-
+		/*
 		void LoadModel(std::string filepath, unsigned int assimpPostProcess);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 		void ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
 		bool ProcessEmptyBones(aiNode* node);
 		std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureTypes name, const aiScene* scene);
+		*/
 	};
 }

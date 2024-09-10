@@ -11,6 +11,8 @@ namespace Engine {
 		this->hasBones = old_model.hasBones;
 		this->containsTransparentMeshes = old_model.containsTransparentMeshes;
 		this->directory = old_model.directory;
+		this->skeleton = old_model.skeleton;
+		this->hasBones = old_model.hasBones;
 
 		for (unsigned int i = 0; i < meshes.size(); i++) {
 			Mesh* m = meshes[i];
@@ -53,7 +55,7 @@ namespace Engine {
 			m->SetLocalMeshID(i);
 		}
 	}
-
+	/*
 	Model::Model(const char* filepath, unsigned int assimpPostProcess)
 	{
 		pbr = false;
@@ -81,6 +83,7 @@ namespace Engine {
 			m->SetLocalMeshID(i);
 		}
 	}
+	*/
 
 	Model::~Model()
 	{
@@ -151,16 +154,7 @@ namespace Engine {
 		}
 	}
 
-	void Model::RetargetSkeletonRootBone(const std::string& boneName)
-	{
-		if (skeleton.bones.find(boneName) != skeleton.bones.end()) {
-			skeleton.rootBone = &skeleton.bones[boneName];
-		}
-		else {
-			std::cout << "ERROR::MODEL::RETARGETSKELETONROOTBONE::Bone not found" << std::endl;
-		}
-	}
-
+	/*
 	void Model::LoadModel(std::string filepath, unsigned int assimpPostProcess)
 	{
 		std::cout << "Model::LoadModel deprecated" << std::endl;
@@ -207,6 +201,7 @@ namespace Engine {
 
 	Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
+		
 		std::cout << "Model::ProcessMesh deprecated" << std::endl;
 		return nullptr;
 
@@ -387,10 +382,12 @@ namespace Engine {
 				//return new Mesh(vertices, indices, pbrMaterial);
 			}
 		}
+		
 	}
 
 	void Model::ProcessBones(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
 	{
+		
 		for (unsigned int i = 0; i < mesh->mNumBones; i++) {
 			hasBones = true;
 
@@ -435,8 +432,10 @@ namespace Engine {
 				vertices[vertexID].AddBoneData(boneID, aiWeight.mWeight);
 			}
 		}
+		
 	}
 
+	
 	bool Model::ProcessEmptyBones(aiNode* node)
 	{
 		if (node) {
@@ -507,4 +506,5 @@ namespace Engine {
 
 		return textures;
 	}
+	*/
 }
