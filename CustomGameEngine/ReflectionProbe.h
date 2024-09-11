@@ -19,6 +19,9 @@ namespace Engine {
 
 		const bool GetRenderSkybox() const { return renderSkybox; }
 
+		const bool GetDiscardUnfilteredCapture() const { return discardUnfilteredCapture; }
+		void SetDiscardUnfilteredCapture(const bool discardUnfilteredCapture) { this->discardUnfilteredCapture = discardUnfilteredCapture; }
+
 		const float GetNearClip() const { return nearClip; }
 		const float GetFarClip() const { return farClip; }
 		
@@ -33,6 +36,7 @@ namespace Engine {
 		unsigned int faceHeight;
 
 		bool renderSkybox;
+		bool discardUnfilteredCapture;
 
 		float nearClip;
 		float farClip;

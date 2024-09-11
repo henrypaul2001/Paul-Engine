@@ -77,10 +77,10 @@ namespace Engine
 		}
 	}
 
-	void SystemManager::BakeReflectionProbes(const std::vector<Entity*>& entities)
+	void SystemManager::BakeReflectionProbes(const std::vector<Entity*>& entities, const bool discardUnfilteredCapture)
 	{
 		if (reflectionProbeSystem != nullptr) {
-			reflectionProbeSystem->Run(entities);
+			reflectionProbeSystem->Run(entities, discardUnfilteredCapture);
 		}
 		else {
 			std::cout << "SYSTEMMANAGER::BakeReflectionProbes::Cannot bake reflection probes, reflection probe system missing" << std::endl;

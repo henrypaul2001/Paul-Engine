@@ -37,7 +37,7 @@ namespace Engine
 		void AddCollisionResponseSystem(CollisionResolver* collisionResponder) { this->collisionResponseSystem = collisionResponder; }
 		void AddConstraintSolver(ConstraintSolver* constraintSolver) { this->constraintSolver = constraintSolver; }
 
-		void BakeReflectionProbes(const std::vector<Entity*>& entities);
+		void BakeReflectionProbes(const std::vector<Entity*>& entities, const bool discardUnfilteredCapture = true);
 	};
 }
 

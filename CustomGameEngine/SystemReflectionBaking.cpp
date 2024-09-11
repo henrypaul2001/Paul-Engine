@@ -12,7 +12,7 @@ namespace Engine {
 
 	}
 
-	void SystemReflectionBaking::Run(const std::vector<Entity*>& entityList)
+	void SystemReflectionBaking::Run(const std::vector<Entity*>& entityList, const bool discardUnfilteredCapture)
 	{
 		SCOPE_TIMER("SystemReflectionBaking::Run");
 		// Capture scene and process capture
@@ -127,6 +127,11 @@ namespace Engine {
 
 			ConvoluteEnvironmentMap(probe);
 			PrefilterMap(probe);
+
+			probe->SetDiscardUnfilteredCapture(discardUnfilteredCapture);
+			if (discardUnfilteredCapture) {
+				glDeleteTextures(1, &cubemapID);
+			}
 
 			glEnable(GL_CULL_FACE);
 		}

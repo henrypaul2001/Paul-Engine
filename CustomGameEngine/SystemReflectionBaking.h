@@ -13,7 +13,7 @@ namespace Engine {
 		void OnAction(Entity* entity) override;
 		void AfterAction() override;
 
-		void Run(const std::vector<Entity*>& entityList);
+		void Run(const std::vector<Entity*>& entityList, const bool discardUnfilteredCapture = true);
 
 		void SetActiveCamera(Camera* newCamera) { activeCamera = newCamera; }
 	private:

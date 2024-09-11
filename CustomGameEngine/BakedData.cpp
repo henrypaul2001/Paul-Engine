@@ -19,31 +19,33 @@ namespace Engine {
 
 			probeString = std::to_string(probeID);
 
-			// --- Write skybox ---
-			// --------------------
 			stbi_flip_vertically_on_write(false);
-
 			faceWidth = probe->GetFaceWidth();
 			faceHeight = probe->GetFaceHeight();
-			GLfloat* floatData = new GLfloat[faceWidth * faceHeight * 3];
 
-			glBindTexture(GL_TEXTURE_CUBE_MAP, probe->GetCubemapTextureID());
-			glFinish();
+			// --- Write skybox ---
+			// --------------------
+			if (!probe->GetDiscardUnfilteredCapture()) {
+				GLfloat* floatData = new GLfloat[faceWidth * faceHeight * 3];
 
-			for (unsigned int j = 0; j < 6; j++) {
-				path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/Skybox/" += cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + j] + ".hdr";
-
-				glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB, GL_FLOAT, floatData);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, probe->GetCubemapTextureID());
 				glFinish();
 
-				stbi_write_hdr(path.c_str(), faceWidth, faceHeight, 3, floatData);
-			}
+				for (unsigned int j = 0; j < 6; j++) {
+					path = "Data/ReflectionProbe/" + probe->GetSceneName() + "/" + probeString + "/Skybox/" += cubemapFaceToString[GL_TEXTURE_CUBE_MAP_POSITIVE_X + j] + ".hdr";
 
-			delete[] floatData;
+					glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB, GL_FLOAT, floatData);
+					glFinish();
+
+					stbi_write_hdr(path.c_str(), faceWidth, faceHeight, 3, floatData);
+				}
+
+				delete[] floatData;
+			}
 
 			// - Write irradiance -
 			// --------------------
-			floatData = new GLfloat[32 * 32 * 3];
+			GLfloat* floatData = new GLfloat[32 * 32 * 3];
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbeIrradianceMapArray);
 			glFinish();
@@ -119,42 +121,55 @@ namespace Engine {
 			// Cubemaps
 			// --- Load skybox ---
 			// -------------------
-			std::string cubemapFilepath = probeFilepath + "/Skybox";
 			unsigned int skybox = probe->GetCubemapTextureID();
-			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
-			std::string filepath = cubemapFilepath;
-			int width, height, nrChannels;
-			for (unsigned int j = 0; j < 6; j++) {
-				filepath = cubemapFilepath + faces[j];
-
-				// Load from file
-				float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
-
-				// Check result
-				if (floatData) {
-					// Check dimensions
-					if (width != faceWidth || height != faceHeight) {
-						std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading skybox cubemap for probe " << probeID << std::endl;
-						stbi_image_free(floatData);
-						break;
-					}
-
-					// Read into texture
-					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, faceWidth, faceHeight, 0, GL_RGB, GL_FLOAT, floatData);
-				}
-				else {
-					std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
-				}
-				stbi_image_free(floatData);
+			std::string cubemapFilepath = probeFilepath + "/Skybox";
+			FILE* f;
+			fopen_s(&f, (cubemapFilepath + faces[0]).c_str(), "rb");
+			if (f == NULL) {
+				// Discard skybox
+				std::cout << "BAKEDDATA::Skybox not saved " << probeID << std::endl;
+				glDeleteTextures(1, &skybox);
+				probe->SetDiscardUnfilteredCapture(true);
 			}
-			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			else {
+				fclose(f);
+				probe->SetDiscardUnfilteredCapture(false);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
+				std::string filepath = cubemapFilepath;
+				int width, height, nrChannels;
+				for (unsigned int j = 0; j < 6; j++) {
+					filepath = cubemapFilepath + faces[j];
+
+					// Load from file
+					float* floatData = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+					// Check result
+					if (floatData) {
+						// Check dimensions
+						if (width != faceWidth || height != faceHeight) {
+							std::cout << "ERROR::BAKEDDATA::Mismatch of data when loading skybox cubemap for probe " << probeID << std::endl;
+							stbi_image_free(floatData);
+							break;
+						}
+
+						// Read into texture
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_RGB16F, faceWidth, faceHeight, 0, GL_RGB, GL_FLOAT, floatData);
+					}
+					else {
+						std::cout << "ERROR::BAKEDDATA::Cubemap face failed to load at path: " << filepath << std::endl;
+					}
+					stbi_image_free(floatData);
+				}
+				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			}
 
 			// - Load irradiance -
 			// -------------------
 			std::string irradianceFilepath = probeFilepath + "/Irradiance";
 			glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, reflectionProbeIrradianceMapArray);
-			filepath = irradianceFilepath;
+			std::string filepath = irradianceFilepath;
 			unsigned int layer;
+			int width, height, nrChannels;
 			for (unsigned int j = 0; j < 6; j++) {
 				filepath = irradianceFilepath + faces[j];
 
