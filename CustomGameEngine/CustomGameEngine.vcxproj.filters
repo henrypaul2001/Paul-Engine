@@ -148,6 +148,12 @@
     <Filter Include="Header Files\Engine\Utility\Geometry">
       <UniqueIdentifier>{34285957-394a-4f10-aa1a-c8623dad81cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\ShaderTypes">
+      <UniqueIdentifier>{3ce67d6b-9390-480b-a301-e3bcf3a1113b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Utility\ShaderTypes">
+      <UniqueIdentifier>{b90e3c3d-3619-41ed-a829-16e4335ed50b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -200,9 +206,6 @@
     </ClInclude>
     <ClInclude Include="ComponentGeometry.h">
       <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files\Engine\Utility</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\Engine</Filter>
@@ -481,7 +484,13 @@
       <Filter>Header Files\Engine\Utility\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="AbstractShader.h">
-      <Filter>Header Files\Engine\Utility</Filter>
+      <Filter>Header Files\Engine\Utility\ShaderTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Engine\Utility\ShaderTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="ComputeShader.h">
+      <Filter>Header Files\Engine\Utility\ShaderTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -541,9 +550,6 @@
     </ClCompile>
     <ClCompile Include="ComponentGeometry.cpp">
       <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files\Engine</Filter>
@@ -822,7 +828,13 @@
       <Filter>Source Files\Engine\Utility\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="AbstractShader.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
+      <Filter>Source Files\Engine\Utility\ShaderTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Engine\Utility\ShaderTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="ComputeShader.cpp">
+      <Filter>Source Files\Engine\Utility\ShaderTypes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

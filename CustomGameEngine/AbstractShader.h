@@ -23,9 +23,7 @@ namespace Engine {
 			setupStatus = SETUP_NOT_STARTED;
 		}
 		virtual ~AbstractShader() {
-			if (setupStatus == LINKED) {
-				glDeleteProgram(ID);
-			}
+			glDeleteProgram(ID);
 		}
 
 		const unsigned int GetID() const { return ID; }

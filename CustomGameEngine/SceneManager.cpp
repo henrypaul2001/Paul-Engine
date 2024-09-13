@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "InputManager.h"
+#include "ComputeShader.h"
 namespace Engine
 {
 	SceneManager::SceneManager(int width, int height, int windowXPos, int windowYPos) 
@@ -126,6 +127,8 @@ namespace Engine
 		RenderManager::GetInstance(1024 * 2, 1024 * 2, SCR_WIDTH, SCR_HEIGHT);
 
 		Profiling::Profiler::GetInstance();
+
+		ComputeShader::InitOpenGLConstants();
 
 		std::cout << "SUCCESS::SCENEMANAGER::ONLOAD::OpenGL initialised" << std::endl;
 	}
