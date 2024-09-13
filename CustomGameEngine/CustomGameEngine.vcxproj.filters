@@ -480,6 +480,9 @@
     <ClInclude Include="ASSIMPModelLoader.h">
       <Filter>Header Files\Engine\Utility\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="AbstractShader.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -817,6 +820,9 @@
     </ClCompile>
     <ClCompile Include="ASSIMPModelLoader.cpp">
       <Filter>Source Files\Engine\Utility\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractShader.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

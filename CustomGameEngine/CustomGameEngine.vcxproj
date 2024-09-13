@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractShader.h" />
     <ClInclude Include="AIScene.h" />
     <ClInclude Include="AnimationChannel.h" />
     <ClInclude Include="AnimationScene.h" />
@@ -255,6 +256,7 @@
     <ClInclude Include="UITextButton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractShader.cpp" />
     <ClCompile Include="AIScene.cpp" />
     <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AnimationScene.cpp" />
