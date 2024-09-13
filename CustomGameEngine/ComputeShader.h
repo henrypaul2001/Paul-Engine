@@ -1,7 +1,31 @@
 #pragma once
 #include "AbstractShader.h"
+#include <unordered_map>
 namespace Engine {
-    class ComputeShader : public AbstractShader
+	struct ShaderStorageBuffer {
+	public:
+		ShaderStorageBuffer() { id = 0; }
+		ShaderStorageBuffer(const unsigned int binding) {
+			id = 0;
+			glGenBuffers(1, &id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		}
+		~ShaderStorageBuffer() {
+			glDeleteBuffers(1, &id);
+		}
+
+		void BufferData(const void* data, const GLsizeiptr dataSize, const GLenum usage = GL_STATIC_DRAW) const {
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize, data, usage);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		}
+	private:
+		unsigned int id;
+	};
+	
+	class ComputeShader : public AbstractShader
     {
     public:
         ComputeShader(const char* cPath) : AbstractShader() {
@@ -76,6 +100,12 @@ namespace Engine {
         }
         ~ComputeShader() {}
 
+		static void InitOpenGLConstants() {
+			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &maxWorkGroupsX);
+			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxWorkGroupsY);
+			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupsZ);
+		}
+
 		void DispatchCompute(const unsigned int xGroups = 1, const unsigned int yGroups = 1, const unsigned int zGroups = 1, GLbitfield barrierBits = GL_ALL_BARRIER_BITS) const {
 			assert(xGroups >= 1, "ERROR::ComputeShader::xGroups cannot be less than one");
 			assert(yGroups >= 1, "ERROR::ComputeShader::yGroups cannot be less than one");
@@ -91,11 +121,18 @@ namespace Engine {
 			glMemoryBarrier(barrierBits);
 		}
 
-		static void InitOpenGLConstants() {
-			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &maxWorkGroupsX);
-			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxWorkGroupsY);
-			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupsZ);
+		void AddNewSSBO(const unsigned int binding) {
+			if (shaderStorageBufferMap.find(binding) != shaderStorageBufferMap.end()) {
+				std::cout << "ERROR::ComputeShader::SSBO binding (" << binding << ") already exists" << std::endl;
+			}
+			else {
+				shaderStorageBufferMap[binding] = ShaderStorageBuffer(binding);
+			}
 		}
+		const ShaderStorageBuffer& GetSSBO(const unsigned int binding) { return shaderStorageBufferMap.at(binding); }
+
+	protected:
+		std::unordered_map<unsigned int, ShaderStorageBuffer> shaderStorageBufferMap; // <binding, buffer>
 
 	private:
 		static int maxWorkGroupsX;
