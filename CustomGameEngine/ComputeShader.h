@@ -4,7 +4,7 @@ namespace Engine {
     class ComputeShader : public AbstractShader
     {
     public:
-        ComputeShader(const char* cPath) {
+        ComputeShader(const char* cPath) : AbstractShader() {
 			// retrieve source code from file
 			std::string computeCode;
 			std::ifstream cShaderFile;
@@ -71,6 +71,8 @@ namespace Engine {
 
 			// delete shader (no longer needed after being linked to program)
 			glDeleteShader(compute);
+
+			setupStatus = LINKED;
         }
         ~ComputeShader() {}
 

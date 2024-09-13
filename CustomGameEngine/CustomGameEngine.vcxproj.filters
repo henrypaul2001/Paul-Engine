@@ -154,6 +154,9 @@
     <Filter Include="Source Files\Engine\Utility\ShaderTypes">
       <UniqueIdentifier>{b90e3c3d-3619-41ed-a829-16e4335ed50b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Shaders\ComputeShaders">
+      <UniqueIdentifier>{66cdecbe-65b6-433c-aef4-e6dc70f1b64b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -999,6 +1002,9 @@
     </None>
     <None Include="Shaders\colliderDebug.frag">
       <Filter>Source Files\Engine\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Compute\test.comp">
+      <Filter>Source Files\Engine\Shaders\ComputeShaders</Filter>
     </None>
   </ItemGroup>
 </Project>

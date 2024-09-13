@@ -3,6 +3,7 @@
 #include "SystemUIRender.h"
 #include "SystemUIMouseInteraction.h"
 #include "GameSceneManager.h"
+#include "ComputeShader.h"
 namespace Engine {
 	MainMenu::MainMenu(SceneManager* sceneManager) : Scene(sceneManager, "MainMenu")
 	{
@@ -58,6 +59,9 @@ namespace Engine {
 
 		CreateSystems();
 		CreateEntities();
+
+		ComputeShader* testCompute = resources->LoadComputeShader("Shaders/Compute/test.comp");
+		testCompute->DispatchCompute();
 
 		inputManager->SetCursorLock(false);
 	}

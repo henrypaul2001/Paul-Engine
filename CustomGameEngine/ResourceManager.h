@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "TextureAtlas.h"
 #include "TextFont.h"
-
+#include "ComputeShader.h"
 #include <ft2build.h>
 #include "SkeletalAnimation.h"
 #include "AudioFile.h"
@@ -33,7 +33,7 @@ namespace Engine {
 
 	struct Resources {
 		std::unordered_map<std::string, MeshData*> meshes;
-		std::unordered_map<std::string, Shader*> shaders;
+		std::unordered_map<std::string, AbstractShader*> shaders;
 		std::unordered_map<std::string, Texture*> textures;
 		std::unordered_map<std::string, Cubemap*> cubemaps;
 		std::unordered_map<std::string, HDREnvironment*> hdrCubemaps;
@@ -137,6 +137,7 @@ namespace Engine {
 		// Creates model without adding to resource list. Instead references previously loaded MeshData in case of duplicate models. This will be the main way of loading models moving forward
 		Model* CreateModel(const std::string& filepath, bool pbr, bool loadInPersistentResources = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		
+		ComputeShader* LoadComputeShader(const char* computePath, bool loadInPersistentResources = false);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources = false);
 		Shader* LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources = false);
 		Texture* LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources = false, AnisotropicFiltering anisoFilter = (AnisotropicFiltering)-1);
@@ -177,6 +178,7 @@ namespace Engine {
 			return true;
 		}
 		MeshData* GetMeshData(const std::string& fileNamePlusMeshName);
+		ComputeShader* GetComputeShader(const char* computePath);
 		Shader* GetShader(const std::string& vertexPath, const std::string& fragmentPath);
 		Shader* GetShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
 		Texture* GetTexture(const std::string& filepath);

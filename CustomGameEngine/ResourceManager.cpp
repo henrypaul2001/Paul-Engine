@@ -651,7 +651,7 @@ namespace Engine {
 		resources.meshes.clear();
 
 		// delete shaders
-		std::unordered_map<std::string, Shader*>::iterator shadersIt = resources.shaders.begin();
+		std::unordered_map<std::string, AbstractShader*>::iterator shadersIt = resources.shaders.begin();
 		while (shadersIt != resources.shaders.end()) {
 			delete shadersIt->second;
 			shadersIt++;
@@ -742,12 +742,44 @@ namespace Engine {
 		return newModel;
 	}
 
+	ComputeShader* ResourceManager::LoadComputeShader(const char* computePath, bool loadInPersistentResources)
+	{
+		std::unordered_map<std::string, AbstractShader*>::iterator persistentIt = persistentResources.shaders.find(computePath);
+		std::unordered_map<std::string, AbstractShader*>::iterator tempIt = tempResources.shaders.find(computePath);
+
+		bool existsInPersistent = true;
+		bool existsInTemp = true;
+		if (persistentIt == persistentResources.shaders.end()) {
+			existsInPersistent = false;
+		}
+		if (tempIt == tempResources.shaders.end()) {
+			existsInTemp = false;
+		}
+
+		if (!existsInPersistent && !existsInTemp) {
+			std::cout << "RESOURCEMANAGER::Loading compute shader " << computePath << std::endl;
+			// Shader not currently loaded
+			if (loadInPersistentResources) {
+				persistentResources.shaders[computePath] = dynamic_cast<AbstractShader*>(new ComputeShader(computePath));
+				return dynamic_cast<ComputeShader*>(persistentResources.shaders[computePath]);
+			}
+			else {
+				tempResources.shaders[computePath] = dynamic_cast<AbstractShader*>(new ComputeShader(computePath));
+				return dynamic_cast<ComputeShader*>(tempResources.shaders[computePath]);
+			}
+		}
+
+		std::unordered_map<std::string, AbstractShader*>::iterator it = persistentIt;
+		if (existsInTemp) { it = tempIt; }
+		return dynamic_cast<ComputeShader*>(it->second);
+	}
+
 	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, bool loadInPersistentResources)
 	{
 		std::string combinedPath = vertexPath + "|" + fragmentPath;
 
-		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
-		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
 
 		bool existsInPersistent = true;
 		bool existsInTemp = true;
@@ -762,26 +794,26 @@ namespace Engine {
 			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
 			// Shader not currently loaded
 			if (loadInPersistentResources) {
-				persistentResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
-				return persistentResources.shaders[combinedPath];
+				persistentResources.shaders[combinedPath] = dynamic_cast<AbstractShader*>(new Shader(vertexPath.c_str(), fragmentPath.c_str()));
+				return dynamic_cast<Shader*>(persistentResources.shaders[combinedPath]);
 			}
 			else {
 				tempResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str());
-				return tempResources.shaders[combinedPath];
+				return dynamic_cast<Shader*>(tempResources.shaders[combinedPath]);
 			}
 		}
 
-		std::unordered_map<std::string, Shader*>::iterator it = persistentIt;
+		std::unordered_map<std::string, AbstractShader*>::iterator it = persistentIt;
 		if (existsInTemp) { it = tempIt; }
-		return it->second;
+		return dynamic_cast<Shader*>(it->second);
 	}
 
 	Shader* ResourceManager::LoadShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath, bool loadInPersistentResources)
 	{
 		std::string combinedPath = vertexPath + "|" + fragmentPath + "|" + geometryPath;
 
-		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
-		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
 
 		bool existsInPersistent = true;
 		bool existsInTemp = true;
@@ -796,18 +828,18 @@ namespace Engine {
 			std::cout << "RESOURCEMANAGER::Loading shader " << combinedPath << std::endl;
 			// Shader not currently loaded
 			if (loadInPersistentResources) {
-				persistentResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
-				return persistentResources.shaders[combinedPath];
+				persistentResources.shaders[combinedPath] = dynamic_cast<AbstractShader*>(new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str()));
+				return dynamic_cast<Shader*>(persistentResources.shaders[combinedPath]);
 			}
 			else {
-				tempResources.shaders[combinedPath] = new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str());
-				return tempResources.shaders[combinedPath];
+				tempResources.shaders[combinedPath] = dynamic_cast<AbstractShader*>(new Shader(vertexPath.c_str(), fragmentPath.c_str(), geometryPath.c_str()));
+				return dynamic_cast<Shader*>(tempResources.shaders[combinedPath]);
 			}
 		}
 
-		std::unordered_map<std::string, Shader*>::iterator it = persistentIt;
+		std::unordered_map<std::string, AbstractShader*>::iterator it = persistentIt;
 		if (existsInTemp) { it = tempIt; }
-		return it->second;
+		return dynamic_cast<Shader*>(it->second);
 	}
 
 	Texture* ResourceManager::LoadTexture(std::string filepath, TextureTypes type, bool srgb, bool loadInPersistentResources, AnisotropicFiltering anisoFilter)
@@ -1406,18 +1438,34 @@ namespace Engine {
 		}
 	}
 
+	ComputeShader* ResourceManager::GetComputeShader(const char* computePath)
+	{
+		std::unordered_map<std::string, AbstractShader*>::iterator persistentIt = persistentResources.shaders.find(computePath);
+		std::unordered_map<std::string, AbstractShader*>::iterator tempIt = tempResources.shaders.find(computePath);
+
+		if (persistentIt != persistentResources.shaders.end()) {
+			return dynamic_cast<ComputeShader*>(persistentIt->second);
+		}
+		else if (tempIt != tempResources.shaders.end()) {
+			return dynamic_cast<ComputeShader*>(tempIt->second);
+		}
+		else {
+			return nullptr;
+		}
+	}
+
 	Shader* ResourceManager::GetShader(const std::string& vertexPath, const std::string& fragmentPath)
 	{
 		std::string combinedPath = vertexPath + "|" + fragmentPath;
 
-		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
-		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
 
 		if (persistentIt != persistentResources.shaders.end()) {
-			return persistentIt->second;
+			return dynamic_cast<Shader*>(persistentIt->second);
 		}
 		else if (tempIt != tempResources.shaders.end()) {
-			return tempIt->second;
+			return dynamic_cast<Shader*>(tempIt->second);
 		}
 		else {
 			return nullptr;
@@ -1428,14 +1476,14 @@ namespace Engine {
 	{
 		std::string combinedPath = vertexPath + "|" + fragmentPath + "|" + geometryPath;
 
-		std::unordered_map<std::string, Shader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
-		std::unordered_map<std::string, Shader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator persistentIt = persistentResources.shaders.find(combinedPath);
+		std::unordered_map<std::string, AbstractShader*>::iterator tempIt = tempResources.shaders.find(combinedPath);
 
 		if (persistentIt != persistentResources.shaders.end()) {
-			return persistentIt->second;
+			return dynamic_cast<Shader*>(persistentIt->second);
 		}
 		else if (tempIt != tempResources.shaders.end()) {
-			return tempIt->second;
+			return dynamic_cast<Shader*>(tempIt->second);
 		}
 		else {
 			return nullptr;

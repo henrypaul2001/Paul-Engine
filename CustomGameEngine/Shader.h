@@ -1,13 +1,10 @@
 #pragma once
-#ifndef SHADER_H
-#define SHADER_H
 #include "AbstractShader.h"
-
 namespace Engine {
 	class Shader : public AbstractShader
 	{
 	public:
-		Shader(const char* vPath, const char* fPath) {
+		Shader(const char* vPath, const char* fPath) : AbstractShader() {
 			// 1. retrieve source code
 			std::string vCode;
 			std::string fCode;
@@ -102,7 +99,7 @@ namespace Engine {
 
 			setupStatus = LINKED;
 		}
-		Shader(const char* vPath, const char* fPath, const char* gPath) {
+		Shader(const char* vPath, const char* fPath, const char* gPath) : AbstractShader() {
 			// 1. retrieve source code from files
 			std::string vertexCode;
 			std::string fragmentCode;
@@ -228,4 +225,3 @@ namespace Engine {
 		~Shader() {}
 	};
 }
-#endif
