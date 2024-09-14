@@ -59,6 +59,8 @@ namespace Engine {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 			return bufferSize;
 		}
+		const unsigned int GetID() const { return id; }
+
 	private:
 		unsigned int id;
 	};
@@ -167,7 +169,15 @@ namespace Engine {
 				shaderStorageBufferMap[binding] = ShaderStorageBuffer(binding);
 			}
 		}
-		const ShaderStorageBuffer& GetSSBO(const unsigned int binding) { return shaderStorageBufferMap.at(binding); }
+		const ShaderStorageBuffer* GetSSBO(const unsigned int binding) {
+			if (shaderStorageBufferMap.find(binding) != shaderStorageBufferMap.end()) {
+				return &shaderStorageBufferMap.at(binding);
+			}
+			else {
+				std::cout << "ERROR:ComputeShader::Buffer at binding (" << binding << ") does not exist" << std::endl;
+				return nullptr;
+			}
+		}
 
 	protected:
 		std::unordered_map<unsigned int, ShaderStorageBuffer> shaderStorageBufferMap; // <binding, buffer>
