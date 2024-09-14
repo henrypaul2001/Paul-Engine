@@ -161,12 +161,14 @@ namespace Engine {
 			glMemoryBarrier(barrierBits);
 		}
 
-		void AddNewSSBO(const unsigned int binding) {
+		const ShaderStorageBuffer* AddNewSSBO(const unsigned int binding) {
 			if (shaderStorageBufferMap.find(binding) != shaderStorageBufferMap.end()) {
 				std::cout << "ERROR::ComputeShader::SSBO binding (" << binding << ") already exists" << std::endl;
+				return nullptr;
 			}
 			else {
 				shaderStorageBufferMap[binding] = ShaderStorageBuffer(binding);
+				return &shaderStorageBufferMap[binding];
 			}
 		}
 		const ShaderStorageBuffer* GetSSBO(const unsigned int binding) {
