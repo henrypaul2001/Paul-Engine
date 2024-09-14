@@ -16,10 +16,48 @@ namespace Engine {
 			glDeleteBuffers(1, &id);
 		}
 
+		// Buffer data into entire GPU buffer
 		void BufferData(const void* data, const GLsizeiptr dataSize, const GLenum usage = GL_STATIC_DRAW) const {
+			if (data != nullptr) {
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+				glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize, data, usage);
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			}
+		}
+
+		// Buffer data into sub section of GPU buffer
+		void BufferSubData(const void* data, const GLsizeiptr dataSize, const GLintptr offset) const {
+			if (data != nullptr) {
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+				glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, dataSize, data);
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			}
+		}
+
+		// Reads the entire buffer into CPU
+		void ReadBufferData(void* dataOutput) const {
+			if (dataOutput != nullptr) {
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+				glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, GetBufferSizeInBytes(), dataOutput);
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			}
+		}
+
+		// Reads sub section of buffer into CPU
+		void ReadBufferSubData(void* dataOutput, const GLsizeiptr dataSize, const GLintptr offset) const {
+			if (dataOutput != nullptr) {
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+				glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, dataSize, dataOutput);
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			}
+		}
+
+		const GLint GetBufferSizeInBytes() const {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
-			glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize, data, usage);
+			GLint bufferSize = 0;
+			glGetBufferParameteriv(GL_SHADER_STORAGE_BUFFER, GL_BUFFER_SIZE, &bufferSize);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			return bufferSize;
 		}
 	private:
 		unsigned int id;
