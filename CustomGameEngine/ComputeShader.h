@@ -14,7 +14,6 @@ namespace Engine {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 		~ShaderStorageBuffer() {
-			std::cout << "DELETE" << id << binding << std::endl;
 			glDeleteBuffers(1, &id);
 		}
 
@@ -53,6 +52,50 @@ namespace Engine {
 			}
 		}
 
+		void UnmapBuffer() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, id); glUnmapBuffer(GL_SHADER_STORAGE_BUFFER); }
+
+		// Map buffer to pointer for reading, bufferSize = -1 will automatically get buffer size. Call UnmapBuffer() after using
+		void* MapBufferForRead(GLint bufferSize = -1, const GLintptr offset = 0) const {
+			if (bufferSize == -1) { bufferSize = GetBufferSizeInBytes(); }
+			void* ptr = MapBuffer(bufferSize, offset, GL_MAP_READ_BIT);
+
+			if (ptr) {
+				return ptr;
+			}
+			else {
+				std::cout << "ERROR::ShaderStorageBuffer::Failed to map buffer for reading. ID (" << id << "), Binding (" << binding << ")" << std::endl;
+				return nullptr;
+			}
+		}
+
+		// Map buffer to pointer for writing, bufferSize = -1 will automatically get buffer size. Call UnmapBuffer() after using
+		void* MapBufferForWrite(GLint bufferSize = -1, const GLintptr offset = 0) const {
+			if (bufferSize == -1) { bufferSize = GetBufferSizeInBytes(); }
+			void* ptr = MapBuffer(bufferSize, offset, GL_MAP_WRITE_BIT);
+
+			if (ptr) {
+				return ptr;
+			}
+			else {
+				std::cout << "ERROR::ShaderStorageBuffer::Failed to map buffer for writing. ID (" << id << "), Binding (" << binding << ")" << std::endl;
+				return nullptr;
+			}
+		}
+
+		// Map buffer to pointer for reading/writing, bufferSize = -1 will automatically get buffer size. Call UnmapBuffer() after using
+		void* MapBufferForReadAndWrite(GLint bufferSize = -1, const GLintptr offset = 0) const {
+			if (bufferSize == -1) { bufferSize = GetBufferSizeInBytes(); }
+			void* ptr = MapBuffer(bufferSize, offset, (GL_MAP_READ_BIT | GL_MAP_WRITE_BIT));
+
+			if (ptr) {
+				return ptr;
+			}
+			else {
+				std::cout << "ERROR::ShaderStorageBuffer::Failed to map buffer for read/write. ID (" << id << "), Binding (" << binding << ")" << std::endl;
+				return nullptr;
+			}
+		}
+
 		const GLint GetBufferSizeInBytes() const {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
 			GLint bufferSize = 0;
@@ -67,6 +110,18 @@ namespace Engine {
 		const unsigned int GetID() const { return id; }
 		const unsigned int GetBinding() const { return binding; }
 	private:
+		void* MapBuffer(GLint bufferSize, const GLintptr offset, const GLenum access) const {
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			void* ptr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, offset, bufferSize, access);
+
+			if (ptr) {
+				return ptr;
+			}
+			else {
+				return nullptr;
+			}
+		}
+
 		unsigned int id;
 		unsigned int binding;
 	};

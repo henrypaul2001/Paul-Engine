@@ -77,7 +77,15 @@ namespace Engine {
 		outputBuffer->BufferData(nullptr, 100 * sizeof(float), GL_DYNAMIC_READ);
 		testCompute->DispatchCompute(100, 1, 1, GL_SHADER_STORAGE_BARRIER_BIT);
 
-		outputBuffer->ReadBufferData(&output);
+		//outputBuffer->ReadBufferData(&output);
+
+		float* inputReadAndWrite = (float*)inputBuffer->MapBufferForReadAndWrite();
+
+		float* readOutput = (float*)outputBuffer->MapBufferForRead();
+		for (unsigned int i = 0; i < bufferSize; i++) {
+			std::cout << readOutput[i] << std::endl;
+		}
+		outputBuffer->UnmapBuffer();
 
 		inputManager->SetCursorLock(false);
 	}
