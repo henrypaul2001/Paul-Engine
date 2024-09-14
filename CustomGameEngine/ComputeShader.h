@@ -4,9 +4,10 @@
 namespace Engine {
 	struct ShaderStorageBuffer {
 	public:
-		ShaderStorageBuffer() { id = 0; }
+		ShaderStorageBuffer() { id = 0; binding = 0; }
 		ShaderStorageBuffer(const unsigned int binding) {
 			id = 0;
+			this->binding = binding;
 			glGenBuffers(1, &id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
@@ -60,9 +61,10 @@ namespace Engine {
 			return bufferSize;
 		}
 		const unsigned int GetID() const { return id; }
-
+		const unsigned int GetBinding() const { return binding; }
 	private:
 		unsigned int id;
+		unsigned int binding;
 	};
 	
 	class ComputeShader : public AbstractShader
