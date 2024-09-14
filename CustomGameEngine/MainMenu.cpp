@@ -61,7 +61,23 @@ namespace Engine {
 		CreateEntities();
 
 		ComputeShader* testCompute = resources->LoadComputeShader("Shaders/Compute/test.comp");
-		testCompute->DispatchCompute();
+		const ShaderStorageBuffer* inputBuffer = testCompute->AddNewSSBO(0);
+		const ShaderStorageBuffer* outputBuffer = testCompute->AddNewSSBO(1);
+
+		const unsigned int bufferSize = 100u;
+
+		float input[bufferSize];
+		float output[bufferSize] = { 1.0f };
+
+		for (unsigned int i = 0; i < bufferSize; i++) {
+			input[i] = i;
+		}
+
+		inputBuffer->BufferData(&input, 100 * sizeof(float), GL_STREAM_DRAW);
+		outputBuffer->BufferData(nullptr, 100 * sizeof(float), GL_DYNAMIC_READ);
+		testCompute->DispatchCompute(100, 1, 1, GL_SHADER_STORAGE_BARRIER_BIT);
+
+		outputBuffer->ReadBufferData(&output);
 
 		inputManager->SetCursorLock(false);
 	}

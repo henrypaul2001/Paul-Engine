@@ -14,32 +14,32 @@ namespace Engine {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 		~ShaderStorageBuffer() {
+			std::cout << "DELETE" << id << binding << std::endl;
 			glDeleteBuffers(1, &id);
 		}
 
 		// Buffer data into entire GPU buffer
 		void BufferData(const void* data, const GLsizeiptr dataSize, const GLenum usage = GL_STATIC_DRAW) const {
-			if (data != nullptr) {
-				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
-				glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize, data, usage);
-				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-			}
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize, data, usage);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 
 		// Buffer data into sub section of GPU buffer
 		void BufferSubData(const void* data, const GLsizeiptr dataSize, const GLintptr offset) const {
-			if (data != nullptr) {
-				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
-				glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, dataSize, data);
-				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-			}
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, dataSize, data);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 
 		// Reads the entire buffer into CPU
 		void ReadBufferData(void* dataOutput) const {
 			if (dataOutput != nullptr) {
+				GLsizeiptr size = GetBufferSizeInBytes();
 				glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
-				glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, GetBufferSizeInBytes(), dataOutput);
+				glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, dataOutput);
 				glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 			}
 		}
@@ -59,6 +59,10 @@ namespace Engine {
 			glGetBufferParameteriv(GL_SHADER_STORAGE_BUFFER, GL_BUFFER_SIZE, &bufferSize);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 			return bufferSize;
+		}
+		void BindForDispatch() const {
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
 		}
 		const unsigned int GetID() const { return id; }
 		const unsigned int GetBinding() const { return binding; }
@@ -140,7 +144,13 @@ namespace Engine {
 
 			setupStatus = LINKED;
         }
-        ~ComputeShader() {}
+        ~ComputeShader() {
+			std::unordered_map<unsigned int, ShaderStorageBuffer*>::const_iterator ssboIt = shaderStorageBufferMap.begin();
+			while (ssboIt != shaderStorageBufferMap.end()) {
+				delete ssboIt->second;
+				ssboIt++;
+			}
+		}
 
 		static void InitOpenGLConstants() {
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &maxWorkGroupsX);
@@ -158,6 +168,7 @@ namespace Engine {
 			assert(zGroups < maxWorkGroupsZ, "ERROR::ComputeShader::zGroups exceeds max group count: " << maxWorkGroupsZ);
 
 			Use();
+			BindStorageBuffersForDispatch();
 			glDispatchCompute(xGroups, yGroups, zGroups);
 
 			glMemoryBarrier(barrierBits);
@@ -169,13 +180,13 @@ namespace Engine {
 				return nullptr;
 			}
 			else {
-				shaderStorageBufferMap[binding] = ShaderStorageBuffer(binding);
-				return &shaderStorageBufferMap[binding];
+				shaderStorageBufferMap[binding] = new ShaderStorageBuffer(binding);
+				return shaderStorageBufferMap[binding];
 			}
 		}
 		const ShaderStorageBuffer* GetSSBO(const unsigned int binding) {
 			if (shaderStorageBufferMap.find(binding) != shaderStorageBufferMap.end()) {
-				return &shaderStorageBufferMap.at(binding);
+				return shaderStorageBufferMap.at(binding);
 			}
 			else {
 				std::cout << "ERROR:ComputeShader::Buffer at binding (" << binding << ") does not exist" << std::endl;
@@ -183,8 +194,15 @@ namespace Engine {
 			}
 		}
 
+		void BindStorageBuffersForDispatch() const {
+			std::unordered_map<unsigned int, ShaderStorageBuffer*>::const_iterator ssboIt = shaderStorageBufferMap.begin();
+			while (ssboIt != shaderStorageBufferMap.end()) {
+				ssboIt->second->BindForDispatch();
+				ssboIt++;
+			}
+		}
 	protected:
-		std::unordered_map<unsigned int, ShaderStorageBuffer> shaderStorageBufferMap; // <binding, buffer>
+		std::unordered_map<unsigned int, ShaderStorageBuffer*> shaderStorageBufferMap; // <binding, buffer>
 
 	private:
 		static int maxWorkGroupsX;
