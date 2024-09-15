@@ -2,18 +2,20 @@
 layout (local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
 layout (binding = 0, std430) readonly buffer inputVertices {
-	vec3[] vertexPositionsLocalSpace;
+	vec4[] vertexPositionsLocalSpace; // vec4 for padding to 16 bytes
 };
 
 layout (binding = 1, std430) buffer finalMinMax {
-	uvec3 minVertexUint;
-	uvec3 maxVertexUint;
+	ivec4 minVertexInt;
+	ivec4 maxVertexInt;
 };
 
 // Shared memory for reduction per work group
-shared vec3 workGroupPositions[gl_WorkGroupSize.x];
 shared vec3 localMin[gl_WorkGroupSize.x];
 shared vec3 localMax[gl_WorkGroupSize.x];
+
+// Large constant to offset float values
+const float FLOAT_OFFSET = 1000.0;
 
 void main() {
 	uint globalID = gl_GlobalInvocationID.x;
@@ -24,16 +26,20 @@ void main() {
 	uint size = vertexPositionsLocalSpace.length();
 	// Load vertex positions and find local min/max
 	if (globalID < size) {
-		pos = vertexPositionsLocalSpace[globalID];
+		pos = vertexPositionsLocalSpace[globalID].xyz;
 	}
 	else {
-		pos = vertexPositionsLocalSpace[size - 1];
+		pos = vertexPositionsLocalSpace[size - 1].xyz;
 	}
 
 	// Store local min/max in shared memory
-	workGroupPositions[localID];
 	localMin[localID] = pos;
 	localMax[localID] = pos;
+
+	if (globalID == 0) {
+		minVertexInt = ivec4(floatBitsToInt(pos + FLOAT_OFFSET), 0);
+		maxVertexInt = ivec4(floatBitsToInt(pos + FLOAT_OFFSET), 0);
+	}
 
 	// Sync
 	barrier();
@@ -42,7 +48,7 @@ void main() {
 	for (uint offset = workGroupSize / 2; offset > 0; offset /= 2) {
 		if (localID < offset) {
 			localMin[localID] = min(localMin[localID], localMin[localID + offset]);
-			localMax[localID] = min(localMax[localID], localMax[localID + offset]);
+			localMax[localID] = max(localMax[localID], localMax[localID + offset]);
 		}
 
 		// Sync
@@ -51,24 +57,28 @@ void main() {
 
 	// Write final min/max for this workgroup to global memory using atomic operations
 	if (localID == 0) {
-		// floatBitsToUint, convert a float to its binary representation as GLSL atomic operations don't support float types
-		uvec3 localMinUint = uvec3 (
-			floatBitsToUint(localMin[0].x),
-            floatBitsToUint(localMin[0].y),
-            floatBitsToUint(localMin[0].z)
+		// Offset float values to ensure correct bitwise comparison
+		vec3 localMinShifted = localMin[0] + FLOAT_OFFSET;
+		vec3 localMaxShifted = localMax[0] + FLOAT_OFFSET;
+
+		// floatBitsToInt, convert a float to its binary representation as GLSL atomic operations don't support float types
+		ivec3 localMinInt = ivec3 (
+			floatBitsToInt(localMinShifted.x),
+            floatBitsToInt(localMinShifted.y),
+            floatBitsToInt(localMinShifted.z)
 		);
-		uvec3 localMaxUint = uvec3 (
-			floatBitsToUint(localMax[0].x),
-            floatBitsToUint(localMax[0].y),
-            floatBitsToUint(localMax[0].z)
+		ivec3 localMaxInt = ivec3 (
+			floatBitsToInt(localMaxShifted.x),
+            floatBitsToInt(localMaxShifted.y),
+            floatBitsToInt(localMaxShifted.z)
 		);
 
-		atomicMin(minVertexUint.x, floatBitsToUint(localMinUint.x));
-		atomicMin(minVertexUint.y, floatBitsToUint(localMinUint.y));
-		atomicMin(minVertexUint.z, floatBitsToUint(localMinUint.z));
+		atomicMin(minVertexInt.x, localMinInt.x);
+		atomicMin(minVertexInt.y, localMinInt.y);
+		atomicMin(minVertexInt.z, localMinInt.z);
 
-		atomicMax(maxVertexUint.x, floatBitsToUint(localMaxUint.x));
-		atomicMax(maxVertexUint.y, floatBitsToUint(localMaxUint.y));
-		atomicMax(maxVertexUint.z, floatBitsToUint(localMaxUint.z));
+		atomicMax(maxVertexInt.x, localMaxInt.x);
+		atomicMax(maxVertexInt.y, localMaxInt.y);
+		atomicMax(maxVertexInt.z, localMaxInt.z);
 	}
 }

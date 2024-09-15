@@ -60,33 +60,87 @@ namespace Engine {
 		CreateSystems();
 		CreateEntities();
 
-		ComputeShader* testCompute = resources->LoadComputeShader("Shaders/Compute/test.comp");
-		const ShaderStorageBuffer* inputBuffer = testCompute->AddNewSSBO(0);
-		const ShaderStorageBuffer* outputBuffer = testCompute->AddNewSSBO(1);
+		// Test compute shader
+		// -------------------
+		{
+			ComputeShader* testCompute = resources->LoadComputeShader("Shaders/Compute/test.comp");
+			const ShaderStorageBuffer* inputBuffer = testCompute->AddNewSSBO(0);
+			const ShaderStorageBuffer* outputBuffer = testCompute->AddNewSSBO(1);
 
-		const unsigned int bufferSize = 100u;
+			const unsigned int bufferSize = 100u;
 
-		float input[bufferSize];
-		float output[bufferSize] = { 1.0f };
+			float input[bufferSize];
+			float output[bufferSize] = { 1.0f };
 
-		for (unsigned int i = 0; i < bufferSize; i++) {
-			input[i] = i;
+			for (unsigned int i = 0; i < bufferSize; i++) {
+				input[i] = i;
+			}
+
+			inputBuffer->BufferData(&input, 100 * sizeof(float), GL_STREAM_DRAW);
+			outputBuffer->BufferData(nullptr, 100 * sizeof(float), GL_DYNAMIC_READ);
+			testCompute->DispatchCompute(100, 1, 1, GL_SHADER_STORAGE_BARRIER_BIT);
+
+			//outputBuffer->ReadBufferData(&output);
+
+			float* inputReadAndWrite = (float*)inputBuffer->MapBufferForReadAndWrite();
+
+			float* readOutput = (float*)outputBuffer->MapBufferForRead();
+			for (unsigned int i = 0; i < bufferSize; i++) {
+				std::cout << readOutput[i] << std::endl;
+			}
+			outputBuffer->UnmapBuffer();
 		}
 
-		inputBuffer->BufferData(&input, 100 * sizeof(float), GL_STREAM_DRAW);
-		outputBuffer->BufferData(nullptr, 100 * sizeof(float), GL_DYNAMIC_READ);
-		testCompute->DispatchCompute(100, 1, 1, GL_SHADER_STORAGE_BARRIER_BIT);
+		// Min/Max test compute shader
+		// ---------------------------
+		{
+			ComputeShader* minMaxCompute = resources->LoadComputeShader("Shaders/Compute/verticesMinMax.comp");
+			const ShaderStorageBuffer* vertexInput = minMaxCompute->AddNewSSBO(0);
+			const ShaderStorageBuffer* minMaxOutput = minMaxCompute->AddNewSSBO(1);
 
-		//outputBuffer->ReadBufferData(&output);
+			// Buffer vertex positions into GPU
+			Model* goblet = resources->CreateModel("Models/PBR/brass_goblet/brass_goblet.obj", true);
+			const std::vector<Vertex>& vertices = goblet->meshes[0]->GetMeshData().GetVertices();
 
-		float* inputReadAndWrite = (float*)inputBuffer->MapBufferForReadAndWrite();
+			const unsigned int numVertices = vertices.size();
 
-		float* readOutput = (float*)outputBuffer->MapBufferForRead();
-		for (unsigned int i = 0; i < bufferSize; i++) {
-			std::cout << readOutput[i] << std::endl;
+			std::vector<glm::vec4> positions;
+			positions.reserve(numVertices);
+
+			for (unsigned int i = 0; i < numVertices; i++) {
+				glm::vec4 position = glm::vec4(vertices[i].Position, 0.0f);
+				positions.push_back(position);
+			}
+			vertexInput->BufferData(&positions[0], sizeof(float) * (numVertices * 4), GL_STATIC_DRAW);
+
+			// Initialise output buffer
+			//minMaxOutput->BufferData(nullptr, 2 * (sizeof(int) * 3), GL_DYNAMIC_READ);
+			minMaxOutput->BufferData(nullptr, 2 * sizeof(glm::ivec4), GL_DYNAMIC_READ);
+
+			// Dispatch compute shader
+			minMaxCompute->DispatchCompute(numVertices / 32, 1, 1, GL_ALL_BARRIER_BITS);
+
+			const float FLOAT_OFFSET = 1000.0f;
+
+			// Read back min/max
+			glm::ivec4 min, max;
+			minMaxOutput->ReadBufferSubData(&min, sizeof(glm::ivec4), 0);
+			minMaxOutput->ReadBufferSubData(&max, sizeof(glm::ivec4), sizeof(glm::ivec4));
+
+			glm::vec3 floatMin = glm::vec3(
+				glm::intBitsToFloat(min.x) - FLOAT_OFFSET,
+				glm::intBitsToFloat(min.y) - FLOAT_OFFSET,
+				glm::intBitsToFloat(min.z) - FLOAT_OFFSET
+			);
+
+			glm::vec3 floatMax = glm::vec3(
+				glm::intBitsToFloat(max.x) - FLOAT_OFFSET,
+				glm::intBitsToFloat(max.y) - FLOAT_OFFSET,
+				glm::intBitsToFloat(max.z) - FLOAT_OFFSET
+			);
+
+			std::cout << floatMin.x << floatMin.y << floatMin.z << " | " << floatMax.x << floatMax.y << floatMax.z << std::endl;
 		}
-		outputBuffer->UnmapBuffer();
-
 		inputManager->SetCursorLock(false);
 	}
 
