@@ -385,6 +385,7 @@
     <None Include="Shaders\colliderDebug.geom" />
     <None Include="Shaders\colliderDebug.vert" />
     <None Include="Shaders\Compute\test.comp" />
+    <None Include="Shaders\Compute\verticesMinMax.comp" />
     <None Include="Shaders\convertToCubemap.frag" />
     <None Include="Shaders\convertToCubemap.vert" />
     <None Include="Shaders\cubeDepthMap.frag" />

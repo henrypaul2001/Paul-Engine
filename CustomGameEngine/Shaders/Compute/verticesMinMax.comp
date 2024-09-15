@@ -1,0 +1,74 @@
+#version 430 core
+layout (local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+
+layout (binding = 0, std430) readonly buffer inputVertices {
+	vec3[] vertexPositionsLocalSpace;
+};
+
+layout (binding = 1, std430) buffer finalMinMax {
+	uvec3 minVertexUint;
+	uvec3 maxVertexUint;
+};
+
+// Shared memory for reduction per work group
+shared vec3 workGroupPositions[gl_WorkGroupSize.x];
+shared vec3 localMin[gl_WorkGroupSize.x];
+shared vec3 localMax[gl_WorkGroupSize.x];
+
+void main() {
+	uint globalID = gl_GlobalInvocationID.x;
+	uint localID = gl_LocalInvocationID.x;
+	uint workGroupSize = gl_WorkGroupSize.x;
+
+	vec3 pos;
+	uint size = vertexPositionsLocalSpace.length();
+	// Load vertex positions and find local min/max
+	if (globalID < size) {
+		pos = vertexPositionsLocalSpace[globalID];
+	}
+	else {
+		pos = vertexPositionsLocalSpace[size - 1];
+	}
+
+	// Store local min/max in shared memory
+	workGroupPositions[localID];
+	localMin[localID] = pos;
+	localMax[localID] = pos;
+
+	// Sync
+	barrier();
+
+	// Parallel reduction within workgroup
+	for (uint offset = workGroupSize / 2; offset > 0; offset /= 2) {
+		if (localID < offset) {
+			localMin[localID] = min(localMin[localID], localMin[localID + offset]);
+			localMax[localID] = min(localMax[localID], localMax[localID + offset]);
+		}
+
+		// Sync
+		barrier();
+	}
+
+	// Write final min/max for this workgroup to global memory using atomic operations
+	if (localID == 0) {
+		// floatBitsToUint, convert a float to its binary representation as GLSL atomic operations don't support float types
+		uvec3 localMinUint = uvec3 (
+			floatBitsToUint(localMin[0].x),
+            floatBitsToUint(localMin[0].y),
+            floatBitsToUint(localMin[0].z)
+		);
+		uvec3 localMaxUint = uvec3 (
+			floatBitsToUint(localMax[0].x),
+            floatBitsToUint(localMax[0].y),
+            floatBitsToUint(localMax[0].z)
+		);
+
+		atomicMin(minVertexUint.x, floatBitsToUint(localMinUint.x));
+		atomicMin(minVertexUint.y, floatBitsToUint(localMinUint.y));
+		atomicMin(minVertexUint.z, floatBitsToUint(localMinUint.z));
+
+		atomicMax(maxVertexUint.x, floatBitsToUint(localMaxUint.x));
+		atomicMax(maxVertexUint.y, floatBitsToUint(localMaxUint.y));
+		atomicMax(maxVertexUint.z, floatBitsToUint(localMaxUint.z));
+	}
+}

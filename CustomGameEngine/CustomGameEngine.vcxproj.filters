@@ -1006,5 +1006,8 @@
     <None Include="Shaders\Compute\test.comp">
       <Filter>Source Files\Engine\Shaders\ComputeShaders</Filter>
     </None>
+    <None Include="Shaders\Compute\verticesMinMax.comp">
+      <Filter>Source Files\Engine\Shaders\ComputeShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
