@@ -118,7 +118,7 @@ namespace Engine {
 			minMaxOutput->BufferData(nullptr, 2 * sizeof(glm::ivec4), GL_DYNAMIC_READ);
 
 			// Dispatch compute shader
-			minMaxCompute->DispatchCompute(numVertices / 32, 1, 1, GL_ALL_BARRIER_BITS);
+			minMaxCompute->DispatchCompute(numVertices / 64, 1, 1, GL_ALL_BARRIER_BITS);
 
 			const float FLOAT_OFFSET = 1000.0f;
 
