@@ -85,6 +85,16 @@ namespace Engine {
 			maxZ = newMax.z;
 		}
 
+		void SetMinMax(const glm::vec3& minVertex, const glm::vec3& maxVertex) {
+			minX = minVertex.x;
+			minY = minVertex.y;
+			minZ = minVertex.z;
+
+			maxX = maxVertex.x;
+			maxY = maxVertex.y;
+			maxZ = maxVertex.z;
+		}
+
 		AABBPoints(float minX = -5.0f, float minY = -5.0f, float minZ = -5.0f, float maxX = 5.0f, float maxY = 5.0f, float maxZ = 5.0f) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
 	
 		bool operator==(AABBPoints const& aabb) {
