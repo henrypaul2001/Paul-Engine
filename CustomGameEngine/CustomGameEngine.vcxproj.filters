@@ -495,6 +495,9 @@
     <ClInclude Include="ComputeShader.h">
       <Filter>Header Files\Engine\Utility\ShaderTypes</Filter>
     </ClInclude>
+    <ClInclude Include="SystemAnimatedGeometryAABBGeneration.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -838,6 +841,9 @@
     </ClCompile>
     <ClCompile Include="ComputeShader.cpp">
       <Filter>Source Files\Engine\Utility\ShaderTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemAnimatedGeometryAABBGeneration.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

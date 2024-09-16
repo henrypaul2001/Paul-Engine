@@ -4,6 +4,7 @@
 #include "SystemSkeletalAnimationUpdater.h"
 #include "UIText.h"
 #include "SystemUIRender.h"
+#include "SystemAnimatedGeometryAABBGeneration.h"
 namespace Engine {
 	AnimationScene::AnimationScene(SceneManager* sceneManager) : Scene(sceneManager, "AnimationScene")
 	{
@@ -250,5 +251,6 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
 		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemAnimatedGeometryAABBGeneration(), UPDATE_SYSTEMS);
 	}
 }
