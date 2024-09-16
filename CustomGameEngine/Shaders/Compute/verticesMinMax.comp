@@ -2,13 +2,12 @@
 layout (local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
 
 struct Vertex {
-	vec4 positionLocalSpace;
+	vec4 positionLocalSpace; // vec4 for padding to 16 bytes
 	int boneIDs[8];
 	float boneWeights[8];
 };
 
 layout (binding = 0, std430) readonly buffer inputVertices {
-	//vec4[] vertexPositionsLocalSpace; // vec4 for padding to 16 bytes
 	Vertex[] vertices;
 };
 
@@ -88,8 +87,8 @@ void main() {
 	localMax[localID] = transformed_vec;
 
 	if (globalID == 0) {
-		minVertexInt = ivec4(floatBitsToInt(pos + FLOAT_OFFSET), 0);
-		maxVertexInt = ivec4(floatBitsToInt(pos + FLOAT_OFFSET), 0);
+		minVertexInt = ivec4(floatBitsToInt(transformed_vec + FLOAT_OFFSET), 0);
+		maxVertexInt = ivec4(floatBitsToInt(transformed_vec + FLOAT_OFFSET), 0);
 	}
 
 	// Sync
