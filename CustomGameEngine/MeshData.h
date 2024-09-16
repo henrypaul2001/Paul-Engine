@@ -9,6 +9,19 @@ namespace Engine {
 	static constexpr int MaxBoneInfluence() { return 8; }
 	static constexpr int MaxBoneCount() { return 200; }
 
+	struct GPUComputeVertex {
+		GPUComputeVertex(glm::vec4 pos, const int* bones, const float* weights) : positionLocalSpace(pos) {
+			for (unsigned int i = 0; i < 8; i++) {
+				boneIDs[i] = bones[i];
+				boneWeights[i] = weights[i];
+			}
+		}
+
+		glm::vec4 positionLocalSpace;
+		int boneIDs[8];
+		float boneWeights[8];
+	};
+
 	struct Vertex {
 		glm::vec3 Position;
 		glm::vec3 Normal;
@@ -58,11 +71,13 @@ namespace Engine {
 		const unsigned int GetVAO() const { return VAO; }
 		const unsigned int GetVBO() const { return VBO; }
 		const unsigned int GetEBO() const { return EBO; }
+		const unsigned int GetSSBO() const { return SSBO; }
 	private:
 		void SetupMesh();
 
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		unsigned int VAO, VBO, EBO;
+		unsigned int SSBO;
 	};
 }

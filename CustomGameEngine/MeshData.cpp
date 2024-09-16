@@ -10,6 +10,9 @@ namespace Engine {
 	MeshData::~MeshData()
 	{
 		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
+		glDeleteBuffers(1, &SSBO);
 	}
 
 	void MeshData::SetupMesh()
@@ -56,5 +59,21 @@ namespace Engine {
 		glBindVertexArray(0);
 
 		// 7, 8, 9, 10 reserved for instancing
+
+		// SSBO for animated AABB calculations
+		glGenBuffers(1, &SSBO);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
+
+		const unsigned int numVertices = vertices.size();
+		std::vector<GPUComputeVertex> gpuVertices;
+		gpuVertices.reserve(numVertices);
+		for (unsigned int i = 0; i < numVertices; i++) {
+			const Vertex& v = vertices[i];
+			gpuVertices.push_back(GPUComputeVertex(glm::vec4(v.Position, 1.0f), v.BoneIDs, v.BoneWeights));
+		}
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUComputeVertex) * numVertices, &gpuVertices[0], GL_STATIC_DRAW);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 }
