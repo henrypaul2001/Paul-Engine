@@ -24,7 +24,7 @@ shared vec3 localMax[gl_WorkGroupSize.x];
 // Large constant to offset float values
 const float FLOAT_OFFSET = 1000.0;
 
-const int MAX_BONES = 200;
+const int MAX_BONES = 126;
 const int MAX_BONE_INFLUENCE = 8;
 uniform mat4 boneTransforms[MAX_BONES];
 uniform bool hasBones;
