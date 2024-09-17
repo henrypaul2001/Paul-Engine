@@ -170,11 +170,17 @@ namespace Engine
 			// Render scene
 			OnRenderFrame();
 
-			// Swap buffers
-			glfwSwapBuffers(window);
+			{
+				SCOPE_TIMER("SceneManager::Run::Frame::glfwSwapBuffers");
+				// Swap buffers
+				glfwSwapBuffers(window);
+			}
 
-			// Poll events
-			glfwPollEvents();
+			{
+				SCOPE_TIMER("SceneManager::Run::Frame::glfwPollEvents");
+				// Poll events
+				glfwPollEvents();
+			}
 
 			// Change scene if one has been requested
 			if (changeSceneAtEndOfFrame != SCENE_NONE) {
