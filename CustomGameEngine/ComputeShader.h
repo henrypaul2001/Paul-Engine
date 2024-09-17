@@ -235,7 +235,7 @@ namespace Engine {
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxWorkGroupsY);
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupsZ);
 		}
-		void DispatchCompute(const unsigned int xGroups = 1, const unsigned int yGroups = 1, const unsigned int zGroups = 1, GLbitfield barrierBits = GL_ALL_BARRIER_BITS) const {
+		void DispatchCompute(const unsigned int xGroups = 1, const unsigned int yGroups = 1, const unsigned int zGroups = 1, GLbitfield barrierBits = GL_ALL_BARRIER_BITS) {
 			SCOPE_TIMER("ComputeShader::DispatchCompute");
 			assert(xGroups >= 1, "ERROR::ComputeShader::xGroups cannot be less than one");
 			assert(yGroups >= 1, "ERROR::ComputeShader::yGroups cannot be less than one");
@@ -250,6 +250,15 @@ namespace Engine {
 			glDispatchCompute(xGroups, yGroups, zGroups);
 
 			glMemoryBarrier(barrierBits);
+
+			sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		}
+
+		const GLenum Sync(const GLuint64 nanoSecondsTimeout = 1000000) const {
+			SCOPE_TIMER("ComputeShader::Sync");
+			GLenum waitReturn = glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, nanoSecondsTimeout);
+			glDeleteSync(sync);
+			return waitReturn;
 		}
 
 		const ShaderStorageBuffer* AddNewSSBO(const unsigned int binding) {
@@ -283,6 +292,8 @@ namespace Engine {
 		std::unordered_map<unsigned int, ShaderStorageBuffer*> shaderStorageBufferMap; // <binding, buffer>
 
 	private:
+		GLsync sync;
+
 		static int maxWorkGroupsX;
 		static int maxWorkGroupsY;
 		static int maxWorkGroupsZ;
