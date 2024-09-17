@@ -7,6 +7,18 @@
 namespace Engine {
 	class SystemAnimatedGeometryAABBGeneration : public System
 	{
+		struct MinMaxGPUReadBack {
+			glm::ivec4 min;
+			glm::ivec4 max;
+		};
+
+		struct MeshEntry {
+			Mesh* mesh;
+			ComponentTransform* transform;
+			ComponentGeometry* geometry;
+			ComponentAnimator* animator;
+		};
+
 	public:
 		SystemAnimatedGeometryAABBGeneration();
 		~SystemAnimatedGeometryAABBGeneration();
@@ -19,10 +31,12 @@ namespace Engine {
 	private:
 		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY | COMPONENT_ANIMATOR);
 
-		void GPUComputeAABB(ComponentTransform* transform, ComponentGeometry* geometry, ComponentAnimator* animator);
+		std::vector<MeshEntry> meshList;
+
+		void GPUComputeAABB(MeshEntry meshEntry);
 
 		ComputeShader* minMaxVerticesShader;
-		//const ShaderStorageBuffer* vertexInput;
 		const ShaderStorageBuffer* minMaxOutput;
+		glm::ivec4* outputBuffer;
 	};
 }
