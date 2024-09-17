@@ -1,6 +1,7 @@
 #pragma once
 #include "AbstractShader.h"
 #include <unordered_map>
+#include "ScopeTimer.h"
 namespace Engine {
 	struct ShaderStorageBuffer {
 	public:
@@ -15,6 +16,14 @@ namespace Engine {
 		}
 		~ShaderStorageBuffer() {
 			glDeleteBuffers(1, &id);
+		}
+
+		// Initialise buffer as immutable
+		void BufferStorage(const void* data, const GLsizeiptr dataSize, const GLbitfield flags) const {
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
+			glBufferStorage(GL_SHADER_STORAGE_BUFFER, dataSize, data, flags);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 
 		// Buffer data into entire GPU buffer
@@ -96,6 +105,20 @@ namespace Engine {
 			}
 		}
 
+		// Map buffer to pointer with explicit access type, bufferSize = -1 will automatically get buffer size. Call UnmapBuffer() after using
+		void* MapBufferWithAccess(const GLbitfield access, GLint bufferSize = -1, const GLintptr offset = 0) const {
+			if (bufferSize == -1) { bufferSize = GetBufferSizeInBytes(); }
+			void* ptr = MapBuffer(bufferSize, offset, access);
+
+			if (ptr) {
+				return ptr;
+			}
+			else {
+				std::cout << "ERROR::ShaderStorageBuffer::Failed to map buffer. Access (" << access << ")" << ", ID(" << id << "), Binding(" << binding << ")" << std::endl;
+				return nullptr;
+			}
+		}
+
 		const GLint GetBufferSizeInBytes() const {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
 			GLint bufferSize = 0;
@@ -110,7 +133,7 @@ namespace Engine {
 		const unsigned int GetID() const { return id; }
 		const unsigned int GetBinding() const { return binding; }
 	private:
-		void* MapBuffer(GLint bufferSize, const GLintptr offset, const GLenum access) const {
+		void* MapBuffer(GLint bufferSize, const GLintptr offset, const GLbitfield access) const {
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
 			void* ptr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, offset, bufferSize, access);
 
@@ -212,8 +235,8 @@ namespace Engine {
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxWorkGroupsY);
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupsZ);
 		}
-
 		void DispatchCompute(const unsigned int xGroups = 1, const unsigned int yGroups = 1, const unsigned int zGroups = 1, GLbitfield barrierBits = GL_ALL_BARRIER_BITS) const {
+			SCOPE_TIMER("ComputeShader::DispatchCompute");
 			assert(xGroups >= 1, "ERROR::ComputeShader::xGroups cannot be less than one");
 			assert(yGroups >= 1, "ERROR::ComputeShader::yGroups cannot be less than one");
 			assert(zGroups >= 1, "ERROR::ComputeShader::zGroups cannot be less than one");
