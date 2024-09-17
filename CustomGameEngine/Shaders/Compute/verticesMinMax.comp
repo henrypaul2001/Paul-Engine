@@ -7,13 +7,17 @@ struct Vertex {
 	float boneWeights[8];
 };
 
+struct MinMaxVertex {
+	ivec4 minVertexInt;
+	ivec4 maxVertexInt;
+};
+
 layout (binding = 0, std430) readonly buffer inputVertices {
 	Vertex[] vertices;
 };
 
 layout (binding = 1, std430) buffer finalMinMax {
-	ivec4 minVertexInt;
-	ivec4 maxVertexInt;
+	MinMaxVertex[] minMaxVertices;
 };
 
 // Shared memory for reduction per work group
@@ -27,6 +31,7 @@ const int MAX_BONES = 126;
 const int MAX_BONE_INFLUENCE = 8;
 uniform mat4 boneTransforms[MAX_BONES];
 uniform bool hasBones;
+uniform uint meshID;
 
 uniform mat4 model;
 
@@ -87,8 +92,8 @@ void main() {
 	localMax[localID] = transformed_vec;
 
 	if (globalID == 0) {
-		minVertexInt = ivec4(floatBitsToInt(transformed_vec + FLOAT_OFFSET), 0);
-		maxVertexInt = ivec4(floatBitsToInt(transformed_vec + FLOAT_OFFSET), 0);
+		minMaxVertices[meshID].minVertexInt = ivec4(floatBitsToInt(transformed_vec + FLOAT_OFFSET), 0);
+		minMaxVertices[meshID].maxVertexInt = ivec4(floatBitsToInt(transformed_vec + FLOAT_OFFSET), 0);
 	}
 
 	// Sync
@@ -123,12 +128,12 @@ void main() {
             floatBitsToInt(localMaxShifted.z)
 		);
 
-		atomicMin(minVertexInt.x, localMinInt.x);
-		atomicMin(minVertexInt.y, localMinInt.y);
-		atomicMin(minVertexInt.z, localMinInt.z);
+		atomicMin(minMaxVertices[meshID].minVertexInt.x, localMinInt.x);
+		atomicMin(minMaxVertices[meshID].minVertexInt.y, localMinInt.y);
+		atomicMin(minMaxVertices[meshID].minVertexInt.z, localMinInt.z);
 
-		atomicMax(maxVertexInt.x, localMaxInt.x);
-		atomicMax(maxVertexInt.y, localMaxInt.y);
-		atomicMax(maxVertexInt.z, localMaxInt.z);
+		atomicMax(minMaxVertices[meshID].maxVertexInt.x, localMaxInt.x);
+		atomicMax(minMaxVertices[meshID].maxVertexInt.y, localMaxInt.y);
+		atomicMax(minMaxVertices[meshID].maxVertexInt.z, localMaxInt.z);
 	}
 }
