@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <chrono>
 namespace Engine::Profiling {
 	struct ProfileResult {
@@ -17,7 +18,7 @@ namespace Engine::Profiling {
 	public:
 		~Profiler();
 
-		void BeginSession(const std::string& name, const std::string& filepath = "results.json");
+		void BeginSession(const std::string& name, const std::string& filepath = "Profiling/results.json");
 		void EndSession();
 
 		void WriteProfile(const ProfileResult& profile);

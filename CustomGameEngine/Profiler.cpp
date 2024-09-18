@@ -4,7 +4,13 @@ namespace Engine::Profiling {
 	Profiler* Profiler::instance = nullptr;
 	Profiler::Profiler() : profileCount(0), activeSession(false)
 	{
+		std::filesystem::path directoryPath = "Profiling";
 
+		// Create directory if it doesn't already exist
+		if (!std::filesystem::exists(directoryPath)) {
+			std::filesystem::create_directory(directoryPath);
+			std::cout << "Profiler::Profiler::Created directory: " << "Profiling" << std::endl;
+		}
 	}
 
 	Profiler::~Profiler()
