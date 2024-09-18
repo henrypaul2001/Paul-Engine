@@ -13,6 +13,7 @@ namespace Engine {
 
 	void BVHTree::BuildTree(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects)
 	{
+		SCOPE_TIMER("BVHTree::BuildTree");
 		globalObjects.clear();
 		AABBPoints worldAABB;
 		nodeCount = 0;

@@ -20,13 +20,16 @@ namespace Engine {
 		std::vector<std::pair<glm::vec3, Mesh*>> centrePosAndMeshesList;
 		centrePosAndMeshesList.reserve(entityList.size());
 
-		for (Entity* e : entityList) {
-			if (e->ContainsComponents(COMPONENT_GEOMETRY)) {
-				glm::vec3 pos = e->GetTransformComponent()->GetWorldPosition(); // temporarily use entity pos as AABB centre
+		{
+			SCOPE_TIMER("CollisionManager::ConstructBVHTree::CreateMeshList");
+			for (Entity* e : entityList) {
+				if (e->ContainsComponents(COMPONENT_GEOMETRY)) {
+					glm::vec3 pos = e->GetTransformComponent()->GetWorldPosition(); // temporarily use entity pos as AABB centre
 
-				std::vector<Mesh*> meshList = e->GetGeometryComponent()->GetModel()->meshes;
-				for (Mesh* m : meshList) {
-					centrePosAndMeshesList.push_back(std::make_pair(pos, m));
+					std::vector<Mesh*> meshList = e->GetGeometryComponent()->GetModel()->meshes;
+					for (Mesh* m : meshList) {
+						centrePosAndMeshesList.push_back(std::make_pair(pos, m));
+					}
 				}
 			}
 		}
