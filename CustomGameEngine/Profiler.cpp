@@ -34,10 +34,35 @@ namespace Engine::Profiling {
 	{
 		std::cout << "PROFILER::BeginSession()" << std::endl;
 		activeSession = true;
-		outputStream.open(filepath);
+		sessionStart = std::chrono::high_resolution_clock::now();
+		
+		// Get system timestamp for filename and directory
+		std::time_t startTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		std::tm dateTime;
+		localtime_s(&dateTime, &startTime);
+		std::ostringstream dateOSS;
+		dateOSS << std::put_time(&dateTime, "%d-%m-%Y");
+		std::string dateString = dateOSS.str();
+		std::ostringstream timeOSS;
+		timeOSS << std::put_time(&dateTime, "%H-%M-%S");
+		std::string timeString = timeOSS.str();
+
+		if (filepath == "Profiling/") {
+			std::filesystem::path directoryPath = filepath + dateString;
+
+			// Create directory if it doesn't already exist
+			if (!std::filesystem::exists(directoryPath)) {
+				std::filesystem::create_directory(directoryPath);
+				std::cout << "Profiler::BeginSession::Created directory: " << filepath + dateString << std::endl;
+			}
+
+			outputStream.open(filepath + dateString + "/profile_" + timeString + "_" + dateString + ".json");
+		}
+		else {
+			outputStream.open(filepath);
+		}
 		WriteHeader();
 		sessionName = name;
-		sessionStart = std::chrono::high_resolution_clock::now();
 	}
 
 	void Profiler::EndSession()

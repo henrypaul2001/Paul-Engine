@@ -2,8 +2,10 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 #include <chrono>
+#include <ctime>
 namespace Engine::Profiling {
 	struct ProfileResult {
 		ProfileResult(const char* name, const long long start, const long long end, const uint32_t threadID) : profileName(name), start(start), end(end), threadID(threadID) {}
@@ -18,7 +20,7 @@ namespace Engine::Profiling {
 	public:
 		~Profiler();
 
-		void BeginSession(const std::string& name, const std::string& filepath = "Profiling/results.json");
+		void BeginSession(const std::string& name, const std::string& filepath = "Profiling/");
 		void EndSession();
 
 		void WriteProfile(const ProfileResult& profile);
