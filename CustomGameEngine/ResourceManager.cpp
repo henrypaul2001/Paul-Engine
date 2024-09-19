@@ -389,6 +389,11 @@ namespace Engine {
 		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBaking.frag", true);
 		reflectionProbeBakingPBR = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBakingPBR.frag", true);
 		colliderDebug = LoadShader("Shaders/colliderDebug.vert", "Shaders/colliderDebug.frag", "Shaders/colliderDebug.geom", true);
+		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenSpaceReflectionUVMapping.frag", true);
+
+		screenSpaceReflectionUVMappingShader->Use();
+		screenSpaceReflectionUVMappingShader->setInt("gPosition", textureSlotLookup.at("gPosition"));
+		screenSpaceReflectionUVMappingShader->setInt("gNormal", textureSlotLookup.at("gNormal"));
 
 		shadowMapShader->Use();
 		shadowMapShader->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
@@ -560,6 +565,7 @@ namespace Engine {
 		unsigned int defaultParticleLocation = glGetUniformBlockIndex(particleShader->GetID(), "Common");
 		unsigned int defaultPointParticleLocation = glGetUniformBlockIndex(pointParticleShader->GetID(), "Common");
 		unsigned int colliderDebugLocation = glGetUniformBlockIndex(colliderDebug->GetID(), "Common");
+		unsigned int screenSpaceUVLocation = glGetUniformBlockIndex(screenSpaceReflectionUVMappingShader->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
@@ -571,6 +577,7 @@ namespace Engine {
 		glUniformBlockBinding(particleShader->GetID(), defaultParticleLocation, 0);
 		glUniformBlockBinding(pointParticleShader->GetID(), defaultPointParticleLocation, 0);
 		glUniformBlockBinding(colliderDebug->GetID(), colliderDebugLocation, 0);
+		glUniformBlockBinding(screenSpaceReflectionUVMappingShader->GetID(), screenSpaceUVLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);

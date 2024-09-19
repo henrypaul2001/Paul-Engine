@@ -97,6 +97,7 @@ namespace Engine {
 		Shader* advBloomDownsampleShader;
 		Shader* advBloomUpsampleShader;
 		Shader* advBloomCombineShader;
+		Shader* screenSpaceReflectionUVMappingShader;
 
 		// Environment mapping
 		// -------------------
@@ -285,6 +286,7 @@ namespace Engine {
 		Shader* ReflectionProbeBakingShader() const { return reflectionProbeBaking; }
 		Shader* ReflectionProbeBakingShaderPBR() const { return reflectionProbeBakingPBR; }
 		Shader* ColliderDebugShader() const { return colliderDebug; }
+		Shader* ScreenSpaceReflectionUVMappingShader() const { return screenSpaceReflectionUVMappingShader; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
