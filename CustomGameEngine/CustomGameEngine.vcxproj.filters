@@ -157,6 +157,15 @@
     <Filter Include="Source Files\Engine\Shaders\ComputeShaders">
       <UniqueIdentifier>{66cdecbe-65b6-433c-aef4-e6dc70f1b64b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Shaders\VertexShaders">
+      <UniqueIdentifier>{e9c7a88a-31a6-4167-a1e0-c29d68c32df7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Shaders\FragmentShaders">
+      <UniqueIdentifier>{14689cbd-ae68-4e01-b350-122d3552dfb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Shaders\GeometryShaders">
+      <UniqueIdentifier>{e59015b4-1a1f-4959-a8aa-33905d561514}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -847,173 +856,176 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\defaultLit.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultLit.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultLit_pbr.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultLit_pbr.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\depthMap.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\depthMap.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultLitNew.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultLitNew.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\cubeDepthMap.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\cubeDepthMap.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\cubeDepthMap.geom">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\screenQuad.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\screenQuad.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\g_buffer.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\g_buffer.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultDeferred.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultDeferred.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\ssao.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\ssao.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\ssaoBlur.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\skybox.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\skybox.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\hdrTonemapping.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\bloomBlur.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\bloomBlur.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\convertToCubemap.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\convertToCubemap.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\irradianceConvolute.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\prefilter.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\brdf.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\brdf.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\g_bufferPBR.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultDeferredPBR.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultText.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultText.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultImage.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\defaultImage.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particles.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particles.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\pointParticles.geom">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\pointParticles.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\advBloomDownsample.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\advBloomUpsample.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\advBloomCombine.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\uiBackground.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\uiBackground.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\uiBackground.geom">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
     <None Include="irrKlang.dll">
       <Filter>Source Files\Engine\Utility</Filter>
-    </None>
-    <None Include="Shaders\reflectionProbeBakingPBR.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\reflectionProbeBakingPBR.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\reflectionProbeBaking.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\colliderDebug.vert">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\colliderDebug.geom">
-      <Filter>Source Files\Engine\Shaders</Filter>
-    </None>
-    <None Include="Shaders\colliderDebug.frag">
-      <Filter>Source Files\Engine\Shaders</Filter>
     </None>
     <None Include="Shaders\Compute\test.comp">
       <Filter>Source Files\Engine\Shaders\ComputeShaders</Filter>
     </None>
     <None Include="Shaders\Compute\verticesMinMax.comp">
       <Filter>Source Files\Engine\Shaders\ComputeShaders</Filter>
+    </None>
+    <None Include="Shaders\advBloomCombine.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\advBloomDownsample.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\advBloomUpsample.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\bloomBlur.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\brdf.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\colliderDebug.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\convertToCubemap.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\cubeDepthMap.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultDeferred.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultDeferredPBR.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultImage.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit_pbr.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLitNew.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultText.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\depthMap.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\g_buffer.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\g_bufferPBR.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\hdrTonemapping.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\irradianceConvolute.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\particles.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\prefilter.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBaking.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBakingPBR.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\screenQuad.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\skybox.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\ssao.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\ssaoBlur.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\uiBackground.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\bloomBlur.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\brdf.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\colliderDebug.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\convertToCubemap.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\cubeDepthMap.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultDeferred.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultImage.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLit_pbr.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultLitNew.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\defaultText.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\depthMap.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\g_buffer.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\particles.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\pointParticles.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\reflectionProbeBakingPBR.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\screenQuad.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\skybox.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\ssao.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\uiBackground.vert">
+      <Filter>Source Files\Engine\Shaders\VertexShaders</Filter>
+    </None>
+    <None Include="Shaders\colliderDebug.geom">
+      <Filter>Source Files\Engine\Shaders\GeometryShaders</Filter>
+    </None>
+    <None Include="Shaders\cubeDepthMap.geom">
+      <Filter>Source Files\Engine\Shaders\GeometryShaders</Filter>
+    </None>
+    <None Include="Shaders\pointParticles.geom">
+      <Filter>Source Files\Engine\Shaders\GeometryShaders</Filter>
+    </None>
+    <None Include="Shaders\uiBackground.geom">
+      <Filter>Source Files\Engine\Shaders\GeometryShaders</Filter>
+    </None>
+    <None Include="Shaders\screenSpaceReflectionUVMapping.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
     </None>
   </ItemGroup>
 </Project>
