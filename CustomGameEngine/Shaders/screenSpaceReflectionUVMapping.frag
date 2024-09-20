@@ -1,14 +1,6 @@
 #version 430 core
 layout (location = 0) out vec4 FragColour;
 
-// uniform block
-layout (std140) uniform Common
-{
-    mat4 projection;
-    mat4 view;
-    vec3 viewPos;
-};
-
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 
@@ -17,12 +9,17 @@ uniform float maxDistance = 15.0;
 uniform float resolution = 0.3;
 int steps = 10;
 float thickness = 0.5;
+uniform int maxRayMarchIterations = 50;
+
+in mat4 Projection;
+in mat4 View;
+in vec2 TexCoords;
 
 vec4 ViewSpaceToScreenSpace(vec4 viewSpace, vec2 texSize) {
     vec4 screenSpace = viewSpace;
 
     // Project
-    screenSpace = projection * screenSpace;
+    screenSpace = Projection * screenSpace;
 
     // Perspective divide
     screenSpace.xyz /= screenSpace.w;
@@ -43,10 +40,10 @@ void main() {
     vec4 uv = vec4(0.0);
 
     // Retrieve fragment information from gBuffer in view space
-    vec4 viewSpaceFragPos = view * texture(gPosition, texCoord);
+    vec4 viewSpaceFragPos = View * texture(gPosition, texCoord);
     vec3 unitViewSpaceFragPos = normalize(viewSpaceFragPos.xyz);
 
-    vec3 viewSpaceNormal = normalize(mat3(view) * texture(gNormal, texCoord).xyz);
+    vec3 viewSpaceNormal = normalize(mat3(View) * texture(gNormal, texCoord).xyz);
     vec3 reflection = normalize(reflect(unitViewSpaceFragPos, viewSpaceNormal));
 
     // Record start position and end position of ray in view space
@@ -82,10 +79,10 @@ void main() {
     // First ray march pass
     // --------------------
     vec4 samplePosition; // positionTo
-    for (int i = 0; i < delta; i++) {
+    for (int i = 0; i < min(int(delta), maxRayMarchIterations); i++) {
         frag += increment;
         uv.xy = frag / texSize;
-        samplePosition = view * texture(gPosition, uv.xy);
+        samplePosition = View * texture(gPosition, uv.xy);
 
         search1 = mix((frag.y - rayStartScreen.y) / deltaY, (frag.x - rayStartScreen.x) / deltaX, useX);
         search1 = clamp(search1, 0.0, 1.0);
@@ -113,7 +110,7 @@ void main() {
     for (int i = 0; i < steps; i++) {
         frag = mix(rayStartScreen.xy, rayEndScreen.xy, search1);
         uv.xy = frag / texSize;
-        samplePosition = view * texture(gPosition, uv.xy);
+        samplePosition = View * texture(gPosition, uv.xy);
 
         viewDistance = (rayStartView.y * rayEndView.y) / mix(rayEndView.y, rayStartView.y, search1);
         depth = viewDistance - samplePosition.y;
