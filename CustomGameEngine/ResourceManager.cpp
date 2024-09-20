@@ -389,11 +389,11 @@ namespace Engine {
 		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBaking.frag", true);
 		reflectionProbeBakingPBR = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBakingPBR.frag", true);
 		colliderDebug = LoadShader("Shaders/colliderDebug.vert", "Shaders/colliderDebug.frag", "Shaders/colliderDebug.geom", true);
-		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/screenQuad.vert", "Shaders/screenSpaceReflectionUVMapping.frag", true);
+		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/ssao.vert", "Shaders/screenSpaceReflectionUVMapping.frag", true);
 
 		screenSpaceReflectionUVMappingShader->Use();
-		screenSpaceReflectionUVMappingShader->setInt("gPosition", textureSlotLookup.at("gPosition"));
-		screenSpaceReflectionUVMappingShader->setInt("gNormal", textureSlotLookup.at("gNormal"));
+		screenSpaceReflectionUVMappingShader->setInt("gPosition", 0);
+		screenSpaceReflectionUVMappingShader->setInt("gNormal", 1);
 
 		shadowMapShader->Use();
 		shadowMapShader->setInt("material.TEXTURE_OPACITY1", textureSlotLookup.at("material.TEXTURE_OPACITY1"));
