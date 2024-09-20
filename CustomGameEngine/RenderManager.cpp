@@ -23,6 +23,7 @@ namespace Engine {
 		SetupSSAOBuffers();
 		SetupEnvironmentMapFBO();
 		SetupCubemapFBO();
+		SetupSSR();
 
 		flatShadowmapAtlas = new FlatTextureAtlas(2, 4, shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
@@ -107,6 +108,7 @@ namespace Engine {
 		delete renderParams;
 
 		glDeleteTextures(1, &global_brdf_lutID);
+		glDeleteTextures(1, &ssrUVMap);
 
 		delete instance;
 	}
@@ -721,5 +723,15 @@ namespace Engine {
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void RenderManager::SetupSSR()
+	{
+		ssrUVMap = 0;
+		glGenTextures(1, &ssrUVMap);
+		glBindTexture(GL_TEXTURE_2D, ssrUVMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 }

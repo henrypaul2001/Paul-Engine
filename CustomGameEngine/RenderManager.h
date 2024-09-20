@@ -181,6 +181,8 @@ namespace Engine {
 		unsigned int* SSAONoiseTexture() const { return noiseTexture; }
 		std::vector<glm::vec3*> SSAOKernel() const { return ssaoKernel; }
 
+		const unsigned int GetSSRUVMap() const { return ssrUVMap; }
+
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
 		unsigned int* GetBloomPingPongColourBuffer(int index) { return pingPongColourBuffers[index]; }
@@ -228,6 +230,7 @@ namespace Engine {
 		void SetupEnvironmentMapFBO();
 		void SetupAdvBloom();
 		void SetupCubemapFBO();
+		void SetupSSR();
 
 		void SetupGBuffer();
 
@@ -257,6 +260,9 @@ namespace Engine {
 		// Deferred rendering
 		unsigned int* gBuffer;
 		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm, *gPBRFLAG;// PBRFLAG is to determine which lighting method is used in lighting pass for this pixel
+
+		// SSR
+		unsigned int ssrUVMap;
 
 		// SSAO
 		unsigned int* ssaoFBO;
