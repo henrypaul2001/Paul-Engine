@@ -736,8 +736,8 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		ssrReflectionMap = 0;
-		glGenTextures(1, &ssrUVMap);
-		glBindTexture(GL_TEXTURE_2D, ssrUVMap);
+		glGenTextures(1, &ssrReflectionMap);
+		glBindTexture(GL_TEXTURE_2D, ssrReflectionMap);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
