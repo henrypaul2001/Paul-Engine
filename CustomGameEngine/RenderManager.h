@@ -182,6 +182,7 @@ namespace Engine {
 		std::vector<glm::vec3*> SSAOKernel() const { return ssaoKernel; }
 
 		const unsigned int GetSSRUVMap() const { return ssrUVMap; }
+		const unsigned int GetSSRReflectionMap() const { return ssrReflectionMap; }
 
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
@@ -263,6 +264,7 @@ namespace Engine {
 
 		// SSR
 		unsigned int ssrUVMap;
+		unsigned int ssrReflectionMap;
 
 		// SSAO
 		unsigned int* ssaoFBO;
