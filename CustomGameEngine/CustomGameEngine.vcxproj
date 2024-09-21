@@ -429,6 +429,7 @@
     <None Include="Shaders\ssao.frag" />
     <None Include="Shaders\ssao.vert" />
     <None Include="Shaders\ssaoBlur.frag" />
+    <None Include="Shaders\ssrUVToReflectionMap.frag" />
     <None Include="Shaders\uiBackground.frag" />
     <None Include="Shaders\uiBackground.geom" />
     <None Include="Shaders\uiBackground.vert" />
