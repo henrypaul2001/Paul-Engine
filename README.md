@@ -66,3 +66,4 @@ This is currently under development. Below is a preview of what I have so far:
 
 ## Optimisations
 ### Frustum culling for geometry
+### Compute shaders available for use with streamlined shader storage buffer use
