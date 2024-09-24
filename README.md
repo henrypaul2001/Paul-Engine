@@ -22,6 +22,10 @@ This is currently under development. Below is a preview of what I have so far:
 ![Bloom toggled on and off on a bright cube](https://media.giphy.com/media/0a4tMIFENGIDgynLXy/giphy.gif)
 
 ### Advanced Bloom
+![Advanced Bloom toggled on and off on a bright cube](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ243eXppaWx1aG81dmVuNW1qZGR5aTBoczRiMWN5cWs5ejU2cmVubyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/68nFqM1n5J7n9x9jUc/giphy.gif)
+
+#### With parameters
+![Advanced Bloom Parameters on bright cube](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3MxcTg2M2hlNzBvMWhubGwydXBvamdkZDV2MmVtZXRxdnJhcWplNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y2Dnw0tAkoRRc46JqF/giphy.gif)
 
 ### Deferred pipeline and forward pipeline
 
@@ -66,3 +70,4 @@ This is currently under development. Below is a preview of what I have so far:
 
 ## Optimisations
 ### Frustum culling for geometry
+### Compute shaders available for use with streamlined shader storage buffer use
