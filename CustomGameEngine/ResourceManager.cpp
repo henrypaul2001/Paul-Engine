@@ -389,7 +389,7 @@ namespace Engine {
 		reflectionProbeBaking = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBaking.frag", true);
 		reflectionProbeBakingPBR = LoadShader("Shaders/reflectionProbeBakingPBR.vert", "Shaders/reflectionProbeBakingPBR.frag", true);
 		colliderDebug = LoadShader("Shaders/colliderDebug.vert", "Shaders/colliderDebug.frag", "Shaders/colliderDebug.geom", true);
-		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/ssao.vert", "Shaders/screenSpaceReflectionUVMapping.frag", true);
+		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/ssao.vert", "Shaders/ssrUVMapping.frag", true);
 		ssrUVMapToReflectionMap = LoadShader("Shaders/screenQuad.vert", "Shaders/ssrUVToReflectionMap.frag", true);
 
 		ssrUVMapToReflectionMap->Use();
