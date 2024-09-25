@@ -1030,5 +1030,11 @@
     <None Include="Shaders\ssrUVToReflectionMap.frag">
       <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
     </None>
+    <None Include="Shaders\ssrUVMapping.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
+    <None Include="Shaders\deferredIBLPassPBR.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

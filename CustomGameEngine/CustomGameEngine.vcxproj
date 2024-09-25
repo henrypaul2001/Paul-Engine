@@ -406,6 +406,7 @@
     <None Include="Shaders\defaultLit_pbr.vert" />
     <None Include="Shaders\defaultText.frag" />
     <None Include="Shaders\defaultText.vert" />
+    <None Include="Shaders\deferredIBLPassPBR.frag" />
     <None Include="Shaders\depthMap.frag" />
     <None Include="Shaders\depthMap.vert" />
     <None Include="Shaders\g_buffer.frag" />
@@ -429,6 +430,7 @@
     <None Include="Shaders\ssao.frag" />
     <None Include="Shaders\ssao.vert" />
     <None Include="Shaders\ssaoBlur.frag" />
+    <None Include="Shaders\ssrUVMapping.frag" />
     <None Include="Shaders\ssrUVToReflectionMap.frag" />
     <None Include="Shaders\uiBackground.frag" />
     <None Include="Shaders\uiBackground.geom" />

@@ -31,6 +31,7 @@ namespace Engine {
 			{ "gArm", 6 },
 			{ "gPBRFLAG", 7 },
 			{ "SSAO", 8 },
+			{ "lightingPass", 9 },
 
 			{ "globalIBL.irradianceMap", 10 },
 			{ "globalIBL.prefilterMap", 11 },
@@ -391,6 +392,7 @@ namespace Engine {
 		colliderDebug = LoadShader("Shaders/colliderDebug.vert", "Shaders/colliderDebug.frag", "Shaders/colliderDebug.geom", true);
 		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/ssao.vert", "Shaders/ssrUVMapping.frag", true);
 		ssrUVMapToReflectionMap = LoadShader("Shaders/screenQuad.vert", "Shaders/ssrUVToReflectionMap.frag", true);
+		deferredIBLPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/deferredIBLPassPBR.frag", true);
 
 		ssrUVMapToReflectionMap->Use();
 		ssrUVMapToReflectionMap->setInt("colourMap", 0);
@@ -489,6 +491,21 @@ namespace Engine {
 
 		deferredLightingPassPBR->setInt("nonPBRResult", 30);
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
+
+		deferredIBLPassPBR->Use();
+		deferredIBLPassPBR->setInt("gPosition", textureSlotLookup.at("gPosition"));
+		deferredIBLPassPBR->setInt("gNormal", textureSlotLookup.at("gNormal"));
+		deferredIBLPassPBR->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
+		deferredIBLPassPBR->setInt("gArm", textureSlotLookup.at("gArm"));
+		deferredIBLPassPBR->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
+		deferredIBLPassPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
+
+		deferredIBLPassPBR->setInt("globalIBL.irradianceMap", textureSlotLookup.at("globalIBL.irradianceMap"));
+		deferredIBLPassPBR->setInt("globalIBL.prefilterMap", textureSlotLookup.at("globalIBL.prefilterMap"));
+		deferredIBLPassPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
+
+		deferredIBLPassPBR->setInt("localIBLIrradianceMapArray", textureSlotLookup.at("localIBLIrradianceMapArray"));
+		deferredIBLPassPBR->setInt("localIBLPrefilterMapArray", textureSlotLookup.at("localIBLPrefilterMapArray"));
 
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
