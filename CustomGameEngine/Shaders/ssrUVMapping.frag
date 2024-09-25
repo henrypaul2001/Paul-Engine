@@ -11,7 +11,9 @@ in vec2 TexCoords;
 // Parameters
 uniform float rayStep = 0.3;
 uniform float minRayStep = 0.3;
-uniform float maxSteps = 500;
+uniform float maxSteps = 100;
+uniform float maxDistance = 15.0;
+uniform float rayThickness = 0.8;
 uniform int numBinarySearchSteps = 50;
 
 vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float dDepth) {
@@ -89,18 +91,16 @@ void main() {
 	if (coords.a == 0.0) {
 		hit = 0;
 	}
-	float thickness = 0.8;
-	if (dDepth > thickness) {
-		hit = 0;
-	}
 
 	vec2 dCoords = smoothstep(0.2, 0.6, abs(vec2(0.5, 0.5) - coords.xy));
 
 	float screenEdgeFactor = clamp(1.0 - (dCoords.x + dCoords.y), 0.0, 1.0);
 
 	float multiplier = screenEdgeFactor
-		* (1 - max(dot(normalize(-viewSpaceFragPos), reflected), 0.0))
-		* hit;
+					* (1 - max(dot(normalize(-viewSpaceFragPos), reflected), 0.0))				// Fade if pointing towards camera
+					* (1 - clamp(dDepth / rayThickness, 0.0, 1.0))								// Fade reflection the further away from intersect point
+					* (1 - clamp(length(hitPos - viewSpaceFragPos) / maxDistance, 0.0, 1.0))    // Fade based on distance to initial ray start point
+					* hit;
 	multiplier = clamp(multiplier, 0.0, 1.0);
 
 	FragColour = vec4(coords.xy, vec2(multiplier));
