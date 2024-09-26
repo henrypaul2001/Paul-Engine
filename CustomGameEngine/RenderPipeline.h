@@ -29,10 +29,10 @@ namespace Engine {
 		void virtual DirLightShadowStep();
 		void virtual ActiveLightsShadowStep();
 		void virtual RunShadowMapSteps();
-		void virtual BloomStep();
+		void virtual BloomStep(const unsigned int activeBloomTexture);
 		void virtual UIRenderStep();
 		void virtual ForwardParticleRenderStep();
-		void virtual AdvancedBloomStep();
+		void virtual AdvancedBloomStep(const unsigned int activeScreenTexture);
 
 		RenderManager* renderInstance;
 
@@ -59,6 +59,7 @@ namespace Engine {
 		unsigned int screenHeight;
 
 		unsigned int finalBloomTexture;
+		unsigned int advBloomSourceTexture;
 
 		const std::unordered_map<std::string, unsigned int>* textureLookups;
 

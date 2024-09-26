@@ -33,9 +33,9 @@ namespace Engine {
 
 			SceneRenderStep();
 
-			BloomStep();
+			BloomStep(*renderInstance->GetBloomBrightnessTexture());
 
-			AdvancedBloomStep();
+			AdvancedBloomStep(*renderInstance->GetScreenTexture());
 
 			ScreenTextureStep();
 
@@ -51,6 +51,8 @@ namespace Engine {
 
 		// Render to textured framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *renderInstance->GetScreenTexture(), 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *renderInstance->GetBloomBrightnessTexture(), 0);
 
 		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 		glDrawBuffers(2, drawBuffers);

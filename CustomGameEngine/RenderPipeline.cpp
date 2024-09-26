@@ -207,7 +207,7 @@ namespace Engine {
 		}
 	}
 
-	void RenderPipeline::BloomStep()
+	void RenderPipeline::BloomStep(const unsigned int activeBloomTexture)
 	{
 		SCOPE_TIMER("RenderPipeline::BloomStep");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
@@ -224,7 +224,7 @@ namespace Engine {
 			for (unsigned int i = 0; i < bloomPasses; i++) {
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetBloomPingPongFBO(horizontal));
 				blurShader->setInt("horizontal", horizontal);
-				glBindTexture(GL_TEXTURE_2D, first_iteration ? *renderInstance->GetBloomBrightnessTexture() : *renderInstance->GetBloomPingPongColourBuffer(!horizontal));
+				glBindTexture(GL_TEXTURE_2D, first_iteration ? activeBloomTexture : *renderInstance->GetBloomPingPongColourBuffer(!horizontal));
 
 				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 
@@ -285,7 +285,7 @@ namespace Engine {
 		bloomCombineShader->setFloat("dirtMaskStrength", lensDirtStrength);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
+		glBindTexture(GL_TEXTURE_2D, advBloomSourceTexture);
 		
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, renderInstance->GetAdvBloomMipChain()[0].texture);
@@ -303,11 +303,12 @@ namespace Engine {
 		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
 	}
 
-	void RenderPipeline::AdvancedBloomStep()
+	void RenderPipeline::AdvancedBloomStep(const unsigned int activeScreenTexture)
 	{
 		SCOPE_TIMER("RenderPipeline::AdvancedBloomStep");
 		RenderParams* renderParams = renderInstance->GetRenderParams();
 		RenderOptions renderOptions = renderParams->GetRenderOptions();
+		advBloomSourceTexture = activeScreenTexture;
 		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
 			unsigned int bloomFBO = *renderInstance->GetAdvBloomFBO();
 			glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
@@ -339,7 +340,7 @@ namespace Engine {
 
 		glActiveTexture(GL_TEXTURE0);
 		glDisable(GL_BLEND);
-		unsigned int previousTexture = *renderInstance->GetScreenTexture();
+		unsigned int previousTexture = advBloomSourceTexture;
 		Mesh defaultPlane = ResourceManager::GetInstance()->DefaultPlane();
 
 		// Progressively downsample through mip chain

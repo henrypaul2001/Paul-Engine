@@ -6,12 +6,35 @@ in vec2 TexCoords;
 
 #define NR_LOCAL_REFLECTION_PROBES 32
 
+struct DirLight {
+    vec3 Direction;
+    vec3 TangentDirection;
+    
+    mat4 LightSpaceMatrix;
+    float LightDistance;
+
+    bool CastShadows;
+    bool Active;
+
+    float MinShadowBias;
+	float MaxShadowBias;
+
+    vec2 shadowResolution;
+    sampler2D ShadowMap;
+
+    vec3 Colour;
+    vec3 Ambient;
+    vec3 Specular;
+};
+uniform DirLight dirLight;
+
 uniform sampler2D lightingPass;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gArm;
 uniform sampler2D gPBRFLAG;
+uniform sampler2D SSAO;
 
 uniform sampler2D brdfLUT;
 
@@ -56,11 +79,11 @@ vec3 Normal;
 float Metallic;
 float Roughness;
 float AO;
+float AmbientOcclusion;
 vec3 Lighting;
 
-uniform bool useSSAO;
-
 uniform float BloomThreshold;
+uniform bool useSSAO;
 
 vec3 N;
 vec3 V;
@@ -158,13 +181,31 @@ void main() {
         Roughness = texture(gArm, TexCoords).g;
         Metallic = texture(gArm, TexCoords).b;
 
+        AmbientOcclusion = texture(SSAO, TexCoords).r;
+        if (!useSSAO) {
+            AmbientOcclusion = 1.0;
+        }
+
         N = normalize(Normal);
         V = normalize(ViewPos - FragPos);
         R = reflect(-V, N);
 
+        // calculate reflectance at normal incidence
+	    // if dia-electric, use F0 of 0.04
+	    // if metal, use albedo colour as F0
+        F0 = vec3(0.04);
+        F0 = mix(F0, Albedo, Metallic);
+
         vec3 Colour = texture(lightingPass, TexCoords).rgb; // sample lighting pass texture
 
         vec3 ambient;
+        if (dirLight.Active) {
+            ambient = (dirLight.Ambient * Albedo * AO) * AmbientOcclusion;
+        }
+        else {
+            ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
+        }
+
 	    float localIBLTotalContribution = 0.0;
         vec3 accumulatedAmbient = vec3(0.0);
         if (activeLocalIBLProbes > 0) {

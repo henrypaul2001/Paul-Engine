@@ -498,6 +498,7 @@ namespace Engine {
 		deferredIBLPassPBR->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
 		deferredIBLPassPBR->setInt("gArm", textureSlotLookup.at("gArm"));
 		deferredIBLPassPBR->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
+		deferredIBLPassPBR->setInt("SSAO", textureSlotLookup.at("SSAO"));
 		deferredIBLPassPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
 
 		deferredIBLPassPBR->setInt("globalIBL.irradianceMap", textureSlotLookup.at("globalIBL.irradianceMap"));

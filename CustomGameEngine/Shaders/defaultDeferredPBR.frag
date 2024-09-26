@@ -514,43 +514,15 @@ void main() {
         }
 
         // Ambient lighting
-        vec3 ambient;
-
-        if (dirLight.Active) {
-            ambient = (dirLight.Ambient * Albedo * AO) * AmbientOcclusion;
-        }
-        else {
-            ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
-        }
-    
-        // Local IBL
-        float localIBLTotalContribution = 0.0;
-        vec3 accumulatedAmbient = vec3(0.0);
-        if (activeLocalIBLProbes > 0) {
-            for (int i = 0; i < activeLocalIBLProbes && i < NR_LOCAL_REFLECTION_PROBES; i++) {
-                float distanceToProbe = distance(FragPos, localIBLProbes[i].worldPos);
-
-                float contribution = 1.0 - (distanceToProbe / localIBLProbes[i].soiRadius);
-
-                //float contribution = 1.0 - (1.0 + distanceToProbe * distanceToProbe / (localIBLProbes[i].soiRadius * localIBLProbes[i].soiRadius));
-
-                if (contribution > 0.0) {
-                    vec3 probeAmbient = CalculateAmbienceFromIBL(localIBLProbes[i]);
-                    accumulatedAmbient += probeAmbient * contribution;
-                    localIBLTotalContribution += contribution;
-                }
+        vec3 ambient = vec3(0.0);
+        // If using IBL, IBL pass will handle this
+        if (activeLocalIBLProbes <= 0 || useGlobalIBL) {
+            if (dirLight.Active) {
+                ambient = (dirLight.Ambient * Albedo * AO) * AmbientOcclusion;
             }
-        }
-
-        if (localIBLTotalContribution > 0.0) {
-            //ambient += (accumulatedAmbient / localIBLTotalContribution);
-            ambient += accumulatedAmbient;
-        }
-    
-        // Global IBL fallback
-        if (useGlobalIBL && localIBLTotalContribution == 0.0) {
-            RParallaxed = R;
-            ambient = CalculateAmbienceFromIBL(globalIBL.prefilterMap, globalIBL.irradianceMap);
+            else {
+                ambient = (vec3(0.01) * Albedo * AO) * AmbientOcclusion;
+            }
         }
 
         vec3 Colour = ambient + Lo;
