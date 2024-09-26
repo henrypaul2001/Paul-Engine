@@ -119,6 +119,7 @@ namespace Engine {
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
 
+			/*
 			// SSR Convert UV to Reflection Map
 			// --------------------------------
 			{
@@ -143,6 +144,7 @@ namespace Engine {
 
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
+			*/
 
 			// Lighting pass
 			// -------------
@@ -153,10 +155,9 @@ namespace Engine {
 				SCOPE_TIMER("DeferredPipeline::Lighting Pass");
 				glViewport(0, 0, screenWidth, screenHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, activeScreenTexture, 0);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, activeBloomTexture, 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 				glDrawBuffers(2, buffers);
@@ -214,6 +215,39 @@ namespace Engine {
 
 			// SSR Combine pass
 			// ----------------
+			{
+				SCOPE_TIMER("DeferredPipeline::SSR Combine Pass");
+				glViewport(0, 0, screenWidth, screenHeight);
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+
+				SwapScreenTextures();
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, activeScreenTexture, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, activeBloomTexture, 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPosition"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gNormal"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gAlbedo"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPBRFLAG"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPBRFLAG());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gArm"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("lightingPass"));
+				glBindTexture(GL_TEXTURE_2D, alternateScreenTexture);
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("brdfLUT"));
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetGlobalBRDF_LUT());
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());
+
+				Shader* ssrCombineShader = resources->SSRCombineShaderPBR();
+				ssrCombineShader->Use();
+				ssrCombineShader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
+				//LightManager::GetInstance()->SetShaderUniforms(ssrCombineShader, activeCamera);
+				resources->DefaultPlane().DrawWithNoMaterial();
+			}
 
 			// IBL Pass
 			// --------
@@ -245,6 +279,8 @@ namespace Engine {
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GArm());
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("lightingPass"));
 				glBindTexture(GL_TEXTURE_2D, alternateScreenTexture);
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("SSAO"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 				iblShader->setBool("useSSAO", ((renderOptions& RENDER_SSAO) != 0));
 				LightManager::GetInstance()->SetShaderUniforms(iblShader, activeCamera);
 				resources->DefaultPlane().DrawWithNoMaterial();

@@ -87,6 +87,7 @@ namespace Engine {
 		Shader* deferredLightingPass;
 		Shader* deferredLightingPassPBR;
 		Shader* deferredIBLPassPBR;
+		Shader* ssrCombineShaderPBR;
 
 		// Post processing / graphics effects shaders
 		// ------------------------------------------
@@ -291,6 +292,7 @@ namespace Engine {
 		Shader* ScreenSpaceReflectionUVMappingShader() const { return screenSpaceReflectionUVMappingShader; }
 		Shader* SSRUVMapToReflectionMap() const { return ssrUVMapToReflectionMap; }
 		Shader* DeferredIBLPassPBR() const { return deferredIBLPassPBR; }
+		Shader* SSRCombineShaderPBR() const { return ssrCombineShaderPBR; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }

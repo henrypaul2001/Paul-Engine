@@ -393,6 +393,7 @@ namespace Engine {
 		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/ssao.vert", "Shaders/ssrUVMapping.frag", true);
 		ssrUVMapToReflectionMap = LoadShader("Shaders/screenQuad.vert", "Shaders/ssrUVToReflectionMap.frag", true);
 		deferredIBLPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/deferredIBLPassPBR.frag", true);
+		ssrCombineShaderPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/ssrCombinePBR.frag", true);
 
 		ssrUVMapToReflectionMap->Use();
 		ssrUVMapToReflectionMap->setInt("colourMap", 0);
@@ -508,6 +509,18 @@ namespace Engine {
 		deferredIBLPassPBR->setInt("localIBLIrradianceMapArray", textureSlotLookup.at("localIBLIrradianceMapArray"));
 		deferredIBLPassPBR->setInt("localIBLPrefilterMapArray", textureSlotLookup.at("localIBLPrefilterMapArray"));
 
+		ssrCombineShaderPBR->Use();
+		ssrCombineShaderPBR->setInt("gPosition", textureSlotLookup.at("gPosition"));
+		ssrCombineShaderPBR->setInt("gNormal", textureSlotLookup.at("gNormal"));
+		ssrCombineShaderPBR->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
+		ssrCombineShaderPBR->setInt("gArm", textureSlotLookup.at("gArm"));
+		ssrCombineShaderPBR->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
+		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
+
+		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
+		ssrCombineShaderPBR->setInt("ssrUVMap", 1);
+		ssrCombineShaderPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
+
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
 		ssaoShader->setInt("gNormal", 1);
@@ -589,6 +602,7 @@ namespace Engine {
 		unsigned int defaultPointParticleLocation = glGetUniformBlockIndex(pointParticleShader->GetID(), "Common");
 		unsigned int colliderDebugLocation = glGetUniformBlockIndex(colliderDebug->GetID(), "Common");
 		unsigned int screenSpaceUVLocation = glGetUniformBlockIndex(screenSpaceReflectionUVMappingShader->GetID(), "Common");
+		unsigned int ssrCombinePBRLocation = glGetUniformBlockIndex(ssrCombineShaderPBR->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
@@ -601,6 +615,7 @@ namespace Engine {
 		glUniformBlockBinding(pointParticleShader->GetID(), defaultPointParticleLocation, 0);
 		glUniformBlockBinding(colliderDebug->GetID(), colliderDebugLocation, 0);
 		glUniformBlockBinding(screenSpaceReflectionUVMappingShader->GetID(), screenSpaceUVLocation, 0);
+		glUniformBlockBinding(ssrCombineShaderPBR->GetID(), ssrCombinePBRLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
