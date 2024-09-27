@@ -130,7 +130,68 @@ namespace Engine {
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
+#pragma region Materials
+		PBRMaterial* metalVent = new PBRMaterial();
+		metalVent->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/albedo.png", TEXTURE_ALBEDO, true));
+		metalVent->normalMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/normal.png", TEXTURE_NORMAL, false));
+		metalVent->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/metal.png", TEXTURE_METALLIC, false));
+		metalVent->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/roughness.png", TEXTURE_ROUGHNESS, false));
+		metalVent->aoMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/ao.png", TEXTURE_AO, false));
+		//metalVent->heightMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/height.png", TEXTURE_DISPLACE, false));
+		metalVent->height_scale = -0.1;
+		metalVent->textureScaling = glm::vec2(10.0f);
+		resources->AddMaterial("Metal Vent", metalVent);
+
+		PBRMaterial* stoneTiles = new PBRMaterial();
+		stoneTiles->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/stoneTiles/albedo.png", TEXTURE_ALBEDO, true));
+		stoneTiles->normalMaps.push_back(resources->LoadTexture("Materials/PBR/stoneTiles/normal.png", TEXTURE_NORMAL, false));
+		stoneTiles->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/stoneTiles/metal.png", TEXTURE_METALLIC, false));
+		stoneTiles->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/stoneTiles/roughness.png", TEXTURE_ROUGHNESS, false));
+		stoneTiles->aoMaps.push_back(resources->LoadTexture("Materials/PBR/stoneTiles/ao.png", TEXTURE_AO, false));
+		//stoneTiles->heightMaps.push_back(resources->LoadTexture("Materials/PBR/stoneTiles/height.png", TEXTURE_DISPLACE, false));
+		stoneTiles->height_scale = -0.1;
+		stoneTiles->textureScaling = glm::vec2(10.0f);
+		resources->AddMaterial("Stone Tiles", stoneTiles);
+
+		PBRMaterial* marbleTile = new PBRMaterial();
+		marbleTile->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/albedo.png", TEXTURE_ALBEDO, true));
+		marbleTile->normalMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/normal.png", TEXTURE_NORMAL, false));
+		marbleTile->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/metal.png", TEXTURE_METALLIC, false));
+		marbleTile->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/roughness.png", TEXTURE_ROUGHNESS, false));
+		marbleTile->aoMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/ao.png", TEXTURE_AO, false));
+		marbleTile->heightMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/height.png", TEXTURE_DISPLACE, false));
+		//marbleTile->height_scale = -0.1;
+		marbleTile->textureScaling = glm::vec2(10.0f);
+		resources->AddMaterial("Marble Tile", marbleTile);
+
+		PBRMaterial* darkWood = new PBRMaterial();
+		darkWood->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/darkWood/albedo.png", TEXTURE_ALBEDO, true));
+		darkWood->normalMaps.push_back(resources->LoadTexture("Materials/PBR/darkWood/normal.png", TEXTURE_NORMAL, false));
+		darkWood->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/darkWood/metal.png", TEXTURE_METALLIC, false));
+		darkWood->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/darkWood/roughness.png", TEXTURE_ROUGHNESS, false));
+		darkWood->aoMaps.push_back(resources->LoadTexture("Materials/PBR/darkWood/ao.png", TEXTURE_AO, false));
+		//darkWood->heightMaps.push_back(resources->LoadTexture("Materials/PBR/darkWood/height.png", TEXTURE_DISPLACE, false));
+		darkWood->height_scale = -0.1;
+		darkWood->textureScaling = glm::vec2(10.0f);
+		resources->AddMaterial("Dark Wood", darkWood);
+
+		PBRMaterial* metalGrid = new PBRMaterial();
+		metalGrid->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/albedo.png", TEXTURE_ALBEDO, true));
+		metalGrid->normalMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/normal.png", TEXTURE_NORMAL, false));
+		metalGrid->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/metal.png", TEXTURE_METALLIC, false));
+		metalGrid->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/roughness.png", TEXTURE_ROUGHNESS, false));
+		metalGrid->aoMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/ao.png", TEXTURE_AO, false));
+		metalGrid->textureScaling = glm::vec2(10.0f);
+		resources->AddMaterial("Metal Grid", metalGrid);
+#pragma endregion
+
 #pragma region Scene
+		Entity* floor = new Entity("Floor");
+		floor->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.25f, 0.0f)));
+		floor->GetTransformComponent()->SetScale(glm::vec3(25.0f, 0.5, 25.0f));
+		floor->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		floor->GetGeometryComponent()->ApplyMaterialToModel(metalGrid);
+		entityManager->AddEntity(floor);
 
 #pragma endregion
 
