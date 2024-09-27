@@ -2,6 +2,8 @@
 #include "SystemUIRender.h"
 #include "SystemUIMouseInteraction.h"
 #include "GameInputManager.h"
+#include "SystemAnimatedGeometryAABBGeneration.h"
+#include "SystemSkeletalAnimationUpdater.h"
 namespace Engine {
 	SSRScene::SSRScene(SceneManager* sceneManager) : Scene(sceneManager, "SSRScene")
 	{
@@ -120,13 +122,14 @@ namespace Engine {
 		Entity* dirLight = new Entity("Directional Light");
 		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
 		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
-		directional->CastShadows = false;
-		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		directional->CastShadows = true;
+		directional->Colour = glm::vec3(3.9f, 3.1f, 7.5f);
 		directional->Ambient = directional->Colour * 0.1f;
 		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
 		directional->MinShadowBias = 0.0f;
 		directional->MaxShadowBias = 0.003f;
 		directional->DirectionalLightDistance = 20.0f;
+		directional->ShadowProjectionSize = 20.0f;
 		dirLight->AddComponent(directional);
 		entityManager->AddEntity(dirLight);
 
@@ -139,7 +142,7 @@ namespace Engine {
 		metalVent->aoMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/ao.png", TEXTURE_AO, false));
 		//metalVent->heightMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/height.png", TEXTURE_DISPLACE, false));
 		metalVent->height_scale = -0.1;
-		metalVent->textureScaling = glm::vec2(10.0f);
+		//metalVent->textureScaling = glm::vec2(10.0f);
 		resources->AddMaterial("Metal Vent", metalVent);
 
 		PBRMaterial* stoneTiles = new PBRMaterial();
@@ -159,9 +162,9 @@ namespace Engine {
 		marbleTile->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/metal.png", TEXTURE_METALLIC, false));
 		marbleTile->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/roughness.png", TEXTURE_ROUGHNESS, false));
 		marbleTile->aoMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/ao.png", TEXTURE_AO, false));
-		marbleTile->heightMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/height.png", TEXTURE_DISPLACE, false));
-		//marbleTile->height_scale = -0.1;
-		marbleTile->textureScaling = glm::vec2(10.0f);
+		//marbleTile->heightMaps.push_back(resources->LoadTexture("Materials/PBR/marbleTile/height.png", TEXTURE_DISPLACE, false));
+		marbleTile->height_scale = -0.1;
+		marbleTile->textureScaling = glm::vec2(1.0f, 5.0f);
 		resources->AddMaterial("Marble Tile", marbleTile);
 
 		PBRMaterial* darkWood = new PBRMaterial();
@@ -183,15 +186,71 @@ namespace Engine {
 		metalGrid->aoMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/ao.png", TEXTURE_AO, false));
 		metalGrid->textureScaling = glm::vec2(10.0f);
 		resources->AddMaterial("Metal Grid", metalGrid);
+
+		PBRMaterial* gold = new PBRMaterial();
+		gold->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/albedo.png", TEXTURE_ALBEDO, true));
+		gold->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/normal.png", TEXTURE_NORMAL, false));
+		gold->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/metallic.png", TEXTURE_METALLIC, false));
+		gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS, false));
+		gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
+		resources->AddMaterial("Gold", gold);
 #pragma endregion
 
 #pragma region Scene
 		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(glm::vec3(0.0f, -0.25f, 0.0f)));
+		floor->AddComponent(new ComponentTransform(0.0f, -0.5f, 0.0f));
 		floor->GetTransformComponent()->SetScale(glm::vec3(25.0f, 0.5, 25.0f));
 		floor->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-		floor->GetGeometryComponent()->ApplyMaterialToModel(metalGrid);
+		floor->GetGeometryComponent()->ApplyMaterialToModel(stoneTiles);
 		entityManager->AddEntity(floor);
+
+		Entity* pillar = new Entity("Pillar");
+		pillar->AddComponent(new ComponentTransform(2.5, 5.0f, -5.0f));
+		pillar->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		pillar->GetTransformComponent()->SetScale(glm::vec3(1.0f, 5.0f, 1.0f));
+		pillar->GetGeometryComponent()->ApplyMaterialToModel(marbleTile);
+		entityManager->AddEntity(pillar);
+
+		Entity* pillarClone = pillar->Clone();
+		pillarClone->GetTransformComponent()->SetPosition(pillar->GetTransformComponent()->GetWorldPosition() + glm::vec3(-4.5f, 0.0f, -2.5f));
+
+		Entity* goldSheet = new Entity("Gold Sheet");
+		goldSheet->AddComponent(new ComponentTransform(0.0f, 0.0f, 1.0f));
+		goldSheet->GetTransformComponent()->SetScale(glm::vec3(3.5f, 0.025f, 3.5f));
+		goldSheet->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		goldSheet->GetGeometryComponent()->ApplyMaterialToModel(gold);
+		entityManager->AddEntity(goldSheet);
+
+		SkeletalAnimation* vampireDanceAnim = resources->LoadAnimation("Models/vampire/dancing_vampire.dae");
+		Entity* vampire = new Entity("Vampire");
+		vampire->AddComponent(new ComponentTransform(0.0f, 0.0f, 1.0f));
+		vampire->AddComponent(new ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+		vampire->AddComponent(new ComponentAnimator(vampireDanceAnim));
+		entityManager->AddEntity(vampire);
+
+		Entity* vent = new Entity("Vent");
+		vent->AddComponent(new ComponentTransform(-5.0f, 1.0f, 0.0f));
+		vent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
+		vent->GetGeometryComponent()->ApplyMaterialToModel(metalVent);
+		entityManager->AddEntity(vent);
+
+		Entity* woodPlane = new Entity("Wood Plane");
+		woodPlane->AddComponent(new ComponentTransform(8.5f, 2.0f, 1.0f));
+		woodPlane->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
+		woodPlane->GetGeometryComponent()->ApplyMaterialToModel(darkWood);
+		woodPlane->GetTransformComponent()->SetScale(glm::vec3(5.0f, 4.0f, 1.0f));
+		woodPlane->GetTransformComponent()->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), -135.0f);
+		entityManager->AddEntity(woodPlane);
+
+		Entity* pointLight = new Entity("Light");
+		pointLight->AddComponent(new ComponentTransform(6.0f, 2.5f, -1.0f));
+		pointLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
+		pointLight->GetTransformComponent()->SetScale(0.25f);
+		ComponentLight* light = new ComponentLight(POINT);
+		light->Colour = glm::vec3(50.0, 50.0, 50.0);
+		light->CastShadows = false;
+		pointLight->AddComponent(light);
+		entityManager->AddEntity(pointLight);
 
 #pragma endregion
 
@@ -253,5 +312,7 @@ namespace Engine {
 		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
 		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
+		systemManager->AddSystem(new SystemSkeletalAnimationUpdater(), UPDATE_SYSTEMS);
+		systemManager->AddSystem(new SystemAnimatedGeometryAABBGeneration(), UPDATE_SYSTEMS);
 	}
 }
