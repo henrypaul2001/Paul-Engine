@@ -219,6 +219,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalAnimation.h" />
     <ClInclude Include="SponzaScene.h" />
+    <ClInclude Include="SSRScene.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="StateTransition.h" />
@@ -336,6 +337,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalAnimation.cpp" />
     <ClCompile Include="SponzaScene.cpp" />
+    <ClCompile Include="SSRScene.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="StateTransition.cpp" />

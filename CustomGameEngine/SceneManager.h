@@ -25,6 +25,7 @@ namespace Engine
 		SCENE_AI,
 		SCENE_IBL,
 		SCENE_GEO_CULLING,
+		SCENE_SSR,
 	};
 
 	using SceneDelegate = std::function<void()>;

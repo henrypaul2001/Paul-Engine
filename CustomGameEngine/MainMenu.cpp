@@ -60,6 +60,7 @@ namespace Engine {
 		CreateSystems();
 		CreateEntities();
 
+		/*
 		// Test compute shader
 		// -------------------
 		{
@@ -141,6 +142,7 @@ namespace Engine {
 
 			std::cout << floatMin.x << floatMin.y << floatMin.z << " | " << floatMax.x << floatMax.y << floatMax.z << std::endl;
 		}
+		*/
 		inputManager->SetCursorLock(false);
 	}
 
@@ -241,6 +243,14 @@ namespace Engine {
 		dynamic_cast<UITextButton*>(button)->SetText("Loading Culling Scene");
 		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
 		sceneManager->ChangeSceneAtEndOfFrame(SCENE_GEO_CULLING);
+	}
+
+	void MainMenu::SSRSceneButtonRelease(UIButton* button)
+	{
+		std::cout << "Launch SSR scene" << std::endl;
+		dynamic_cast<UITextButton*>(button)->SetText("Loading SSR Scene");
+		button->Position(glm::vec2(button->Position().x - 95.0f, button->Position().y));
+		sceneManager->ChangeSceneAtEndOfFrame(SCENE_SSR);
 	}
 
 	void MainMenu::ButtonPress(UIButton* button)
@@ -353,6 +363,13 @@ namespace Engine {
 		cullingButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
 		cullingButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
 		canvas->GetUICanvasComponent()->AddUIElement(cullingButton);
+
+		UITextButton* ssrButton = new UITextButton(std::string("SSR Scene"), glm::vec2((SCR_WIDTH / 6.0f) - 145.0f, SCR_HEIGHT * 0.25f), glm::vec2(0.4f, 0.4f), glm::vec2(310.0f, 50.0f), font, glm::vec3(0.8f), 0);
+		ssrButton->SetMouseDownCallback(std::bind(&MainMenu::ButtonPress, this, std::placeholders::_1));
+		ssrButton->SetMouseUpCallback(std::bind(&MainMenu::SSRSceneButtonRelease, this, std::placeholders::_1));
+		ssrButton->SetMouseEnterCallback(std::bind(&MainMenu::ButtonEnter, this, std::placeholders::_1));
+		ssrButton->SetMouseExitCallback(std::bind(&MainMenu::ButtonExit, this, std::placeholders::_1));
+		canvas->GetUICanvasComponent()->AddUIElement(ssrButton);
 
 		entityManager->AddEntity(canvas);
 	}

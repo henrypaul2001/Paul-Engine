@@ -30,6 +30,7 @@ namespace Engine {
 		void AISceneButtonRelease(UIButton* button);
 		void IBLSceneButtonRelease(UIButton* button);
 		void GeoCullingSceneButtonRelease(UIButton* button);
+		void SSRSceneButtonRelease(UIButton* button);
 
 		void ButtonPress(UIButton* button);
 		void ButtonEnter(UIButton* button);

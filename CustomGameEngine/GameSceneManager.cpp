@@ -13,6 +13,7 @@
 #include "AIScene.h"
 #include "IBLScene.h"
 #include "GeoCullingScene.h"
+#include "SSRScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -82,6 +83,9 @@ namespace Engine
 			break;
 		case SCENE_GEO_CULLING:
 			newScene = new GeoCullingScene(this);
+			break;
+		case SCENE_SSR:
+			newScene = new SSRScene(this);
 			break;
 		case SCENE_NONE:
 			newScene = nullptr;
