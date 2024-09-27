@@ -1,5 +1,5 @@
 #version 330 core
-layout (location = 0) out vec3 gPosition;
+layout (location = 0) out vec4 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
 layout (location = 3) out vec4 gSpecular;
@@ -92,7 +92,7 @@ vec2 TexCoords;
 
 void WriteToBuffers() {
     // Position
-    gPosition.xyz = vertex_data.WorldPos;
+    gPosition = vec4(vertex_data.WorldPos.xyz, 1.0);
 
     // Normal
     vec3 Normal = vertex_data.Normal;
