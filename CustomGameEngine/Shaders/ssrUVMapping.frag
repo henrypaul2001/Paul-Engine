@@ -13,7 +13,7 @@ uniform float rayStep = 0.3;
 uniform float minRayStep = 0.3;
 uniform float maxSteps = 100;
 uniform float maxDistance = 15.0;
-uniform float rayThickness = 0.8;
+uniform float rayThickness = 0.3;
 uniform int numBinarySearchSteps = 50;
 
 vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float dDepth) {
@@ -25,7 +25,8 @@ vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float 
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		depth = vec3(View * vec4(texture(gPosition, projectedCoord.xy).xyz, 1.0)).z;
+		vec4 posSample = texture(gPosition, projectedCoord.xy);
+		depth = vec3(View * vec4(posSample.xyz, 1.0)).z;
 
 		dDepth = hitCoord.z - depth;
 
@@ -59,14 +60,16 @@ vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth) {
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		depth = vec3(View * vec4(texture(gPosition, projectedCoord.xy).xyz, 1.0)).z;
-		if (depth > 1000.0) {
+		vec4 posSample = texture(gPosition, projectedCoord.xy);
+		depth = vec3(View * vec4(posSample.xyz, 1.0)).z;
+
+		if (depth > 1000.0 || posSample.a == 0.0) {
 			continue;
 		}
 
 		dDepth = hitCoord.z - depth;
 
-		if ((dir.z - dDepth) < 1.2) {
+		if ((dir.z - dDepth) < rayThickness) {
 			if (dDepth <= 0.0) {
 				return vec4(RayRefinementBinarySearch(dir, hitCoord, dDepth), 1.0);
 			}
