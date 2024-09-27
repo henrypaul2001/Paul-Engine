@@ -536,6 +536,15 @@ void main() {
             BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
         }
 
+        if (isnan(Colour.x)) {
+            Colour.x = 0.0;
+        }
+        if (isnan(Colour.y)) {
+            Colour.y = 0.0;
+        }
+        if (isnan(Colour.z)) {
+            Colour.z = 0.0;
+        }
         FragColour = vec4(Colour, 1.0);
     }
     else {
