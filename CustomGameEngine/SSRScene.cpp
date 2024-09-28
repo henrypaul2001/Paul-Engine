@@ -184,7 +184,7 @@ namespace Engine {
 		metalGrid->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/metal.png", TEXTURE_METALLIC, false));
 		metalGrid->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/roughness.png", TEXTURE_ROUGHNESS, false));
 		metalGrid->aoMaps.push_back(resources->LoadTexture("Materials/PBR/metalGrid/ao.png", TEXTURE_AO, false));
-		metalGrid->textureScaling = glm::vec2(10.0f);
+		//metalGrid->textureScaling = glm::vec2(10.0f);
 		resources->AddMaterial("Metal Grid", metalGrid);
 
 		PBRMaterial* gold = new PBRMaterial();
@@ -233,6 +233,10 @@ namespace Engine {
 		vent->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
 		vent->GetGeometryComponent()->ApplyMaterialToModel(metalVent);
 		entityManager->AddEntity(vent);
+
+		Entity* block = vent->Clone();
+		block->GetTransformComponent()->SetPosition(vent->GetTransformComponent()->GetWorldPosition() + glm::vec3(0.05f, 2.0f, -0.1f));
+		block->GetGeometryComponent()->ApplyMaterialToModel(metalGrid);
 
 		Entity* woodPlane = new Entity("Wood Plane");
 		woodPlane->AddComponent(new ComponentTransform(8.5f, 2.0f, 1.0f));
