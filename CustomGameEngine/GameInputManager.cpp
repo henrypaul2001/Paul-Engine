@@ -175,6 +175,17 @@ namespace Engine {
 				std::cout << "GAMEINPUTMANAGER::ENABLE::Geometry colliders debug" << std::endl;
 			}
 		}
+		if (key == GLFW_KEY_I) {
+			bool IBL = (renderOptions & RENDER_IBL) != 0;
+			if (IBL) {
+				renderParams->DisableRenderOptions(RENDER_IBL);
+				std::cout << "GAMEINPUTMANAGER::DISABLE::Image based lighting" << std::endl;
+			}
+			else {
+				renderParams->EnableRenderOptions(RENDER_IBL);
+				std::cout << "GAMEINPUTMANAGER::ENABLE::Image based lighting" << std::endl;
+			}
+		}
 
 		if (key == GLFW_KEY_F2) {
 			Profiling::Profiler* profiler = Profiling::Profiler::GetInstance();
