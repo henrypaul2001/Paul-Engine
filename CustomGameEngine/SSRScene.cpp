@@ -134,6 +134,7 @@ namespace Engine {
 		entityManager->AddEntity(dirLight);
 
 #pragma region Materials
+		/*
 		PBRMaterial* metalVent = new PBRMaterial();
 		metalVent->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/albedo.png", TEXTURE_ALBEDO, true));
 		metalVent->normalMaps.push_back(resources->LoadTexture("Materials/PBR/metalVent/normal.png", TEXTURE_NORMAL, false));
@@ -194,9 +195,11 @@ namespace Engine {
 		gold->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/roughness.png", TEXTURE_ROUGHNESS, false));
 		gold->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
 		resources->AddMaterial("Gold", gold);
+		*/
 #pragma endregion
 
 #pragma region Scene
+		/*
 		Entity* floor = new Entity("Floor");
 		floor->AddComponent(new ComponentTransform(0.0f, -0.5f, 0.0f));
 		floor->GetTransformComponent()->SetScale(glm::vec3(25.0f, 0.5, 25.0f));
@@ -255,6 +258,21 @@ namespace Engine {
 		light->CastShadows = false;
 		pointLight->AddComponent(light);
 		entityManager->AddEntity(pointLight);
+		*/
+
+		Entity* testEnvironment = new Entity("Test Environment");
+		testEnvironment->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		testEnvironment->AddComponent(new ComponentGeometry("Models/PBR/SSRTestEnvironment/ssrTestEnvironment.obj", true));
+		entityManager->AddEntity(testEnvironment);
+
+		Model* testScene = testEnvironment->GetGeometryComponent()->GetModel();
+		testScene->meshes[0]->GetMaterial()->textureScaling = glm::vec2(25.0f, 25.0f);
+		testScene->meshes[1]->GetMaterial()->textureScaling = glm::vec2(3.3f, 0.6f);
+		testScene->meshes[6]->GetMaterial()->textureScaling = glm::vec2(10.0f, 10.0f);
+		testScene->meshes[7]->GetMaterial()->textureScaling = glm::vec2(10.0f, 10.0f);
+		testScene->meshes[8]->GetMaterial()->textureScaling = glm::vec2(10.0f, 10.0f);
+		testScene->meshes[9]->GetMaterial()->textureScaling = glm::vec2(10.0f, 10.0f);
+		testScene->meshes[10]->GetMaterial()->textureScaling = glm::vec2(2.5f, 2.5f);
 
 #pragma endregion
 
