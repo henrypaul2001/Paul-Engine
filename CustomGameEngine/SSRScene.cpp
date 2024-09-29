@@ -15,8 +15,13 @@ namespace Engine {
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
 
-		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
+		resources->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
+
+		const char* envMap = "Textures/Environment Maps/sky.hdr";
+		resources->LoadHDREnvironmentMap(envMap, true);
+		renderManager->SetEnvironmentMap(envMap);
+		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 	}
 
 	SSRScene::~SSRScene()
