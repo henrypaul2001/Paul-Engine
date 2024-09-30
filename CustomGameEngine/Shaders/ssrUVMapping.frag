@@ -1,7 +1,7 @@
 #version 430 core
 layout (location = 0) out vec4 FragColour;
 
-uniform sampler2D gPosition;
+uniform sampler2D gViewSpacePos;
 uniform sampler2D gNormal;
 
 in mat4 Projection;
@@ -14,7 +14,7 @@ uniform float minRayStep = 0.3;
 uniform float maxSteps = 30;
 uniform float maxDistance = 50.0;
 uniform float rayThickness = 0.3;
-uniform int numBinarySearchSteps = 15;
+uniform int numBinarySearchSteps = 50;
 
 vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float dDepth) {
 	float depth;
@@ -25,8 +25,8 @@ vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float 
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		vec4 posSample = texture(gPosition, projectedCoord.xy);
-		depth = vec3(View * vec4(posSample.xyz, 1.0)).z;
+		vec4 posSample = texture(gViewSpacePos, projectedCoord.xy);
+		depth = vec4(posSample.xyz, 1.0).z;
 
 		dDepth = hitCoord.z - depth;
 
@@ -57,11 +57,11 @@ vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth) {
 		hitCoord += dir;
 
 		projectedCoord = Projection * vec4(hitCoord, 1.0);
-		projectedCoord.xy /= projectedCoord.w;
-		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+		projectedCoord.xyz /= projectedCoord.w;
+		projectedCoord.xyz = projectedCoord.xyz * 0.5 + 0.5;
 
-		vec4 posSample = texture(gPosition, projectedCoord.xy);
-		depth = vec3(View * vec4(posSample.xyz, 1.0)).z;
+		vec4 posSample = texture(gViewSpacePos, projectedCoord.xy);
+		depth = vec4(posSample.xyz, 1.0).z;
 
 		if (depth > 1000.0 || posSample.a == 0.0) {
 			steps++;
@@ -82,7 +82,7 @@ vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth) {
 }
 
 void main() {
-	vec3 viewSpaceFragPos = vec3(View * vec4(texture(gPosition, TexCoords).xyz, 1.0));
+	vec3 viewSpaceFragPos = texture(gViewSpacePos, TexCoords).xyz;
 	vec3 viewSpaceNormal = mat3(View) * texture(gNormal, TexCoords).rgb;
 
 	vec3 reflected = normalize(reflect(normalize(viewSpaceFragPos), normalize(viewSpaceNormal)));
