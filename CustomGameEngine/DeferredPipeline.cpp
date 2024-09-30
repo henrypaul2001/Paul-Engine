@@ -111,7 +111,7 @@ namespace Engine {
 				ssrUVShader->Use();
 
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GViewSpacePos());
 
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());

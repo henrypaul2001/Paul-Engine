@@ -24,6 +24,7 @@ out VIEW_DATA {
 
 out VERTEX_DATA {
     vec3 WorldPos;
+    vec3 VertexViewPos;
     vec3 Normal;
     vec2 TexCoords;
 
@@ -72,6 +73,8 @@ void main() {
     }
 
     vertex_data.WorldPos = vec3(Model * transformedLocalPos);
+    vec3 viewPos = (view * vec4(vertex_data.WorldPos, 1.0)).xyz;
+    vertex_data.VertexViewPos = viewPos;
     vertex_data.Normal = normalize(NormalMatrix * transformedNormal);
     vertex_data.TexCoords = aTexCoords;
     

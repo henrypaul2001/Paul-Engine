@@ -4,6 +4,7 @@ layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
 layout (location = 4) out vec3 gARM; // Ambient, Roughness, Metalness
 layout (location = 5) out float gPBRFLAG;
+layout (location = 6) out vec4 gViewSpacePos;
 
 in VIEW_DATA {
     flat vec3 TangentViewPos;
@@ -12,6 +13,7 @@ in VIEW_DATA {
 
 in VERTEX_DATA {
     vec3 WorldPos;
+    vec3 VertexViewPos;
     vec3 Normal;
     vec2 TexCoords;
 
@@ -120,6 +122,9 @@ vec3 GetNormalFromMap() {
 void WriteToBuffers() {
     // Position
     gPosition = vec4(vertex_data.WorldPos, 1.0);
+
+    // Vertex View Space
+    gViewSpacePos = vec4(vertex_data.VertexViewPos, 1.0);
 
     // Normal
     Normal = vertex_data.Normal;

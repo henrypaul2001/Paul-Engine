@@ -30,15 +30,16 @@ namespace Engine {
 			{ "gSpecular", 6 },
 			{ "gArm", 6 },
 			{ "gPBRFLAG", 7 },
-			{ "SSAO", 8 },
-			{ "lightingPass", 9 },
+			{ "gViewSpacePos", 8 },
+			{ "SSAO", 9 },
+			{ "lightingPass", 10 },
 
-			{ "globalIBL.irradianceMap", 10 },
-			{ "globalIBL.prefilterMap", 11 },
-			{ "brdfLUT", 12 },
+			{ "globalIBL.irradianceMap", 11 },
+			{ "globalIBL.prefilterMap", 12 },
+			{ "brdfLUT", 13 },
 
-			{ "localIBLIrradianceMapArray", 13 },
-			{ "localIBLPrefilterMapArray", 14 },
+			{ "localIBLIrradianceMapArray", 14 },
+			{ "localIBLPrefilterMapArray", 15 },
 		};
 
 		// Setup freetype
@@ -400,7 +401,7 @@ namespace Engine {
 		ssrUVMapToReflectionMap->setInt("uvMap", 1);
 
 		screenSpaceReflectionUVMappingShader->Use();
-		screenSpaceReflectionUVMappingShader->setInt("gPosition", 0);
+		screenSpaceReflectionUVMappingShader->setInt("gViewSpacePos", 0);
 		screenSpaceReflectionUVMappingShader->setInt("gNormal", 1);
 
 		shadowMapShader->Use();

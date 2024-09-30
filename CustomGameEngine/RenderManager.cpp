@@ -72,6 +72,7 @@ namespace Engine {
 		delete gSpecular;
 		delete gArm;
 		delete gPBRFLAG;
+		delete gViewSpacePos;
 
 		delete ssaoFBO;
 		delete ssaoBlurFBO;
@@ -404,6 +405,7 @@ namespace Engine {
 		gSpecular = new unsigned int;
 		gArm = new unsigned int;
 		gPBRFLAG = new unsigned int;
+		gViewSpacePos = new unsigned int;
 
 		// position colour buffer
 		glGenTextures(1, gPosition);
@@ -447,9 +449,16 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, *gPBRFLAG, 0);
+		// View Space Pos
+		glGenTextures(1, gViewSpacePos);
+		glBindTexture(GL_TEXTURE_2D, *gViewSpacePos);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D, *gViewSpacePos, 0);
 
-		unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
-		glDrawBuffers(6, attachments);
+		unsigned int attachments[7] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6 };
+		glDrawBuffers(7, attachments);
 
 		// create and attach depth buffer
 		unsigned int rboDepth;
@@ -731,7 +740,7 @@ namespace Engine {
 		ssrUVMap = 0;
 		glGenTextures(1, &ssrUVMap);
 		glBindTexture(GL_TEXTURE_2D, ssrUVMap);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 

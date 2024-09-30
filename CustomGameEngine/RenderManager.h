@@ -168,6 +168,7 @@ namespace Engine {
 		unsigned int* GSpecular() const { return gSpecular; }
 		unsigned int* GArm() const { return gArm; }
 		unsigned int* GPBRFLAG() const { return gPBRFLAG; }
+		unsigned int* GViewSpacePos() const { return gViewSpacePos; }
 
 		unsigned int* GetScreenTexture() const { return screenTexture; }
 		unsigned int* GetAlternateScreenTexture() const { return alternateScreenTexture; }
@@ -260,7 +261,7 @@ namespace Engine {
 
 		// Deferred rendering
 		unsigned int* gBuffer;
-		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm, *gPBRFLAG;// PBRFLAG is to determine which lighting method is used in lighting pass for this pixel
+		unsigned int* gPosition, *gNormal, *gAlbedo, *gSpecular, *gArm, *gPBRFLAG, *gViewSpacePos;// PBRFLAG is to determine which lighting method is used in lighting pass for this pixel
 
 		// SSR
 		unsigned int ssrUVMap;
