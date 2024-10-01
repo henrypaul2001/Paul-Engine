@@ -35,6 +35,7 @@ uniform sampler2D gAlbedo;
 uniform sampler2D gArm;
 uniform sampler2D gPBRFLAG;
 uniform sampler2D SSAO;
+uniform sampler2D ssrUVMap;
 
 uniform sampler2D brdfLUT;
 
@@ -84,6 +85,7 @@ vec3 Lighting;
 
 uniform float BloomThreshold;
 uniform bool useSSAO;
+uniform bool useSSR;
 
 vec3 N;
 vec3 V;
@@ -235,7 +237,13 @@ void main() {
             ambient = CalculateAmbienceFromIBL(globalIBL.prefilterMap, globalIBL.irradianceMap);
         }
 
-        Colour += ambient;
+        // SSR
+        float ssrAlpha = 0.0;
+        if (useSSR) {
+            ssrAlpha = texture(ssrUVMap, TexCoords).b;
+        }
+
+        Colour += ambient * (1.0 - ssrAlpha);
 
         // Check whether result is higher than bloom threshold and output bloom colour accordingly
         float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
