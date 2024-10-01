@@ -395,6 +395,10 @@ namespace Engine {
 		ssrUVMapToReflectionMap = LoadShader("Shaders/screenQuad.vert", "Shaders/ssrUVToReflectionMap.frag", true);
 		deferredIBLPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/deferredIBLPassPBR.frag", true);
 		ssrCombineShaderPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/ssrCombinePBR.frag", true);
+		boxBlurShader = LoadShader("Shaders/screenQuad.vert", "Shaders/boxBlur.frag", true);
+
+		boxBlurShader->Use();
+		boxBlurShader->setInt("inputImage", 0);
 
 		ssrUVMapToReflectionMap->Use();
 		ssrUVMapToReflectionMap->setInt("colourMap", 0);
@@ -495,6 +499,7 @@ namespace Engine {
 		deferredLightingPassPBR->setInt("nonPBRBrightResult", 31);
 
 		deferredIBLPassPBR->Use();
+		deferredIBLPassPBR->setInt("ssrUVMap", 2);
 		deferredIBLPassPBR->setInt("gPosition", textureSlotLookup.at("gPosition"));
 		deferredIBLPassPBR->setInt("gNormal", textureSlotLookup.at("gNormal"));
 		deferredIBLPassPBR->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));

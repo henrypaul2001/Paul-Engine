@@ -101,6 +101,7 @@ namespace Engine {
 		Shader* advBloomCombineShader;
 		Shader* screenSpaceReflectionUVMappingShader;
 		Shader* ssrUVMapToReflectionMap;
+		Shader* boxBlurShader;
 
 		// Environment mapping
 		// -------------------
@@ -293,6 +294,7 @@ namespace Engine {
 		Shader* SSRUVMapToReflectionMap() const { return ssrUVMapToReflectionMap; }
 		Shader* DeferredIBLPassPBR() const { return deferredIBLPassPBR; }
 		Shader* SSRCombineShaderPBR() const { return ssrCombineShaderPBR; }
+		Shader* BoxBlurShader() const { return boxBlurShader; }
 		const unsigned int CommonUniforms() const { return uboMatrices; }
 		const unsigned int GetUIQuadVAO() const { return uiQuadVAO; }
 		const unsigned int GetUIQuadVBO() const { return uiQuadVBO; }
