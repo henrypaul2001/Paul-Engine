@@ -1045,5 +1045,8 @@
     <None Include="Shaders\ssrCombinePBR.frag">
       <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
     </None>
+    <None Include="Shaders\boxBlur.frag">
+      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -524,7 +524,10 @@ namespace Engine {
 		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
 
 		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
-		ssrCombineShaderPBR->setInt("ssrUVMap", 1);
+		ssrCombineShaderPBR->setInt("ssrUVMap", 0);
+		ssrCombineShaderPBR->setInt("ssrReflectionMap", 1);
+		ssrCombineShaderPBR->setInt("ssrReflectionMapBlurred", 2);
+
 		ssrCombineShaderPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
 		ssaoShader->Use();

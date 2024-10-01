@@ -5,7 +5,7 @@ in vec2 TexCoords;
 
 uniform sampler2D inputImage;
 
-uniform int size = 4;
+uniform int size = 8;
 
 void main() {
 	if (size <= 0) {

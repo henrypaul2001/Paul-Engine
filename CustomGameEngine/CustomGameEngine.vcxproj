@@ -383,6 +383,7 @@
     <None Include="Shaders\advBloomUpsample.frag" />
     <None Include="Shaders\bloomBlur.frag" />
     <None Include="Shaders\bloomBlur.vert" />
+    <None Include="Shaders\boxBlur.frag" />
     <None Include="Shaders\brdf.frag" />
     <None Include="Shaders\brdf.vert" />
     <None Include="Shaders\colliderDebug.frag" />

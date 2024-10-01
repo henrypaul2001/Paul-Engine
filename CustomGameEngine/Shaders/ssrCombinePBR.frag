@@ -5,6 +5,9 @@ layout (location = 1) out vec4 BrightColour;
 uniform sampler2D lightingPass;
 uniform sampler2D ssrUVMap;
 
+uniform sampler2D ssrReflectionMap;
+uniform sampler2D ssrReflectionMapBlurred;
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
@@ -49,13 +52,15 @@ void main() {
         vec3 kD = 1.0 - kS;
         kD *= 1.0 - Metallic;
 
-        //const float MAX_REFLECTION_LOD = 4.0;
-        vec3 reflectedColour = texture(lightingPass, sampleUV.xy).rgb;
-        float reflectionAlpha = clamp(sampleUV.b, 0.0, 1.0);
-        //vec3 prefilteredColour = textureLod(localIBLPrefilterMapArray, vec4(RParallaxed, iblIndex), Roughness * MAX_REFLECTION_LOD).rgb;
-        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
-        vec3 Specular = reflectedColour * (F * brdf.x + brdf.y);
+        //vec3 reflectedColour = texture(lightingPass, sampleUV.xy).rgb;
+        vec3 reflectedColour = texture(ssrReflectionMap, TexCoords).rgb;
+        vec3 blurredReflection = texture(ssrReflectionMapBlurred, TexCoords).rgb;
+        vec3 filteredColour = mix(reflectedColour, blurredReflection, Roughness);
 
+        vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+        vec3 Specular = filteredColour * (F * brdf.x + brdf.y);
+
+        float reflectionAlpha = clamp(sampleUV.b, 0.0, 1.0);
         vec3 ambience = ((kD * Albedo + Specular) * AO) * reflectionAlpha;
 
         vec3 fragSample = texture(lightingPass, TexCoords).rgb;

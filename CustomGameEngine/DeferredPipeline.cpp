@@ -119,33 +119,6 @@ namespace Engine {
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
 
-			/*
-			// SSR Convert UV to Reflection Map
-			// --------------------------------
-			{
-				SCOPE_TIMER("DeferredPipeline::SSR Convert UV to Reflection Map");
-				glViewport(0, 0, screenWidth, screenHeight);
-				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
-
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap(), 0);
-
-				glDrawBuffer(GL_COLOR_ATTACHMENT0);
-				glClear(GL_COLOR_BUFFER_BIT);
-				glDisable(GL_DEPTH_TEST);
-
-				Shader* ssrReflectionMapShader = resources->SSRUVMapToReflectionMap();
-				ssrReflectionMapShader->Use();
-
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, *renderInstance->GAlbedo());
-
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());
-
-				resources->DefaultPlane().DrawWithNoMaterial();
-			}
-			*/
-
 			// Lighting pass
 			// -------------
 
@@ -213,6 +186,51 @@ namespace Engine {
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
 
+			// SSR Convert UV to Reflection Map
+			// --------------------------------
+			{
+				SCOPE_TIMER("DeferredPipeline::SSR UV to Reflection Map");
+				glViewport(0, 0, screenWidth, screenHeight);
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap(), 0);
+
+				glDrawBuffer(GL_COLOR_ATTACHMENT0);
+				glClear(GL_COLOR_BUFFER_BIT);
+				glDisable(GL_DEPTH_TEST);
+
+				Shader* ssrReflectionMapShader = resources->SSRUVMapToReflectionMap();
+				ssrReflectionMapShader->Use();
+
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, activeScreenTexture);
+
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());
+
+				resources->DefaultPlane().DrawWithNoMaterial();
+			}
+
+			// SSR Reflection Map Blur
+			// -----------------------
+			{
+				SCOPE_TIMER("DeferredPipeline::SSR Reflection Map Blur");
+
+				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderInstance->GetSSRReflectionMapBlurred(), 0);
+
+				glDrawBuffer(GL_COLOR_ATTACHMENT0);
+				glClear(GL_COLOR_BUFFER_BIT);
+				glDisable(GL_DEPTH_TEST);
+
+				Shader* boxBlur = resources->BoxBlurShader();
+				boxBlur->Use();
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap());
+				resources->DefaultPlane().DrawWithNoMaterial();
+			}
+
+
 			// SSR Combine pass
 			// ----------------
 			{
@@ -224,6 +242,9 @@ namespace Engine {
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, activeScreenTexture, 0);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, activeBloomTexture, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+				glDrawBuffers(2, buffers);
 
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPosition"));
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
@@ -239,13 +260,17 @@ namespace Engine {
 				glBindTexture(GL_TEXTURE_2D, alternateScreenTexture);
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("brdfLUT"));
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetGlobalBRDF_LUT());
-				glActiveTexture(GL_TEXTURE1);
+
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap());
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMapBlurred());
 
 				Shader* ssrCombineShader = resources->SSRCombineShaderPBR();
 				ssrCombineShader->Use();
 				ssrCombineShader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
-				//LightManager::GetInstance()->SetShaderUniforms(ssrCombineShader, activeCamera);
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
 
@@ -267,6 +292,8 @@ namespace Engine {
 				Shader* iblShader = resources->DeferredIBLPassPBR();
 				iblShader->Use();
 
+				glActiveTexture(GL_TEXTURE0 + 2);
+				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gPosition"));
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GPosition());
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gNormal"));
@@ -282,6 +309,7 @@ namespace Engine {
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("SSAO"));
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 				iblShader->setBool("useSSAO", ((renderOptions& RENDER_SSAO) != 0));
+				iblShader->setBool("useSSR", true);
 				LightManager::GetInstance()->SetShaderUniforms(iblShader, activeCamera);
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
@@ -307,6 +335,7 @@ namespace Engine {
 				glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
 				glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LEQUAL);
 				glCullFace(GL_FRONT);
 
