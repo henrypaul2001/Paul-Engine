@@ -61,7 +61,7 @@ void main() {
         vec3 Specular = filteredColour * (F * brdf.x + brdf.y);
 
         float reflectionAlpha = clamp(sampleUV.b, 0.0, 1.0);
-        vec3 ambience = ((kD * Albedo + Specular) * AO) * reflectionAlpha;
+        vec3 ambience = ((kD * Albedo + Specular) * AO);
 
         vec3 fragSample = texture(lightingPass, TexCoords).rgb;
         fragSample += ambience;
