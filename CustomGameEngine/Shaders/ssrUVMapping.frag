@@ -43,7 +43,7 @@ vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float 
 	projectedCoord.xy /= projectedCoord.w;
 	projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-	return vec3(projectedCoord.xy, depth);
+	return vec3(projectedCoord.xy, dDepth);
 }
 
 vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth, out int totalSteps) {
@@ -69,10 +69,8 @@ vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth, out int totalStep
 
 		dDepth = hitCoord.z - depth;
 
-		if (abs(dDepth) < rayThickness) {
-			if (dDepth <= 0.0) {
-				return vec4(RayRefinementBinarySearch(dir, hitCoord, dDepth), 1.0);
-			}
+		if (dDepth <= 0.0) {
+			return vec4(RayRefinementBinarySearch(dir, hitCoord, dDepth), 1.0);
 		}
 		totalSteps++;
 	}
