@@ -211,26 +211,6 @@ namespace Engine {
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
 
-			// SSR Reflection Map Blur
-			// -----------------------
-			{
-				SCOPE_TIMER("DeferredPipeline::SSR Reflection Map Blur");
-
-				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderInstance->GetSSRReflectionMapBlurred(), 0);
-
-				glDrawBuffer(GL_COLOR_ATTACHMENT0);
-				glClear(GL_COLOR_BUFFER_BIT);
-				glDisable(GL_DEPTH_TEST);
-
-				Shader* boxBlur = resources->BoxBlurShader();
-				boxBlur->Use();
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap());
-				resources->DefaultPlane().DrawWithNoMaterial();
-			}
-
-
 			// SSR Combine pass
 			// ----------------
 			{
@@ -265,8 +245,6 @@ namespace Engine {
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap());
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMapBlurred());
 
 				Shader* ssrCombineShader = resources->SSRCombineShaderPBR();
 				ssrCombineShader->Use();

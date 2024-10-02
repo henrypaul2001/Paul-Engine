@@ -184,7 +184,6 @@ namespace Engine {
 
 		const unsigned int GetSSRUVMap() const { return ssrUVMap; }
 		const unsigned int GetSSRReflectionMap() const { return ssrReflectionMap; }
-		const unsigned int GetSSRReflectionMapBlurred() const { return ssrReflectionMapBlurred; }
 
 		// Bloom
 		unsigned int* GetBloomPingPongFBO(int index) { return pingPongFBO[index]; }
@@ -267,7 +266,6 @@ namespace Engine {
 		// SSR
 		unsigned int ssrUVMap;
 		unsigned int ssrReflectionMap;
-		unsigned int ssrReflectionMapBlurred;
 
 		// SSAO
 		unsigned int* ssaoFBO;

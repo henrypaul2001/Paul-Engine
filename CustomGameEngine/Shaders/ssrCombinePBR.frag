@@ -54,11 +54,11 @@ void main() {
 
         //vec3 reflectedColour = texture(lightingPass, sampleUV.xy).rgb;
         vec3 reflectedColour = texture(ssrReflectionMap, TexCoords).rgb;
-        vec3 blurredReflection = texture(ssrReflectionMapBlurred, TexCoords).rgb;
-        vec3 filteredColour = mix(reflectedColour, blurredReflection, Roughness);
+        //vec3 blurredReflection = texture(ssrReflectionMapBlurred, TexCoords).rgb;
+        //vec3 filteredColour = mix(reflectedColour, blurredReflection, Roughness);
 
         vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
-        vec3 Specular = filteredColour * (F * brdf.x + brdf.y);
+        vec3 Specular = reflectedColour * (F * brdf.x + brdf.y);
 
         float reflectionAlpha = clamp(sampleUV.b, 0.0, 1.0);
         vec3 ambience = ((kD * Albedo + Specular) * AO);
