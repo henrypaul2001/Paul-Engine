@@ -83,6 +83,7 @@ float AO;
 float AmbientOcclusion;
 vec3 Lighting;
 
+uniform float minIBLSSRBlend = 0.3;
 uniform float BloomThreshold;
 uniform bool useSSAO;
 uniform bool useSSR;
@@ -243,7 +244,7 @@ void main() {
             ssrAlpha = texture(ssrUVMap, TexCoords).b;
         }
 
-        Colour += ambient * (1.0 - ssrAlpha);
+        Colour += ambient * max(clamp(minIBLSSRBlend, 0.0, 1.0), (1.0 - ssrAlpha));
 
         // Check whether result is higher than bloom threshold and output bloom colour accordingly
         float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
