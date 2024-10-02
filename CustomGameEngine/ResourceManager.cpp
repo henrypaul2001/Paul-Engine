@@ -28,18 +28,18 @@ namespace Engine {
 			{ "gNormal", 4 },
 			{ "gAlbedo", 5 },
 			{ "gSpecular", 6 },
-			{ "gArm", 6 },
-			{ "gPBRFLAG", 7 },
-			{ "gViewSpacePos", 8 },
-			{ "SSAO", 9 },
-			{ "lightingPass", 10 },
+			{ "gArm", 7 },
+			{ "gPBRFLAG", 8 },
+			{ "gViewSpacePos", 9 },
+			{ "SSAO", 10 },
+			{ "lightingPass", 11 },
 
-			{ "globalIBL.irradianceMap", 11 },
-			{ "globalIBL.prefilterMap", 12 },
-			{ "brdfLUT", 13 },
+			{ "globalIBL.irradianceMap", 12 },
+			{ "globalIBL.prefilterMap", 13 },
+			{ "brdfLUT", 14 },
 
-			{ "localIBLIrradianceMapArray", 14 },
-			{ "localIBLPrefilterMapArray", 15 },
+			{ "localIBLIrradianceMapArray", 15 },
+			{ "localIBLPrefilterMapArray", 16 },
 		};
 
 		// Setup freetype
@@ -522,6 +522,7 @@ namespace Engine {
 		ssrCombineShaderPBR->setInt("gArm", textureSlotLookup.at("gArm"));
 		ssrCombineShaderPBR->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
 		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
+		ssrCombineShaderPBR->setInt("gSpecular", textureSlotLookup.at("gSpecular"));
 
 		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
 		ssrCombineShaderPBR->setInt("ssrUVMap", 0);

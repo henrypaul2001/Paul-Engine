@@ -240,6 +240,8 @@ namespace Engine {
 				glBindTexture(GL_TEXTURE_2D, alternateScreenTexture);
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("brdfLUT"));
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetGlobalBRDF_LUT());
+				glActiveTexture(GL_TEXTURE0 + textureLookups->at("gSpecular"));
+				glBindTexture(GL_TEXTURE_2D, *renderInstance->GSpecular());
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRUVMap());

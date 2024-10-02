@@ -13,6 +13,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gArm;
 uniform sampler2D gPBRFLAG;
+uniform sampler2D gSpecular;
 
 uniform sampler2D brdfLUT;
 
@@ -30,21 +31,26 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
 }
 
 void main() {
-    if (texture(gPBRFLAG, TexCoords).r == 1.0) {
-	    vec4 sampleUV = texture(ssrUVMap, TexCoords);
+    vec4 sampleUV = texture(ssrUVMap, TexCoords);
+    vec3 FragPos = texture(gPosition, TexCoords).rgb;
+    vec3 Normal = texture(gNormal, TexCoords).rgb;
+    vec3 Albedo = texture(gAlbedo, TexCoords).rgb;
 
-	    vec3 FragPos = texture(gPosition, TexCoords).rgb;
-        vec3 Normal = texture(gNormal, TexCoords).rgb;
-        vec3 Albedo = texture(gAlbedo, TexCoords).rgb;
+    vec3 N = normalize(Normal);
+    vec3 V = normalize(ViewPos - FragPos);
+
+    vec3 reflectedColour = texture(ssrReflectionMap, TexCoords).rgb;
+    float reflectionAlpha = clamp(sampleUV.b, 0.0, 1.0);
+    vec3 fragSample = texture(lightingPass, TexCoords).rgb;
+
+    vec3 F0 = vec3(0.04);
+
+    if (texture(gPBRFLAG, TexCoords).r == 1.0) {
         float AO = texture(gArm, TexCoords).r;
         float Roughness = texture(gArm, TexCoords).g;
         float Metallic = texture(gArm, TexCoords).b;
 
-        vec3 F0 = vec3(0.04);
         F0 = mix(F0, Albedo, Metallic);
-
-        vec3 N = normalize(Normal);
-        vec3 V = normalize(ViewPos - FragPos);
 
         vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
 
@@ -53,43 +59,40 @@ void main() {
         kD *= 1.0 - Metallic;
 
         //vec3 reflectedColour = texture(lightingPass, sampleUV.xy).rgb;
-        vec3 reflectedColour = texture(ssrReflectionMap, TexCoords).rgb;
         //vec3 blurredReflection = texture(ssrReflectionMapBlurred, TexCoords).rgb;
         //vec3 filteredColour = mix(reflectedColour, blurredReflection, Roughness);
 
         vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), Roughness)).rg;
         vec3 Specular = reflectedColour * (F * brdf.x + brdf.y);
 
-        float reflectionAlpha = clamp(sampleUV.b, 0.0, 1.0);
         vec3 ambience = ((kD * Albedo + Specular) * AO);
 
-        vec3 fragSample = texture(lightingPass, TexCoords).rgb;
         fragSample += ambience;
-
-        vec3 Colour = fragSample;
-
-        // Check whether result is higher than bloom threshold and output bloom colour accordingly
-        float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
-        if (brightness > BloomThreshold) {
-            BrightColour = vec4(Colour, 1.0);
-        }
-        else {
-            BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
-        }
-
-        FragColour = vec4(fragSample, reflectionAlpha);
     }
     else {
-        vec4 Colour = texture(lightingPass, TexCoords).rgba;
+        vec4 SpecularSample = texture(gSpecular, TexCoords).rgba;
+        float Shininess = SpecularSample.a;
 
-        float brightness = dot(Colour.rgb, vec3(0.2126, 0.7152, 0.0722));
-        if (brightness > BloomThreshold) {
-            BrightColour = vec4(Colour.rgb, 1.0);
-        }
-        else {
-            BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
-        }
+        float Roughness = 1.0 - smoothstep(0.0, 1.0, Shininess);
+        vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
+        vec3 kD = 1.0 - F;
 
-        FragColour = vec4(Colour);
+        vec3 Specular = reflectedColour * F;
+
+        vec3 ambience = (kD * Specular);
+
+        fragSample += ambience;
     }
+    vec3 Colour = fragSample;
+
+    // Check whether result is higher than bloom threshold and output bloom colour accordingly
+    float brightness = dot(Colour, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > BloomThreshold) {
+        BrightColour = vec4(Colour, 1.0);
+    }
+    else {
+        BrightColour = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+
+    FragColour = vec4(fragSample, reflectionAlpha);
 }
