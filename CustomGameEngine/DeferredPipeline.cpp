@@ -248,7 +248,7 @@ namespace Engine {
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, renderInstance->GetSSRReflectionMap());
 
-				Shader* ssrCombineShader = resources->SSRCombineShaderPBR();
+				Shader* ssrCombineShader = resources->SSRCombineShader();
 				ssrCombineShader->Use();
 				ssrCombineShader->setFloat("BloomThreshold", renderInstance->GetRenderParams()->GetBloomThreshold());
 				resources->DefaultPlane().DrawWithNoMaterial();

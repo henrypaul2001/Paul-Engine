@@ -394,7 +394,7 @@ namespace Engine {
 		screenSpaceReflectionUVMappingShader = LoadShader("Shaders/ssao.vert", "Shaders/ssrUVMapping.frag", true);
 		ssrUVMapToReflectionMap = LoadShader("Shaders/screenQuad.vert", "Shaders/ssrUVToReflectionMap.frag", true);
 		deferredIBLPassPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/deferredIBLPassPBR.frag", true);
-		ssrCombineShaderPBR = LoadShader("Shaders/defaultDeferred.vert", "Shaders/ssrCombinePBR.frag", true);
+		ssrCombineShader = LoadShader("Shaders/defaultDeferred.vert", "Shaders/ssrCombine.frag", true);
 		boxBlurShader = LoadShader("Shaders/screenQuad.vert", "Shaders/boxBlur.frag", true);
 
 		boxBlurShader->Use();
@@ -515,21 +515,21 @@ namespace Engine {
 		deferredIBLPassPBR->setInt("localIBLIrradianceMapArray", textureSlotLookup.at("localIBLIrradianceMapArray"));
 		deferredIBLPassPBR->setInt("localIBLPrefilterMapArray", textureSlotLookup.at("localIBLPrefilterMapArray"));
 
-		ssrCombineShaderPBR->Use();
-		ssrCombineShaderPBR->setInt("gPosition", textureSlotLookup.at("gPosition"));
-		ssrCombineShaderPBR->setInt("gNormal", textureSlotLookup.at("gNormal"));
-		ssrCombineShaderPBR->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
-		ssrCombineShaderPBR->setInt("gArm", textureSlotLookup.at("gArm"));
-		ssrCombineShaderPBR->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
-		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
-		ssrCombineShaderPBR->setInt("gSpecular", textureSlotLookup.at("gSpecular"));
+		ssrCombineShader->Use();
+		ssrCombineShader->setInt("gPosition", textureSlotLookup.at("gPosition"));
+		ssrCombineShader->setInt("gNormal", textureSlotLookup.at("gNormal"));
+		ssrCombineShader->setInt("gAlbedo", textureSlotLookup.at("gAlbedo"));
+		ssrCombineShader->setInt("gArm", textureSlotLookup.at("gArm"));
+		ssrCombineShader->setInt("gPBRFLAG", textureSlotLookup.at("gPBRFLAG"));
+		ssrCombineShader->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
+		ssrCombineShader->setInt("gSpecular", textureSlotLookup.at("gSpecular"));
 
-		ssrCombineShaderPBR->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
-		ssrCombineShaderPBR->setInt("ssrUVMap", 0);
-		ssrCombineShaderPBR->setInt("ssrReflectionMap", 1);
-		ssrCombineShaderPBR->setInt("ssrReflectionMapBlurred", 2);
+		ssrCombineShader->setInt("lightingPass", textureSlotLookup.at("lightingPass"));
+		ssrCombineShader->setInt("ssrUVMap", 0);
+		ssrCombineShader->setInt("ssrReflectionMap", 1);
+		ssrCombineShader->setInt("ssrReflectionMapBlurred", 2);
 
-		ssrCombineShaderPBR->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
+		ssrCombineShader->setInt("brdfLUT", textureSlotLookup.at("brdfLUT"));
 
 		ssaoShader->Use();
 		ssaoShader->setInt("gPosition", 0);
@@ -612,7 +612,7 @@ namespace Engine {
 		unsigned int defaultPointParticleLocation = glGetUniformBlockIndex(pointParticleShader->GetID(), "Common");
 		unsigned int colliderDebugLocation = glGetUniformBlockIndex(colliderDebug->GetID(), "Common");
 		unsigned int screenSpaceUVLocation = glGetUniformBlockIndex(screenSpaceReflectionUVMappingShader->GetID(), "Common");
-		unsigned int ssrCombinePBRLocation = glGetUniformBlockIndex(ssrCombineShaderPBR->GetID(), "Common");
+		unsigned int ssrCombineLocation = glGetUniformBlockIndex(ssrCombineShader->GetID(), "Common");
 		glUniformBlockBinding(defaultLitShader->GetID(), defaultLitBlockLocation, 0);
 		glUniformBlockBinding(deferredGeometryPass->GetID(), deferredGeometryPassLocation, 0);
 		glUniformBlockBinding(deferredGeometryPassPBR->GetID(), deferredGeometryPassPBRLocation, 0);
@@ -625,7 +625,7 @@ namespace Engine {
 		glUniformBlockBinding(pointParticleShader->GetID(), defaultPointParticleLocation, 0);
 		glUniformBlockBinding(colliderDebug->GetID(), colliderDebugLocation, 0);
 		glUniformBlockBinding(screenSpaceReflectionUVMappingShader->GetID(), screenSpaceUVLocation, 0);
-		glUniformBlockBinding(ssrCombineShaderPBR->GetID(), ssrCombinePBRLocation, 0);
+		glUniformBlockBinding(ssrCombineShader->GetID(), ssrCombineLocation, 0);
 
 		glGenBuffers(1, &uboMatrices);
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
