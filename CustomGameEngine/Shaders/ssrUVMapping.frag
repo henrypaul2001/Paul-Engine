@@ -69,10 +69,10 @@ vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth, out int totalStep
 
 		dDepth = hitCoord.z - depth;
 
+		totalSteps++;
 		if (dDepth <= 0.0) {
 			return vec4(RayRefinementBinarySearch(dir, hitCoord, dDepth), 1.0);
 		}
-		totalSteps++;
 	}
 
 	return vec4(projectedCoord.xy, depth, 0.0);
@@ -83,6 +83,7 @@ void main() {
 	vec3 viewSpaceNormal = mat3(View) * texture(gNormal, TexCoords).rgb;
 
 	vec3 reflected = normalize(reflect(normalize(viewSpaceFragPos), normalize(viewSpaceNormal)));
+
 	vec3 hitPos = viewSpaceFragPos;
 	float dDepth;
 	int steps = 0;
@@ -93,6 +94,7 @@ void main() {
 	float screenEdgeFactor = clamp(1.0 - (dCoords.x + dCoords.y), 0.0, 1.0);
 	float cameraDirectionFactor = (1 - max(dot(normalize(-viewSpaceFragPos), reflected), 0.0));
 	float collisionAccuracyFactor = clamp(1 - smoothstep(0.0, rayThickness, abs(dDepth)), 0.0, 1.0);
+	//float collisionAccuracyFactor = 1.0 - clamp(abs(dDepth) / rayThickness, 0.0, 1.0);
 	float distanceFromRayStartFactor = (1 - clamp(length(hitPos - viewSpaceFragPos) / maxDistance, 0.0, 1.0));
 
 	float multiplier = coords.a * screenEdgeFactor  // coords.a == 1 if hit, 0 if no hit
