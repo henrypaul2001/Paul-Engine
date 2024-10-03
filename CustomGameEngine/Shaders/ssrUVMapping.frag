@@ -9,8 +9,8 @@ in mat4 View;
 in vec2 TexCoords;
 
 // Parameters
-uniform float rayStep = 1.0;
-uniform float minRayStep = 0.3;
+uniform float rayAcceleration = 1.0;
+uniform float rayStep = 0.3;
 uniform float maxSteps = 30;
 uniform float maxDistance = 50.0;
 uniform float rayThickness = 0.3;
@@ -47,7 +47,7 @@ vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float 
 }
 
 vec4 RayMarch(vec3 dir, inout vec3 hitCoord, out float dDepth, out int totalSteps) {
-	dir *= rayStep;
+	dir *= rayAcceleration;
 
 	float depth;
 	vec4 projectedCoord;
@@ -87,7 +87,7 @@ void main() {
 	float dDepth;
 	int steps = 0;
 
-	vec4 coords = RayMarch(reflected * minRayStep, hitPos, dDepth, steps);
+	vec4 coords = RayMarch(reflected * rayStep, hitPos, dDepth, steps);
 	vec2 dCoords = smoothstep(0.2, 0.6, abs(vec2(0.5, 0.5) - coords.xy));
 
 	float screenEdgeFactor = clamp(1.0 - (dCoords.x + dCoords.y), 0.0, 1.0);
