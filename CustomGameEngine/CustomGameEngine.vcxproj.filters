@@ -1030,9 +1030,6 @@
     <None Include="Shaders\uiBackground.geom">
       <Filter>Source Files\Engine\Shaders\GeometryShaders</Filter>
     </None>
-    <None Include="Shaders\screenSpaceReflectionUVMapping.frag">
-      <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
-    </None>
     <None Include="Shaders\ssrUVToReflectionMap.frag">
       <Filter>Source Files\Engine\Shaders\FragmentShaders</Filter>
     </None>

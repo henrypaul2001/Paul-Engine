@@ -427,7 +427,6 @@
     <None Include="Shaders\reflectionProbeBakingPBR.vert" />
     <None Include="Shaders\screenQuad.frag" />
     <None Include="Shaders\screenQuad.vert" />
-    <None Include="Shaders\screenSpaceReflectionUVMapping.frag" />
     <None Include="Shaders\skybox.frag" />
     <None Include="Shaders\skybox.vert" />
     <None Include="Shaders\ssao.frag" />
