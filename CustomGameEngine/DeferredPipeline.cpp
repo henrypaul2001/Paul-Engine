@@ -16,7 +16,8 @@ namespace Engine {
 	{
 		SCOPE_TIMER("DeferredPipeline::Run");
 		RenderPipeline::Run(renderSystems, entities);
-		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
+		const RenderParams& renderParams = *renderInstance->GetRenderParams();
+		const RenderOptions renderOptions = renderParams.GetRenderOptions();
 		activeScreenTexture = *renderInstance->GetScreenTexture();
 		alternateScreenTexture = *renderInstance->GetAlternateScreenTexture();
 
@@ -96,7 +97,7 @@ namespace Engine {
 
 			// SSR UV Pass
 			// -----------
-			{
+			if ((renderOptions & RENDER_SSR) != 0) {
 				SCOPE_TIMER("DeferredPipeline::SSR UV Pass");
 				glViewport(0, 0, screenWidth, screenHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -115,6 +116,13 @@ namespace Engine {
 
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->GNormal());
+
+				ssrUVShader->setFloat("rayAcceleration", renderParams.GetSSRRayAcceleration());
+				ssrUVShader->setFloat("rayStep", renderParams.GetSSRRayStep());
+				ssrUVShader->setUInt("maxSteps", renderParams.GetSSRMaxSteps());
+				ssrUVShader->setFloat("maxDistance", renderParams.GetSSRMaxDistance());
+				ssrUVShader->setFloat("rayThickness", renderParams.GetSSRRayThickness());
+				ssrUVShader->setUInt("numBinarySearchSteps", renderParams.GetSSRNumBinarySearchSteps());
 
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}
@@ -188,7 +196,7 @@ namespace Engine {
 
 			// SSR Convert UV to Reflection Map
 			// --------------------------------
-			{
+			if ((renderOptions & RENDER_SSR) != 0) {
 				SCOPE_TIMER("DeferredPipeline::SSR UV to Reflection Map");
 				glViewport(0, 0, screenWidth, screenHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -213,7 +221,7 @@ namespace Engine {
 
 			// SSR Combine pass
 			// ----------------
-			{
+			if ((renderOptions & RENDER_SSR) != 0) {
 				SCOPE_TIMER("DeferredPipeline::SSR Combine Pass");
 				glViewport(0, 0, screenWidth, screenHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -256,7 +264,7 @@ namespace Engine {
 
 			// IBL Pass
 			// --------
-			{
+			if ((renderOptions & RENDER_IBL) != 0) {
 				SCOPE_TIMER("DeferredPipeline::IBL Pass");
 				glViewport(0, 0, screenWidth, screenHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
@@ -289,7 +297,8 @@ namespace Engine {
 				glActiveTexture(GL_TEXTURE0 + textureLookups->at("SSAO"));
 				glBindTexture(GL_TEXTURE_2D, *renderInstance->SSAOBlurColour());
 				iblShader->setBool("useSSAO", ((renderOptions& RENDER_SSAO) != 0));
-				iblShader->setBool("useSSR", true);
+				iblShader->setBool("useSSR", ((renderOptions& RENDER_SSR) != 0));
+				iblShader->setFloat("minIBLSSRBlend", renderParams.GetMinIBLSSRBlend());
 				LightManager::GetInstance()->SetShaderUniforms(iblShader, activeCamera);
 				resources->DefaultPlane().DrawWithNoMaterial();
 			}

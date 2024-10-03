@@ -11,10 +11,10 @@ in vec2 TexCoords;
 // Parameters
 uniform float rayAcceleration = 1.0;
 uniform float rayStep = 0.3;
-uniform float maxSteps = 30;
+uniform uint maxSteps = 30;
 uniform float maxDistance = 50.0;
 uniform float rayThickness = 0.3;
-uniform int numBinarySearchSteps = 50;
+uniform uint numBinarySearchSteps = 50;
 
 vec3 RayRefinementBinarySearch(inout vec3 dir, inout vec3 hitCoord, inout float dDepth) {
 	float depth;

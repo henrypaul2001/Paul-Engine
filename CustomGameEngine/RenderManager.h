@@ -21,6 +21,7 @@ namespace Engine {
 		RENDER_ADVANCED_BLOOM = 1 << 9,
 		RENDER_ADVANCED_BLOOM_LENS_DIRT = 1 << 10,
 		RENDER_GEOMETRY_COLLIDERS = 1 << 11,
+		RENDER_SSR = 1 << 12,
 	};
 	inline RenderOptions operator| (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a | (int)b); }
 	inline RenderOptions operator|= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a |= (int)b); }
@@ -48,12 +49,14 @@ namespace Engine {
 
 	struct RenderParams {
 	public:
-		RenderParams(float exposure = 1.0f, float gamma = 1.2f, float bloomThreshold = 15.0f, int bloomPasses = 10, float advBloomThreshold = 1.0f, float advBloomSoftThreshold = 0.5f, int advBloomChainLength = 6, float advBloomFilterRadius = 0.005f, 
-			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f, float postProcessStrength = 1.0f, AnisotropicFiltering defaultAnisoFilter = ANISO_4X) 
+		RenderParams(float exposure = 1.0f, float gamma = 1.2f, float bloomThreshold = 15.0f, int bloomPasses = 10, float advBloomThreshold = 1.0f, float advBloomSoftThreshold = 0.5f, int advBloomChainLength = 6, float advBloomFilterRadius = 0.005f,
+			float advBloomStrength = 0.04f, float advBloomDirtStrength = 5.0f, int ssaoSamples = 32, float ssaoRadius = 0.5f, float ssaoBias = 0.025f, float postProcessStrength = 1.0f, AnisotropicFiltering defaultAnisoFilter = ANISO_4X, float ssrRayAcceleration = 1.0f,
+			float ssrRayStep = 0.3f, unsigned int ssrMaxSteps = 30, float ssrMaxDistance = 50.0f, float ssrRayThickness = 0.3f, unsigned int srrNumBinarySearchSteps = 50, float minIBLSSRBlend = 0.3f)
 			: exposure(exposure), gamma(gamma), bloomThreshold(bloomThreshold), bloomPasses(bloomPasses), advBloomThreshold(advBloomThreshold), advBloomSoftThreshold(advBloomSoftThreshold), advBloomChainLength(advBloomChainLength), advBloomFilterRadius(advBloomFilterRadius), 
-			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias), postProcessStrength(postProcessStrength), anisotropicFiltering(defaultAnisoFilter)
+			advBloomStrength(advBloomStrength), advBloomLensDirtMaskStrength(advBloomDirtStrength), ssaoSamples(ssaoSamples), ssaoRadius(ssaoRadius), ssaoBias(ssaoBias), postProcessStrength(postProcessStrength), anisotropicFiltering(defaultAnisoFilter), ssrRayAcceleration(ssrRayAcceleration),
+			ssrRayStep(ssrRayStep), ssrMaxSteps(ssrMaxSteps), ssrMaxDistance(ssrMaxDistance), ssrRayThickness(ssrRayThickness), ssrNumBinarySearchSteps(srrNumBinarySearchSteps), minIBLSSRBlend(minIBLSSRBlend)
 		{
-			SetRenderOptions(RENDER_UI | RENDER_SSAO | RENDER_SHADOWS | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT | RENDER_TONEMAPPING | RENDER_PARTICLES);
+			SetRenderOptions(RENDER_UI | RENDER_SSAO | RENDER_SHADOWS | RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT | RENDER_TONEMAPPING | RENDER_PARTICLES | RENDER_SSR);
 			EnableRenderOptions(RENDER_SKYBOX);
 			DisableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP | RENDER_GEOMETRY_COLLIDERS);
 		}
@@ -71,6 +74,14 @@ namespace Engine {
 		const int GetSSAOSamples() const { return ssaoSamples; }
 		const float GetSSAORadius() const { return ssaoRadius; }
 		const float GetSSAOBias() const { return ssaoBias; }
+
+		const float GetSSRRayAcceleration() const { return ssrRayAcceleration; }
+		const float GetSSRRayStep() const { return ssrRayStep; }
+		const float GetSSRMaxDistance() const { return ssrMaxDistance; }
+		const float GetSSRRayThickness() const { return ssrRayThickness; }
+		const unsigned int GetSSRNumBinarySearchSteps() const { return ssrNumBinarySearchSteps; }
+		const unsigned int GetSSRMaxSteps() const { return ssrMaxSteps; }
+		const float GetMinIBLSSRBlend() const { return minIBLSSRBlend; }
 
 		// Advanced bloom
 		const float GetAdvBloomThreshold() const { return advBloomThreshold; }
@@ -98,6 +109,14 @@ namespace Engine {
 		
 		void SetSSAORadius(const float newRadius) { ssaoRadius = newRadius; }
 		void SetSSAOBias(const float newBias) { ssaoBias = newBias; }
+
+		void SetSSRRayAcceleration(const float acceleration) { ssrRayAcceleration = acceleration; }
+		void SetSSRRayStep(const float rayStep) { ssrRayStep = rayStep; }
+		void SetSSRMaxDistance(const float maxDistance) { ssrMaxDistance = maxDistance; }
+		void SetSSRRayThickness(const float rayThickness) { ssrRayThickness = rayThickness; }
+		void SetSSRNumBinarySearchSteps(const unsigned int binarySteps) { ssrNumBinarySearchSteps = binarySteps; }
+		void SetSSRMaxSteps(const unsigned int raymarchSteps) { ssrMaxSteps = raymarchSteps; }
+		void SetMinIBLSSRBlend(const float iblSSRBlend) { minIBLSSRBlend = iblSSRBlend; }
 
 		const AnisotropicFiltering GetDefaultAnisoFiltering() const { return anisotropicFiltering; }
 		void SetDefaultAnisotropicFiltering(const AnisotropicFiltering newAnisoFilter) { this->anisotropicFiltering = newAnisoFilter; }
@@ -127,6 +146,17 @@ namespace Engine {
 		int ssaoSamples;
 		float ssaoRadius;
 		float ssaoBias;
+
+		// SSR
+		float ssrRayAcceleration;
+		float ssrRayStep;
+		unsigned int ssrMaxSteps;
+		float ssrMaxDistance;
+		float ssrRayThickness;
+		unsigned int ssrNumBinarySearchSteps;
+
+		// SSR / IBL
+		float minIBLSSRBlend;
 
 		// Texture filtering
 		AnisotropicFiltering anisotropicFiltering;
