@@ -33,6 +33,7 @@ This is currently under development. Below is a preview of what I have so far:
 ![Switching between different post processing effects](https://media.giphy.com/media/Q8PZCWFIm7HTRP4D8M/giphy.gif)
 
 ### Screen space reflections
+![Screen space reflection effect shown on reflecting metal game art posters](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnBlZWFhMHk3amI0Y24xdnNiZno0em91eWwzdHoxMGlpeXdmdDZwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mskYR08uOnVZBv50Br/giphy.gif)
 
 ### Screen space ambient occlusion
 ![Screen space ambient occlusion toggled on and off](https://media.giphy.com/media/SKJe2XhUz45zcfy7X0/giphy.gif)
