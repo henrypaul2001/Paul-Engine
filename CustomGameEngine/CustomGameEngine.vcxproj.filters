@@ -516,6 +516,15 @@
     <ClInclude Include="SparseSet.h">
       <Filter>Header Files\Engine\Utility\Collections</Filter>
     </ClInclude>
+    <ClInclude Include="EntityManagerNew.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityNew.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -864,6 +873,9 @@
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="SSRScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="EmptyScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>

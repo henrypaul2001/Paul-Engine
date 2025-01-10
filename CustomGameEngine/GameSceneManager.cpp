@@ -14,6 +14,7 @@
 #include "IBLScene.h"
 #include "GeoCullingScene.h"
 #include "SSRScene.h"
+#include "EmptyScene.h"
 #include <iostream>
 namespace Engine
 {
@@ -88,7 +89,7 @@ namespace Engine
 			newScene = new SSRScene(this);
 			break;
 		case SCENE_NONE:
-			newScene = nullptr;
+			newScene = new EmptyScene(this);
 			break;
 		}
 		std::cout << "Scene '" << sceneType << "' created" << std::endl;
@@ -103,6 +104,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_MAIN_MENU);
+		ChangeScene(SCENE_NONE);
 	}
 }
