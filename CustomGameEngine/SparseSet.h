@@ -83,6 +83,9 @@ namespace Engine {
 		const size_t SparseSize() const override { return sparse.size(); }
 
 		const std::vector<T>& Dense() const { return dense; }
+		const std::vector<unsigned int>& DenseToSparse() const { return denseToSparse; }
+
+		const unsigned int GetSparseIndexFromDense(const unsigned int index) const { return denseToSparse[index]; }
 
 	private:
 		std::vector<T> dense;
