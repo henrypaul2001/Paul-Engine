@@ -5,12 +5,11 @@ namespace Engine {
 	template <class T>
 	class SparseSet {
 	public:
-		SparseSet() {
-
+		SparseSet(const unsigned int size = 10u, const unsigned int denseReserve = 3u) {
+			sparse = std::vector<int>(10, -1);
+			dense.reserve(denseReserve);
 		}
-		~SparseSet() {
-
-		}
+		~SparseSet() {}
 
 		// Get functions
 		T Get(const unsigned int index) const {
@@ -55,7 +54,7 @@ namespace Engine {
 		// Delete functions
 		void Delete(const unsigned int index) {
 			assert(index < sparse.size());
-			int denseIndex = sparse[index];
+			const int denseIndex = sparse[index];
 			if (denseIndex == -1) { return; }
 
 			std::swap(dense[denseIndex], dense[dense.size() - 1]);
@@ -74,6 +73,8 @@ namespace Engine {
 
 		const unsigned int DenseSize() const { return dense.size(); }
 		const unsigned int SparseSize() const { return sparse.size(); }
+
+		const std::vector<T>& Dense() const { return dense; }
 
 	private:
 		std::vector<T> dense;
