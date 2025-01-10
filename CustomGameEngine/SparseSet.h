@@ -2,14 +2,22 @@
 #include <vector>
 #include <algorithm>
 namespace Engine {
+
+	class ISparseSet {
+	public:
+		virtual ~ISparseSet() = default;
+		virtual void Delete(const unsigned int index) = 0;
+		virtual const size_t DenseSize() const = 0;
+		virtual const size_t SparseSize() const = 0;
+	};
+
 	template <class T>
-	class SparseSet {
+	class SparseSet : public ISparseSet {
 	public:
 		SparseSet(const unsigned int size = 10u, const unsigned int denseReserve = 3u) {
 			sparse = std::vector<int>(10, -1);
 			dense.reserve(denseReserve);
 		}
-		~SparseSet() {}
 
 		// Get functions
 		T Get(const unsigned int index) const {
@@ -52,7 +60,7 @@ namespace Engine {
 		}
 
 		// Delete functions
-		void Delete(const unsigned int index) {
+		void Delete(const unsigned int index) override {
 			assert(index < sparse.size());
 			const int denseIndex = sparse[index];
 			if (denseIndex == -1) { return; }
@@ -71,8 +79,8 @@ namespace Engine {
 			denseToSparse.pop_back();
 		}
 
-		const unsigned int DenseSize() const { return dense.size(); }
-		const unsigned int SparseSize() const { return sparse.size(); }
+		const size_t DenseSize() const override { return dense.size(); }
+		const size_t SparseSize() const override { return sparse.size(); }
 
 		const std::vector<T>& Dense() const { return dense; }
 
