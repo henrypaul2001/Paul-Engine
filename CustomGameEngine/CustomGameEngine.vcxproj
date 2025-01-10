@@ -218,6 +218,7 @@
     <ClInclude Include="ScopeTimer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalAnimation.h" />
+    <ClInclude Include="SparseSet.h" />
     <ClInclude Include="SponzaScene.h" />
     <ClInclude Include="SSRScene.h" />
     <ClInclude Include="State.h" />

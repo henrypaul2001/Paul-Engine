@@ -166,6 +166,9 @@
     <Filter Include="Source Files\Engine\Shaders\GeometryShaders">
       <UniqueIdentifier>{e59015b4-1a1f-4959-a8aa-33905d561514}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Collections">
+      <UniqueIdentifier>{82482bfe-22d2-4335-bb17-95bac9999631}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -509,6 +512,9 @@
     </ClInclude>
     <ClInclude Include="SSRScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SparseSet.h">
+      <Filter>Header Files\Engine\Utility\Collections</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
