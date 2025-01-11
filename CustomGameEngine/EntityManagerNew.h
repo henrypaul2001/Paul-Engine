@@ -12,7 +12,7 @@ namespace Engine
 		EntityManagerNew() : num_entities(0) {}
 		~EntityManagerNew() {}
 
-		// Create a new entity, assign ID based on current end point of sparse set, check unique name, return pointer to new entity
+		// Create and return a new entity. If name already exists, a unique number will be appended
 		EntityNew* New(const std::string& name) {
 			// Check for existing name
 			std::string entityName = name;
@@ -29,6 +29,13 @@ namespace Engine
 			name_to_ID[entityName] = entityID;
 			num_entities++;
 			return entities.GetPtr(entityID);
+		}
+
+		// Find an entity by name. Returns nullptr if entity does not exist
+		EntityNew* Find(const std::string& name) {
+			std::unordered_map<std::string, unsigned int>::iterator it = name_to_ID.find(name);
+			if (it != name_to_ID.end()) { return entities.GetPtr(it->second); }
+			else { return nullptr; }
 		}
 
 	private:
