@@ -6,7 +6,7 @@ namespace Engine {
 	class ISparseSet {
 	public:
 		virtual ~ISparseSet() = default;
-		virtual void Delete(const unsigned int index) = 0;
+		virtual bool Delete(const unsigned int index) = 0;
 		virtual const size_t DenseSize() const = 0;
 		virtual const size_t SparseSize() const = 0;
 	};
@@ -63,11 +63,11 @@ namespace Engine {
 			return true;
 		}
 
-		// Delete functions
-		void Delete(const unsigned int index) override {
+		// Delete entry at index. Returns false if sparse index doesn't point to a dense entry
+		bool Delete(const unsigned int index) override {
 			assert(index < sparse.size());
 			const int denseIndex = sparse[index];
-			if (denseIndex == -1) { return; }
+			if (denseIndex == -1) { return false; }
 
 			std::swap(dense[denseIndex], dense[dense.size() - 1]);
 			std::swap(denseToSparse[denseIndex], denseToSparse[denseToSparse.size() - 1]);
@@ -81,6 +81,8 @@ namespace Engine {
 			// Pop dense lists
 			dense.pop_back();
 			denseToSparse.pop_back();
+
+			return true;
 		}
 
 		const size_t DenseSize() const override { return dense.size(); }
