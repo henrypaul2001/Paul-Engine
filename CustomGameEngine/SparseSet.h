@@ -34,11 +34,15 @@ namespace Engine {
 		}
 		const T* GetPtr(const unsigned int index) const {
 			assert(index < sparse.size());
-			return &dense[sparse[index]];
+			const int denseIndex = sparse[index];
+			if (denseIndex != -1) { return &dense[denseIndex]; }
+			else { return nullptr; }
 		}
 		T* GetPtr(const unsigned int index) {
 			assert(index < sparse.size());
-			return &dense[sparse[index]];
+			const int denseIndex = sparse[index];
+			if (denseIndex != -1) { return &dense[denseIndex]; }
+			else { return nullptr; }
 		}
 
 		// Add functions
