@@ -36,6 +36,9 @@ namespace Engine
 			EntityNew* deletedFive = ecs.Find("Test (5)");
 
 			ecs.New("After delete");
+
+			bool equalsFalse = ecs.Delete("I don't exist");
+			bool equalsTrue = ecs.Delete("After delete");
 		}
 
 		void keyUp(int key) override {}
