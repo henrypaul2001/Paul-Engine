@@ -26,6 +26,8 @@ namespace Engine
 			EntityNew* missingEntity = ecs.Find("I don't exist");
 			EntityNew* foundEntity = ecs.Find("Hello");
 			EntityNew* duplicateFoundEntity = ecs.Find("Test (10)");
+
+			EntityNew* findTen = ecs.Find(10);
 		}
 
 		void keyUp(int key) override {}

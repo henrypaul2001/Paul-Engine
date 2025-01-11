@@ -37,6 +37,10 @@ namespace Engine
 			if (it != name_to_ID.end()) { return entities.GetPtr(it->second); }
 			else { return nullptr; }
 		}
+		// Find entity by id. Returns nullptr if entity does not exist with this id
+		EntityNew* Find(const unsigned int id) {
+			return entities.GetPtr(id);
+		}
 
 	private:
 		SparseSet<EntityNew> entities;
