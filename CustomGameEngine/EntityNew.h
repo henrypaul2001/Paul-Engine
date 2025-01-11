@@ -11,7 +11,7 @@ namespace Engine {
 		const unsigned int ID() const { return id; }
 
 	protected:
-		EntityNew(const std::string& name, const unsigned int id) : name(name), id(id) {}
+		EntityNew(const std::string& name, const unsigned int id);
 
 	private:
 		std::string name;

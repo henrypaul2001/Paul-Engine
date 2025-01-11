@@ -306,6 +306,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="EntityNew.cpp" />
     <ClCompile Include="FlatTextureAtlas.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="GameInputManager.cpp" />

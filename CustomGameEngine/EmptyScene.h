@@ -23,11 +23,19 @@ namespace Engine
 			}
 			ecs.New("Hello");
 
-			EntityNew* missingEntity = ecs.Find("I don't exist");
-			EntityNew* foundEntity = ecs.Find("Hello");
-			EntityNew* duplicateFoundEntity = ecs.Find("Test (10)");
+			const EntityNew* missingEntity = ecs.Find("I don't exist");
+			const EntityNew* foundEntity = ecs.Find("Hello");
+			const EntityNew* duplicateFoundEntity = ecs.Find("Test (10)");
 
 			EntityNew* findTen = ecs.Find(10);
+
+			ecs.Delete(*findTen);
+			ecs.Delete(*ecs.Find(5));
+
+			EntityNew* deletedTen = ecs.Find("Test (10)");
+			EntityNew* deletedFive = ecs.Find("Test (5)");
+
+			ecs.New("After delete");
 		}
 
 		void keyUp(int key) override {}

@@ -878,6 +878,9 @@
     <ClCompile Include="EmptyScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="EntityNew.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="irrKlang.dll">
