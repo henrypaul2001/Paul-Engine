@@ -15,7 +15,7 @@ namespace Engine {
 	class SparseSet : public ISparseSet {
 	public:
 		SparseSet(const unsigned int size = 10u, const unsigned int denseReserve = 3u) {
-			sparse = std::vector<int>(10, -1);
+			sparse = std::vector<int>(size, -1);
 			dense.reserve(denseReserve);
 		}
 
