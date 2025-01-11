@@ -6,5 +6,7 @@ namespace Engine {
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);
+
+		SetupScene();
 	}
 }
