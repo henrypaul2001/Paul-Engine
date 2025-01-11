@@ -65,9 +65,9 @@ namespace Engine {
 
 		// Delete entry at index. Returns false if sparse index doesn't point to a dense entry
 		bool Delete(const unsigned int index) override {
-			assert(index < sparse.size());
+			if (!ValidateIndex(index)) { return false; }
+
 			const int denseIndex = sparse[index];
-			if (denseIndex == -1) { return false; }
 
 			std::swap(dense[denseIndex], dense[dense.size() - 1]);
 			std::swap(denseToSparse[denseIndex], denseToSparse[denseToSparse.size() - 1]);
@@ -92,6 +92,8 @@ namespace Engine {
 		const std::vector<unsigned int>& DenseToSparse() const { return denseToSparse; }
 
 		const unsigned int GetSparseIndexFromDense(const unsigned int index) const { return denseToSparse[index]; }
+
+		const bool ValidateIndex(const unsigned int sparseIndex) { return (sparse[sparseIndex] != -1 && sparseIndex < sparse.size()); }
 
 	private:
 		std::vector<T> dense;
