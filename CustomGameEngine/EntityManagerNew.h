@@ -23,7 +23,14 @@ namespace Engine
 			}
 
 			// Create entity
-			const unsigned int entityID = entities.SparseSize();
+
+			unsigned int entityID = entities.SparseSize();
+			if (empty_slots.size() > 0) {
+				// Use most recently deleted id
+				entityID = empty_slots.top();
+				empty_slots.pop();
+			}
+
 			EntityNew entity = EntityNew(entityName, entityID);
 			entities.Add(entityID, entity);
 			name_to_ID[entityName] = entityID;
@@ -53,14 +60,12 @@ namespace Engine
 
 		// Delete entity by reference. Returns false if entity does not exist in manager
 		bool Delete(EntityNew& entity) { return Delete(entity.ID()); }
-
 		// Delete entity by name. Returns false if name does not exist in manager
 		bool Delete(const std::string& name) {
 			std::unordered_map<std::string, unsigned int>::iterator it = name_to_ID.find(name);
 			if (it != name_to_ID.end()) { return Delete(it->second); }
 			return false;
 		}
-
 		// Delete entity by ID. Returns false if ID does not exist in manager
 		bool Delete(const unsigned int entityID) {
 			if (!entities.ValidateIndex(entityID)) { return false; }
@@ -69,17 +74,18 @@ namespace Engine
 			const std::string entityName = entities.GetRef(entityID).Name();
 			name_to_ID.erase(entityName);
 
-			return entities.Delete(entityID);
+			bool success = entities.Delete(entityID);
+			if (success) { empty_slots.push(entityID); }
+			return success;
 		}
 
 
 	private:
 		SparseSet<EntityNew> entities;
+		std::stack<unsigned int> empty_slots;
 		std::vector<ISparseSet> component_pools;
 
 		std::unordered_map<std::string, unsigned int> name_to_ID;
+		
 	};
-
-	// A potential way to fill empty entity slots when adding a new entity after deleting another one. Have a stack of integers that represent the most recently removed entity index
-	// When adding an entity, add them at the index at the top of the stack and pop the stack
 }
