@@ -10,7 +10,7 @@ namespace Engine
 	class EntityManagerNew
 	{
 	public:
-		EntityManagerNew() : entities(0) {}
+		EntityManagerNew() : entities(0) {} // this can be changed back to 10 now that empty slots are tracked
 		~EntityManagerNew() {}
 
 		// Entity functions
@@ -92,17 +92,70 @@ namespace Engine
 		// Component functions
 		// -------------------
 
-		template <typename T>
+		template <typename TComponent>
+		bool HasComponent(const unsigned int entityID) const {
+			const std::bitset<MAX_COMPONENTS>& mask = entities.GetRef(entityID).component_mask;
+			int index = GetComponentBitPosition<TComponent>();
+			if (index != -1) { return mask[index]; }
+			else { return false; }
+		}
+		template <typename TComponent>
+		bool HasComponent(const EntityNew& entity) const {
+			const std::bitset<MAX_COMPONENTS>& mask = entity.component_mask;
+			const int index = GetComponentBitPosition<TComponent>();
+			if (index != -1) { return mask[index]; }
+			else { return false; }
+		}
+		template <typename TComponent>
+		bool HasComponent(const std::string& entityName) const {
+			const std::bitset<MAX_COMPONENTS>& mask = Find(entityName).component_mask;
+			const int index = GetComponentBitPosition<TComponent>();
+			if (index != -1) { return mask[index]; }
+			else { return false; }
+		}
+
+		template <typename TComponent>
+		bool AddComponent(const unsigned int entityID, const TComponent& component) {
+			if (!HasComponent<TComponent>(entityID)) {
+				RegisterComponentType<TComponent>();
+
+				SparseSet<TComponent>* component_pool = GetComponentPoolPtrCasted<TComponent>();
+				component_pool->Add(entityID, component);
+
+				entities.GetPtr(entityID)->component_mask.set(GetComponentBitPosition<TComponent>());
+				return true;
+			}
+			else { return false; }
+		}
+
+		template <typename TComponent>
 		void RegisterComponentType() {
-			AddComponentBitPosition<T>();
-			component_pools.push_back(std::make_unique<SparseSet<T>>());
+			AddComponentBitPosition<TComponent>();
 		}
 	private:
+		// Get uncasted ptr to ISparseSet for component type TComponent
+		template <typename TComponent>
+		ISparseSet* GetComponentPoolPtr() {
+			int index = GetComponentBitPosition<TComponent>();
+			if (index != -1) {
+				RegisterComponentType<TComponent>();
+				index = GetComponentBitPosition<TComponent>();
+			}
+
+			return component_pools[index].get();
+		}
+
+		// Get casted ptr to SparseSet for component type TComponent
+		template <typename TComponent>
+		SparseSet<TComponent>* GetComponentPoolPtrCasted() {
+			ISparseSet* ptr = GetComponentPoolPtr<TComponent>();
+			return static_cast<SparseSet<TComponent>*>(ptr);
+		}
 
 		template <typename T>
-		const int GetComponentBitPosition() {
+		const int GetComponentBitPosition() const {
 			std::type_index type = std::type_index(typeid(T));
-			std::unordered_map<std::type_index, unsigned int>::iterator it = component_bit_positions.find(type);
+			std::unordered_map<std::type_index, unsigned int>::const_iterator it = component_bit_positions.find(type);
 			if (it != component_bit_positions.end()) {
 				// Component index found
 				return it->second;
@@ -118,11 +171,12 @@ namespace Engine
 			std::type_index type = std::type_index(typeid(T));
 
 			// Check if already registered
-			if (GetComponentBitPosition<T>() == -1) {
+			if (GetComponentBitPosition<T>() != -1) {
 				return;
 			}
 
 			component_bit_positions[type] = component_pools.size();
+			component_pools.push_back(std::make_unique<SparseSet<T>>());
 		}
 
 		SparseSet<EntityNew> entities;

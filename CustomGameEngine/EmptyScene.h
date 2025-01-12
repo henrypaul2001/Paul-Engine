@@ -3,6 +3,15 @@
 #include "EntityManagerNew.h"
 namespace Engine
 {
+
+	struct TestComponentA {
+		float x, y, z;
+	};
+
+	struct TestComponentB {
+		float velocityX, velocityY, velocityZ;
+	};
+
 	class EmptyScene : public Scene
 	{
 	private:
@@ -40,8 +49,16 @@ namespace Engine
 			bool equalsFalse = ecs.Delete("I don't exist");
 			bool equalsTrue = ecs.Delete("After delete");
 
-			ecs.RegisterComponentType<ComponentTransform>();
-			ecs.RegisterComponentType<ComponentGeometry>();
+			ecs.RegisterComponentType<TestComponentA>();
+			ecs.RegisterComponentType<TestComponentB>();
+
+			ecs.AddComponent<TestComponentA>(0, TestComponentA());
+			ecs.AddComponent<TestComponentA>(42, TestComponentA());
+			ecs.AddComponent<TestComponentB>(0, TestComponentB());
+
+			bool hasA = ecs.HasComponent<TestComponentA>(0);
+			bool doesntHaveA = ecs.HasComponent<TestComponentA>(1);
+			bool hasB = ecs.HasComponent<TestComponentB>(0);
 		}
 
 		void keyUp(int key) override {}

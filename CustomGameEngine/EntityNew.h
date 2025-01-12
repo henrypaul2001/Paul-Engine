@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
+#include <bitset>
 namespace Engine {
+	static constexpr unsigned int MAX_COMPONENTS = 13;
 	class EntityNew {
 	public:
 		friend class EntityManagerNew;
@@ -16,5 +18,6 @@ namespace Engine {
 	private:
 		std::string name;
 		unsigned int id;
+		std::bitset<MAX_COMPONENTS> component_mask;
 	};
 }
