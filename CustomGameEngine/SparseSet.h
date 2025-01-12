@@ -14,7 +14,7 @@ namespace Engine {
 	template <class T>
 	class SparseSet : public ISparseSet {
 	public:
-		SparseSet(const unsigned int size = 10u, const unsigned int denseReserve = 3u) {
+		SparseSet(const unsigned int size = 0u, const unsigned int denseReserve = 3u) {
 			sparse = std::vector<int>(size, -1);
 			dense.reserve(denseReserve);
 		}
@@ -22,15 +22,21 @@ namespace Engine {
 		// Get functions
 		T Get(const unsigned int index) const {
 			assert(index < sparse.size());
-			return dense[sparse[index]];
+			const int denseIndex = sparse[index];
+			assert(denseIndex != -1);
+			return dense[denseIndex];
 		}
 		const T& GetRef(const unsigned int index) const {
 			assert(index < sparse.size());
-			return dense[sparse[index]];
+			const int denseIndex = sparse[index];
+			assert(denseIndex != -1);
+			return dense[denseIndex];
 		}
 		T& GetRef(const unsigned int index) {
 			assert(index < sparse.size());
-			return dense[sparse[index]];
+			const int denseIndex = sparse[index];
+			assert(denseIndex != -1);
+			return dense[denseIndex];
 		}
 		const T* GetPtr(const unsigned int index) const {
 			assert(index < sparse.size());
