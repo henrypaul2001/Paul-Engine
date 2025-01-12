@@ -3,6 +3,7 @@
 #include <vector>
 #include "EntityNew.h"
 #include <unordered_map>
+#include <typeindex>
 
 namespace Engine
 {
@@ -12,6 +13,9 @@ namespace Engine
 		EntityManagerNew() : entities(0) {}
 		~EntityManagerNew() {}
 
+		// Entity functions
+		// ----------------
+		
 		// Create and return a new entity. If name already exists, a unique number will be appended
 		EntityNew* New(const std::string& name) {
 			// Check for existing name
@@ -23,7 +27,6 @@ namespace Engine
 			}
 
 			// Create entity
-
 			unsigned int entityID = entities.SparseSize();
 			if (empty_slots.size() > 0) {
 				// Use most recently deleted id
@@ -75,17 +78,59 @@ namespace Engine
 			name_to_ID.erase(entityName);
 
 			bool success = entities.Delete(entityID);
-			if (success) { empty_slots.push(entityID); }
+			if (success) {
+				empty_slots.push(entityID);
+				
+				// Delete component entries
+				// for each pool
+				// check mask[i] == 1
+				// pool[i]->delete(id)
+			}
 			return success;
 		}
 
+		// Component functions
+		// -------------------
 
+		template <typename T>
+		void RegisterComponentType() {
+			AddComponentBitPosition<T>();
+			component_pools.push_back(std::make_unique<SparseSet<T>>());
+		}
 	private:
+
+		template <typename T>
+		const int GetComponentBitPosition() {
+			std::type_index type = std::type_index(typeid(T));
+			std::unordered_map<std::type_index, unsigned int>::iterator it = component_bit_positions.find(type);
+			if (it != component_bit_positions.end()) {
+				// Component index found
+				return it->second;
+			}
+			else {
+				// Component not found. May not have been registered with ecs yet
+				return -1;
+			}
+		}
+
+		template <typename T>
+		void AddComponentBitPosition() {
+			std::type_index type = std::type_index(typeid(T));
+
+			// Check if already registered
+			if (GetComponentBitPosition<T>() == -1) {
+				return;
+			}
+
+			component_bit_positions[type] = component_pools.size();
+		}
+
 		SparseSet<EntityNew> entities;
 		std::stack<unsigned int> empty_slots;
-		std::vector<ISparseSet> component_pools;
+		std::vector<std::unique_ptr<ISparseSet>> component_pools;
 
 		std::unordered_map<std::string, unsigned int> name_to_ID;
 		
+		std::unordered_map<std::type_index, unsigned int> component_bit_positions;
 	};
 }

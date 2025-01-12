@@ -39,6 +39,9 @@ namespace Engine
 
 			bool equalsFalse = ecs.Delete("I don't exist");
 			bool equalsTrue = ecs.Delete("After delete");
+
+			ecs.RegisterComponentType<ComponentTransform>();
+			ecs.RegisterComponentType<ComponentGeometry>();
 		}
 
 		void keyUp(int key) override {}
