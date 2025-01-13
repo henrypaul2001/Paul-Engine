@@ -10,7 +10,11 @@ namespace Engine
 	class EntityManagerNew
 	{
 	public:
-		EntityManagerNew() : entities(0) {} // this can be changed back to 10 now that empty slots are tracked
+		EntityManagerNew(const unsigned int init_size = 10) : entities(init_size) {
+			for (unsigned int i = 0; i < init_size; i++) {
+				empty_slots.push(i);
+			}
+		}
 		~EntityManagerNew() {}
 
 		// Entity functions
