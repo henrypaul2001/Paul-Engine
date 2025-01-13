@@ -137,6 +137,14 @@ namespace Engine
 		int RegisterComponentType() {
 			return GetAddComponentBitPosition<TComponent>();
 		}
+
+		// Generate a mask of components from templated types
+		template <typename... TComponents>
+		std::bitset<MAX_COMPONENTS> CreateMask() {
+			std::bitset<MAX_COMPONENTS> mask;
+			(mask.set(GetAddComponentBitPosition<TComponents>(), true), ...);
+			return mask;
+		}
 	private:
 		// Get uncasted ptr to ISparseSet for component type TComponent
 		template <typename TComponent>
