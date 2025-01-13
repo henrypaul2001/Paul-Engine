@@ -64,6 +64,11 @@ namespace Engine
 
 			ecs.RemoveComponent<TestComponentA, TestComponentB>(0);
 			ecs.RemoveComponent<TestComponentA>(42);
+
+			ecs.AddComponent<TestComponentA>(2, TestComponentA());
+			ecs.AddComponent(2, TestComponentB());
+
+			ecs.Delete(2);
 		}
 
 		void keyUp(int key) override {}

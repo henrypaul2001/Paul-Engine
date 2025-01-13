@@ -76,19 +76,21 @@ namespace Engine
 		// Delete entity by ID. Returns false if ID does not exist in manager
 		bool Delete(const unsigned int entityID) {
 			if (!entities.ValidateIndex(entityID)) { return false; }
-
-			// Remove name from map
-			const std::string entityName = entities.GetRef(entityID).Name();
-			name_to_ID.erase(entityName);
+			EntityNew& entity = entities.GetRef(entityID);
+			const std::string entityName = entity.Name();
+			std::bitset<MAX_COMPONENTS> mask = entity.component_mask;
 
 			bool success = entities.Delete(entityID);
 			if (success) {
+				// Remove name from map
+				name_to_ID.erase(entityName);
+
 				empty_slots.push(entityID);
 				
 				// Delete component entries
-				// for each pool
-				// check mask[i] == 1
-				// pool[i]->delete(id)
+				for (int i = 0; i < component_pools.size(); i++) {
+					component_pools[i].get()->Delete(entityID);
+				}
 			}
 			return success;
 		}
