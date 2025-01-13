@@ -139,6 +139,16 @@ namespace Engine
 			(RemoveComponentPrivate<TComponents>(entityID), ...);
 		}
 
+		// Return pointer to component type, returns nullptr if entity does not own component
+		template <typename TComponent>
+		TComponent* GetComponent(const unsigned int entityID) {
+			if (HasComponent<TComponent>(entityID)) {
+				SparseSet<TComponent>* pool = GetComponentPoolPtrCasted<TComponent>();
+				return pool->GetPtr(entityID);
+			}
+			else { return nullptr; }
+		}
+
 		// Register component and return bit position
 		template <typename TComponent>
 		int RegisterComponentType() {

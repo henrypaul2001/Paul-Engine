@@ -52,9 +52,9 @@ namespace Engine
 			ecs.RegisterComponentType<TestComponentA>();
 			ecs.RegisterComponentType<TestComponentB>();
 
-			ecs.AddComponent<TestComponentA>(0, TestComponentA());
-			ecs.AddComponent<TestComponentA>(42, TestComponentA());
-			ecs.AddComponent<TestComponentB>(0, TestComponentB());
+			ecs.AddComponent(0, TestComponentA());
+			ecs.AddComponent(42, TestComponentA());
+			ecs.AddComponent(0, TestComponentB());
 
 			bool hasA = ecs.HasComponent<TestComponentA>(0);
 			bool doesntHaveA = ecs.HasComponent<TestComponentA>(1);
@@ -65,10 +65,17 @@ namespace Engine
 			ecs.RemoveComponent<TestComponentA, TestComponentB>(0);
 			ecs.RemoveComponent<TestComponentA>(42);
 
-			ecs.AddComponent<TestComponentA>(2, TestComponentA());
+			//ecs.AddComponent(2, TestComponentA());
+			ecs.AddComponent(0, TestComponentA());
 			ecs.AddComponent(2, TestComponentB());
 
+			TestComponentB* bComponent = ecs.GetComponent<TestComponentB>(2);
+			bComponent->velocityX = 10.0f;
+			TestComponentA* nullpointer = ecs.GetComponent<TestComponentA>(2);
+
 			ecs.Delete(2);
+
+			std::cout << bComponent->velocityX << std::endl;
 		}
 
 		void keyUp(int key) override {}
