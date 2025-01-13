@@ -85,6 +85,7 @@ namespace Engine {
 			sparse[index] = -1;
 
 			// Pop dense lists
+			memset(&dense[dense.size() - 1], NULL, sizeof(dense[dense.size() - 1]));
 			dense.pop_back();
 			denseToSparse.pop_back();
 
