@@ -132,9 +132,10 @@ namespace Engine
 			else { return false; }
 		}
 
+		// Register component and return bit position
 		template <typename TComponent>
-		void RegisterComponentType() {
-			AddComponentBitPosition<TComponent>();
+		int RegisterComponentType() {
+			return GetAddComponentBitPosition<TComponent>();
 		}
 	private:
 		// Get uncasted ptr to ISparseSet for component type TComponent
@@ -154,6 +155,22 @@ namespace Engine
 		SparseSet<TComponent>* GetComponentPoolPtrCasted() {
 			ISparseSet* ptr = GetComponentPoolPtr<TComponent>();
 			return static_cast<SparseSet<TComponent>*>(ptr);
+		}
+
+		// Better optimised alternative of: if (!GetComponentBitPosition()) then { AddComponentBitPosition() }
+		template <typename T>
+		const int GetAddComponentBitPosition() {
+			int position = GetComponentBitPosition<T>();
+			if (position != -1) {
+				return position;
+			}
+			else {
+				std::type_index type = std::type_index(typeid(T));
+				position = component_pools.size();
+				component_bit_positions[type] = position;
+				component_pools.push_back(std::make_unique<SparseSet<T>>());
+				return position;
+			}
 		}
 
 		template <typename T>
