@@ -132,6 +132,11 @@ namespace Engine
 			else { return false; }
 		}
 
+		template <typename... TComponents>
+		void RemoveComponent(const unsigned int entityID) {
+			(RemoveComponentPrivate<TComponents>(entityID), ...);
+		}
+
 		// Register component and return bit position
 		template <typename TComponent>
 		int RegisterComponentType() {
@@ -206,6 +211,17 @@ namespace Engine
 
 			component_bit_positions[type] = component_pools.size();
 			component_pools.push_back(std::make_unique<SparseSet<T>>());
+		}
+
+		template <typename TComponent>
+		void RemoveComponentPrivate(const unsigned int entityID) {
+			EntityNew& entity = entities.GetRef(entityID);
+			if (HasComponent<TComponent>(entity)) {
+				const int position = GetComponentBitPosition<TComponent>();
+				SparseSet<TComponent>* pool = GetComponentPoolPtrCasted<TComponent>();
+				pool->Delete(entityID);
+				entity.component_mask.set(position, false);
+			}
 		}
 
 		SparseSet<EntityNew> entities;

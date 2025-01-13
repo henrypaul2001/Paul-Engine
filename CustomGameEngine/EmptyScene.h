@@ -61,6 +61,9 @@ namespace Engine
 			bool hasB = ecs.HasComponent<TestComponentB>(0);
 
 			std::bitset<MAX_COMPONENTS> testMask = ecs.CreateMask<TestComponentB>();
+
+			ecs.RemoveComponent<TestComponentA, TestComponentB>(0);
+			ecs.RemoveComponent<TestComponentA>(42);
 		}
 
 		void keyUp(int key) override {}
