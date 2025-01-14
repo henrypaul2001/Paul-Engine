@@ -9,6 +9,7 @@ namespace Engine {
 		virtual bool Delete(const unsigned int index) = 0;
 		virtual const size_t DenseSize() const = 0;
 		virtual const size_t SparseSize() const = 0;
+		virtual bool CloneElement(const unsigned int sparseIDOrigin, const unsigned int sparseIDDestination) = 0;
 	};
 
 	template <class T>
@@ -90,6 +91,10 @@ namespace Engine {
 			denseToSparse.pop_back();
 
 			return true;
+		}
+
+		bool CloneElement(const unsigned int sparseIDOrigin, const unsigned int sparseIDDestination) override {
+			return Add(sparseIDDestination, T(GetRef(sparseIDOrigin)));
 		}
 
 		const size_t DenseSize() const override { return dense.size(); }
