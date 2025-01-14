@@ -76,6 +76,15 @@ namespace Engine
 			ecs.Delete(2);
 
 			std::cout << bComponent->velocityX << std::endl;
+		
+			EntityNew* clone_base = ecs.New("Clone base");
+			TestComponentB b;
+			b.velocityX = -2.5f;
+			b.velocityY = 5.0f;
+			ecs.AddComponent(clone_base->ID(), TestComponentA());
+			ecs.AddComponent(clone_base->ID(), b);
+
+			EntityNew* cloned = ecs.Clone(*clone_base);
 		}
 
 		void keyUp(int key) override {}

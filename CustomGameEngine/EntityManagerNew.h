@@ -19,7 +19,7 @@ namespace Engine
 
 		// Entity functions
 		// ----------------
-		
+
 		// Create and return a new entity. If name already exists, a unique number will be appended
 		EntityNew* New(const std::string& name) {
 			// Check for existing name
@@ -43,6 +43,28 @@ namespace Engine
 			name_to_ID[entityName] = entityID;
 			return entities.GetPtr(entityID);
 		}
+
+		// Clone an entity by ID. Returns pointer to new entity. Returns nullptr if ID doesn't exist
+		EntityNew* Clone(const unsigned int entityID) { return Clone(entities.GetRef(entityID)); }
+		// Clone an entity by reference. Returns pointer to new entity. Returns nullptr if entity doesn't exist in ECS
+		EntityNew* Clone(const EntityNew& entity) {
+			// Clone entity
+			EntityNew* newEntity = New(entity.name);
+			const std::bitset<MAX_COMPONENTS>& old_mask = entity.component_mask;
+
+			// Clone components
+			for (int i = 0; i < component_pools.size(); i++) {
+				if (old_mask[i]) {
+					// Copy and add to new entity
+					component_pools[i].get()->CloneElement(entity.id, newEntity->id);
+				}
+			}
+
+			newEntity->component_mask = old_mask;
+			return newEntity;
+		}
+		// Clone an entity by name. Returns pointer to new entity. Returns nullptr if name doesn't exist
+		EntityNew* Clone(const std::string& name) { return Clone(*Find(name)); }
 
 		// Find an entity by name. Returns nullptr if entity does not exist
 		const EntityNew* Find(const std::string& name) const {
