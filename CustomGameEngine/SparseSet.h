@@ -10,6 +10,7 @@ namespace Engine {
 		virtual const size_t DenseSize() const = 0;
 		virtual const size_t SparseSize() const = 0;
 		virtual bool CloneElement(const unsigned int sparseIDOrigin, const unsigned int sparseIDDestination) = 0;
+		virtual const std::vector<unsigned int>& GetDenseToSparse() const = 0;
 	};
 
 	template <class T>
@@ -101,7 +102,7 @@ namespace Engine {
 		const size_t SparseSize() const override { return sparse.size(); }
 
 		const std::vector<T>& Dense() const { return dense; }
-		const std::vector<unsigned int>& DenseToSparse() const { return denseToSparse; }
+		const std::vector<unsigned int>& GetDenseToSparse() const override { return denseToSparse; }
 
 		const unsigned int GetSparseIndexFromDense(const unsigned int index) const { return denseToSparse[index]; }
 
