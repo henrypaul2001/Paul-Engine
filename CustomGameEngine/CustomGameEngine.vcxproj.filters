@@ -166,7 +166,7 @@
     <Filter Include="Source Files\Engine\Shaders\GeometryShaders">
       <UniqueIdentifier>{e59015b4-1a1f-4959-a8aa-33905d561514}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Utility\Collections">
+    <Filter Include="Header Files\Engine\Utility\Data Structures">
       <UniqueIdentifier>{82482bfe-22d2-4335-bb17-95bac9999631}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -514,7 +514,7 @@
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="SparseSet.h">
-      <Filter>Header Files\Engine\Utility\Collections</Filter>
+      <Filter>Header Files\Engine\Utility\Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="EntityManagerNew.h">
       <Filter>Header Files\Engine\Managers</Filter>
@@ -524,6 +524,9 @@
     </ClInclude>
     <ClInclude Include="EmptyScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="View.h">
+      <Filter>Header Files\Engine\Utility\Data Structures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

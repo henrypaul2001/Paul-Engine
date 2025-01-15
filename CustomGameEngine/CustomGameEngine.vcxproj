@@ -261,6 +261,7 @@
     <ClInclude Include="UIImageButton.h" />
     <ClInclude Include="UIText.h" />
     <ClInclude Include="UITextButton.h" />
+    <ClInclude Include="View.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractShader.cpp" />

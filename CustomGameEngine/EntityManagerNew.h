@@ -4,6 +4,7 @@
 #include "EntityNew.h"
 #include <unordered_map>
 #include <typeindex>
+#include "View.h"
 
 namespace Engine
 {
@@ -108,7 +109,7 @@ namespace Engine
 				name_to_ID.erase(entityName);
 
 				empty_slots.push(entityID);
-				
+
 				// Delete component entries
 				for (int i = 0; i < component_pools.size(); i++) {
 					component_pools[i].get()->Delete(entityID);
@@ -184,6 +185,12 @@ namespace Engine
 			(mask.set(GetAddComponentBitPosition<TComponents>(), true), ...);
 			return mask;
 		}
+
+		template <typename... TComponents>
+		View<TComponents...> View() {
+			return { { GetComponentPoolPtr<TComponents>()... } };
+		}
+
 	private:
 		// Get uncasted ptr to ISparseSet for component type TComponent
 		template <typename TComponent>

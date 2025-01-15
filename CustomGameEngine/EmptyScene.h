@@ -12,6 +12,22 @@ namespace Engine
 		float velocityX, velocityY, velocityZ;
 	};
 
+	struct TestComponentC {
+		float c;
+	};
+
+	struct TestComponentD {
+		bool d;
+	};
+
+	struct TestComponentE {
+		long e;
+	};
+
+	struct TestComponentF {
+		long long f;
+	};
+
 	class EmptyScene : public Scene
 	{
 	private:
@@ -85,6 +101,45 @@ namespace Engine
 			ecs.AddComponent(clone_base->ID(), b);
 
 			EntityNew* cloned = ecs.Clone(*clone_base);
+
+			for (int i = 0; i < 50; i++) {
+				EntityNew* entity = ecs.New("ViewTest");
+				TestComponentA a;
+				a.x = i;
+				ecs.AddComponent(entity->ID(), a);
+				if (i % 2 == 0) {
+					TestComponentB b;
+					b.velocityY = i;
+					ecs.AddComponent(entity->ID(), b);
+				}
+				if (i % 3 == 0) {
+					TestComponentC c;
+					c.c = i;
+					ecs.AddComponent(entity->ID(), c);
+				}
+				if (i % 4 == 0) {
+					TestComponentF f;
+					f.f = i;
+					ecs.AddComponent(entity->ID(), f);
+				}
+			}
+
+			View<TestComponentA, TestComponentB> testView = ecs.View<TestComponentA, TestComponentB>();
+			testView.ForEach([](unsigned int entityID, TestComponentA& a, TestComponentB& b) {
+				unsigned int id = entityID;
+				float x = a.x;
+				float velocityY = b.velocityY;
+			});
+
+			View<TestComponentF> fView = ecs.View<TestComponentF>();
+			fView.ForEach([](unsigned int entityID, TestComponentF& f) {
+				unsigned int id = entityID;
+				if (id == 10) {
+					f.f = 3000.0;
+				}
+			});
+
+			std::cout << ecs.GetComponent<TestComponentF>(10)->f << std::endl;
 		}
 
 		void keyUp(int key) override {}
