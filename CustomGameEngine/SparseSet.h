@@ -105,7 +105,7 @@ namespace Engine {
 
 		const unsigned int GetSparseIndexFromDense(const unsigned int index) const { return denseToSparse[index]; }
 
-		const bool ValidateIndex(const unsigned int sparseIndex) { return (sparse[sparseIndex] != -1 && sparseIndex < sparse.size()); }
+		const bool ValidateIndex(const unsigned int sparseIndex) { return (sparseIndex < sparse.size() && sparse[sparseIndex] != -1); }
 
 	private:
 		std::vector<T> dense;
