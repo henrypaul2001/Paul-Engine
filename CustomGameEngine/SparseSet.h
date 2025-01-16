@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include <cassert>
 namespace Engine {
 
 	class ISparseSet {

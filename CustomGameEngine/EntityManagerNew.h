@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <typeindex>
 #include "View.h"
+#include <memory>
+#include <stack>
 
 namespace Engine
 {
@@ -39,7 +41,7 @@ namespace Engine
 				empty_slots.pop();
 			}
 
-			EntityNew entity = EntityNew(entityName, entityID);
+			EntityNew entity = EntityNew(this, entityName, entityID);
 			entities.Add(entityID, entity);
 			name_to_ID[entityName] = entityID;
 			return entities.GetPtr(entityID);
