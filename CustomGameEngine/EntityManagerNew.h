@@ -1,4 +1,5 @@
 #pragma once
+#include "ComponentTransform.h"
 #include "SparseSet.h"
 #include <vector>
 #include "EntityNew.h"
@@ -23,28 +24,13 @@ namespace Engine
 		// Entity functions
 		// ----------------
 
-		// Create and return a new entity. If name already exists, a unique number will be appended
+		// Create and return a new entity with a default transform component. If name already exists, a unique number will be appended
 		EntityNew* New(const std::string& name) {
-			// Check for existing name
-			std::string entityName = name;
-			unsigned int duplicateCount = 0;
-			while (name_to_ID.find(entityName) != name_to_ID.end()) {
-				duplicateCount++;
-				entityName = name + " (" + std::to_string(duplicateCount) + ")";
-			}
+			EntityNew* entity = NewWithoutDefault(name);
 
-			// Create entity
-			unsigned int entityID = entities.SparseSize();
-			if (empty_slots.size() > 0) {
-				// Use most recently deleted id
-				entityID = empty_slots.top();
-				empty_slots.pop();
-			}
-
-			EntityNew entity = EntityNew(this, entityName, entityID);
-			entities.Add(entityID, entity);
-			name_to_ID[entityName] = entityID;
-			return entities.GetPtr(entityID);
+			AddComponent(entity->id, ComponentTransform(this, 0.0f, 0.0f, 0.0f));
+			GetComponent<ComponentTransform>(entity->id)->owner = entity;
+			return entity;
 		}
 
 		// Clone an entity by ID. Returns pointer to new entity. Returns nullptr if ID doesn't exist
@@ -52,7 +38,7 @@ namespace Engine
 		// Clone an entity by reference. Returns pointer to new entity. Returns nullptr if entity doesn't exist in ECS
 		EntityNew* Clone(const EntityNew& entity) {
 			// Clone entity
-			EntityNew* newEntity = New(entity.name);
+			EntityNew* newEntity = NewWithoutDefault(entity.name);
 			const std::bitset<MAX_COMPONENTS>& old_mask = entity.component_mask;
 
 			// Clone components
@@ -64,6 +50,9 @@ namespace Engine
 			}
 
 			newEntity->component_mask = old_mask;
+
+			GetComponent<ComponentTransform>(newEntity->id)->owner = newEntity;
+
 			return newEntity;
 		}
 		// Clone an entity by name. Returns pointer to new entity. Returns nullptr if name doesn't exist
@@ -194,6 +183,31 @@ namespace Engine
 		}
 
 	private:
+
+		// Create new entity without default transform component (for use during entity cloning)
+		EntityNew* NewWithoutDefault(const std::string& name) {
+			// Check for existing name
+			std::string entityName = name;
+			unsigned int duplicateCount = 0;
+			while (name_to_ID.find(entityName) != name_to_ID.end()) {
+				duplicateCount++;
+				entityName = name + " (" + std::to_string(duplicateCount) + ")";
+			}
+
+			// Create entity
+			unsigned int entityID = entities.SparseSize();
+			if (empty_slots.size() > 0) {
+				// Use most recently deleted id
+				entityID = empty_slots.top();
+				empty_slots.pop();
+			}
+
+			EntityNew entity = EntityNew(entityName, entityID);
+			entities.Add(entityID, entity);
+			name_to_ID[entityName] = entityID;
+			return entities.GetPtr(entityID);
+		}
+
 		// Get uncasted ptr to ISparseSet for component type TComponent
 		template <typename TComponent>
 		ISparseSet* GetComponentPoolPtr() {

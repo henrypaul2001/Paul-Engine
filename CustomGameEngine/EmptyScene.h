@@ -140,6 +140,18 @@ namespace Engine
 			});
 
 			std::cout << ecs.GetComponent<TestComponentF>(10)->f << std::endl;
+
+			EntityNew* transformTest = ecs.New("Transform Test");
+			ecs.AddComponent(transformTest->ID(), ComponentTransform(&ecs, 10.0f, 1.0f, -5.0f));
+
+			// Transform children
+			for (int i = 0; i < 20; i++) {
+				EntityNew* child = ecs.New("Transform Test");
+				ecs.AddComponent(child->ID(), ComponentTransform(&ecs, 10.0f + i, 1.0f + i, -5.0f - i));
+				ecs.GetComponent<ComponentTransform>(transformTest->ID())->AddChild(child);
+			}
+
+			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
 		}
 
 		void keyUp(int key) override {}
