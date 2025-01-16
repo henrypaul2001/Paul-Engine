@@ -94,10 +94,10 @@ namespace Engine {
 			if (geometry->GetModel()->HasBones()) {
 				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
 					shader->setBool("hasBones", true);
-					std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					for (int i = 0; i < transforms.size(); i++) {
-						shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					}
+					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+					//for (int i = 0; i < transforms.size(); i++) {
+						//shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+					//}
 				}
 			}
 		}
@@ -173,10 +173,10 @@ namespace Engine {
 			if (geometry->GetModel()->HasBones()) {
 				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
 					shader->setBool("hasBones", true);
-					std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					for (int i = 0; i < transforms.size(); i++) {
-						shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					}
+					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+					//for (int i = 0; i < transforms.size(); i++) {
+					//	shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+					//}
 				}
 			}
 
@@ -284,10 +284,10 @@ namespace Engine {
 			if (geometry->GetModel()->HasBones()) {
 				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
 					shader->setBool("hasBones", true);
-					std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					for (int i = 0; i < transforms.size(); i++) {
-						shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					}
+					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+					//for (int i = 0; i < transforms.size(); i++) {
+					//	shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+					//}
 				}
 			}
 		}

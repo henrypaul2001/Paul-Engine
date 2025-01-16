@@ -1,19 +1,19 @@
 #include "GameSceneManager.h"
-#include "GameScene.h"
-#include "SponzaScene.h"
-#include "AOScene.h"
-#include "CollisionScene.h"
-#include "PBRScene.h"
-#include "PhysicsScene.h"
-#include "InstanceScene.h"
-#include "MainMenu.h"
-#include "AnimationScene.h"
-#include "AudioScene.h"
-#include "ParticleScene.h"
-#include "AIScene.h"
-#include "IBLScene.h"
-#include "GeoCullingScene.h"
-#include "SSRScene.h"
+//#include "GameScene.h"
+//#include "SponzaScene.h"
+//#include "AOScene.h"
+//#include "CollisionScene.h"
+//#include "PBRScene.h"
+//#include "PhysicsScene.h"
+//#include "InstanceScene.h"
+//#include "MainMenu.h"
+//#include "AnimationScene.h"
+//#include "AudioScene.h"
+//#include "ParticleScene.h"
+//#include "AIScene.h"
+//#include "IBLScene.h"
+//#include "GeoCullingScene.h"
+//#include "SSRScene.h"
 #include "EmptyScene.h"
 #include <iostream>
 namespace Engine
@@ -39,7 +39,7 @@ namespace Engine
 		std::cout << "Attempting to create scene '" << sceneType << "'" << std::endl;
 		Scene* newScene{};
 		switch (sceneType) {
-		case SCENE_MAIN_MENU:
+		/*case SCENE_MAIN_MENU:
 			newScene = new MainMenu(this);
 			break;
 		case SCENE_GAME:
@@ -87,8 +87,11 @@ namespace Engine
 			break;
 		case SCENE_SSR:
 			newScene = new SSRScene(this);
-			break;
+			break;*/
 		case SCENE_NONE:
+			newScene = new EmptyScene(this);
+			break;
+		default:
 			newScene = new EmptyScene(this);
 			break;
 		}

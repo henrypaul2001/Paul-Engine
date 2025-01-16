@@ -80,7 +80,7 @@ namespace Engine
 		// Linear velocity
 		glm::vec3 position = transform->Position();
 		glm::vec3 velocity = physics->Velocity();
-		transform->SetLastPosition(position);
+		//transform->SetLastPosition(position);
 
 		position += velocity * Scene::dt;
 

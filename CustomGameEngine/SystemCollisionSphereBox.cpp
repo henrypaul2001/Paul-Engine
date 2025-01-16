@@ -83,8 +83,8 @@ namespace Engine {
 			glm::vec3 otherLocalCollisionPoint = -collisionNormal * scaledRadius;
 			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 
-			collision.objectA = transform->GetOwner();
-			collision.objectB = transform2->GetOwner();
+			//collision.objectA = transform->GetOwner();
+			//collision.objectB = transform2->GetOwner();
 		}
 		else {
 			collision.isColliding = false;

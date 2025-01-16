@@ -1,6 +1,7 @@
 #pragma once
 #include "InputManager.h"
-#include "GameScene.h"
+#include "Scene.h"
+//#include "GameScene.h"
 namespace Engine {
 	class GameInputManager : public InputManager
 	{

@@ -1,5 +1,6 @@
 #include "SystemPathfinding.h"
 #include "Scene.h"
+#include <glm/gtx/norm.hpp>
 namespace Engine {
 	SystemPathfinding::SystemPathfinding()
 	{

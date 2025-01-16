@@ -1,4 +1,5 @@
 #include "SystemFrustumCulling.h"
+#include <glm/gtx/norm.hpp>
 namespace Engine {
 	std::map<float, Mesh*> SystemFrustumCulling::culledMeshList = std::map<float, Mesh*>();
 	SystemFrustumCulling::~SystemFrustumCulling()

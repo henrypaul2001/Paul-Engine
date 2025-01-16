@@ -1,4 +1,5 @@
 #include "SystemCollisionSphere.h"
+#include <glm/gtx/norm.hpp>
 namespace Engine {
 	SystemCollisionSphere::SystemCollisionSphere(EntityManager* entityManager, CollisionManager* collisionManager) : SystemCollision(entityManager, collisionManager)
 	{
@@ -67,8 +68,8 @@ namespace Engine {
 			glm::vec3 otherLocalCollisionPoint = -collisionNormal * dynamic_cast<ComponentCollisionSphere*>(collider2)->CollisionRadius();
 			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 
-			collision.objectA = transform->GetOwner();
-			collision.objectB = transform2->GetOwner();
+			//collision.objectA = transform->GetOwner();
+			//collision.objectB = transform2->GetOwner();
 		}
 		else {
 			collision.isColliding = false;

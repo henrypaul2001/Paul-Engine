@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "StateMachine.h"
 #include "ComponentStateController.h"
+#include <glm/gtx/norm.hpp>
 namespace Engine {
 	IdleState::IdleState(const IdleState& old_state) : State(old_state.name)
 	{

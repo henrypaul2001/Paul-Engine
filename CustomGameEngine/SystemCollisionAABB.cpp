@@ -85,8 +85,8 @@ namespace Engine {
 
 			collision.AddContactPoint(glm::vec3(), glm::vec3(), bestAxis, penetration);
 
-			collision.objectA = transform->GetOwner();
-			collision.objectB = transform2->GetOwner();
+			//collision.objectA = transform->GetOwner();
+			//collision.objectB = transform2->GetOwner();
 
 			GetContactPoints(collision);
 		}

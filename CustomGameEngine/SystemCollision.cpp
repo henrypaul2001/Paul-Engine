@@ -1,5 +1,6 @@
 #include "SystemCollision.h"
 #include "ComponentTransform.h"
+#include <glm/gtx/norm.hpp>
 namespace Engine {
 	SystemCollision::SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager)
 	{

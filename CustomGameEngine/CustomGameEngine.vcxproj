@@ -265,21 +265,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractShader.cpp" />
-    <ClCompile Include="AIScene.cpp" />
+    <ClCompile Include="AIScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="AnimationChannel.cpp" />
-    <ClCompile Include="AnimationScene.cpp" />
-    <ClCompile Include="AOScene.cpp" />
+    <ClCompile Include="AnimationScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="AOScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="ASSIMPModelLoader.cpp" />
     <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="AudioManager.cpp" />
-    <ClCompile Include="AudioScene.cpp" />
+    <ClCompile Include="AudioScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="BakedData.cpp" />
     <ClCompile Include="BVHNode.cpp" />
     <ClCompile Include="BVHTree.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionResolver.cpp" />
-    <ClCompile Include="CollisionScene.cpp" />
+    <ClCompile Include="CollisionScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="ComponentAnimator.cpp" />
     <ClCompile Include="ComponentAudioSource.cpp" />
     <ClCompile Include="ComponentCollision.cpp" />
@@ -303,7 +313,9 @@
     <ClCompile Include="ConstraintSolver.cpp" />
     <ClCompile Include="CubeTextureAtlas.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
-    <ClCompile Include="EmptyScene.cpp" />
+    <ClCompile Include="EmptyScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -311,28 +323,44 @@
     <ClCompile Include="FlatTextureAtlas.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="GameInputManager.cpp" />
-    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="GameScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GameSceneManager.cpp" />
     <ClCompile Include="GenericState.cpp" />
     <ClCompile Include="GenericStateTransition.cpp" />
-    <ClCompile Include="GeoCullingScene.cpp" />
+    <ClCompile Include="GeoCullingScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="IBLScene.cpp" />
+    <ClCompile Include="IBLScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="IdleState.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="InstanceScene.cpp" />
+    <ClCompile Include="InstanceScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MainMenu.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshData.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="NavigationGrid.cpp" />
     <ClCompile Include="NavigationMap.cpp" />
     <ClCompile Include="NavigationPath.cpp" />
-    <ClCompile Include="ParticleScene.cpp" />
-    <ClCompile Include="PBRScene.cpp" />
-    <ClCompile Include="PhysicsScene.cpp" />
+    <ClCompile Include="ParticleScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="PBRScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="PhysicsScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="ReflectionProbe.cpp" />
     <ClCompile Include="RenderManager.cpp" />
@@ -343,8 +371,12 @@
     <ClCompile Include="ScopeTimer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalAnimation.cpp" />
-    <ClCompile Include="SponzaScene.cpp" />
-    <ClCompile Include="SSRScene.cpp" />
+    <ClCompile Include="SponzaScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="SSRScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="StateTransition.cpp" />
