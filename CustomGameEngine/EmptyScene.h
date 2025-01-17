@@ -4,6 +4,7 @@
 
 #include "ComponentPhysics.h"
 #include "ComponentAnimator.h"
+#include "ComponentAudioSource.h"
 
 namespace Engine
 {
@@ -52,6 +53,7 @@ namespace Engine
 			EntityNew* allComponents = ecs.New("All Components");
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
 			ecs.AddComponent(allComponents->ID(), ComponentAnimator(nullptr));
+			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(nullptr));
 
 
 			for (int i = 0; i < 50; i++) {

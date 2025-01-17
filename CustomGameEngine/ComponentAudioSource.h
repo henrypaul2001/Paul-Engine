@@ -1,19 +1,13 @@
 #pragma once
-#include "Component.h"
 #include "AudioFile.h"
 #include "AudioManager.h"
 namespace Engine {
-	class ComponentAudioSource : public Component
+	class ComponentAudioSource
 	{
 	public:
 		ComponentAudioSource(const ComponentAudioSource& old_component);
-		ComponentAudioSource(AudioFile* activeAudio, bool is3D = true, bool startPaused = false, bool isLooped = true, bool enableSoundEffects = true);
+		ComponentAudioSource(AudioFile* activeAudio, const bool is3D = true, const bool startPaused = false, const bool isLooped = true, const bool enableSoundEffects = true);
 		~ComponentAudioSource();
-
-		ComponentTypes ComponentType() override { return COMPONENT_AUDIO_SOURCE; }
-		void Close() override;
-
-		Component* Copy() override { return new ComponentAudioSource(*this); }
 
 		bool Is3D() const { return is3D; }
 		void Set3D(bool newValue) { 

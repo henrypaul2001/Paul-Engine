@@ -1,10 +1,7 @@
 #include "ComponentAudioSource.h"
-#include "AudioManager.h"
 namespace Engine {
 	ComponentAudioSource::ComponentAudioSource(const ComponentAudioSource& old_component)
 	{
-		this->owner = nullptr;
-
 		this->is3D = old_component.is3D;
 		this->isPlaying = old_component.isPlaying;
 		this->isLooped = old_component.isLooped;
@@ -19,12 +16,13 @@ namespace Engine {
 			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, soundEffectsEnabled);
 		}
 
+		sfxController = nullptr;
 		if (sound) {
 			sfxController = sound->getSoundEffectControl();
 		}
 	}
 
-	ComponentAudioSource::ComponentAudioSource(AudioFile* activeAudio, bool is3D, bool startPaused, bool isLooped, bool enableSoundEffects)
+	ComponentAudioSource::ComponentAudioSource(AudioFile* activeAudio, const bool is3D, const bool startPaused, const bool isLooped, const bool enableSoundEffects)
 	{
 		this->activeAudio = activeAudio;
 		this->is3D = is3D;
@@ -40,6 +38,7 @@ namespace Engine {
 			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, enableSoundEffects);
 		}
 
+		sfxController = nullptr;
 		if (sound) {
 			sfxController = sound->getSoundEffectControl();
 		}
@@ -49,10 +48,5 @@ namespace Engine {
 	{
 		sound->stop();
 		sound->drop();
-	}
-
-	void ComponentAudioSource::Close()
-	{
-
 	}
 }
