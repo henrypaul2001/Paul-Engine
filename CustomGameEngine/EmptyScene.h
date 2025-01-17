@@ -1,6 +1,9 @@
 #pragma once
 #include "Scene.h"
 #include "EntityManagerNew.h"
+
+#include "ComponentPhysics.h"
+
 namespace Engine
 {
 
@@ -121,6 +124,7 @@ namespace Engine
 					TestComponentF f;
 					f.f = i;
 					ecs.AddComponent(entity->ID(), f);
+					ecs.AddComponent(entity->ID(), ComponentPhysics());
 				}
 			}
 
