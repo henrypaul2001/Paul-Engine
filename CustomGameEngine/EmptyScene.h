@@ -3,6 +3,7 @@
 #include "EntityManagerNew.h"
 
 #include "ComponentPhysics.h"
+#include "ComponentAnimator.h"
 
 namespace Engine
 {
@@ -46,6 +47,13 @@ namespace Engine
 		void Close() override {}
 		void SetupScene() override {
 			EntityManagerNew ecs;
+			
+			// All components entity
+			EntityNew* allComponents = ecs.New("All Components");
+			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
+			ecs.AddComponent(allComponents->ID(), ComponentAnimator(nullptr));
+
+
 			for (int i = 0; i < 50; i++) {
 				ecs.New("Test");
 			}
