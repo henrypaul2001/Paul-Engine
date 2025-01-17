@@ -8,9 +8,13 @@
 #include "View.h"
 #include <memory>
 #include <stack>
+#include <concepts>
 
 namespace Engine
 {
+	template <typename TComponent>
+	concept NotComponentTransform = !std::is_same_v<TComponent, ComponentTransform>;
+
 	class EntityManagerNew
 	{
 	public:
@@ -148,8 +152,10 @@ namespace Engine
 			else { return false; }
 		}
 
+		// Remove a component or multiple components from a specified entity ID.
+		// Attempting to remove ComponentTransform will cause a build error
 		template <typename... TComponents>
-		void RemoveComponent(const unsigned int entityID) {
+		void RemoveComponent(const unsigned int entityID) requires (NotComponentTransform<TComponents>&&...) {
 			(RemoveComponentPrivate<TComponents>(entityID), ...);
 		}
 

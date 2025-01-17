@@ -147,6 +147,7 @@ namespace Engine
 
 			EntityNew* transformTest = ecs.New("Transform Test");
 			ecs.AddComponent(transformTest->ID(), ComponentTransform(&ecs, 10.0f, 1.0f, -5.0f));
+			//ecs.RemoveComponent<ComponentTransform>(transformTest->ID()); // build error, cannot remove transform component
 
 			// Transform children
 			for (int i = 0; i < 20; i++) {
