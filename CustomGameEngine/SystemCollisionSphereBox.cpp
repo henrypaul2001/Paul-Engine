@@ -26,13 +26,13 @@ namespace Engine {
 			for (Entity* e : entityManager->Entities()) {
 				if ((e->Mask() & SPHERE_MASK) == SPHERE_MASK) {
 					// Check if this entity has already checked for collisions with current entity in a previous run during this frame
-					if (!collider->HasEntityAlreadyBeenChecked(e) && e != entity) {
-						ComponentTransform* transform2 = e->GetTransformComponent();
-						ComponentCollisionSphere* collider2 = e->GetSphereCollisionComponent();
+					//if (!collider->HasEntityAlreadyBeenChecked(e) && e != entity) {
+					//	ComponentTransform* transform2 = e->GetTransformComponent();
+					//	ComponentCollisionSphere* collider2 = e->GetSphereCollisionComponent();
 
-						// Check for collision
-						Collision(transform, collider, transform2, collider2);
-					}
+					//	// Check for collision
+					//	Collision(transform, collider, transform2, collider2);
+					//}
 				}
 			}
 		}
