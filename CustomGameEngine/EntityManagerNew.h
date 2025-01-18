@@ -141,7 +141,8 @@ namespace Engine
 		template <typename TComponent>
 		bool AddComponent(const unsigned int entityID, const TComponent& component) {
 			if (!HasComponent<TComponent>(entityID)) {
-				RegisterComponentType<TComponent>();
+				int bitPosition = RegisterComponentType<TComponent>();
+				if (bitPosition == -1) { return false; }
 
 				SparseSet<TComponent>* component_pool = GetComponentPoolPtrCasted<TComponent>();
 				component_pool->Add(entityID, component);
@@ -170,6 +171,7 @@ namespace Engine
 		}
 
 		// Register component and return bit position
+		// Returns -1 if component couldn't be registered
 		template <typename TComponent>
 		int RegisterComponentType() {
 			return GetAddComponentBitPosition<TComponent>();
@@ -243,6 +245,9 @@ namespace Engine
 			else {
 				std::type_index type = std::type_index(typeid(T));
 				position = component_pools.size();
+				if (position >= MAX_COMPONENTS) {
+					return -1;
+				}
 				component_bit_positions[type] = position;
 				component_pools.push_back(std::make_unique<SparseSet<T>>());
 				return position;
@@ -272,7 +277,11 @@ namespace Engine
 				return;
 			}
 
-			component_bit_positions[type] = component_pools.size();
+			const unsigned int position = component_pools.size();
+			if (position >= MAX_COMPONENTS) {
+				return -1;
+			}
+			component_bit_positions[type] = position;
 			component_pools.push_back(std::make_unique<SparseSet<T>>());
 		}
 

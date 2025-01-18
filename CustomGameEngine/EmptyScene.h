@@ -5,6 +5,9 @@
 #include "ComponentPhysics.h"
 #include "ComponentAnimator.h"
 #include "ComponentAudioSource.h"
+#include "ComponentCollisionSphere.h"
+#include "ComponentCollisionBox.h"
+#include "ComponentCollisionAABB.h"
 
 namespace Engine
 {
@@ -54,7 +57,16 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
 			ecs.AddComponent(allComponents->ID(), ComponentAnimator(nullptr));
 			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(nullptr));
-
+			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(10.0f));
+			ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+			ecs.AddComponent(allComponents->ID(), 2);
+			ecs.AddComponent(allComponents->ID(), 2.2f);
+			ecs.AddComponent(allComponents->ID(), (double)2);
+			ecs.AddComponent(allComponents->ID(), TestComponentA());
+			ecs.AddComponent(allComponents->ID(), TestComponentB());
+			bool shouldBeTrue = ecs.AddComponent(allComponents->ID(), TestComponentC());
+			bool shouldBeFalse = ecs.AddComponent(allComponents->ID(), TestComponentD());
 
 			for (int i = 0; i < 50; i++) {
 				ecs.New("Test");
