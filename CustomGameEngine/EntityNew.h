@@ -2,7 +2,7 @@
 #include <string>
 #include <bitset>
 namespace Engine {
-	static constexpr unsigned int MAX_COMPONENTS = 13;
+	static constexpr unsigned int MAX_COMPONENTS = 32;
 	class EntityNew {
 	public:
 		friend class EntityManagerNew;
