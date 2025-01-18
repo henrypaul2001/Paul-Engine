@@ -15,20 +15,20 @@ namespace Engine {
 
 	void SystemCollision::Collision(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
 	{
-		collider->AddToEntitiesCheckedThisFrame(collider2->GetOwner());
-		collider2->AddToEntitiesCheckedThisFrame(collider->GetOwner());
+		//collider->AddToEntitiesCheckedThisFrame(collider2->GetOwner());
+		//collider2->AddToEntitiesCheckedThisFrame(collider->GetOwner());
 
-		CollisionData collision = Intersect(transform, collider, transform2, collider2);
-		if (collision.isColliding) {
-			collisionManager->AddToCollisionList(collision);
+		//CollisionData collision = Intersect(transform, collider, transform2, collider2);
+		//if (collision.isColliding) {
+		//	collisionManager->AddToCollisionList(collision);
 
-			collider->AddToCollisions(collider2->GetOwner());
-			collider2->AddToCollisions(collider->GetOwner());
-		}
-		else {
-			collider->RemoveFromCollisions(collider2->GetOwner());
-			collider2->RemoveFromCollisions(collider->GetOwner());
-		}
+		//	collider->AddToCollisions(collider2->GetOwner());
+		//	collider2->AddToCollisions(collider->GetOwner());
+		//}
+		//else {
+		//	collider->RemoveFromCollisions(collider2->GetOwner());
+		//	collider2->RemoveFromCollisions(collider->GetOwner());
+		//}
 	}
 
 	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max)

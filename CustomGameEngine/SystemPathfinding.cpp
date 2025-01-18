@@ -1,6 +1,7 @@
 #include "SystemPathfinding.h"
 #include "Scene.h"
 #include <glm/gtx/norm.hpp>
+#include "ComponentTransform.h"
 namespace Engine {
 	SystemPathfinding::SystemPathfinding()
 	{

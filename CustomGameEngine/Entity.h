@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "ComponentTransform.h"
 #include "ComponentCollisionAABB.h"
 #include "ComponentCollisionSphere.h"
 #include "ComponentCollisionBox.h"
