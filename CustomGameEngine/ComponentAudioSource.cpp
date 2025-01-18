@@ -8,12 +8,15 @@ namespace Engine {
 		this->soundEffectsEnabled = old_component.soundEffectsEnabled;
 		this->activeAudio = old_component.activeAudio;
 
-		// should always initialise as paused as we dont currently know the position of the sound. Audio will be resumed in audio system where its correct position will also be set
-		if (is3D) {
-			sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), irrklang::vec3df(0.0f, 0.0f, 0.0f), isLooped, true, true, soundEffectsEnabled);
-		}
-		else {
-			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, soundEffectsEnabled);
+		sound = nullptr;
+		if (activeAudio) {
+			// should always initialise as paused as we dont currently know the position of the sound. Audio will be resumed in audio system where its correct position will also be set
+			if (is3D) {
+				sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), irrklang::vec3df(0.0f, 0.0f, 0.0f), isLooped, true, true, soundEffectsEnabled);
+			}
+			else {
+				sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, soundEffectsEnabled);
+			}
 		}
 
 		sfxController = nullptr;
@@ -30,12 +33,15 @@ namespace Engine {
 		soundEffectsEnabled = enableSoundEffects;
 		isPlaying = !startPaused;
 
-		// should always initialise as paused as we dont currently know the position of the sound. Audio will be resumed in audio system where its correct position will also be set
-		if (is3D) {
-			sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), irrklang::vec3df(0.0f, 0.0f, 0.0f), isLooped, true, true, enableSoundEffects);
-		}
-		else {
-			sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, enableSoundEffects);
+		sound = nullptr;
+		if (activeAudio) {
+			// should always initialise as paused as we dont currently know the position of the sound. Audio will be resumed in audio system where its correct position will also be set
+			if (is3D) {
+				sound = AudioManager::GetInstance()->GetSoundEngine()->play3D(activeAudio->GetSource(), irrklang::vec3df(0.0f, 0.0f, 0.0f), isLooped, true, true, enableSoundEffects);
+			}
+			else {
+				sound = AudioManager::GetInstance()->GetSoundEngine()->play2D(activeAudio->GetSource(), isLooped, true, true, enableSoundEffects);
+			}
 		}
 
 		sfxController = nullptr;
@@ -46,7 +52,9 @@ namespace Engine {
 
 	ComponentAudioSource::~ComponentAudioSource()
 	{
-		sound->stop();
-		sound->drop();
+		if (sound) {
+			sound->stop();
+			sound->drop();
+		}
 	}
 }
