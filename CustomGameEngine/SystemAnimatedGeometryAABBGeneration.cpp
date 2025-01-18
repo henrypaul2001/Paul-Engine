@@ -1,4 +1,5 @@
 #include "SystemAnimatedGeometryAABBGeneration.h"
+#include "ComponentTransform.h"
 namespace Engine {
 	SystemAnimatedGeometryAABBGeneration::SystemAnimatedGeometryAABBGeneration()
 	{

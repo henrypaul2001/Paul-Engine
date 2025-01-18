@@ -1,21 +1,6 @@
 #include "ComponentCollisionBox.h"
 namespace Engine {
-	ComponentCollisionBox::ComponentCollisionBox(const ComponentCollisionBox& old_component)
-	{
-		this->owner = nullptr;
-
-		this->localExtents = old_component.localExtents;
-		this->boundingBox = old_component.boundingBox;
-		
-		this->checkBroadPhaseFirst = old_component.checkBroadPhaseFirst;
-
-		this->EntitiesCheckedThisFrame = old_component.EntitiesCheckedThisFrame;
-		this->EntitiesCollidingWith = old_component.EntitiesCollidingWith;
-
-		this->isMovedByCollisions = old_component.isMovedByCollisions;
-	}
-
-	ComponentCollisionBox::ComponentCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+	ComponentCollisionBox::ComponentCollisionBox(const float minX, const float minY, const float minZ, const float maxX, const float maxY, const float maxZ)
 	{
 		localExtents = BoxExtents();
 		localExtents.minX = minX;
@@ -30,12 +15,9 @@ namespace Engine {
 		ConstructCube();
 	}
 
-	ComponentCollisionBox::~ComponentCollisionBox()
-	{
+	ComponentCollisionBox::~ComponentCollisionBox() {}
 
-	}
-
-	BoxExtents ComponentCollisionBox::GetWorldSpacePoints(glm::mat4 modelMatrix)
+	BoxExtents ComponentCollisionBox::GetWorldSpacePoints(const glm::mat4& modelMatrix)
 	{
 		BoxExtents worldSpacePoints;
 
@@ -50,7 +32,7 @@ namespace Engine {
 		return worldSpacePoints;
 	}
 
-	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(glm::mat4 modelMatrix)
+	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(const glm::mat4& modelMatrix)
 	{
 		std::vector<glm::vec3> cubePoints = {
 			glm::vec3(localExtents.minX, localExtents.minY, localExtents.maxZ), // front, bottom left point
@@ -99,10 +81,5 @@ namespace Engine {
 		boundingBox.AddFace(glm::vec3(0.0f, -1.0f, 0.0f), 4, face4);
 		boundingBox.AddFace(glm::vec3(1.0f, 0.0f, 0.0f), 4, face5);
 		boundingBox.AddFace(glm::vec3(-1.0f, 0.0f, 0.0f), 4, face6);
-	}
-
-	void ComponentCollisionBox::Close()
-	{
-
 	}
 }

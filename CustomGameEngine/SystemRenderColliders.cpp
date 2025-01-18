@@ -1,5 +1,6 @@
 #include "SystemRenderColliders.h"
 #include "ResourceManager.h"
+#include "ComponentTransform.h"
 namespace Engine {
 	SystemRenderColliders::SystemRenderColliders(CollisionManager* collisionManager)
 	{

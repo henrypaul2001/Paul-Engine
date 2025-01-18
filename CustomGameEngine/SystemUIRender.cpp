@@ -1,4 +1,5 @@
 #include "SystemUIRender.h"
+#include "ComponentTransform.h"
 namespace Engine {
 	SystemUIRender::SystemUIRender()
 	{
