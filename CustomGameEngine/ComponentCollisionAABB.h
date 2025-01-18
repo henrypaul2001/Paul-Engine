@@ -120,17 +120,11 @@ namespace Engine {
 
 	class ComponentCollisionAABB : public ComponentCollision
 	{
-	private:
-		AABBPoints localBounds;
-		BoundingBox boundingBox;
-
-		void ConstructCube();
 	public:
-		ComponentCollisionAABB(const ComponentCollisionAABB& old_component);
-		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
-		~ComponentCollisionAABB();
+		constexpr Engine::ColliderType ColliderType() const override { return COLLISION_AABB; }
 
-		Component* Copy() override { return new ComponentCollisionAABB(*this); }
+		ComponentCollisionAABB(const float minX, const float minY, const float minZ, const float maxX, const float maxY, const float maxZ);
+		~ComponentCollisionAABB();
 
 		AABBPoints GetBoundary() { return localBounds; }
 		BoundingBox& GetBoundingBox() { return boundingBox; }
@@ -143,10 +137,13 @@ namespace Engine {
 		void SetMaxY(float maxY) { localBounds.maxY = maxY; }
 		void SetMaxZ(float maxZ) { localBounds.maxZ = maxZ; }
 
-		AABBPoints GetWorldSpaceBounds(glm::mat4 modelMatrix);
-		std::vector<glm::vec3> WorldSpacePoints(glm::mat4 modelMatrix);
+		AABBPoints GetWorldSpaceBounds(const glm::mat4& modelMatrix);
+		std::vector<glm::vec3> WorldSpacePoints(const glm::mat4& modelMatrix);
 
-		ComponentTypes ComponentType() override { return COMPONENT_COLLISION_AABB; }
-		void Close() override;
+	private:
+		AABBPoints localBounds;
+		BoundingBox boundingBox;
+
+		void ConstructCube();
 	};
 }

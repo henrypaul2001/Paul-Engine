@@ -1,18 +1,6 @@
 #include "ComponentCollisionAABB.h"
 namespace Engine {
-	ComponentCollisionAABB::ComponentCollisionAABB(const ComponentCollisionAABB& old_component)
-	{
-		this->owner = nullptr;
-
-		this->localBounds = old_component.localBounds;
-		this->boundingBox = old_component.boundingBox;
-
-		this->EntitiesCheckedThisFrame = old_component.EntitiesCheckedThisFrame;
-		this->EntitiesCollidingWith = old_component.EntitiesCollidingWith;
-		this->isMovedByCollisions = old_component.isMovedByCollisions;
-	}
-
-	ComponentCollisionAABB::ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+	ComponentCollisionAABB::ComponentCollisionAABB(const float minX, const float minY, const float minZ, const float maxX, const float maxY, const float maxZ) : localBounds(minX, minY, minZ, maxX, maxY, maxZ)
 	{
 		localBounds = AABBPoints(minX, minY, minZ, maxX, maxY, maxZ);
 
@@ -21,12 +9,9 @@ namespace Engine {
 		ConstructCube();
 	}
 
-	ComponentCollisionAABB::~ComponentCollisionAABB()
-	{
+	ComponentCollisionAABB::~ComponentCollisionAABB() {}
 
-	}
-
-	AABBPoints ComponentCollisionAABB::GetWorldSpaceBounds(glm::mat4 modelMatrix)
+	AABBPoints ComponentCollisionAABB::GetWorldSpaceBounds(const glm::mat4& modelMatrix)
 	{
 		AABBPoints worldBounds;
 
@@ -51,7 +36,7 @@ namespace Engine {
 		return worldBounds;
 	}
 
-	std::vector<glm::vec3> ComponentCollisionAABB::WorldSpacePoints(glm::mat4 modelMatrix)
+	std::vector<glm::vec3> ComponentCollisionAABB::WorldSpacePoints(const glm::mat4& modelMatrix)
 	{
 		std::vector<glm::vec3> cubePoints = {
 			glm::vec3(localBounds.minX, localBounds.minY, localBounds.maxZ), // front, bottom left point
@@ -100,9 +85,5 @@ namespace Engine {
 		boundingBox.AddFace(glm::vec3(0.0f, -1.0f, 0.0f), 4, face4);
 		boundingBox.AddFace(glm::vec3(1.0f, 0.0f, 0.0f), 4, face5);
 		boundingBox.AddFace(glm::vec3(-1.0f, 0.0f, 0.0f), 4, face6);
-	}
-
-	void ComponentCollisionAABB::Close()
-	{
 	}
 }
