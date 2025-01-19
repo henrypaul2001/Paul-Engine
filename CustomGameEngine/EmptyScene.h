@@ -14,6 +14,7 @@
 #include "ComponentPathfinder.h"
 #include "ComponentStateController.h"
 #include "ComponentUICanvas.h"
+#include "SystemManagerNew.h"
 
 namespace Engine
 {
@@ -41,18 +42,25 @@ namespace Engine
 		long long f;
 	};
 
+	static void TestSystem(unsigned int entityID, ComponentTransform& transform, ComponentPhysics& physics) {
+		std::cout << "TEST_SYSTEM: EntityID = " << entityID << std::endl;
+	}
+	static void TestAfterAction() {
+		std::cout << "TEST_SYSTEM: After action" << std::endl;
+	}
+
 	class EmptyScene : public Scene
 	{
 	public:
 		EmptyScene(SceneManager* sceneManager);
 		~EmptyScene() {}
 
-		void Update() override {}
+		void Update() override {
+			systemManager.ActionSystems();
+		}
 		void Render() override {}
 		void Close() override {}
 		void SetupScene() override {
-			EntityManagerNew ecs;
-			
 			// All components entity
 			EntityNew* allComponents = ecs.New("All Components");
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
@@ -171,6 +179,8 @@ namespace Engine
 			ecs.AddComponent(transformTest->ID(), ComponentTransform(&ecs, 10.0f, 1.0f, -5.0f));
 			//ecs.RemoveComponent<ComponentTransform>(transformTest->ID()); // build error, cannot remove transform component
 
+			//systemManager.RegisterSystem<ComponentTransform, ComponentPhysics>()
+
 			// Transform children
 			for (int i = 0; i < 20; i++) {
 				EntityNew* child = ecs.New("Transform Test");
@@ -179,6 +189,8 @@ namespace Engine
 			}
 
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
+
+			systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
 		}
 
 		void keyUp(int key) override {}
@@ -187,6 +199,7 @@ namespace Engine
 	private:
 		//EntityManager entityManager;
 		//SystemManager systemManager;
-
+		EntityManagerNew ecs;
+		SystemManagerNew systemManager;
 	};
 }

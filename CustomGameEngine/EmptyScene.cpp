@@ -2,7 +2,7 @@
 #include "GameInputManager.h"
 
 namespace Engine {
-	Engine::EmptyScene::EmptyScene(SceneManager* sceneManager) : Scene(sceneManager, "EmptyScene")
+	Engine::EmptyScene::EmptyScene(SceneManager* sceneManager) : Scene(sceneManager, "EmptyScene"), systemManager(&ecs)
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

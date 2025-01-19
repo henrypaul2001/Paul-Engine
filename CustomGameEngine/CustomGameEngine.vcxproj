@@ -241,6 +241,7 @@
     <ClInclude Include="SystemCollisionSphereBox.h" />
     <ClInclude Include="SystemFrustumCulling.h" />
     <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="SystemManagerNew.h" />
     <ClInclude Include="SystemParticleRenderer.h" />
     <ClInclude Include="SystemParticleUpdater.h" />
     <ClInclude Include="SystemPathfinding.h" />
@@ -394,6 +395,7 @@
     <ClCompile Include="SystemCollisionSphereBox.cpp" />
     <ClCompile Include="SystemFrustumCulling.cpp" />
     <ClCompile Include="SystemManager.cpp" />
+    <ClCompile Include="SystemManagerNew.cpp" />
     <ClCompile Include="SystemParticleRenderer.cpp" />
     <ClCompile Include="SystemParticleUpdater.cpp" />
     <ClCompile Include="SystemPathfinding.cpp" />

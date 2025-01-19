@@ -528,6 +528,9 @@
     <ClInclude Include="View.h">
       <Filter>Header Files\Engine\Utility\Data Structures</Filter>
     </ClInclude>
+    <ClInclude Include="SystemManagerNew.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -883,6 +886,9 @@
     </ClCompile>
     <ClCompile Include="EntityNew.cpp">
       <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManagerNew.cpp">
+      <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
