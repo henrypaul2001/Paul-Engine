@@ -1,9 +1,11 @@
 #pragma once
-#include "Component.h"
 #include "Model.h"
 //#include "Shader.h"
 namespace Engine {
-	class ComponentGeometry : public Component
+
+	// TODO: Completely tear this component down including the ComponentGeometry->Model->Meshes structure as part of a larger renderer redesign
+
+	class ComponentGeometry
 	{
 	public:
 		ComponentGeometry(const ComponentGeometry& old_component);
@@ -12,11 +14,6 @@ namespace Engine {
 		ComponentGeometry(const char* modelFilepath, const char* vShaderFilepath, const char* fShaderFilepath, bool pbr, bool instanced = false, bool persistentStorage = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		ComponentGeometry(const char* modelFilepath, bool pbr, bool instanced = false, bool persistentStorage = false, const unsigned int assimpPostProcess = defaultAssimpPostProcess);
 		~ComponentGeometry();
-
-		ComponentTypes ComponentType() override { return COMPONENT_GEOMETRY; }
-		void Close() override;
-
-		Component* Copy() override { return new ComponentGeometry(*this); }
 
 		bool PBR() { return pbr; }
 		void PBR(bool PBR) { 
@@ -43,25 +40,25 @@ namespace Engine {
 		void SetTextureScale(float newScale) { textureScale = glm::vec2(newScale); }
 		void SetTextureScale(glm::vec2 newScale) { textureScale = newScale; }
 
-		const std::vector<unsigned int>& GetInstanceVAOs() const { return instanceVAOs; }
-		const std::vector<unsigned int>& GetInstanceVBOs() const { return instanceVBOs; }
-		bool Instanced() { return instanced; }
-		const int NumInstances() { return instanceSources.size(); }
-		const std::vector<Entity*>& InstanceSources() { return instanceSources; }
-		const std::vector<glm::mat4>& InstanceTransforms() { return instanceTransforms; }
+		//const std::vector<unsigned int>& GetInstanceVAOs() const { return instanceVAOs; }
+		//const std::vector<unsigned int>& GetInstanceVBOs() const { return instanceVBOs; }
+		//bool Instanced() { return instanced; }
+		//const int NumInstances() { return instanceSources.size(); }
+		//const std::vector<Entity*>& InstanceSources() { return instanceSources; }
+		//const std::vector<glm::mat4>& InstanceTransforms() { return instanceTransforms; }
 
-		void AddNewInstanceSource(Entity* newSource) { instanceSources.push_back(newSource); }
-		void RemoveInstanceSource(Entity* sourceToRemove);
-		void UpdateInstanceTransform(int index, glm::mat4 transform) { instanceTransforms[index] = transform; }
-		void ResizeInstancedTransforms() { 
-			if (instanceTransforms.size() != instanceSources.size()) {
-				instanceTransforms.resize(instanceSources.size());
-			}
-		}
+		//void AddNewInstanceSource(Entity* newSource) { instanceSources.push_back(newSource); }
+		//void RemoveInstanceSource(Entity* sourceToRemove);
+		//void UpdateInstanceTransform(int index, glm::mat4 transform) { instanceTransforms[index] = transform; }
+		//void ResizeInstancedTransforms() { 
+		//	if (instanceTransforms.size() != instanceSources.size()) {
+		//		instanceTransforms.resize(instanceSources.size());
+		//	}
+		//}
 
-		void BufferInstanceTransforms();
+		//void BufferInstanceTransforms();
 
-		void OnAddedToEntity() override;
+		//void OnAddedToEntity() override;
 
 		void ApplyMaterialToModel(AbstractMaterial* newMaterial) { ApplyMaterialSetToModel({ newMaterial }); }
 		void ApplyMaterialSetToModel(const std::vector<AbstractMaterial*>& newMaterials);
@@ -87,14 +84,14 @@ namespace Engine {
 		GLenum CULL_TYPE;
 		bool CULL_FACE;
 
-		std::vector<unsigned int> instanceVAOs;
-		std::vector<unsigned int> instanceVBOs;
-		bool instanced;
-		std::vector<glm::mat4> instanceTransforms;
-		std::vector<Entity*> instanceSources;
+		//std::vector<unsigned int> instanceVAOs;
+		//std::vector<unsigned int> instanceVBOs;
+		//bool instanced;
+		//std::vector<glm::mat4> instanceTransforms;
+		//std::vector<EntityNew*> instanceSources;
 		
 		bool includeInReflectionProbes;
 
-		void SetupInstanceVBO();
+		//void SetupInstanceVBO();
 	};
 }

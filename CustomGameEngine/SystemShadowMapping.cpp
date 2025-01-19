@@ -44,21 +44,21 @@ namespace Engine {
 			}
 
 			depthShader->setMat4("model", transform->GetWorldModelMatrix());
-			depthShader->setBool("instanced", geometry->Instanced());
-			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			//depthShader->setBool("instanced", geometry->Instanced());
+			//if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			depthShader->setVec2("textureScale", geometry->GetTextureScale());
 			depthShader->setBool("hasBones", false);
 
 			// Bones
-			if (geometry->GetModel()->HasBones()) {
-				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-					depthShader->setBool("hasBones", true);
-					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					//for (int i = 0; i < transforms.size(); i++) {
-					//	depthShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					//}
-				}
-			}
+			//if (geometry->GetModel()->HasBones()) {
+			//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+			//		depthShader->setBool("hasBones", true);
+			//		//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+			//		//for (int i = 0; i < transforms.size(); i++) {
+			//		//	depthShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+			//		//}
+			//	}
+			//}
 
 			if (geometry->Cull_Face()) {
 				glEnable(GL_CULL_FACE);
@@ -76,7 +76,8 @@ namespace Engine {
 				glCullFace(GL_FRONT);
 			}
 
-			geometry->GetModel()->Draw(*depthShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			//geometry->GetModel()->Draw(*depthShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			geometry->GetModel()->Draw(*depthShader, 0, {});
 		}
 	}
 }

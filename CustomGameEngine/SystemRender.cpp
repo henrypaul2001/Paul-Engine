@@ -82,8 +82,8 @@ namespace Engine {
 			glm::mat4 model = transform->GetWorldModelMatrix();
 			shader->setMat4("model", model);
 			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			shader->setBool("instanced", geometry->Instanced());
-			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			//shader->setBool("instanced", geometry->Instanced());
+			//if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			shader->setBool("hasBones", false);
 			shader->setBool("OpaqueRenderPass", true);
 		}
@@ -91,15 +91,15 @@ namespace Engine {
 		{
 			SCOPE_TIMER("SystemRender::Draw::Set bone transforms");
 			// Bones
-			if (geometry->GetModel()->HasBones()) {
-				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-					shader->setBool("hasBones", true);
-					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					//for (int i = 0; i < transforms.size(); i++) {
-						//shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					//}
-				}
-			}
+			//if (geometry->GetModel()->HasBones()) {
+			//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+			//		shader->setBool("hasBones", true);
+			//		//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+			//		//for (int i = 0; i < transforms.size(); i++) {
+			//			//shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+			//		//}
+			//	}
+			//}
 		}
 
 		if (geometry->Cull_Face()) {
@@ -119,7 +119,7 @@ namespace Engine {
 			glCullFace(GL_BACK);
 		}
 
-		geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances(), geometry->GetInstanceVAOs());
+		//geometry->GetModel()->Draw(*geometry->GetShader(), geometry->NumInstances(), geometry->GetInstanceVAOs());
 
 		if (geometry->GetModel()->ContainsTransparentMeshes()) {
 			float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
@@ -159,26 +159,26 @@ namespace Engine {
 
 			shader->Use();
 
-			ComponentTransform* transform = dynamic_cast<ComponentTransform*>(geometry->GetOwner()->GetComponent(COMPONENT_TRANSFORM));
-			glm::mat4 model = transform->GetWorldModelMatrix();
-			shader->setMat4("model", model);
-			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			shader->setBool("instanced", geometry->Instanced());
-			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
-			shader->setVec2("textureScale", geometry->GetTextureScale());
-			shader->setBool("hasBones", false);
-			shader->setBool("OpaqueRenderPass", false);
+			////ComponentTransform* transform = dynamic_cast<ComponentTransform*>(geometry->GetOwner()->GetComponent(COMPONENT_TRANSFORM));
+			////glm::mat4 model = transform->GetWorldModelMatrix();
+			//shader->setMat4("model", model);
+			//shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			////shader->setBool("instanced", geometry->Instanced());
+			////if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			//shader->setVec2("textureScale", geometry->GetTextureScale());
+			//shader->setBool("hasBones", false);
+			//shader->setBool("OpaqueRenderPass", false);
 
 			// Bones
-			if (geometry->GetModel()->HasBones()) {
-				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-					shader->setBool("hasBones", true);
-					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					//for (int i = 0; i < transforms.size(); i++) {
-					//	shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					//}
-				}
-			}
+			//if (geometry->GetModel()->HasBones()) {
+			//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+			//		shader->setBool("hasBones", true);
+			//		//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+			//		//for (int i = 0; i < transforms.size(); i++) {
+			//		//	shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+			//		//}
+			//	}
+			//}
 
 			if (geometry->Cull_Face()) {
 				glEnable(GL_CULL_FACE);
@@ -197,7 +197,8 @@ namespace Engine {
 				glCullFace(GL_BACK);
 			}
 
-			geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			//geometry->GetModel()->DrawTransparentMeshes(*shader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			geometry->GetModel()->DrawTransparentMeshes(*shader, 0, {});
 		}
 
 		transparentGeometry.clear();
@@ -225,7 +226,7 @@ namespace Engine {
 		for (Mesh* m : meshList) {
 			RenderMesh(m, transparencyPass, useDefaultForwardShader);
 			if (!transparencyPass && m->GetMaterial()->GetIsTransparent()) {
-				AddMeshToTransparentMeshes(m->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent(), m);
+				//AddMeshToTransparentMeshes(m->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent(), m);
 			}
 		}
 
@@ -235,103 +236,103 @@ namespace Engine {
 	void SystemRender::RenderMesh(Mesh* mesh, const bool transparencyPass, bool useDefaultForwardShader)
 	{
 		SCOPE_TIMER("SystemRender::RenderMesh");
-		ComponentTransform* transform = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent();
-		ComponentGeometry* geometry = mesh->GetOwner()->GetOwner();
+	//	//ComponentTransform* transform = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent();
+	//	ComponentGeometry* geometry = mesh->GetOwner()->GetOwner();
 
-		Shader* shader;
-		if (useDefaultForwardShader) { if (geometry->PBR()) { shader = ResourceManager::GetInstance()->DefaultLitPBR(); } else { shader = ResourceManager::GetInstance()->DefaultLitShader(); } }
-		else { shader = geometry->GetShader(); }
+	//	Shader* shader;
+	//	if (useDefaultForwardShader) { if (geometry->PBR()) { shader = ResourceManager::GetInstance()->DefaultLitPBR(); } else { shader = ResourceManager::GetInstance()->DefaultLitShader(); } }
+	//	else { shader = geometry->GetShader(); }
 
-		{
-			SCOPE_TIMER("SystemRender::RenderMesh::Check shader used this frame");
-			if (shadersUsedThisFrame.size() > 0) {
-				for (Shader* s : shadersUsedThisFrame) {
-					if (s->GetID() == shader->GetID()) {
-						// lighting uniforms already set
-					}
-					else {
-						// add shader to list and set lighting uniforms
-						shadersUsedThisFrame.push_back(s);
-						shader->Use();
-						LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
-						break;
-					}
-				}
-			}
-			else {
-				shadersUsedThisFrame.push_back(shader);
-				shader->Use();
-				LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
-			}
-		}
+	//	{
+	//		SCOPE_TIMER("SystemRender::RenderMesh::Check shader used this frame");
+	//		if (shadersUsedThisFrame.size() > 0) {
+	//			for (Shader* s : shadersUsedThisFrame) {
+	//				if (s->GetID() == shader->GetID()) {
+	//					// lighting uniforms already set
+	//				}
+	//				else {
+	//					// add shader to list and set lighting uniforms
+	//					shadersUsedThisFrame.push_back(s);
+	//					shader->Use();
+	//					LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+	//					break;
+	//				}
+	//			}
+	//		}
+	//		else {
+	//			shadersUsedThisFrame.push_back(shader);
+	//			shader->Use();
+	//			LightManager::GetInstance()->SetShaderUniforms(shader, activeCamera);
+	//		}
+	//	}
 
-		{
-			SCOPE_TIMER("SystemRender::RenderMesh::Set base uniforms");
-			shader->Use();
+	//	{
+	//		SCOPE_TIMER("SystemRender::RenderMesh::Set base uniforms");
+	//		shader->Use();
 
-			glm::mat4 model = transform->GetWorldModelMatrix();
-			shader->setMat4("model", model);
-			shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			shader->setBool("instanced", geometry->Instanced());
-			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
-			shader->setBool("hasBones", false);
-			shader->setBool("OpaqueRenderPass", !transparencyPass);
-		}
+	//		glm::mat4 model = transform->GetWorldModelMatrix();
+	//		shader->setMat4("model", model);
+	//		shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+	//		shader->setBool("instanced", geometry->Instanced());
+	//		if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+	//		shader->setBool("hasBones", false);
+	//		shader->setBool("OpaqueRenderPass", !transparencyPass);
+	//	}
 
-		{
-			SCOPE_TIMER("SystemRender::RenderMesh::Set bone transforms");
-			// Bones
-			if (geometry->GetModel()->HasBones()) {
-				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-					shader->setBool("hasBones", true);
-					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					//for (int i = 0; i < transforms.size(); i++) {
-					//	shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					//}
-				}
-			}
-		}
+	//	{
+	//		SCOPE_TIMER("SystemRender::RenderMesh::Set bone transforms");
+	//		// Bones
+	//		if (geometry->GetModel()->HasBones()) {
+	//			if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+	//				shader->setBool("hasBones", true);
+	//				//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+	//				//for (int i = 0; i < transforms.size(); i++) {
+	//				//	shader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+	//				//}
+	//			}
+	//		}
+	//	}
 
-		if (geometry->Cull_Face()) {
-			glEnable(GL_CULL_FACE);
-		}
-		else {
-			glDisable(GL_CULL_FACE);
-		}
+	//	if (geometry->Cull_Face()) {
+	//		glEnable(GL_CULL_FACE);
+	//	}
+	//	else {
+	//		glDisable(GL_CULL_FACE);
+	//	}
 
-		if (geometry->Cull_Type() == GL_BACK) {
-			glCullFace(GL_BACK);
-		}
-		else if (geometry->Cull_Type() == GL_FRONT) {
-			glCullFace(GL_FRONT);
-		}
-		else {
-			glCullFace(GL_BACK);
-		}
+	//	if (geometry->Cull_Type() == GL_BACK) {
+	//		glCullFace(GL_BACK);
+	//	}
+	//	else if (geometry->Cull_Type() == GL_FRONT) {
+	//		glCullFace(GL_FRONT);
+	//	}
+	//	else {
+	//		glCullFace(GL_BACK);
+	//	}
 
-		unsigned int numInstances = geometry->NumInstances();
+	//	unsigned int numInstances = geometry->NumInstances();
 
-		if (numInstances > 0) {
-			mesh->Draw(*shader, geometry->PBR(), numInstances, geometry->GetInstanceVAOs()[mesh->GetLocalMeshID()]);
-		}
-		else {
-			mesh->Draw(*shader, geometry->PBR());
-		}
+	//	if (numInstances > 0) {
+	//		mesh->Draw(*shader, geometry->PBR(), numInstances, geometry->GetInstanceVAOs()[mesh->GetLocalMeshID()]);
+	//	}
+	//	else {
+	//		mesh->Draw(*shader, geometry->PBR());
+	//	}
 	}
 
 	void SystemRender::AddMeshToTransparentMeshes(ComponentTransform* transform, Mesh* mesh)
 	{
-		SCOPE_TIMER("SystemRender::AddMeshToTransparentMeshes");
-		float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
+	//	SCOPE_TIMER("SystemRender::AddMeshToTransparentMeshes");
+	//	float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
 
-		int iterations = 0;
-		while (transparentMeshes.find(distanceToCamera) != transparentMeshes.end()) {
-			distanceToCamera += 0.001f;
-			iterations++;
-			if (iterations > 100) {
-				std::cout << "ahhhhh" << std::endl;
-			}
-		}
-		transparentMeshes[distanceToCamera] = mesh;
+	//	int iterations = 0;
+	//	while (transparentMeshes.find(distanceToCamera) != transparentMeshes.end()) {
+	//		distanceToCamera += 0.001f;
+	//		iterations++;
+	//		if (iterations > 100) {
+	//			std::cout << "ahhhhh" << std::endl;
+	//		}
+	//	}
+	//	transparentMeshes[distanceToCamera] = mesh;
 	}
 }

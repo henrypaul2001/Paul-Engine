@@ -323,22 +323,22 @@ namespace Engine {
 			glm::mat4 model = transform->GetWorldModelMatrix();
 			reflectionShader->setMat4("model", model);
 			reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			reflectionShader->setBool("instanced", geometry->Instanced());
-			if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+			//reflectionShader->setBool("instanced", geometry->Instanced());
+			//if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 			reflectionShader->setVec2("textureScale", geometry->GetTextureScale());
 			reflectionShader->setBool("hasBones", false);
 			reflectionShader->setBool("OpaqueRenderPass", true);
 
 			// Bones
-			if (geometry->GetModel()->HasBones()) {
-				if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-					reflectionShader->setBool("hasBones", true);
-					//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-					//for (int i = 0; i < transforms.size(); i++) {
-					//	reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-					//}
-				}
-			}
+			//if (geometry->GetModel()->HasBones()) {
+			//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+			//		reflectionShader->setBool("hasBones", true);
+			//		//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+			//		//for (int i = 0; i < transforms.size(); i++) {
+			//		//	reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+			//		//}
+			//	}
+			//}
 
 			// Apply face culling
 			if (geometry->Cull_Face()) {
@@ -358,7 +358,7 @@ namespace Engine {
 			}
 
 			// Draw geometry
-			geometry->GetModel()->Draw(*reflectionShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			//geometry->GetModel()->Draw(*reflectionShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
 
 			if (geometry->GetModel()->ContainsTransparentMeshes()) {
 				float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
@@ -385,25 +385,25 @@ namespace Engine {
 				reflectionShader->Use();
 
 				// setup shader uniforms
-				glm::mat4 model = geometry->GetOwner()->GetTransformComponent()->GetWorldModelMatrix();
-				reflectionShader->setMat4("model", model);
-				reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-				reflectionShader->setBool("instanced", geometry->Instanced());
-				if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
+				//glm::mat4 model = geometry->GetOwner()->GetTransformComponent()->GetWorldModelMatrix();
+				//reflectionShader->setMat4("model", model);
+				//reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+				//reflectionShader->setBool("instanced", geometry->Instanced());
+				//if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 				reflectionShader->setVec2("textureScale", geometry->GetTextureScale());
 				reflectionShader->setBool("hasBones", false);
 				reflectionShader->setBool("OpaqueRenderPass", false);
 
 				// Bones
-				if (geometry->GetModel()->HasBones()) {
-					if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-						reflectionShader->setBool("hasBones", true);
-						std::vector<glm::mat4> transforms = geometry->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-						for (int i = 0; i < transforms.size(); i++) {
-							reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-						}
-					}
-				}
+				//if (geometry->GetModel()->HasBones()) {
+				//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
+				//		reflectionShader->setBool("hasBones", true);
+				//		std::vector<glm::mat4> transforms = geometry->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
+				//		for (int i = 0; i < transforms.size(); i++) {
+				//			reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+				//		}
+				//	}
+				//}
 
 				// Apply face culling
 				if (geometry->Cull_Face()) {
@@ -422,7 +422,8 @@ namespace Engine {
 					glCullFace(GL_FRONT);
 				}
 
-				geometry->GetModel()->DrawTransparentMeshes(*reflectionShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+				//geometry->GetModel()->DrawTransparentMeshes(*reflectionShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+				geometry->GetModel()->DrawTransparentMeshes(*reflectionShader, 0, {});
 			}
 		}
 

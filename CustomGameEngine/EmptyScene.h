@@ -8,6 +8,8 @@
 #include "ComponentCollisionSphere.h"
 #include "ComponentCollisionBox.h"
 #include "ComponentCollisionAABB.h"
+#include "ComponentGeometry.h"
+
 
 namespace Engine
 {
@@ -60,7 +62,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(10.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
-			ecs.AddComponent(allComponents->ID(), 2);
+			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_CUBE));
 			ecs.AddComponent(allComponents->ID(), 2.2f);
 			ecs.AddComponent(allComponents->ID(), (double)2);
 			ecs.AddComponent(allComponents->ID(), TestComponentA());

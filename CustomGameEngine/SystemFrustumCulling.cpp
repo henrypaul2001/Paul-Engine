@@ -109,20 +109,20 @@ namespace Engine {
 	void SystemFrustumCulling::AddMeshToCulledList(Mesh* mesh)
 	{
 		SCOPE_TIMER("SystemFrustumCulling::AddMeshToCulledList");
-		const glm::vec3& meshOrigin = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent()->GetWorldPosition();
+		//const glm::vec3& meshOrigin = mesh->GetOwner()->GetOwner()->GetOwner()->GetTransformComponent()->GetWorldPosition();
 
 		// Get distance to mesh
-		float distanceToCameraSquared = glm::distance2(activeCamera->GetPosition(), meshOrigin);
-		int iterations = 0;
-		while (culledMeshList.find(distanceToCameraSquared) != culledMeshList.end()) {
-			// Distance already exists, increment slightly
-			distanceToCameraSquared += 0.001f;
-			iterations++;
-			if (iterations > 100) {
-				std::cout << "ahhhhhh" << std::endl;
-			}
-		}
-		culledMeshList[distanceToCameraSquared] = mesh;
+		//float distanceToCameraSquared = glm::distance2(activeCamera->GetPosition(), meshOrigin);
+		//int iterations = 0;
+		//while (culledMeshList.find(distanceToCameraSquared) != culledMeshList.end()) {
+		//	// Distance already exists, increment slightly
+		//	distanceToCameraSquared += 0.001f;
+		//	iterations++;
+		//	if (iterations > 100) {
+		//		std::cout << "ahhhhhh" << std::endl;
+		//	}
+		//}
+		//culledMeshList[distanceToCameraSquared] = mesh;
 	}
 
 	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node)
