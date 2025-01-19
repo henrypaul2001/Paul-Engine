@@ -9,11 +9,11 @@
 #include "ComponentCollisionBox.h"
 #include "ComponentCollisionAABB.h"
 #include "ComponentGeometry.h"
+#include "ComponentLight.h"
 
 
 namespace Engine
 {
-
 	struct TestComponentA {
 		float x, y, z;
 	};
@@ -40,10 +40,6 @@ namespace Engine
 
 	class EmptyScene : public Scene
 	{
-	private:
-		//EntityManager entityManager;
-		//SystemManager systemManager;
-
 	public:
 		EmptyScene(SceneManager* sceneManager);
 		~EmptyScene() {}
@@ -63,7 +59,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_CUBE));
-			ecs.AddComponent(allComponents->ID(), 2.2f);
+			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), (double)2);
 			ecs.AddComponent(allComponents->ID(), TestComponentA());
 			ecs.AddComponent(allComponents->ID(), TestComponentB());
@@ -185,6 +181,10 @@ namespace Engine
 
 		void keyUp(int key) override {}
 		void keyDown(int key) override {}
+
+	private:
+		//EntityManager entityManager;
+		//SystemManager systemManager;
 
 	};
 }
