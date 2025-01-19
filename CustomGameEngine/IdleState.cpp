@@ -48,7 +48,8 @@ namespace Engine {
 
 	void IdleState::Update()
 	{
-		Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
+		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
+		Entity* owner = nullptr;
 		if (owner && owner->GetTransformComponent()) {
 			ComponentTransform* transform = owner->GetTransformComponent();
 			if (isLookingAround) {
@@ -105,7 +106,8 @@ namespace Engine {
 	void IdleState::Enter()
 	{
 		State::Enter();
-		Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
+		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
+		Entity* owner = nullptr;
 		if (owner && owner->GetTransformComponent()) {
 			startPosition = owner->GetTransformComponent()->GetWorldPosition();
 			startOrientation = owner->GetTransformComponent()->GetOrientation();

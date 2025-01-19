@@ -27,7 +27,7 @@ namespace Engine {
         }
         else {
             if (updateFunction) {
-                updateFunction(parentStateMachine->GetParentComponent()->GetOwner());
+                //updateFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
     }
@@ -42,7 +42,7 @@ namespace Engine {
         }
         else {
             if (enterFunction) {
-                enterFunction(parentStateMachine->GetParentComponent()->GetOwner());
+                //enterFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
     }
@@ -57,7 +57,7 @@ namespace Engine {
         }
         else {
             if (exitFunction) {
-                exitFunction(parentStateMachine->GetParentComponent()->GetOwner());
+                //exitFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
     }

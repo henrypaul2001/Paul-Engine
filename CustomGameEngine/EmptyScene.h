@@ -12,6 +12,7 @@
 #include "ComponentLight.h"
 #include "ComponentParticleGenerator.h"
 #include "ComponentPathfinder.h"
+#include "ComponentStateController.h"
 
 namespace Engine
 {
@@ -63,9 +64,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(nullptr));
 			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(nullptr));
-			ecs.AddComponent(allComponents->ID(), TestComponentB());
-			bool shouldBeTrue = ecs.AddComponent(allComponents->ID(), TestComponentC());
-			bool shouldBeFalse = ecs.AddComponent(allComponents->ID(), TestComponentD());
+			ecs.AddComponent(allComponents->ID(), ComponentStateController());
 
 			for (int i = 0; i < 50; i++) {
 				ecs.New("Test");
