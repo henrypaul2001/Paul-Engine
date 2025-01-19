@@ -1,44 +1,5 @@
 #include "ComponentParticleGenerator.h"
 namespace Engine {
-	ComponentParticleGenerator::ComponentParticleGenerator(const ComponentParticleGenerator& old_component)
-	{
-		this->owner = nullptr;
-
-		this->maxParticles = old_component.maxParticles;
-		this->particlesPerSecond = old_component.particlesPerSecond;
-
-		this->VAO = old_component.VAO;
-		this->VBO = old_component.VBO;
-
-		this->lastDeadParticle = old_component.lastDeadParticle;
-
-		this->generatorVelocityScale = old_component.generatorVelocityScale;
-
-		this->particleLifespan = old_component.particleLifespan;
-
-		this->decayRate = old_component.decayRate;
-
-		this->lessThanOneCount = old_component.lessThanOneCount;
-
-		this->chanceToGenerateNewAcceleration = old_component.chanceToGenerateNewAcceleration;
-
-		this->accelerationChangeScale = old_component.accelerationChangeScale;
-
-		this->sphericalBillboarding = old_component.sphericalBillboarding;
-		this->pointSprite = old_component.pointSprite;
-
-		this->offset = old_component.offset;
-		this->particleScale = old_component.particleScale;
-
-		this->particles = old_component.particles;
-		this->randomParams = old_component.randomParams;
-
-		this->sprite = old_component.sprite;
-
-		this->srcFactor = old_component.srcFactor;
-		this->dstFactor = old_component.dstFactor;
-	}
-
 	ComponentParticleGenerator::ComponentParticleGenerator(Texture* sprite, unsigned int maxParticles, glm::vec3 offset, float particlesPerSecond, float particleLifespan, float decayRate, glm::vec3 particleScale, float velocityScale, float chanceToGenerateNewAccelerationPerParticle, float accelerationChangeScale, GLenum srcFactor, GLenum dstFactor)
 	{
 		this->sprite = sprite;
@@ -74,10 +35,6 @@ namespace Engine {
 	ComponentParticleGenerator::~ComponentParticleGenerator()
 	{
 
-	}
-
-	void ComponentParticleGenerator::Close()
-	{
 	}
 
 	void ComponentParticleGenerator::SetupBuffers()

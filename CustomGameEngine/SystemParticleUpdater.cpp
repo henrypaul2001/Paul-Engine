@@ -57,9 +57,9 @@ namespace Engine {
 
 		// Get generator velocity
 		glm::vec3 generatorVelocity = glm::vec3(0.0f);
-		if ((generator->GetOwner()->ContainsComponents(COMPONENT_PHYSICS))) {
-			generatorVelocity = generator->GetOwner()->GetPhysicsComponent()->Velocity();
-		}
+		//if ((generator->GetOwner()->ContainsComponents(COMPONENT_PHYSICS))) {
+		//	generatorVelocity = generator->GetOwner()->GetPhysicsComponent()->Velocity();
+		//}
 
 		// Create new particles
 		for (unsigned int i = 0; i < numberToRespawn; i++) {

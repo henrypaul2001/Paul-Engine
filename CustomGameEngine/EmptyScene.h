@@ -10,7 +10,7 @@
 #include "ComponentCollisionAABB.h"
 #include "ComponentGeometry.h"
 #include "ComponentLight.h"
-
+#include "ComponentParticleGenerator.h"
 
 namespace Engine
 {
@@ -60,7 +60,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_CUBE));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
-			ecs.AddComponent(allComponents->ID(), (double)2);
+			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(nullptr));
 			ecs.AddComponent(allComponents->ID(), TestComponentA());
 			ecs.AddComponent(allComponents->ID(), TestComponentB());
 			bool shouldBeTrue = ecs.AddComponent(allComponents->ID(), TestComponentC());
