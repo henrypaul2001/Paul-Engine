@@ -1,20 +1,13 @@
 #pragma once
-#include "Component.h"
 #include "NavigationPath.h"
 #include "NavigationMap.h"
 #include <iostream>
 namespace Engine {
-	class ComponentPathfinder : public Component
+	class ComponentPathfinder
 	{
 	public:
-		ComponentPathfinder(const ComponentPathfinder& old_component);
 		ComponentPathfinder(NavigationMap* navigationMap, const float moveSpeed = 0.05f, const float nextPositionDistance = 0.025f);
 		~ComponentPathfinder();
-
-		ComponentTypes ComponentType() override { return COMPONENT_PATHFINDER; }
-		void Close() override;
-
-		Component* Copy() override { return new ComponentPathfinder(*this); }
 
 		const NavigationMap& GetNavMap() const { return *navigationMap; }
 
