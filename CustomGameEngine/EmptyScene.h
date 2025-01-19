@@ -13,6 +13,7 @@
 #include "ComponentParticleGenerator.h"
 #include "ComponentPathfinder.h"
 #include "ComponentStateController.h"
+#include "ComponentUICanvas.h"
 
 namespace Engine
 {
@@ -65,6 +66,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(nullptr));
 			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(nullptr));
 			ecs.AddComponent(allComponents->ID(), ComponentStateController());
+			ecs.AddComponent(allComponents->ID(), ComponentUICanvas(SCREEN_SPACE));
 
 			for (int i = 0; i < 50; i++) {
 				ecs.New("Test");

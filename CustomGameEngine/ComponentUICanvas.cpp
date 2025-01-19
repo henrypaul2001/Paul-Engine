@@ -2,8 +2,6 @@
 namespace Engine {
 	ComponentUICanvas::ComponentUICanvas(const ComponentUICanvas& old_component)
 	{
-		this->owner = nullptr;
-
 		this->uiType = old_component.uiType;
 
 		// Copy UI elements
@@ -23,10 +21,5 @@ namespace Engine {
 		for (UIElement* uiElement : uiElements) {
 			delete uiElement;
 		}
-	}
-
-	void ComponentUICanvas::Close()
-	{
-
 	}
 }
