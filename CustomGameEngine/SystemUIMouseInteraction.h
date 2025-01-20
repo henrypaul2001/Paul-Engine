@@ -1,24 +1,21 @@
 #pragma once
-#include "System.h"
+#include "SystemNew.h"
 #include "UIButton.h"
 #include "ComponentUICanvas.h"
 #include "InputManager.h"
 namespace Engine {
-	class SystemUIMouseInteraction : public System
+	class SystemUIMouseInteraction : public SystemNew
 	{
 	public:
-		SystemUIMouseInteraction(InputManager* inputManager);
-		~SystemUIMouseInteraction();
+		SystemUIMouseInteraction(EntityManagerNew* ecs, InputManager* inputManager) : SystemNew(ecs), inputManager(inputManager) {}
+		~SystemUIMouseInteraction() {}
 
-		SystemTypes Name() override { return SYSTEM_UI_INTERACT; }
+		constexpr const char* SystemName() override { return "SYSTEM_UI_MOUSE_INTERACTION"; }
 
-		ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_UICANVAS);
-
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentUICanvas& canvas);
+		void AfterAction();
 	private:
-		void ProcessUIButton(UIButton* button, ComponentTransform* canvasTransform) const;
+		void ProcessUIButton(UIButton* button, ComponentTransform& canvasTransform) const;
 		InputManager* inputManager;
 	};
 }

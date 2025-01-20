@@ -1,65 +1,39 @@
 #include "SystemUIMouseInteraction.h"
 #include "RenderManager.h"
 namespace Engine {
-	SystemUIMouseInteraction::SystemUIMouseInteraction(InputManager* inputManager)
-	{
-		this->inputManager = inputManager;
-	}
-
-	SystemUIMouseInteraction::~SystemUIMouseInteraction()
-	{
-
-	}
-
-	void SystemUIMouseInteraction::Run(const std::vector<Entity*>& entityList)
-	{
-		SCOPE_TIMER("SystemUIMouseInteraction::Run");
-		System::Run(entityList);
-	}
-
-	void SystemUIMouseInteraction::OnAction(Entity* entity)
+	void SystemUIMouseInteraction::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentUICanvas& canvas)
 	{
 		if (inputManager->GetCursorLock() == false) {
-			if ((entity->Mask() & MASK) == MASK) {
-				ComponentTransform* transform = entity->GetTransformComponent();
-				ComponentUICanvas* canvas = entity->GetUICanvasComponent();
-
-				if (canvas != nullptr) {
-					for (UIElement* ui : canvas->UIElements()) {
-						if (ui->UIType() == UI_BUTTON && ui->GetActive()) {
-							ProcessUIButton(dynamic_cast<UIButton*>(ui), transform);
-						}
-					}
+			for (UIElement* ui : canvas.UIElements()) {
+				if (ui->UIType() == UI_BUTTON && ui->GetActive()) {
+					ProcessUIButton(dynamic_cast<UIButton*>(ui), transform);
 				}
 			}
 		}
 	}
 
-	void SystemUIMouseInteraction::AfterAction()
-	{
+	void SystemUIMouseInteraction::AfterAction() {}
 
-	}
-
-	void SystemUIMouseInteraction::ProcessUIButton(UIButton* button, ComponentTransform* canvasTransform) const
+	void SystemUIMouseInteraction::ProcessUIButton(UIButton* button, ComponentTransform& canvasTransform) const
 	{
 		RenderManager* renderInstance = RenderManager::GetInstance();
 
 		glm::vec2 mousePos = inputManager->GetMousePos();
 
 		// Invert mouse position Y axis
-		int screenHeight = renderInstance->ScreenHeight();
+		const int screenHeight = renderInstance->ScreenHeight();
 		mousePos.y = (float)screenHeight - mousePos.y;
 		//std::cout << "inverted y = " << mousePos.y << std::endl;
 		// Check if mouse position is inside of buttons boundary
-		glm::vec2 buttonPos = button->Position() + glm::vec2(canvasTransform->Position().x, canvasTransform->Position().y);
-		glm::vec2 buttonScale = button->GetButtonScale() * glm::vec2(canvasTransform->Scale().x, canvasTransform->Scale().y);
+		glm::vec2 buttonPos = button->Position() + glm::vec2(canvasTransform.Position().x, canvasTransform.Position().y);
+		const glm::vec2& buttonScale = button->GetButtonScale() * glm::vec2(canvasTransform.Scale().x, canvasTransform.Scale().y);
 
 		float minX = 0.0f;
 		float minY = 0.0f;
 		float maxX = 0.0f;
 		float maxY = 0.0f;
 
-		ButtonTypes buttonType = button->GetButtonType();
+		const ButtonTypes buttonType = button->GetButtonType();
 		if (buttonType == BUTTON_IMAGE) {
 			buttonPos.x = (renderInstance->ScreenWidth() / 2.0f) + ((renderInstance->ScreenWidth() / 2.0f) * buttonPos.x);
 			buttonPos.y = (renderInstance->ScreenHeight() / 2.0f) + ((renderInstance->ScreenHeight() / 2.0f) * buttonPos.y);
@@ -75,10 +49,7 @@ namespace Engine {
 			minY = buttonPos.y;
 		}
 
-		bool mouseCollision = false;
-		if (mousePos.y < maxY && mousePos.y > minY && mousePos.x < maxX && mousePos.x > minX) {
-			mouseCollision = true;
-		}
+		const bool mouseCollision = (mousePos.y < maxY && mousePos.y > minY && mousePos.x < maxX && mousePos.x > minX);
 
 		// Fire mouse events to button
 		if (mouseCollision) {

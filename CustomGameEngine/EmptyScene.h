@@ -22,6 +22,7 @@
 #include "SystemPhysics.h"
 #include "SystemPathfinding.h"
 #include "SystemParticleUpdater.h"
+#include "SystemUIMouseInteraction.h"
 
 namespace Engine
 {
@@ -204,6 +205,7 @@ namespace Engine
 			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPhysics::AfterAction, &physicsSystem));
 			systemManager.RegisterSystem(pathfindingSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPathfinder&)>(std::bind(&SystemPathfinding::OnAction, &pathfindingSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPathfinding::AfterAction, &pathfindingSystem));
 			systemManager.RegisterSystem(particleUpdater.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentParticleGenerator&)>(std::bind(&SystemParticleUpdater::OnAction, &particleUpdater, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemParticleUpdater::AfterAction, &particleUpdater));
+			systemManager.RegisterSystem(uiInteract.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentUICanvas&)>(std::bind(&SystemUIMouseInteraction::OnAction, &uiInteract, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemUIMouseInteraction::AfterAction, &uiInteract));
 		}
 
 		void keyUp(int key) override {}
@@ -219,5 +221,6 @@ namespace Engine
 		SystemPhysics physicsSystem;
 		SystemPathfinding pathfindingSystem;
 		SystemParticleUpdater particleUpdater;
+		SystemUIMouseInteraction uiInteract;
 	};
 }
