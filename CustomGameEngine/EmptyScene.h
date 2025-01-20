@@ -21,6 +21,7 @@
 #include "SystemAudio.h"
 #include "SystemPhysics.h"
 #include "SystemPathfinding.h"
+#include "SystemParticleUpdater.h"
 
 namespace Engine
 {
@@ -80,7 +81,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_CUBE));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
-			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(nullptr));
+			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
 			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
 			ecs.AddComponent(allComponents->ID(), ComponentStateController());
 			ecs.AddComponent(allComponents->ID(), ComponentUICanvas(SCREEN_SPACE));
@@ -202,6 +203,7 @@ namespace Engine
 			systemManager.RegisterSystem(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemAudio::AfterAction, &audioSystem));
 			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPhysics::AfterAction, &physicsSystem));
 			systemManager.RegisterSystem(pathfindingSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPathfinder&)>(std::bind(&SystemPathfinding::OnAction, &pathfindingSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPathfinding::AfterAction, &pathfindingSystem));
+			systemManager.RegisterSystem(particleUpdater.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentParticleGenerator&)>(std::bind(&SystemParticleUpdater::OnAction, &particleUpdater, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemParticleUpdater::AfterAction, &particleUpdater));
 		}
 
 		void keyUp(int key) override {}
@@ -216,5 +218,6 @@ namespace Engine
 		SystemAudio audioSystem;
 		SystemPhysics physicsSystem;
 		SystemPathfinding pathfindingSystem;
+		SystemParticleUpdater particleUpdater;
 	};
 }
