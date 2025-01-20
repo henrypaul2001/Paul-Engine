@@ -2,7 +2,7 @@
 #include "GameInputManager.h"
 
 namespace Engine {
-	Engine::EmptyScene::EmptyScene(SceneManager* sceneManager) : Scene(sceneManager, "EmptyScene"), systemManager(&ecs), audioSystem(&ecs), physicsSystem(&ecs), pathfindingSystem(&ecs), particleUpdater(&ecs), uiInteract(nullptr, nullptr), stateUpdater(&ecs)
+	Engine::EmptyScene::EmptyScene(SceneManager* sceneManager) : Scene(sceneManager, "EmptyScene"), systemManager(&ecs), audioSystem(&ecs), physicsSystem(&ecs), pathfindingSystem(&ecs), particleUpdater(&ecs), uiInteract(nullptr, nullptr), stateUpdater(&ecs), animSystem(&ecs)
 	{
 		inputManager = new GameInputManager(this);
 		inputManager->SetCameraPointer(camera);

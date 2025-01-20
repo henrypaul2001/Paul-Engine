@@ -24,6 +24,7 @@
 #include "SystemParticleUpdater.h"
 #include "SystemUIMouseInteraction.h"
 #include "SystemStateMachineUpdater.h"
+#include "SystemSkeletalAnimationUpdater.h"
 
 namespace Engine
 {
@@ -70,18 +71,20 @@ namespace Engine
 		void Render() override {}
 		void Close() override {}
 		void SetupScene() override {
+			SkeletalAnimation* vampireDanceAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
+
 			navGrid = NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
 			AudioFile* campfireCrackling = ResourceManager::GetInstance()->LoadAudio("Audio/campfire.wav", 1.0f, 0.0f, 2.0f);
 
 			// All components entity
 			EntityNew* allComponents = ecs.New("All Components");
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
-			ecs.AddComponent(allComponents->ID(), ComponentAnimator(nullptr));
+			ecs.AddComponent(allComponents->ID(), ComponentAnimator(vampireDanceAnim));
 			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(campfireCrackling));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(10.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
-			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_CUBE));
+			ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
 			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
@@ -208,6 +211,7 @@ namespace Engine
 			systemManager.RegisterSystem(particleUpdater.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentParticleGenerator&)>(std::bind(&SystemParticleUpdater::OnAction, &particleUpdater, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemParticleUpdater::AfterAction, &particleUpdater));
 			systemManager.RegisterSystem(uiInteract.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentUICanvas&)>(std::bind(&SystemUIMouseInteraction::OnAction, &uiInteract, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemUIMouseInteraction::AfterAction, &uiInteract));
 			systemManager.RegisterSystem(stateUpdater.SystemName(), std::function<void(const unsigned int, ComponentStateController&)>(std::bind(&SystemStateMachineUpdater::OnAction, &stateUpdater, std::placeholders::_1, std::placeholders::_2)), std::bind(&SystemStateMachineUpdater::AfterAction, &stateUpdater));
+			systemManager.RegisterSystem(animSystem.SystemName(), std::function<void(const unsigned int, ComponentGeometry&, ComponentAnimator&)>(std::bind(&SystemSkeletalAnimationUpdater::OnAction, &animSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemSkeletalAnimationUpdater::AfterAction, &animSystem));
 		}
 
 		void keyUp(int key) override {}
@@ -225,5 +229,6 @@ namespace Engine
 		SystemParticleUpdater particleUpdater;
 		SystemUIMouseInteraction uiInteract;
 		SystemStateMachineUpdater stateUpdater;
+		SystemSkeletalAnimationUpdater animSystem;
 	};
 }
