@@ -1,43 +1,25 @@
 #pragma once
-#include "Component.h"
-#include "System.h"
+#include "SystemNew.h"
 #include "ComponentTransform.h"
-#include "ComponentVelocity.h"
 #include "ComponentPhysics.h"
 namespace Engine 
 {
-	class SystemPhysics : public System
+	class SystemPhysics : public SystemNew
 	{
 	public:
-		SystemPhysics();
-		~SystemPhysics();
-
-		glm::vec3 GravityAxis() { return gravityAxis; }
-		float Gravity() { return gravity; }
-		void Gravity(float newGravity) { gravity = newGravity; }
-		void Gravity(glm::vec3 gravityAxis) { this->gravityAxis = gravityAxis; }
-		void Gravity(float gravityScale, glm::vec3 gravityAxis) {
-			gravity = gravityScale;
-			this->gravityAxis = gravityAxis;
-		}
-
-		float AirDensity() { return airDensity; }
-		void AirDensity(float airDensity) { this->airDensity = airDensity; }
-
-		SystemTypes Name() override { return SYSTEM_PHYSICS; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
-
-	private:
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_PHYSICS);
+		SystemPhysics(EntityManagerNew* ecs, const float gravity = 9.8f, const glm::vec3& gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f), const float airDensity = 1.225f) : SystemNew(ecs), gravity(gravity), gravityAxis(gravityAxis), airDensity(airDensity) {}
+		~SystemPhysics() {}
 
 		float airDensity; // kg/m3
 		glm::vec3 gravityAxis;
 		float gravity; // represented as acceleration m/s^2
 
-		void Acceleration(ComponentTransform* transform, ComponentPhysics* physics);
+		constexpr const char* SystemName() override { return "SYSTEM_PHYSICS"; }
 
-		void Physics(ComponentTransform* transform, ComponentPhysics* physics);
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentPhysics& physics);
+		void AfterAction();
+
+	private:
+		void Acceleration(ComponentTransform& transform, ComponentPhysics& physics);
 	};
 }

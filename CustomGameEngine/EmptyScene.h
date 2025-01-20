@@ -17,6 +17,7 @@
 
 #include "SystemManagerNew.h"
 #include "SystemAudio.h"
+#include "SystemPhysics.h"
 
 namespace Engine
 {
@@ -183,8 +184,6 @@ namespace Engine
 			ecs.AddComponent(transformTest->ID(), ComponentTransform(&ecs, 10.0f, 1.0f, -5.0f));
 			//ecs.RemoveComponent<ComponentTransform>(transformTest->ID()); // build error, cannot remove transform component
 
-			//systemManager.RegisterSystem<ComponentTransform, ComponentPhysics>()
-
 			// Transform children
 			for (int i = 0; i < 20; i++) {
 				EntityNew* child = ecs.New("Transform Test");
@@ -196,7 +195,8 @@ namespace Engine
 
 			// Systems
 			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
-			systemManager.RegisterSystem<ComponentTransform, ComponentAudioSource>(std::string(audioSystem.SystemName()), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemAudio::AfterAction, &audioSystem));
+			systemManager.RegisterSystem<ComponentTransform, ComponentAudioSource>(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemAudio::AfterAction, &audioSystem));
+			systemManager.RegisterSystem<ComponentTransform, ComponentPhysics>(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPhysics::AfterAction, &physicsSystem));
 		}
 
 		void keyUp(int key) override {}
@@ -207,5 +207,6 @@ namespace Engine
 		SystemManagerNew systemManager;
 
 		SystemAudio audioSystem;
+		SystemPhysics physicsSystem;
 	};
 }
