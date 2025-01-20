@@ -17,7 +17,7 @@ namespace Engine {
 	template <typename... Components>
 	class View {
 	public:
-		using ForEachFunc = std::function<void(unsigned int, Components&...)>;
+		using ForEachFunc = std::function<void(const unsigned int, Components&...)>;
 
 		View(std::array<ISparseSet*, sizeof...(Components)> pools) : viewPools{ pools } {
 			assert(componentTypes::size == viewPools.size());
@@ -30,12 +30,12 @@ namespace Engine {
 		}
 
 		// Execute function on each element in view
-		// [](unsigned int sparseID, Components& c1, Components& c2, ...)
+		// [](const unsigned int sparseID, Components& c1, Components& c2, ...)
 		void ForEach(ForEachFunc func) {
 			auto indices = std::make_index_sequence<sizeof...(Components)>{};
 
 			// Iterate smallest pool and execute function only if all other pools share this id
-			for (unsigned int id : smallestPool->GetDenseToSparse()) {
+			for (const unsigned int id : smallestPool->GetDenseToSparse()) {
 				if (AllContains(id)) {
 					std::apply(func, std::tuple_cat(std::make_tuple(id), MakeComponentTuple(id, indices)));
 				}
@@ -52,7 +52,7 @@ namespace Engine {
 			auto indices = std::make_index_sequence<sizeof... (Components)>{};
 			std::vector<Pack> result;
 
-			for (unsigned int id : smallestPool->GetDenseToSparse()) {
+			for (const unsigned int id : smallestPool->GetDenseToSparse()) {
 				if (AllContains(id)) {
 					result.push_back({ id, MakeComponentTuple(id, indices) });
 				}
@@ -71,7 +71,7 @@ namespace Engine {
 		}
 
 		template <std::size_t... indices>
-		auto MakeComponentTuple(unsigned int id, std::index_sequence<indices...>) {
+		auto MakeComponentTuple(const unsigned int id, std::index_sequence<indices...>) {
 			return std::make_tuple((std::ref(GetPoolAt<indices>()->GetRef(id)))...);
 		}
 

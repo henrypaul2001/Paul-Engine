@@ -42,7 +42,7 @@ namespace Engine
 		long long f;
 	};
 
-	static void TestSystem(unsigned int entityID, ComponentTransform& transform, ComponentPhysics& physics) {
+	static void TestSystem(const unsigned int entityID, ComponentTransform& transform, ComponentPhysics& physics) {
 		std::cout << "TEST_SYSTEM: EntityID = " << entityID << std::endl;
 	}
 	static void TestAfterAction() {
@@ -159,14 +159,14 @@ namespace Engine
 			}
 
 			View<TestComponentA, TestComponentB> testView = ecs.View<TestComponentA, TestComponentB>();
-			testView.ForEach([](unsigned int entityID, TestComponentA& a, TestComponentB& b) {
+			testView.ForEach([](const unsigned int entityID, TestComponentA& a, TestComponentB& b) {
 				unsigned int id = entityID;
 				float x = a.x;
 				float velocityY = b.velocityY;
 			});
 
 			View<TestComponentF> fView = ecs.View<TestComponentF>();
-			fView.ForEach([](unsigned int entityID, TestComponentF& f) {
+			fView.ForEach([](const unsigned int entityID, TestComponentF& f) {
 				unsigned int id = entityID;
 				if (id == 10) {
 					f.f = 3000.0;
@@ -190,6 +190,7 @@ namespace Engine
 
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
 
+			// Systems
 			systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
 		}
 
@@ -197,8 +198,6 @@ namespace Engine
 		void keyDown(int key) override {}
 
 	private:
-		//EntityManager entityManager;
-		//SystemManager systemManager;
 		EntityManagerNew ecs;
 		SystemManagerNew systemManager;
 	};

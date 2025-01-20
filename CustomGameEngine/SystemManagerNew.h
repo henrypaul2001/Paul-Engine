@@ -11,7 +11,7 @@ namespace Engine {
 		~SystemManagerNew() {}
 
 		template <typename... Components>
-		bool RegisterSystem(const std::string& systemName, std::function<void(unsigned int, Components&...)> onActionFunc, std::function<void()> afterActionFunc = []() {}) {
+		bool RegisterSystem(const std::string& systemName, std::function<void(const unsigned int, Components&...)> onActionFunc, std::function<void()> afterActionFunc = []() {}) {
 			if (systems.find(systemName) != systems.end()) {
 				return false;
 			}
