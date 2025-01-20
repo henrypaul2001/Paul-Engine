@@ -23,6 +23,7 @@
 #include "SystemPathfinding.h"
 #include "SystemParticleUpdater.h"
 #include "SystemUIMouseInteraction.h"
+#include "SystemStateMachineUpdater.h"
 
 namespace Engine
 {
@@ -206,6 +207,7 @@ namespace Engine
 			systemManager.RegisterSystem(pathfindingSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPathfinder&)>(std::bind(&SystemPathfinding::OnAction, &pathfindingSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPathfinding::AfterAction, &pathfindingSystem));
 			systemManager.RegisterSystem(particleUpdater.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentParticleGenerator&)>(std::bind(&SystemParticleUpdater::OnAction, &particleUpdater, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemParticleUpdater::AfterAction, &particleUpdater));
 			systemManager.RegisterSystem(uiInteract.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentUICanvas&)>(std::bind(&SystemUIMouseInteraction::OnAction, &uiInteract, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemUIMouseInteraction::AfterAction, &uiInteract));
+			systemManager.RegisterSystem(stateUpdater.SystemName(), std::function<void(const unsigned int, ComponentStateController&)>(std::bind(&SystemStateMachineUpdater::OnAction, &stateUpdater, std::placeholders::_1, std::placeholders::_2)), std::bind(&SystemStateMachineUpdater::AfterAction, &stateUpdater));
 		}
 
 		void keyUp(int key) override {}
@@ -222,5 +224,6 @@ namespace Engine
 		SystemPathfinding pathfindingSystem;
 		SystemParticleUpdater particleUpdater;
 		SystemUIMouseInteraction uiInteract;
+		SystemStateMachineUpdater stateUpdater;
 	};
 }
