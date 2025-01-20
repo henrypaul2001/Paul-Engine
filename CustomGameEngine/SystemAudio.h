@@ -1,21 +1,17 @@
 #pragma once
-#include "System.h"
+#include "SystemNew.h"
 #include "ComponentTransform.h"
 #include "ComponentAudioSource.h"
 namespace Engine {
-    class SystemAudio : public System
+    class SystemAudio : public SystemNew
     {
     public:
-        SystemAudio();
-        ~SystemAudio();
+        SystemAudio(EntityManagerNew* ecs) : SystemNew(ecs) {}
+        ~SystemAudio() {}
 
-        SystemTypes Name() override { return SYSTEM_AUDIO; }
-        void Run(const std::vector<Entity*>& entityList) override;
-        void OnAction(Entity* entity) override;
-        void AfterAction() override;
+        constexpr const char* SystemName() override { return "SYSTEM_AUDIO"; }
 
-    private:
-        const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_AUDIO_SOURCE);
-        void UpdateAudio(ComponentTransform* transform, ComponentAudioSource* audio);
+        void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentAudioSource& audio);
+        void AfterAction();
     };
 }

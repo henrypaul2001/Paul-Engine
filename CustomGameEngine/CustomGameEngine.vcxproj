@@ -242,6 +242,7 @@
     <ClInclude Include="SystemFrustumCulling.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemManagerNew.h" />
+    <ClInclude Include="SystemNew.h" />
     <ClInclude Include="SystemParticleRenderer.h" />
     <ClInclude Include="SystemParticleUpdater.h" />
     <ClInclude Include="SystemPathfinding.h" />

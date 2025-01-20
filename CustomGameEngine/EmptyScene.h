@@ -14,7 +14,9 @@
 #include "ComponentPathfinder.h"
 #include "ComponentStateController.h"
 #include "ComponentUICanvas.h"
+
 #include "SystemManagerNew.h"
+#include "SystemAudio.h"
 
 namespace Engine
 {
@@ -61,11 +63,13 @@ namespace Engine
 		void Render() override {}
 		void Close() override {}
 		void SetupScene() override {
+			AudioFile* campfireCrackling = ResourceManager::GetInstance()->LoadAudio("Audio/campfire.wav", 1.0f, 0.0f, 2.0f);
+
 			// All components entity
 			EntityNew* allComponents = ecs.New("All Components");
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
 			ecs.AddComponent(allComponents->ID(), ComponentAnimator(nullptr));
-			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(nullptr));
+			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(campfireCrackling));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(10.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
@@ -191,7 +195,8 @@ namespace Engine
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
 
 			// Systems
-			systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
+			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
+			systemManager.RegisterSystem<ComponentTransform, ComponentAudioSource>(std::string(audioSystem.SystemName()), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemAudio::AfterAction, &audioSystem));
 		}
 
 		void keyUp(int key) override {}
@@ -200,5 +205,7 @@ namespace Engine
 	private:
 		EntityManagerNew ecs;
 		SystemManagerNew systemManager;
+
+		SystemAudio audioSystem;
 	};
 }
