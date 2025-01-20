@@ -2,6 +2,8 @@
 #include "Scene.h"
 #include "EntityManagerNew.h"
 
+#include "NavigationGrid.h"
+
 #include "ComponentPhysics.h"
 #include "ComponentAnimator.h"
 #include "ComponentAudioSource.h"
@@ -18,6 +20,7 @@
 #include "SystemManagerNew.h"
 #include "SystemAudio.h"
 #include "SystemPhysics.h"
+#include "SystemPathfinding.h"
 
 namespace Engine
 {
@@ -64,6 +67,7 @@ namespace Engine
 		void Render() override {}
 		void Close() override {}
 		void SetupScene() override {
+			navGrid = NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
 			AudioFile* campfireCrackling = ResourceManager::GetInstance()->LoadAudio("Audio/campfire.wav", 1.0f, 0.0f, 2.0f);
 
 			// All components entity
@@ -77,7 +81,7 @@ namespace Engine
 			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_CUBE));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(nullptr));
-			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(nullptr));
+			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
 			ecs.AddComponent(allComponents->ID(), ComponentStateController());
 			ecs.AddComponent(allComponents->ID(), ComponentUICanvas(SCREEN_SPACE));
 
@@ -195,18 +199,22 @@ namespace Engine
 
 			// Systems
 			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
-			systemManager.RegisterSystem<ComponentTransform, ComponentAudioSource>(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemAudio::AfterAction, &audioSystem));
-			systemManager.RegisterSystem<ComponentTransform, ComponentPhysics>(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPhysics::AfterAction, &physicsSystem));
+			systemManager.RegisterSystem(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemAudio::AfterAction, &audioSystem));
+			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPhysics::AfterAction, &physicsSystem));
+			systemManager.RegisterSystem(pathfindingSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPathfinder&)>(std::bind(&SystemPathfinding::OnAction, &pathfindingSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemPathfinding::AfterAction, &pathfindingSystem));
 		}
 
 		void keyUp(int key) override {}
 		void keyDown(int key) override {}
 
 	private:
+		NavigationGrid navGrid;
+
 		EntityManagerNew ecs;
 		SystemManagerNew systemManager;
 
 		SystemAudio audioSystem;
 		SystemPhysics physicsSystem;
+		SystemPathfinding pathfindingSystem;
 	};
 }
