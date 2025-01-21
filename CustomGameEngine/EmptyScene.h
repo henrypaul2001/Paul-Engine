@@ -26,6 +26,7 @@
 #include "SystemStateMachineUpdater.h"
 #include "SystemSkeletalAnimationUpdater.h"
 #include "SystemBuildMeshList.h"
+#include "SystemAnimatedGeometryAABBGeneration.h"
 
 namespace Engine
 {
@@ -209,6 +210,7 @@ namespace Engine
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
 
 			// Systems
+			systemManager.RegisterPreUpdateSystem(animAABBSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&, ComponentAnimator&)>(std::bind(&SystemAnimatedGeometryAABBGeneration::OnAction, &animAABBSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)), []() {}, std::bind(&SystemAnimatedGeometryAABBGeneration::AfterAction, &animAABBSystem));
 			systemManager.RegisterPreUpdateSystem(meshListSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemBuildMeshList::OnAction, &meshListSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemBuildMeshList::PreAction, &meshListSystem));
 			 
 			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
@@ -238,5 +240,6 @@ namespace Engine
 		SystemStateMachineUpdater stateUpdater;
 		SystemSkeletalAnimationUpdater animSystem;
 		SystemBuildMeshList meshListSystem;
+		SystemAnimatedGeometryAABBGeneration animAABBSystem;
 	};
 }

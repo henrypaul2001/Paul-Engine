@@ -1,20 +1,17 @@
 #include "SystemAnimatedGeometryAABBGeneration.h"
-#include "ComponentTransform.h"
 namespace Engine {
-	SystemAnimatedGeometryAABBGeneration::SystemAnimatedGeometryAABBGeneration()
+	void SystemAnimatedGeometryAABBGeneration::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry, ComponentAnimator& animator)
 	{
-		minMaxVerticesShader = ResourceManager::GetInstance()->LoadComputeShader("Shaders/Compute/verticesMinMax.comp");
-		minMaxOutput = minMaxVerticesShader->AddNewSSBO(1);
+		SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::OnAction");
+
+		const std::vector<Mesh*>& meshes = geometry.GetModel()->meshes;
+		for (Mesh* m : meshes) {
+			meshList.push_back({ m, transform, geometry, animator });
+		}
 	}
 
-	SystemAnimatedGeometryAABBGeneration::~SystemAnimatedGeometryAABBGeneration()
-	{
-	}
-
-	void SystemAnimatedGeometryAABBGeneration::Run(const std::vector<Entity*>& entityList)
-	{
-		SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::Run");
-		System::Run(entityList);
+	void SystemAnimatedGeometryAABBGeneration::AfterAction() {
+		SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::AfterAction");
 
 		const unsigned int numMeshes = meshList.size();
 		minMaxVerticesShader->Use();
@@ -24,7 +21,7 @@ namespace Engine {
 
 		{
 			// Run compute shader on each mesh
-			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::Run::ComputeMeshes");
+			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::AfterAction::ComputeMeshes");
 			for (unsigned int i = 0; i < numMeshes; i++) {
 				minMaxVerticesShader->setUInt("meshID", i);
 				GPUComputeAABB(meshList[i]);
@@ -42,23 +39,22 @@ namespace Engine {
 
 		{
 			// Read buffer
-			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::Run::ReadOutputBuffer");
+			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::AfterAction::ReadOutputBuffer");
 			minMaxOutput->ReadBufferData(&output);
 		}
 
 		{
 			// Update AABBs
-			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::Run::UpdateAABBs");
-			glm::vec3 floatMin, floatMax;
+			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::AfterAction::UpdateAABBs");
 			for (unsigned int i = 0; i < numMeshes && i < maxOutputs; i++) {
 
-				floatMin = glm::vec3(
+				const glm::vec3 floatMin = glm::vec3(
 					glm::intBitsToFloat(output[i].min.x) - FLOAT_OFFSET,
 					glm::intBitsToFloat(output[i].min.y) - FLOAT_OFFSET,
 					glm::intBitsToFloat(output[i].min.z) - FLOAT_OFFSET
 				);
 
-				floatMax = glm::vec3(
+				const glm::vec3 floatMax = glm::vec3(
 					glm::intBitsToFloat(output[i].max.x) - FLOAT_OFFSET,
 					glm::intBitsToFloat(output[i].max.y) - FLOAT_OFFSET,
 					glm::intBitsToFloat(output[i].max.z) - FLOAT_OFFSET
@@ -71,45 +67,25 @@ namespace Engine {
 		meshList.clear();
 	}
 
-	void SystemAnimatedGeometryAABBGeneration::OnAction(Entity* entity)
-	{
-		SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::OnAction");
-		if ((entity->Mask() & MASK) == MASK) {
-
-			ComponentTransform* transform = entity->GetTransformComponent();
-			ComponentGeometry* geometry = entity->GetGeometryComponent();
-			ComponentAnimator* animator = entity->GetAnimator();
-
-			if (transform != nullptr && geometry != nullptr && animator != nullptr) {
-				const std::vector<Mesh*>& meshes = geometry->GetModel()->meshes;
-				for (Mesh* m : meshes) {
-					meshList.push_back({ m, transform, geometry, animator });
-				}
-			}
-		}
-	}
-
-	void SystemAnimatedGeometryAABBGeneration::AfterAction() {}
-
-	void SystemAnimatedGeometryAABBGeneration::GPUComputeAABB(MeshEntry meshEntry)
+	void SystemAnimatedGeometryAABBGeneration::GPUComputeAABB(const MeshEntry meshEntry)
 	{
 		SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::GPUComputeAABB");
-		ComponentTransform* transform = meshEntry.transform;
-		ComponentGeometry* geometry = meshEntry.geometry;
-		ComponentAnimator* animator = meshEntry.animator;
+		ComponentTransform& transform = meshEntry.transform;
+		ComponentGeometry& geometry = meshEntry.geometry;
+		ComponentAnimator& animator = meshEntry.animator;
 		Mesh* m = meshEntry.mesh;
 
 		// Set uniforms
-		glm::mat4 model = transform->GetWorldModelMatrix();
+		const glm::mat4 model = transform.GetWorldModelMatrix();
 		minMaxVerticesShader->setMat4("model", model);
 
 		{
 			SCOPE_TIMER("SystemAnimatedGeometryAABBGeneration::GPUComputeAABB::Set bone transforms");
 			const int MAX_BONES = 126;
 			// Bones
-			if (geometry->GetModel()->HasBones()) {
+			if (geometry.GetModel()->HasBones()) {
 				minMaxVerticesShader->setBool("hasBones", true);
-				std::vector<glm::mat4> transforms = animator->GetFinalBonesMatrices();
+				const std::vector<glm::mat4>& transforms = animator.GetFinalBonesMatrices();
 				for (int i = 0; i < transforms.size() && i < MAX_BONES; i++) {
 					minMaxVerticesShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
 				}
