@@ -25,6 +25,7 @@
 #include "SystemUIMouseInteraction.h"
 #include "SystemStateMachineUpdater.h"
 #include "SystemSkeletalAnimationUpdater.h"
+#include "SystemBuildMeshList.h"
 
 namespace Engine
 {
@@ -66,9 +67,13 @@ namespace Engine
 		~EmptyScene() {}
 
 		void Update() override {
+			systemManager.ActionPreUpdateSystems();
+			Scene::Update();
 			systemManager.ActionSystems();
 		}
-		void Render() override {}
+		void Render() override {
+			Scene::Render();
+		}
 		void Close() override {}
 		void SetupScene() override {
 			SkeletalAnimation* vampireDanceAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
@@ -204,6 +209,8 @@ namespace Engine
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
 
 			// Systems
+			systemManager.RegisterPreUpdateSystem(meshListSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemBuildMeshList::OnAction, &meshListSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemBuildMeshList::PreAction, &meshListSystem));
+			 
 			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
 			systemManager.RegisterSystem(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), [](){}, std::bind(&SystemAudio::AfterAction, &audioSystem));
 			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemPhysics::AfterAction, &physicsSystem));
@@ -230,5 +237,6 @@ namespace Engine
 		SystemUIMouseInteraction uiInteract;
 		SystemStateMachineUpdater stateUpdater;
 		SystemSkeletalAnimationUpdater animSystem;
+		SystemBuildMeshList meshListSystem;
 	};
 }

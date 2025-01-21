@@ -534,6 +534,9 @@
     <ClInclude Include="SystemNew.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="SystemBuildMeshList.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemManager.cpp">
@@ -892,6 +895,9 @@
     </ClCompile>
     <ClCompile Include="SystemManagerNew.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemBuildMeshList.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

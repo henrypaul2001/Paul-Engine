@@ -232,6 +232,7 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemAnimatedGeometryAABBGeneration.h" />
     <ClInclude Include="SystemAudio.h" />
+    <ClInclude Include="SystemBuildMeshList.h" />
     <ClInclude Include="SystemCollision.h" />
     <ClInclude Include="SystemCollisionAABB.h" />
     <ClInclude Include="SystemCollisionBox.h" />
@@ -387,6 +388,7 @@
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemAnimatedGeometryAABBGeneration.cpp" />
     <ClCompile Include="SystemAudio.cpp" />
+    <ClCompile Include="SystemBuildMeshList.cpp" />
     <ClCompile Include="SystemCollision.cpp" />
     <ClCompile Include="SystemCollisionAABB.cpp" />
     <ClCompile Include="SystemCollisionBox.cpp" />
