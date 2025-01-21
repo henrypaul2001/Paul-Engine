@@ -42,7 +42,7 @@ namespace Engine {
 
 		void AddToCollisionList(CollisionData newCollision) { unresolvedCollisions.push_back(newCollision); }
 
-		void ConstructBVHTree(const std::vector<Entity*>& entityList);
+		void ConstructBVHTree();
 
 		BVHTree* GetBVHTree() { return bvhTree; }
 	private:

@@ -1,5 +1,4 @@
 #pragma once
-#include "System.h"
 #include "Camera.h"
 #include "RenderManager.h"
 #include "CollisionManager.h"
@@ -11,29 +10,20 @@ namespace Engine {
 		PARTIAL_FRUSTUM,
 	};
 
-	class SystemFrustumCulling : public System
+	// This is a special case system which doesn't operate per entity/component set but on all meshes in the scene. Therefore, this system doesn't get registered to the system manager in the same way as other systems
+	class SystemFrustumCulling
 	{
 	public:
-		SystemFrustumCulling(Camera* activeCamera, CollisionManager* collisionManager) { 
-			this->activeCamera = activeCamera;
-			this->viewFrustum = &activeCamera->GetViewFrustum();
-			this->collisionManager = collisionManager;
-			visibleMeshes = 0;
-			totalMeshes = 0;
-			geometryAABBTests = 0;
-		}
-		~SystemFrustumCulling();
+		SystemFrustumCulling() : activeCamera(nullptr), viewFrustum(nullptr), collisionManager(nullptr), visibleMeshes(0), totalMeshes(0), geometryAABBTests(0) {}
+		~SystemFrustumCulling() {}
 
-		SystemTypes Name() override { return SYSTEM_FRUSTUM_CULLING; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		void Run(Camera* activeCamera, CollisionManager* collisionManager);
 
 		const unsigned int GetVisibleMeshes() const { return visibleMeshes; }
 		const unsigned int GetTotalMeshes() const { return totalMeshes; }
 		const unsigned int GetTotalAABBTests() const { return geometryAABBTests; }
 
-		void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
+		//void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
 
 		static std::map<float, Mesh*> culledMeshList;
 	private:
@@ -43,11 +33,9 @@ namespace Engine {
 		bool SphereIsOnOrInFrontOfPlane(const glm::vec3& spherePos, const float sphereRadius, const ViewPlane& plane);
 
 		void CullMeshes();
-		void AddMeshToCulledList(Mesh* mesh);
+		void AddMeshToCulledList(const BVHObject& bvhObject);
 		void TestBVHNodeRecursive(const BVHNode* node);
 		void CullReflectionProbes();
-
-		const ComponentTypes GEOMETRY_MASK = (COMPONENT_GEOMETRY);
 
 		Camera* activeCamera;
 		const ViewFrustum* viewFrustum;

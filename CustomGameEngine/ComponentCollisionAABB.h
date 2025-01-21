@@ -97,22 +97,22 @@ namespace Engine {
 
 		AABBPoints(float minX = -5.0f, float minY = -5.0f, float minZ = -5.0f, float maxX = 5.0f, float maxY = 5.0f, float maxZ = 5.0f) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
 	
-		bool operator==(AABBPoints const& aabb) {
-			glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
-			glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
+		bool operator==(AABBPoints const& aabb) const {
+			const glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
+			const glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
 
-			glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
-			glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
+			const glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
+			const glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
 
 			return (thisMin == otherMin && thisMax == otherMax);
 		}
 
-		bool operator!=(AABBPoints const& aabb) {
-			glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
-			glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
+		bool operator!=(AABBPoints const& aabb) const {
+			const glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
+			const glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
 
-			glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
-			glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
+			const glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
+			const glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
 
 			return (thisMin != otherMin || thisMax != otherMax);
 		}

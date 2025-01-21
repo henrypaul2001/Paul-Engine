@@ -30,6 +30,9 @@ namespace Engine
 		CollisionManager* collisionManager;
 		ConstraintManager* constraintManager;
 		ResourceManager* resources;
+
+		SystemFrustumCulling frustumCulling;
+
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
 
