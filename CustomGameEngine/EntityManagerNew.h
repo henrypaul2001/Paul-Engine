@@ -190,6 +190,8 @@ namespace Engine
 			return { { GetComponentPoolPtr<TComponents>()... } };
 		}
 
+		const unsigned int NumEntities() const { return entities.DenseSize(); }
+
 	private:
 
 		// Create new entity without default transform component (for use during entity cloning)
