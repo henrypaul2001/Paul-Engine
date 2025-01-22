@@ -6,18 +6,14 @@
 namespace Engine {
 	class SystemCollisionSphereAABB : public SystemCollision
 	{
-	private:
-		const ComponentTypes SPHERE_MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_SPHERE);
-		const ComponentTypes AABB_MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_AABB);
-
-		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
-		SystemCollisionSphereAABB(EntityManager* entityManager, CollisionManager* collisionManager);
-		~SystemCollisionSphereAABB();
+		SystemCollisionSphereAABB(EntityManagerNew* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
+		~SystemCollisionSphereAABB() {}
 
-		SystemTypes Name() override { return SYSTEM_COLLISION_SPHERE_AABB; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionSphere& collider);
+		void AfterAction();
+
+	private:
+		CollisionData Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionSphere& colliderA, const ComponentTransform& transformB, const ComponentCollisionAABB& colliderB) const;
 	};
 }

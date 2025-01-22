@@ -1,82 +1,59 @@
 #include "SystemCollisionSphereAABB.h"
 namespace Engine {
-	SystemCollisionSphereAABB::SystemCollisionSphereAABB(EntityManager* entityManager, CollisionManager* collisionManager) : SystemCollision(entityManager, collisionManager)
+	void SystemCollisionSphereAABB::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionSphere& collider)
 	{
-
-	}
-
-	SystemCollisionSphereAABB::~SystemCollisionSphereAABB()
-	{
-
-	}
-
-	void SystemCollisionSphereAABB::Run(const std::vector<Entity*>& entityList)
-	{
-		SCOPE_TIMER("SystemCollisionSphereAABB::Run");
-		System::Run(entityList);
-	}
-
-	void SystemCollisionSphereAABB::OnAction(Entity* entity)
-	{
-		if ((entity->Mask() & SPHERE_MASK) == SPHERE_MASK) {
-			ComponentTransform* transform = entity->GetTransformComponent();
-			ComponentCollisionSphere* collider = entity->GetSphereCollisionComponent();
-
-			// Loop through all over entities to find another AABB collider entity
-			for (Entity* e : entityManager->Entities()) {
-				if ((e->Mask() & AABB_MASK) == AABB_MASK) {
-					// Check if this entity has already checked for collisions with current entity in a previous run during this frame
-					//if (!collider->HasEntityAlreadyBeenChecked(e) && e != entity) {
-					//	ComponentTransform* transform2 = e->GetTransformComponent();
-					//	ComponentCollisionAABB* collider2 = e->GetAABBCollisionComponent();
-
-					//	// Check for collision
-					//	Collision(transform, collider, transform2, collider2);
-					//}
-				}
+		// Loop through all other AABB entities for collision checks
+		View<ComponentTransform, ComponentCollisionAABB> aabbView = active_ecs->View<ComponentTransform, ComponentCollisionAABB>();
+		aabbView.ForEach([this, entityID, transform, &collider](const unsigned int entityIDB, ComponentTransform& transformB, ComponentCollisionAABB& colliderB) {
+			// Check if this entity has already checked for collisions with current entity in a previous run during this frame
+			if (collider.HasEntityAlreadyBeenChecked(entityIDB) && entityIDB != entityID) {
+				CollisionPreCheck(entityID, &collider, entityIDB, &colliderB);
+				CollisionData collision = Intersect(entityID, entityIDB, transform, collider, transformB, colliderB);
+				CollisionPostCheck(collision, entityID, &collider, entityIDB, &colliderB);
 			}
-		}
+		});
 	}
 
 	void SystemCollisionSphereAABB::AfterAction()
 	{
 		// Loop through all collision entities and clear EntitiesCheckedThisFrame
-		for (Entity* e : entityManager->Entities()) {
-			if ((e->Mask() & SPHERE_MASK) == SPHERE_MASK) {
-				dynamic_cast<ComponentCollisionSphere*>(e->GetComponent(COMPONENT_COLLISION_SPHERE))->ClearEntitiesCheckedThisFrame();
-			}
-			else if ((e->Mask() & AABB_MASK) == AABB_MASK) {
-				dynamic_cast<ComponentCollisionAABB*>(e->GetComponent(COMPONENT_COLLISION_AABB))->ClearEntitiesCheckedThisFrame();
-			}
-		}
+		active_ecs->View<ComponentCollisionSphere>().ForEach([](const unsigned int entityID, ComponentCollisionSphere& collider) {
+			collider.ClearEntitiesCheckedThisFrame();
+		});
+		active_ecs->View<ComponentCollisionAABB>().ForEach([](const unsigned int entityID, ComponentCollisionAABB& collider) {
+			collider.ClearEntitiesCheckedThisFrame();
+		});
 	}
 
-	CollisionData SystemCollisionSphereAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionSphereAABB::Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionSphere& colliderA, const ComponentTransform& transformB, const ComponentCollisionAABB& colliderB) const
 	{
 		// collider = sphere
 		// collider2 = AABB
-		AABBPoints worldSpaceBounds = dynamic_cast<ComponentCollisionAABB*>(collider2)->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
-		float scaledRadius = dynamic_cast<ComponentCollisionSphere*>(collider)->CollisionRadius() * transform->GetBiggestScaleFactor();
+		const AABBPoints worldSpaceBounds = colliderB.GetWorldSpaceBounds(transformB.GetWorldModelMatrix());
+		const float scaledRadius = colliderA.CollisionRadius() * transformA.GetBiggestScaleFactor();
+
+		const glm::vec3& worldPosA = transformA.GetWorldPosition();
+		const glm::vec3& worldPosB = transformB.GetWorldPosition();
 
 		// get closest point of AABB
 		glm::vec3 closestPoint = glm::vec3();
-		closestPoint.x = std::max(worldSpaceBounds.minX, std::min(transform->GetWorldPosition().x, worldSpaceBounds.maxX));
-		closestPoint.y = std::max(worldSpaceBounds.minY, std::min(transform->GetWorldPosition().y, worldSpaceBounds.maxY));
-		closestPoint.z = std::max(worldSpaceBounds.minZ, std::min(transform->GetWorldPosition().z, worldSpaceBounds.maxZ));
+		closestPoint.x = std::max(worldSpaceBounds.minX, std::min(worldPosA.x, worldSpaceBounds.maxX));
+		closestPoint.y = std::max(worldSpaceBounds.minY, std::min(worldPosA.y, worldSpaceBounds.maxY));
+		closestPoint.z = std::max(worldSpaceBounds.minZ, std::min(worldPosA.z, worldSpaceBounds.maxZ));
 
-		float distance = glm::distance(closestPoint, transform->GetWorldPosition());
+		const float distance = glm::distance(closestPoint, worldPosA);
 
-		glm::vec3 delta = transform->GetWorldPosition() - transform2->GetWorldPosition();
-		glm::vec3 localPoint = delta - closestPoint;
+		const glm::vec3 delta = worldPosA - worldPosB;
+		const glm::vec3 localPoint = delta - closestPoint;
 
 		CollisionData collision;
 		if (distance < scaledRadius) {
 			collision.isColliding = true;
 
-			float collisionPenetration = scaledRadius - distance;
-			glm::vec3 collisionNormal = glm::normalize(transform->GetWorldPosition() - closestPoint);
-			glm::vec3 localCollisionPoint = -collisionNormal * scaledRadius;
-			glm::vec3 otherLocalCollisionPoint = glm::vec3();
+			const float collisionPenetration = scaledRadius - distance;
+			const glm::vec3 collisionNormal = glm::normalize(worldPosA - closestPoint);
+			const glm::vec3 localCollisionPoint = -collisionNormal * scaledRadius;
+			const glm::vec3 otherLocalCollisionPoint = glm::vec3();
 			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 
 			//collision.objectA = transform->GetOwner();

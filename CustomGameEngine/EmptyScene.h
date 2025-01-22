@@ -32,6 +32,7 @@
 #include "SystemCollisionBox.h"
 #include "SystemCollisionBoxAABB.h"
 #include "SystemCollisionSphere.h"
+#include "SystemCollisionSphereAABB.h"
 
 namespace Engine
 {
@@ -223,6 +224,7 @@ namespace Engine
 			systemManager.RegisterSystem(boxSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionBox&)>(std::bind(&SystemCollisionBox::OnAction, &boxSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionBox::AfterAction, &boxSystem));
 			systemManager.RegisterSystem(boxAABBSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionBox&)>(std::bind(&SystemCollisionBoxAABB::OnAction, &boxAABBSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionBoxAABB::AfterAction, &boxAABBSystem));
 			systemManager.RegisterSystem(sphereSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionSphere&)>(std::bind(&SystemCollisionSphere::OnAction, &sphereSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionSphere::AfterAction, &sphereSystem));
+			systemManager.RegisterSystem(sphereAABBSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionSphere&)>(std::bind(&SystemCollisionSphereAABB::OnAction, &sphereAABBSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionSphereAABB::AfterAction, &sphereAABBSystem));
 
 			systemManager.RegisterSystem(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), [](){}, std::bind(&SystemAudio::AfterAction, &audioSystem));
 			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemPhysics::AfterAction, &physicsSystem));
@@ -256,5 +258,6 @@ namespace Engine
 		SystemCollisionBox boxSystem;
 		SystemCollisionBoxAABB boxAABBSystem;
 		SystemCollisionSphere sphereSystem;
+		SystemCollisionSphereAABB sphereAABBSystem;
 	};
 }
