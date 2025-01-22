@@ -28,6 +28,8 @@
 #include "SystemBuildMeshList.h"
 #include "SystemAnimatedGeometryAABBGeneration.h"
 
+#include "SystemCollisionAABB.h"
+
 namespace Engine
 {
 	struct TestComponentA {
@@ -214,6 +216,8 @@ namespace Engine
 			systemManager.RegisterPreUpdateSystem(meshListSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemBuildMeshList::OnAction, &meshListSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemBuildMeshList::PreAction, &meshListSystem));
 			 
 			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
+			systemManager.RegisterSystem(aabbSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionAABB&)>(std::bind(&SystemCollisionAABB::OnAction, &aabbSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionAABB::AfterAction, &aabbSystem));
+
 			systemManager.RegisterSystem(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), [](){}, std::bind(&SystemAudio::AfterAction, &audioSystem));
 			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemPhysics::AfterAction, &physicsSystem));
 			systemManager.RegisterSystem(pathfindingSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPathfinder&)>(std::bind(&SystemPathfinding::OnAction, &pathfindingSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemPathfinding::AfterAction, &pathfindingSystem));
@@ -241,5 +245,7 @@ namespace Engine
 		SystemSkeletalAnimationUpdater animSystem;
 		SystemBuildMeshList meshListSystem;
 		SystemAnimatedGeometryAABBGeneration animAABBSystem;
+
+		SystemCollisionAABB aabbSystem;
 	};
 }

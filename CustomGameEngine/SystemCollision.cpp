@@ -1,5 +1,4 @@
 #include "SystemCollision.h"
-#include "ComponentTransform.h"
 #include <glm/gtx/norm.hpp>
 namespace Engine {
 	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max) const

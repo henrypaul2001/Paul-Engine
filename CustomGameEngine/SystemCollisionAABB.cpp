@@ -1,56 +1,33 @@
 #include "SystemCollisionAABB.h"
 #include <iostream>
 namespace Engine {
-	SystemCollisionAABB::SystemCollisionAABB(EntityManager* entityManager, CollisionManager* collisionManager) : SystemCollision(entityManager, collisionManager)
+
+	void SystemCollisionAABB::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionAABB& collider)
 	{
-	}
-
-	SystemCollisionAABB::~SystemCollisionAABB()
-	{
-	}
-
-	void SystemCollisionAABB::Run(const std::vector<Entity*>& entityList)
-	{
-		SCOPE_TIMER("SystemCollisionAABB::Run");
-		System::Run(entityList);
-	}
-
-	void SystemCollisionAABB::OnAction(Entity* entity)
-	{
-		if ((entity->Mask() & MASK) == MASK) {
-			ComponentTransform* transform = entity->GetTransformComponent();
-			ComponentCollisionAABB* collider = entity->GetAABBCollisionComponent();
-
-			// Loop through all over entities to find another AABB collider entity
-			for (Entity* e : entityManager->Entities()) {
-				if ((e->Mask() & MASK) == MASK) {
-					// Check if this entity has already checked for collisions with current entity in a previous run during this frame
-					//if (!collider->HasEntityAlreadyBeenChecked(e) && e != entity) {
-					//	ComponentTransform* transform2 = e->GetTransformComponent();
-					//	ComponentCollisionAABB* collider2 = e->GetAABBCollisionComponent();
-
-					//	// Check for collision
-					//	Collision(transform, collider, transform2, collider2);
-					//}
-				}
+		// Loop through all other AABB entities for collision checks
+		View<ComponentTransform, ComponentCollisionAABB> aabbView = active_ecs->View<ComponentTransform, ComponentCollisionAABB>();
+		aabbView.ForEach([this, entityID, transform, &collider](const unsigned int entityIDB, ComponentTransform& transformB, ComponentCollisionAABB& colliderB) {
+			// Check if this entity has already checked for collisions with current entity in a previous run during this frame
+			if (collider.HasEntityAlreadyBeenChecked(entityIDB) && entityIDB != entityID) {
+				CollisionPreCheck(entityID, &collider, entityIDB, &colliderB);
+				CollisionData collision = Intersect(entityID, entityIDB, transform, collider, transformB, colliderB);
+				CollisionPostCheck(collision, entityID, &collider, entityIDB, &colliderB);
 			}
-		}
+		});
 	}
 
 	void SystemCollisionAABB::AfterAction()
 	{
 		// Loop through all collision entities and clear EntitiesCheckedThisFrame
-		for (Entity* e : entityManager->Entities()) {
-			if ((e->Mask() & MASK) == MASK) {
-				dynamic_cast<ComponentCollisionAABB*>(e->GetComponent(COMPONENT_COLLISION_AABB))->ClearEntitiesCheckedThisFrame();
-			}
-		}
+		active_ecs->View<ComponentCollisionAABB>().ForEach([](const unsigned int entityID, ComponentCollisionAABB& collider) {
+			collider.ClearEntitiesCheckedThisFrame();
+		});
 	}
 
-	CollisionData SystemCollisionAABB::Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	CollisionData SystemCollisionAABB::Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionAABB& colliderA, const ComponentTransform& transformB, const ComponentCollisionAABB& colliderB) const
 	{
-		AABBPoints bounds1 = dynamic_cast<ComponentCollisionAABB*>(collider)->GetWorldSpaceBounds(transform->GetWorldModelMatrix());
-		AABBPoints bounds2 = dynamic_cast<ComponentCollisionAABB*>(collider2)->GetWorldSpaceBounds(transform2->GetWorldModelMatrix());
+		const AABBPoints bounds1 = colliderA.GetWorldSpaceBounds(transformA.GetWorldModelMatrix());
+		const AABBPoints bounds2 = colliderB.GetWorldSpaceBounds(transformB.GetWorldModelMatrix());
 
 		CollisionData collision;
 		if (bounds1.minX <= bounds2.maxX && bounds1.maxX >= bounds2.minX && bounds1.minY <= bounds2.maxY && bounds1.maxY >= bounds2.minY && bounds1.minZ <= bounds2.maxZ && bounds1.maxZ >= bounds2.minZ) {
@@ -63,7 +40,7 @@ namespace Engine {
 				glm::vec3(0.0f, 0.0f, 1.0f)
 			};
 			
-			float distances[6] = {
+			const float distances[6] = {
 				(bounds2.maxX - bounds1.minX),
 				(bounds1.maxX - bounds2.minX),
 				(bounds2.maxY - bounds1.minY),
@@ -85,8 +62,8 @@ namespace Engine {
 
 			collision.AddContactPoint(glm::vec3(), glm::vec3(), bestAxis, penetration);
 
-			//collision.objectA = transform->GetOwner();
-			//collision.objectB = transform2->GetOwner();
+			collision.entityIDA = entityIDA;
+			collision.entityIDB = entityIDB;
 
 			GetContactPoints(collision);
 		}
