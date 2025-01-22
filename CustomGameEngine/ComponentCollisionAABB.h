@@ -126,7 +126,9 @@ namespace Engine {
 		ComponentCollisionAABB(const float minX, const float minY, const float minZ, const float maxX, const float maxY, const float maxZ);
 		~ComponentCollisionAABB();
 
-		AABBPoints GetBoundary() { return localBounds; }
+		AABBPoints& GetBoundary() { return localBounds; }
+		const AABBPoints& GetBoundary() const { return localBounds; }
+		const BoundingBox& GetBoundingBox() const { return boundingBox; }
 		BoundingBox& GetBoundingBox() { return boundingBox; }
 
 		void SetMinX(float minX) { localBounds.minX = minX; }
@@ -137,8 +139,8 @@ namespace Engine {
 		void SetMaxY(float maxY) { localBounds.maxY = maxY; }
 		void SetMaxZ(float maxZ) { localBounds.maxZ = maxZ; }
 
-		AABBPoints GetWorldSpaceBounds(const glm::mat4& modelMatrix);
-		std::vector<glm::vec3> WorldSpacePoints(const glm::mat4& modelMatrix);
+		AABBPoints GetWorldSpaceBounds(const glm::mat4& modelMatrix) const;
+		std::vector<glm::vec3> WorldSpacePoints(const glm::mat4& modelMatrix) const;
 
 	private:
 		AABBPoints localBounds;

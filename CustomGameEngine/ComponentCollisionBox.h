@@ -45,8 +45,8 @@ namespace Engine {
 
         const BoundingBox& GetBoundingBox() const { return boundingBox; }
 
-        BoxExtents GetWorldSpacePoints(const glm::mat4& modelMatrix);
-        std::vector<glm::vec3> WorldSpacePoints(const glm::mat4& modelMatrix);
+        BoxExtents GetWorldSpacePoints(const glm::mat4& modelMatrix) const;
+        std::vector<glm::vec3> WorldSpacePoints(const glm::mat4& modelMatrix) const;
     private:
         void ConstructCube();
 

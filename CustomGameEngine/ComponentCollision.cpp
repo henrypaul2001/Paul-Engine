@@ -1,11 +1,11 @@
 #include "ComponentCollision.h"
 namespace Engine {
-	void ComponentCollision::AddToEntitiesCheckedThisFrame(EntityNew* e)
+	void ComponentCollision::AddToEntitiesCheckedThisFrame(const unsigned int e, const std::string& name)
 	{
-		EntitiesCheckedThisFrame[e] = e->Name();
+		EntitiesCheckedThisFrame[e] = name;
 	}
-	void ComponentCollision::AddToCollisions(EntityNew* e)
+	void ComponentCollision::AddToCollisions(const unsigned int e, const std::string& name)
 	{
-		EntitiesCollidingWith[e] = e->Name();
+		EntitiesCollidingWith[e] = name;
 	}
 }

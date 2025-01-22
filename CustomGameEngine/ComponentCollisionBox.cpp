@@ -17,7 +17,7 @@ namespace Engine {
 
 	ComponentCollisionBox::~ComponentCollisionBox() {}
 
-	BoxExtents ComponentCollisionBox::GetWorldSpacePoints(const glm::mat4& modelMatrix)
+	BoxExtents ComponentCollisionBox::GetWorldSpacePoints(const glm::mat4& modelMatrix) const
 	{
 		BoxExtents worldSpacePoints;
 
@@ -32,7 +32,7 @@ namespace Engine {
 		return worldSpacePoints;
 	}
 
-	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(const glm::mat4& modelMatrix)
+	std::vector<glm::vec3> ComponentCollisionBox::WorldSpacePoints(const glm::mat4& modelMatrix) const
 	{
 		std::vector<glm::vec3> cubePoints = {
 			glm::vec3(localExtents.minX, localExtents.minY, localExtents.maxZ), // front, bottom left point

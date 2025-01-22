@@ -11,7 +11,7 @@ namespace Engine {
 
 	ComponentCollisionAABB::~ComponentCollisionAABB() {}
 
-	AABBPoints ComponentCollisionAABB::GetWorldSpaceBounds(const glm::mat4& modelMatrix)
+	AABBPoints ComponentCollisionAABB::GetWorldSpaceBounds(const glm::mat4& modelMatrix) const
 	{
 		AABBPoints worldBounds;
 
@@ -36,7 +36,7 @@ namespace Engine {
 		return worldBounds;
 	}
 
-	std::vector<glm::vec3> ComponentCollisionAABB::WorldSpacePoints(const glm::mat4& modelMatrix)
+	std::vector<glm::vec3> ComponentCollisionAABB::WorldSpacePoints(const glm::mat4& modelMatrix) const
 	{
 		std::vector<glm::vec3> cubePoints = {
 			glm::vec3(localBounds.minX, localBounds.minY, localBounds.maxZ), // front, bottom left point

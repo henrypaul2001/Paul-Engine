@@ -190,21 +190,21 @@ namespace Engine {
         virtual constexpr ColliderType ColliderType() const = 0;
 
 		void ClearEntitiesCheckedThisFrame() { EntitiesCheckedThisFrame.clear(); }
-		void AddToEntitiesCheckedThisFrame(EntityNew* e);
+		void AddToEntitiesCheckedThisFrame(const unsigned int e, const std::string& name);
 
-		bool HasEntityAlreadyBeenChecked(EntityNew* e) const { return EntitiesCheckedThisFrame.find(e) != EntitiesCheckedThisFrame.end(); }
+		bool HasEntityAlreadyBeenChecked(const unsigned int e) const { return EntitiesCheckedThisFrame.find(e) != EntitiesCheckedThisFrame.end(); }
 
 		bool IsMovedByCollisions() const { return isMovedByCollisions; }
 		void IsMovedByCollisions(const bool isMoveable) { isMovedByCollisions = isMoveable; }
 
-		const std::unordered_map<EntityNew*, std::string>& Collisions() { return EntitiesCollidingWith; }
-		bool IsCollidingWithEntity(EntityNew* e) const { return EntitiesCollidingWith.find(e) != EntitiesCollidingWith.end(); }
-		void AddToCollisions(EntityNew* e);
-		void RemoveFromCollisions(EntityNew* e) { EntitiesCollidingWith.erase(e); }
+		const std::unordered_map<unsigned int, std::string>& Collisions() { return EntitiesCollidingWith; }
+		bool IsCollidingWithEntity(const unsigned int e) const { return EntitiesCollidingWith.find(e) != EntitiesCollidingWith.end(); }
+		void AddToCollisions(const unsigned int e, const std::string& name);
+		void RemoveFromCollisions(const unsigned int e) { EntitiesCollidingWith.erase(e); }
 	
     protected:
-        std::unordered_map<EntityNew*, std::string> EntitiesCheckedThisFrame;
-        std::unordered_map<EntityNew*, std::string> EntitiesCollidingWith;
+        std::unordered_map<unsigned int, std::string> EntitiesCheckedThisFrame;
+        std::unordered_map<unsigned int, std::string> EntitiesCollidingWith;
 
         bool isMovedByCollisions;
     };

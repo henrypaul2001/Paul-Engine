@@ -2,36 +2,7 @@
 #include "ComponentTransform.h"
 #include <glm/gtx/norm.hpp>
 namespace Engine {
-	SystemCollision::SystemCollision(EntityManager* entityManager, CollisionManager* collisionManager)
-	{
-		this->entityManager = entityManager;
-		this->collisionManager = collisionManager;
-	}
-
-	SystemCollision::~SystemCollision()
-	{
-
-	}
-
-	void SystemCollision::Collision(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
-	{
-		//collider->AddToEntitiesCheckedThisFrame(collider2->GetOwner());
-		//collider2->AddToEntitiesCheckedThisFrame(collider->GetOwner());
-
-		//CollisionData collision = Intersect(transform, collider, transform2, collider2);
-		//if (collision.isColliding) {
-		//	collisionManager->AddToCollisionList(collision);
-
-		//	collider->AddToCollisions(collider2->GetOwner());
-		//	collider2->AddToCollisions(collider->GetOwner());
-		//}
-		//else {
-		//	collider->RemoveFromCollisions(collider2->GetOwner());
-		//	collider2->RemoveFromCollisions(collider->GetOwner());
-		//}
-	}
-
-	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max)
+	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max) const
 	{
 		if (worldSpacePoints.size() < 1) {
 			return;
@@ -52,7 +23,7 @@ namespace Engine {
 		}
 	}
 
-	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max, int& out_minIndex, int& out_maxIndex)
+	void SystemCollision::GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max, int& out_minIndex, int& out_maxIndex) const
 	{
 		if (worldSpacePoints.size() < 1) {
 			return;
@@ -77,7 +48,7 @@ namespace Engine {
 		}
 	}
 
-	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionBox* collider2, CollisionData& collision)
+	bool SystemCollision::CheckForCollisionOnAxis(const glm::vec3& axis, const ComponentTransform& transform, const ComponentCollisionBox& collider, const ComponentTransform& transform2, const ComponentCollisionBox& collider2, CollisionData& collision) const
 	{
 		float cube1Min;
 		float cube2Min;
@@ -85,26 +56,26 @@ namespace Engine {
 		float cube1Max;
 		float cube2Max;
 
-		std::vector<glm::vec3> cube1 = collider->WorldSpacePoints(transform->GetWorldModelMatrix());
-		std::vector<glm::vec3> cube2 = collider2->WorldSpacePoints(transform2->GetWorldModelMatrix());
+		const std::vector<glm::vec3> cube1 = collider.WorldSpacePoints(transform.GetWorldModelMatrix());
+		const std::vector<glm::vec3> cube2 = collider2.WorldSpacePoints(transform2.GetWorldModelMatrix());
 
 		// Project points onto axis and check for overlap
 		GetMinMaxOnAxis(cube1, axis, cube1Min, cube1Max);
 		GetMinMaxOnAxis(cube2, axis, cube2Min, cube2Max);
 
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
-			glm::vec3 collisionNormal = glm::normalize(axis);
-			float collisionPenetration = cube2Min - cube1Max;
-			glm::vec3 otherLocalCollisionPoint = cube1Max + collisionNormal * collisionPenetration;
+			const glm::vec3 collisionNormal = glm::normalize(axis);
+			const float collisionPenetration = cube2Min - cube1Max;
+			const glm::vec3 otherLocalCollisionPoint = cube1Max + collisionNormal * collisionPenetration;
 
 			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
 		}
 
 		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
-			glm::vec3 collisionNormal = -glm::normalize(axis);
-			float collisionPenetration = cube1Min - cube2Max;
-			glm::vec3 otherLocalCollisionPoint = cube1Min + collisionNormal * collisionPenetration;
+			const glm::vec3 collisionNormal = -glm::normalize(axis);
+			const float collisionPenetration = cube1Min - cube2Max;
+			const glm::vec3 otherLocalCollisionPoint = cube1Min + collisionNormal * collisionPenetration;
 
 			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
@@ -113,7 +84,7 @@ namespace Engine {
 		return false;
 	}
 
-	bool SystemCollision::CheckForCollisionOnAxis(glm::vec3 axis, ComponentTransform* transform, ComponentCollisionBox* collider, ComponentTransform* transform2, ComponentCollisionAABB* collider2, CollisionData& collision)
+	bool SystemCollision::CheckForCollisionOnAxis(const glm::vec3& axis, const ComponentTransform& transform, const ComponentCollisionBox& collider, const ComponentTransform& transform2, const ComponentCollisionAABB& collider2, CollisionData& collision) const
 	{
 		float cube1Min;
 		float cube2Min;
@@ -121,26 +92,26 @@ namespace Engine {
 		float cube1Max;
 		float cube2Max;
 
-		std::vector<glm::vec3> cube1 = collider->WorldSpacePoints(transform->GetWorldModelMatrix());
-		std::vector<glm::vec3> cube2 = collider2->WorldSpacePoints(transform2->GetWorldModelMatrix());
+		const std::vector<glm::vec3> cube1 = collider.WorldSpacePoints(transform.GetWorldModelMatrix());
+		const std::vector<glm::vec3> cube2 = collider2.WorldSpacePoints(transform2.GetWorldModelMatrix());
 
 		// Project points onto axis and check for overlap
 		GetMinMaxOnAxis(cube1, axis, cube1Min, cube1Max);
 		GetMinMaxOnAxis(cube2, axis, cube2Min, cube2Max);
 
 		if (cube1Min <= cube2Min && cube1Max >= cube2Min) {
-			glm::vec3 collisionNormal = glm::normalize(axis);
-			float collisionPenetration = cube2Min - cube1Max;
-			glm::vec3 otherLocalCollisionPoint = cube2Min + collisionNormal * collisionPenetration;
+			const glm::vec3 collisionNormal = glm::normalize(axis);
+			const float collisionPenetration = cube2Min - cube1Max;
+			const glm::vec3 otherLocalCollisionPoint = cube2Min + collisionNormal * collisionPenetration;
 
 			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
 		}
 
 		if (cube2Min <= cube1Min && cube2Max >= cube1Min) {
-			glm::vec3 collisionNormal = -glm::normalize(axis);
-			float collisionPenetration = cube1Min - cube2Max;
-			glm::vec3 otherLocalCollisionPoint = cube1Min + collisionNormal * collisionPenetration;
+			const glm::vec3 collisionNormal = -glm::normalize(axis);
+			const float collisionPenetration = cube1Min - cube2Max;
+			const glm::vec3 otherLocalCollisionPoint = cube1Min + collisionNormal * collisionPenetration;
 			
 			collision.AddContactPoint(glm::vec3(), otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 			return true;
@@ -149,9 +120,9 @@ namespace Engine {
 		return false;
 	}
 
-	std::vector<glm::vec3> SystemCollision::GetCubeNormals(ComponentTransform* transform)
+	std::vector<glm::vec3> SystemCollision::GetCubeNormals(const ComponentTransform& transform) const
 	{
-		glm::mat3 rotationMatrix = glm::mat3(transform->GetWorldModelMatrix());
+		const glm::mat3 rotationMatrix = glm::mat3(transform.GetWorldModelMatrix());
 
 		std::vector<glm::vec3> normals;
 		normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); // right face
@@ -166,9 +137,9 @@ namespace Engine {
 		return normals;
 	}
 
-	std::vector<glm::vec3> SystemCollision::GetEdgeVectors(ComponentTransform* transform)
+	std::vector<glm::vec3> SystemCollision::GetEdgeVectors(const ComponentTransform& transform) const
 	{
-		glm::mat3 rotationMatrix = glm::mat3(transform->GetWorldModelMatrix());
+		glm::mat3 rotationMatrix = glm::mat3(transform.GetWorldModelMatrix());
 
 		std::vector<glm::vec3> edges;
 		edges.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -192,13 +163,13 @@ namespace Engine {
 		return edges;
 	}
 
-	std::vector<glm::vec3> SystemCollision::GetAllCollisionAxis(ComponentTransform* transform, ComponentTransform* transform2)
+	std::vector<glm::vec3> SystemCollision::GetAllCollisionAxis(const ComponentTransform& transform, const ComponentTransform& transform2) const
 	{
 		std::vector<glm::vec3> axes;
 
 		// Get normals of both cubes
-		std::vector<glm::vec3> cube1Normals = GetCubeNormals(transform);
-		std::vector<glm::vec3> cube2Normals = GetCubeNormals(transform2);
+		const std::vector<glm::vec3> cube1Normals = GetCubeNormals(transform);
+		const std::vector<glm::vec3> cube2Normals = GetCubeNormals(transform2);
 
 		// Get edge vectors of both cubes
 		//std::vector<glm::vec3> cube1Edges = GetEdgeVectors(transform);
@@ -236,7 +207,7 @@ namespace Engine {
 	}
 
 	// Implementation below adapted from: https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/previousinformation/csc8503coderepository/
-	void SystemCollision::SutherlandHodgmanClipping(const std::vector<glm::vec3>& input_polygon, int num_clip_planes, const ClippingPlane* clip_planes, std::vector<glm::vec3>* out_polygon, bool removeNotClipToPlane)
+	void SystemCollision::SutherlandHodgmanClipping(const std::vector<glm::vec3>& input_polygon, int num_clip_planes, const ClippingPlane* clip_planes, std::vector<glm::vec3>* out_polygon, const bool removeNotClipToPlane) const
 	{
 		if (!out_polygon) {
 			return;
@@ -263,8 +234,8 @@ namespace Engine {
 			// Loop through each edge of the polygon and clip edge against current plane
 			glm::vec3 tempPoint, startPoint = input->back();
 			for (const glm::vec3& endPoint : *input) {
-				bool startInPlane = plane.PointInPlane(startPoint);
-				bool endInPlane = plane.PointInPlane(endPoint);
+				const bool startInPlane = plane.PointInPlane(startPoint);
+				const bool endInPlane = plane.PointInPlane(endPoint);
 
 				// If in final pass, remove all points outside reference plane
 				if (removeNotClipToPlane) {
@@ -303,15 +274,15 @@ namespace Engine {
 		*out_polygon = *input;
 	}
 
-	bool SystemCollision::PlaneEdgeIntersection(const ClippingPlane& plane, const glm::vec3& start, const glm::vec3& end, glm::vec3& out_point)
+	bool SystemCollision::PlaneEdgeIntersection(const ClippingPlane& plane, const glm::vec3& start, const glm::vec3& end, glm::vec3& out_point) const
 	{
-		glm::vec3 ab = end - start;
+		const glm::vec3 ab = end - start;
 
 		// Check edge and plane are not parallel
-		float ab_p = glm::dot(plane.normal, ab);
+		const float ab_p = glm::dot(plane.normal, ab);
 		if (fabs(ab_p) > 1e-6f) {
 			// Generate random point on plane
-			glm::vec3 p_co = plane.normal * -plane.distance;
+			const glm::vec3 p_co = plane.normal * -plane.distance;
 
 			// Work out edge factor to scale edge by
 			float fac = -glm::dot(plane.normal, start - p_co) / ab_p;
@@ -327,7 +298,7 @@ namespace Engine {
 		return false;
 	}
 
-	glm::vec3 SystemCollision::GetClosestPointPolygon(const glm::vec3& pos, const std::vector<glm::vec3>& polygon)
+	glm::vec3 SystemCollision::GetClosestPointPolygon(const glm::vec3& pos, const std::vector<glm::vec3>& polygon) const
 	{
 		glm::vec3 final_closest_point = glm::vec3(0.0f);
 		float final_closest_distsq = FLT_MAX;
@@ -335,11 +306,11 @@ namespace Engine {
 		glm::vec3 last = polygon.back();
 		for (const glm::vec3& next : polygon) {
 			Edge edge = Edge(last, next);
-			glm::vec3 edge_closest_point = GetClosestPoint(pos, edge);
+			const glm::vec3 edge_closest_point = GetClosestPoint(pos, edge);
 
 			// Compute distance
-			glm::vec3 diff = pos - edge_closest_point;
-			float temp_distsq = glm::dot(diff, diff);
+			const glm::vec3 diff = pos - edge_closest_point;
+			const float temp_distsq = glm::dot(diff, diff);
 
 			if (temp_distsq < final_closest_distsq) {
 				final_closest_distsq = temp_distsq;
@@ -352,16 +323,16 @@ namespace Engine {
 		return final_closest_point;
 	}
 
-	glm::vec3 SystemCollision::GetClosestPoint(const glm::vec3& pos, std::vector<Edge>& edges)
+	glm::vec3 SystemCollision::GetClosestPoint(const glm::vec3& pos, std::vector<Edge>& edges) const
 	{
 		glm::vec3 final_closest_point = glm::vec3(0.0f);
 		float final_closest_distsq = FLT_MAX;
 
 		for (Edge& edge : edges) {
-			glm::vec3 edge_closest_point = GetClosestPoint(pos, edge);
+			const glm::vec3 edge_closest_point = GetClosestPoint(pos, edge);
 			
-			glm::vec3 diff = pos - edge_closest_point;
-			float temp_distsq = glm::dot(diff, diff);
+			const glm::vec3 diff = pos - edge_closest_point;
+			const float temp_distsq = glm::dot(diff, diff);
 
 			if (temp_distsq < final_closest_distsq) {
 				final_closest_distsq = temp_distsq;
@@ -372,14 +343,14 @@ namespace Engine {
 		return final_closest_point;
 	}
 
-	glm::vec3 SystemCollision::GetClosestPoint(const glm::vec3& pos, Edge& edge)
+	glm::vec3 SystemCollision::GetClosestPoint(const glm::vec3& pos, Edge& edge) const
 	{
-		glm::vec3 diffAP = pos - edge.start;
-		glm::vec3 diffAB = edge.end - edge.start;
+		const glm::vec3 diffAP = pos - edge.start;
+		const glm::vec3 diffAB = edge.end - edge.start;
 
 		// Distance along line in world space
-		float ABAPproduct = glm::dot(diffAP, diffAB);
-		float magnitudeAB = glm::dot(diffAB, diffAB);
+		const float ABAPproduct = glm::dot(diffAP, diffAB);
+		const float magnitudeAB = glm::dot(diffAB, diffAB);
 
 		float distance = ABAPproduct / magnitudeAB;
 		distance = std::max(std::min(distance, 1.0f), 0.0f);
@@ -388,59 +359,59 @@ namespace Engine {
 	}
 
 	// Use a quick sphere-sphere collision test to see if objects are close enough to check with more complex SAT collision detection
-	bool SystemCollision::BroadPhaseSphereSphere(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2)
+	bool SystemCollision::BroadPhaseSphereSphere(const ComponentTransform& transform, const ComponentCollisionBox& collider, const ComponentTransform& transform2, const ComponentCollisionBox& collider2) const
 	{
-		ComponentCollisionBox* boxA;
-		ComponentCollisionBox* boxB;
+		const float aRadius = (collider.GetLocalPoints().GetBiggestExtent() / 2.0f)* transform.GetBiggestScaleFactor();
+		const float bRadius = (collider2.GetLocalPoints().GetBiggestExtent() / 2.0f) * transform2.GetBiggestScaleFactor();
 
-		ComponentCollisionAABB* aabbA;
-		ComponentCollisionAABB* aabbB;
+		const float distanceSqr = glm::distance2(transform.GetWorldPosition(), transform2.GetWorldPosition());
 
-		float aRadius;
-		float bRadius;
-		
-		if ((boxA = dynamic_cast<ComponentCollisionBox*>(collider)) != nullptr) {
-			aRadius = (boxA->GetLocalPoints().GetBiggestExtent() / 2.0f) * transform->GetBiggestScaleFactor();
-		}
-		else if ((aabbA = dynamic_cast<ComponentCollisionAABB*>(collider)) != nullptr) {
-			aRadius = (aabbA->GetBoundary().GetBiggestExtent() / 2.0f) * transform->GetBiggestScaleFactor();
-		}
-		else {
-			throw std::invalid_argument("Collider must be AABB or box for broad phase");
-		}
+		const float combinedRadius = aRadius + bRadius;
+		const float combinedRadiusSqr = combinedRadius * combinedRadius;
 
-		if ((boxB = dynamic_cast<ComponentCollisionBox*>(collider2)) != nullptr) {
-			bRadius = (boxB->GetLocalPoints().GetBiggestExtent() / 2.0f) * transform2->GetBiggestScaleFactor();
-		}
-		else if ((aabbB = dynamic_cast<ComponentCollisionAABB*>(collider2)) != nullptr) {
-			bRadius = (aabbB->GetBoundary().GetBiggestExtent() / 2.0f) * transform2->GetBiggestScaleFactor();
-		}
-		else {
-			throw std::invalid_argument("Collider must be AABB or box for broad phase");
-		}
+		return (distanceSqr < combinedRadiusSqr) ? true : false;
+	}
+	// Use a quick sphere-sphere collision test to see if objects are close enough to check with more complex SAT collision detection
+	bool SystemCollision::BroadPhaseSphereSphere(const ComponentTransform& transform, const ComponentCollisionBox& collider, const ComponentTransform& transform2, const ComponentCollisionAABB& collider2) const
+	{
+		const float aRadius = (collider.GetLocalPoints().GetBiggestExtent() / 2.0f) * transform.GetBiggestScaleFactor();
+		const float bRadius = (collider2.GetBoundary().GetBiggestExtent() / 2.0f) * transform2.GetBiggestScaleFactor();
 
-		float distanceSqr = glm::distance2(transform->GetWorldPosition(), transform2->GetWorldPosition());
+		const float distanceSqr = glm::distance2(transform.GetWorldPosition(), transform2.GetWorldPosition());
 
-		float combinedRadius = aRadius + bRadius;
-		float combinedRadiusSqr = combinedRadius * combinedRadius;
+		const float combinedRadius = aRadius + bRadius;
+		const float combinedRadiusSqr = combinedRadius * combinedRadius;
+
+		return (distanceSqr < combinedRadiusSqr) ? true : false;
+	}
+	// Use a quick sphere-sphere collision test to see if objects are close enough to check with more complex SAT collision detection
+	bool SystemCollision::BroadPhaseSphereSphere(const ComponentTransform& transform, const ComponentCollisionAABB& collider, const ComponentTransform& transform2, const ComponentCollisionAABB& collider2) const
+	{
+		const float aRadius = (collider.GetBoundary().GetBiggestExtent() / 2.0f) * transform.GetBiggestScaleFactor();
+		const float bRadius = (collider2.GetBoundary().GetBiggestExtent() / 2.0f) * transform2.GetBiggestScaleFactor();
+
+		const float distanceSqr = glm::distance2(transform.GetWorldPosition(), transform2.GetWorldPosition());
+
+		const float combinedRadius = aRadius + bRadius;
+		const float combinedRadiusSqr = combinedRadius * combinedRadius;
 
 		return (distanceSqr < combinedRadiusSqr) ? true : false;
 	}
 
-	void SystemCollision::GetContactPoints(CollisionData& out_collisionInfo)
+	void SystemCollision::GetContactPoints(CollisionData& out_collisionInfo) const
 	{
 		std::vector<glm::vec3> poly1, poly2;
 		glm::vec3 normal1, normal2;
 		std::vector<ClippingPlane> adjPlanes1, adjPlanes2;
 
 		// Get incident reference polygon 1
-		GetIncidentReferencePolygon(out_collisionInfo.contactPoints[0].normal, poly1, normal1, adjPlanes1, out_collisionInfo.objectA);
+		GetIncidentReferencePolygon(out_collisionInfo.contactPoints[0].normal, poly1, normal1, adjPlanes1, out_collisionInfo.entityIDA);
 
 		// Get incident reference polygon 2
-		GetIncidentReferencePolygon(-out_collisionInfo.contactPoints[0].normal, poly2, normal2, adjPlanes2, out_collisionInfo.objectB);
+		GetIncidentReferencePolygon(-out_collisionInfo.contactPoints[0].normal, poly2, normal2, adjPlanes2, out_collisionInfo.entityIDB);
 
-		float penatration = out_collisionInfo.contactPoints[0].penetration;
-		glm::vec3 normal = out_collisionInfo.contactPoints[0].normal;
+		const float penatration = out_collisionInfo.contactPoints[0].penetration;
+		const glm::vec3 normal = out_collisionInfo.contactPoints[0].normal;
 		// return if either polygon contains no contact points
 		if (poly1.size() == 0 || poly2.size() == 0) {
 			return;
@@ -456,7 +427,7 @@ namespace Engine {
 		else {
 			// Clipping method
 			// Check if we need to flip the incident and reference faces
-			bool flipped = fabs(glm::dot(normal, normal1)) < fabs(glm::dot(normal, normal2));
+			const bool flipped = fabs(glm::dot(normal, normal1)) < fabs(glm::dot(normal, normal2));
 			if (flipped) {
 				std::swap(poly1, poly2);
 				std::swap(normal1, normal2);
@@ -469,14 +440,14 @@ namespace Engine {
 			}
 
 			// Clip and remove any contact points that are above the reference face
-			ClippingPlane refPlane = ClippingPlane(-normal1, -glm::dot(-normal1, poly1.front()));
+			const ClippingPlane refPlane = ClippingPlane(-normal1, -glm::dot(-normal1, poly1.front()));
 			SutherlandHodgmanClipping(poly2, 1, &refPlane, &poly2, true);
 
 			// Now left with selection of valid contact points to be used for collision manifold
 			bool first = true;
 			for (const glm::vec3& point : poly2) {
 				// Get distance to reference plane
-				glm::vec3 pointDiff = point - GetClosestPointPolygon(point, poly1);
+				const glm::vec3 pointDiff = point - GetClosestPointPolygon(point, poly1);
 				float contact_penetration = glm::dot(pointDiff, normal);
 
 				// set contact data
@@ -494,8 +465,8 @@ namespace Engine {
 						out_collisionInfo.contactPoints.clear();
 						first = false;
 					}
-					glm::vec3 localA = globalOnA - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectA->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
-					glm::vec3 localB = globalOnB - dynamic_cast<ComponentTransform*>(out_collisionInfo.objectB->GetComponent(COMPONENT_TRANSFORM))->GetWorldPosition();
+					const glm::vec3 localA = globalOnA - active_ecs->GetComponent<ComponentTransform>(out_collisionInfo.entityIDA)->GetWorldPosition();
+					const glm::vec3 localB = globalOnB - active_ecs->GetComponent<ComponentTransform>(out_collisionInfo.entityIDB)->GetWorldPosition();
 					//glm::vec3 newNormal = glm::normalize(-normal1 + normal2);
 					out_collisionInfo.AddContactPoint(localA, localB, normal, contact_penetration);
 				}
@@ -503,28 +474,26 @@ namespace Engine {
 		}
 	}
 
-	void SystemCollision::GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, std::vector<ClippingPlane>& out_adjPlanes, Entity* object)
+	void SystemCollision::GetIncidentReferencePolygon(const glm::vec3& axis, std::vector<glm::vec3>& out_face, glm::vec3& out_normal, std::vector<ClippingPlane>& out_adjPlanes, const unsigned int entityID) const
 	{
-		glm::mat4 modelMatrix = dynamic_cast<ComponentTransform*>(object->GetComponent(COMPONENT_TRANSFORM))->GetWorldModelMatrix();
-		glm::mat3 inverseNormalMatrix = glm::inverse(glm::mat3(modelMatrix));
-		glm::mat3 normalMatrix = glm::inverse(inverseNormalMatrix);
+		const ComponentTransform* transform = active_ecs->GetComponent<ComponentTransform>(entityID);
+		const glm::mat4& modelMatrix = transform->GetWorldModelMatrix();
+		const glm::mat3 inverseNormalMatrix = glm::inverse(glm::mat3(modelMatrix));
+		const glm::mat3 normalMatrix = glm::inverse(inverseNormalMatrix);
 
-		glm::vec3 localAxis = inverseNormalMatrix * axis;
+		const glm::vec3 localAxis = inverseNormalMatrix * axis;
 
 		// Get furthest vertex along axis - furthest face
 		int minVertexId, maxVertexId;
 		BoundingBox cube;
-		if (object->GetBoxCollisionComponent() != nullptr) {
-			cube = object->GetBoxCollisionComponent()->GetBoundingBox();
-		}
-		else if (object->GetAABBCollisionComponent() != nullptr) {
-			cube = object->GetAABBCollisionComponent()->GetBoundingBox();
-		}
-		else {
-			throw std::invalid_argument("Incident refernc polygon can only be retrieved on objects with either an AABB collider or box collider");
-		}
+		const ComponentCollisionBox* boxCollider = active_ecs->GetComponent<ComponentCollisionBox>(entityID);
+		const ComponentCollisionAABB* aabbCollider = active_ecs->GetComponent<ComponentCollisionAABB>(entityID);
+		if (boxCollider) { cube = boxCollider->GetBoundingBox(); }
+		else if (aabbCollider) { cube = aabbCollider->GetBoundingBox(); }
+		else { throw std::invalid_argument("Incident refernc polygon can only be retrieved on objects with either an AABB collider or box collider"); }
+
 		cube.GetMinMaxVerticesOnAxis(localAxis, minVertexId, maxVertexId);
-		BoxVertex& vertex = cube.vertices[maxVertexId];
+		const BoxVertex& vertex = cube.vertices[maxVertexId];
 
 		// Get face which is furthest along axis (contains the furthest vertex)
 		// Determined by normal being closest to parallel with axis
@@ -532,16 +501,14 @@ namespace Engine {
 		float correlation = -FLT_MAX;
 		for (int faceId : vertex.enclosingFaceIds) {
 			const BoxFace* face = &cube.faces[faceId];
-			float tempCorrelation = glm::dot(localAxis, face->normal);
+			const float tempCorrelation = glm::dot(localAxis, face->normal);
 			if (tempCorrelation > correlation) {
 				correlation = tempCorrelation;
 				bestFace = face;
 			}
 		}
 
-		if (bestFace == nullptr) {
-			return;
-		}
+		if (bestFace == nullptr) { return; }
 
 		// Output face normal
 		out_normal = glm::normalize((normalMatrix * bestFace->normal));
@@ -557,8 +524,8 @@ namespace Engine {
 		glm::vec3 worldPointOnPlane = modelMatrix * glm::vec4(cube.vertices[cube.edges[bestFace->edgeIds[0]].startVertexId].position, 1.0f);
 
 		// Form plane around reference face
-		glm::vec3 planeNormal = glm::normalize(-(normalMatrix * bestFace->normal));
-		float planeDistance = -glm::dot(planeNormal, worldPointOnPlane);
+		const glm::vec3 planeNormal = glm::normalize(-(normalMatrix * bestFace->normal));
+		const float planeDistance = -glm::dot(planeNormal, worldPointOnPlane);
 
 		// Loop over all adjacent faces and form clip plane
 		for (int edgeId : bestFace->edgeIds) {
@@ -569,9 +536,9 @@ namespace Engine {
 				if (adjFaceId != bestFace->id) {
 					const BoxFace& adjFace = cube.faces[adjFaceId];
 
-					glm::vec3 planeNrml = glm::normalize(-(normalMatrix * adjFace.normal));
-					float planeDist = -glm::dot(planeNrml, worldPointOnPlane);
-					out_adjPlanes.push_back(ClippingPlane(planeNrml, planeDist));
+					const glm::vec3 planeNormal = glm::normalize(-(normalMatrix * adjFace.normal));
+					const float planeDist = -glm::dot(planeNormal, worldPointOnPlane);
+					out_adjPlanes.push_back(ClippingPlane(planeNormal, planeDist));
 				}
 			}
 		}
