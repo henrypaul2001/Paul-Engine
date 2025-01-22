@@ -10,6 +10,8 @@ namespace Engine {
 		SystemCollisionSphereAABB(EntityManagerNew* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
 		~SystemCollisionSphereAABB() {}
 
+		constexpr const char* SystemName() override { return "SYSTEM_COLLISION_SPHERE_AABB"; }
+
 		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionSphere& collider);
 		void AfterAction();
 
