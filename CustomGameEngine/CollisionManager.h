@@ -37,7 +37,7 @@ namespace Engine {
 		CollisionManager();
 		~CollisionManager();
 
-		std::vector<CollisionData> GetUnresolvedCollisions() { return unresolvedCollisions; }
+		const std::vector<CollisionData>& GetUnresolvedCollisions() { return unresolvedCollisions; }
 		void ClearUnresolvedCollisions() { unresolvedCollisions.clear(); }
 
 		void AddToCollisionList(CollisionData newCollision) { unresolvedCollisions.push_back(newCollision); }

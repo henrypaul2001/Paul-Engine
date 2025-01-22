@@ -35,13 +35,13 @@ namespace Engine
 				if (s->Name() == SYSTEM_PHYSICS) {
 					if (collisionResponseSystem != nullptr) {
 						// Collision response
-						collisionResponseSystem->OnAction();
-						collisionResponseSystem->AfterAction();
+						//collisionResponseSystem->OnAction();
+						//collisionResponseSystem->AfterAction();
 					}
 					if (constraintSolver != nullptr) {
 						// Solve constraints
-						constraintSolver->OnAction();
-						constraintSolver->AfterAction();
+						//constraintSolver->OnAction();
+						//constraintSolver->AfterAction();
 					}
 				}
 			}

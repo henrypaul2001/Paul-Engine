@@ -1,48 +1,29 @@
 #include "CollisionResolver.h"
-#include "Scene.h"
 namespace Engine {
-	CollisionResolver::CollisionResolver(CollisionManager* collisonManager)
+	void CollisionResolver::Run(EntityManagerNew& ecs)
 	{
-		this->collisionManager = collisonManager;
-	}
+		SCOPE_TIMER("CollisionResolver::Run");
+		for (const CollisionData& collision : collisionManager->GetUnresolvedCollisions()) {
+			const unsigned int entityIDA = collision.entityIDA;
+			const unsigned int entityIDB = collision.entityIDB;
 
-	CollisionResolver::~CollisionResolver()
-	{
+			ComponentTransform* transformA = ecs.GetComponent<ComponentTransform>(entityIDA);
+			ComponentTransform* transformB = ecs.GetComponent<ComponentTransform>(entityIDB);
 
-	}
+			ComponentPhysics* physicsA = ecs.GetComponent<ComponentPhysics>(entityIDA);
+			ComponentPhysics* physicsB = ecs.GetComponent<ComponentPhysics>(entityIDB);
 
-	void CollisionResolver::OnAction()
-	{
-		SCOPE_TIMER("CollisionResolver::OnAction");
-		for (CollisionData collision : collisionManager->GetUnresolvedCollisions()) {
-			Entity* objectA = collision.objectA;
-			Entity* objectB = collision.objectB;
+			ComponentCollision* colliderA = ecs.GetComponent<ComponentCollisionAABB>(entityIDA);
+			if (!colliderA) { colliderA = ecs.GetComponent<ComponentCollisionSphere>(entityIDA); }
+			if (!colliderA) { colliderA = ecs.GetComponent<ComponentCollisionBox>(entityIDA); }
 
-			ComponentPhysics* physicsA = dynamic_cast<ComponentPhysics*>(objectA->GetComponent(COMPONENT_PHYSICS));
-			ComponentPhysics* physicsB = dynamic_cast<ComponentPhysics*>(objectB->GetComponent(COMPONENT_PHYSICS));
-
-			ComponentTransform* transformA = dynamic_cast<ComponentTransform*>(objectA->GetComponent(COMPONENT_TRANSFORM));
-			ComponentTransform* transformB = dynamic_cast<ComponentTransform*>(objectB->GetComponent(COMPONENT_TRANSFORM));
-
-			ComponentCollision* colliderA = dynamic_cast<ComponentCollision*>(objectA->GetComponent(COMPONENT_COLLISION_AABB));
-			if (colliderA == nullptr) {
-				colliderA = dynamic_cast<ComponentCollision*>(objectA->GetComponent(COMPONENT_COLLISION_SPHERE));
-			}
-			if (colliderA == nullptr) {
-				colliderA = dynamic_cast<ComponentCollision*>(objectA->GetComponent(COMPONENT_COLLISION_BOX));
-			}
-
-			ComponentCollision* colliderB = dynamic_cast<ComponentCollision*>(objectB->GetComponent(COMPONENT_COLLISION_AABB));
-			if (colliderB == nullptr) {
-				colliderB = dynamic_cast<ComponentCollision*>(objectB->GetComponent(COMPONENT_COLLISION_SPHERE));
-			}
-			if (colliderB == nullptr) {
-				colliderB = dynamic_cast<ComponentCollision*>(objectB->GetComponent(COMPONENT_COLLISION_BOX));
-			}
+			ComponentCollision* colliderB = ecs.GetComponent<ComponentCollisionAABB>(entityIDB);
+			if (!colliderB) { colliderB = ecs.GetComponent<ComponentCollisionSphere>(entityIDB); }
+			if (!colliderB) { colliderB = ecs.GetComponent<ComponentCollisionBox>(entityIDB); }
 
 			float totalMass = 0.0f;
-			if (physicsA != nullptr) { totalMass += physicsA->InverseMass(); }
-			if (physicsB != nullptr) { totalMass += physicsB->InverseMass(); }
+			if (physicsA) { totalMass += physicsA->InverseMass(); }
+			if (physicsB) { totalMass += physicsB->InverseMass(); }
 
 			// Seperate objects using projection
 			Separate(transformA, physicsA, colliderA, transformB, physicsB, colliderB, totalMass, collision);
@@ -50,28 +31,24 @@ namespace Engine {
 			// Update velocity of each physics component if they exist
 			Impulse(transformA, physicsA, colliderA, transformB, physicsB, colliderB, totalMass, collision);
 
-			for (ContactPoint& contact : collision.contactPoints) {
+			//for (ContactPoint& contact : collision.contactPoints) {
 				//PresolveContactPoint(contact, collision.objectA, collision.objectB, collision.contactPoints.size());
-			}
+			//}
 
-			for (ContactPoint& contact : collision.contactPoints) {
+			//for (ContactPoint& contact : collision.contactPoints) {
 				//SolveContactPoint(contact, collision.objectA, collision.objectB, collision.contactPoints.size());
-			}
+			//}
 		}
-	}
 
-	void CollisionResolver::AfterAction()
-	{
-		SCOPE_TIMER("CollisionResolver::AfterAction");
 		collisionManager->ClearUnresolvedCollisions();
 	}
 
-	void CollisionResolver::Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData& collision)
+	void CollisionResolver::Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, const CollisionData& collision) const
 	{
-		for (ContactPoint& contact : collision.contactPoints) {
+		for (const ContactPoint& contact : collision.contactPoints) {
 			//ContactPoint& contact = collision.contactPoints[0];
 			if (colliderA->IsMovedByCollisions()) {
-				if (physicsA != nullptr) {
+				if (physicsA) {
 					transformA->SetPosition(transformA->GetWorldPosition() + (contact.normal * contact.penetration) * (physicsA->InverseMass() / totalMass));
 				}
 				else {
@@ -79,7 +56,7 @@ namespace Engine {
 				}
 			}
 			if (colliderB->IsMovedByCollisions()) {
-				if (physicsB != nullptr) {
+				if (physicsB) {
 					transformB->SetPosition(transformB->GetWorldPosition() - (contact.normal * contact.penetration) * (physicsB->InverseMass() / totalMass));
 				}
 				else {
@@ -89,7 +66,7 @@ namespace Engine {
 		}
 	}
 
-	void CollisionResolver::Impulse(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, CollisionData& collision)
+	void CollisionResolver::Impulse(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, float totalMass, const CollisionData& collision) const
 	{
 		std::vector<glm::vec3> impulses;
 		std::vector<glm::vec3> inertiaAs;
@@ -115,11 +92,11 @@ namespace Engine {
 			startAngularB = physicsB->AngularVelocity();
 		}
 
-		glm::vec3 contactVelocity = startVelocityB - startVelocityA;
+		const glm::vec3 contactVelocity = startVelocityB - startVelocityA;
 
-		for (ContactPoint& contact : collision.contactPoints) {
-			glm::vec3 relativeA = contact.contactPointA;
-			glm::vec3 relativeB = contact.contactPointB;
+		for (const ContactPoint& contact : collision.contactPoints) {
+			const glm::vec3 relativeA = contact.contactPointA;
+			const glm::vec3 relativeB = contact.contactPointB;
 
 			glm::vec3 relativeAngularA = glm::vec3();
 			glm::vec3 relativeAngularB = glm::vec3();
@@ -136,19 +113,19 @@ namespace Engine {
 				relativeLinearB += relativeAngularB;
 			}
 
-			float impulseForce = glm::dot(contactVelocity, contact.normal);
+			const float impulseForce = glm::dot(contactVelocity, contact.normal);
 
 			glm::vec3 inertiaA = glm::vec3(0.0f);
 			glm::vec3 inertiaB = glm::vec3(0.0f);
 			if (physicsA != nullptr) { inertiaA = glm::cross(physicsA->InertiaTensor() * glm::cross(relativeA, contact.normal), relativeA); }
 			if (physicsB != nullptr) { inertiaB = glm::cross(physicsB->InertiaTensor() * glm::cross(relativeB, contact.normal), relativeB); }
 
-			float angularEffect = glm::dot(inertiaA + inertiaB, contact.normal);
+			const float angularEffect = glm::dot(inertiaA + inertiaB, contact.normal);
 
-			float coefficient = elasticityA * elasticityB;
+			const float coefficient = elasticityA * elasticityB;
 
-			float J = (-(1.0f + coefficient) * impulseForce) / (totalMass + angularEffect);
-			glm::vec3 fullImpulse = contact.normal * J;
+			const float J = (-(1.0f + coefficient) * impulseForce) / (totalMass + angularEffect);
+			const glm::vec3 fullImpulse = contact.normal * J;
 
 			impulses.push_back(fullImpulse);
 
@@ -158,22 +135,23 @@ namespace Engine {
 
 		for (int i = 0; i < impulses.size(); i++) {
 			//glm::vec3 impulse = impulses[i] / float(collision.contactPoints.size());
-			glm::vec3 impulse = impulses[i];
-			glm::vec3 relativeA = collision.contactPoints[i].contactPointA;
-			glm::vec3 relativeB = collision.contactPoints[i].contactPointB;
+			const glm::vec3 impulse = impulses[i];
+			const glm::vec3 relativeA = collision.contactPoints[i].contactPointA;
+			const glm::vec3 relativeB = collision.contactPoints[i].contactPointB;
 
-			if (physicsA != nullptr && colliderA->IsMovedByCollisions()) {
+			if (physicsA && colliderA->IsMovedByCollisions()) {
 				physicsA->ApplyLinearImpulse(-impulse / float(collision.contactPoints.size()));
 				physicsA->ApplyAngularImpulse(glm::cross(relativeA, collision.contactPoints[i].normal * -impulse));
 			}
 
-			if (physicsB != nullptr && colliderB->IsMovedByCollisions()) {
+			if (physicsB && colliderB->IsMovedByCollisions()) {
 				physicsB->ApplyLinearImpulse(impulse / float(collision.contactPoints.size()));
 				physicsB->ApplyAngularImpulse(glm::cross(relativeB, collision.contactPoints[i].normal * impulse));
 			}
 		}
 	}
 
+	/*
 	void CollisionResolver::PresolveContactPoint(ContactPoint& contact, Entity* objectA, Entity* objectB, int numContacts)
 	{
 		// Update contact constraint
@@ -309,6 +287,7 @@ namespace Engine {
 				}
 			}
 		}
-		*/
+		
 	}
+	*/
 }

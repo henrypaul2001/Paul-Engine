@@ -32,6 +32,7 @@ namespace Engine
 		ResourceManager* resources;
 
 		SystemFrustumCulling frustumCulling;
+		CollisionResolver collisionResolver;
 
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
