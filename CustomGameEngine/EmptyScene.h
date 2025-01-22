@@ -29,6 +29,7 @@
 #include "SystemAnimatedGeometryAABBGeneration.h"
 
 #include "SystemCollisionAABB.h"
+#include "SystemCollisionBox.h"
 
 namespace Engine
 {
@@ -217,6 +218,7 @@ namespace Engine
 			 
 			//systemManager.RegisterSystem("TEST_SYSTEM", std::function(TestSystem), &TestAfterAction);
 			systemManager.RegisterSystem(aabbSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionAABB&)>(std::bind(&SystemCollisionAABB::OnAction, &aabbSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionAABB::AfterAction, &aabbSystem));
+			systemManager.RegisterSystem(boxSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentCollisionBox&)>(std::bind(&SystemCollisionBox::OnAction, &boxSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemCollisionBox::AfterAction, &boxSystem));
 
 			systemManager.RegisterSystem(audioSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentAudioSource&)>(std::bind(&SystemAudio::OnAction, &audioSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), [](){}, std::bind(&SystemAudio::AfterAction, &audioSystem));
 			systemManager.RegisterSystem(physicsSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentPhysics&)>(std::bind(&SystemPhysics::OnAction, &physicsSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemPhysics::AfterAction, &physicsSystem));
@@ -247,5 +249,6 @@ namespace Engine
 		SystemAnimatedGeometryAABBGeneration animAABBSystem;
 
 		SystemCollisionAABB aabbSystem;
+		SystemCollisionBox boxSystem;
 	};
 }
