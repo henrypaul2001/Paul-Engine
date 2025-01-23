@@ -11,6 +11,7 @@
 #include "RenderManager.h"
 #include "CollisionManager.h"
 #include "ConstraintManager.h"
+#include "LightManager.h"
 
 #include "SystemFrustumCulling.h"
 #include "UIText.h"
@@ -32,6 +33,7 @@ namespace Engine
 		ResourceManager* resources;
 
 		EntityManagerNew ecs;
+		LightManager lightManager;
 		SystemFrustumCulling frustumCulling;
 		CollisionResolver collisionResolver;
 		ConstraintSolver constraintSolver;

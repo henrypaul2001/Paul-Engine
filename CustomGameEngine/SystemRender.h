@@ -1,5 +1,6 @@
 #pragma once
 #include "EntityManagerNew.h"
+#include "LightManager.h"
 #include "Camera.h"
 #include "ComponentTransform.h"
 #include "ComponentGeometry.h"
@@ -21,7 +22,7 @@ namespace Engine {
 	class SystemRender
 	{
 	public:
-		SystemRender(EntityManagerNew* ecs);
+		SystemRender(EntityManagerNew* ecs, LightManager* lightManager);
 		~SystemRender();
 
 		constexpr const char* SystemName() const { return "SYSTEM_RENDER"; }
@@ -51,5 +52,6 @@ namespace Engine {
 		Camera* activeCamera;
 
 		EntityManagerNew* ecs;
+		LightManager* lightManager;
 	};
 }

@@ -16,7 +16,7 @@ namespace Engine {
 		ComponentLight(LightTypes type);
 		~ComponentLight();
 
-		LightTypes GetLightType() { return type; }
+		LightTypes GetLightType() const { return type; }
 
 		// Universal
 		glm::vec3 Colour;

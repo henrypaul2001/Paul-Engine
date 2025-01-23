@@ -1,9 +1,9 @@
 #include "SystemRender.h"
-#include "LightManager.h"
+#include "ComponentAnimator.h"
 #include "ResourceManager.h"
 namespace Engine {
 	std::map<float, std::pair<Mesh*, unsigned int>> SystemRender::transparentMeshes = std::map<float, std::pair<Mesh*, unsigned int>>();
-	SystemRender::SystemRender(EntityManagerNew* ecs) : ecs(ecs)
+	SystemRender::SystemRender(EntityManagerNew* ecs, LightManager* lightManager) : ecs(ecs), lightManager(lightManager)
 	{
 		//camera = nullptr;
 		shadersUsedThisFrame = std::unordered_map<unsigned int, Shader*>();
@@ -48,7 +48,6 @@ namespace Engine {
 	{
 		SCOPE_TIMER("SystemRender::RenderMesh");
 		ResourceManager* resources = ResourceManager::GetInstance();
-		LightManager* lightManager = LightManager::GetInstance();
 
 		const ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
 		ComponentGeometry* geometry = ecs->GetComponent<ComponentGeometry>(entityID);
@@ -63,7 +62,7 @@ namespace Engine {
 				// add shader to list and set lighting uniforms
 				shadersUsedThisFrame[shader->GetID()] = shader;
 				shader->Use();
-				lightManager->SetShaderUniforms(shader, activeCamera);
+				lightManager->SetShaderUniforms(*ecs, shader, activeCamera);
 			}
 		}
 
