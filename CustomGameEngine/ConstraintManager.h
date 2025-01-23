@@ -8,27 +8,27 @@ namespace Engine {
 		ConstraintManager() {}
 		~ConstraintManager() { ClearConstraints(); }
 
-		void AddNewConstraint(Constraint* constraint) { constraints.push_back(constraint); }
+		//void AddNewConstraint(Constraint* constraint) { constraints.push_back(constraint); }
 
 		void RemoveConstraint(Constraint* constraintToRemove) {
-			constraints.erase(std::find(constraints.begin(), constraints.end(), constraintToRemove));
-			delete constraintToRemove;
+			//constraints.erase(std::find(constraints.begin(), constraints.end(), constraintToRemove));
+			//delete constraintToRemove;
 		}
 		void RemoveConstraint(int indexToRemove) {
-			Constraint* constraintToRemove = constraints[indexToRemove];
-			constraints.erase(constraints.begin() + indexToRemove);
-			delete constraintToRemove;
+			//Constraint* constraintToRemove = constraints[indexToRemove];
+			//constraints.erase(constraints.begin() + indexToRemove);
+			//delete constraintToRemove;
 		}
 
 		void ClearConstraints() {
-			for (int i = 0; i < constraints.size(); i++) {
-				delete constraints[i];
-			}
+			//for (int i = 0; i < constraints.size(); i++) {
+				//delete constraints[i];
+			//}
 			constraints.clear();
 		}
 
-		std::vector<Constraint*>& GetConstraints() { return constraints; }
+		std::vector<Constraint>& GetConstraints() { return constraints; }
 	protected:
-		std::vector<Constraint*> constraints;
+		std::vector<Constraint> constraints;
 	};
 }

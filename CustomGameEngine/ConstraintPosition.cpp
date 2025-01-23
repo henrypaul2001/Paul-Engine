@@ -2,20 +2,29 @@
 #include "ComponentPhysics.h"
 #include "ComponentTransform.h"
 namespace Engine {
-	void ConstraintPosition::UpdateConstraint(float deltaTime)
+	void ConstraintPosition::UpdateConstraint(EntityManagerNew* ecs, const float deltaTime) const
 	{
-		glm::vec3 worldSpaceJointPositionA = objectA.GetTransformComponent()->GetWorldModelMatrix() * glm::vec4(relativeJointPositionA, 1.0f);
-		glm::vec3 worldSpaceJointPositionB = objectB.GetTransformComponent()->GetWorldModelMatrix() * glm::vec4(relativeJointPositionB, 1.0f);
-		glm::vec3 relativePosition = worldSpaceJointPositionA - worldSpaceJointPositionB;
-		float currentDistance = glm::length(relativePosition);
-		float offset = distance - currentDistance;
+		const ComponentTransform* transformA = ecs->GetComponent<ComponentTransform>(objectA.ID());
+		const ComponentTransform* transformB = ecs->GetComponent<ComponentTransform>(objectB.ID());
 
-		float targetAngleDegrees = 180.0f;
+		ComponentPhysics* physicsA = ecs->GetComponent<ComponentPhysics>(objectA.ID());
+		ComponentPhysics* physicsB = ecs->GetComponent<ComponentPhysics>(objectB.ID());
 
-		glm::vec3 rotationConstraintNormal = glm::normalize(worldSpaceJointPositionA - worldSpaceJointPositionB);
+		// At least one of the constrained objects must have a physics component
+		if (!physicsA && !physicsB) { return; }
+
+		const glm::vec3 worldSpaceJointPositionA = transformA->GetWorldModelMatrix() * glm::vec4(relativeJointPositionA, 1.0f);
+		const glm::vec3 worldSpaceJointPositionB = transformB->GetWorldModelMatrix() * glm::vec4(relativeJointPositionB, 1.0f);
+		const glm::vec3 relativePosition = worldSpaceJointPositionA - worldSpaceJointPositionB;
+		const float currentDistance = glm::length(relativePosition);
+		const float offset = distance - currentDistance;
+
+		const float targetAngleDegrees = 180.0f;
+
+		const glm::vec3 rotationConstraintNormal = glm::normalize(worldSpaceJointPositionA - worldSpaceJointPositionB);
 
 		// Get current angle between them
-		float cosAngle = acos((glm::dot(rotationConstraintNormal, relativeJointPositionA) / (glm::length(rotationConstraintNormal) * glm::length(relativeJointPositionA))));
+		const float cosAngle = acos((glm::dot(rotationConstraintNormal, relativeJointPositionA) / (glm::length(rotationConstraintNormal) * glm::length(relativeJointPositionA))));
 		float angleDegrees = cosAngle * (180.0f / glm::pi<float>());
 
 		float angleOffset = targetAngleDegrees - angleDegrees;
@@ -23,44 +32,41 @@ namespace Engine {
 			angleDegrees = 180.0f - angleDegrees;
 		}
 		if (abs(offset) > 0.0f) {
-			glm::vec3 direction = glm::normalize(relativePosition);
-
-			ComponentPhysics* physicsA = objectA.GetPhysicsComponent();
-			ComponentPhysics* physicsB = objectB.GetPhysicsComponent();
+			const glm::vec3 direction = glm::normalize(relativePosition);
 
 			glm::vec3 velocityA = glm::vec3(0.0f);
 			glm::vec3 velocityB = glm::vec3(0.0f);
 			float inverseMassA = 0.0f;
 			float inverseMassB = 0.0f;
 
-			if (physicsA != nullptr) {
+			if (physicsA) {
 				velocityA = physicsA->Velocity();
 				inverseMassA = physicsA->InverseMass();
 			}
-			if (physicsB != nullptr) {
+			if (physicsB) {
 				velocityB = physicsB->Velocity();
 				inverseMassB = physicsB->InverseMass();
 			}
 
-			glm::vec3 relativeVelocity = velocityA - velocityB;
-			float constraintMass = inverseMassA + inverseMassB;
+			const glm::vec3 relativeVelocity = velocityA - velocityB;
+			const float constraintMass = inverseMassA + inverseMassB;
 
 			if (constraintMass > 0.0f) {
-				float constraintStress = glm::dot(relativeVelocity, direction);
-				float biasFactor = this->bias;
-				float bias = -(biasFactor / deltaTime) * offset;
+				const float constraintStress = glm::dot(relativeVelocity, direction);
+				const float biasFactor = this->bias;
+				const float bias = -(biasFactor / deltaTime) * offset;
 
-				float lambda = -(constraintStress + bias) / constraintMass;
+				const float lambda = -(constraintStress + bias) / constraintMass;
 
-				if (physicsA != nullptr) {
-					glm::vec3 impulseA = direction * lambda;
+				if (physicsA) {
+					const glm::vec3 impulseA = direction * lambda;
 					physicsA->ApplyLinearImpulse(impulseA);
-					physicsA->ApplyAngularImpulse(glm::cross(worldSpaceJointPositionA - objectA.GetTransformComponent()->GetWorldPosition(), impulseA * (angleOffset * (angleDegrees / targetAngleDegrees)))); // Angular impulse scales as the angle between the two faces gets larger
+					physicsA->ApplyAngularImpulse(glm::cross(worldSpaceJointPositionA - transformA->GetWorldPosition(), impulseA * (angleOffset * (angleDegrees / targetAngleDegrees)))); // Angular impulse scales as the angle between the two faces gets larger
 				}
-				if (physicsB != nullptr) {
-					glm::vec3 impulseB = -direction * lambda;
+				if (physicsB) {
+					const glm::vec3 impulseB = -direction * lambda;
 					physicsB->ApplyLinearImpulse(impulseB);
-					physicsB->ApplyAngularImpulse(glm::cross(worldSpaceJointPositionB - objectB.GetTransformComponent()->GetWorldPosition(), impulseB * (angleOffset * (angleDegrees / targetAngleDegrees))));
+					physicsB->ApplyAngularImpulse(glm::cross(worldSpaceJointPositionB - transformB->GetWorldPosition(), impulseB * (angleOffset * (angleDegrees / targetAngleDegrees))));
 				}
 			}
 		}

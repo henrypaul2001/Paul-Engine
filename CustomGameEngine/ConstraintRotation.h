@@ -4,25 +4,19 @@ namespace Engine {
 	class ConstraintRotation : public Constraint
 	{
 	public:
-		ConstraintRotation(Entity& objectA, Entity& objectB, glm::vec3 maxRotationOffset = glm::vec3(0.0f), bool controlXRotation = true, bool controlYRotation = true, bool controlZRotation = true, float bias = 0.000005f) : Constraint(objectA, objectB, bias) {
-			this->controlXRotation = controlXRotation; 
-			this->controlYRotation = controlYRotation;
-			this->controlZRotation = controlZRotation;
-
-			this->maxRotationOffset = maxRotationOffset;
-		}
-
+		ConstraintRotation(EntityNew& objectA, EntityNew& objectB, const glm::vec3& maxRotationOffset = glm::vec3(0.0f), const bool controlXRotation = true, const bool controlYRotation = true, const bool controlZRotation = true, const float bias = 0.000005f) : Constraint(objectA, objectB, bias),
+			controlXRotation(controlXRotation), controlYRotation(controlYRotation), controlZRotation(controlZRotation), maxRotationOffset(maxRotationOffset) {}
 		~ConstraintRotation() {}
 
-		void UpdateConstraint(float deltaTime) override;
+		void UpdateConstraint(EntityManagerNew* ecs, const float deltaTime) const override;
 
-		bool ControlXRotation() { return controlXRotation; }
-		bool ControlYRotation() { return controlYRotation; }
-		bool ControlZRotation() { return controlZRotation; }
+		bool ControlXRotation() const { return controlXRotation; }
+		bool ControlYRotation() const { return controlYRotation; }
+		bool ControlZRotation() const { return controlZRotation; }
 
-		void ControlXRotation(bool control) { controlXRotation = control; }
-		void ControlYRotation(bool control) { controlYRotation = control; }
-		void ControlZRotation(bool control) { controlZRotation = control; }
+		void SetControlXRotation(const bool control) { controlXRotation = control; }
+		void SetControlYRotation(const bool control) { controlYRotation = control; }
+		void SetControlZRotation(const bool control) { controlZRotation = control; }
 	private:
 		glm::vec3 maxRotationOffset;
 		bool controlXRotation, controlYRotation, controlZRotation;
