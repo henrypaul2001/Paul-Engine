@@ -8,7 +8,7 @@ namespace Engine {
 			controlXRotation(controlXRotation), controlYRotation(controlYRotation), controlZRotation(controlZRotation), maxRotationOffset(maxRotationOffset) {}
 		~ConstraintRotation() {}
 
-		void UpdateConstraint(EntityManagerNew* ecs, const float deltaTime) const override;
+		void UpdateConstraint(EntityManagerNew& ecs, const float deltaTime) const override;
 
 		bool ControlXRotation() const { return controlXRotation; }
 		bool ControlYRotation() const { return controlYRotation; }

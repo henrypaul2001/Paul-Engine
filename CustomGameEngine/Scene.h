@@ -31,8 +31,10 @@ namespace Engine
 		ConstraintManager* constraintManager;
 		ResourceManager* resources;
 
+		EntityManagerNew ecs;
 		SystemFrustumCulling frustumCulling;
 		CollisionResolver collisionResolver;
+		ConstraintSolver constraintSolver;
 
 		int SCR_WIDTH;
 		int SCR_HEIGHT;

@@ -1,12 +1,12 @@
 #include "ConstraintRotation.h"
 namespace Engine {
-	void ConstraintRotation::UpdateConstraint(EntityManagerNew* ecs, const float deltaTime) const
+	void ConstraintRotation::UpdateConstraint(EntityManagerNew& ecs, const float deltaTime) const
 	{
-		const ComponentTransform* transformA = ecs->GetComponent<ComponentTransform>(objectA.ID());
-		const ComponentTransform* transformB = ecs->GetComponent<ComponentTransform>(objectB.ID());
+		const ComponentTransform* transformA = ecs.GetComponent<ComponentTransform>(objectA.ID());
+		const ComponentTransform* transformB = ecs.GetComponent<ComponentTransform>(objectB.ID());
 
-		ComponentPhysics* physicsA = ecs->GetComponent<ComponentPhysics>(objectA.ID());
-		ComponentPhysics* physicsB = ecs->GetComponent<ComponentPhysics>(objectB.ID());
+		ComponentPhysics* physicsA = ecs.GetComponent<ComponentPhysics>(objectA.ID());
+		ComponentPhysics* physicsB = ecs.GetComponent<ComponentPhysics>(objectB.ID());
 
 		// At least one of the constrained objects must have a physics component
 		if (!physicsA && !physicsB) { return; }

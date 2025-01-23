@@ -11,7 +11,7 @@ namespace Engine {
 	class CollisionResolver
 	{
 	public:
-		CollisionResolver(CollisionManager* collisonManager) : collisionManager(collisionManager) {}
+		CollisionResolver(CollisionManager* collisionManager) : collisionManager(collisionManager) {}
 		~CollisionResolver() {}
 
 		void Run(EntityManagerNew& ecs);

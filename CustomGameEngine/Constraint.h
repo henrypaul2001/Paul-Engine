@@ -8,7 +8,7 @@ namespace Engine {
 		Constraint(EntityNew& objectA, EntityNew& objectB, const float bias) : objectA(objectA), objectB(objectB), active(true), bias(bias){}
 		~Constraint() {}
 
-		virtual void UpdateConstraint(EntityManagerNew* ecs, const float deltaTime) const = 0;
+		virtual void UpdateConstraint(EntityManagerNew& ecs, const float deltaTime) const = 0;
 
 		float Bias() const { return bias; }
 		void SetBias(const float newBias) { this->bias = newBias; }

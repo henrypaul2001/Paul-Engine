@@ -6,7 +6,7 @@ namespace Engine
 {
 	float Scene::dt;
 
-	Scene::Scene(SceneManager* sceneManager, const std::string& name) : camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), collisionResolver(collisionManager) {
+	Scene::Scene(SceneManager* sceneManager, const std::string& name) : camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), collisionResolver(collisionManager), constraintSolver(constraintManager) {
 		SCOPE_TIMER("Scene::Scene()");
 		this->resources = ResourceManager::GetInstance();
 		this->sceneManager = sceneManager;
@@ -19,7 +19,6 @@ namespace Engine
 		entityManager = new EntityManager();
 		systemManager = new SystemManager();
 		renderManager = RenderManager::GetInstance();
-		constraintManager = new ConstraintManager();
 		dt = 0;
 
 		this->name = name;
@@ -50,9 +49,8 @@ namespace Engine
 		collisionManager->ConstructBVHTree();
 		frustumCulling.Run(camera, collisionManager);
 
-		// collision response
-		//collisionResolver.Run(ecs);
-		// constraint solve
+		collisionResolver.Run(ecs);
+		constraintSolver.Run(ecs);
 	}
 
 	void Scene::Render()
