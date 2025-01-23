@@ -18,8 +18,9 @@ namespace Engine {
 		Mesh* mesh;
 		glm::vec3 worldPosition;
 		unsigned int globalIndex;
+		unsigned int entityID;
 
-		BVHObject(Mesh* mesh, const glm::vec3& worldPosition, const unsigned int index) : mesh(mesh), worldPosition(worldPosition), globalIndex(index) {}
+		BVHObject(Mesh* mesh, const glm::vec3& worldPosition, const unsigned int index, const unsigned int entityID) : mesh(mesh), worldPosition(worldPosition), globalIndex(index), entityID(entityID) {}
 	};
 
 	class BVHTree
@@ -28,7 +29,7 @@ namespace Engine {
 		BVHTree(unsigned int maxObjectsPerNode = 3u);
 		~BVHTree();
 
-		void BuildTree(const std::vector<std::pair<glm::vec3, Mesh*>>& unsortedObjects);
+		void BuildTree(const std::vector<std::pair<std::pair<glm::vec3, unsigned int>, Mesh*>>& unsortedObjects);
 		BVHNode* GetRootNode() { return rootNode; }
 		const unsigned int GetNodeCount() const { return nodeCount; }
 		const std::vector<BVHObject>& GetGlobalObjects() const { return globalObjects; }

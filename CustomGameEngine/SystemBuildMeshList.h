@@ -22,12 +22,12 @@ namespace Engine {
 
 			const std::vector<Mesh*>& meshList = geometry.GetModel()->meshes;
 			for (Mesh* m : meshList) {
-				centrePosAndMeshesList.push_back(std::make_pair(pos, m));
+				centrePosAndMeshesList.push_back(std::make_pair(std::make_pair(pos, entityID), m));
 			}
 		}
 
-		static const std::vector<std::pair<glm::vec3, Mesh*>>& MeshList() { return centrePosAndMeshesList; }
+		static const std::vector<std::pair<std::pair<glm::vec3, unsigned int>, Mesh*>>& MeshList() { return centrePosAndMeshesList; }
 	private:
-		static std::vector<std::pair<glm::vec3, Mesh*>> centrePosAndMeshesList;
+		static std::vector<std::pair<std::pair<glm::vec3, unsigned int>, Mesh*>> centrePosAndMeshesList;
 	};
 }

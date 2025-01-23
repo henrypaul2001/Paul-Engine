@@ -1,7 +1,7 @@
 #include "SystemFrustumCulling.h"
 #include <glm/gtx/norm.hpp>
 namespace Engine {
-	std::map<float, Mesh*> SystemFrustumCulling::culledMeshList = std::map<float, Mesh*>();
+	std::map<float, std::pair<Mesh*, unsigned int>> SystemFrustumCulling::culledMeshList = std::map<float, std::pair<Mesh*, unsigned int>>();
 
 	void SystemFrustumCulling::Run(Camera* activeCamera, CollisionManager* collisionManager)
 	{
@@ -110,7 +110,7 @@ namespace Engine {
 				std::cout << "ahhhhhh" << std::endl;
 			}
 		}
-		culledMeshList[distanceToCameraSquared] = bvhObject.mesh;
+		culledMeshList[distanceToCameraSquared] = std::make_pair(bvhObject.mesh, bvhObject.entityID);
 	}
 
 	void SystemFrustumCulling::TestBVHNodeRecursive(const BVHNode* node)

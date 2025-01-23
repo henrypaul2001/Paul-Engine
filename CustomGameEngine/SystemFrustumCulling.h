@@ -25,7 +25,7 @@ namespace Engine {
 
 		//void SetActiveCamera(Camera* newCamera) { this->activeCamera = newCamera; }
 
-		static std::map<float, Mesh*> culledMeshList;
+		static std::map<float, std::pair<Mesh*, unsigned int>> culledMeshList;
 	private:
 		FrustumIntersection AABBIsOnOrInFrontOfPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
 		bool TestAABBAndViewPlane(const AABBPoints& aabb, const glm::vec3& boxWorldOrigin, const ViewPlane& plane);
