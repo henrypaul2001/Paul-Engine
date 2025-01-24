@@ -3,7 +3,7 @@
 #include "ResourceManager.h"
 namespace Engine {
 	std::map<float, std::pair<Mesh*, unsigned int>> SystemRender::transparentMeshes = std::map<float, std::pair<Mesh*, unsigned int>>();
-	SystemRender::SystemRender(EntityManagerNew* ecs, LightManager* lightManager) : ecs(ecs), lightManager(lightManager)
+	SystemRender::SystemRender() : ecs(nullptr), lightManager(nullptr)
 	{
 		//camera = nullptr;
 		shadersUsedThisFrame = std::unordered_map<unsigned int, Shader*>();

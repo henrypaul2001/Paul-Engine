@@ -22,7 +22,8 @@ namespace Engine {
 	class SystemRender
 	{
 	public:
-		SystemRender(EntityManagerNew* ecs, LightManager* lightManager);
+		friend class RenderPipeline;
+		SystemRender();
 		~SystemRender();
 
 		constexpr const char* SystemName() const { return "SYSTEM_RENDER"; }

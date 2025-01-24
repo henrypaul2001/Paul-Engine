@@ -1,19 +1,16 @@
 #pragma once
 #include "RenderPipeline.h"
 namespace Engine {
-	class ResourceManager;
 	class DeferredPipeline : public RenderPipeline
 	{
 	public:
-		DeferredPipeline();
-		~DeferredPipeline();
+		DeferredPipeline() {}
+		~DeferredPipeline() {}
 
-		RENDER_PIPELINE Name() override { return DEFERRED_PIPELINE; }
-		void Run(std::vector<System*> renderSystems, std::vector<Entity*> entities) override;
+		constexpr const char* PipelineName() const override { return "DEFERRED_PIPELINE"; }
+		void Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager) override;
 
 	protected:
-		ResourceManager* resources;
-
 		void SwapScreenTextures() {
 			unsigned int temp = activeScreenTexture;
 			activeScreenTexture = alternateScreenTexture;

@@ -1,52 +1,25 @@
 #include "ForwardPipeline.h"
-#include "ResourceManager.h"
-#include "ComponentLight.h"
-#include "LightManager.h"
-#include "SystemRender.h"'
-#include "SystemShadowMapping.h"
-#include "SystemFrustumCulling.h"
+#include "RenderManager.h"
 namespace Engine {
-	ForwardPipeline::ForwardPipeline()
-	{
-
-	}
-	 
-	ForwardPipeline::~ForwardPipeline()
-	{
-
-	}
-
-	void ForwardPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
+	void ForwardPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager)
 	{
 		SCOPE_TIMER("ForwardPipeline::Run");
-		RenderPipeline::Run(renderSystems, entities);
+		RenderPipeline::Run(ecs, lightManager, collisionManager);
 
-		this->renderSystems = renderSystems;
-
-		// shadow map steps
-		if (shadowmapSystem != nullptr) {
-			RunShadowMapSteps();
-		}
+		RunShadowMapSteps();
 
 		// render scene to textured framebuffer
-		if (renderSystem != nullptr) {
-
-			SceneRenderStep();
-
-			BloomStep(*renderInstance->GetBloomBrightnessTexture());
-
-			AdvancedBloomStep(*renderInstance->GetScreenTexture());
-
-			ScreenTextureStep();
-
-			UIRenderStep();
-		}
+		SceneRenderStep();
+		BloomStep(*renderInstance->GetBloomBrightnessTexture());
+		AdvancedBloomStep(*renderInstance->GetScreenTexture());
+		ScreenTextureStep();
+		UIRenderStep();
 	}
 
 	void ForwardPipeline::SceneRenderStep()
 	{
 		SCOPE_TIMER("ForwardPipeline::SceneRenderStep");
-		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
+		const RenderOptions& renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		glViewport(0, 0, screenWidth, screenHeight);
 
 		// Render to textured framebuffer
@@ -57,25 +30,19 @@ namespace Engine {
 		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 		glDrawBuffers(2, drawBuffers);
 
-		Camera* activeCamera = renderSystem->GetActiveCamera();
+		Camera* activeCamera = renderSystem.GetActiveCamera();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		// If frustum culling active
-		renderSystem->RenderMeshes(SystemFrustumCulling::culledMeshList);
-
-		// else
-		//for (Entity* e : entities) {
-		//	renderSystem->OnAction(e);
-		//}
-		renderSystem->AfterAction();
+		renderSystem.RenderMeshes(SystemFrustumCulling::culledMeshList);
 
 		// Render skybox
 		if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
-			Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+			Shader* skyShader = resources->SkyboxShader();
 			skyShader->Use();
 
-			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+			glBindBuffer(GL_UNIFORM_BUFFER, resources->CommonUniforms());
 			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(activeCamera->GetViewMatrix()))));
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -91,55 +58,42 @@ namespace Engine {
 			else if ((renderOptions & RENDER_SKYBOX) != 0) {
 				glBindTexture(GL_TEXTURE_CUBE_MAP, renderInstance->GetSkybox()->id);
 			}
-			ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
+			resources->DefaultCube().DrawWithNoMaterial();
 			glCullFace(GL_BACK);
 			glDepthFunc(GL_LESS);
 
-			glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+			glBindBuffer(GL_UNIFORM_BUFFER, resources->CommonUniforms());
 			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
 		// Render debug colliders
 		// ----------------------
-		if (colliderDebugRenderSystem != nullptr && (renderOptions & RENDER_GEOMETRY_COLLIDERS) != 0) {
-			colliderDebugRenderSystem->Run(entities);
+		if ((renderOptions & RENDER_GEOMETRY_COLLIDERS) != 0) {
+			//colliderDebugRenderSystem.Run(entities);
 		}
 
 		// Render transparent objects
-
-		// if frustum culling active
-		renderSystem->RenderMeshes(SystemRender::transparentMeshes, true, false);
-		// else
-		//renderSystem->DrawTransparentGeometry(false);
+		renderSystem.RenderMeshes(SystemRender::transparentMeshes, true, false);
+		renderSystem.AfterAction();
 
 		if ((renderOptions & RENDER_PARTICLES) != 0) {
 			// Render particles
 			ForwardParticleRenderStep();
-		}
-
-		// Run any other render systems that may have been added
-		for (System* s : renderSystems) {
-			if (s->Name() != SYSTEM_RENDER && s->Name() != SYSTEM_UI_RENDER && s->Name() != SYSTEM_SHADOWMAP && s->Name() != SYSTEM_PARTICLE_RENDER && s->Name() != SYSTEM_REFLECTION_BAKING && s->Name() != SYSTEM_RENDER_COLLIDERS) {
-				for (Entity* e : entities) {
-					s->OnAction(e);
-				}
-				s->AfterAction();
-			}
 		}
 	}
 
 	void ForwardPipeline::ScreenTextureStep()
 	{
 		SCOPE_TIMER("ForwardPipeline::ScreenTextureStep");
-		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
+		const RenderOptions& renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_TONEMAPPING) != 0) {
 			// HDR tonemapping step
 			glViewport(0, 0, screenWidth, screenHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 			glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-			Shader* hdrShader = ResourceManager::GetInstance()->HDRTonemappingShader();
+			Shader* hdrShader = resources->HDRTonemappingShader();
 			hdrShader->Use();
 			hdrShader->setFloat("gamma", renderInstance->GetRenderParams()->GetGamma());
 			hdrShader->setFloat("exposure", renderInstance->GetRenderParams()->GetExposure());
@@ -155,7 +109,7 @@ namespace Engine {
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			glDisable(GL_STENCIL_TEST);
-			ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+			resources->DefaultPlane().DrawWithNoMaterial();
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_STENCIL_TEST);
@@ -166,29 +120,29 @@ namespace Engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		Shader* screenQuadShader = ResourceManager::GetInstance()->ScreenQuadShader();
+		Shader* screenQuadShader = resources->ScreenQuadShader();
 		screenQuadShader->Use();
 
-		screenQuadShader->setUInt("postProcess", renderSystem->GetPostProcess());
+		screenQuadShader->setUInt("postProcess", renderSystem.GetPostProcess());
 		screenQuadShader->setFloat("postProcessStrength", renderInstance->GetRenderParams()->GetPostProcessStrength());
 
-		if (renderSystem->GetPostProcess() == CUSTOM_KERNEL) {
-			screenQuadShader->setFloat("customKernel[0]", renderSystem->PostProcessKernel[0]);
-			screenQuadShader->setFloat("customKernel[1]", renderSystem->PostProcessKernel[1]);
-			screenQuadShader->setFloat("customKernel[2]", renderSystem->PostProcessKernel[2]);
-			screenQuadShader->setFloat("customKernel[3]", renderSystem->PostProcessKernel[3]);
-			screenQuadShader->setFloat("customKernel[4]", renderSystem->PostProcessKernel[4]);
-			screenQuadShader->setFloat("customKernel[5]", renderSystem->PostProcessKernel[5]);
-			screenQuadShader->setFloat("customKernel[6]", renderSystem->PostProcessKernel[6]);
-			screenQuadShader->setFloat("customKernel[7]", renderSystem->PostProcessKernel[7]);
-			screenQuadShader->setFloat("customKernel[8]", renderSystem->PostProcessKernel[8]);
+		if (renderSystem.GetPostProcess() == CUSTOM_KERNEL) {
+			screenQuadShader->setFloat("customKernel[0]", renderSystem.PostProcessKernel[0]);
+			screenQuadShader->setFloat("customKernel[1]", renderSystem.PostProcessKernel[1]);
+			screenQuadShader->setFloat("customKernel[2]", renderSystem.PostProcessKernel[2]);
+			screenQuadShader->setFloat("customKernel[3]", renderSystem.PostProcessKernel[3]);
+			screenQuadShader->setFloat("customKernel[4]", renderSystem.PostProcessKernel[4]);
+			screenQuadShader->setFloat("customKernel[5]", renderSystem.PostProcessKernel[5]);
+			screenQuadShader->setFloat("customKernel[6]", renderSystem.PostProcessKernel[6]);
+			screenQuadShader->setFloat("customKernel[7]", renderSystem.PostProcessKernel[7]);
+			screenQuadShader->setFloat("customKernel[8]", renderSystem.PostProcessKernel[8]);
 		}
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, *renderInstance->GetScreenTexture());
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
-		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+		resources->DefaultPlane().DrawWithNoMaterial();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 	}

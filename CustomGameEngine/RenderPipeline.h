@@ -1,30 +1,33 @@
 #pragma once
 #include <vector>
-#include "System.h"
+#include "EntityManagerNew.h"
+#include "LightManager.h"
+#include "CollisionManager.h"
+#include "ResourceManager.h"
+
 #include "Shader.h"
+#include "SystemRender.h"
+#include "SystemShadowMapping.h"
+#include "SystemUIRender.h"
 #include "SystemParticleRenderer.h"
 #include "SystemRenderColliders.h"
+#include "SystemFrustumCulling.h"
 #include "ScopeTimer.h"
+
 namespace Engine {
-	class SystemRender;
-	class SystemShadowMapping;
-	class SystemUIRender;
 	class RenderManager;
 	struct AdvBloomMip;
-
-	enum RENDER_PIPELINE {
-		FORWARD_PIPELINE,
-		DEFERRED_PIPELINE
-	};
 
 	class RenderPipeline
 	{
 	public:
-		RenderPipeline();
-		~RenderPipeline();
+		RenderPipeline() : resources(ResourceManager::GetInstance()) { 
+			textureLookups = &resources->GetTextureSlotLookupMap();
+		}
+		~RenderPipeline() {}
 
-		RENDER_PIPELINE virtual Name() = 0;
-		void virtual Run(std::vector<System*> renderSystems, std::vector<Entity*> entities);
+		virtual constexpr const char* PipelineName() const = 0;
+		void virtual Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager);
 	protected:
 		void virtual DirLightShadowStep();
 		void virtual ActiveLightsShadowStep();
@@ -34,20 +37,20 @@ namespace Engine {
 		void virtual ForwardParticleRenderStep();
 		void virtual AdvancedBloomStep(const unsigned int activeScreenTexture);
 
+		EntityManagerNew* ecs;
+		LightManager* lightManager;
+		CollisionManager* collisionManager;
 		RenderManager* renderInstance;
-
-		std::vector<Entity*> entities;
+		ResourceManager* resources;
 
 		Shader* depthShader;
 		Shader* cubeDepthShader;
 
-		SystemRender* renderSystem;
-		SystemShadowMapping* shadowmapSystem;
-		SystemUIRender* uiRenderSystem;
-		SystemParticleRenderer* particleRenderSystem;
-		SystemRenderColliders* colliderDebugRenderSystem;
-
-		std::vector<System*> renderSystems;
+		SystemRender renderSystem;
+		SystemShadowMapping shadowmapSystem;
+		SystemUIRender uiRenderSystem;
+		SystemParticleRenderer particleRenderSystem;
+		SystemRenderColliders colliderDebugRenderSystem;
 
 		unsigned int* depthMapFBO;
 		unsigned int* cubeDepthMapFBO;

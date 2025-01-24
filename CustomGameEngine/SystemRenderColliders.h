@@ -5,7 +5,8 @@ namespace Engine {
 	class SystemRenderColliders : public System
 	{
 	public:
-		SystemRenderColliders(CollisionManager* collisionManager);
+		friend class RenderPipeline;
+		SystemRenderColliders();
 		~SystemRenderColliders();
 
 		SystemTypes Name() override { return SYSTEM_RENDER_COLLIDERS; }

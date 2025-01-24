@@ -82,7 +82,7 @@ namespace Engine {
 		castShadows = true;
 
 		shader = nullptr;
-		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+		if (RenderManager::GetInstance()->GetRenderPipeline()->PipelineName() == "FORWARD_PIPELINE") {
 			if (pbr) {
 				shader = ResourceManager::GetInstance()->DefaultLitPBR();
 			}
@@ -90,7 +90,7 @@ namespace Engine {
 				shader = ResourceManager::GetInstance()->DefaultLitShader();
 			}
 		}
-		else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+		else if (RenderManager::GetInstance()->GetRenderPipeline()->PipelineName() == "DEFERRED_PIPELINE") {
 			if (pbr) {
 				shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
 			}
@@ -150,7 +150,7 @@ namespace Engine {
 		usingPremadeModel = false;
 
 		shader = nullptr;
-		if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+		if (RenderManager::GetInstance()->GetRenderPipeline()->PipelineName() == "FORWARD_PIPELINE") {
 			if (pbr) {
 				shader = ResourceManager::GetInstance()->DefaultLitPBR();
 			}
@@ -158,7 +158,7 @@ namespace Engine {
 				shader = ResourceManager::GetInstance()->DefaultLitShader();
 			}
 		}
-		else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+		else if (RenderManager::GetInstance()->GetRenderPipeline()->PipelineName() == "DEFERRED_PIPELINE") {
 			if (pbr) {
 				shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
 			}
@@ -216,7 +216,7 @@ namespace Engine {
 		bool changedMatType = (pbr != newPBR);
 		pbr = newPBR;
 		if (changedMatType && usingDefaultShader) {
-			if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
+			if (RenderManager::GetInstance()->GetRenderPipeline()->PipelineName() == "FORWARD_PIPELINE") {
 				if (pbr) {
 					shader = ResourceManager::GetInstance()->DefaultLitPBR();
 				}
@@ -224,7 +224,7 @@ namespace Engine {
 					shader = ResourceManager::GetInstance()->DefaultLitShader();
 				}
 			}
-			else if (RenderManager::GetInstance()->GetRenderPipeline()->Name() == DEFERRED_PIPELINE) {
+			else if (RenderManager::GetInstance()->GetRenderPipeline()->PipelineName() == "DEFERRED_PIPELINE") {
 				if (pbr) {
 					shader = ResourceManager::GetInstance()->DeferredGeometryPassPBR();
 				}

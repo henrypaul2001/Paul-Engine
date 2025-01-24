@@ -2,9 +2,9 @@
 #include "ResourceManager.h"
 #include "ComponentTransform.h"
 namespace Engine {
-	SystemRenderColliders::SystemRenderColliders(CollisionManager* collisionManager)
+	SystemRenderColliders::SystemRenderColliders()
 	{
-		this->collisionManager = collisionManager;
+		this->collisionManager = nullptr;
 
 		VAO = 0;
 		VBO = 0;

@@ -1,76 +1,42 @@
 #include "RenderPipeline.h"
-#include "SystemRender.h"'
-#include "SystemShadowMapping.h"
-#include "SystemUIRender.h"
-#include "ComponentLight.h"
-#include "LightManager.h"
-#include "ResourceManager.h"
 #include "RenderManager.h"
+
 namespace Engine {
-	RenderPipeline::RenderPipeline()
-	{
-		textureLookups = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
-	}
-
-	RenderPipeline::~RenderPipeline()
-	{
-
-	}
-
-	void RenderPipeline::Run(std::vector<System*> renderSystems, std::vector<Entity*> entities)
+	void RenderPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager)
 	{
 		SCOPE_TIMER("RenderPipeline::Run");
-		this->entities = entities;
+		this->ecs = ecs;
+		this->lightManager = lightManager;
+		this->collisionManager = collisionManager;
 
-		shadowmapSystem = nullptr;
-		renderSystem = nullptr;
-		uiRenderSystem = nullptr;
-		particleRenderSystem = nullptr;
 		renderInstance = RenderManager::GetInstance();
-
 		shadowWidth = renderInstance->ShadowWidth();
 		shadowHeight = renderInstance->ShadowHeight();
 
 		screenWidth = renderInstance->ScreenWidth();
 		screenHeight = renderInstance->ScreenHeight();
 
-		for (System* s : renderSystems) {
-			if (s->Name() == SYSTEM_RENDER) {
-				renderSystem = dynamic_cast<SystemRender*>(s);
-			}
-			else if (s->Name() == SYSTEM_SHADOWMAP) {
-				shadowmapSystem = dynamic_cast<SystemShadowMapping*>(s);
-			}
-			else if (s->Name() == SYSTEM_UI_RENDER) {
-				uiRenderSystem = dynamic_cast<SystemUIRender*>(s);
-			}
-			else if (s->Name() == SYSTEM_PARTICLE_RENDER) {
-				particleRenderSystem = dynamic_cast<SystemParticleRenderer*>(s);
-			}
-			else if (s->Name() == SYSTEM_RENDER_COLLIDERS) {
-				colliderDebugRenderSystem = dynamic_cast<SystemRenderColliders*>(s);
-			}
-		}
+		renderSystem.ecs = ecs;
+		renderSystem.lightManager = lightManager;
+		colliderDebugRenderSystem.collisionManager = collisionManager;
 	}
 
 	void RenderPipeline::DirLightShadowStep()
 	{
 		SCOPE_TIMER("RenderPipeline::DirLightShadowStep");
-		if (LightManager::GetInstance()->GetDirectionalLightEntity() != nullptr) {
+		const std::vector<unsigned int>& dirLightEntityIDs = lightManager->GetDirectionalLightEntities();
+		if (dirLightEntityIDs.size() > 0) {
 			// Directional light
-			unsigned int shadowWidth = renderInstance->ShadowWidth();
-			unsigned int shadowHeight = renderInstance->ShadowHeight();
-
-			ComponentLight* dirLight = dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT));
+			ComponentLight* dirLight = ecs->GetComponent<ComponentLight>(dirLightEntityIDs[0]);
 
 			if (dirLight->CastShadows) {
-				glm::vec3 lightPos = -dirLight->Direction * dirLight->DirectionalLightDistance; // negative of the directional light's direction
-				float orthoSize = dirLight->ShadowProjectionSize;
-				float near = dirLight->Near;
-				float far = dirLight->Far;
-				glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, near, far);
-				glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+				const glm::vec3 lightPos = -dirLight->Direction * dirLight->DirectionalLightDistance; // negative of the directional light's direction
+				const float orthoSize = dirLight->ShadowProjectionSize;
+				const float near = dirLight->Near;
+				const float far = dirLight->Far;
+				const glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, near, far);
+				const glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 				depthShader->Use();
 				depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
@@ -80,11 +46,11 @@ namespace Engine {
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderInstance->GetDirectionalShadowMap(), 0);
 				glClear(GL_DEPTH_BUFFER_BIT);
 
-				shadowmapSystem->SetDepthMapType(MAP_2D);
-				for (Entity* e : entities) {
-					shadowmapSystem->OnAction(e);
-				}
-				shadowmapSystem->AfterAction();
+				shadowmapSystem.SetDepthMapType(MAP_2D);
+				//for (Entity* e : entities) {
+					//shadowmapSystem->OnAction(e);
+				//}
+				shadowmapSystem.AfterAction();
 			}
 		}
 	}
@@ -93,12 +59,11 @@ namespace Engine {
 	{
 		SCOPE_TIMER("RenderPipeline::ActiveLightsShadowStep");
 		// Spot and point lights
-		std::vector<glm::mat4> shadowTransforms;
 
 		const FlatTextureAtlas* flatShadowAtlas = renderInstance->GetFlatShadowmapTextureAtlas();
-		unsigned int numFlatShadowColumns = flatShadowAtlas->GetNumColumns();
+		const unsigned int numFlatShadowColumns = flatShadowAtlas->GetNumColumns();
 
-		unsigned int pointShadowArray = renderInstance->GetPointLightCubemapShadowArray();
+		const unsigned int pointShadowArray = renderInstance->GetPointLightCubemapShadowArray();
 
 		// Clear spotlight texture atlas
 		glBindFramebuffer(GL_FRAMEBUFFER, *depthMapFBO);
@@ -111,11 +76,12 @@ namespace Engine {
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		float aspect = (float)shadowWidth / (float)shadowHeight;
-		std::vector<Entity*> lightEntities = LightManager::GetInstance()->GetLightEntities();
+		const float aspect = (float)shadowWidth / (float)shadowHeight;
+		const std::map<float, unsigned int>& lightEntities = lightManager->GetLightEntities();
+		std::map<float, unsigned int>::const_iterator lightEntitiesIt = lightEntities.begin();
 		for (int i = 0; i < lightEntities.size() && i < 8; i++) {
-			ComponentLight* lightComponent = dynamic_cast<ComponentLight*>(lightEntities[i]->GetComponent(COMPONENT_LIGHT));
-			ComponentTransform* transformComponent = dynamic_cast<ComponentTransform*>(lightEntities[i]->GetComponent(COMPONENT_TRANSFORM));
+			const ComponentTransform* transformComponent = ecs->GetComponent<ComponentTransform>(lightEntitiesIt->second);
+			const ComponentLight* lightComponent = ecs->GetComponent<ComponentLight>(lightEntitiesIt->second);
 
 			if (lightComponent->CastShadows) {
 				if (lightComponent->GetLightType() == SPOT) {
@@ -125,10 +91,10 @@ namespace Engine {
 					glDrawBuffer(GL_NONE);
 					glReadBuffer(GL_NONE);
 
-					glm::vec3 lightPos = transformComponent->GetWorldPosition();
-					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
-					glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
-					glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+					const glm::vec3& lightPos = transformComponent->GetWorldPosition();
+					const glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+					const glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
+					const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 					depthShader->Use();
 					depthShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
@@ -146,11 +112,11 @@ namespace Engine {
 
 					glViewport(startXY.x, startXY.y, shadowWidth, shadowHeight);
 
-					shadowmapSystem->SetDepthMapType(MAP_2D);
-					for (Entity* e : entities) {
-						shadowmapSystem->OnAction(e);
-					}
-					shadowmapSystem->AfterAction();
+					shadowmapSystem.SetDepthMapType(MAP_2D);
+					//for (Entity* e : entities) {
+						//shadowmapSystem.OnAction(e);
+					//}
+					shadowmapSystem.AfterAction();
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				}
 				else if (lightComponent->GetLightType() == POINT) {
@@ -159,10 +125,10 @@ namespace Engine {
 					glDrawBuffer(GL_NONE);
 					glReadBuffer(GL_NONE);
 
-					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
-					glm::vec3 lightPos = transformComponent->GetWorldPosition();
+					const glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+					const glm::vec3& lightPos = transformComponent->GetWorldPosition();
 
-					shadowTransforms.clear();
+					std::vector<glm::mat4> shadowTransforms;
 					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 					shadowTransforms.push_back(lightProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -180,14 +146,15 @@ namespace Engine {
 
 					glViewport(0, 0, shadowWidth, shadowHeight);
 
-					shadowmapSystem->SetDepthMapType(MAP_CUBE);
-					for (Entity* e : entities) {
-						shadowmapSystem->OnAction(e);
-					}
-					shadowmapSystem->AfterAction();
+					shadowmapSystem.SetDepthMapType(MAP_CUBE);
+					//for (Entity* e : entities) {
+						//shadowmapSystem.OnAction(e);
+					//}
+					shadowmapSystem.AfterAction();
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				}
 			}
+			lightEntitiesIt++;
 		}
 	}
 
@@ -196,8 +163,8 @@ namespace Engine {
 		SCOPE_TIMER("RenderPipeline::RunShadowMapSteps");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_SHADOWS) != 0) {
-			depthShader = ResourceManager::GetInstance()->ShadowMapShader();
-			cubeDepthShader = ResourceManager::GetInstance()->CubeShadowMapShader();
+			depthShader = resources->ShadowMapShader();
+			cubeDepthShader = resources->CubeShadowMapShader();
 			depthMapFBO = renderInstance->GetFlatDepthFBO();
 			cubeDepthMapFBO = renderInstance->GetCubeDepthFBO();
 
@@ -210,12 +177,12 @@ namespace Engine {
 	void RenderPipeline::BloomStep(const unsigned int activeBloomTexture)
 	{
 		SCOPE_TIMER("RenderPipeline::BloomStep");
-		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
+		const RenderOptions& renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_BLOOM) != 0 && (renderOptions & RENDER_ADVANCED_BLOOM) == 0) {
 			bool horizontal = true;
 			bool first_iteration = true;
-			int bloomPasses = renderInstance->GetRenderParams()->GetBloomPasses();
-			Shader* blurShader = ResourceManager::GetInstance()->BloomBlurShader();
+			const int bloomPasses = renderInstance->GetRenderParams()->GetBloomPasses();
+			Shader* blurShader = resources->BloomBlurShader();
 			blurShader->Use();
 
 			glDisable(GL_DEPTH_TEST);
@@ -226,7 +193,7 @@ namespace Engine {
 				blurShader->setInt("horizontal", horizontal);
 				glBindTexture(GL_TEXTURE_2D, first_iteration ? activeBloomTexture : *renderInstance->GetBloomPingPongColourBuffer(!horizontal));
 
-				ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+				resources->DefaultPlane().DrawWithNoMaterial();
 
 				horizontal = !horizontal;
 				if (first_iteration) {
@@ -247,29 +214,25 @@ namespace Engine {
 		SCOPE_TIMER("RenderPipeline::UIRenderStep");
 		RenderOptions renderOptions = renderInstance->GetRenderParams()->GetRenderOptions();
 		if ((renderOptions & RENDER_UI) != 0) {
-			if (uiRenderSystem != nullptr) {
-				glViewport(0, 0, screenWidth, screenHeight);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-				//glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			glViewport(0, 0, screenWidth, screenHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			//glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-				for (Entity* e : entities) {
-					uiRenderSystem->OnAction(e);
-				}
-				uiRenderSystem->AfterAction();
-			}
+			//for (Entity* e : entities) {
+				//uiRenderSystem.OnAction(e);
+			//}
+			uiRenderSystem.AfterAction();
 		}
 	}
 
 	void RenderPipeline::ForwardParticleRenderStep()
 	{
 		SCOPE_TIMER("RenderPipeline::ForwardParticleRenderStep");
-		if (particleRenderSystem) {
-			// Render particles
-			for (Entity* e : entities) {
-				particleRenderSystem->OnAction(e);
-			}
-			particleRenderSystem->AfterAction();
-		}
+		// Render particles
+		//for (Entity* e : entities) {
+			//particleRenderSystem.OnAction(e);
+		//}
+		particleRenderSystem.AfterAction();
 	}
 
 	void RenderPipeline::AdvBloomCombineStep(const bool renderDirtMask, const float bloomStrength, const float lensDirtStrength)
@@ -279,7 +242,7 @@ namespace Engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, *renderInstance->GetTexturedFBO());
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-		Shader* bloomCombineShader = ResourceManager::GetInstance()->AdvBloomCombineShader();
+		Shader* bloomCombineShader = resources->AdvBloomCombineShader();
 		bloomCombineShader->Use();
 		bloomCombineShader->setFloat("bloomStrength", bloomStrength);
 		bloomCombineShader->setFloat("dirtMaskStrength", lensDirtStrength);
@@ -300,14 +263,14 @@ namespace Engine {
 			bloomCombineShader->setBool("useDirtMask", false);
 		}
 
-		ResourceManager::GetInstance()->DefaultPlane().DrawWithNoMaterial();
+		resources->DefaultPlane().DrawWithNoMaterial();
 	}
 
 	void RenderPipeline::AdvancedBloomStep(const unsigned int activeScreenTexture)
 	{
 		SCOPE_TIMER("RenderPipeline::AdvancedBloomStep");
-		RenderParams* renderParams = renderInstance->GetRenderParams();
-		RenderOptions renderOptions = renderParams->GetRenderOptions();
+		const RenderParams* renderParams = renderInstance->GetRenderParams();
+		const RenderOptions& renderOptions = renderParams->GetRenderOptions();
 		advBloomSourceTexture = activeScreenTexture;
 		if ((renderOptions & RENDER_ADVANCED_BLOOM) != 0) {
 			unsigned int bloomFBO = *renderInstance->GetAdvBloomFBO();
@@ -330,7 +293,7 @@ namespace Engine {
 	void RenderPipeline::AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold)
 	{
 		SCOPE_TIMER("RenderPipeline::AdvBloomDownsampleStep");
-		Shader* downsampleShader = ResourceManager::GetInstance()->AdvBloomDownsampleShader();
+		Shader* downsampleShader = resources->AdvBloomDownsampleShader();
 		downsampleShader->Use();
 		downsampleShader->setVec2("srcResolution", glm::vec2((float)screenWidth, (float)screenHeight));
 		downsampleShader->setFloat("threshold", threshold);
@@ -341,7 +304,7 @@ namespace Engine {
 		glActiveTexture(GL_TEXTURE0);
 		glDisable(GL_BLEND);
 		unsigned int previousTexture = advBloomSourceTexture;
-		Mesh defaultPlane = ResourceManager::GetInstance()->DefaultPlane();
+		Mesh defaultPlane = resources->DefaultPlane();
 
 		// Progressively downsample through mip chain
 		for (int i = 0; i < mipChain.size(); i++) {
@@ -367,12 +330,12 @@ namespace Engine {
 	void RenderPipeline::AdvBloomUpsampleStep(const std::vector<AdvBloomMip>& mipChain, const float filterRadius)
 	{
 		SCOPE_TIMER("RenderPipeline::AdvBloomUpsampleStep");
-		Shader* upsampleShader = ResourceManager::GetInstance()->AdvBloomUpsampleShader();
+		Shader* upsampleShader = resources->AdvBloomUpsampleShader();
 		upsampleShader->Use();
 		upsampleShader->setFloat("filterRadius", filterRadius);
 		upsampleShader->setFloat("aspectRatio", (float)screenWidth / (float)screenHeight);
 
-		Mesh defaultPlane = ResourceManager::GetInstance()->DefaultPlane();
+		Mesh defaultPlane = resources->DefaultPlane();
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
