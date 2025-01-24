@@ -5,7 +5,7 @@
 namespace Engine
 {
 	EntityManager::EntityManager() {
-		LightManager::GetInstance()->ResetScene();
+		//LightManager::GetInstance()->ResetScene();
 	}
 
 	EntityManager::~EntityManager()
@@ -40,10 +40,10 @@ namespace Engine
 
 		if (light != nullptr) {
 			if (light->GetLightType() == DIRECTIONAL) {
-				LightManager::GetInstance()->SetDirectionalLightEntity(entity);
+				//LightManager::GetInstance()->SetDirectionalLightEntity(entity);
 			}
 			else {
-				LightManager::GetInstance()->AddLightEntity(entity);
+				//LightManager::GetInstance()->AddLightEntity(entity);
 			}
 		}
 	}

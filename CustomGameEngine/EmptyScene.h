@@ -93,17 +93,26 @@ namespace Engine
 			// All components entity
 			EntityNew* allComponents = ecs.New("All Components");
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
-			ecs.AddComponent(allComponents->ID(), ComponentAnimator(vampireDanceAnim));
+			//ecs.AddComponent(allComponents->ID(), ComponentAnimator(vampireDanceAnim));
 			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(campfireCrackling));
-			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(10.0f));
-			ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
-			ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
-			ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(1.0f));
+			//ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+			//ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+			ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
-			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
-			ecs.AddComponent(allComponents->ID(), ComponentStateController());
+			//ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
+			//ecs.AddComponent(allComponents->ID(), ComponentStateController());
 			ecs.AddComponent(allComponents->ID(), ComponentUICanvas(SCREEN_SPACE));
+			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetScale(5.0f);
+			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetPosition(glm::vec3(0.0f, 20.0f, 0.0f));
+
+			EntityNew* floor = ecs.New("Floor");
+			ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
+			ecs.AddComponent(floor->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+			ComponentTransform* floorTransform = ecs.GetComponent<ComponentTransform>(floor->ID());
+			floorTransform->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+			floorTransform->SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
 
 			for (int i = 0; i < 50; i++) {
 				ecs.New("Test");
@@ -217,6 +226,14 @@ namespace Engine
 
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
 
+			EntityNew* geometryTest = ecs.New("Geometry Test");
+			ecs.GetComponent<ComponentTransform>(geometryTest->ID())->SetPosition(glm::vec3(0.0f, 0.0f, -2.5f));
+			ecs.AddComponent(geometryTest->ID(), ComponentGeometry(MODEL_CUBE));
+
+			EntityNew* dirLight = ecs.New("Dir Light");
+			ecs.GetComponent<ComponentTransform>(dirLight->ID())->SetPosition(glm::vec3(10.0f, 10.0f, 10.0f));
+			ecs.AddComponent(dirLight->ID(), ComponentLight(DIRECTIONAL));
+
 			// Systems
 			systemManager.RegisterPreUpdateSystem(animAABBSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&, ComponentAnimator&)>(std::bind(&SystemAnimatedGeometryAABBGeneration::OnAction, &animAABBSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)), []() {}, std::bind(&SystemAnimatedGeometryAABBGeneration::AfterAction, &animAABBSystem));
 			systemManager.RegisterPreUpdateSystem(meshListSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemBuildMeshList::OnAction, &meshListSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemBuildMeshList::PreAction, &meshListSystem));
@@ -245,7 +262,6 @@ namespace Engine
 	private:
 		NavigationGrid navGrid;
 
-		EntityManagerNew ecs;
 		SystemManagerNew systemManager;
 
 		SystemAudio audioSystem;

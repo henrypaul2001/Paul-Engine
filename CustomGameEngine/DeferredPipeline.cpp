@@ -2,10 +2,10 @@
 #include "RenderManager.h"
 
 namespace Engine {
-	void DeferredPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager)
+	void DeferredPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
 	{
 		SCOPE_TIMER("DeferredPipeline::Run");
-		RenderPipeline::Run(ecs, lightManager, collisionManager);
+		RenderPipeline::Run(ecs, lightManager, collisionManager, activeCamera);
 		const RenderParams& renderParams = *renderInstance->GetRenderParams();
 		const RenderOptions& renderOptions = renderParams.GetRenderOptions();
 		activeScreenTexture = *renderInstance->GetScreenTexture();
@@ -16,8 +16,6 @@ namespace Engine {
 
 		// shadow map steps
 		RunShadowMapSteps();
-
-		Camera* activeCamera = renderSystem.GetActiveCamera();
 
 		// Geometry pass
 		// -------------

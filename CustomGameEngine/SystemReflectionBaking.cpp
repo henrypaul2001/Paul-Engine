@@ -313,7 +313,7 @@ namespace Engine {
 			else { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader(); }
 			reflectionShader->Use();
 
-			LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
+			//LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
 
 			reflectionShader->setMat4("projection", currentProjection);
 			reflectionShader->setVec3("viewPos", currentViewPos);

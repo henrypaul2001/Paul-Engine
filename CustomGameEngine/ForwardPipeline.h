@@ -8,7 +8,7 @@ namespace Engine {
 		~ForwardPipeline() {}
 
 		constexpr const char* PipelineName() const override { return "FORWARD_PIPELINE"; }
-		void Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager) override;
+		void Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera) override;
 	private:
 		void SceneRenderStep();
 		void ScreenTextureStep();

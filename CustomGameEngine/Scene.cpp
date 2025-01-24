@@ -63,6 +63,8 @@ namespace Engine
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
 		glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera->GetPosition()));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		renderManager->GetRenderPipeline()->Run(&ecs, &lightManager, collisionManager, camera);
 	}
 
 	InputManager* Scene::GetInputManager() const

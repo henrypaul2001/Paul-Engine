@@ -1,10 +1,10 @@
 #include "ForwardPipeline.h"
 #include "RenderManager.h"
 namespace Engine {
-	void ForwardPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager)
+	void ForwardPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
 	{
 		SCOPE_TIMER("ForwardPipeline::Run");
-		RenderPipeline::Run(ecs, lightManager, collisionManager);
+		RenderPipeline::Run(ecs, lightManager, collisionManager, activeCamera);
 
 		RunShadowMapSteps();
 

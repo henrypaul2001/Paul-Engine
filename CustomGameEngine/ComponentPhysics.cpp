@@ -1,6 +1,6 @@
 #include "ComponentPhysics.h"
 namespace Engine {
-	ComponentPhysics::ComponentPhysics(const float mass, const float drag, const float surfaceArea, const float elasticity, const bool gravity, const bool cuboidInertiaTensor) : dragCoefficient(drag), surfaceArea(surfaceArea), gravity(gravity), elasticity(elasticity)
+	ComponentPhysics::ComponentPhysics(const float mass, const float drag, const float surfaceArea, const float elasticity, const bool gravity, const bool cuboidInertiaTensor) : dragCoefficient(drag), surfaceArea(surfaceArea), gravity(gravity), elasticity(elasticity), velocity(0.0f, 0.0f, 0.0f), angularVelocity(0.0f, 0.0f, 0.0f), force(0.0f, 0.0f, 0.0f), torque(0.0f, 0.0f, 0.0f)
 	{
 		SetMass(mass);
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "ReflectionProbe.h"
 #include "Camera.h"
 #include "RenderManager.h"
 #include "CollisionManager.h"

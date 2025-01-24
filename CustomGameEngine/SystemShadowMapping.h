@@ -2,8 +2,12 @@
 #include "System.h"
 #include "ComponentGeometry.h"
 #include "ComponentTransform.h"
-#include "RenderManager.h"
 namespace Engine {
+	enum DepthMapType {
+		MAP_2D,
+		MAP_CUBE
+	};
+
 	class SystemShadowMapping : public System
 	{
 	public:

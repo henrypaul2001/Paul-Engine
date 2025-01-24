@@ -52,7 +52,7 @@ namespace Engine
 
 	void SystemManager::ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT)
 	{
-		RenderManager::GetInstance()->RunRenderPipeline(renderSystemList, entityManager->Entities());
+		//RenderManager::GetInstance()->RunRenderPipeline(renderSystemList, entityManager->Entities());
 	}
 
 	void SystemManager::AddSystem(System* system, SystemLists list)

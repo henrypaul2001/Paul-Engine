@@ -6,6 +6,7 @@
 #include "BakedData.h"
 #include "CubeTextureAtlas.h"
 #include "FlatTextureAtlas.h"
+#include "SystemShadowMapping.h"
 namespace Engine {
 
 	enum RenderOptions {
@@ -28,11 +29,6 @@ namespace Engine {
 	inline RenderOptions operator& (RenderOptions a, RenderOptions b) { return (RenderOptions)((int)a & (int)b); }
 	inline RenderOptions operator&= (RenderOptions a, RenderOptions b) { return (RenderOptions)((int&)a &= (int)b); }
 	inline RenderOptions operator~ (RenderOptions a) { return (RenderOptions)~(int)a; }
-
-	enum DepthMapType {
-		MAP_2D,
-		MAP_CUBE
-	};
 
 	enum AnisotropicFiltering {
 		ANISO_DEFAULT = -1,
@@ -248,8 +244,9 @@ namespace Engine {
 		const Texture* GetAdvBloomLensDirtTexture() const { return ResourceManager::GetInstance()->GetTexture(advBloomDirtMaskLookup); }
 		const unsigned int* GetAdvBloomFBO() const { return advBloomFBO; }
 
-		RenderPipeline* GetRenderPipeline() const { return renderPipeline; }
-		void RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities);
+		const RenderPipeline* GetRenderPipeline() const { return renderPipeline; }
+		RenderPipeline* GetRenderPipeline() { return renderPipeline; }
+
 	private:
 		static RenderManager* instance;
 		RenderManager(unsigned int shadowWidth, unsigned int shadowHeight, unsigned int screenWidth, unsigned int screenHeight);

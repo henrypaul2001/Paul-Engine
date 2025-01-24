@@ -25,7 +25,7 @@ namespace Engine {
 		globalObjects.reserve(numObjects);
 		for (unsigned int i = 0; i < numObjects; i++) {
 			std::pair<std::pair<glm::vec3, unsigned int>, Mesh*> pair = unsortedObjects[i];
-			globalObjects.push_back(BVHObject(pair.second, pair.first.first, pair.first.second, i));
+			globalObjects.push_back(BVHObject(pair.second, pair.first.first, i, pair.first.second));
 			indices.push_back(i);
 		}
 

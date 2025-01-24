@@ -222,7 +222,7 @@ namespace Engine
 		template <typename TComponent>
 		ISparseSet* GetComponentPoolPtr() {
 			int index = GetComponentBitPosition<TComponent>();
-			if (index != -1) {
+			if (index == -1) {
 				RegisterComponentType<TComponent>();
 				index = GetComponentBitPosition<TComponent>();
 			}

@@ -27,7 +27,7 @@ namespace Engine {
 		~RenderPipeline() {}
 
 		virtual constexpr const char* PipelineName() const = 0;
-		void virtual Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager);
+		void virtual Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera);
 	protected:
 		void virtual DirLightShadowStep();
 		void virtual ActiveLightsShadowStep();
@@ -51,6 +51,8 @@ namespace Engine {
 		SystemUIRender uiRenderSystem;
 		SystemParticleRenderer particleRenderSystem;
 		SystemRenderColliders colliderDebugRenderSystem;
+
+		Camera* activeCamera;
 
 		unsigned int* depthMapFBO;
 		unsigned int* cubeDepthMapFBO;

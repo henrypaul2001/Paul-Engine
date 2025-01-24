@@ -6,7 +6,7 @@ namespace Engine {
 		View<ComponentTransform, ComponentCollisionAABB> aabbView = active_ecs->View<ComponentTransform, ComponentCollisionAABB>();
 		aabbView.ForEach([this, entityID, transform, &collider](const unsigned int entityIDB, ComponentTransform& transformB, ComponentCollisionAABB& colliderB) {
 			// Check if this entity has already checked for collisions with current entity in a previous run during this frame
-			if (collider.HasEntityAlreadyBeenChecked(entityIDB) && entityIDB != entityID) {
+			if (!collider.HasEntityAlreadyBeenChecked(entityIDB) && entityIDB != entityID) {
 				CollisionPreCheck(entityID, &collider, entityIDB, &colliderB);
 				CollisionData collision = Intersect(entityID, entityIDB, transform, collider, transformB, colliderB);
 				CollisionPostCheck(collision, entityID, &collider, entityIDB, &colliderB);
@@ -56,8 +56,8 @@ namespace Engine {
 			const glm::vec3 otherLocalCollisionPoint = glm::vec3();
 			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 
-			//collision.objectA = transform->GetOwner();
-			//collision.objectB = transform2->GetOwner();
+			collision.entityIDA = entityIDA;
+			collision.entityIDB = entityIDB;
 		}
 		else {
 			collision.isColliding = false;

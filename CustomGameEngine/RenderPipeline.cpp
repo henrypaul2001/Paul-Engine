@@ -2,12 +2,14 @@
 #include "RenderManager.h"
 
 namespace Engine {
-	void RenderPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager)
+	void RenderPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
 	{
 		SCOPE_TIMER("RenderPipeline::Run");
 		this->ecs = ecs;
 		this->lightManager = lightManager;
 		this->collisionManager = collisionManager;
+
+		activeCamera = activeCamera;
 
 		renderInstance = RenderManager::GetInstance();
 		shadowWidth = renderInstance->ShadowWidth();
@@ -17,6 +19,7 @@ namespace Engine {
 		screenHeight = renderInstance->ScreenHeight();
 
 		renderSystem.ecs = ecs;
+		renderSystem.SetActiveCamera(activeCamera);
 		renderSystem.lightManager = lightManager;
 		colliderDebugRenderSystem.collisionManager = collisionManager;
 	}

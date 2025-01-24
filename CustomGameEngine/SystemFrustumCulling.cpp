@@ -104,7 +104,7 @@ namespace Engine {
 		int iterations = 0;
 		while (culledMeshList.find(distanceToCameraSquared) != culledMeshList.end()) {
 			// Distance already exists, increment slightly
-			distanceToCameraSquared += 0.001f;
+			distanceToCameraSquared += 0.01f;
 			iterations++;
 			if (iterations > 100) {
 				std::cout << "ahhhhhh" << std::endl;
