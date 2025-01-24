@@ -27,6 +27,7 @@
 #include "SystemSkeletalAnimationUpdater.h"
 #include "SystemBuildMeshList.h"
 #include "SystemAnimatedGeometryAABBGeneration.h"
+#include "SystemLighting.h"
 
 #include "SystemCollisionAABB.h"
 #include "SystemCollisionBox.h"
@@ -235,6 +236,7 @@ namespace Engine
 			systemManager.RegisterSystem(uiInteract.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentUICanvas&)>(std::bind(&SystemUIMouseInteraction::OnAction, &uiInteract, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemUIMouseInteraction::AfterAction, &uiInteract));
 			systemManager.RegisterSystem(stateUpdater.SystemName(), std::function<void(const unsigned int, ComponentStateController&)>(std::bind(&SystemStateMachineUpdater::OnAction, &stateUpdater, std::placeholders::_1, std::placeholders::_2)), []() {}, std::bind(&SystemStateMachineUpdater::AfterAction, &stateUpdater));
 			systemManager.RegisterSystem(animSystem.SystemName(), std::function<void(const unsigned int, ComponentGeometry&, ComponentAnimator&)>(std::bind(&SystemSkeletalAnimationUpdater::OnAction, &animSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), []() {}, std::bind(&SystemSkeletalAnimationUpdater::AfterAction, &animSystem));
+			systemManager.RegisterSystem(lightingSystem.SystemName(), std::function<void(const unsigned int, ComponentTransform&, ComponentLight&)>(std::bind(&SystemLighting::OnAction, &lightingSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)), std::bind(&SystemLighting::PreAction, &lightingSystem), std::bind(&SystemLighting::AfterAction, &lightingSystem));
 		}
 
 		void keyUp(int key) override {}
@@ -255,6 +257,7 @@ namespace Engine
 		SystemSkeletalAnimationUpdater animSystem;
 		SystemBuildMeshList meshListSystem;
 		SystemAnimatedGeometryAABBGeneration animAABBSystem;
+		SystemLighting lightingSystem;
 
 		SystemCollisionAABB aabbSystem;
 		SystemCollisionBox boxSystem;

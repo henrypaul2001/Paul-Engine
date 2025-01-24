@@ -150,20 +150,11 @@ namespace Engine {
 				shader->setFloat(std::string("lights[" + std::string(std::to_string(i)) + std::string("].ShadowFarPlane")), lightComponent->Far);
 			}
 			else if (lightComponent->GetLightType() == SPOT) {
-				// todo: move this rotation code to new LightSystem
-				// Rotate light direction based on transform matrix
-				glm::mat4 model = glm::mat4(glm::mat3(transformComponent->GetWorldModelMatrix()));
-				glm::vec4 rotatedDirection4 = model * glm::vec4(lightComponent->Direction, 1.0);
-
-				glm::vec3 rotatedDirection = glm::vec3(rotatedDirection4);
-				rotatedDirection = glm::normalize(rotatedDirection);
-				lightComponent->WorldDirection = rotatedDirection;
-
-				float aspect = (float)renderInstance->ShadowWidth() / (float)renderInstance->ShadowHeight();
-				glm::vec3 lightPos = transformComponent->GetWorldPosition();
-				glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
-				glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
-				glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+				const float aspect = (float)renderInstance->ShadowWidth() / (float)renderInstance->ShadowHeight();
+				const glm::vec3& lightPos = transformComponent->GetWorldPosition();
+				const glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, lightComponent->Near, lightComponent->Far);
+				const glm::mat4 lightView = glm::lookAt(lightPos, lightPos + lightComponent->WorldDirection, glm::vec3(0.0f, 1.0f, 0.0f));
+				const glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 				if (i < numFlatShadowColumns) {
 					slotRow = 0;

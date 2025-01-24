@@ -241,6 +241,7 @@
     <ClInclude Include="SystemCollisionSphereAABB.h" />
     <ClInclude Include="SystemCollisionSphereBox.h" />
     <ClInclude Include="SystemFrustumCulling.h" />
+    <ClInclude Include="SystemLighting.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="SystemManagerNew.h" />
     <ClInclude Include="SystemNew.h" />

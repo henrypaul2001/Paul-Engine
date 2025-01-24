@@ -49,9 +49,6 @@ namespace Engine {
 		std::vector<unsigned int> directionalLightEntities; // Entities with a directional light component
 		std::map<float, unsigned int> lightEntities; // Entities with a light component that are either SPOT or POINT. <distanceToCamera, entityID>
 
-		//std::vector<Entity*> lightEntities;
-		//Entity* directionalLight;
-
 		void SetDirectionalLightUniforms(EntityManagerNew& ecs, Shader* shader);
 		void SetIBLUniforms(Shader* shader, Camera* activeCamera);
 
