@@ -2,6 +2,7 @@
 #include "SystemNew.h"
 #include "ComponentTransform.h"
 #include "ComponentGeometry.h"
+#include "ComponentAnimator.h"
 
 namespace Engine {
 	class SystemBuildMeshList : public SystemNew {
@@ -20,7 +21,9 @@ namespace Engine {
 			SCOPE_TIMER("SystemBuildMeshList::OnAction");
 
 			// Update geometry bounds for model
-			geometry.GetModel()->UpdateGeometryBoundingBoxes(transform.GetWorldModelMatrix());
+			if (!active_ecs->HasComponent<ComponentAnimator>(entityID)) { // animated meshes have their boundaries calculated by another system
+				geometry.GetModel()->UpdateGeometryBoundingBoxes(transform.GetWorldModelMatrix());
+			}
 
 			const glm::vec3& pos = transform.GetWorldPosition(); // temporarily use entity pos as AABB centre
 
