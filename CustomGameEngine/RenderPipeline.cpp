@@ -21,6 +21,7 @@ namespace Engine {
 		renderSystem.ecs = ecs;
 		renderSystem.SetActiveCamera(activeCamera);
 		renderSystem.lightManager = lightManager;
+		shadowmapSystem.active_ecs = ecs;
 		colliderDebugRenderSystem.collisionManager = collisionManager;
 	}
 
@@ -50,10 +51,8 @@ namespace Engine {
 				glClear(GL_DEPTH_BUFFER_BIT);
 
 				shadowmapSystem.SetDepthMapType(MAP_2D);
-				//for (Entity* e : entities) {
-					//shadowmapSystem->OnAction(e);
-				//}
-				shadowmapSystem.AfterAction();
+				View<ComponentTransform, ComponentGeometry> geometryView = ecs->View<ComponentTransform, ComponentGeometry>();
+				geometryView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemShadowMapping::OnAction, &shadowmapSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 			}
 		}
 	}
@@ -116,10 +115,8 @@ namespace Engine {
 					glViewport(startXY.x, startXY.y, shadowWidth, shadowHeight);
 
 					shadowmapSystem.SetDepthMapType(MAP_2D);
-					//for (Entity* e : entities) {
-						//shadowmapSystem.OnAction(e);
-					//}
-					shadowmapSystem.AfterAction();
+					View<ComponentTransform, ComponentGeometry> geometryView = ecs->View<ComponentTransform, ComponentGeometry>();
+					geometryView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemShadowMapping::OnAction, &shadowmapSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				}
 				else if (lightComponent->GetLightType() == POINT) {
@@ -150,10 +147,8 @@ namespace Engine {
 					glViewport(0, 0, shadowWidth, shadowHeight);
 
 					shadowmapSystem.SetDepthMapType(MAP_CUBE);
-					//for (Entity* e : entities) {
-						//shadowmapSystem.OnAction(e);
-					//}
-					shadowmapSystem.AfterAction();
+					View<ComponentTransform, ComponentGeometry> geometryView = ecs->View<ComponentTransform, ComponentGeometry>();
+					geometryView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemShadowMapping::OnAction, &shadowmapSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				}
 			}
