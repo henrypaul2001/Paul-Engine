@@ -99,8 +99,8 @@ namespace Engine
 			//ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 			//ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 			//ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
-			//ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_SPHERE));
+			ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+			//ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_SPHERE));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
 			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));

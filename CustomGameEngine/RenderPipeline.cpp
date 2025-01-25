@@ -288,6 +288,13 @@ namespace Engine {
 		}
 	}
 
+	void RenderPipeline::DebugCollidersStep()
+	{
+		View<ComponentTransform, ComponentGeometry> geometryView = ecs->View<ComponentTransform, ComponentGeometry>();
+		geometryView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemRenderColliders::OnAction, &colliderDebugRenderSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
+		colliderDebugRenderSystem.AfterAction();
+	}
+
 	void RenderPipeline::AdvBloomDownsampleStep(const std::vector<AdvBloomMip>& mipChain, const float threshold, const float softThreshold)
 	{
 		SCOPE_TIMER("RenderPipeline::AdvBloomDownsampleStep");

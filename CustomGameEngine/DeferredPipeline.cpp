@@ -329,7 +329,7 @@ namespace Engine {
 		// Render debug colliders using forward rendering
 		// ----------------------------------------------
 		if ((renderOptions & RENDER_GEOMETRY_COLLIDERS) != 0) {
-			//colliderDebugRenderSystem.Run(entities);
+			DebugCollidersStep();
 		}
 
 		// Transparency using forward rendering

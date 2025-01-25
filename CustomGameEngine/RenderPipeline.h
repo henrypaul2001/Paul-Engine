@@ -36,6 +36,7 @@ namespace Engine {
 		void virtual UIRenderStep();
 		void virtual ForwardParticleRenderStep();
 		void virtual AdvancedBloomStep(const unsigned int activeScreenTexture);
+		void virtual DebugCollidersStep();
 
 		EntityManagerNew* ecs;
 		LightManager* lightManager;

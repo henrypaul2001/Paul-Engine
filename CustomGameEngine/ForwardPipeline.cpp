@@ -70,7 +70,7 @@ namespace Engine {
 		// Render debug colliders
 		// ----------------------
 		if ((renderOptions & RENDER_GEOMETRY_COLLIDERS) != 0) {
-			//colliderDebugRenderSystem.Run(entities);
+			DebugCollidersStep();
 		}
 
 		// Render transparent objects
