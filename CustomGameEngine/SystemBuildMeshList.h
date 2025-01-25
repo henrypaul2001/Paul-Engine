@@ -18,6 +18,10 @@ namespace Engine {
 
 		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry) {
 			SCOPE_TIMER("SystemBuildMeshList::OnAction");
+
+			// Update geometry bounds for model
+			geometry.GetModel()->UpdateGeometryBoundingBoxes(transform.GetWorldModelMatrix());
+
 			const glm::vec3& pos = transform.GetWorldPosition(); // temporarily use entity pos as AABB centre
 
 			const std::vector<Mesh*>& meshList = geometry.GetModel()->meshes;
