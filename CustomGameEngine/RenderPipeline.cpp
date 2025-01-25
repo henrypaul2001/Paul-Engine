@@ -226,11 +226,8 @@ namespace Engine {
 	void RenderPipeline::ForwardParticleRenderStep()
 	{
 		SCOPE_TIMER("RenderPipeline::ForwardParticleRenderStep");
-		// Render particles
-		//for (Entity* e : entities) {
-			//particleRenderSystem.OnAction(e);
-		//}
-		particleRenderSystem.AfterAction();
+		View<ComponentTransform, ComponentParticleGenerator> particleView = ecs->View<ComponentTransform, ComponentParticleGenerator>();
+		particleView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentParticleGenerator&)>(std::bind(&SystemParticleRenderer::OnAction, &particleRenderSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 	}
 
 	void RenderPipeline::AdvBloomCombineStep(const bool renderDirtMask, const float bloomStrength, const float lensDirtStrength)
