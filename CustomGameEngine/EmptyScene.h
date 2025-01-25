@@ -93,23 +93,27 @@ namespace Engine
 			// All components entity
 			EntityNew* allComponents = ecs.New("All Components");
 			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
-			//ecs.AddComponent(allComponents->ID(), ComponentAnimator(vampireDanceAnim));
+			ecs.AddComponent(allComponents->ID(), ComponentAnimator(vampireDanceAnim));
 			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(campfireCrackling));
 			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(1.0f));
-			//ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+			//ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 			//ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
-			ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
+			//ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
+			//ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
+			ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_SPHERE));
 			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
 			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
-			//ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
-			//ecs.AddComponent(allComponents->ID(), ComponentStateController());
+			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
+			ecs.AddComponent(allComponents->ID(), ComponentStateController());
 			ecs.AddComponent(allComponents->ID(), ComponentUICanvas(SCREEN_SPACE));
-			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetScale(5.0f);
+			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetScale(1.0f);
 			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetPosition(glm::vec3(0.0f, 20.0f, 0.0f));
 
 			EntityNew* floor = ecs.New("Floor");
 			ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
-			ecs.AddComponent(floor->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
+			ComponentCollisionAABB collider = ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
+			collider.IsMovedByCollisions(false);
+			ecs.AddComponent(floor->ID(), collider);
 			ComponentTransform* floorTransform = ecs.GetComponent<ComponentTransform>(floor->ID());
 			floorTransform->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
 			floorTransform->SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
