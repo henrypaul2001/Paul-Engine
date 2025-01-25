@@ -216,10 +216,8 @@ namespace Engine {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			//glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-			//for (Entity* e : entities) {
-				//uiRenderSystem.OnAction(e);
-			//}
-			uiRenderSystem.AfterAction();
+			View<ComponentTransform, ComponentUICanvas> uiView = ecs->View<ComponentTransform, ComponentUICanvas>();
+			uiView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentUICanvas&)>(std::bind(&SystemUIRender::OnAction, &uiRenderSystem, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 		}
 	}
 

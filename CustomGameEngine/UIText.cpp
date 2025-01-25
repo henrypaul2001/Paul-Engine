@@ -40,7 +40,7 @@ namespace Engine {
 
 	}
 
-	void UIText::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
+	void UIText::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) const
 	{
 		UIElement::Draw(canvasPosition, canvasScale);
 

@@ -11,7 +11,7 @@ namespace Engine {
 		UIImage(glm::vec2 position, glm::vec2 scale, Texture* imageTexture, UIBackground background, Shader* shader);
 		~UIImage();
 
-		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override;
+		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) const override;
 
 		void SetTexture(Texture* newTexture) { imageTexture = newTexture; }
 		const Texture* GetTexture() const { return imageTexture; }

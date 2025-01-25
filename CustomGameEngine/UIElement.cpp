@@ -25,7 +25,7 @@ namespace Engine {
 	{
 	}
 
-	void UIElement::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale)
+	void UIElement::Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) const
 	{
 		if (useBackground) {
 			// Draw background

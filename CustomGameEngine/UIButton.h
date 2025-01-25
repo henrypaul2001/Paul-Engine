@@ -14,7 +14,7 @@ namespace Engine {
 		UIButton(glm::vec2 position, glm::vec2 scale, Shader* shader, int idTag, UIBackground background);
 		~UIButton();
 
-		virtual void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override = 0;
+		virtual void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) const override = 0;
 
 		void SetMouseEnterCallback(std::function<void(UIButton*)> mouseEnter) { OnMouseEnter = mouseEnter; }
 		void SetMouseExitCallback(std::function<void(UIButton*)> mouseExit) { OnMouseExit = mouseExit; }
