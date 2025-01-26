@@ -26,6 +26,12 @@ namespace Engine {
 		}
 		~RenderPipeline() {}
 
+		SystemRender& GetRenderSystem() { return renderSystem; }
+		SystemShadowMapping& GetShadowmapSystem() { return shadowmapSystem; }
+		SystemUIRender& GetUIRenderSystem() { return uiRenderSystem; }
+		SystemParticleRenderer& GetParticleRenderSystem() { return particleRenderSystem; }
+		SystemRenderColliders& GetColliderDebugRenderSystem() { return colliderDebugRenderSystem; }
+
 		virtual constexpr const char* PipelineName() const = 0;
 		void virtual Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera);
 	protected:

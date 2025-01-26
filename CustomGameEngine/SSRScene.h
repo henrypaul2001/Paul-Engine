@@ -18,7 +18,6 @@ namespace Engine {
 		void keyDown(int key) override;
 	private:
 		void CreateEntities();
-		void CreateSystems();
 
 		std::unordered_map<unsigned int, std::string> postProcessEffectToString = {
 			{ 0u, std::string("None") },
