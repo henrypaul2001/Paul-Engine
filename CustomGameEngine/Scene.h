@@ -38,12 +38,16 @@ namespace Engine
 		CollisionResolver collisionResolver;
 		ConstraintSolver constraintSolver;
 
+		SystemReflectionBaking reflectionBakingSystem;
+
 		int SCR_WIDTH;
 		int SCR_HEIGHT;
 
 		std::string name;
 
 		Camera* camera;
+
+		void BakeReflectionProbes(const bool discardUnfilteredCapture = true) { reflectionBakingSystem.Run(&ecs, &lightManager, discardUnfilteredCapture); }
 	public:
 		static float dt;
 		Scene(SceneManager* sceneManager, const std::string& name);

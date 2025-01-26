@@ -1,35 +1,29 @@
 #include "SystemReflectionBaking.h"
 #include "RenderManager.h"
-#include "LightManager.h"
+#include "ComponentAnimator.h"
 namespace Engine {
-	SystemReflectionBaking::SystemReflectionBaking()
-	{
-
-	}
-
-	SystemReflectionBaking::~SystemReflectionBaking()
-	{
-
-	}
-
-	void SystemReflectionBaking::Run(const std::vector<Entity*>& entityList, const bool discardUnfilteredCapture)
+	void SystemReflectionBaking::Run(EntityManagerNew* ecs, LightManager* lightManager, const bool discardUnfilteredCapture)
 	{
 		SCOPE_TIMER("SystemReflectionBaking::Run");
+		this->ecs = ecs;
+		this->lightManager = lightManager;
+		
 		// Capture scene and process capture
 		// ---------------------------------
 		std::cout << "SYSTEMREFLECTIONBAKING::Baking reflection probes" << std::endl;
+		ResourceManager* resources = ResourceManager::GetInstance();
 		RenderManager* renderManager = RenderManager::GetInstance();
-		RenderOptions renderOptions = renderManager->GetRenderParams()->GetRenderOptions();
+		const RenderOptions& renderOptions = renderManager->GetRenderParams()->GetRenderOptions();
 
-		unsigned int reflectionFBO = renderManager->GetCubemapFBO();
-		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
+		const unsigned int reflectionFBO = renderManager->GetCubemapFBO();
+		const unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
 
 		unsigned int width, height;
-		std::vector<ReflectionProbe*> probes = renderManager->GetBakedData().GetReflectionProbes();
-		int numProbes = probes.size();
+		const std::vector<ReflectionProbe*>& probes = renderManager->GetBakedData().GetReflectionProbes();
+		const int numProbes = probes.size();
 		for (int i = 0; i < numProbes; i++) {
 			// error check
-			int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			const int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			if (status != GL_FRAMEBUFFER_COMPLETE) {
 				std::cout << "ERROR::RENDERMANAGER::Cubemap FBO incomplete, status: 0x\%x\n" << status << std::endl;
 			}
@@ -40,13 +34,13 @@ namespace Engine {
 			// Capture scene
 			width = probe->GetFaceWidth();
 			height = probe->GetFaceHeight();
-			unsigned int cubemapID = probe->GetCubemapTextureID();
+			const unsigned int cubemapID = probe->GetCubemapTextureID();
 
 			currentViewPos = probe->GetWorldPosition();
 
 			// Set up projections for each cubemap face
 			currentProjection = glm::perspective(glm::radians(90.0f), 1.0f, probe->GetNearClip(), probe->GetFarClip());
-			glm::mat4 captureViews[] = {
+			const glm::mat4 captureViews[] = {
 				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 				glm::lookAt(currentViewPos, currentViewPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
@@ -77,17 +71,16 @@ namespace Engine {
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				// Render scene
-				for (Entity* entity : entityList) {
-					OnAction(entity);
-				}
+				View<ComponentTransform, ComponentGeometry> geometryView = ecs->View<ComponentTransform, ComponentGeometry>();
+				geometryView.ForEach(std::function<void(const unsigned int, ComponentTransform&, ComponentGeometry&)>(std::bind(&SystemReflectionBaking::OnAction, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 
 				if (probe->GetRenderSkybox()) {
 					// Render skybox
 					if ((renderOptions & RENDER_SKYBOX) != 0 || (renderOptions & RENDER_ENVIRONMENT_MAP) != 0) {
-						Shader* skyShader = ResourceManager::GetInstance()->SkyboxShader();
+						Shader* skyShader = resources->SkyboxShader();
 						skyShader->Use();
 
-						glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+						glBindBuffer(GL_UNIFORM_BUFFER, resources->CommonUniforms());
 						glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(currentProjection));
 						glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(captureViews[j]))));
 						glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(probe->GetWorldPosition()));
@@ -105,11 +98,11 @@ namespace Engine {
 						else if ((renderOptions & RENDER_SKYBOX) != 0) {
 							glBindTexture(GL_TEXTURE_CUBE_MAP, renderManager->GetSkybox()->id);
 						}
-						ResourceManager::GetInstance()->DefaultCube().DrawWithNoMaterial();
+						resources->DefaultCube().DrawWithNoMaterial();
 						glCullFace(GL_BACK);
 						glDepthFunc(GL_LESS);
 
-						glBindBuffer(GL_UNIFORM_BUFFER, ResourceManager::GetInstance()->CommonUniforms());
+						glBindBuffer(GL_UNIFORM_BUFFER, resources->CommonUniforms());
 						glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(activeCamera->GetProjection()));
 						glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(activeCamera->GetViewMatrix()));
 						glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(activeCamera->GetPosition()));
@@ -144,19 +137,19 @@ namespace Engine {
 		renderManager->GetBakedData().WriteReflectionProbesToFile();
 	}
 
-	void SystemReflectionBaking::ConvoluteEnvironmentMap(ReflectionProbe* probe)
+	void SystemReflectionBaking::ConvoluteEnvironmentMap(const ReflectionProbe* probe)
 	{
 		RenderManager* renderManager = RenderManager::GetInstance();
 		ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
-		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
-		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
+		const unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
+		const unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
+		const unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
 
-		unsigned int envCubemap = probe->GetCubemapTextureID();
-		unsigned int irradianceMapArray = renderManager->GetBakedData().GetProbeIrradianceMapArray();
+		const unsigned int envCubemap = probe->GetCubemapTextureID();
+		const unsigned int irradianceMapArray = renderManager->GetBakedData().GetProbeIrradianceMapArray();
 
-		unsigned int probeID = probe->GetFileID();
+		const unsigned int probeID = probe->GetFileID();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Resize depth texture buffer
@@ -171,8 +164,8 @@ namespace Engine {
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
 
 		// Set up projections for each cubemap face
-		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-		glm::mat4 captureViews[] = {
+		const glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		const glm::mat4 captureViews[] = {
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
@@ -203,26 +196,26 @@ namespace Engine {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
-	void SystemReflectionBaking::PrefilterMap(ReflectionProbe* probe)
+	void SystemReflectionBaking::PrefilterMap(const ReflectionProbe* probe)
 	{
 		RenderManager* renderManager = RenderManager::GetInstance();
 		ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-		unsigned int envCubemap = probe->GetCubemapTextureID();
-		unsigned int prefilterMapArray = renderManager->GetBakedData().GetProbePrefilterMapArray();
+		const unsigned int envCubemap = probe->GetCubemapTextureID();
+		const unsigned int prefilterMapArray = renderManager->GetBakedData().GetProbePrefilterMapArray();
 
-		unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
-		unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
-		unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
+		const unsigned int cubeCaptureFBO = *renderManager->GetHDRCubeCaptureFBO();
+		const unsigned int cubeCaptureRBO = *renderManager->GetHDRCubeCaptureRBO();
+		const unsigned int depthBuffer = renderManager->GetCubemapDepthBuffer();
 
-		unsigned int faceWidth = probe->GetFaceWidth();
-		unsigned int faceHeight = probe->GetFaceHeight();
+		const unsigned int faceWidth = probe->GetFaceWidth();
+		const unsigned int faceHeight = probe->GetFaceHeight();
 
-		unsigned int probeID = probe->GetFileID();
+		const unsigned int probeID = probe->GetFileID();
 
 		// Set up projections for each cubemap face
-		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-		glm::mat4 captureViews[] = {
+		const glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		const glm::mat4 captureViews[] = {
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
@@ -251,8 +244,8 @@ namespace Engine {
 
 		for (unsigned int mip = 0; mip < maxMipLevels; mip++) {
 			// resize framebuffer
-			unsigned int mipWidth = (faceWidth / 2) * std::pow(0.5, mip);
-			unsigned int mipHeight = (faceHeight / 2) * std::pow(0.5, mip);
+			const unsigned int mipWidth = (faceWidth / 2) * std::pow(0.5, mip);
+			const unsigned int mipHeight = (faceHeight / 2) * std::pow(0.5, mip);
 
 			glBindRenderbuffer(GL_RENDERBUFFER, cubeCaptureRBO);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
@@ -270,7 +263,7 @@ namespace Engine {
 
 			glViewport(0, 0, mipWidth, mipHeight);
 
-			float roughness = (float)mip / (float)(maxMipLevels - 1);
+			const float roughness = (float)mip / (float)(maxMipLevels - 1);
 			prefilterShader->setFloat("roughness", roughness);
 			prefilterShader->setUInt("faceWidth", faceWidth);
 			prefilterShader->setUInt("faceHeight", faceHeight);
@@ -289,129 +282,113 @@ namespace Engine {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
-	void SystemReflectionBaking::OnAction(Entity* entity)
+	void SystemReflectionBaking::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry)
 	{
 		SCOPE_TIMER("SystemReflectionBaking::OnAction");
-		if ((entity->Mask() & MASK) == MASK) {
-			ComponentTransform* transform = entity->GetTransformComponent();
-			ComponentGeometry* geometry = entity->GetGeometryComponent();
-
-			Draw(transform, geometry);
-		}
-	}
-
-	void SystemReflectionBaking::AfterAction()
-	{
-
-	}
-
-	void SystemReflectionBaking::Draw(ComponentTransform* transform, ComponentGeometry* geometry)
-	{
-		if (geometry->IsIncludedInReflectionProbes()) {
+		if (geometry.IsIncludedInReflectionProbes()) {
+			ResourceManager* resources = ResourceManager::GetInstance();
 			Shader* reflectionShader;
-			if (geometry->PBR()) { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShaderPBR(); }
-			else { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader(); }
+			if (geometry.PBR()) { reflectionShader = resources->ReflectionProbeBakingShaderPBR(); }
+			else { reflectionShader = resources->ReflectionProbeBakingShader(); }
 			reflectionShader->Use();
 
-			//LightManager::GetInstance()->SetShaderUniforms(reflectionShader, nullptr);
+			lightManager->SetShaderUniforms(*ecs, reflectionShader, nullptr);
 
 			reflectionShader->setMat4("projection", currentProjection);
 			reflectionShader->setVec3("viewPos", currentViewPos);
 			reflectionShader->setMat4("view", currentView);
 
 			// setup shader uniforms
-			glm::mat4 model = transform->GetWorldModelMatrix();
+			const glm::mat4& model = transform.GetWorldModelMatrix();
 			reflectionShader->setMat4("model", model);
 			reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			//reflectionShader->setBool("instanced", geometry->Instanced());
+			reflectionShader->setBool("instanced", false);
 			//if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
-			reflectionShader->setVec2("textureScale", geometry->GetTextureScale());
+			reflectionShader->setVec2("textureScale", geometry.GetTextureScale());
 			reflectionShader->setBool("hasBones", false);
 			reflectionShader->setBool("OpaqueRenderPass", true);
 
 			// Bones
-			//if (geometry->GetModel()->HasBones()) {
-			//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-			//		reflectionShader->setBool("hasBones", true);
-			//		//std::vector<glm::mat4> transforms = transform->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-			//		//for (int i = 0; i < transforms.size(); i++) {
-			//		//	reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-			//		//}
-			//	}
-			//}
+			if (geometry.GetModel()->HasBones()) {
+				ComponentAnimator* animator = ecs->GetComponent<ComponentAnimator>(entityID);
+				if (animator) {
+					reflectionShader->setBool("hasBones", true);
+					const std::vector<glm::mat4>& transforms = animator->GetFinalBonesMatrices();
+					for (int i = 0; i < transforms.size(); i++) {
+						reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+					}
+				}
+			}
 
 			// Apply face culling
-			if (geometry->Cull_Face()) {
-				glEnable(GL_CULL_FACE);
-			}
-			else {
-				glDisable(GL_CULL_FACE);
-			}
+			if (geometry.Cull_Face()) { glEnable(GL_CULL_FACE); }
+			else { glDisable(GL_CULL_FACE); }
 
-			if (geometry->Cull_Type() == GL_BACK) {
+			if (geometry.Cull_Type() == GL_BACK) {
 				///glCullFace(GL_FRONT);
 				glCullFace(GL_BACK);
 			}
-			else if (geometry->Cull_Type() == GL_FRONT) {
+			else if (geometry.Cull_Type() == GL_FRONT) {
 				//glCullFace(GL_BACK);
 				glCullFace(GL_FRONT);
 			}
 
 			// Draw geometry
-			//geometry->GetModel()->Draw(*reflectionShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			//geometry.GetModel()->Draw(*reflectionShader, geometry->NumInstances(), geometry->GetInstanceVAOs());
+			geometry.GetModel()->Draw(*reflectionShader, 0, {});
 
-			if (geometry->GetModel()->ContainsTransparentMeshes()) {
-				float distanceToCamera = glm::length(activeCamera->GetPosition() - transform->GetWorldPosition());
+			if (geometry.GetModel()->ContainsTransparentMeshes()) {
+				float distanceToCamera = glm::length(activeCamera->GetPosition() - transform.GetWorldPosition());
 
 				if (transparentGeometry.find(distanceToCamera) != transparentGeometry.end()) {
 					// Distance already exists, increment slightly
 					distanceToCamera += 0.00001f;
 				}
-				transparentGeometry[distanceToCamera] = geometry;
+				transparentGeometry[distanceToCamera] = std::make_pair(&geometry, entityID);
 			}
 		}
 	}
 
 	void SystemReflectionBaking::DrawTransparentGeometry()
 	{
+		ResourceManager* resources = ResourceManager::GetInstance();
 		// Geometry is already sorted in ascending order
-		for (std::map<float, ComponentGeometry*>::reverse_iterator it = transparentGeometry.rbegin(); it != transparentGeometry.rend(); ++it) {
-			ComponentGeometry* geometry = it->second;
+		for (std::map<float, std::pair<ComponentGeometry*, unsigned int>>::reverse_iterator it = transparentGeometry.rbegin(); it != transparentGeometry.rend(); ++it) {
+			ComponentGeometry* geometry = it->second.first;
+			const unsigned int entityID = it->second.second;
+			const ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
 
 			if (geometry->IsIncludedInReflectionProbes()) {
 				Shader* reflectionShader;
-				if (geometry->PBR()) { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShaderPBR(); }
-				else { reflectionShader = ResourceManager::GetInstance()->ReflectionProbeBakingShader(); }
+				if (geometry->PBR()) { reflectionShader = resources->ReflectionProbeBakingShaderPBR(); }
+				else { reflectionShader = resources->ReflectionProbeBakingShader(); }
 				reflectionShader->Use();
 
 				// setup shader uniforms
-				//glm::mat4 model = geometry->GetOwner()->GetTransformComponent()->GetWorldModelMatrix();
-				//reflectionShader->setMat4("model", model);
-				//reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-				//reflectionShader->setBool("instanced", geometry->Instanced());
+				const glm::mat4& model = transform->GetWorldModelMatrix();
+				reflectionShader->setMat4("model", model);
+				reflectionShader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+				reflectionShader->setBool("instanced", false);
 				//if (geometry->Instanced()) { geometry->BufferInstanceTransforms(); }
 				reflectionShader->setVec2("textureScale", geometry->GetTextureScale());
 				reflectionShader->setBool("hasBones", false);
 				reflectionShader->setBool("OpaqueRenderPass", false);
 
 				// Bones
-				//if (geometry->GetModel()->HasBones()) {
-				//	if (geometry->GetOwner()->ContainsComponents(COMPONENT_ANIMATOR)) {
-				//		reflectionShader->setBool("hasBones", true);
-				//		std::vector<glm::mat4> transforms = geometry->GetOwner()->GetAnimator()->GetFinalBonesMatrices();
-				//		for (int i = 0; i < transforms.size(); i++) {
-				//			reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
-				//		}
-				//	}
-				//}
+				if (geometry->GetModel()->HasBones()) {
+					ComponentAnimator* animator = ecs->GetComponent<ComponentAnimator>(entityID);
+					if (animator) {
+						reflectionShader->setBool("hasBones", true);
+						const std::vector<glm::mat4>& transforms = animator->GetFinalBonesMatrices();
+						for (int i = 0; i < transforms.size(); i++) {
+							reflectionShader->setMat4("boneTransforms[" + std::to_string(i) + "]", transforms[i]);
+						}
+					}
+				}
 
 				// Apply face culling
-				if (geometry->Cull_Face()) {
-					glEnable(GL_CULL_FACE);
-				}
-				else {
-					glDisable(GL_CULL_FACE);
-				}
+				if (geometry->Cull_Face()) { glEnable(GL_CULL_FACE); }
+				else { glDisable(GL_CULL_FACE); }
 
 				if (geometry->Cull_Type() == GL_BACK) {
 					///glCullFace(GL_FRONT);
