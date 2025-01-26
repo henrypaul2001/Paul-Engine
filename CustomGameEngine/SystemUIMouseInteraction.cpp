@@ -3,7 +3,7 @@
 namespace Engine {
 	void SystemUIMouseInteraction::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentUICanvas& canvas)
 	{
-		if (inputManager->GetCursorLock() == false) {
+		if ((*inputManager)->GetCursorLock() == false) {
 			for (UIElement* ui : canvas.UIElements()) {
 				if (ui->UIType() == UI_BUTTON && ui->GetActive()) {
 					ProcessUIButton(dynamic_cast<UIButton*>(ui), transform);
@@ -18,7 +18,7 @@ namespace Engine {
 	{
 		RenderManager* renderInstance = RenderManager::GetInstance();
 
-		glm::vec2 mousePos = inputManager->GetMousePos();
+		glm::vec2 mousePos = (*inputManager)->GetMousePos();
 
 		// Invert mouse position Y axis
 		const int screenHeight = renderInstance->ScreenHeight();
@@ -58,15 +58,15 @@ namespace Engine {
 
 			if (button->IsMouseDown()) {
 				// Fires once on release
-				if (!inputManager->GetLeftMouseDown()) { button->MouseUp(); }
+				if (!(*inputManager)->GetLeftMouseDown()) { button->MouseUp(); }
 			}
 			else {
 				// Fires once on click
-				if (inputManager->GetLeftMouseDown()) { button->MouseDown(); }
+				if ((*inputManager)->GetLeftMouseDown()) { button->MouseDown(); }
 			}
 
 			// Fires every frame during hold
-			if (inputManager->GetLeftMouseDown()) { button->MouseHold(); }
+			if ((*inputManager)->GetLeftMouseDown()) { button->MouseHold(); }
 		}
 		else {
 			// Fires once on exit

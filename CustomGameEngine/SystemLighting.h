@@ -35,7 +35,7 @@ namespace Engine {
 
 		void AfterAction() {}
 
-		void SetActiveCamera(Camera* newCamera) { activeCamera = activeCamera; }
+		void SetActiveCamera(Camera* newCamera) { activeCamera = newCamera; }
 
 	private:
 		LightManager* lightManager;

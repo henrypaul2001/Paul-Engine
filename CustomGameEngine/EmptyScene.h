@@ -1,40 +1,7 @@
 #pragma once
 #include "Scene.h"
-#include "EntityManagerNew.h"
-
 #include "NavigationGrid.h"
-
-#include "ComponentPhysics.h"
-#include "ComponentAnimator.h"
-#include "ComponentAudioSource.h"
-#include "ComponentCollisionSphere.h"
-#include "ComponentCollisionBox.h"
-#include "ComponentCollisionAABB.h"
-#include "ComponentGeometry.h"
-#include "ComponentLight.h"
-#include "ComponentParticleGenerator.h"
-#include "ComponentPathfinder.h"
-#include "ComponentStateController.h"
-#include "ComponentUICanvas.h"
-
-#include "SystemManagerNew.h"
-#include "SystemAudio.h"
-#include "SystemPhysics.h"
-#include "SystemPathfinding.h"
-#include "SystemParticleUpdater.h"
-#include "SystemUIMouseInteraction.h"
-#include "SystemStateMachineUpdater.h"
-#include "SystemSkeletalAnimationUpdater.h"
-#include "SystemBuildMeshList.h"
-#include "SystemAnimatedGeometryAABBGeneration.h"
-#include "SystemLighting.h"
-
-#include "SystemCollisionAABB.h"
-#include "SystemCollisionBox.h"
-#include "SystemCollisionBoxAABB.h"
-#include "SystemCollisionSphere.h"
-#include "SystemCollisionSphereAABB.h"
-#include "SystemCollisionsphereBox.h"
+#include "UIText.h"
 
 namespace Engine
 {
@@ -342,25 +309,5 @@ namespace Engine
 
 	private:
 		NavigationGrid navGrid;
-
-		SystemManagerNew systemManager;
-
-		SystemAudio audioSystem;
-		SystemPhysics physicsSystem;
-		SystemPathfinding pathfindingSystem;
-		SystemParticleUpdater particleUpdater;
-		SystemUIMouseInteraction uiInteract;
-		SystemStateMachineUpdater stateUpdater;
-		SystemSkeletalAnimationUpdater animSystem;
-		SystemBuildMeshList meshListSystem;
-		SystemAnimatedGeometryAABBGeneration animAABBSystem;
-		SystemLighting lightingSystem;
-
-		SystemCollisionAABB aabbSystem;
-		SystemCollisionBox boxSystem;
-		SystemCollisionBoxAABB boxAABBSystem;
-		SystemCollisionSphere sphereSystem;
-		SystemCollisionSphereAABB sphereAABBSystem;
-		SystemCollisionSphereBox sphereBoxSystem;
 	};
 }

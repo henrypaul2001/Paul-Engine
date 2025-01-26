@@ -7,7 +7,7 @@ namespace Engine {
 	class SystemUIMouseInteraction : public SystemNew
 	{
 	public:
-		SystemUIMouseInteraction(EntityManagerNew* ecs, InputManager* inputManager) : SystemNew(ecs), inputManager(inputManager) {}
+		SystemUIMouseInteraction(EntityManagerNew* ecs, InputManager** inputManager) : SystemNew(ecs), inputManager(inputManager) {}
 		~SystemUIMouseInteraction() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_UI_MOUSE_INTERACTION"; }
@@ -16,6 +16,6 @@ namespace Engine {
 		void AfterAction();
 	private:
 		void ProcessUIButton(UIButton* button, ComponentTransform& canvasTransform) const;
-		InputManager* inputManager;
+		InputManager** inputManager;
 	};
 }

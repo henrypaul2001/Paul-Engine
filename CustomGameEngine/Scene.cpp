@@ -1,12 +1,33 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "InputManager.h"
-#include "SystemManager.h"
 namespace Engine
 {
 	float Scene::dt;
 
-	Scene::Scene(SceneManager* sceneManager, const std::string& name) : camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), collisionResolver(collisionManager), constraintSolver(constraintManager) {
+	Scene::Scene(SceneManager* sceneManager, const std::string& name) : camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), systemManager(&ecs),
+		collisionResolver(collisionManager),
+		constraintSolver(constraintManager),
+		audioSystem(&ecs),
+		physicsSystem(&ecs),
+		pathfindingSystem(&ecs),
+		particleUpdater(&ecs),
+		stateUpdater(&ecs),
+		animSystem(&ecs),
+		meshListSystem(&ecs),
+		animAABBSystem(&ecs),
+
+		aabbSystem(&ecs, collisionManager),
+		boxSystem(&ecs, collisionManager),
+		boxAABBSystem(&ecs, collisionManager),
+		sphereSystem(&ecs, collisionManager),
+		sphereAABBSystem(&ecs, collisionManager),
+		sphereBoxSystem(&ecs, collisionManager),
+
+		lightingSystem(&ecs, &lightManager, camera),
+
+		uiInteract(&ecs, &inputManager) 
+	{
 		SCOPE_TIMER("Scene::Scene()");
 		this->resources = ResourceManager::GetInstance();
 		this->sceneManager = sceneManager;
@@ -16,22 +37,12 @@ namespace Engine
 		SCR_WIDTH = this->sceneManager->GetWindowWidth();
 		SCR_HEIGHT = this->sceneManager->GetWindowHeight();
 
-		entityManager = new EntityManager();
-		systemManager = new SystemManager();
 		renderManager = RenderManager::GetInstance();
 		dt = 0;
 
 		this->name = name;
-	}
 
-	Scene::~Scene()
-	{
-		ResourceManager::GetInstance()->ClearTempResources();
-		renderManager->GetBakedData().ClearBakedData();
-		delete camera;
-		delete systemManager;
-		delete constraintManager;
-		delete entityManager;
+		lightingSystem.SetActiveCamera(camera);
 	}
 
 	void Scene::OnSceneCreated()
@@ -70,11 +81,6 @@ namespace Engine
 	InputManager* Scene::GetInputManager() const
 	{
 		return inputManager;
-	}
-
-	SystemManager* Scene::GetSystemManager() const
-	{
-		return systemManager;
 	}
 
 	SceneManager* Scene::GetSceneManager() const
