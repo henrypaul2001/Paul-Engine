@@ -39,30 +39,7 @@ namespace Engine
 
 		// Clone an entity by ID. Returns pointer to new entity. Returns nullptr if ID doesn't exist
 		EntityNew* Clone(const unsigned int entityID) { 
-			return Clone(entities.Get(entityID));
-		}
-		// Clone an entity by reference. Returns pointer to new entity. Returns nullptr if entity doesn't exist in ECS
-		EntityNew* Clone(const EntityNew entity) {
-			// Clone entity
-			const unsigned int old_id = entity.id;
-			const std::string& old_name = entity.name;
-			const std::bitset<MAX_COMPONENTS> old_mask = entity.component_mask;
-
-			EntityNew* newEntity = NewWithoutDefault(old_name);
-
-			// Clone components
-			for (int i = 0; i < component_pools.size(); i++) {
-				if (old_mask[i]) {
-					// Copy and add to new entity
-					component_pools[i].get()->CloneElement(old_id, newEntity->id);
-				}
-			}
-
-			newEntity->component_mask = old_mask;
-
-			GetComponent<ComponentTransform>(newEntity->id)->owner = newEntity;
-
-			return newEntity;
+			return Clone(entities.GetRef(entityID));
 		}
 		// Clone an entity by name. Returns pointer to new entity. Returns nullptr if name doesn't exist
 		EntityNew* Clone(const std::string& name) { return Clone(*Find(name)); }
@@ -198,6 +175,29 @@ namespace Engine
 		const unsigned int NumEntities() const { return entities.DenseSize(); }
 
 	private:
+		// Clone an entity by reference. Returns pointer to new entity. Returns nullptr if entity doesn't exist in ECS
+		EntityNew* Clone(const EntityNew& entity) {
+			// Clone entity
+			const unsigned int old_id = entity.id;
+			const std::string& old_name = entity.name;
+			const std::bitset<MAX_COMPONENTS> old_mask = entity.component_mask;
+
+			EntityNew* newEntity = NewWithoutDefault(old_name);
+
+			// Clone components
+			for (int i = 0; i < component_pools.size(); i++) {
+				if (old_mask[i]) {
+					// Copy and add to new entity
+					component_pools[i].get()->CloneElement(old_id, newEntity->id);
+				}
+			}
+
+			newEntity->component_mask = old_mask;
+
+			GetComponent<ComponentTransform>(newEntity->id)->owner = newEntity;
+
+			return newEntity;
+		}
 
 		// Create new entity without default transform component (for use during entity cloning)
 		EntityNew* NewWithoutDefault(const std::string& name) {

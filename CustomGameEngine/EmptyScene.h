@@ -167,7 +167,7 @@ namespace Engine
 			ecs.AddComponent(clone_base->ID(), TestComponentA());
 			ecs.AddComponent(clone_base->ID(), b);
 
-			EntityNew* cloned = ecs.Clone(*clone_base);
+			EntityNew* cloned = ecs.Clone(clone_base->ID());
 
 			for (int i = 0; i < 50; i++) {
 				EntityNew* entity = ecs.New("ViewTest");
