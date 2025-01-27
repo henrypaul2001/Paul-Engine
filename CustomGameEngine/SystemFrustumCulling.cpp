@@ -8,7 +8,7 @@ namespace Engine {
 		SCOPE_TIMER("SystemFrustumCulling::Run");
 		this->activeCamera = activeCamera;
 		this->collisionManager = collisionManager;
-		viewFrustum = &activeCamera->GetViewFrustum();
+		viewFrustum = activeCamera->GetViewFrustum();
 		totalMeshes = 0;
 		visibleMeshes = 0;
 		geometryAABBTests = 0;
@@ -61,7 +61,7 @@ namespace Engine {
 		SCOPE_TIMER("SystemFrustumCulling::AABBIsInFrustum");
 		geometryAABBTests++;
 		bool fullyInside = true;
-		for (const ViewPlane& plane : { viewFrustum->left, viewFrustum->right, viewFrustum->far, viewFrustum->near, viewFrustum->top, viewFrustum->bottom }) {
+		for (const ViewPlane& plane : { viewFrustum.left, viewFrustum.right, viewFrustum.far, viewFrustum.near, viewFrustum.top, viewFrustum.bottom }) {
 			const FrustumIntersection planeResult = AABBIsOnOrInFrontOfPlane(aabb, boxWorldOrigin, plane);
 
 			if (planeResult == OUTSIDE_FRUSTUM) { return planeResult; }
@@ -169,9 +169,9 @@ namespace Engine {
 			const glm::vec3& worldPos = probe->GetWorldPosition();
 
 			// Check for collision on each view plane, starting with most likely to fail first
-			if (SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->left) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->right) &&
-				SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->far) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->near) &&
-				SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->top) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum->bottom))
+			if (SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum.left) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum.right) &&
+				SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum.far) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum.near) &&
+				SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum.top) && SphereIsOnOrInFrontOfPlane(worldPos, soiRadius, viewFrustum.bottom))
 			{
 				// Probe is inside view frustum
 				float distanceToCameraSquared = glm::distance2(activeCamera->GetPosition(), worldPos);

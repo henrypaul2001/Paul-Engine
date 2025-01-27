@@ -5,7 +5,7 @@ namespace Engine
 {
 	float Scene::dt;
 
-	Scene::Scene(SceneManager* sceneManager, const std::string& name) : camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), systemManager(&ecs),
+	Scene::Scene(SceneManager* sceneManager, const std::string& name) : SCR_WIDTH(sceneManager->GetWindowWidth()), SCR_HEIGHT(sceneManager->GetWindowHeight()), camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), systemManager(&ecs),
 		collisionResolver(collisionManager),
 		constraintSolver(constraintManager),
 		audioSystem(&ecs),
@@ -33,9 +33,6 @@ namespace Engine
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
-
-		SCR_WIDTH = this->sceneManager->GetWindowWidth();
-		SCR_HEIGHT = this->sceneManager->GetWindowHeight();
 
 		renderManager = RenderManager::GetInstance();
 		dt = 0;

@@ -15,7 +15,7 @@ namespace Engine {
 	class SystemFrustumCulling
 	{
 	public:
-		SystemFrustumCulling() : activeCamera(nullptr), viewFrustum(nullptr), collisionManager(nullptr), visibleMeshes(0), totalMeshes(0), geometryAABBTests(0) {}
+		SystemFrustumCulling() : activeCamera(nullptr), collisionManager(nullptr), visibleMeshes(0), totalMeshes(0), geometryAABBTests(0) {}
 		~SystemFrustumCulling() {}
 
 		void Run(Camera* activeCamera, CollisionManager* collisionManager);
@@ -39,7 +39,7 @@ namespace Engine {
 		void CullReflectionProbes();
 
 		Camera* activeCamera;
-		const ViewFrustum* viewFrustum;
+		ViewFrustum viewFrustum;
 		
 		CollisionManager* collisionManager;
 
