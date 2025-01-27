@@ -113,13 +113,6 @@ namespace Engine {
 		systemManager.ActionPreUpdateSystems();
 		Scene::Update();
 
-		EntityNew* geoBall = ecs.Find("Geo Ball");
-		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(geoBall->ID());
-		const glm::quat& currentOrientation = transform->GetOrientation();
-		const glm::quat rotationIncrement = glm::angleAxis(1.0f * Scene::dt, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		transform->SetOrientation(currentOrientation * rotationIncrement);
-
 		float time = (float)glfwGetTime();
 		float fps = 1.0f / Scene::dt;
 

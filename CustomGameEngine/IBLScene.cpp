@@ -1,6 +1,4 @@
 #include "IBLScene.h"
-#include "UIText.h"
-#include "SystemFrustumCulling.h"
 namespace Engine {
 	IBLScene::IBLScene(SceneManager* sceneManager) : Scene(sceneManager, "IBLScene")
 	{
@@ -13,12 +11,12 @@ namespace Engine {
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL);
 
-		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
+		resources->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 		renderManager->GetRenderParams()->SetAdvBloomLensDirtMaskStrength(0.5f);
 
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
-		ResourceManager::GetInstance()->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true);
+		resources->LoadHDREnvironmentMap("Textures/Environment Maps/sky.hdr", true);
+		resources->LoadHDREnvironmentMap("Textures/Environment Maps/newport_loft.hdr", true);
 		renderManager->SetEnvironmentMap("Textures/Environment Maps/sky.hdr");
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 
@@ -33,31 +31,27 @@ namespace Engine {
 
 	void IBLScene::CreateEntities()
 	{
-		ResourceManager* resources = ResourceManager::GetInstance();
-		Entity* dirLight = new Entity("Directional Light");
-		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
+		EntityNew* dirLight = ecs.New("Directional Light");
 
-		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
-		directional->CastShadows = true;
-		//directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
-		directional->Colour = glm::vec3(0.0f);
-		directional->Ambient = glm::vec3(0.0f);
-		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
-		directional->MinShadowBias = 0.0f;
-		directional->MaxShadowBias = 0.003f;
-		directional->DirectionalLightDistance = 20.0f;
-
-		dirLight->AddComponent(directional);
-		entityManager->AddEntity(dirLight);
+		ComponentLight directional = ComponentLight(DIRECTIONAL);
+		directional.CastShadows = true;
+		//directional.Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		directional.Colour = glm::vec3(0.0f);
+		directional.Ambient = glm::vec3(0.0f);
+		directional.Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
+		directional.MinShadowBias = 0.0f;
+		directional.MaxShadowBias = 0.003f;
+		directional.DirectionalLightDistance = 20.0f;
+		ecs.AddComponent(dirLight->ID(), directional);
 
 #pragma region Materials
 		PBRMaterial* bricks = new PBRMaterial(glm::vec3(1.0f));
-		bricks->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
-		bricks->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/normal.png", TEXTURE_NORMAL, false));
-		bricks->metallicMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/specular.png", TEXTURE_METALLIC, false));
-		bricks->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/roughness.png", TEXTURE_ROUGHNESS, false));
-		bricks->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
-		bricks->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
+		bricks->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/bricks/albedo.png", TEXTURE_ALBEDO, true));
+		bricks->normalMaps.push_back(resources->LoadTexture("Materials/PBR/bricks/normal.png", TEXTURE_NORMAL, false));
+		bricks->metallicMaps.push_back(resources->LoadTexture("Materials/PBR/bricks/specular.png", TEXTURE_METALLIC, false));
+		bricks->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/bricks/roughness.png", TEXTURE_ROUGHNESS, false));
+		bricks->aoMaps.push_back(resources->LoadTexture("Materials/PBR/bricks/ao.png", TEXTURE_AO, false));
+		bricks->heightMaps.push_back(resources->LoadTexture("Materials/PBR/bricks/displacement.png", TEXTURE_DISPLACE, false));
 		bricks->height_scale = -0.1;
 		bricks->textureScaling = glm::vec2(5.0f, 50.0f);
 		resources->AddMaterial("bricks", bricks);
@@ -69,25 +63,24 @@ namespace Engine {
 		resources->AddMaterial("ballMaterial", ballMaterial);
 
 		PBRMaterial* raindrops = new PBRMaterial(glm::vec3(1.0f));
-		raindrops->baseColourMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
-		raindrops->normalMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/normal.png", TEXTURE_NORMAL, false));
-		raindrops->roughnessMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/roughness.jpg", TEXTURE_ROUGHNESS, false));
-		raindrops->aoMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/ao.jpg", TEXTURE_AO, false));
-		raindrops->heightMaps.push_back(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/height.png", TEXTURE_DISPLACE, false));
-		raindrops->PushOpacityMap(ResourceManager::GetInstance()->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
+		raindrops->baseColourMaps.push_back(resources->LoadTexture("Materials/PBR/rain_drops/albedo.jpg", TEXTURE_ALBEDO, true));
+		raindrops->normalMaps.push_back(resources->LoadTexture("Materials/PBR/rain_drops/normal.png", TEXTURE_NORMAL, false));
+		raindrops->roughnessMaps.push_back(resources->LoadTexture("Materials/PBR/rain_drops/roughness.jpg", TEXTURE_ROUGHNESS, false));
+		raindrops->aoMaps.push_back(resources->LoadTexture("Materials/PBR/rain_drops/ao.jpg", TEXTURE_AO, false));
+		raindrops->heightMaps.push_back(resources->LoadTexture("Materials/PBR/rain_drops/height.png", TEXTURE_DISPLACE, false));
+		raindrops->PushOpacityMap(resources->LoadTexture("Materials/PBR/rain_drops/opacity.png", TEXTURE_OPACITY, false));
 		raindrops->shadowCastAlphaDiscardThreshold = 1.0f;
 		raindrops->textureScaling = glm::vec2(5.0f, 50.0f);
 		resources->AddMaterial("raindrops", raindrops);
 #pragma endregion
 
 #pragma region Scene
-		Entity* scifiInterior = new Entity("Scifi Interior");
-		scifiInterior->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		scifiInterior->AddComponent(new ComponentGeometry("Models/PBR/scifiInterior/scifiInterior.obj", true));
+		EntityNew* scifiInterior = ecs.New("Scifi Interior");
+		ecs.AddComponent(scifiInterior->ID(), ComponentGeometry("Models/PBR/scifiInterior/scifiInterior.obj", true));
 
-		std::vector<Mesh*> meshes = scifiInterior->GetGeometryComponent()->GetModel()->meshes;
+		const std::vector<Mesh*>& meshes = ecs.GetComponent<ComponentGeometry>(scifiInterior->ID())->GetModel()->meshes;
 
-		std::vector<glm::vec2> textureScales = {
+		const std::vector<glm::vec2> textureScales = {
 			glm::vec2(10.0f),
 			glm::vec2(5.0f),
 			glm::vec2(5.0f),
@@ -126,100 +119,95 @@ namespace Engine {
 		for (int i = 0; i < meshes.size(); i++) {
 			meshes[i]->GetMaterial()->textureScaling = textureScales[i];
 		}
-		entityManager->AddEntity(scifiInterior);
 
-		Entity* geoBall = new Entity("Geo Ball");
-		geoBall->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		geoBall->AddComponent(new ComponentGeometry("Models/PBR/scifiInterior/coolGeoSphere.obj", true));
-		geoBall->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
-		geoBall->GetGeometryComponent()->ApplyMaterialToModel(geoBallMaterial);
-		entityManager->AddEntity(geoBall);
+		EntityNew* geoBall = ecs.New("Geo Ball");
+		ecs.AddComponent(geoBall->ID(), ComponentGeometry("Models/PBR/scifiInterior/coolGeoSphere.obj", true));
+		ComponentGeometry* geometry = ecs.GetComponent<ComponentGeometry>(geoBall->ID());
+		geometry->SetIsIncludedInReflectionProbes(false);
+		geometry->ApplyMaterialToModel(geoBallMaterial);
 
-		//Entity* ball = new Entity("Ball");
-		//ball->AddComponent(new ComponentTransform(0.0f, 8.0f, 0.0f));
-		//ball->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-		//ball->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
-		//ball->GetGeometryComponent()->ApplyMaterialToModel(ballMaterial);
-		//entityManager->AddEntity(ball);
+		EntityNew* ball = ecs.New("Ball");
+		ecs.GetComponent<ComponentTransform>(ball->ID())->SetPosition(glm::vec3(0.0f, 8.0f, 0.0f));
+		ecs.AddComponent(ball->ID(), ComponentGeometry(MODEL_SPHERE, true));
+		geometry = ecs.GetComponent<ComponentGeometry>(ball->ID());
+		geometry->SetIsIncludedInReflectionProbes(false);
+		geometry->ApplyMaterialToModel(ballMaterial);
 
-		Entity* light = new Entity("Light");
-		light->AddComponent(new ComponentTransform(0.0f, 2.5f, 0.0f));
-		ComponentLight* pointLight = new ComponentLight(POINT);
-		pointLight->CastShadows = false;
-		pointLight->Colour = glm::vec3(25.0f, 25.0f, 32.5f);
-		pointLight->Ambient = glm::vec3(0.0f);
-		light->AddComponent(pointLight);
-		entityManager->AddEntity(light);
+		EntityNew* light = ecs.New("Light");
+		ecs.GetComponent<ComponentTransform>(light->ID())->SetPosition(glm::vec3(0.0f, 2.5f, 0.0f));
+		ComponentLight pointLight = ComponentLight(POINT);
+		pointLight.CastShadows = false;
+		pointLight.Colour = glm::vec3(25.0f, 25.0f, 32.5f);
+		pointLight.Ambient = glm::vec3(0.0f);
+		ecs.AddComponent(light->ID(), pointLight);
 
-		Entity* floor = new Entity("Floor");
-		floor->AddComponent(new ComponentTransform(40.0f, 0.0f, 0.0f));
-		floor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 50.0f, 1.0f));
-		floor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
-		floor->GetGeometryComponent()->ApplyMaterialToModel(bricks);
-		entityManager->AddEntity(floor);
+		EntityNew* floor = ecs.New("Floor");
+		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
+		transform->SetPosition(glm::vec3(40.0f, 0.0f, 0.0f));
+		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_PLANE, true));
+		transform->SetScale(glm::vec3(5.0f, 50.0f, 1.0f));
+		transform->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		ecs.GetComponent<ComponentGeometry>(floor->ID())->ApplyMaterialToModel(bricks);
 
-		Entity* rainFloor = new Entity("Rain Floor");
-		rainFloor->AddComponent(new ComponentTransform(40.0f, 0.01f, 0.0f));
-		rainFloor->AddComponent(new ComponentGeometry(MODEL_PLANE, true));
-		rainFloor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 50.0f, 1.0f));
-		rainFloor->GetTransformComponent()->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
-		rainFloor->GetGeometryComponent()->ApplyMaterialToModel(raindrops);
-		rainFloor->GetGeometryComponent()->SetIsIncludedInReflectionProbes(false);
-		rainFloor->GetGeometryComponent()->CastShadows(false);
-		entityManager->AddEntity(rainFloor);
+		EntityNew* rainFloor = ecs.New("Rain Floor");
+		transform = ecs.GetComponent<ComponentTransform>(rainFloor->ID());
+		transform->SetPosition(glm::vec3(40.0f, 0.01f, 0.0f));
+		ecs.AddComponent(rainFloor->ID(), ComponentGeometry(MODEL_PLANE, true));
+		transform->SetScale(glm::vec3(5.0f, 50.0f, 1.0f));
+		transform->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
+		geometry = ecs.GetComponent<ComponentGeometry>(rainFloor->ID());
+		geometry->ApplyMaterialToModel(raindrops);
+		geometry->SetIsIncludedInReflectionProbes(false);
+		geometry->CastShadows(false);
 
-		Entity* streetLight = new Entity("StreetLight");
-		streetLight->AddComponent(new ComponentTransform(40.0f, 2.5f, 0.0f));
-		ComponentLight* streetPoint = new ComponentLight(POINT);
-		streetPoint->CastShadows = false;
-		streetPoint->Colour = glm::vec3(200.0f);
-		streetPoint->Ambient = glm::vec3(0.0f);
-		streetPoint->Specular = streetPoint->Colour;
-		streetLight->AddComponent(streetPoint);
-		streetLight->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-		streetLight->GetTransformComponent()->SetScale(0.25f);
-		entityManager->AddEntity(streetLight);
+		EntityNew streetLight = *ecs.New("StreetLight");
+		transform = ecs.GetComponent<ComponentTransform>(streetLight.ID());
+		transform->SetPosition(glm::vec3(40.0f, 2.5f, 0.0f));
+		ComponentLight streetPoint = ComponentLight(POINT);
+		streetPoint.CastShadows = false;
+		streetPoint.Colour = glm::vec3(200.0f);
+		streetPoint.Ambient = glm::vec3(0.0f);
+		streetPoint.Specular = streetPoint.Colour;
+		ecs.AddComponent(streetLight.ID(), streetPoint);
+		ecs.AddComponent(streetLight.ID(), ComponentGeometry(MODEL_SPHERE, true));
+		transform->SetScale(0.25f);
 
-		Entity* street = new Entity("Street");
-		street->AddComponent(new ComponentTransform(40.0f, 0.0f, 0.0f));
-		street->AddComponent(new ComponentGeometry("Models/simpleStreet/street.obj", true));
-		entityManager->AddEntity(street);
+		EntityNew street = *ecs.New("Street");
+		transform = ecs.GetComponent<ComponentTransform>(street.ID());
+		transform->SetPosition(glm::vec3(40.0f, 0.0f, 0.0f));
+		ecs.AddComponent(street.ID(), ComponentGeometry("Models/simpleStreet/street.obj", true));
 
-		Entity* streetClone = street->Clone();
-		streetClone->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, -20.0f));
+		EntityNew* streetClone = ecs.Clone(street.ID());
+		ecs.GetComponent<ComponentTransform>(streetClone->ID())->SetPosition(glm::vec3(40.0f, 0.0f, -20.0f));
 
-		Entity* streetCloneTwo = street->Clone();
-		streetCloneTwo->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, -40.0f));
+		EntityNew* streetCloneTwo = ecs.Clone(street.ID());
+		ecs.GetComponent<ComponentTransform>(streetCloneTwo->ID())->SetPosition(glm::vec3(40.0f, 0.0f, -40.0f));
 
-		Entity* streetCloneThree = street->Clone();
-		streetCloneThree->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, 20.0f));
+		EntityNew* streetCloneThree = ecs.Clone(street.ID());
+		ecs.GetComponent<ComponentTransform>(streetCloneThree->ID())->SetPosition(glm::vec3(40.0f, 0.0f, 20.0f));
 
-		Entity* streetCloneFour = street->Clone();
-		streetCloneFour->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 0.0f, 40.0f));
+		EntityNew* streetCloneFour = ecs.Clone(street.ID());
+		ecs.GetComponent<ComponentTransform>(streetCloneFour->ID())->SetPosition(glm::vec3(40.0f, 0.0f, 40.0f));
 
-		Entity* streetLightClone = streetLight->Clone();
-		streetLightClone->GetTransformComponent()->SetPosition(glm::vec3(42.5f, 2.5f, -20.0f));
-		streetLightClone->GetLightComponent()->Colour = glm::vec3(125.0f, 200.0f, 125.0f);
-		streetLightClone->GetLightComponent()->Specular = streetLightClone->GetLightComponent()->Colour;
+		EntityNew* streetLightClone = ecs.Clone(streetLight.ID());
+		ecs.GetComponent<ComponentTransform>(streetLightClone->ID())->SetPosition(glm::vec3(42.5f, 2.5f, -20.0f));
+		ComponentLight* lightComponent = ecs.GetComponent<ComponentLight>(streetLightClone->ID());
+		lightComponent->Colour = glm::vec3(125.0f, 200.0f, 125.0f);
+		lightComponent->Specular = lightComponent->Colour;
 #pragma endregion
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		Entity* canvas = new Entity("Canvas");
-		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		canvas->GetTransformComponent()->SetScale(1.0f);
-		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		EntityNew* uiCanvas = ecs.New("Canvas");
+		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
+		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
+		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		canvas->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
-		std::string renderPipeline = "DEFERRED";
-		if (renderManager->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
-			renderPipeline = "FORWARD";
-		}
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("G Pipeline: ") + renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		const std::string renderPipeline = renderManager->GetRenderPipeline()->PipelineName();
+		canvas->AddUIElement(new UIText(renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
 		// Geometry debug UI
 		UIBackground geometryDebugBackground;
@@ -241,27 +229,28 @@ namespace Engine {
 		bvhCountText->SetActive(false);
 		UIText* aabbTestCountText = new UIText(std::string("AABB Tests: "), glm::vec2((SCR_WIDTH / 2.0f) - 150.0f, 15.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f));
 		aabbTestCountText->SetActive(false);
-		canvas->GetUICanvasComponent()->AddUIElement(geoDebugText);
-		canvas->GetUICanvasComponent()->AddUIElement(meshCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(visibleCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(bvhCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(aabbTestCountText);
-		entityManager->AddEntity(canvas);
+		canvas->AddUIElement(geoDebugText);
+		canvas->AddUIElement(meshCountText);
+		canvas->AddUIElement(visibleCountText);
+		canvas->AddUIElement(bvhCountText);
+		canvas->AddUIElement(aabbTestCountText);
 #pragma endregion
+		
+		//EntityNew probeDebug = *ecs.New("Probe Debug");
+		//transform = ecs.GetComponent<ComponentTransform>(probeDebug.ID());
+		//transform->SetPosition(glm::vec3(0.0f, 5.0f, 0.0f));
+		//ecs.AddComponent(probeDebug.ID(), ComponentGeometry(MODEL_SPHERE, true));
+		//transform->SetScale(8.0f);
 
-		//Entity* probeDebug = new Entity("Probe Debug");
-		//probeDebug->AddComponent(new ComponentTransform(glm::vec3(0.0f, 5.0f, 0.0f)));
-		//probeDebug->AddComponent(new ComponentGeometry(MODEL_SPHERE, true));
-		//probeDebug->GetTransformComponent()->SetScale(8.0f);
-		//entityManager->AddEntity(probeDebug);
+		//EntityNew* probeDebugClone = ecs.Clone(probeDebug);
+		//transform = ecs.GetComponent<ComponentTransform>(probeDebugClone->ID());
+		//transform->SetPosition(glm::vec3(40.0f, 2.5f, 0.0f));
+		//transform->SetScale(30.0f);
 
-		//Entity* probeDebugClone = probeDebug->Clone();
-		//probeDebugClone->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 2.5f, 0.0f));
-		//probeDebugClone->GetTransformComponent()->SetScale(30.0f);
-
-		//Entity* probeDebugCloneTwo = probeDebug->Clone();
-		//probeDebugCloneTwo->GetTransformComponent()->SetPosition(glm::vec3(40.0f, 2.5f, -20.0f));
-		//probeDebugCloneTwo->GetTransformComponent()->SetScale(30.0f);
+		//EntityNew* probeDebugCloneTwo = ecs.Clone(probeDebug);
+		//transform = ecs.GetComponent<ComponentTransform>(probeDebugCloneTwo->ID());
+		//transform->SetPosition(glm::vec3(40.0f, 2.5f, -20.0f));
+		//transform->SetScale(30.0f);
 
 		// Reflection probes
 		std::vector<glm::vec3> positions;
@@ -313,22 +302,12 @@ namespace Engine {
 		renderSkybox.push_back(true);
 		renderSkybox.push_back(true);
 
-		RenderManager::GetInstance()->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, nearClips, farClips, renderSkybox, name, 1024u);
+		renderManager->GetBakedData().InitialiseReflectionProbes(positions, localBounds, soiRadii, nearClips, farClips, renderSkybox, name, 1024u);
 	}
 
 	void IBLScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
-		SystemRender* renderSystem = new SystemRender();
-		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
-		renderSystem->SetActiveCamera(camera);
-		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
-		SystemReflectionBaking* reflectionSystem = new SystemReflectionBaking();
-		reflectionSystem->SetActiveCamera(camera);
-		systemManager->AddSystem(reflectionSystem, RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
+		RegisterAllDefaultSystems();
 	}
 
 	void IBLScene::SetupScene()
@@ -344,8 +323,8 @@ namespace Engine {
 
 	void IBLScene::ChangePostProcessEffect()
 	{
-		SystemRender* renderSystem = dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS));
-		unsigned int currentEffect = renderSystem->GetPostProcess();
+		SystemRender& renderSystem = renderManager->GetRenderPipeline()->GetRenderSystem();
+		unsigned int currentEffect = renderSystem.GetPostProcess();
 		unsigned int nextEffect;
 		if (currentEffect == 8u) {
 			nextEffect = 0u;
@@ -354,52 +333,52 @@ namespace Engine {
 			nextEffect = currentEffect + 1;
 		}
 
-		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
+		renderSystem.SetPostProcess((PostProcessingEffect)nextEffect);
 	}
 
 	void IBLScene::Update()
 	{
+		systemManager.ActionPreUpdateSystems();
 		Scene::Update();
-		systemManager->ActionUpdateSystems(entityManager);
 
-		Entity* geoBall = entityManager->FindEntity("Geo Ball");
-		glm::quat currentOrientation = geoBall->GetTransformComponent()->GetOrientation();
-		glm::quat rotationIncrement = glm::angleAxis(1.0f * Scene::dt, glm::vec3(0.0f, 1.0f, 0.0f));
+		EntityNew* geoBall = ecs.Find("Geo Ball");
+		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(geoBall->ID());
+		const glm::quat& currentOrientation = transform->GetOrientation();
+		const glm::quat rotationIncrement = glm::angleAxis(1.0f * Scene::dt, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		geoBall->GetTransformComponent()->SetOrientation(currentOrientation * rotationIncrement);
+		transform->SetOrientation(currentOrientation * rotationIncrement);
 
 		float time = (float)glfwGetTime();
 		float fps = 1.0f / Scene::dt;
 
 		float targetFPSPercentage = fps / 160.0f;
-		if (targetFPSPercentage > 1.0f) {
-			targetFPSPercentage = 1.0f;
-		}
+		if (targetFPSPercentage > 1.0f) { targetFPSPercentage = 1.0f; }
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		Entity* canvas = entityManager->FindEntity("Canvas");
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
+		EntityNew* canvasEntity = ecs.Find("Canvas");
+		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
+		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
+		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
-		SystemFrustumCulling* culling = dynamic_cast<SystemFrustumCulling*>(systemManager->FindSystem(SYSTEM_FRUSTUM_CULLING, UPDATE_SYSTEMS));
 
-		unsigned int meshCount = culling->GetTotalMeshes();
-		unsigned int visibleMeshes = culling->GetVisibleMeshes();
-		unsigned int nodeCount = geometryBVH->GetNodeCount();
-		unsigned int aabbTests = culling->GetTotalAABBTests();
+		const unsigned int meshCount = frustumCulling.GetTotalMeshes();
+		const unsigned int visibleMeshes = frustumCulling.GetVisibleMeshes();
+		const unsigned int nodeCount = geometryBVH->GetNodeCount();
+		const unsigned int aabbTests = frustumCulling.GetTotalAABBTests();
 
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+		dynamic_cast<UIText*>(canvas->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
+		dynamic_cast<UIText*>(canvas->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
+		dynamic_cast<UIText*>(canvas->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
+		dynamic_cast<UIText*>(canvas->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+
+		systemManager.ActionSystems();
 	}
 
 	void IBLScene::Render()
 	{
 		Scene::Render();
-		systemManager->ActionRenderSystems(entityManager, SCR_WIDTH, SCR_HEIGHT);
 	}
 
 	void IBLScene::Close()
@@ -414,13 +393,14 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			Entity* canvas = entityManager->FindEntity("Canvas");
+			EntityNew* uiCanvas = ecs.Find("Canvas");
+			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
-			canvas->GetUICanvasComponent()->UIElements()[5]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[6]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[7]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[8]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[9]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[6]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[7]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[8]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[9]->SetActive(!renderGeometryColliders);
 		}
 	}
 
