@@ -11,7 +11,7 @@
 //#include "AudioScene.h"
 //#include "ParticleScene.h"
 //#include "AIScene.h"
-//#include "IBLScene.h"
+#include "IBLScene.h"
 #include "GeoCullingScene.h"
 #include "SSRScene.h"
 #include "EmptyScene.h"
@@ -80,10 +80,10 @@ namespace Engine
 		case SCENE_AI:
 			newScene = new AIScene(this);
 			break;
+			*/
 		case SCENE_IBL:
 			newScene = new IBLScene(this);
 			break;
-			*/
 		case SCENE_GEO_CULLING:
 			newScene = new GeoCullingScene(this);
 			break;
@@ -109,6 +109,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_GEO_CULLING);
+		ChangeScene(SCENE_IBL);
 	}
 }

@@ -39,14 +39,14 @@ namespace Engine
 
 		// Clone an entity by ID. Returns pointer to new entity. Returns nullptr if ID doesn't exist
 		EntityNew* Clone(const unsigned int entityID) { 
-			return Clone(entities.GetRef(entityID));
+			return Clone(entities.Get(entityID));
 		}
 		// Clone an entity by reference. Returns pointer to new entity. Returns nullptr if entity doesn't exist in ECS
-		EntityNew* Clone(const EntityNew& entity) {
+		EntityNew* Clone(const EntityNew entity) {
 			// Clone entity
 			const unsigned int old_id = entity.id;
 			const std::string& old_name = entity.name;
-			const std::bitset<MAX_COMPONENTS>& old_mask = entity.component_mask;
+			const std::bitset<MAX_COMPONENTS> old_mask = entity.component_mask;
 
 			EntityNew* newEntity = NewWithoutDefault(old_name);
 
