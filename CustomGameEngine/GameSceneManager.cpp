@@ -12,9 +12,10 @@
 //#include "ParticleScene.h"
 //#include "AIScene.h"
 //#include "IBLScene.h"
-//#include "GeoCullingScene.h"
+#include "GeoCullingScene.h"
 #include "SSRScene.h"
 #include "EmptyScene.h"
+
 #include <iostream>
 namespace Engine
 {
@@ -82,10 +83,10 @@ namespace Engine
 		case SCENE_IBL:
 			newScene = new IBLScene(this);
 			break;
+			*/
 		case SCENE_GEO_CULLING:
 			newScene = new GeoCullingScene(this);
 			break;
-			*/
 		case SCENE_SSR:
 			newScene = new SSRScene(this);
 			break;
@@ -108,6 +109,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_SSR);
+		ChangeScene(SCENE_GEO_CULLING);
 	}
 }

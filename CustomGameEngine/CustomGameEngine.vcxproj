@@ -336,7 +336,7 @@
     <ClCompile Include="GenericState.cpp" />
     <ClCompile Include="GenericStateTransition.cpp" />
     <ClCompile Include="GeoCullingScene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="glad.c" />
     <ClCompile Include="IBLScene.cpp">

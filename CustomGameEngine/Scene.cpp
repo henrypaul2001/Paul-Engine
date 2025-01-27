@@ -47,7 +47,8 @@ namespace Engine
 
 	void Scene::OnSceneCreated()
 	{
-		//collisionManager->ConstructBVHTree();
+		systemManager.ActionPreUpdateSystems();
+		collisionManager->ConstructBVHTree();
 	}
 
 	void Scene::Update()
@@ -57,7 +58,7 @@ namespace Engine
 		glm::vec3 forward = camera->GetFront();
 		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
 
-		collisionManager->ConstructBVHTree();
+		//collisionManager->ConstructBVHTree();
 		frustumCulling.Run(camera, collisionManager);
 
 		collisionResolver.Run(ecs);
