@@ -46,7 +46,7 @@ namespace Engine {
 
 	}
 
-	void IdleState::Update()
+	void IdleState::Update(EntityManagerNew* ecs, const unsigned int entityID)
 	{
 		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
 		Entity* owner = nullptr;
@@ -103,7 +103,7 @@ namespace Engine {
 		}
 	}
 
-	void IdleState::Enter()
+	void IdleState::Enter(EntityManagerNew* ecs, const unsigned int entityID)
 	{
 		State::Enter();
 		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
@@ -125,7 +125,7 @@ namespace Engine {
 		}
 	}
 
-	void IdleState::Exit()
+	void IdleState::Exit(EntityManagerNew* ecs, const unsigned int entityID)
 	{
 		State::Exit();
 	}

@@ -272,7 +272,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractShader.cpp" />
     <ClCompile Include="AIScene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="AnimationChannel.cpp" />
     <ClCompile Include="AnimationScene.cpp">

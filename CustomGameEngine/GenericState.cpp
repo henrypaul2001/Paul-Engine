@@ -18,8 +18,12 @@ namespace Engine {
         this->data = data;
     }
 
-    void GenericState::Update()
+    void GenericState::Update(EntityManagerNew* ecs, const unsigned int entityID)
     {
+        if (updateFunction) {
+            updateFunction(data, ecs, entityID);
+        }
+        /*
         if (data != nullptr) {
             if (updateFunction) {
                 updateFunction(data);
@@ -30,11 +34,16 @@ namespace Engine {
                 //updateFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
+        */
     }
 
-    void GenericState::Enter()
+    void GenericState::Enter(EntityManagerNew* ecs, const unsigned int entityID)
     {
-        State::Enter();
+        State::Enter(ecs, entityID);
+        if (enterFunction) {
+            enterFunction(data, ecs, entityID);
+        }
+        /*
         if (data != nullptr) {
             if (enterFunction) {
                 enterFunction(data);
@@ -45,11 +54,16 @@ namespace Engine {
                 //enterFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
+        */
     }
 
-    void GenericState::Exit()
+    void GenericState::Exit(EntityManagerNew* ecs, const unsigned int entityID)
     {
-        State::Exit();
+        State::Exit(ecs, entityID);
+        if (exitFunction) {
+            exitFunction(data, ecs, entityID);
+        }
+        /*
         if (data != nullptr) {
             if (exitFunction) {
                 exitFunction(data);
@@ -60,5 +74,6 @@ namespace Engine {
                 //exitFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
+        */
     }
 }
