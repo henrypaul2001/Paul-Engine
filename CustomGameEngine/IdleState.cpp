@@ -49,63 +49,60 @@ namespace Engine {
 	void IdleState::Update(EntityManagerNew* ecs, const unsigned int entityID)
 	{
 		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
-		Entity* owner = nullptr;
-		if (owner && owner->GetTransformComponent()) {
-			ComponentTransform* transform = owner->GetTransformComponent();
-			if (isLookingAround) {
-				glm::quat currentOrientation = transform->GetOrientation();
+		ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
+		if (isLookingAround) {
+			const glm::quat& currentOrientation = transform->GetOrientation();
 
-				float dotProduct = glm::dot(currentOrientation, targetOrientation);
+			float dotProduct = glm::dot(currentOrientation, targetOrientation);
 
-				// if dot product is close to 1, then the orientations are closely the same
-				if (dotProduct <= (1.0f - 0.1f)) {
-					// Rotate current orientation towards target orientation at rotateSpeed
-					glm::quat rotatedOrientation = glm::slerp(currentOrientation, targetOrientation, rotateSpeed * Scene::dt);
-					transform->SetOrientation(rotatedOrientation);
-				}
-				else {
-					isLookingAround = false;
-					DecideNextActivity();
-				}
-			}
-			else if (isSteppingAround) {
-				// Check if reached target
-				glm::vec3 currentPosition = transform->GetWorldPosition();
-				float distanceToTargetSquared = glm::distance2(currentPosition, targetPosition);
-
-				if (distanceToTargetSquared >= (moveSpeed * moveSpeed)) {
-					// Rotate to face target position
-					glm::quat currentOrientation = transform->GetOrientation();
-					glm::quat targetRotation = glm::rotation(transform->GetForwardVector(), glm::normalize(targetPosition - currentPosition));
-
-					glm::quat rotatedOrientation = glm::slerp(currentOrientation, targetOrientation, (rotateSpeed * 5.0f) * Scene::dt);
-					transform->SetOrientation(rotatedOrientation);
-
-					glm::vec3 forward = transform->GetForwardVector();
-
-					// Move towards target
-					glm::vec3 moveDirection = glm::normalize(targetPosition - currentPosition);
-					transform->SetPosition(currentPosition + ((moveDirection * moveSpeed) * Scene::dt));
-				}
-				else {
-					isSteppingAround = false;
-					DecideNextActivity();
-				}
+			// if dot product is close to 1, then the orientations are closely the same
+			if (dotProduct <= (1.0f - 0.1f)) {
+				// Rotate current orientation towards target orientation at rotateSpeed
+				glm::quat rotatedOrientation = glm::slerp(currentOrientation, targetOrientation, rotateSpeed * Scene::dt);
+				transform->SetOrientation(rotatedOrientation);
 			}
 			else {
-				// Stand still for 'x' seconds
-				secondsWaited += Scene::dt;
+				isLookingAround = false;
+				DecideNextActivity();
+			}
+		}
+		else if (isSteppingAround) {
+			// Check if reached target
+			glm::vec3 currentPosition = transform->GetWorldPosition();
+			float distanceToTargetSquared = glm::distance2(currentPosition, targetPosition);
 
-				if (secondsWaited >= secondsToWait) {
-					DecideNextActivity();
-				}
+			if (distanceToTargetSquared >= (moveSpeed * moveSpeed)) {
+				// Rotate to face target position
+				glm::quat currentOrientation = transform->GetOrientation();
+				glm::quat targetRotation = glm::rotation(transform->GetForwardVector(), glm::normalize(targetPosition - currentPosition));
+
+				glm::quat rotatedOrientation = glm::slerp(currentOrientation, targetOrientation, (rotateSpeed * 5.0f) * Scene::dt);
+				transform->SetOrientation(rotatedOrientation);
+
+				glm::vec3 forward = transform->GetForwardVector();
+
+				// Move towards target
+				glm::vec3 moveDirection = glm::normalize(targetPosition - currentPosition);
+				transform->SetPosition(currentPosition + ((moveDirection * moveSpeed) * Scene::dt));
+			}
+			else {
+				isSteppingAround = false;
+				DecideNextActivity();
+			}
+		}
+		else {
+			// Stand still for 'x' seconds
+			secondsWaited += Scene::dt;
+
+			if (secondsWaited >= secondsToWait) {
+				DecideNextActivity();
 			}
 		}
 	}
 
 	void IdleState::Enter(EntityManagerNew* ecs, const unsigned int entityID)
 	{
-		State::Enter();
+		State::Enter(ecs, entityID);
 		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
 		Entity* owner = nullptr;
 		if (owner && owner->GetTransformComponent()) {
@@ -127,7 +124,7 @@ namespace Engine {
 
 	void IdleState::Exit(EntityManagerNew* ecs, const unsigned int entityID)
 	{
-		State::Exit();
+		State::Exit(ecs, entityID);
 	}
 
 	void IdleState::DecideNextActivity()

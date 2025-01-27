@@ -23,7 +23,7 @@ namespace Engine {
 
         virtual bool Condition(EntityManagerNew* ecs, const unsigned int entityID) override {
             if (function) {
-                return function(retrieverA(this, ecs, entityID), retrieverB(this, ecs, entitYID));
+                return function(retrieverA(this, ecs, entityID), retrieverB(this, ecs, entityID));
             }
             return false;
         }
@@ -43,8 +43,8 @@ namespace Engine {
         }
 
         // Generic data retrieval functions
-        static RA PassthroughA(GenericStateTransition* owner) { return owner->GetBaseDataA(); }
-        static RB PassthroughB(GenericStateTransition* owner) { return owner->GetBaseDataB(); }
+        static RA PassthroughA(GenericStateTransition* owner, EntityManagerNew* ecs, const unsigned int entityID) { return owner->GetBaseDataA(); }
+        static RB PassthroughB(GenericStateTransition* owner, EntityManagerNew* ecs, const unsigned int entityID) { return owner->GetBaseDataB(); }
 
         void SetBaseDataA(T newDataA) { this->dataA = newDataA; }
         void SetBaseDataB(U newDataB) { this->dataB = newDataB; }
