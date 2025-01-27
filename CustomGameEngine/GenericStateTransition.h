@@ -8,8 +8,8 @@ namespace Engine {
     public:
         typedef bool (*GenericTransitionFunc)(RA, RB);
 
-        typedef RA(*GenericDataRetrieverFuncA)(GenericStateTransition*);
-        typedef RB(*GenericDataRetrieverFuncB)(GenericStateTransition*);
+        typedef RA(*GenericDataRetrieverFuncA)(GenericStateTransition*, EntityManagerNew*, const unsigned int);
+        typedef RB(*GenericDataRetrieverFuncB)(GenericStateTransition*, EntityManagerNew*, const unsigned int);
 
         GenericStateTransition(const GenericStateTransition& old_transition);
         GenericStateTransition(GenericTransitionFunc function, T baseData, U otherBaseData, State* source, State* destination, GenericDataRetrieverFuncA dataRetrieverA, GenericDataRetrieverFuncB dataRetrieverB) : StateTransition(source, destination), dataA(baseData), dataB(otherBaseData) {
@@ -21,9 +21,9 @@ namespace Engine {
 
         StateTransition* Copy() override { return new GenericStateTransition<T, U, RA, RB>(*this); }
 
-        virtual bool Condition() override {
+        virtual bool Condition(EntityManagerNew* ecs, const unsigned int entityID) override {
             if (function) {
-                return function(retrieverA(this), retrieverB(this));
+                return function(retrieverA(this, ecs, entityID), retrieverB(this, ecs, entitYID));
             }
             return false;
         }
