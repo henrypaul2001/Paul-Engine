@@ -43,8 +43,8 @@ namespace Engine {
 			const glm::vec3 otherLocalCollisionPoint = -collisionNormal * colliderB.CollisionRadius();
 			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 
-			//collision.objectA = transform->GetOwner();
-			//collision.objectB = transform2->GetOwner();
+			collision.entityIDA = entityIDA;
+			collision.entityIDB = entityIDB;
 		}
 		else {
 			collision.isColliding = false;

@@ -27,8 +27,8 @@ namespace Engine {
 		CollisionData collision;
 		if (colliderA.CheckBroadPhaseFirst() && colliderB.CheckBroadPhaseFirst()) {
 			if (!BroadPhaseSphereSphere(transformA, colliderA, transformB, colliderB)) {
-				//collision.objectA = transform->GetOwner();
-				//collision.objectB = transform2->GetOwner();
+				collision.entityIDA = entityIDA;
+				collision.entityIDB = entityIDB;
 				collision.isColliding = false;
 				return collision;
 			}
@@ -40,8 +40,8 @@ namespace Engine {
 		bestCollision.AddContactPoint(glm::vec3(), glm::vec3(), glm::vec3(), -FLT_MAX);
 		for (glm::vec3 axis : axes) {
 			if (axis != glm::vec3(0.0f, 0.0f, 0.0f)) {
-				//collision.objectA = transform->GetOwner();
-				//collision.objectB = transform2->GetOwner();
+				collision.entityIDA = entityIDA;
+				collision.entityIDB = entityIDB;
 				if (!CheckForCollisionOnAxis(axis, transformA, colliderA, transformB, colliderB, collision)) {
 					collision.isColliding = false;
 					return collision;

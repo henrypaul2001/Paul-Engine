@@ -51,13 +51,13 @@ namespace Engine {
 			collision.isColliding = true;
 
 			const float collisionPenetration = scaledRadius - distance;
-			const glm::vec3 collisionNormal = -glm::normalize(worldSpaceSpherePosition - closestPointWorldSpace);
-			const glm::vec3 localCollisionPoint = closestPoint;
-			const glm::vec3 otherLocalCollisionPoint = -collisionNormal * scaledRadius;
+			const glm::vec3 collisionNormal = glm::normalize(worldSpaceSpherePosition - closestPointWorldSpace);
+			const glm::vec3 localCollisionPoint = -collisionNormal * scaledRadius;
+			const glm::vec3 otherLocalCollisionPoint = closestPoint;
 			collision.AddContactPoint(localCollisionPoint, otherLocalCollisionPoint, collisionNormal, collisionPenetration);
 
-			//collision.objectA = transform->GetOwner();
-			//collision.objectB = transform2->GetOwner();
+			collision.entityIDA = entityIDA;
+			collision.entityIDB = entityIDB;
 		}
 		else {
 			collision.isColliding = false;
