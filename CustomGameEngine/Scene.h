@@ -140,6 +140,8 @@ namespace Engine
 
 		Camera* camera;
 
+		bool rebuildBVHOnUpdate;
+
 		void BakeReflectionProbes(const bool discardUnfilteredCapture = true) { reflectionBakingSystem.Run(&ecs, &lightManager, discardUnfilteredCapture); }
 
 		void RegisterAllDefaultSystems() {

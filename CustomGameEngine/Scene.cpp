@@ -5,7 +5,7 @@ namespace Engine
 {
 	float Scene::dt;
 
-	Scene::Scene(SceneManager* sceneManager, const std::string& name) : SCR_WIDTH(sceneManager->GetWindowWidth()), SCR_HEIGHT(sceneManager->GetWindowHeight()), camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), systemManager(&ecs),
+	Scene::Scene(SceneManager* sceneManager, const std::string& name) : rebuildBVHOnUpdate(false), SCR_WIDTH(sceneManager->GetWindowWidth()), SCR_HEIGHT(sceneManager->GetWindowHeight()), camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), systemManager(&ecs),
 		collisionResolver(collisionManager),
 		constraintSolver(constraintManager),
 		audioSystem(&ecs),
@@ -55,7 +55,7 @@ namespace Engine
 		glm::vec3 forward = camera->GetFront();
 		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
 
-		//collisionManager->ConstructBVHTree();
+		if (rebuildBVHOnUpdate) { collisionManager->ConstructBVHTree(); }
 		frustumCulling.Run(camera, collisionManager);
 
 		collisionResolver.Run(ecs);
