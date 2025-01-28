@@ -1,31 +1,23 @@
-#include "ComponentTransform.h"
 #include "EntityManagerNew.h"
+#include "ComponentTransform.h"
 namespace Engine
 {
-	ComponentTransform::ComponentTransform(const ComponentTransform& old_component)
-	{
-		this->owning_ecs = old_component.owning_ecs;
-		this->position = old_component.position;
-		this->rotationAxis = old_component.rotationAxis;
-		this->rotationAngle = old_component.rotationAngle;
-		this->scale = old_component.scale;
-		this->forwardVector = old_component.forwardVector;
-		this->orientation = old_component.orientation;
-		this->worldModelMatrix = old_component.worldModelMatrix;
-		this->parent = old_component.parent;
-		this->owner = nullptr;
+	//ComponentTransform::ComponentTransform(const ComponentTransform& old_component)
+	//{
+	//	this->owning_ecs = old_component.owning_ecs;
+	//	this->position = old_component.position;
+	//	this->rotationAxis = old_component.rotationAxis;
+	//	this->rotationAngle = old_component.rotationAngle;
+	//	this->scale = old_component.scale;
+	//	this->forwardVector = old_component.forwardVector;
+	//	this->orientation = old_component.orientation;
+	//	this->worldModelMatrix = old_component.worldModelMatrix;
+	//	this->parentID = old_component.parentID;
+	//	this->ownerID = old_component.ownerID;
+	//	this->childrenIDs = old_component.childrenIDs;
+	//}
 
-		assert(owning_ecs);
-
-		// Copy children
-		this->children.reserve(old_component.children.size());
-		for (int i = 0; i < old_component.children.size(); i++) {
-			EntityNew* child = owning_ecs->Clone(old_component.children[i]->ID());
-			AddChild(child);
-		}
-	}
-
-	ComponentTransform::ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position, const glm::vec3& rotationAxis, const float rotationAngle, const glm::vec3& scale) : owning_ecs(owning_ecs), position(position), rotationAxis(rotationAxis), rotationAngle(rotationAngle), scale(scale), parent(nullptr)
+	ComponentTransform::ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position, const glm::vec3& rotationAxis, const float rotationAngle, const glm::vec3& scale) : owning_ecs(owning_ecs), position(position), rotationAxis(rotationAxis), rotationAngle(rotationAngle), scale(scale), parentID(INVALID_ID)
 	{
 		assert(owning_ecs);
 		orientation = glm::angleAxis(glm::radians(rotationAngle), rotationAxis);
@@ -33,7 +25,7 @@ namespace Engine
 		UpdateModelMatrix();
 	}
 
-	ComponentTransform::ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position) : owning_ecs(owning_ecs), position(position), rotationAxis(0.0f, 1.0f, 0.0f), rotationAngle(0.0f), scale(1.0f), parent(nullptr)
+	ComponentTransform::ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position) : owning_ecs(owning_ecs), position(position), rotationAxis(0.0f, 1.0f, 0.0f), rotationAngle(0.0f), scale(1.0f), parentID(INVALID_ID)
 	{
 		assert(owning_ecs);
 		orientation = glm::angleAxis(glm::radians(rotationAngle), rotationAxis);
@@ -41,7 +33,7 @@ namespace Engine
 		UpdateModelMatrix();
 	}
 
-	ComponentTransform::ComponentTransform(EntityManagerNew* owning_ecs, const float posX, const float posY, const float posZ) : owning_ecs(owning_ecs), position(posX, posY, posZ), rotationAxis(0.0f, 1.0f, 0.0f), rotationAngle(0.0f), scale(1.0f), parent(nullptr)
+	ComponentTransform::ComponentTransform(EntityManagerNew* owning_ecs, const float posX, const float posY, const float posZ) : owning_ecs(owning_ecs), position(posX, posY, posZ), rotationAxis(0.0f, 1.0f, 0.0f), rotationAngle(0.0f), scale(1.0f), parentID(INVALID_ID)
 	{
 		assert(owning_ecs);
 		orientation = glm::angleAxis(glm::radians(rotationAngle), rotationAxis);
@@ -61,34 +53,37 @@ namespace Engine
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), this->scale);
 		worldModelMatrix = translate * rotate * scale;
 
-		if (parent != nullptr) {
-			ComponentTransform* parentTransform = owning_ecs->GetComponent<ComponentTransform>(parent->ID());
+		if (parentID != INVALID_ID) {
+			ComponentTransform* parentTransform = owning_ecs->GetComponent<ComponentTransform>(parentID);
 			if (parentTransform) {
 				worldModelMatrix = parentTransform->GetWorldModelMatrix() * worldModelMatrix;
 			}
 		}
 
-		for (EntityNew* child : children) {
-			ComponentTransform* childTransform = owning_ecs->GetComponent<ComponentTransform>(child->ID());
+		for (unsigned int child : childrenIDs) {
+			ComponentTransform* childTransform = owning_ecs->GetComponent<ComponentTransform>(child);
 			if (childTransform) {
 				childTransform->UpdateModelMatrix();
 			}
 		}
+	}
 
-		// TODO
-		// Not possible with current design, and for good reason in all honesty. Components shouldn't need to know about other component types
-		// For this reason, consider putting UpdateModelMatrix() into a small system, and maybe use a dirty flag if performance is a concern
-		// Update owning entities geometry component if available
-		//if (owner && owner->ContainsComponents(COMPONENT_GEOMETRY)) {
-		//	owner->GetGeometryComponent()->GetModel()->UpdateGeometryBoundingBoxes(worldModelMatrix);
-		//}
+	ComponentTransform ComponentTransform::Clone() const
+	{
+		// Copy children
+		ComponentTransform clonedTransform = *this;
+		for (int i = 0; i < childrenIDs.size(); i++) {
+			EntityNew* child = owning_ecs->Clone(childrenIDs[i]);
+			clonedTransform.childrenIDs[i] = child->ID();
+		}
+		return clonedTransform;
 	}
 
 	const glm::vec3 ComponentTransform::GetWorldPosition() const
 	{
 		glm::vec3 worldPos = position;
-		if (parent != nullptr) {
-			ComponentTransform* parentTransform = owning_ecs->GetComponent<ComponentTransform>(parent->ID());
+		if (parentID != INVALID_ID) {
+			ComponentTransform* parentTransform = owning_ecs->GetComponent<ComponentTransform>(parentID);
 			if (parentTransform) {
 				worldPos += parentTransform->GetWorldPosition();
 			}
@@ -96,22 +91,33 @@ namespace Engine
 		return worldPos;
 	}
 
-	void ComponentTransform::RemoveChild(EntityNew* entityPtr)
+	const EntityNew* ComponentTransform::FindChildWithName(const std::string& name) const
 	{
-		for (int i = 0; i < children.size(); i++) {
-			if (children[i] == entityPtr) {
-				children.erase(children.begin() + i);
+		for (unsigned int id : childrenIDs) {
+			EntityNew* e = owning_ecs->Find(id);
+			if (e->Name() == name) {
+				return e;
+			}
+		}
+		return nullptr;
+	}
+
+	void ComponentTransform::RemoveChild(const unsigned int entityID)
+	{
+		for (int i = 0; i < childrenIDs.size(); i++) {
+			if (childrenIDs[i] == entityID) {
+				childrenIDs.erase(childrenIDs.begin() + i);
 				return;
 			}
 		}
 	}
 
-	void ComponentTransform::AddChild(EntityNew* entityPtr)
+	void ComponentTransform::AddChild(const unsigned int entityID)
 	{
-		for (EntityNew* child : children) {
-			if (child == entityPtr) { return; }
+		for (unsigned int child : childrenIDs) {
+			if (child == entityID) { return; }
 		}
-		children.push_back(entityPtr);
-		owning_ecs->GetComponent<ComponentTransform>(entityPtr->ID())->parent = owner;
+		childrenIDs.push_back(entityID);
+		owning_ecs->GetComponent<ComponentTransform>(entityID)->parentID = ownerID;
 	}
 }

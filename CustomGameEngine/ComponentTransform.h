@@ -13,7 +13,7 @@ namespace Engine
 	public:
 		friend class EntityManagerNew; // transform is a key component in the engine, therefore ECS and transform are tightly coupled and share a unique relationship
 
-		ComponentTransform(const ComponentTransform& old_component);
+		//ComponentTransform(const ComponentTransform& old_component);
 		ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position, const glm::vec3& rotationAxis, const float rotationAngle, const glm::vec3& scale);
 		ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position);
 		ComponentTransform(EntityManagerNew* owning_ecs, const float posX, const float posY, const float posZ);
@@ -70,24 +70,19 @@ namespace Engine
 		}
 		const glm::quat& GetOrientation() const { return orientation; }
 
-		const std::vector<EntityNew*>& GetChildren() const { return children; }
+		const std::vector<unsigned int>& GetChildren() const { return childrenIDs; }
 		
-		const EntityNew* FindChildWithName(const std::string& name) const {
-			for (EntityNew* e : children) {
-				if (e->Name() == name) {
-					return e;
-				}
-			}
-			return nullptr;
-		}
+		const EntityNew* FindChildWithName(const std::string& name) const;
 		
-		const EntityNew* GetParent() const { return parent; }
+		const unsigned int GetParent() const { return parentID; }
 
-		void RemoveChild(EntityNew* entityPtr);
-		void AddChild(EntityNew* entityPtr);
+		void RemoveChild(const unsigned int entityID);
+		void AddChild(const unsigned int entityID);
 
 		void UpdateModelMatrix();
 	private:
+		ComponentTransform Clone() const;
+
 		glm::vec3 position;
 		glm::vec3 rotationAxis;
 		float rotationAngle;
@@ -98,10 +93,10 @@ namespace Engine
 
 		glm::mat4 worldModelMatrix;
 
-		EntityNew* parent;
-		std::vector<EntityNew*> children;
+		unsigned int parentID;
+		std::vector<unsigned int> childrenIDs;
 
 		EntityManagerNew* owning_ecs;
-		EntityNew* owner;
+		unsigned int ownerID;
 	};
 }

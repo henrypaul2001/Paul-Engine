@@ -217,7 +217,7 @@ namespace Engine
 			for (int i = 0; i < 20; i++) {
 				EntityNew* child = ecs.New("Transform Test");
 				ecs.AddComponent(child->ID(), ComponentTransform(&ecs, 10.0f + i, 1.0f + i, -5.0f - i));
-				ecs.GetComponent<ComponentTransform>(transformTest->ID())->AddChild(child);
+				ecs.GetComponent<ComponentTransform>(transformTest->ID())->AddChild(child->ID());
 			}
 
 			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());

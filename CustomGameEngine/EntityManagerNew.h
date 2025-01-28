@@ -14,6 +14,7 @@ namespace Engine
 {
 	template <typename TComponent>
 	concept NotComponentTransform = !std::is_same_v<TComponent, ComponentTransform>;
+	static constexpr unsigned int INVALID_ID = std::numeric_limits<unsigned int>::max();
 
 	class EntityManagerNew
 	{
@@ -33,7 +34,7 @@ namespace Engine
 			EntityNew* entity = NewWithoutDefault(name);
 
 			AddComponent(entity->id, ComponentTransform(this, 0.0f, 0.0f, 0.0f));
-			GetComponent<ComponentTransform>(entity->id)->owner = entity;
+			GetComponent<ComponentTransform>(entity->id)->ownerID = entity->id;
 			return entity;
 		}
 
@@ -183,18 +184,26 @@ namespace Engine
 			const std::bitset<MAX_COMPONENTS> old_mask = entity.component_mask;
 
 			EntityNew* newEntity = NewWithoutDefault(old_name);
+			const unsigned int new_id = newEntity->ID();
+
+			// Clone transform component
+			AddComponent(new_id, GetComponent<ComponentTransform>(old_id)->Clone());
+			ComponentTransform* transform = GetComponent<ComponentTransform>(new_id);
+			transform->ownerID = new_id;
+			for (unsigned int child : transform->childrenIDs) {
+				GetComponent<ComponentTransform>(child)->parentID = new_id;
+			}
 
 			// Clone components
-			for (int i = 0; i < component_pools.size(); i++) {
+			for (int i = 1; i < component_pools.size(); i++) {
 				if (old_mask[i]) {
 					// Copy and add to new entity
-					component_pools[i].get()->CloneElement(old_id, newEntity->id);
+					component_pools[i].get()->CloneElement(old_id, new_id);
 				}
 			}
 
+			newEntity = Find(new_id);
 			newEntity->component_mask = old_mask;
-
-			GetComponent<ComponentTransform>(newEntity->id)->owner = newEntity;
 
 			return newEntity;
 		}
