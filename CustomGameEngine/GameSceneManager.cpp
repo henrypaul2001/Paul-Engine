@@ -7,7 +7,7 @@
 //#include "PhysicsScene.h"
 //#include "InstanceScene.h"
 //#include "MainMenu.h"
-//#include "AnimationScene.h"
+#include "AnimationScene.h"
 #include "AudioScene.h"
 #include "ParticleScene.h"
 #include "AIScene.h"
@@ -68,10 +68,10 @@ namespace Engine
 		case SCENE_INSTANCED:
 			newScene = new InstanceScene(this);
 			break;
+			*/
 		case SCENE_ANIMATION:
 			newScene = new AnimationScene(this);
 			break;
-			*/
 		case SCENE_AUDIO:
 			newScene = new AudioScene(this);
 			break;
@@ -109,6 +109,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_AUDIO);
+		ChangeScene(SCENE_ANIMATION);
 	}
 }
