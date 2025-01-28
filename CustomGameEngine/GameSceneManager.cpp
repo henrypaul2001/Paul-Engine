@@ -5,7 +5,7 @@
 //#include "CollisionScene.h"
 //#include "PBRScene.h"
 //#include "PhysicsScene.h"
-//#include "InstanceScene.h"
+#include "InstanceScene.h"
 //#include "MainMenu.h"
 #include "AnimationScene.h"
 #include "AudioScene.h"
@@ -65,10 +65,10 @@ namespace Engine
 		case SCENE_PHYSICS:
 			newScene = new PhysicsScene(this);
 			break;
+			*/
 		case SCENE_INSTANCED:
 			newScene = new InstanceScene(this);
 			break;
-			*/
 		case SCENE_ANIMATION:
 			newScene = new AnimationScene(this);
 			break;
@@ -109,6 +109,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_ANIMATION);
+		ChangeScene(SCENE_INSTANCED);
 	}
 }
