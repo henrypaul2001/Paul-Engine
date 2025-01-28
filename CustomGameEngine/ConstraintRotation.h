@@ -4,7 +4,7 @@ namespace Engine {
 	class ConstraintRotation : public Constraint
 	{
 	public:
-		ConstraintRotation(EntityNew& objectA, EntityNew& objectB, const glm::vec3& maxRotationOffset = glm::vec3(0.0f), const bool controlXRotation = true, const bool controlYRotation = true, const bool controlZRotation = true, const float bias = 0.000005f) : Constraint(objectA, objectB, bias),
+		ConstraintRotation(unsigned int entityIDA, unsigned int entityIDB, const glm::vec3& maxRotationOffset = glm::vec3(0.0f), const bool controlXRotation = true, const bool controlYRotation = true, const bool controlZRotation = true, const float bias = 0.000005f) : Constraint(entityIDA, entityIDB, bias),
 			controlXRotation(controlXRotation), controlYRotation(controlYRotation), controlZRotation(controlZRotation), maxRotationOffset(maxRotationOffset) {}
 		~ConstraintRotation() {}
 

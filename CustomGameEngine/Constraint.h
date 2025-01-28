@@ -5,7 +5,7 @@ namespace Engine {
 	class Constraint
 	{
 	public:
-		Constraint(EntityNew& objectA, EntityNew& objectB, const float bias) : objectA(objectA), objectB(objectB), active(true), bias(bias){}
+		Constraint(unsigned int entityIDA, unsigned int entityIDB, const float bias) : entityIDA(entityIDA), entityIDB(entityIDB), active(true), bias(bias){}
 		~Constraint() {}
 
 		virtual void UpdateConstraint(EntityManagerNew& ecs, const float deltaTime) const = 0;
@@ -20,7 +20,7 @@ namespace Engine {
 	protected:
 		float bias;
 		bool active;
-		EntityNew& objectA;
-		EntityNew& objectB;
+		unsigned int entityIDA;
+		unsigned int entityIDB;
 	};
 }
