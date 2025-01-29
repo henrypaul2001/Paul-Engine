@@ -3,7 +3,7 @@
 //#include "SponzaScene.h"
 //#include "AOScene.h"
 #include "CollisionScene.h"
-//#include "PBRScene.h"
+#include "PBRScene.h"
 #include "PhysicsScene.h"
 #include "InstanceScene.h"
 //#include "MainMenu.h"
@@ -56,10 +56,10 @@ namespace Engine
 		case SCENE_AO:
 			newScene = new AOScene(this);
 			break;
+			*/
 		case SCENE_PBR:
 			newScene = new PBRScene(this);
 			break;
-			*/
 		case SCENE_COLLISIONS:
 			newScene = new CollisionScene(this);
 			break;
@@ -109,6 +109,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_COLLISIONS);
+		ChangeScene(SCENE_PBR);
 	}
 }
