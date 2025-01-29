@@ -6,7 +6,7 @@
 #include "PBRScene.h"
 #include "PhysicsScene.h"
 #include "InstanceScene.h"
-//#include "MainMenu.h"
+#include "MainMenu.h"
 #include "AnimationScene.h"
 #include "AudioScene.h"
 #include "ParticleScene.h"
@@ -40,10 +40,9 @@ namespace Engine
 		std::cout << "Attempting to create scene '" << sceneType << "'" << std::endl;
 		Scene* newScene{};
 		switch (sceneType) {
-		/*case SCENE_MAIN_MENU:
+		case SCENE_MAIN_MENU:
 			newScene = new MainMenu(this);
 			break;
-			*/
 		case SCENE_GAME:
 			newScene = new GameScene(this);
 			break;
@@ -111,6 +110,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_GAME);
+		ChangeScene(SCENE_MAIN_MENU);
 	}
 }
