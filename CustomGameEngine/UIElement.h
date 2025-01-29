@@ -27,7 +27,7 @@ namespace Engine {
 	public:
 		UIElement(glm::vec2 position, glm::vec2 scale, Shader* shader, UIBackground background);
 		UIElement(glm::vec2 position, glm::vec2 scale, Shader* shader);
-		~UIElement();
+		virtual ~UIElement();
 
 		virtual void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) const;
 
