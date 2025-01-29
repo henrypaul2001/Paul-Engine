@@ -1,5 +1,5 @@
 #include "GameSceneManager.h"
-//#include "GameScene.h"
+#include "GameScene.h"
 #include "SponzaScene.h"
 #include "AOScene.h"
 #include "CollisionScene.h"
@@ -43,10 +43,10 @@ namespace Engine
 		/*case SCENE_MAIN_MENU:
 			newScene = new MainMenu(this);
 			break;
+			*/
 		case SCENE_GAME:
 			newScene = new GameScene(this);
 			break;
-			*/
 		case SCENE_GAME_OVER:
 			newScene = new EmptyScene(this);
 			break;
@@ -111,6 +111,6 @@ namespace Engine
 
 	void GameSceneManager::StartNewGame()
 	{
-		ChangeScene(SCENE_SPONZA);
+		ChangeScene(SCENE_GAME);
 	}
 }

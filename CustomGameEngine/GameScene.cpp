@@ -1,11 +1,9 @@
 #include "GameScene.h"
 #include <iostream>
 #include <glm/vec3.hpp>
-#include "SystemPhysics.h"
 #include <glad/glad.h>
-#include "EntityManager.h"
-#include "SystemManager.h"
 #include "GameInputManager.h"
+#include "UIText.h"
 namespace Engine
 {
 	GameScene::GameScene(SceneManager* sceneManager) : Scene(sceneManager, "GameScene")
@@ -15,12 +13,7 @@ namespace Engine
 		SetupScene();
 	}
 
-	GameScene::~GameScene()
-	{
-		delete entityManager;
-		delete systemManager;
-		delete inputManager;
-	}
+	GameScene::~GameScene() {}
 
 	void GameScene::SetupScene()
 	{
@@ -42,13 +35,14 @@ namespace Engine
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			Entity* canvas = entityManager->FindEntity("Canvas");
+			EntityNew* uiCanvas = ecs.Find("Canvas");
+			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
-			canvas->GetUICanvasComponent()->UIElements()[5]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[6]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[7]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[8]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[9]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[6]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[7]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[8]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[9]->SetActive(!renderGeometryColliders);
 		}
 	}
 
@@ -59,7 +53,7 @@ namespace Engine
 
 	void GameScene::CreateEntities()
 	{
-		ResourceManager* resources = ResourceManager::GetInstance();
+		/*
 		Material* newMeshMaterial = new Material();
 		newMeshMaterial->baseColour = glm::vec3(0.8f, 0.0f, 0.8f);
 		newMeshMaterial->specular = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -136,6 +130,7 @@ namespace Engine
 		stbi_set_flip_vertically_on_load(false);
 		//dynamic_cast<ComponentGeometry*>(backpack->GetComponent(COMPONENT_GEOMETRY))->GetModel()->ApplyMaterialToAllMesh(ResourceManager::GetInstance()->DefaultMaterial());
 		entityManager->AddEntity(backpack);
+		*/
 
 		/*
 		Entity* rock = new Entity("Rock");
@@ -170,13 +165,13 @@ namespace Engine
 		entityManager->AddEntity(rockChild3);
 		*/
 
-		Entity* dirLight = new Entity("Directional Light");
-		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		dirLight->AddComponent(new ComponentLight(DIRECTIONAL));
-		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->Direction = glm::vec3(0.0f, -0.85f, -1.0f);
-		dynamic_cast<ComponentLight*>(dirLight->GetComponent(COMPONENT_LIGHT))->ShadowProjectionSize = 50.0f;
-		entityManager->AddEntity(dirLight);
+		EntityNew* dirLight = ecs.New("Directional Light");
+		ComponentLight directional = ComponentLight(DIRECTIONAL);
+		directional.Direction = glm::vec3(0.0f, -0.85f, -1.0f);
+		directional.ShadowProjectionSize = 50.0f;
+		ecs.AddComponent(dirLight->ID(), directional);
 
+		/*
 		Entity* spotLight = new Entity("Spot Light");
 		spotLight->AddComponent(new ComponentTransform(0.0f, 3.0f, -9.0f));
 		spotLight->AddComponent(new ComponentLight(SPOT));
@@ -368,22 +363,20 @@ namespace Engine
 		window4->AddComponent(new ComponentGeometry(MODEL_PLANE));
 		dynamic_cast<ComponentGeometry*>(window4->GetComponent(COMPONENT_GEOMETRY))->ApplyMaterialToModel(window);
 		entityManager->AddEntity(window4);
+		*/
 
-		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		Entity* canvas = new Entity("Canvas");
-		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		canvas->GetTransformComponent()->SetScale(1.0f);
-		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+#pragma region UI
+		TextFont* font = resources->LoadTextFont("Fonts/arial.ttf");
+		EntityNew* uiCanvas = ecs.New("Canvas");
+		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
+		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
+		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		canvas->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
-		std::string renderPipeline = "DEFERRED";
-		if (renderManager->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
-			renderPipeline = "FORWARD";
-		}
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("G Pipeline: ") + renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		const std::string renderPipeline = renderManager->GetRenderPipeline()->PipelineName();
+		canvas->AddUIElement(new UIText(renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
 		// Geometry debug UI
 		UIBackground geometryDebugBackground;
@@ -405,31 +398,23 @@ namespace Engine
 		bvhCountText->SetActive(false);
 		UIText* aabbTestCountText = new UIText(std::string("AABB Tests: "), glm::vec2((SCR_WIDTH / 2.0f) - 150.0f, 15.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f));
 		aabbTestCountText->SetActive(false);
-		canvas->GetUICanvasComponent()->AddUIElement(geoDebugText);
-		canvas->GetUICanvasComponent()->AddUIElement(meshCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(visibleCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(bvhCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(aabbTestCountText);
-		entityManager->AddEntity(canvas);
+		canvas->AddUIElement(geoDebugText);
+		canvas->AddUIElement(meshCountText);
+		canvas->AddUIElement(visibleCountText);
+		canvas->AddUIElement(bvhCountText);
+		canvas->AddUIElement(aabbTestCountText);
+#pragma endregion
 	}
 
 	void GameScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
-		SystemRender* renderSystem = new SystemRender();
-		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
-		renderSystem->SetActiveCamera(camera);
-		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
+		RegisterAllDefaultSystems();
 	}
 
 	void GameScene::ChangePostProcessEffect()
 	{
-		SystemRender* renderSystem = dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS));
-		unsigned int currentEffect = renderSystem->GetPostProcess();
+		SystemRender& renderSystem = renderManager->GetRenderPipeline()->GetRenderSystem();
+		unsigned int currentEffect = renderSystem.GetPostProcess();
 		unsigned int nextEffect;
 		if (currentEffect == 8u) {
 			nextEffect = 0u;
@@ -438,25 +423,25 @@ namespace Engine
 			nextEffect = currentEffect + 1;
 		}
 
-		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
+		renderSystem.SetPostProcess((PostProcessingEffect)nextEffect);
 	}
 
 	void GameScene::Update()
 	{
+		systemManager.ActionPreUpdateSystems();
 		Scene::Update();
 
-		systemManager->ActionUpdateSystems(entityManager);
 		float time = (float)glfwGetTime();
 		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Rock")->GetComponent(COMPONENT_TRANSFORM))->SetScale(glm::vec3(sin(time) * 1.0f, sin(time) * 1.0f, sin(time) * 1.0f));
 		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 0.0f, 1.0f), sin(time) * 180.0f);
 		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild2")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), sin(time) * 180.0f);
 		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("RockChild3")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 1.0f, 1.0f), sin(time) * 180.0f);
 
-		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
+		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Backpack")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), time * 45.0f);
 
 		//dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Point Light")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 2.5f);
 
-		dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
+		//dynamic_cast<ComponentTransform*>(entityManager->FindEntity("Brick Wall")->GetComponent(COMPONENT_TRANSFORM))->SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), time * -20.0f);
 
 		//dynamic_cast<ComponentVelocity*>(entityManager->FindEntity("Wall")->GetComponent(COMPONENT_VELOCITY))->SetVelocity(glm::vec3(1.0f, 0.0f, 0.0f) * sin(time) * 3.5f);
 
@@ -465,38 +450,33 @@ namespace Engine
 		float fps = 1.0f / Scene::dt;
 
 		float targetFPSPercentage = fps / 160.0f;
-		if (targetFPSPercentage > 1.0f) {
-			targetFPSPercentage = 1.0f;
-		}
+		if (targetFPSPercentage > 1.0f) { targetFPSPercentage = 1.0f; }
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		Entity* canvas = entityManager->FindEntity("Canvas");
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
+		EntityNew* canvasEntity = ecs.Find("Canvas");
+		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
+		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
+		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
-		SystemFrustumCulling* culling = dynamic_cast<SystemFrustumCulling*>(systemManager->FindSystem(SYSTEM_FRUSTUM_CULLING, UPDATE_SYSTEMS));
 
-		unsigned int meshCount = culling->GetTotalMeshes();
-		unsigned int visibleMeshes = culling->GetVisibleMeshes();
-		unsigned int nodeCount = geometryBVH->GetNodeCount();
-		unsigned int aabbTests = culling->GetTotalAABBTests();
+		const unsigned int meshCount = frustumCulling.GetTotalMeshes();
+		const unsigned int visibleMeshes = frustumCulling.GetVisibleMeshes();
+		const unsigned int nodeCount = geometryBVH->GetNodeCount();
+		const unsigned int aabbTests = frustumCulling.GetTotalAABBTests();
 
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+		dynamic_cast<UIText*>(canvas->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
+		dynamic_cast<UIText*>(canvas->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
+		dynamic_cast<UIText*>(canvas->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
+		dynamic_cast<UIText*>(canvas->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+
+		systemManager.ActionSystems();
 	}
 
 	void GameScene::Render()
 	{
 		Scene::Render();
-
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-		// Render scene
-		systemManager->ActionRenderSystems(entityManager, SCR_WIDTH, SCR_HEIGHT);
 	}
 
 	void GameScene::Close()
