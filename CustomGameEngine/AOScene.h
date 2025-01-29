@@ -3,12 +3,6 @@
 namespace Engine {
 	class AOScene : public Scene
 	{
-	private:
-		//EntityManager entityManager;
-		//SystemManager systemManager;
-
-		void CreateEntities();
-		void CreateSystems();
 	public:
 		AOScene(SceneManager* sceneManager);
 		~AOScene();
@@ -23,5 +17,8 @@ namespace Engine {
 		void keyUp(int key) override;
 		void keyDown(int key) override;
 
+	private:
+		void CreateEntities();
+		void CreateSystems();
 	};
 }
