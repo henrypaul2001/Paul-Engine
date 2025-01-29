@@ -1,11 +1,12 @@
 #pragma once
 #include "Scene.h"
+#include "UIText.h"
+#include "UIImage.h"
+#include "UITextButton.h"
+#include "UIImageButton.h"
 namespace Engine {
 	class SponzaScene : public Scene
 	{
-	private:
-		void CreateEntities();
-		void CreateSystems();
 	public:
 		SponzaScene(SceneManager* sceneManager);
 		~SponzaScene();
@@ -17,6 +18,10 @@ namespace Engine {
 
 		void keyUp(int key) override;
 		void keyDown(int key) override;
+
+	private:
+		void CreateEntities();
+		void CreateSystems();
 
 	};
 }
