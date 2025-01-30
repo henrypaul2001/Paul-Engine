@@ -1,41 +1,9 @@
 #pragma once
 #include "Scene.h"
-#include "NavigationGrid.h"
 #include "UIText.h"
 
 namespace Engine
 {
-	struct TestComponentA {
-		float x, y, z;
-	};
-
-	struct TestComponentB {
-		float velocityX, velocityY, velocityZ;
-	};
-
-	struct TestComponentC {
-		float c;
-	};
-
-	struct TestComponentD {
-		bool d;
-	};
-
-	struct TestComponentE {
-		long e;
-	};
-
-	struct TestComponentF {
-		long long f;
-	};
-
-	static void TestSystem(const unsigned int entityID, ComponentTransform& transform, ComponentPhysics& physics) {
-		std::cout << "TEST_SYSTEM: EntityID = " << entityID << std::endl;
-	}
-	static void TestAfterAction() {
-		std::cout << "TEST_SYSTEM: After action" << std::endl;
-	}
-
 	class EmptyScene : public Scene
 	{
 	public:
@@ -78,157 +46,23 @@ namespace Engine
 		}
 		void Close() override {}
 		void SetupScene() override {
-			SkeletalAnimation* vampireDanceAnim = ResourceManager::GetInstance()->LoadAnimation("Models/vampire/dancing_vampire.dae");
+			const char* envMapPath = "Textures/Environment Maps/sky.hdr";
+			resources->LoadHDREnvironmentMap(envMapPath, true);
+			renderManager->SetEnvironmentMap(envMapPath);
+			renderManager->GetRenderParams()->EnableRenderOptions(RENDER_IBL | RENDER_ENVIRONMENT_MAP);
 
-			navGrid = NavigationGrid("Data/NavigationGrid/TestGrid1.txt");
-			AudioFile* campfireCrackling = ResourceManager::GetInstance()->LoadAudio("Audio/campfire.wav", 1.0f, 0.0f, 2.0f);
+			renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
 
-			// All components entity
-			EntityNew* allComponents = ecs.New("All Components");
-			ecs.AddComponent(allComponents->ID(), ComponentPhysics());
-			ecs.AddComponent(allComponents->ID(), ComponentAnimator(vampireDanceAnim));
-			ecs.AddComponent(allComponents->ID(), ComponentAudioSource(campfireCrackling));
-			ecs.AddComponent(allComponents->ID(), ComponentCollisionSphere(1.0f));
-			//ecs.AddComponent(allComponents->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
-			//ecs.AddComponent(allComponents->ID(), ComponentCollisionBox(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
-			//ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
-			ecs.AddComponent(allComponents->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
-			//ecs.AddComponent(allComponents->ID(), ComponentGeometry(MODEL_SPHERE));
-			ecs.AddComponent(allComponents->ID(), ComponentLight(SPOT));
-			ecs.AddComponent(allComponents->ID(), ComponentParticleGenerator(ResourceManager::GetInstance()->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false)));
-			ecs.AddComponent(allComponents->ID(), ComponentPathfinder(&navGrid));
-			ecs.AddComponent(allComponents->ID(), ComponentStateController());
-			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetScale(1.0f);
-			ecs.GetComponent<ComponentTransform>(allComponents->ID())->SetPosition(glm::vec3(0.0f, 20.0f, 0.0f));
+			resources->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
+			renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 
-			EntityNew* floor = ecs.New("Floor");
-			ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
-			ComponentCollisionAABB collider = ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
-			collider.IsMovedByCollisions(false);
-			ecs.AddComponent(floor->ID(), collider);
-			ComponentTransform* floorTransform = ecs.GetComponent<ComponentTransform>(floor->ID());
-			floorTransform->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
-			floorTransform->SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
+			rebuildBVHOnUpdate = true;
 
-			for (int i = 0; i < 50; i++) {
-				ecs.New("Test");
-			}
-			ecs.New("Hello");
-
-			const EntityNew* missingEntity = ecs.Find("I don't exist");
-			const EntityNew* foundEntity = ecs.Find("Hello");
-			const EntityNew* duplicateFoundEntity = ecs.Find("Test (10)");
-
-			EntityNew* findTen = ecs.Find(10);
-
-			ecs.Delete(*findTen);
-			ecs.Delete(*ecs.Find(5));
-
-			EntityNew* deletedTen = ecs.Find("Test (10)");
-			EntityNew* deletedFive = ecs.Find("Test (5)");
-
-			ecs.New("After delete");
-
-			bool equalsFalse = ecs.Delete("I don't exist");
-			bool equalsTrue = ecs.Delete("After delete");
-
-			ecs.RegisterComponentType<TestComponentA>();
-			ecs.RegisterComponentType<TestComponentB>();
-
-			ecs.AddComponent(0, TestComponentA());
-			ecs.AddComponent(42, TestComponentA());
-			ecs.AddComponent(0, TestComponentB());
-
-			bool hasA = ecs.HasComponent<TestComponentA>(0);
-			bool doesntHaveA = ecs.HasComponent<TestComponentA>(1);
-			bool hasB = ecs.HasComponent<TestComponentB>(0);
-
-			std::bitset<MAX_COMPONENTS> testMask = ecs.CreateMask<TestComponentB>();
-
-			ecs.RemoveComponent<TestComponentA, TestComponentB>(0);
-			ecs.RemoveComponent<TestComponentA>(42);
-
-			//ecs.AddComponent(2, TestComponentA());
-			ecs.AddComponent(0, TestComponentA());
-			ecs.AddComponent(2, TestComponentB());
-
-			TestComponentB* bComponent = ecs.GetComponent<TestComponentB>(2);
-			bComponent->velocityX = 10.0f;
-			TestComponentA* nullpointer = ecs.GetComponent<TestComponentA>(2);
-
-			ecs.Delete(2);
-
-			std::cout << bComponent->velocityX << std::endl;
-		
-			EntityNew* clone_base = ecs.New("Clone base");
-			TestComponentB b;
-			b.velocityX = -2.5f;
-			b.velocityY = 5.0f;
-			ecs.AddComponent(clone_base->ID(), TestComponentA());
-			ecs.AddComponent(clone_base->ID(), b);
-
-			EntityNew* cloned = ecs.Clone(clone_base->ID());
-
-			for (int i = 0; i < 50; i++) {
-				EntityNew* entity = ecs.New("ViewTest");
-				TestComponentA a;
-				a.x = i;
-				ecs.AddComponent(entity->ID(), a);
-				if (i % 2 == 0) {
-					TestComponentB b;
-					b.velocityY = i;
-					ecs.AddComponent(entity->ID(), b);
-				}
-				if (i % 3 == 0) {
-					TestComponentC c;
-					c.c = i;
-					ecs.AddComponent(entity->ID(), c);
-				}
-				if (i % 4 == 0) {
-					TestComponentF f;
-					f.f = i;
-					ecs.AddComponent(entity->ID(), f);
-					ecs.AddComponent(entity->ID(), ComponentPhysics());
-				}
-			}
-
-			View<TestComponentA, TestComponentB> testView = ecs.View<TestComponentA, TestComponentB>();
-			testView.ForEach([](const unsigned int entityID, TestComponentA& a, TestComponentB& b) {
-				unsigned int id = entityID;
-				float x = a.x;
-				float velocityY = b.velocityY;
-			});
-
-			View<TestComponentF> fView = ecs.View<TestComponentF>();
-			fView.ForEach([](const unsigned int entityID, TestComponentF& f) {
-				unsigned int id = entityID;
-				if (id == 10) {
-					f.f = 3000.0;
-				}
-			});
-
-			std::cout << ecs.GetComponent<TestComponentF>(10)->f << std::endl;
-
-			EntityNew* transformTest = ecs.New("Transform Test");
-			ecs.AddComponent(transformTest->ID(), ComponentTransform(&ecs, 10.0f, 1.0f, -5.0f));
-			//ecs.RemoveComponent<ComponentTransform>(transformTest->ID()); // build error, cannot remove transform component
-
-			// Transform children
-			for (int i = 0; i < 20; i++) {
-				EntityNew* child = ecs.New("Transform Test");
-				ecs.AddComponent(child->ID(), ComponentTransform(&ecs, 10.0f + i, 1.0f + i, -5.0f - i));
-				ecs.GetComponent<ComponentTransform>(transformTest->ID())->AddChild(child->ID());
-			}
-
-			ComponentTransform* transformChild = ecs.GetComponent<ComponentTransform>(ecs.GetComponent<ComponentTransform>(transformTest->ID())->FindChildWithName("Transform Test (3)")->ID());
-
-			EntityNew* geometryTest = ecs.New("Geometry Test");
-			ecs.GetComponent<ComponentTransform>(geometryTest->ID())->SetPosition(glm::vec3(0.0f, 0.0f, -2.5f));
-			ecs.AddComponent(geometryTest->ID(), ComponentGeometry(MODEL_CUBE));
-
-			EntityNew* dirLight = ecs.New("Dir Light");
-			ecs.GetComponent<ComponentTransform>(dirLight->ID())->SetPosition(glm::vec3(10.0f, 10.0f, 10.0f));
+			EntityNew* dirLight = ecs.New("Directional Light");
 			ecs.AddComponent(dirLight->ID(), ComponentLight(DIRECTIONAL));
+
+			EntityNew* defaultCube = ecs.New("Cube");
+			ecs.AddComponent(defaultCube->ID(), ComponentGeometry(MODEL_CUBE, true));
 
 #pragma region UI
 			TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
@@ -269,7 +103,6 @@ namespace Engine
 			canvas->AddUIElement(bvhCountText);
 			canvas->AddUIElement(aabbTestCountText);
 #pragma endregion
-
 			RegisterAllDefaultSystems();
 		}
 
@@ -287,8 +120,5 @@ namespace Engine
 			}
 		}
 		void keyDown(int key) override {}
-
-	private:
-		NavigationGrid navGrid;
 	};
 }
