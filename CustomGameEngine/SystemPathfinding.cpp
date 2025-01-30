@@ -4,6 +4,7 @@
 namespace Engine {
 	void SystemPathfinding::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentPathfinder& pathfinder)
 	{
+		SCOPE_TIMER("SystemPathfinding::OnAction()");
 		if (!pathfinder.HasReachedTarget()) {
 			// Check if entity has reached next position
 			const glm::vec3& currentPosition = transform.GetWorldPosition();

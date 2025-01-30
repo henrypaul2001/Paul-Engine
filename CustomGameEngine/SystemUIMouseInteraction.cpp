@@ -3,6 +3,7 @@
 namespace Engine {
 	void SystemUIMouseInteraction::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentUICanvas& canvas)
 	{
+		SCOPE_TIMER("SystemUIMouseInteraction::OnAction()");
 		if ((*inputManager)->GetCursorLock() == false) {
 			for (UIElement* ui : canvas.UIElements()) {
 				if (ui->UIType() == UI_BUTTON && ui->GetActive()) {

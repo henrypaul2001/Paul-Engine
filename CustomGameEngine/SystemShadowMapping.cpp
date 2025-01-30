@@ -4,6 +4,7 @@
 namespace Engine {
 	void SystemShadowMapping::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry)
 	{
+		SCOPE_TIMER("SystemShadowMapping::OnAction()");
 		if (geometry.CastShadows()) {
 			Shader* depthShader = nullptr;
 			if (type == MAP_2D) {

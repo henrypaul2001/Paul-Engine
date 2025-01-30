@@ -4,6 +4,7 @@ namespace Engine
 {
 	void SystemPhysics::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentPhysics& physics)
 	{
+		SCOPE_TIMER("SystemPhysics::OnAction()");
 		Acceleration(transform, physics);
 
 		// Linear velocity

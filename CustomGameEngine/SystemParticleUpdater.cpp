@@ -4,6 +4,7 @@
 namespace Engine {
 	void SystemParticleUpdater::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentParticleGenerator& generator)
 	{
+		SCOPE_TIMER("SystemParticleUpdater::OnAction()");
 		const float deltaTime = Scene::dt;
 		std::vector<Particle>& particles = generator.GetParticles();
 

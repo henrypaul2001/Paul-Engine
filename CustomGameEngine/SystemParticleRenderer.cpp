@@ -3,6 +3,7 @@
 namespace Engine {
 	void SystemParticleRenderer::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentParticleGenerator& generator)
 	{
+		SCOPE_TIMER("SystemParticleRenderer::OnAction()");
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, generator.GetSprite()->id);
 

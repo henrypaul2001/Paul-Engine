@@ -29,6 +29,7 @@ namespace Engine {
 
 	void SystemRender::RenderMeshes(const std::map<float, std::pair<Mesh*, unsigned int>>& meshesAndDistances, const bool transparencyPass, bool useDefaultForwardShader)
 	{
+		SCOPE_TIMER("SystemRender::RenderMeshes()");
 		std::map<float, std::pair<Mesh*, unsigned int>>::const_iterator meshesAndDistancesIt = meshesAndDistances.begin();
 
 		while (meshesAndDistancesIt != meshesAndDistances.end()) {

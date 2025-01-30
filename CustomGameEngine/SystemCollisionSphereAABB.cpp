@@ -2,6 +2,7 @@
 namespace Engine {
 	void SystemCollisionSphereAABB::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionSphere& collider)
 	{
+		SCOPE_TIMER("SystemCollisionSphereAABB::OnAction()");
 		// Loop through all other AABB entities for collision checks
 		View<ComponentTransform, ComponentCollisionAABB> aabbView = active_ecs->View<ComponentTransform, ComponentCollisionAABB>();
 		aabbView.ForEach([this, entityID, transform, &collider](const unsigned int entityIDB, ComponentTransform& transformB, ComponentCollisionAABB& colliderB) {
@@ -16,6 +17,7 @@ namespace Engine {
 
 	void SystemCollisionSphereAABB::AfterAction()
 	{
+		SCOPE_TIMER("SystemCollisionSphereAABB::AfterAction()");
 		// Loop through all collision entities and clear EntitiesCheckedThisFrame
 		active_ecs->View<ComponentCollisionSphere>().ForEach([](const unsigned int entityID, ComponentCollisionSphere& collider) {
 			collider.ClearEntitiesCheckedThisFrame();
@@ -27,6 +29,7 @@ namespace Engine {
 
 	CollisionData SystemCollisionSphereAABB::Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionSphere& colliderA, const ComponentTransform& transformB, const ComponentCollisionAABB& colliderB) const
 	{
+		SCOPE_TIMER("SystemCollisionSphereAABB::Intersect()");
 		// collider = sphere
 		// collider2 = AABB
 		const AABBPoints worldSpaceBounds = colliderB.GetWorldSpaceBounds(transformB.GetWorldModelMatrix());

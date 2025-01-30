@@ -1,7 +1,9 @@
 #include "SystemAudio.h"
+#include "ScopeTimer.h"
 namespace Engine {
 	void SystemAudio::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentAudioSource& audio)
 	{
+		SCOPE_TIMER("SystemAudio::OnAction()");
 		glm::vec3 position = transform.GetWorldPosition();
 		irrklang::ISound* sound = audio.GetSound();
 

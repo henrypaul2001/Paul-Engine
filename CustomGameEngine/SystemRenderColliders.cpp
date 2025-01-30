@@ -24,6 +24,7 @@ namespace Engine {
 
 	void SystemRenderColliders::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry)
 	{
+		SCOPE_TIMER("SystemRenderColliders::OnAction()");
 		Shader* debugShader = ResourceManager::GetInstance()->ColliderDebugShader();
 		Model* model = geometry.GetModel();
 
@@ -37,6 +38,7 @@ namespace Engine {
 
 	void SystemRenderColliders::AfterAction()
 	{
+		SCOPE_TIMER("SystemRenderColliders::AfterAction()");
 		// Render BVH Tree
 		BVHTree* bvhTree = collisionManager->GetBVHTree();
 		RenderBVHNode(bvhTree->GetRootNode());

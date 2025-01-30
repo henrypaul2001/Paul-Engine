@@ -3,6 +3,7 @@
 namespace Engine {
 	void SystemCollisionSphere::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionSphere& collider)
 	{
+		SCOPE_TIMER("SystemCollisionSphere::OnAction()");
 		// Loop through all other sphere entities for collision checks
 		View<ComponentTransform, ComponentCollisionSphere> aabbView = active_ecs->View<ComponentTransform, ComponentCollisionSphere>();
 		aabbView.ForEach([this, entityID, transform, &collider](const unsigned int entityIDB, ComponentTransform& transformB, ComponentCollisionSphere& colliderB) {
@@ -17,6 +18,7 @@ namespace Engine {
 
 	void SystemCollisionSphere::AfterAction()
 	{
+		SCOPE_TIMER("SystemCollisionSphere::AfterAction()");
 		// Loop through all collision entities and clear EntitiesCheckedThisFrame
 		active_ecs->View<ComponentCollisionSphere>().ForEach([](const unsigned int entityID, ComponentCollisionSphere& collider) {
 			collider.ClearEntitiesCheckedThisFrame();
@@ -25,6 +27,7 @@ namespace Engine {
 
 	CollisionData SystemCollisionSphere::Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionSphere& colliderA, const ComponentTransform& transformB, const ComponentCollisionSphere& colliderB) const
 	{
+		SCOPE_TIMER("SystemCollisionSphere::Intersect()");
 		const float scaledRadius1 = colliderA.CollisionRadius() * transformA.GetBiggestScaleFactor();
 		const float scaledRadius2 = colliderB.CollisionRadius() * transformB.GetBiggestScaleFactor();
 

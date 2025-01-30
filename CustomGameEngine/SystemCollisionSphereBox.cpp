@@ -2,6 +2,7 @@
 namespace Engine {
 	void SystemCollisionSphereBox::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionSphere& collider)
 	{
+		SCOPE_TIMER("SystemCollisionSphereBox::OnAction()");
 		// Loop through all other box entities for collision checks
 		View<ComponentTransform, ComponentCollisionBox> boxView = active_ecs->View<ComponentTransform, ComponentCollisionBox>();
 		boxView.ForEach([this, entityID, transform, &collider](const unsigned int entityIDB, ComponentTransform& transformB, ComponentCollisionBox& colliderB) {
@@ -16,6 +17,7 @@ namespace Engine {
 
 	void SystemCollisionSphereBox::AfterAction()
 	{
+		SCOPE_TIMER("SystemCollisionSphereBox::AfterAction()");
 		// Loop through all collision entities and clear EntitiesCheckedThisFrame
 		active_ecs->View<ComponentCollisionSphere>().ForEach([](const unsigned int entityID, ComponentCollisionSphere& collider) {
 			collider.ClearEntitiesCheckedThisFrame();
@@ -27,6 +29,7 @@ namespace Engine {
 
 	CollisionData SystemCollisionSphereBox::Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionSphere& colliderA, const ComponentTransform& transformB, const ComponentCollisionBox& colliderB) const
 	{
+		SCOPE_TIMER("SystemCollisionSphereBox::Intersect()");
 		// Transform sphere into oriented box's local space
 		const glm::vec3& worldSpaceSpherePosition = transformA.GetWorldPosition();
 		const glm::mat4& boxTransform = transformB.GetWorldModelMatrix();

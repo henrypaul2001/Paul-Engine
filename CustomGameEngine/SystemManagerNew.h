@@ -2,6 +2,7 @@
 #include "EntityManagerNew.h"
 #include <vector>
 #include <functional>
+#include "ScopeTimer.h"
 #include <string>
 namespace Engine {
 	class SystemManagerNew
@@ -27,7 +28,10 @@ namespace Engine {
 		}
 
 		void ActionSystems() const {
+			SCOPE_TIMER("SystemManager::ActionSystems()");
 			for (const std::string& name : systemNames) {
+				const std::string scopeName = "SystemManager::ActionSystems::" + name + "::Run()";
+				SCOPE_TIMER(scopeName.c_str());
 				systems.at(name)[0]();
 				systems.at(name)[1]();
 				systems.at(name)[2]();
@@ -51,7 +55,10 @@ namespace Engine {
 		}
 
 		void ActionPreUpdateSystems() const {
+			SCOPE_TIMER("SystemManager::ActionPreUpdateSystems()");
 			for (const std::string& name : preUpdateSystemNames) {
+				const std::string scopeName = "SystemManager::ActionPreUpdateSystems::" + name + "::Run()";
+				SCOPE_TIMER(scopeName.c_str());
 				preUpdateSystems.at(name)[0]();
 				preUpdateSystems.at(name)[1]();
 				preUpdateSystems.at(name)[2]();
