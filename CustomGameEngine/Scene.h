@@ -94,6 +94,14 @@ namespace Engine
 
 		InputManager* GetInputManager() const;
 		SceneManager* GetSceneManager() const;
+
+		LightManager* GetLightManager() { return &lightManager; }
+		CollisionManager* GetCollisionManager() { return collisionManager; }
+		ConstraintManager* GetConstraintManager() { return constraintManager; }
+		const EntityManagerNew& GetECS() const { return ecs; }
+		EntityManagerNew& GetECS() { return ecs; }
+		const SystemManagerNew& GetSystemManager() const { return systemManager; }
+		SystemManagerNew& GetSystemManager() { return systemManager; }
 		Camera* GetCamera() { return camera; }
 		const Camera* GetCamera() const { return camera; }
 
