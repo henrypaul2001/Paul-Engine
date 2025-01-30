@@ -58,7 +58,7 @@ namespace Engine {
 
 		{
 			SCOPE_TIMER("SystemRender::RenderMesh::Check shader used this frame");
-			if (shadersUsedThisFrame.find(shader->GetID()) != shadersUsedThisFrame.end()) {
+			if (shadersUsedThisFrame.find(shader->GetID()) == shadersUsedThisFrame.end()) {
 				// add shader to list and set lighting uniforms
 				shadersUsedThisFrame[shader->GetID()] = shader;
 				shader->Use();
