@@ -8,22 +8,21 @@ namespace Engine {
 		ConstraintManager() {}
 		~ConstraintManager() { ClearConstraints(); }
 
+		const Constraint* GetConstraint(const unsigned int index) const { return constraints[index]; }
 		void AddNewConstraint(Constraint* constraint) { constraints.push_back(constraint); }
 
 		void RemoveConstraint(Constraint* constraintToRemove) {
 			constraints.erase(std::find(constraints.begin(), constraints.end(), constraintToRemove));
 			delete constraintToRemove;
 		}
-		void RemoveConstraint(int indexToRemove) {
-			Constraint* constraintToRemove = constraints[indexToRemove];
+		void RemoveConstraint(int indexToRemove) { 
+			Constraint* c = constraints[indexToRemove];
 			constraints.erase(constraints.begin() + indexToRemove);
-			delete constraintToRemove;
+			delete c;
 		}
 
 		void ClearConstraints() {
-			for (int i = 0; i < constraints.size(); i++) {
-				delete constraints[i];
-			}
+			for (Constraint* c : constraints) { delete c; }
 			constraints.clear();
 		}
 

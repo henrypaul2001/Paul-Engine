@@ -162,6 +162,7 @@ namespace Engine {
 		void DrawWithNoMaterial(int instanceNum = 0, const unsigned int instanceVAO = 0);
 
 		AABBPoints& GetGeometryAABB() { return geometryAABB; }
+		const AABBPoints& GetGeometryAABB() const { return geometryAABB; }
 
 		const MeshData& GetMeshData() const { return *meshData; }
 

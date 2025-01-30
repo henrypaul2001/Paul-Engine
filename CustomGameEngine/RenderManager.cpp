@@ -358,11 +358,6 @@ namespace Engine {
 		return brdfLUTTexture;
 	}
 
-	void RenderManager::RunRenderPipeline(std::vector<System*> renderSystems, std::vector<Entity*> entities)
-	{
-		renderPipeline->Run(renderSystems, entities);
-	}
-
 	void RenderManager::SetupShadowMapTextures(unsigned int shadowWidth, unsigned int shadowHeight)
 	{
 		this->shadowHeight = shadowHeight;

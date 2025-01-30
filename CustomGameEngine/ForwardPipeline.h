@@ -4,11 +4,11 @@ namespace Engine {
 	class ForwardPipeline : public RenderPipeline
 	{
 	public:
-		ForwardPipeline();
-		~ForwardPipeline();
+		ForwardPipeline() {}
+		~ForwardPipeline() {}
 
-		RENDER_PIPELINE Name() override { return FORWARD_PIPELINE; }
-		void Run(std::vector<System*> renderSystems, std::vector<Entity*> entities) override;
+		constexpr const char* PipelineName() const override { return "FORWARD_PIPELINE"; }
+		void Run(EntityManager* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera) override;
 	private:
 		void SceneRenderStep();
 		void ScreenTextureStep();

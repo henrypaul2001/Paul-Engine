@@ -1,43 +1,77 @@
 #pragma once
-#include <vector>
-#include "System.h"
 #include "EntityManager.h"
+#include <vector>
+#include <functional>
+#include "ScopeTimer.h"
 #include <string>
-#include "SystemRender.h"
-#include "SystemShadowMapping.h"
-#include "SystemReflectionBaking.h"
-#include "CollisionResolver.h"
-#include "ConstraintSolver.h"
-namespace Engine
-{
-	enum SystemLists {
-		RENDER_SYSTEMS = 0,
-		UPDATE_SYSTEMS = 1 << 0
-	};
-
+namespace Engine {
 	class SystemManager
 	{
-	private:
-		std::vector<System*> updateSystemList;
-		std::vector<System*> renderSystemList;
-
-		SystemRender* renderSystem;
-		SystemShadowMapping* shadowmapSystem;
-		SystemReflectionBaking* reflectionProbeSystem;
-		CollisionResolver* collisionResponseSystem;
-		ConstraintSolver* constraintSolver;
 	public:
-		SystemManager();
-		~SystemManager();
+		SystemManager(EntityManager* ecs) : ecs(ecs) {}
+		~SystemManager() {}
 
-		System* FindSystem(SystemTypes name, SystemLists list);
-		void ActionUpdateSystems(EntityManager* entityManager);
-		void ActionRenderSystems(EntityManager* entityManager, int SCR_WIDTH, int SCR_HEIGHT);
-		void AddSystem(System* system, SystemLists list);
-		void AddCollisionResponseSystem(CollisionResolver* collisionResponder) { this->collisionResponseSystem = collisionResponder; }
-		void AddConstraintSolver(ConstraintSolver* constraintSolver) { this->constraintSolver = constraintSolver; }
+		template <typename... Components>
+		bool RegisterSystem(const std::string& systemName, std::function<void(const unsigned int, Components&...)> onActionFunc, std::function<void()> preActionFunc = []() {}, std::function<void()> afterActionFunc = []() {}) {
+			if (systems.find(systemName) != systems.end()) {
+				return false;
+			}
 
-		void BakeReflectionProbes(const std::vector<Entity*>& entities, const bool discardUnfilteredCapture = true);
+			systems[systemName][0] = preActionFunc;
+			systems[systemName][1] = [this, onActionFunc]() {
+				auto view = ecs->View<Components...>();
+				view.ForEach(onActionFunc);
+			};
+			systems[systemName][2] = afterActionFunc;
+			systemNames.push_back(systemName);
+			return true;
+		}
+
+		void ActionSystems() const {
+			SCOPE_TIMER("SystemManager::ActionSystems()");
+			for (const std::string& name : systemNames) {
+				const std::string scopeName = "SystemManager::ActionSystems::" + name + "::Run()";
+				SCOPE_TIMER(scopeName.c_str());
+				systems.at(name)[0]();
+				systems.at(name)[1]();
+				systems.at(name)[2]();
+			}
+		}
+
+		template <typename... Components>
+		bool RegisterPreUpdateSystem(const std::string& systemName, std::function<void(const unsigned int, Components&...)> onActionFunc, std::function<void()> preActionFunc = []() {}, std::function<void()> afterActionFunc = []() {}) {
+			if (preUpdateSystems.find(systemName) != preUpdateSystems.end()) {
+				return false;
+			}
+
+			preUpdateSystems[systemName][0] = preActionFunc;
+			preUpdateSystems[systemName][1] = [this, onActionFunc]() {
+				auto view = ecs->View<Components...>();
+				view.ForEach(onActionFunc);
+				};
+			preUpdateSystems[systemName][2] = afterActionFunc;
+			preUpdateSystemNames.push_back(systemName);
+			return true;
+		}
+
+		void ActionPreUpdateSystems() const {
+			SCOPE_TIMER("SystemManager::ActionPreUpdateSystems()");
+			for (const std::string& name : preUpdateSystemNames) {
+				const std::string scopeName = "SystemManager::ActionPreUpdateSystems::" + name + "::Run()";
+				SCOPE_TIMER(scopeName.c_str());
+				preUpdateSystems.at(name)[0]();
+				preUpdateSystems.at(name)[1]();
+				preUpdateSystems.at(name)[2]();
+			}
+		}
+
+	private:
+		EntityManager* ecs;
+
+		std::vector<std::string> preUpdateSystemNames;
+		std::unordered_map<std::string, std::function<void()>[3]> preUpdateSystems;
+
+		std::vector<std::string> systemNames;
+		std::unordered_map<std::string, std::function<void()>[3]> systems;
 	};
 }
-

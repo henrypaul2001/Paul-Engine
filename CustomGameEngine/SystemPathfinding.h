@@ -1,20 +1,17 @@
 #pragma once
 #include "System.h"
+#include "ComponentTransform.h"
 #include "ComponentPathfinder.h"
 namespace Engine {
 	class SystemPathfinding : public System
 	{
     public:
-        SystemPathfinding();
-        ~SystemPathfinding();
+        SystemPathfinding(EntityManager* ecs) : System(ecs) {}
+        ~SystemPathfinding() {}
 
-        SystemTypes Name() override { return SYSTEM_PATHFINDING; }
-        void Run(const std::vector<Entity*>& entityList) override;
-        void OnAction(Entity* entity) override;
-        void AfterAction() override;
+        constexpr const char* SystemName() override { return "SYSTEM_PATHFINDING"; }
 
-    private:
-        const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_PATHFINDER);
-        void Update(ComponentTransform* transform, ComponentPathfinder* pathfinder);
+        void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentPathfinder& pathfinder);
+        void AfterAction();
 	};
 }

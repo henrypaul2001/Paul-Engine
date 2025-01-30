@@ -1,23 +1,18 @@
 #pragma once
-#include "Component.h"
 #include "UIElement.h"
+#include <vector>
 namespace Engine {
 	enum CanvasTypes {
 		SCREEN_SPACE,
 		WORLD_SPACE
 	};
 
-	class ComponentUICanvas : public Component
+	class ComponentUICanvas
 	{
 	public:
 		ComponentUICanvas(const ComponentUICanvas& old_component);
 		ComponentUICanvas(CanvasTypes type);
 		~ComponentUICanvas();
-
-		ComponentTypes ComponentType() override { return COMPONENT_UICANVAS; }
-		void Close() override;
-
-		Component* Copy() override { return new ComponentUICanvas(*this); }
 
 		const CanvasTypes UIType() const { return uiType; }
 		const std::vector<UIElement*>& UIElements() const { return uiElements; }

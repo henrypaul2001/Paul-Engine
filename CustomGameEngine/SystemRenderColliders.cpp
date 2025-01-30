@@ -1,9 +1,9 @@
 #include "SystemRenderColliders.h"
 #include "ResourceManager.h"
 namespace Engine {
-	SystemRenderColliders::SystemRenderColliders(CollisionManager* collisionManager)
+	SystemRenderColliders::SystemRenderColliders()
 	{
-		this->collisionManager = collisionManager;
+		this->collisionManager = nullptr;
 
 		VAO = 0;
 		VBO = 0;
@@ -19,34 +19,29 @@ namespace Engine {
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
 	}
 
-	SystemRenderColliders::~SystemRenderColliders()
+	SystemRenderColliders::~SystemRenderColliders() {}
+
+
+	void SystemRenderColliders::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry)
 	{
+		SCOPE_TIMER("SystemRenderColliders::OnAction()");
+		Shader* debugShader = ResourceManager::GetInstance()->ColliderDebugShader();
+		Model* model = geometry.GetModel();
 
-	}
+		for (Mesh* mesh : model->meshes) {
+			const AABBPoints& geometryAABB = mesh->GetGeometryAABB();
+			const glm::vec3& position = transform.GetWorldPosition();
 
-	void SystemRenderColliders::Run(const std::vector<Entity*>& entityList)
-	{
-		SCOPE_TIMER("SystemRenderColliders::Run");
-		System::Run(entityList);
-
-		// Render BVH Tree
-		BVHTree* bvhTree = collisionManager->GetBVHTree();
-		RenderBVHNode(bvhTree->GetRootNode());
-	}
-
-	void SystemRenderColliders::OnAction(Entity* entity)
-	{
-		if ((entity->Mask() & GEOMETRY_MASK) == GEOMETRY_MASK) {
-			ComponentTransform* transform = entity->GetTransformComponent();
-			ComponentGeometry* geometry = entity->GetGeometryComponent();
-
-			DrawEntityColliders(transform, geometry);
+			DrawAABB(position, geometryAABB, debugShader);
 		}
 	}
 
 	void SystemRenderColliders::AfterAction()
 	{
-
+		SCOPE_TIMER("SystemRenderColliders::AfterAction()");
+		// Render BVH Tree
+		BVHTree* bvhTree = collisionManager->GetBVHTree();
+		RenderBVHNode(bvhTree->GetRootNode());
 	}
 
 	void SystemRenderColliders::DrawAABB(const glm::vec3& position, const AABBPoints& aabb, Shader* shader, const glm::vec3& colliderColour)
@@ -75,18 +70,6 @@ namespace Engine {
 		glBindVertexArray(0);
 	}
 
-	void SystemRenderColliders::DrawEntityColliders(ComponentTransform* transform, ComponentGeometry* geometry)
-	{
-		Shader* debugShader = ResourceManager::GetInstance()->ColliderDebugShader();
-		Model* model = geometry->GetModel();
-
-		for (Mesh* mesh : model->meshes) {
-			AABBPoints geometryAABB = mesh->GetGeometryAABB();
-			glm::vec3 position = transform->GetWorldPosition();
-
-			DrawAABB(position, geometryAABB, debugShader);
-		}
-	}
 
 	void SystemRenderColliders::RenderBVHNode(const BVHNode* node)
 	{

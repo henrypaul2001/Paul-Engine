@@ -1,38 +1,57 @@
 #pragma once
 #include <vector>
-#include "Entity.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "ComponentLight.h"
+#include <map>
+#include <unordered_map>
+#include "ResourceManager.h"
+#include <stdexcept>
+#include "EntityManager.h"
 namespace Engine {
 	class LightManager
 	{
+	public:
+		LightManager() {
+			textureSlots = &ResourceManager::GetInstance()->GetTextureSlotLookupMap();
+		}
+		~LightManager() {}
+
+		void SetShaderUniforms(EntityManager& ecs, Shader* shader, Camera* activeCamera);
+		void ResetLights() { 
+			directionalLightEntities.clear();
+			lightEntities.clear();
+		}
+
+		void RegisterLightEntity(float distanceToCamera, const unsigned int entityID, const ComponentLight& lightComponent) {
+			if (lightComponent.GetLightType() == DIRECTIONAL) {
+				directionalLightEntities.push_back(entityID);
+			}
+			else {
+				float increment = 0.01f;
+				int iterations = 0;
+				while (lightEntities.find(distanceToCamera) != lightEntities.end()) {
+					distanceToCamera += increment;
+					increment *= 1.05f;
+					iterations++;
+					if (iterations >= 100) {
+						throw std::length_error("Unable to increment to unique light distance from camera in suitable amount of iterations");
+					}
+				}
+				lightEntities[distanceToCamera] = entityID;
+			}
+		}
+
+		const std::vector<unsigned int>& GetDirectionalLightEntities() const { return directionalLightEntities; }
+		const std::map<float, unsigned int>& GetLightEntities() const { return lightEntities; }
+
 	private:
-		LightManager();
-		static LightManager* instance;
+		std::vector<unsigned int> directionalLightEntities; // Entities with a directional light component
+		std::map<float, unsigned int> lightEntities; // Entities with a light component that are either SPOT or POINT. <distanceToCamera, entityID>
 
-		std::vector<Entity*> lightEntities;
-		Entity* directionalLight;
-
-		void SetDirectionalLightUniforms(Shader* shader, Entity* directionalLight);
+		void SetDirectionalLightUniforms(EntityManager& ecs, Shader* shader);
 		void SetIBLUniforms(Shader* shader, Camera* activeCamera);
 
 		const std::unordered_map<std::string, unsigned int>* textureSlots;
-	public:
-		LightManager(LightManager& other) = delete; // singleton should not be cloneable
-		void operator=(const LightManager&) = delete; // singleton should not be assignable
-
-		~LightManager();
-
-		static LightManager* GetInstance();
-		void AddLightEntity(Entity* entity);
-		void SetDirectionalLightEntity(Entity* entity);
-		void RemoveLightEntity(Entity* entity);
-
-		void SetShaderUniforms(Shader* shader, Camera* activeCamera);
-
-		void ResetScene() { lightEntities.clear(); directionalLight = nullptr; }
-
-		std::vector<Entity*> GetLightEntities() { return lightEntities; }
-		Entity* GetDirectionalLightEntity() { return directionalLight; }
 	};
 }

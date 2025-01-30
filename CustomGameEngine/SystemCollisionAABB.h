@@ -1,22 +1,20 @@
 #pragma once
-#include "System.h"
 #include "SystemCollision.h"
 #include "ComponentTransform.h"
 #include "ComponentCollisionAABB.h"
 namespace Engine{
 	class SystemCollisionAABB : public SystemCollision
 	{
-	private:
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_AABB);
-
-		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
-		SystemCollisionAABB(EntityManager* entityManager, CollisionManager* collisionManager);
-		~SystemCollisionAABB();
+		SystemCollisionAABB(EntityManager* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
+		~SystemCollisionAABB() {}
 
-		SystemTypes Name() override { return SYSTEM_COLLISION_AABB; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		constexpr const char* SystemName() override { return "SYSTEM_COLLISION_AABB"; }
+
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionAABB& collider);
+		void AfterAction();
+
+	private:
+		CollisionData Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionAABB& colliderA, const ComponentTransform& transformB, const ComponentCollisionAABB& colliderB) const;
 	};
 }

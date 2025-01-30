@@ -1,49 +1,20 @@
 #include "SystemParticleUpdater.h"
+#include "ComponentPhysics.h"
 #include "Scene.h"
 namespace Engine {
-	SystemParticleUpdater::SystemParticleUpdater()
+	void SystemParticleUpdater::OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentParticleGenerator& generator)
 	{
-
-	}
-
-	SystemParticleUpdater::~SystemParticleUpdater()
-	{
-
-	}
-
-	void SystemParticleUpdater::Run(const std::vector<Entity*>& entityList)
-	{
-		SCOPE_TIMER("SystemParticleUpdater::Run");
-		System::Run(entityList);
-	}
-
-	void SystemParticleUpdater::OnAction(Entity* entity)
-	{
-		if ((entity->Mask() & MASK) == MASK) {
-			ComponentTransform* transform = entity->GetTransformComponent();
-			ComponentParticleGenerator* generator = entity->GetParticleGenerator();
-
-			UpdateParticles(transform, generator);
-		}
-	}
-
-	void SystemParticleUpdater::AfterAction()
-	{
-
-	}
-
-	void SystemParticleUpdater::UpdateParticles(ComponentTransform* transform, ComponentParticleGenerator* generator)
-	{
-		float deltaTime = Scene::dt;
-		std::vector<Particle>& particles = generator->GetParticles();
+		SCOPE_TIMER("SystemParticleUpdater::OnAction()");
+		const float deltaTime = Scene::dt;
+		std::vector<Particle>& particles = generator.GetParticles();
 
 		// Determine how many particles should be created during this frame based on the generators particles per second rate
 		// If the result is less than 1 for this frame, accumulate this value into the next frame
-		float particlesPerSecond = generator->ParticlesPerSecond();
-		float previousFramesBuildup = generator->GetRunningLessThanOneCount();
-		float fps = 1.0f / deltaTime;
+		const float particlesPerSecond = generator.ParticlesPerSecond();
+		float previousFramesBuildup = generator.GetRunningLessThanOneCount();
+		const float fps = 1.0f / deltaTime;
 
-		float particlesForThisFrame = particlesPerSecond / fps;
+		const float particlesForThisFrame = particlesPerSecond / fps;
 		unsigned int numberToRespawn = static_cast<unsigned int>(particlesForThisFrame);
 
 		previousFramesBuildup += particlesForThisFrame - (float)numberToRespawn;
@@ -52,30 +23,30 @@ namespace Engine {
 			numberToRespawn++;
 			previousFramesBuildup -= 1.0f;
 		}
-		
-		generator->SetRunningCount(previousFramesBuildup);
+
+		generator.SetRunningCount(previousFramesBuildup);
 
 		// Get generator velocity
 		glm::vec3 generatorVelocity = glm::vec3(0.0f);
-		if ((generator->GetOwner()->ContainsComponents(COMPONENT_PHYSICS))) {
-			generatorVelocity = generator->GetOwner()->GetPhysicsComponent()->Velocity();
-		}
+		const ComponentPhysics* physics = active_ecs->GetComponent<ComponentPhysics>(entityID);
+		if (physics) { generatorVelocity = physics->Velocity(); }
 
 		// Create new particles
 		for (unsigned int i = 0; i < numberToRespawn; i++) {
-			int firstDeadParticleIndex = FindFirstDeadParticle(particles, generator->LastDeadParticleIndex());
+			const int firstDeadParticleIndex = FindFirstDeadParticle(particles, generator.LastDeadParticleIndex());
 			if (firstDeadParticleIndex != -1) {
-				generator->SetLastDeadParticleIndex(firstDeadParticleIndex);
-				SpawnParticle(particles[firstDeadParticleIndex], *generator, transform->GetWorldPosition(), generatorVelocity);
+				generator.SetLastDeadParticleIndex(firstDeadParticleIndex);
+				SpawnParticle(particles[firstDeadParticleIndex], generator, transform.GetWorldPosition(), generatorVelocity);
 			}
 		}
-		
-		float decayRate = generator->GetDecayRate();
-		float startingLifespan = generator->GetParticleLifespan();
 
-		float accelerationChangeProbability = generator->GetChanceToGenerateNewAcceleration();
-		float acclerationChangeScale = generator->GetAccelerationChangeScale();
-		RandomParameters params = generator->GetRandomParameters();
+		const float decayRate = generator.GetDecayRate();
+		const float startingLifespan = generator.GetParticleLifespan();
+
+		const float accelerationChangeProbability = generator.GetChanceToGenerateNewAcceleration();
+		const float acclerationChangeScale = generator.GetAccelerationChangeScale();
+		const RandomParameters& params = generator.GetRandomParameters();
+
 		// Update particles
 		for (Particle& p : particles) {
 			p.Life -= decayRate * deltaTime;
@@ -87,9 +58,9 @@ namespace Engine {
 
 				if (Random(0.0f, 1.0f) < accelerationChangeProbability) {
 					// Generate new acceleration based on random paramaters of generator
-					float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
-					float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
-					float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
+					const float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
+					const float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
+					const float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
 					p.Acceleration = glm::vec3(randomXAcceleration, randomYAcceleration, randomZAcceleration) * acclerationChangeScale;
 				}
 			}
@@ -98,4 +69,6 @@ namespace Engine {
 			}
 		}
 	}
+
+	void SystemParticleUpdater::AfterAction() {}
 }

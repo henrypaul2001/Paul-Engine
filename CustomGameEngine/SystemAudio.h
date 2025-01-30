@@ -6,16 +6,12 @@ namespace Engine {
     class SystemAudio : public System
     {
     public:
-        SystemAudio();
-        ~SystemAudio();
+        SystemAudio(EntityManager* ecs) : System(ecs) {}
+        ~SystemAudio() {}
 
-        SystemTypes Name() override { return SYSTEM_AUDIO; }
-        void Run(const std::vector<Entity*>& entityList) override;
-        void OnAction(Entity* entity) override;
-        void AfterAction() override;
+        constexpr const char* SystemName() override { return "SYSTEM_AUDIO"; }
 
-    private:
-        const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_AUDIO_SOURCE);
-        void UpdateAudio(ComponentTransform* transform, ComponentAudioSource* audio);
+        void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentAudioSource& audio);
+        void AfterAction();
     };
 }

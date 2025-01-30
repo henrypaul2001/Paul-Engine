@@ -6,41 +6,35 @@ namespace Engine {
 	class SystemParticleUpdater : public System
 	{
     public:
-        SystemParticleUpdater();
-        ~SystemParticleUpdater();
+        SystemParticleUpdater(EntityManager* ecs) : System(ecs) {}
+        ~SystemParticleUpdater() {}
 
-        SystemTypes Name() override { return SYSTEM_PARTICLE_UPDATE; }
-		void Run(const std::vector<Entity*>& entityList) override;
-        void OnAction(Entity* entity) override;
-        void AfterAction() override;
+		constexpr const char* SystemName() override { return "SYSTEM_PARTICLE_UPDATER"; }
+
+        void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentParticleGenerator& generator);
+        void AfterAction();
 
     private:
-        const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_PARTICLE_GENERATOR);
+		float Random(float min, float max) const { return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min))); }
 
-        void UpdateParticles(ComponentTransform* transform, ComponentParticleGenerator* generator);
+		void SpawnParticle(Particle& particle, const ComponentParticleGenerator& generator, const glm::vec3& generatorPosition, const glm::vec3& generatorVelocity) const {
+			const RandomParameters& params = generator.GetRandomParameters();
 
-		float Random(float min, float max) const {
-			return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
-		}
+			const float randomXPosition = Random(params.randomPositionXRange.x, params.randomPositionXRange.y);
+			const float randomYPosition = Random(params.randomPositionYRange.x, params.randomPositionYRange.y);
+			const float randomZPosition = Random(params.randomPositionZRange.x, params.randomPositionZRange.y);
 
-		void SpawnParticle(Particle& particle, const ComponentParticleGenerator& generator, const glm::vec3& generatorPosition, const glm::vec3& generatorVelocity) {
-			RandomParameters params = generator.GetRandomParameters();
+			const float randomXVelocity = Random(params.randomVelocityXRange.x, params.randomVelocityXRange.y);
+			const float randomYVelocity = Random(params.randomVelocityYRange.x, params.randomVelocityYRange.y);
+			const float randomZVelocity = Random(params.randomVelocityZRange.x, params.randomVelocityZRange.y);
 
-			float randomXPosition = Random(params.randomPositionXRange.x, params.randomPositionXRange.y);
-			float randomYPosition = Random(params.randomPositionYRange.x, params.randomPositionYRange.y);
-			float randomZPosition = Random(params.randomPositionZRange.x, params.randomPositionZRange.y);
+			const float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
+			const float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
+			const float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
 
-			float randomXVelocity = Random(params.randomVelocityXRange.x, params.randomVelocityXRange.y);
-			float randomYVelocity = Random(params.randomVelocityYRange.x, params.randomVelocityYRange.y);
-			float randomZVelocity = Random(params.randomVelocityZRange.x, params.randomVelocityZRange.y);
+			const float randomColour = Random(0.5f, 1.0f);
 
-			float randomXAcceleration = Random(params.randomAccelerationXRange.x, params.randomAccelerationXRange.y);
-			float randomYAcceleration = Random(params.randomAccelerationYRange.x, params.randomAccelerationYRange.y);
-			float randomZAcceleration = Random(params.randomAccelerationZRange.x, params.randomAccelerationZRange.y);
-
-			float randomColour = Random(0.5f, 1.0f);
-
-			glm::vec3 offset = generator.Offset();
+			const glm::vec3& offset = generator.Offset();
 
 			particle.Position = generatorPosition + offset + glm::vec3(randomXPosition, randomYPosition, randomZPosition);
 			particle.Colour = glm::vec4(randomColour, randomColour, randomColour, 1.0f);

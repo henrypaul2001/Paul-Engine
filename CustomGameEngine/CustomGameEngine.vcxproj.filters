@@ -166,37 +166,22 @@
     <Filter Include="Source Files\Engine\Shaders\GeometryShaders">
       <UniqueIdentifier>{e59015b4-1a1f-4959-a8aa-33905d561514}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utility\Data Structures">
+      <UniqueIdentifier>{82482bfe-22d2-4335-bb17-95bac9999631}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\Engine\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentTransform.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityManager.h">
-      <Filter>Header Files\Engine\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>Header Files\Engine\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemManager.h">
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Engine\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="SystemPhysics.h">
       <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentVelocity.h">
-      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="GameSceneManager.h">
       <Filter>Header Files\Game\Managers</Filter>
@@ -510,37 +495,46 @@
     <ClInclude Include="SSRScene.h">
       <Filter>Header Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="SparseSet.h">
+      <Filter>Header Files\Engine\Utility\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Engine\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyScene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="View.h">
+      <Filter>Header Files\Engine\Utility\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>Header Files\Engine\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemBuildMeshList.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemLighting.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SystemManager.cpp">
-      <Filter>Source Files\Engine\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
     <ClCompile Include="ComponentTransform.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\Engine\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityManager.cpp">
-      <Filter>Source Files\Engine\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="System.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="SystemPhysics.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentVelocity.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="GameSceneManager.cpp">
       <Filter>Source Files\Game\Managers</Filter>
@@ -859,6 +853,18 @@
     </ClCompile>
     <ClCompile Include="SSRScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="EmptyScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Engine\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>Source Files\Engine\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemBuildMeshList.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 #pragma once
 #include "State.h"
 namespace Engine {
-	typedef void (*StateFunc)(void*);
+	typedef void (*StateFunc)(void*, EntityManager*, const unsigned int);
 
 	class GenericState : public State
 	{
@@ -12,11 +12,11 @@ namespace Engine {
 		
 		~GenericState() {}
 		
-		void Update() override;
+		void Update(EntityManager* ecs, const unsigned int entityID) override;
 
-		void Enter() override;
+		void Enter(EntityManager* ecs, const unsigned int entityID) override;
 
-		void Exit() override;
+		void Exit(EntityManager* ecs, const unsigned int entityID) override;
 
 		// Copies to GenericState and it's functions, but points to the same original data
 		State* Copy() override { return new GenericState(*this); }

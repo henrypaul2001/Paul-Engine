@@ -1,20 +1,13 @@
 #pragma once
-#include "System.h"
+#include "ComponentTransform.h"
 #include "ComponentUICanvas.h"
 namespace Engine {
-	class SystemUIRender : public System
+	class SystemUIRender
 	{
 	public:
-		SystemUIRender();
-		~SystemUIRender();
+		SystemUIRender() {}
+		~SystemUIRender() {}
 
-		SystemTypes Name() override { return SYSTEM_UI_RENDER; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
-
-	private:
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_UICANVAS);
-		void Draw(ComponentTransform* transform, ComponentUICanvas* canvas);
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentUICanvas& canvas);
 	};
 }

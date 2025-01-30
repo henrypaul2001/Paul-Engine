@@ -18,8 +18,12 @@ namespace Engine {
         this->data = data;
     }
 
-    void GenericState::Update()
+    void GenericState::Update(EntityManager* ecs, const unsigned int entityID)
     {
+        if (updateFunction) {
+            updateFunction(data, ecs, entityID);
+        }
+        /*
         if (data != nullptr) {
             if (updateFunction) {
                 updateFunction(data);
@@ -27,14 +31,19 @@ namespace Engine {
         }
         else {
             if (updateFunction) {
-                updateFunction(parentStateMachine->GetParentComponent()->GetOwner());
+                //updateFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
+        */
     }
 
-    void GenericState::Enter()
+    void GenericState::Enter(EntityManager* ecs, const unsigned int entityID)
     {
-        State::Enter();
+        State::Enter(ecs, entityID);
+        if (enterFunction) {
+            enterFunction(data, ecs, entityID);
+        }
+        /*
         if (data != nullptr) {
             if (enterFunction) {
                 enterFunction(data);
@@ -42,14 +51,19 @@ namespace Engine {
         }
         else {
             if (enterFunction) {
-                enterFunction(parentStateMachine->GetParentComponent()->GetOwner());
+                //enterFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
+        */
     }
 
-    void GenericState::Exit()
+    void GenericState::Exit(EntityManager* ecs, const unsigned int entityID)
     {
-        State::Exit();
+        State::Exit(ecs, entityID);
+        if (exitFunction) {
+            exitFunction(data, ecs, entityID);
+        }
+        /*
         if (data != nullptr) {
             if (exitFunction) {
                 exitFunction(data);
@@ -57,8 +71,9 @@ namespace Engine {
         }
         else {
             if (exitFunction) {
-                exitFunction(parentStateMachine->GetParentComponent()->GetOwner());
+                //exitFunction(parentStateMachine->GetParentComponent()->GetOwner());
             }
         }
+        */
     }
 }

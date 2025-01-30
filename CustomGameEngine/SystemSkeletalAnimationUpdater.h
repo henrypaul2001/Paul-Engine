@@ -1,23 +1,17 @@
 #pragma once
 #include "System.h"
 #include "ComponentGeometry.h"
-#include "ComponentTransform.h"
 #include "ComponentAnimator.h"
 namespace Engine {
 	class SystemSkeletalAnimationUpdater : public System
 	{
 	public:
-		SystemSkeletalAnimationUpdater();
-		~SystemSkeletalAnimationUpdater();
+		SystemSkeletalAnimationUpdater(EntityManager* ecs) : System(ecs) {}
+		~SystemSkeletalAnimationUpdater() {}
+		
+		constexpr const char* SystemName() override { return "SYSTEM_SKELTAL_ANIM_UPDATE"; }
 
-		SystemTypes Name() override { return SYSTEM_SKELETAL_ANIM_UPDATE; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
-
-	private:
-		const ComponentTypes MASK = (COMPONENT_GEOMETRY | COMPONENT_ANIMATOR);
-
-		void UpdateAnimator(ComponentGeometry* geometry, ComponentAnimator* animator);
+		void OnAction(const unsigned int entityID, ComponentGeometry& geometry, ComponentAnimator& animator);
+		void AfterAction();
 	};
 }

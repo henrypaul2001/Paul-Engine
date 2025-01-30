@@ -9,7 +9,7 @@ namespace Engine {
 
 		virtual StateTransition* Copy() = 0;
 
-		virtual bool Condition() = 0;
+		virtual bool Condition(EntityManager* ecs, const unsigned int entityID) = 0;
 
 		State* GetDestinationState() const { return destinationState; }
 		State* GetSourceState() const { return sourceState; }

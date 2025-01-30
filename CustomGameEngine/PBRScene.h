@@ -1,6 +1,10 @@
 #pragma once
 #include "Scene.h"
 #include "UITextButton.h"
+#include "UIText.h"
+#include "UIImage.h"
+#include "UITextButton.h"
+#include "UIImageButton.h"
 namespace Engine {
 	class PBRScene : public Scene
 	{
@@ -34,7 +38,8 @@ namespace Engine {
 		int parameterGroupIndex;
 		std::vector<std::vector<UIElement*>> parameterGroups;
 
-		ComponentLight* directionalLight;
+		unsigned int directionalLightEntity;
+		//ComponentLight* directionalLight;
 		float ambientStrength;
 
 		std::unordered_map<unsigned int, std::string> postProcessEffectToString = {

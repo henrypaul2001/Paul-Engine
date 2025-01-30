@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "GameInputManager.h"
-#include "SystemUIRender.h"
+#include "UIText.h"
 namespace Engine {
     class IBLScene : public Scene
     {

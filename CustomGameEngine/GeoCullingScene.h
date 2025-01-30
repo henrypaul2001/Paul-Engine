@@ -1,5 +1,9 @@
 #pragma once
 #include "Scene.h"
+#include "UIText.h"
+#include "UIImage.h"
+#include "UITextButton.h"
+#include "UIImageButton.h"
 namespace Engine {
 	class GeoCullingScene : public Scene
 	{

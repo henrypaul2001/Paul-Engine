@@ -1,24 +1,25 @@
 #pragma once
-#include "System.h"
+#include "EntityManager.h"
 #include "ComponentGeometry.h"
 #include "ComponentTransform.h"
-#include "RenderManager.h"
 namespace Engine {
-	class SystemShadowMapping : public System
+	enum DepthMapType {
+		MAP_2D,
+		MAP_CUBE
+	};
+
+	class SystemShadowMapping
 	{
 	public:
-		SystemShadowMapping();
-		~SystemShadowMapping();
+		friend class RenderPipeline;
+		SystemShadowMapping() : type(MAP_2D) {}
+		~SystemShadowMapping() {}
 
-		SystemTypes Name() override { return SYSTEM_SHADOWMAP; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry);
 	
-		void SetDepthMapType(DepthMapType newType) { type = newType; }
+		void SetDepthMapType(const DepthMapType newType) { type = newType; }
 	private:
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
-		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
 		DepthMapType type;
+		EntityManager* active_ecs;
 	};
 }

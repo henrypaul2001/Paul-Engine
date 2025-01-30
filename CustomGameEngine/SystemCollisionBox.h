@@ -3,17 +3,16 @@
 namespace Engine {
     class SystemCollisionBox : public SystemCollision
     {
-	private:
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_COLLISION_BOX);
-
-		CollisionData Intersect(ComponentTransform* transform, ComponentCollision* collider, ComponentTransform* transform2, ComponentCollision* collider2) override;
 	public:
-		SystemCollisionBox(EntityManager* entityManager, CollisionManager* collisionManager);
-		~SystemCollisionBox();
+		SystemCollisionBox(EntityManager* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
+		~SystemCollisionBox() {}
 
-		SystemTypes Name() override { return SYSTEM_COLLISION_BOX; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		constexpr const char* SystemName() override { return "SYSTEM_COLLISION_BOX"; }
+
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentCollisionBox& collider);
+		void AfterAction();
+
+	private:
+		CollisionData Intersect(const unsigned int entityIDA, const unsigned int entityIDB, const ComponentTransform& transformA, const ComponentCollisionBox& colliderA, const ComponentTransform& transformB, const ComponentCollisionBox& colliderB) const;
     };
 }

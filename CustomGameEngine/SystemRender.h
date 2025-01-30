@@ -1,8 +1,9 @@
 #pragma once
-#include "System.h"
+#include "EntityManager.h"
+#include "LightManager.h"
 #include "Camera.h"
-#include "ComponentGeometry.h"
 #include "ComponentTransform.h"
+#include "ComponentGeometry.h"
 #include <map>
 namespace Engine {
 	enum PostProcessingEffect {
@@ -18,45 +19,40 @@ namespace Engine {
 		CUSTOM_KERNEL = 9u
 	};
 
-	class SystemRender : public System
+	class SystemRender
 	{
 	public:
+		friend class RenderPipeline;
 		SystemRender();
 		~SystemRender();
 
-		SystemTypes Name() override { return SYSTEM_RENDER; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		constexpr const char* SystemName() const { return "SYSTEM_RENDER"; }
+
+		void AfterAction();
 
 		void SetPostProcess(PostProcessingEffect effect) { postProcess = effect; }
-		PostProcessingEffect GetPostProcess() { return postProcess; }
+		PostProcessingEffect GetPostProcess() const { return postProcess; }
 
-		void DrawTransparentGeometry(bool useDefaultForwardShader);
+		void RenderMeshes(const std::map<float, std::pair<Mesh*, unsigned int>>& meshesAndDistances, const bool transparencyPass = false, bool useDefaultForwardShader = false);
 
-		void RenderMeshes(const std::map<float, Mesh*>& meshesAndDistances, const bool transparencyPass = false, bool useDefaultForwardShader = false);
-		void RenderMeshes(const std::vector<Mesh*>& meshList, const bool transparencyPass = false, bool useDefaultForwardShader = false);
-
-		void RenderMesh(Mesh* mesh, const bool transparencyPass = false, bool useDefaultForwardShader = false);
+		void RenderMesh(const unsigned int entityID, Mesh* mesh, const bool transparencyPass = false, bool useDefaultForwardShader = false);
 
 		float PostProcessKernel[9];
 
-		static std::map<float, Mesh*> transparentMeshes;
+		static std::map<float, std::pair<Mesh*, unsigned int>> transparentMeshes;
 
+		const Camera* GetActiveCamera() const { return activeCamera; }
 		Camera* GetActiveCamera() { return activeCamera; }
 		void SetActiveCamera(Camera* camera) { activeCamera = camera; }
+
 	private:
-		//Camera* camera;
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY);
-		void Draw(ComponentTransform* transform, ComponentGeometry* geometry);
-		void AddMeshToTransparentMeshes(ComponentTransform* transform, Mesh* mesh);
-
-		std::vector<Shader*> shadersUsedThisFrame;
-
-		std::map<float, ComponentGeometry*> transparentGeometry;
+		std::unordered_map<unsigned int, Shader*> shadersUsedThisFrame;
 
 		PostProcessingEffect postProcess;
 
 		Camera* activeCamera;
+
+		EntityManager* ecs;
+		LightManager* lightManager;
 	};
 }

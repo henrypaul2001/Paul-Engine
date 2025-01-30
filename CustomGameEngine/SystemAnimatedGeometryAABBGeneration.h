@@ -4,6 +4,11 @@
 #include "ResourceManager.h"
 #include <algorithm>
 #include <iterator>
+
+#include "ComponentTransform.h"
+#include "ComponentGeometry.h"
+#include "ComponentAnimator.h"
+
 namespace Engine {
 	class SystemAnimatedGeometryAABBGeneration : public System
 	{
@@ -14,26 +19,27 @@ namespace Engine {
 
 		struct MeshEntry {
 			Mesh* mesh;
-			ComponentTransform* transform;
-			ComponentGeometry* geometry;
-			ComponentAnimator* animator;
+			ComponentTransform& transform;
+			ComponentGeometry& geometry;
+			ComponentAnimator& animator;
 		};
 
 	public:
-		SystemAnimatedGeometryAABBGeneration();
-		~SystemAnimatedGeometryAABBGeneration();
+		SystemAnimatedGeometryAABBGeneration(EntityManager* ecs) : System(ecs) {
+			minMaxVerticesShader = ResourceManager::GetInstance()->LoadComputeShader("Shaders/Compute/verticesMinMax.comp");
+			minMaxOutput = minMaxVerticesShader->AddNewSSBO(1);
+		}
+		~SystemAnimatedGeometryAABBGeneration() {}
 
-		SystemTypes Name() override { return SYSTEM_ANIMATED_GEOMETRY_AABB; }
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		constexpr const char* SystemName() override { return "SYSTEM_ANIMATED_GEOMETRY_AABB"; }
+
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry, ComponentAnimator& animator);
+		void AfterAction();
 
 	private:
-		const ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_GEOMETRY | COMPONENT_ANIMATOR);
-
 		std::vector<MeshEntry> meshList;
 
-		void GPUComputeAABB(MeshEntry meshEntry);
+		void GPUComputeAABB(const MeshEntry meshEntry);
 
 		ComputeShader* minMaxVerticesShader;
 		const ShaderStorageBuffer* minMaxOutput;

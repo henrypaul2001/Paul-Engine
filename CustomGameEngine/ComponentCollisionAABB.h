@@ -97,22 +97,22 @@ namespace Engine {
 
 		AABBPoints(float minX = -5.0f, float minY = -5.0f, float minZ = -5.0f, float maxX = 5.0f, float maxY = 5.0f, float maxZ = 5.0f) : minX(minX), minY(minY), minZ(minZ), maxX(maxX), maxY(maxY), maxZ(maxZ), startMinX(minX), startMinY(minY), startMinZ(minZ), startMaxX(maxX), startMaxY(maxY), startMaxZ(maxZ) {}
 	
-		bool operator==(AABBPoints const& aabb) {
-			glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
-			glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
+		bool operator==(AABBPoints const& aabb) const {
+			const glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
+			const glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
 
-			glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
-			glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
+			const glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
+			const glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
 
 			return (thisMin == otherMin && thisMax == otherMax);
 		}
 
-		bool operator!=(AABBPoints const& aabb) {
-			glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
-			glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
+		bool operator!=(AABBPoints const& aabb) const {
+			const glm::vec3 thisMin = glm::vec3(minX, minY, minZ);
+			const glm::vec3 thisMax = glm::vec3(maxX, maxY, maxZ);
 
-			glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
-			glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
+			const glm::vec3 otherMin = glm::vec3(aabb.minX, aabb.minY, aabb.minZ);
+			const glm::vec3 otherMax = glm::vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
 
 			return (thisMin != otherMin || thisMax != otherMax);
 		}
@@ -120,19 +120,15 @@ namespace Engine {
 
 	class ComponentCollisionAABB : public ComponentCollision
 	{
-	private:
-		AABBPoints localBounds;
-		BoundingBox boundingBox;
-
-		void ConstructCube();
 	public:
-		ComponentCollisionAABB(const ComponentCollisionAABB& old_component);
-		ComponentCollisionAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+		constexpr Engine::ColliderType ColliderType() const override { return COLLISION_AABB; }
+
+		ComponentCollisionAABB(const float minX, const float minY, const float minZ, const float maxX, const float maxY, const float maxZ);
 		~ComponentCollisionAABB();
 
-		Component* Copy() override { return new ComponentCollisionAABB(*this); }
-
-		AABBPoints GetBoundary() { return localBounds; }
+		AABBPoints& GetBoundary() { return localBounds; }
+		const AABBPoints& GetBoundary() const { return localBounds; }
+		const BoundingBox& GetBoundingBox() const { return boundingBox; }
 		BoundingBox& GetBoundingBox() { return boundingBox; }
 
 		void SetMinX(float minX) { localBounds.minX = minX; }
@@ -143,10 +139,13 @@ namespace Engine {
 		void SetMaxY(float maxY) { localBounds.maxY = maxY; }
 		void SetMaxZ(float maxZ) { localBounds.maxZ = maxZ; }
 
-		AABBPoints GetWorldSpaceBounds(glm::mat4 modelMatrix);
-		std::vector<glm::vec3> WorldSpacePoints(glm::mat4 modelMatrix);
+		AABBPoints GetWorldSpaceBounds(const glm::mat4& modelMatrix) const;
+		std::vector<glm::vec3> WorldSpacePoints(const glm::mat4& modelMatrix) const;
 
-		ComponentTypes ComponentType() override { return COMPONENT_COLLISION_AABB; }
-		void Close() override;
+	private:
+		AABBPoints localBounds;
+		BoundingBox boundingBox;
+
+		void ConstructCube();
 	};
 }

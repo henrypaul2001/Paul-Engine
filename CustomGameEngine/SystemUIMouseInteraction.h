@@ -7,18 +7,15 @@ namespace Engine {
 	class SystemUIMouseInteraction : public System
 	{
 	public:
-		SystemUIMouseInteraction(InputManager* inputManager);
-		~SystemUIMouseInteraction();
+		SystemUIMouseInteraction(EntityManager* ecs, InputManager** inputManager) : System(ecs), inputManager(inputManager) {}
+		~SystemUIMouseInteraction() {}
 
-		SystemTypes Name() override { return SYSTEM_UI_INTERACT; }
+		constexpr const char* SystemName() override { return "SYSTEM_UI_MOUSE_INTERACTION"; }
 
-		ComponentTypes MASK = (COMPONENT_TRANSFORM | COMPONENT_UICANVAS);
-
-		void Run(const std::vector<Entity*>& entityList) override;
-		void OnAction(Entity* entity) override;
-		void AfterAction() override;
+		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentUICanvas& canvas);
+		void AfterAction();
 	private:
-		void ProcessUIButton(UIButton* button, ComponentTransform* canvasTransform) const;
-		InputManager* inputManager;
+		void ProcessUIButton(UIButton* button, ComponentTransform& canvasTransform) const;
+		InputManager** inputManager;
 	};
 }

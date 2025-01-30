@@ -1,16 +1,16 @@
 #include "ConstraintSolver.h"
 #include "Scene.h"
 namespace Engine {
-	void ConstraintSolver::OnAction()
+	void ConstraintSolver::Run(EntityManager& ecs)
 	{
-		SCOPE_TIMER("ConstraintSolver::OnAction");
-		std::vector<Constraint*> constraints = constraintManager->GetConstraints();
+		SCOPE_TIMER("ConstraintSolver::Run");
+		const std::vector<Constraint*>& constraints = constraintManager->GetConstraints();
 		float dividedDeltaTime = Scene::dt / float(numIterations);
 
 		for (int i = 0; i < numIterations; i++) {
-			for (Constraint* c : constraints) {
+			for (const Constraint* c : constraints) {
 				if (c->IsActive()) {
-					c->UpdateConstraint(dividedDeltaTime);
+					c->UpdateConstraint(ecs, dividedDeltaTime);
 				}
 			}
 		}

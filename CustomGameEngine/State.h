@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "EntityManager.h"
 namespace Engine {
 	class StateMachine;
 	class ComponentStateController;
@@ -11,9 +12,9 @@ namespace Engine {
 		State(const std::string& name) { this->name = name; }
 		~State() {}
 
-		virtual void Update() = 0;
-		virtual void Enter();
-		virtual void Exit();
+		virtual void Update(EntityManager* ecs, const unsigned int entityID) = 0;
+		virtual void Enter(EntityManager* ecs, const unsigned int entityID);
+		virtual void Exit(EntityManager* ecs, const unsigned int entityID);
 
 		virtual State* Copy() = 0;
 

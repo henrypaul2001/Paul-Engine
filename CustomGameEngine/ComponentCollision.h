@@ -1,10 +1,18 @@
 #pragma once
-#include "Component.h"
+#include "Entity.h"
 #include <unordered_map>
 #include <glm/ext/matrix_float4x4.hpp>
 
+// The whole physics system and collision setup is a mess anyway. Will be re-worked as a larger physics engine re-design
+
 namespace Engine {
-	class Entity;
+
+    enum ColliderType {
+        COLLISION_SPHERE,
+        COLLISION_BOX,
+        COLLISION_AABB
+    };
+
     // Bounding box structure and implementation below adapted from: https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/previousinformation/csc8503coderepository/
     struct BoxEdge {
         int id;
@@ -176,30 +184,28 @@ namespace Engine {
         float distance;
     };
 	
-    class ComponentCollision : public Component
+    class ComponentCollision
 	{
-	protected:
-		std::unordered_map<Entity*, std::string> EntitiesCheckedThisFrame;
-		std::unordered_map<Entity*, std::string> EntitiesCollidingWith;
-
-		bool isMovedByCollisions;
 	public:
-		virtual ComponentTypes ComponentType() override = 0;
-		virtual void Close() override = 0;
-		
-        virtual Component* Copy() override = 0;
+        virtual constexpr ColliderType ColliderType() const = 0;
 
 		void ClearEntitiesCheckedThisFrame() { EntitiesCheckedThisFrame.clear(); }
-		void AddToEntitiesCheckedThisFrame(Entity* e);
+		void AddToEntitiesCheckedThisFrame(const unsigned int e, const std::string& name);
 
-		bool HasEntityAlreadyBeenChecked(Entity* e) { return EntitiesCheckedThisFrame.find(e) != EntitiesCheckedThisFrame.end(); }
+		bool HasEntityAlreadyBeenChecked(const unsigned int e) const { return EntitiesCheckedThisFrame.find(e) != EntitiesCheckedThisFrame.end(); }
 
-		bool IsMovedByCollisions() { return isMovedByCollisions; }
-		void IsMovedByCollisions(bool isMoveable) { isMovedByCollisions = isMoveable; }
+		bool IsMovedByCollisions() const { return isMovedByCollisions; }
+		void IsMovedByCollisions(const bool isMoveable) { isMovedByCollisions = isMoveable; }
 
-		std::unordered_map<Entity*, std::string> Collisions() { return EntitiesCollidingWith; }
-		bool IsCollidingWithEntity(Entity* e) { return EntitiesCollidingWith.find(e) != EntitiesCollidingWith.end(); }
-		void AddToCollisions(Entity* e);
-		void RemoveFromCollisions(Entity* e) { EntitiesCollidingWith.erase(e); }
-	};
+		const std::unordered_map<unsigned int, std::string>& Collisions() { return EntitiesCollidingWith; }
+		bool IsCollidingWithEntity(const unsigned int e) const { return EntitiesCollidingWith.find(e) != EntitiesCollidingWith.end(); }
+		void AddToCollisions(const unsigned int e, const std::string& name);
+		void RemoveFromCollisions(const unsigned int e) { EntitiesCollidingWith.erase(e); }
+	
+    protected:
+        std::unordered_map<unsigned int, std::string> EntitiesCheckedThisFrame;
+        std::unordered_map<unsigned int, std::string> EntitiesCollidingWith;
+
+        bool isMovedByCollisions;
+    };
 }

@@ -1,47 +1,12 @@
 #include "ComponentPhysics.h"
-#include <glm/gtc/quaternion.hpp>
 namespace Engine {
-	ComponentPhysics::ComponentPhysics(const ComponentPhysics& old_component)
-	{
-		this->owner = nullptr;
-
-		this->gravity = old_component.gravity;
-
-		this->surfaceArea = old_component.surfaceArea;
-		this->dragCoefficient = old_component.dragCoefficient;
-		this->inverseMass = old_component.inverseMass;
-		this->mass = old_component.mass;
-		this->elasticity = old_component.elasticity;
-
-		this->velocity = old_component.velocity;
-
-		this->angularVelocity = old_component.angularVelocity;
-		this->torque = old_component.torque;
-		this->inertiaTensor = old_component.inertiaTensor;
-
-		this->inverseInertiaTensor = old_component.inverseInertiaTensor;
-		this->inverseInertia = old_component.inverseInertia;
-
-		this->force = old_component.force;
-	}
-
-	ComponentPhysics::ComponentPhysics(float mass, float drag, float surfaceArea, float elasticity, bool gravity, bool cuboidInertiaTensor)
+	ComponentPhysics::ComponentPhysics(const float mass, const float drag, const float surfaceArea, const float elasticity, const bool gravity, const bool cuboidInertiaTensor) : dragCoefficient(drag), surfaceArea(surfaceArea), gravity(gravity), elasticity(elasticity), velocity(0.0f, 0.0f, 0.0f), angularVelocity(0.0f, 0.0f, 0.0f), force(0.0f, 0.0f, 0.0f), torque(0.0f, 0.0f, 0.0f)
 	{
 		SetMass(mass);
-		dragCoefficient = drag;
-		this->surfaceArea = surfaceArea;
-		this->gravity = gravity;
-		this->elasticity = elasticity;
 
-		if (!cuboidInertiaTensor) {
-			float radius = surfaceArea; // temp
-			float I = 2.5f * inverseMass / (radius * radius);
-
-			inverseInertia = glm::vec3(I);
-		}
-		else {
-			glm::vec3 dimensions = glm::vec3(surfaceArea);
-			glm::vec3 dimsSqr = dimensions * dimensions;
+		if (cuboidInertiaTensor) {
+			const glm::vec3 dimensions = glm::vec3(surfaceArea);
+			const glm::vec3 dimsSqr = dimensions * dimensions;
 
 			//inverseInertia.x = (12.0f * inverseMass) / (dimsSqr.y + dimsSqr.z);
 			//inverseInertia.y = (12.0f * inverseMass) / (dimsSqr.x + dimsSqr.z);
@@ -51,17 +16,21 @@ namespace Engine {
 			inverseInertia.y = ((1.0f / 6.0f) * mass) * (dimsSqr.x + dimsSqr.z);
 			inverseInertia.z = ((1.0f / 6.0f) * mass) * (dimsSqr.x + dimsSqr.y);
 		}
+		else {
+			const float radius = surfaceArea; // temp
+			const float I = 2.5f * inverseMass / (radius * radius);
+			inverseInertia = glm::vec3(I);
+		}
+
+		UpdateInertiaTensor(glm::quat());
 	}
 
-	ComponentPhysics::~ComponentPhysics()
-	{
+	ComponentPhysics::~ComponentPhysics() {}
 
-	}
-
-	void ComponentPhysics::UpdateInertiaTensor(glm::quat orientation)
+	void ComponentPhysics::UpdateInertiaTensor(const glm::quat& orientation)
 	{
-		glm::mat3 inverseOrientation = glm::mat3_cast(glm::conjugate(orientation));
-		glm::mat3 rotation = glm::mat3_cast(orientation);
+		const glm::mat3 inverseOrientation = glm::mat3_cast(glm::conjugate(orientation));
+		const glm::mat3 rotation = glm::mat3_cast(orientation);
 
 		glm::mat3 scaled = glm::mat3();
 		scaled[0][0] = inverseInertia.x;
@@ -69,9 +38,5 @@ namespace Engine {
 		scaled[2][2] = inverseInertia.z;
 
 		inverseInertiaTensor = rotation * scaled * inverseOrientation;
-	}
-
-	void ComponentPhysics::Close()
-	{
 	}
 }

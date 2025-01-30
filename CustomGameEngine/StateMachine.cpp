@@ -74,30 +74,30 @@ namespace Engine {
 		transitions.push_back(newTransition);
 	}
 
-	void StateMachine::Update()
+	void StateMachine::Update(EntityManager* ecs, const unsigned int entityID)
 	{
 		if (activeState) {
 
 			if (firstIteration) {
 				firstIteration = false;
-				activeState->Enter();
+				activeState->Enter(ecs, entityID);
 			}
 
 			// Update state
-			activeState->Update();
+			activeState->Update(ecs, entityID);
 
 			// Check transition conditions
 			std::pair<TransitionIterator, TransitionIterator> range = statesToTransitions.equal_range(activeState);
 			for (TransitionIterator& i = range.first; i != range.second; i++) {
-				if (i->second->Condition()) {
-					activeState->Exit();
+				if (i->second->Condition(ecs, entityID)) {
+					activeState->Exit(ecs, entityID);
 					State* newState = i->second->GetDestinationState();
 					stateHistory.push(activeState);
 					if (stateHistory.size() > maxHistorySize) {
 						stateHistory.pop();
 					}
 					activeState = newState;
-					activeState->Enter();
+					activeState->Enter(ecs, entityID);
 				}
 			}
 		}

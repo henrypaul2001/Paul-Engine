@@ -1,46 +1,51 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "InputManager.h"
-#include "SystemManager.h"
 namespace Engine
 {
 	float Scene::dt;
 
-	Scene::Scene(SceneManager* sceneManager, const std::string& name) {
+	Scene::Scene(SceneManager* sceneManager, const std::string& name) : rebuildBVHOnUpdate(false), SCR_WIDTH(sceneManager->GetWindowWidth()), SCR_HEIGHT(sceneManager->GetWindowHeight()), camera(new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f))), collisionManager(new CollisionManager()), constraintManager(new ConstraintManager()), systemManager(&ecs),
+		collisionResolver(collisionManager),
+		constraintSolver(constraintManager),
+		audioSystem(&ecs),
+		physicsSystem(&ecs),
+		pathfindingSystem(&ecs),
+		particleUpdater(&ecs),
+		stateUpdater(&ecs),
+		animSystem(&ecs),
+		meshListSystem(&ecs),
+		animAABBSystem(&ecs),
+
+		aabbSystem(&ecs, collisionManager),
+		boxSystem(&ecs, collisionManager),
+		boxAABBSystem(&ecs, collisionManager),
+		sphereSystem(&ecs, collisionManager),
+		sphereAABBSystem(&ecs, collisionManager),
+		sphereBoxSystem(&ecs, collisionManager),
+
+		lightingSystem(&ecs, &lightManager, camera),
+
+		uiInteract(&ecs, &inputManager) 
+	{
 		SCOPE_TIMER("Scene::Scene()");
 		this->resources = ResourceManager::GetInstance();
 		this->sceneManager = sceneManager;
 		this->sceneManager->renderer = std::bind(&Scene::Render, this);
 		this->sceneManager->updater = std::bind(&Scene::Update, this);
 
-		SCR_WIDTH = this->sceneManager->GetWindowWidth();
-		SCR_HEIGHT = this->sceneManager->GetWindowHeight();
-
-		entityManager = new EntityManager();
-		systemManager = new SystemManager();
 		renderManager = RenderManager::GetInstance();
-		constraintManager = new ConstraintManager();
-		camera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 5.0f));
 		dt = 0;
 
 		this->name = name;
 
-		this->collisionManager = new CollisionManager();
-	}
-
-	Scene::~Scene()
-	{
-		ResourceManager::GetInstance()->ClearTempResources();
-		renderManager->GetBakedData().ClearBakedData();
-		delete camera;
-		delete systemManager;
-		delete constraintManager;
-		delete entityManager;
+		lightingSystem.SetActiveCamera(camera);
 	}
 
 	void Scene::OnSceneCreated()
 	{
-		collisionManager->ConstructBVHTree(entityManager->Entities());
+		systemManager.ActionPreUpdateSystems();
+		collisionManager->ConstructBVHTree();
 	}
 
 	void Scene::Update()
@@ -49,7 +54,12 @@ namespace Engine
 		glm::vec3 position = camera->GetPosition();
 		glm::vec3 forward = camera->GetFront();
 		AudioManager::GetInstance()->GetSoundEngine()->setListenerPosition(irrklang::vec3df(position.x, position.y, position.z), irrklang::vec3df(forward.x, forward.y, forward.z));
-		//collisionManager->ConstructBVHTree(entityManager->Entities());
+
+		if (rebuildBVHOnUpdate) { collisionManager->ConstructBVHTree(); }
+		frustumCulling.Run(camera, collisionManager);
+
+		collisionResolver.Run(ecs);
+		constraintSolver.Run(ecs);
 	}
 
 	void Scene::Render()
@@ -62,16 +72,13 @@ namespace Engine
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
 		glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera->GetPosition()));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		renderManager->GetRenderPipeline()->Run(&ecs, &lightManager, collisionManager, camera);
 	}
 
 	InputManager* Scene::GetInputManager() const
 	{
 		return inputManager;
-	}
-
-	SystemManager* Scene::GetSystemManager() const
-	{
-		return systemManager;
 	}
 
 	SceneManager* Scene::GetSceneManager() const

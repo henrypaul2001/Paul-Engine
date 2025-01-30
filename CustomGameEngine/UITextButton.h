@@ -11,7 +11,7 @@ namespace Engine {
 		UITextButton(std::string text, glm::vec2 position, glm::vec2 textScale, glm::vec2 buttonScale, TextFont* font, glm::vec3 colour, int idTag);
 		~UITextButton();
 
-		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) override;
+		void Draw(glm::vec2 canvasPosition, glm::vec2 canvasScale) const override;
 	private:
 	};
 }

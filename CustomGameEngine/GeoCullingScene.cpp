@@ -1,14 +1,5 @@
 #include "GeoCullingScene.h"
-#include "PBRScene.h"
 #include "GameInputManager.h"
-#include "SystemPhysics.h"
-#include "SystemUIRender.h"
-#include "SystemUIMouseInteraction.h"
-#include "UIText.h"
-#include "UIImage.h"
-#include "UITextButton.h"
-#include "UIImageButton.h"
-#include "SystemFrustumCulling.h"
 namespace Engine {
 	GeoCullingScene::GeoCullingScene(SceneManager* sceneManager) : Scene(sceneManager, "GeoCullingscene")
 	{
@@ -19,14 +10,12 @@ namespace Engine {
 		renderManager->GetRenderParams()->SetBloomPasses(10);
 		renderManager->GetRenderParams()->SetSSAOSamples(32);
 		renderManager->GetRenderParams()->EnableRenderOptions(RENDER_ADVANCED_BLOOM | RENDER_ADVANCED_BLOOM_LENS_DIRT);
-
-		ResourceManager::GetInstance()->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
+		
+		resources->LoadTexture("Textures/LensEffects/dirtmask.jpg", TEXTURE_DIFFUSE, false);
 		renderManager->SetAdvBloomLensDirtTexture("Textures/LensEffects/dirtmask.jpg");
 	}
 
-	GeoCullingScene::~GeoCullingScene()
-	{
-	}
+	GeoCullingScene::~GeoCullingScene() {}
 
 	void GeoCullingScene::SetupScene()
 	{
@@ -41,36 +30,34 @@ namespace Engine {
 
 	void GeoCullingScene::CreateEntities()
 	{
-		Entity* dirLight = new Entity("Directional Light");
-		dirLight->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		ComponentLight* directional = new ComponentLight(DIRECTIONAL);
-		directional->CastShadows = false;
-		directional->Colour = glm::vec3(5.9f, 5.1f, 9.5f);
-		directional->Ambient = directional->Colour * 0.1f;
-		directional->Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
-		directional->MinShadowBias = 0.0f;
-		directional->MaxShadowBias = 0.003f;
-		directional->DirectionalLightDistance = 20.0f;
-		dirLight->AddComponent(directional);
-		entityManager->AddEntity(dirLight);
+		Entity* dirLight = ecs.New("Directional Light");
+		ComponentLight directional = ComponentLight(DIRECTIONAL);
+		directional.CastShadows = false;
+		directional.Colour = glm::vec3(5.9f, 5.1f, 9.5f);
+		directional.Ambient = directional.Colour * 0.1f;
+		directional.Direction = glm::vec3(-1.0f, -0.9f, 1.0f);
+		directional.MinShadowBias = 0.0f;
+		directional.MaxShadowBias = 0.003f;
+		directional.DirectionalLightDistance = 20.0f;
+		ecs.AddComponent(dirLight->ID(), directional);
 
 #pragma region Scene
-		unsigned int width = 15u, height = 15u, depth = 15u;
+		const unsigned int width = 15u, height = 15u, depth = 15u;
 
-		glm::vec3 startPos = glm::vec3(-50.0f, -25.0f, -25.0f);
+		const glm::vec3 startPos = glm::vec3(-50.0f, -25.0f, -25.0f);
 
-		float distanceX = 5.0f, distanceY = 5.0f, distanceZ = 5.0f;
+		const float distanceX = 5.0f, distanceY = 5.0f, distanceZ = 5.0f;
 
 		unsigned int count = 0;
 		for (unsigned int z = 0; z < depth; z++) {
 			for (unsigned int y = 0; y < height; y++) {
 				for (unsigned int x = 0; x < width; x++) {
-					Entity* cube = new Entity("Cube");
-					cube->AddComponent(new ComponentTransform(startPos + glm::vec3(x * distanceX, y * distanceY, z * distanceZ)));
-					cube->AddComponent(new ComponentGeometry(MODEL_CUBE, true));
-					//cube->AddComponent(new ComponentPhysics());
-					//cube->GetPhysicsComponent()->Gravity(false);
-					entityManager->AddEntity(cube);
+					Entity* cube = ecs.New("Cube");
+					ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(cube->ID());
+					transform->SetPosition(startPos + glm::vec3(x * distanceX, y * distanceY, z * distanceZ));
+					ecs.AddComponent(cube->ID(), ComponentGeometry(MODEL_CUBE, true));
+					//ecs.AddComponent(cube->ID(), ComponentPhysics());
+					//ecs.GetComponent<ComponentPhysics>(cube->ID())->SetGravity(false);
 				}
 			}
 		}
@@ -78,21 +65,16 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
+		Entity* uiCanvas = ecs.New("Canvas");
+		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
+		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
+		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
+		canvas->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		canvas->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
-		Entity* canvas = new Entity("Canvas");
-		canvas->AddComponent(new ComponentTransform(0.0f, 0.0f, 0.0f));
-		canvas->GetTransformComponent()->SetScale(1.0f);
-		canvas->AddComponent(new ComponentUICanvas(SCREEN_SPACE));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("FPS: "), glm::vec2(25.0f, 10.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Resolution: ") + std::to_string(SCR_WIDTH) + " X " + std::to_string(SCR_HEIGHT), glm::vec2(25.0f, 105.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("Shadow res: ") + std::to_string(renderManager->ShadowWidth()) + " X " + std::to_string(renderManager->ShadowHeight()), glm::vec2(25.0f, 75.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
-
-		std::string renderPipeline = "DEFERRED";
-		if (renderManager->GetRenderPipeline()->Name() == FORWARD_PIPELINE) {
-			renderPipeline = "FORWARD";
-		}
-		canvas->GetUICanvasComponent()->AddUIElement(new UIText(std::string("G Pipeline: ") + renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
+		const std::string renderPipeline = renderManager->GetRenderPipeline()->PipelineName();
+		canvas->AddUIElement(new UIText(renderPipeline, glm::vec2(25.0f, 45.0f), glm::vec2(0.17f), font, glm::vec3(0.0f)));
 
 		// Geometry debug UI
 		UIBackground geometryDebugBackground;
@@ -114,76 +96,57 @@ namespace Engine {
 		bvhCountText->SetActive(false);
 		UIText* aabbTestCountText = new UIText(std::string("AABB Tests: "), glm::vec2((SCR_WIDTH / 2.0f) - 150.0f, 15.0f), glm::vec2(0.17f), font, glm::vec3(0.0f, 0.0f, 0.0f));
 		aabbTestCountText->SetActive(false);
-		canvas->GetUICanvasComponent()->AddUIElement(geoDebugText);
-		canvas->GetUICanvasComponent()->AddUIElement(meshCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(visibleCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(bvhCountText);
-		canvas->GetUICanvasComponent()->AddUIElement(aabbTestCountText);
-		entityManager->AddEntity(canvas);
+		canvas->AddUIElement(geoDebugText);
+		canvas->AddUIElement(meshCountText);
+		canvas->AddUIElement(visibleCountText);
+		canvas->AddUIElement(bvhCountText);
+		canvas->AddUIElement(aabbTestCountText);
 #pragma endregion
 	}
 	void GeoCullingScene::CreateSystems()
 	{
-		systemManager->AddSystem(new SystemPhysics(), UPDATE_SYSTEMS);
-		SystemRender* renderSystem = new SystemRender();
-		renderSystem->SetPostProcess(PostProcessingEffect::NONE);
-		renderSystem->SetActiveCamera(camera);
-		systemManager->AddSystem(renderSystem, RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemShadowMapping(), RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemUIRender(), RENDER_SYSTEMS);
-		systemManager->AddCollisionResponseSystem(new CollisionResolver(collisionManager));
-		systemManager->AddSystem(new SystemUIMouseInteraction(inputManager), UPDATE_SYSTEMS);
-		systemManager->AddSystem(new SystemFrustumCulling(camera, collisionManager), UPDATE_SYSTEMS);
-		SystemReflectionBaking* reflectionSystem = new SystemReflectionBaking();
-		reflectionSystem->SetActiveCamera(camera);
-		systemManager->AddSystem(reflectionSystem, RENDER_SYSTEMS);
-		systemManager->AddSystem(new SystemRenderColliders(collisionManager), RENDER_SYSTEMS);
+		RegisterAllDefaultSystems();
 	}
 
 	void GeoCullingScene::Update()
 	{
+		systemManager.ActionPreUpdateSystems();
 		Scene::Update();
-		systemManager->ActionUpdateSystems(entityManager);
 
 		float time = (float)glfwGetTime();
-
 		float fps = 1.0f / Scene::dt;
 
 		float targetFPSPercentage = fps / 160.0f;
-		if (targetFPSPercentage > 1.0f) {
-			targetFPSPercentage = 1.0f;
-		}
+		if (targetFPSPercentage > 1.0f) { targetFPSPercentage = 1.0f; }
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		Entity* canvas = entityManager->FindEntity("Canvas");
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[1])->SetColour(colour);
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
+		Entity* canvasEntity = ecs.Find("Canvas");
+		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
+		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
+		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
 
 		BVHTree* geometryBVH = collisionManager->GetBVHTree();
-		SystemFrustumCulling* culling = dynamic_cast<SystemFrustumCulling*>(systemManager->FindSystem(SYSTEM_FRUSTUM_CULLING, UPDATE_SYSTEMS));
 
-		unsigned int meshCount = culling->GetTotalMeshes();
-		unsigned int visibleMeshes = culling->GetVisibleMeshes();
-		unsigned int nodeCount = geometryBVH->GetNodeCount();
-		unsigned int aabbTests = culling->GetTotalAABBTests();
+		const unsigned int meshCount = frustumCulling.GetTotalMeshes();
+		const unsigned int visibleMeshes = frustumCulling.GetVisibleMeshes();
+		const unsigned int nodeCount = geometryBVH->GetNodeCount();
+		const unsigned int aabbTests = frustumCulling.GetTotalAABBTests();
 
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
-		dynamic_cast<UIText*>(canvas->GetUICanvasComponent()->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+		dynamic_cast<UIText*>(canvas->UIElements()[6])->SetText("Mesh count: " + std::to_string(meshCount));
+		dynamic_cast<UIText*>(canvas->UIElements()[7])->SetText("     - Visible: " + std::to_string(visibleMeshes));
+		dynamic_cast<UIText*>(canvas->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
+		dynamic_cast<UIText*>(canvas->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
+
+		systemManager.ActionSystems();
 	}
 
 	void GeoCullingScene::Render()
 	{
 		Scene::Render();
-		systemManager->ActionRenderSystems(entityManager, SCR_WIDTH, SCR_HEIGHT);
 	}
 
-	void GeoCullingScene::Close()
-	{
-
-	}
+	void GeoCullingScene::Close() {}
 
 	void GeoCullingScene::keyUp(int key)
 	{
@@ -192,13 +155,14 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			Entity* canvas = entityManager->FindEntity("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
+			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
-			canvas->GetUICanvasComponent()->UIElements()[5]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[6]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[7]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[8]->SetActive(!renderGeometryColliders);
-			canvas->GetUICanvasComponent()->UIElements()[9]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[6]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[7]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[8]->SetActive(!renderGeometryColliders);
+			canvas->UIElements()[9]->SetActive(!renderGeometryColliders);
 		}
 	}
 
@@ -208,8 +172,8 @@ namespace Engine {
 
 	void GeoCullingScene::ChangePostProcessEffect()
 	{
-		SystemRender* renderSystem = dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS));
-		unsigned int currentEffect = renderSystem->GetPostProcess();
+		SystemRender& renderSystem = renderManager->GetRenderPipeline()->GetRenderSystem();
+		unsigned int currentEffect = renderSystem.GetPostProcess();
 		unsigned int nextEffect;
 		if (currentEffect == 8u) {
 			nextEffect = 0u;
@@ -218,6 +182,6 @@ namespace Engine {
 			nextEffect = currentEffect + 1;
 		}
 
-		dynamic_cast<SystemRender*>(systemManager->FindSystem(SYSTEM_RENDER, RENDER_SYSTEMS))->SetPostProcess((PostProcessingEffect)nextEffect);
+		renderSystem.SetPostProcess((PostProcessingEffect)nextEffect);
 	}
 }
