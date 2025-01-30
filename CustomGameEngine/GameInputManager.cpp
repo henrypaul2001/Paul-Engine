@@ -62,24 +62,28 @@ namespace Engine {
 
 		if (keysPressed[GLFW_KEY_LEFT]) {
 			// Min shadow bias decrease
-			//dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias -= 0.00005;
-			//std::cout << "Min shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias << std::endl;
+			ComponentLight* dirLight = owner->GetECS().GetComponent<ComponentLight>(owner->GetLightManager()->GetDirectionalLightEntities()[0]);
+			dirLight->MinShadowBias -= 0.00005;
+			std::cout << "Min shadow bias = " << dirLight->MinShadowBias << std::endl;
 		}
 		else if (keysPressed[GLFW_KEY_RIGHT]) {
 			// Min shadow bias increase
-			//dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias += 0.00005;
-			//std::cout << "Min shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MinShadowBias << std::endl;
+			ComponentLight* dirLight = owner->GetECS().GetComponent<ComponentLight>(owner->GetLightManager()->GetDirectionalLightEntities()[0]);
+			dirLight->MinShadowBias += 0.00005;
+			std::cout << "Min shadow bias = " << dirLight->MinShadowBias << std::endl;
 		}
 
 		if (keysPressed[GLFW_KEY_UP]) {
 			// Max shadow bias increase
-			//dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias += 0.00005;
-			//std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
+			ComponentLight* dirLight = owner->GetECS().GetComponent<ComponentLight>(owner->GetLightManager()->GetDirectionalLightEntities()[0]);
+			dirLight->MaxShadowBias += 0.00005;
+			std::cout << "Max shadow bias = " << dirLight->MaxShadowBias << std::endl;
 		}
 		else if (keysPressed[GLFW_KEY_DOWN]) {
 			// Max shadow bias decrease
-			//dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias -= 0.00005;
-			//std::cout << "Max shadow bias = " << dynamic_cast<ComponentLight*>(LightManager::GetInstance()->GetDirectionalLightEntity()->GetComponent(COMPONENT_LIGHT))->MaxShadowBias << std::endl;
+			ComponentLight* dirLight = owner->GetECS().GetComponent<ComponentLight>(owner->GetLightManager()->GetDirectionalLightEntities()[0]);
+			dirLight->MaxShadowBias -= 0.00005;
+			std::cout << "Max shadow bias = " << dirLight->MaxShadowBias << std::endl;
 		}
 
 		RenderParams* params = RenderManager::GetInstance()->GetRenderParams();
