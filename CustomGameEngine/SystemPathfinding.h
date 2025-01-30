@@ -1,12 +1,12 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentPathfinder.h"
 namespace Engine {
-	class SystemPathfinding : public SystemNew
+	class SystemPathfinding : public System
 	{
     public:
-        SystemPathfinding(EntityManagerNew* ecs) : SystemNew(ecs) {}
+        SystemPathfinding(EntityManagerNew* ecs) : System(ecs) {}
         ~SystemPathfinding() {}
 
         constexpr const char* SystemName() override { return "SYSTEM_PATHFINDING"; }

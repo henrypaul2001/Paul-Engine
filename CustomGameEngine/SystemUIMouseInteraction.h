@@ -1,13 +1,13 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "UIButton.h"
 #include "ComponentUICanvas.h"
 #include "InputManager.h"
 namespace Engine {
-	class SystemUIMouseInteraction : public SystemNew
+	class SystemUIMouseInteraction : public System
 	{
 	public:
-		SystemUIMouseInteraction(EntityManagerNew* ecs, InputManager** inputManager) : SystemNew(ecs), inputManager(inputManager) {}
+		SystemUIMouseInteraction(EntityManagerNew* ecs, InputManager** inputManager) : System(ecs), inputManager(inputManager) {}
 		~SystemUIMouseInteraction() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_UI_MOUSE_INTERACTION"; }

@@ -186,14 +186,8 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="SystemManager.h">
-      <Filter>Header Files\Engine\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Engine\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="SystemPhysics.h">
       <Filter>Header Files\Engine\Systems</Filter>
@@ -528,10 +522,10 @@
     <ClInclude Include="View.h">
       <Filter>Header Files\Engine\Utility\Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="SystemManagerNew.h">
+    <ClInclude Include="SystemManager.h">
       <Filter>Header Files\Engine\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="SystemNew.h">
+    <ClInclude Include="System.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="SystemBuildMeshList.h">
@@ -542,9 +536,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SystemManager.cpp">
-      <Filter>Source Files\Engine\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
@@ -562,9 +553,6 @@
     </ClCompile>
     <ClCompile Include="EntityManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="System.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="SystemPhysics.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
@@ -896,7 +884,7 @@
     <ClCompile Include="EntityNew.cpp">
       <Filter>Source Files\Engine\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="SystemManagerNew.cpp">
+    <ClCompile Include="SystemManager.cpp">
       <Filter>Source Files\Engine\Managers</Filter>
     </ClCompile>
     <ClCompile Include="SystemBuildMeshList.cpp">

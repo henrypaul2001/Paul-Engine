@@ -231,7 +231,6 @@
     <ClInclude Include="StateTransition.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
-    <ClInclude Include="System.h" />
     <ClInclude Include="SystemAnimatedGeometryAABBGeneration.h" />
     <ClInclude Include="SystemAudio.h" />
     <ClInclude Include="SystemBuildMeshList.h" />
@@ -245,8 +244,7 @@
     <ClInclude Include="SystemFrustumCulling.h" />
     <ClInclude Include="SystemLighting.h" />
     <ClInclude Include="SystemManager.h" />
-    <ClInclude Include="SystemManagerNew.h" />
-    <ClInclude Include="SystemNew.h" />
+    <ClInclude Include="System.h" />
     <ClInclude Include="SystemParticleRenderer.h" />
     <ClInclude Include="SystemParticleUpdater.h" />
     <ClInclude Include="SystemPathfinding.h" />
@@ -388,7 +386,6 @@
     <ClCompile Include="StateTransition.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="stb_image_write.cpp" />
-    <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemAnimatedGeometryAABBGeneration.cpp" />
     <ClCompile Include="SystemAudio.cpp" />
     <ClCompile Include="SystemBuildMeshList.cpp" />
@@ -401,7 +398,6 @@
     <ClCompile Include="SystemCollisionSphereBox.cpp" />
     <ClCompile Include="SystemFrustumCulling.cpp" />
     <ClCompile Include="SystemManager.cpp" />
-    <ClCompile Include="SystemManagerNew.cpp" />
     <ClCompile Include="SystemParticleRenderer.cpp" />
     <ClCompile Include="SystemParticleUpdater.cpp" />
     <ClCompile Include="SystemPathfinding.cpp" />

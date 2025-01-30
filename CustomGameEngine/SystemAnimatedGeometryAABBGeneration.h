@@ -1,5 +1,5 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComputeShader.h"
 #include "ResourceManager.h"
 #include <algorithm>
@@ -10,7 +10,7 @@
 #include "ComponentAnimator.h"
 
 namespace Engine {
-	class SystemAnimatedGeometryAABBGeneration : public SystemNew
+	class SystemAnimatedGeometryAABBGeneration : public System
 	{
 		struct MinMaxGPUReadBack {
 			glm::ivec4 min;
@@ -25,7 +25,7 @@ namespace Engine {
 		};
 
 	public:
-		SystemAnimatedGeometryAABBGeneration(EntityManagerNew* ecs) : SystemNew(ecs) {
+		SystemAnimatedGeometryAABBGeneration(EntityManagerNew* ecs) : System(ecs) {
 			minMaxVerticesShader = ResourceManager::GetInstance()->LoadComputeShader("Shaders/Compute/verticesMinMax.comp");
 			minMaxOutput = minMaxVerticesShader->AddNewSSBO(1);
 		}

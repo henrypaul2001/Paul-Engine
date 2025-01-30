@@ -1,12 +1,12 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentGeometry.h"
 #include "ComponentAnimator.h"
 namespace Engine {
-	class SystemSkeletalAnimationUpdater : public SystemNew
+	class SystemSkeletalAnimationUpdater : public System
 	{
 	public:
-		SystemSkeletalAnimationUpdater(EntityManagerNew* ecs) : SystemNew(ecs) {}
+		SystemSkeletalAnimationUpdater(EntityManagerNew* ecs) : System(ecs) {}
 		~SystemSkeletalAnimationUpdater() {}
 		
 		constexpr const char* SystemName() override { return "SYSTEM_SKELTAL_ANIM_UPDATE"; }

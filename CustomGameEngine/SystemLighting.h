@@ -1,13 +1,13 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentLight.h"
 #include "LightManager.h"
 #include <glm/gtx/norm.hpp>
 namespace Engine {
-	class SystemLighting : public SystemNew {
+	class SystemLighting : public System {
 	public:
-		SystemLighting(EntityManagerNew* ecs, LightManager* lightManager, Camera* activeCamera) : SystemNew(ecs), lightManager(lightManager), activeCamera(activeCamera) {}
+		SystemLighting(EntityManagerNew* ecs, LightManager* lightManager, Camera* activeCamera) : System(ecs), lightManager(lightManager), activeCamera(activeCamera) {}
 		~SystemLighting() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_LIGHTING"; }

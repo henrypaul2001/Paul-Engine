@@ -1,12 +1,12 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentParticleGenerator.h"
 namespace Engine {
-	class SystemParticleUpdater : public SystemNew
+	class SystemParticleUpdater : public System
 	{
     public:
-        SystemParticleUpdater(EntityManagerNew* ecs) : SystemNew(ecs) {}
+        SystemParticleUpdater(EntityManagerNew* ecs) : System(ecs) {}
         ~SystemParticleUpdater() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_PARTICLE_UPDATER"; }

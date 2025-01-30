@@ -1,12 +1,12 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentAudioSource.h"
 namespace Engine {
-    class SystemAudio : public SystemNew
+    class SystemAudio : public System
     {
     public:
-        SystemAudio(EntityManagerNew* ecs) : SystemNew(ecs) {}
+        SystemAudio(EntityManagerNew* ecs) : System(ecs) {}
         ~SystemAudio() {}
 
         constexpr const char* SystemName() override { return "SYSTEM_AUDIO"; }

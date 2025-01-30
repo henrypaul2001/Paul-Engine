@@ -1,5 +1,5 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentCollision.h"
 #include "ComponentCollisionAABB.h"
@@ -14,10 +14,10 @@ namespace Engine {
 		glm::vec3 end;
 	};
 
-	class SystemCollision : public SystemNew
+	class SystemCollision : public System
 	{
 	public:
-		SystemCollision(EntityManagerNew* ecs, CollisionManager* collisionManager) : SystemNew(ecs), collisionManager(collisionManager) {}
+		SystemCollision(EntityManagerNew* ecs, CollisionManager* collisionManager) : System(ecs), collisionManager(collisionManager) {}
 		~SystemCollision() {}
 
 		void GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max) const;

@@ -1,13 +1,13 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentPhysics.h"
 namespace Engine 
 {
-	class SystemPhysics : public SystemNew
+	class SystemPhysics : public System
 	{
 	public:
-		SystemPhysics(EntityManagerNew* ecs, const float gravity = 9.8f, const glm::vec3& gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f), const float airDensity = 1.225f) : SystemNew(ecs), gravity(gravity), gravityAxis(gravityAxis), airDensity(airDensity) {}
+		SystemPhysics(EntityManagerNew* ecs, const float gravity = 9.8f, const glm::vec3& gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f), const float airDensity = 1.225f) : System(ecs), gravity(gravity), gravityAxis(gravityAxis), airDensity(airDensity) {}
 		~SystemPhysics() {}
 
 		float airDensity; // kg/m3

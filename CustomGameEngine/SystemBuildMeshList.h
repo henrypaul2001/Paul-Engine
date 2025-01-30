@@ -1,13 +1,13 @@
 #pragma once
-#include "SystemNew.h"
+#include "System.h"
 #include "ComponentTransform.h"
 #include "ComponentGeometry.h"
 #include "ComponentAnimator.h"
 
 namespace Engine {
-	class SystemBuildMeshList : public SystemNew {
+	class SystemBuildMeshList : public System {
 	public:
-		SystemBuildMeshList(EntityManagerNew* ecs) : SystemNew(ecs) {}
+		SystemBuildMeshList(EntityManagerNew* ecs) : System(ecs) {}
 		~SystemBuildMeshList() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_BUILD_MESH_LIST"; }
