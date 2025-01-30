@@ -22,7 +22,7 @@ namespace Engine
 
 			glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-			EntityNew* canvasEntity = ecs.Find("Canvas");
+			Entity* canvasEntity = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 			dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 			dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -58,15 +58,15 @@ namespace Engine
 
 			rebuildBVHOnUpdate = true;
 
-			EntityNew* dirLight = ecs.New("Directional Light");
+			Entity* dirLight = ecs.New("Directional Light");
 			ecs.AddComponent(dirLight->ID(), ComponentLight(DIRECTIONAL));
 
-			EntityNew* defaultCube = ecs.New("Cube");
+			Entity* defaultCube = ecs.New("Cube");
 			ecs.AddComponent(defaultCube->ID(), ComponentGeometry(MODEL_CUBE, true));
 
 #pragma region UI
 			TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-			EntityNew* uiCanvas = ecs.New("Canvas");
+			Entity* uiCanvas = ecs.New("Canvas");
 			ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 			canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
@@ -109,7 +109,7 @@ namespace Engine
 		void keyUp(int key) override {
 			if (key == GLFW_KEY_G) {
 				bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-				EntityNew* uiCanvas = ecs.Find("Canvas");
+				Entity* uiCanvas = ecs.Find("Canvas");
 				ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 				canvas->UIElements()[5]->SetActive(!renderGeometryColliders);

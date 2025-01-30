@@ -2,7 +2,7 @@
 #include "ComponentPhysics.h"
 #include "ComponentTransform.h"
 namespace Engine {
-	void ConstraintPosition::UpdateConstraint(EntityManagerNew& ecs, const float deltaTime) const
+	void ConstraintPosition::UpdateConstraint(EntityManager& ecs, const float deltaTime) const
 	{
 		const ComponentTransform* transformA = ecs.GetComponent<ComponentTransform>(entityIDA);
 		const ComponentTransform* transformB = ecs.GetComponent<ComponentTransform>(entityIDB);

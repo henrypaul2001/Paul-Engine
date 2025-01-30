@@ -7,7 +7,7 @@
 #include "CollisionManager.h"
 #include "ConstraintManager.h"
 #include "LightManager.h"
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 
 #include "ComponentPhysics.h"
 #include "ComponentAnimator.h"
@@ -98,8 +98,8 @@ namespace Engine
 		LightManager* GetLightManager() { return &lightManager; }
 		CollisionManager* GetCollisionManager() { return collisionManager; }
 		ConstraintManager* GetConstraintManager() { return constraintManager; }
-		const EntityManagerNew& GetECS() const { return ecs; }
-		EntityManagerNew& GetECS() { return ecs; }
+		const EntityManager& GetECS() const { return ecs; }
+		EntityManager& GetECS() { return ecs; }
 		const SystemManager& GetSystemManager() const { return systemManager; }
 		SystemManager& GetSystemManager() { return systemManager; }
 		Camera* GetCamera() { return camera; }
@@ -113,7 +113,7 @@ namespace Engine
 		ConstraintManager* constraintManager;
 		ResourceManager* resources;
 
-		EntityManagerNew ecs;
+		EntityManager ecs;
 		LightManager lightManager;
 		SystemFrustumCulling frustumCulling;
 		CollisionResolver collisionResolver;

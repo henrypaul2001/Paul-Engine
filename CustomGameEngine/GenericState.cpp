@@ -18,7 +18,7 @@ namespace Engine {
         this->data = data;
     }
 
-    void GenericState::Update(EntityManagerNew* ecs, const unsigned int entityID)
+    void GenericState::Update(EntityManager* ecs, const unsigned int entityID)
     {
         if (updateFunction) {
             updateFunction(data, ecs, entityID);
@@ -37,7 +37,7 @@ namespace Engine {
         */
     }
 
-    void GenericState::Enter(EntityManagerNew* ecs, const unsigned int entityID)
+    void GenericState::Enter(EntityManager* ecs, const unsigned int entityID)
     {
         State::Enter(ecs, entityID);
         if (enterFunction) {
@@ -57,7 +57,7 @@ namespace Engine {
         */
     }
 
-    void GenericState::Exit(EntityManagerNew* ecs, const unsigned int entityID)
+    void GenericState::Exit(EntityManager* ecs, const unsigned int entityID)
     {
         State::Exit(ecs, entityID);
         if (exitFunction) {

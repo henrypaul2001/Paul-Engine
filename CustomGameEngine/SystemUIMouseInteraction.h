@@ -7,7 +7,7 @@ namespace Engine {
 	class SystemUIMouseInteraction : public System
 	{
 	public:
-		SystemUIMouseInteraction(EntityManagerNew* ecs, InputManager** inputManager) : System(ecs), inputManager(inputManager) {}
+		SystemUIMouseInteraction(EntityManager* ecs, InputManager** inputManager) : System(ecs), inputManager(inputManager) {}
 		~SystemUIMouseInteraction() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_UI_MOUSE_INTERACTION"; }

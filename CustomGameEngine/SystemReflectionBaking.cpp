@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "ComponentAnimator.h"
 namespace Engine {
-	void SystemReflectionBaking::Run(EntityManagerNew* ecs, LightManager* lightManager, const bool discardUnfilteredCapture)
+	void SystemReflectionBaking::Run(EntityManager* ecs, LightManager* lightManager, const bool discardUnfilteredCapture)
 	{
 		SCOPE_TIMER("SystemReflectionBaking::Run");
 		this->ecs = ecs;

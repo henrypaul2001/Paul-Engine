@@ -46,7 +46,7 @@ namespace Engine {
 
 	}
 
-	void IdleState::Update(EntityManagerNew* ecs, const unsigned int entityID)
+	void IdleState::Update(EntityManager* ecs, const unsigned int entityID)
 	{
 		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
 		ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
@@ -100,14 +100,13 @@ namespace Engine {
 		}
 	}
 
-	void IdleState::Enter(EntityManagerNew* ecs, const unsigned int entityID)
+	void IdleState::Enter(EntityManager* ecs, const unsigned int entityID)
 	{
 		State::Enter(ecs, entityID);
-		//Entity* owner = parentStateMachine->GetParentComponent()->GetOwner();
-		Entity* owner = nullptr;
-		if (owner && owner->GetTransformComponent()) {
-			startPosition = owner->GetTransformComponent()->GetWorldPosition();
-			startOrientation = owner->GetTransformComponent()->GetOrientation();
+		ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
+		if (transform) {
+			startPosition = transform->GetWorldPosition();
+			startOrientation = transform->GetOrientation();
 
 			targetOrientation = glm::quat();
 			targetPosition = glm::vec3();
@@ -117,12 +116,12 @@ namespace Engine {
 
 			secondsWaited = 0.0f;
 
-			owner->GetPathfinder()->Reset();
+			ecs->GetComponent<ComponentPathfinder>(entityID)->Reset();
 			DecideNextActivity();
 		}
 	}
 
-	void IdleState::Exit(EntityManagerNew* ecs, const unsigned int entityID)
+	void IdleState::Exit(EntityManager* ecs, const unsigned int entityID)
 	{
 		State::Exit(ecs, entityID);
 	}

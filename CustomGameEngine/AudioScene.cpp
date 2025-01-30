@@ -41,7 +41,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -91,7 +91,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -109,7 +109,7 @@ namespace Engine {
 
 	void AudioScene::CreateEntities()
 	{
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Ambient = glm::vec3(0.1f, 0.1f, 0.1f);
@@ -135,7 +135,7 @@ namespace Engine {
 		AudioFile* waterAndNature = resources->LoadAudio("Audio/waterAndNature.wav");
 		AudioFile* campfireCrackling = resources->LoadAudio("Audio/campfire.wav", 1.0f, 0.0f, 2.0f);
 
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetPosition(glm::vec3(0.0f, -0.6f, 0.0f));
 		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
@@ -143,7 +143,7 @@ namespace Engine {
 		ecs.GetComponent<ComponentGeometry>(floor->ID())->SetTextureScale(5.0f);
 		transform->SetScale(20.0f, 0.1f, 20.0f);
 
-		EntityNew* waterStream = ecs.New("WaterStream");
+		Entity* waterStream = ecs.New("WaterStream");
 		transform = ecs.GetComponent<ComponentTransform>(waterStream->ID());
 		transform->SetPosition(glm::vec3(8.0f, -0.45f, 0.0f));
 		transform->SetScale(2.0f, 20.0f, 1.0f);
@@ -152,7 +152,7 @@ namespace Engine {
 		ecs.GetComponent<ComponentGeometry>(waterStream->ID())->ApplyMaterialToModel(water);
 		ecs.AddComponent(waterStream->ID(), ComponentAudioSource(waterAndNature));
 
-		EntityNew* campfire = ecs.New("Campfire");
+		Entity* campfire = ecs.New("Campfire");
 		transform = ecs.GetComponent<ComponentTransform>(campfire->ID());
 		transform->SetPosition(glm::vec3(-9.0f, -0.1f, 12.0f));
 		ecs.AddComponent(campfire->ID(), ComponentGeometry("Models/Campfire/PUSHILIN_campfire.obj", true));
@@ -164,7 +164,7 @@ namespace Engine {
 		ecs.GetComponent<ComponentAudioSource>(campfire->ID())->GetSFXController()->enableWavesReverbSoundEffect(0.0f, -10.0f, 500.0f, 0.001f);
 		const unsigned int campfireID = campfire->ID();
 
-		EntityNew* fireLight = ecs.New("Fire Light");
+		Entity* fireLight = ecs.New("Fire Light");
 		transform = ecs.GetComponent<ComponentTransform>(fireLight->ID());
 		transform->SetPosition(glm::vec3(0.0f, 1.5f, 0.0f));
 		light.CastShadows = true;
@@ -172,32 +172,32 @@ namespace Engine {
 		ecs.AddComponent(fireLight->ID(), light);
 		ecs.GetComponent<ComponentTransform>(campfireID)->AddChild(fireLight->ID());
 
-		EntityNew* campfireClone = ecs.Clone(campfireID);
+		Entity* campfireClone = ecs.Clone(campfireID);
 		transform = ecs.GetComponent<ComponentTransform>(campfireClone->ID());
 		transform->SetPosition(transform->GetWorldPosition() + glm::vec3(0.0f, 0.0f, -25.0f));
 
-		EntityNew* boulder = ecs.New("Boulder");
+		Entity* boulder = ecs.New("Boulder");
 		transform = ecs.GetComponent<ComponentTransform>(boulder->ID());
 		transform->SetPosition(glm::vec3(-8.0f, 0.0f, 20.0f));
 		transform->SetScale(10.0f);
 		transform->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), 35.0f);
 		ecs.AddComponent(boulder->ID(), ComponentGeometry("Models/Boulder/PUSHILIN_boulder.obj", true));
 
-		EntityNew* caveWall = ecs.New("Cave wall");
+		Entity* caveWall = ecs.New("Cave wall");
 		transform = ecs.GetComponent<ComponentTransform>(caveWall->ID());
 		transform->SetPosition(glm::vec3(-15.0f, 0.0f, 13.0f));
 		transform->SetScale(8.0f, 8.0f, 12.0f);
 		transform->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), -35.0f);
 		ecs.AddComponent(caveWall->ID(), ComponentGeometry("Models/rockTwo/model.obj", true));
 
-		EntityNew* caveWallTwo = ecs.New("Cave wall 2");
+		Entity* caveWallTwo = ecs.New("Cave wall 2");
 		transform = ecs.GetComponent<ComponentTransform>(caveWallTwo->ID());
 		transform->SetPosition(glm::vec3(-1.0f, 0.0f, 13.0f));
 		transform->SetScale(8.0f, 8.0f, 12.0f);
 		transform->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), 140.0f);
 		ecs.AddComponent(caveWallTwo->ID(), ComponentGeometry("Models/rockTwo/model.obj", true));
 
-		EntityNew* caveRoof = ecs.New("Cave roof");
+		Entity* caveRoof = ecs.New("Cave roof");
 		transform = ecs.GetComponent<ComponentTransform>(caveRoof->ID());
 		transform->SetPosition(glm::vec3(-8.0f, 5.0f, 13.0f));
 		transform->SetScale(11.0f, 3.0f, 8.0f);
@@ -206,7 +206,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

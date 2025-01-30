@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include "ResourceManager.h"
 #include <stdexcept>
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 namespace Engine {
 	class LightManager
 	{
@@ -17,7 +17,7 @@ namespace Engine {
 		}
 		~LightManager() {}
 
-		void SetShaderUniforms(EntityManagerNew& ecs, Shader* shader, Camera* activeCamera);
+		void SetShaderUniforms(EntityManager& ecs, Shader* shader, Camera* activeCamera);
 		void ResetLights() { 
 			directionalLightEntities.clear();
 			lightEntities.clear();
@@ -49,7 +49,7 @@ namespace Engine {
 		std::vector<unsigned int> directionalLightEntities; // Entities with a directional light component
 		std::map<float, unsigned int> lightEntities; // Entities with a light component that are either SPOT or POINT. <distanceToCamera, entityID>
 
-		void SetDirectionalLightUniforms(EntityManagerNew& ecs, Shader* shader);
+		void SetDirectionalLightUniforms(EntityManager& ecs, Shader* shader);
 		void SetIBLUniforms(Shader* shader, Camera* activeCamera);
 
 		const std::unordered_map<std::string, unsigned int>* textureSlots;

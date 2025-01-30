@@ -1,13 +1,13 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 
 namespace Engine {
 	class System {
 	public:
-		System(EntityManagerNew* ecs) : active_ecs(ecs) {}
+		System(EntityManager* ecs) : active_ecs(ecs) {}
 
 		virtual constexpr const char* SystemName() = 0;
 	protected:
-		EntityManagerNew* active_ecs;
+		EntityManager* active_ecs;
 	};
 }

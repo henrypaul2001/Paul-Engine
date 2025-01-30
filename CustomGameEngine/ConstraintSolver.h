@@ -1,6 +1,6 @@
 #pragma once
 #include "ConstraintManager.h"
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 namespace Engine {
 	class ConstraintSolver
 	{
@@ -8,7 +8,7 @@ namespace Engine {
 		ConstraintSolver(ConstraintManager* constraintManager, const int numIterations = 4) : constraintManager(constraintManager), numIterations(numIterations) {}
 		~ConstraintSolver() {}
 
-		void Run(EntityManagerNew& ecs);
+		void Run(EntityManager& ecs);
 		void AfterAction();
 
 		void SetNumberOfIterations(const int newIterations) { numIterations = newIterations; }

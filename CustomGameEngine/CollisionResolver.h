@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include "CollisionManager.h"
 #include "ComponentPhysics.h"
 #include "ComponentTransform.h"
@@ -14,7 +14,7 @@ namespace Engine {
 		CollisionResolver(CollisionManager* collisionManager) : collisionManager(collisionManager) {}
 		~CollisionResolver() {}
 
-		void Run(EntityManagerNew& ecs);
+		void Run(EntityManager& ecs);
 
 	private:
 		void Separate(ComponentTransform* transformA, ComponentPhysics* physicsA, ComponentCollision* colliderA, ComponentTransform* transformB, ComponentPhysics* physicsB, ComponentCollision* colliderB, const float totalMass, const CollisionData& collision) const;

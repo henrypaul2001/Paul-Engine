@@ -31,7 +31,7 @@ namespace Engine {
 
 	void IBLScene::CreateEntities()
 	{
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
@@ -75,7 +75,7 @@ namespace Engine {
 #pragma endregion
 
 #pragma region Scene
-		EntityNew* scifiInterior = ecs.New("Scifi Interior");
+		Entity* scifiInterior = ecs.New("Scifi Interior");
 		ecs.AddComponent(scifiInterior->ID(), ComponentGeometry("Models/PBR/scifiInterior/scifiInterior.obj", true));
 
 		const std::vector<Mesh*>& meshes = ecs.GetComponent<ComponentGeometry>(scifiInterior->ID())->GetModel()->meshes;
@@ -120,20 +120,20 @@ namespace Engine {
 			meshes[i]->GetMaterial()->textureScaling = textureScales[i];
 		}
 
-		EntityNew* geoBall = ecs.New("Geo Ball");
+		Entity* geoBall = ecs.New("Geo Ball");
 		ecs.AddComponent(geoBall->ID(), ComponentGeometry("Models/PBR/scifiInterior/coolGeoSphere.obj", true));
 		ComponentGeometry* geometry = ecs.GetComponent<ComponentGeometry>(geoBall->ID());
 		geometry->SetIsIncludedInReflectionProbes(false);
 		geometry->ApplyMaterialToModel(geoBallMaterial);
 
-		EntityNew* ball = ecs.New("Ball");
+		Entity* ball = ecs.New("Ball");
 		ecs.GetComponent<ComponentTransform>(ball->ID())->SetPosition(glm::vec3(0.0f, 8.0f, 0.0f));
 		ecs.AddComponent(ball->ID(), ComponentGeometry(MODEL_SPHERE, true));
 		geometry = ecs.GetComponent<ComponentGeometry>(ball->ID());
 		geometry->SetIsIncludedInReflectionProbes(false);
 		geometry->ApplyMaterialToModel(ballMaterial);
 
-		EntityNew* light = ecs.New("Light");
+		Entity* light = ecs.New("Light");
 		ecs.GetComponent<ComponentTransform>(light->ID())->SetPosition(glm::vec3(0.0f, 2.5f, 0.0f));
 		ComponentLight pointLight = ComponentLight(POINT);
 		pointLight.CastShadows = false;
@@ -141,7 +141,7 @@ namespace Engine {
 		pointLight.Ambient = glm::vec3(0.0f);
 		ecs.AddComponent(light->ID(), pointLight);
 
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetPosition(glm::vec3(40.0f, 0.0f, 0.0f));
 		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -149,7 +149,7 @@ namespace Engine {
 		transform->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 		ecs.GetComponent<ComponentGeometry>(floor->ID())->ApplyMaterialToModel(bricks);
 
-		EntityNew* rainFloor = ecs.New("Rain Floor");
+		Entity* rainFloor = ecs.New("Rain Floor");
 		transform = ecs.GetComponent<ComponentTransform>(rainFloor->ID());
 		transform->SetPosition(glm::vec3(40.0f, 0.01f, 0.0f));
 		ecs.AddComponent(rainFloor->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -160,7 +160,7 @@ namespace Engine {
 		geometry->SetIsIncludedInReflectionProbes(false);
 		geometry->CastShadows(false);
 
-		EntityNew streetLight = *ecs.New("StreetLight");
+		Entity streetLight = *ecs.New("StreetLight");
 		transform = ecs.GetComponent<ComponentTransform>(streetLight.ID());
 		transform->SetPosition(glm::vec3(40.0f, 2.5f, 0.0f));
 		ComponentLight streetPoint = ComponentLight(POINT);
@@ -172,24 +172,24 @@ namespace Engine {
 		ecs.AddComponent(streetLight.ID(), ComponentGeometry(MODEL_SPHERE, true));
 		transform->SetScale(0.25f);
 
-		EntityNew street = *ecs.New("Street");
+		Entity street = *ecs.New("Street");
 		transform = ecs.GetComponent<ComponentTransform>(street.ID());
 		transform->SetPosition(glm::vec3(40.0f, 0.0f, 0.0f));
 		ecs.AddComponent(street.ID(), ComponentGeometry("Models/simpleStreet/street.obj", true));
 
-		EntityNew* streetClone = ecs.Clone(street.ID());
+		Entity* streetClone = ecs.Clone(street.ID());
 		ecs.GetComponent<ComponentTransform>(streetClone->ID())->SetPosition(glm::vec3(40.0f, 0.0f, -20.0f));
 
-		EntityNew* streetCloneTwo = ecs.Clone(street.ID());
+		Entity* streetCloneTwo = ecs.Clone(street.ID());
 		ecs.GetComponent<ComponentTransform>(streetCloneTwo->ID())->SetPosition(glm::vec3(40.0f, 0.0f, -40.0f));
 
-		EntityNew* streetCloneThree = ecs.Clone(street.ID());
+		Entity* streetCloneThree = ecs.Clone(street.ID());
 		ecs.GetComponent<ComponentTransform>(streetCloneThree->ID())->SetPosition(glm::vec3(40.0f, 0.0f, 20.0f));
 
-		EntityNew* streetCloneFour = ecs.Clone(street.ID());
+		Entity* streetCloneFour = ecs.Clone(street.ID());
 		ecs.GetComponent<ComponentTransform>(streetCloneFour->ID())->SetPosition(glm::vec3(40.0f, 0.0f, 40.0f));
 
-		EntityNew* streetLightClone = ecs.Clone(streetLight.ID());
+		Entity* streetLightClone = ecs.Clone(streetLight.ID());
 		ecs.GetComponent<ComponentTransform>(streetLightClone->ID())->SetPosition(glm::vec3(42.5f, 2.5f, -20.0f));
 		ComponentLight* lightComponent = ecs.GetComponent<ComponentLight>(streetLightClone->ID());
 		lightComponent->Colour = glm::vec3(125.0f, 200.0f, 125.0f);
@@ -198,7 +198,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
@@ -236,18 +236,18 @@ namespace Engine {
 		canvas->AddUIElement(aabbTestCountText);
 #pragma endregion
 		
-		//EntityNew probeDebug = *ecs.New("Probe Debug");
+		//Entity probeDebug = *ecs.New("Probe Debug");
 		//transform = ecs.GetComponent<ComponentTransform>(probeDebug.ID());
 		//transform->SetPosition(glm::vec3(0.0f, 5.0f, 0.0f));
 		//ecs.AddComponent(probeDebug.ID(), ComponentGeometry(MODEL_SPHERE, true));
 		//transform->SetScale(8.0f);
 
-		//EntityNew* probeDebugClone = ecs.Clone(probeDebug);
+		//Entity* probeDebugClone = ecs.Clone(probeDebug);
 		//transform = ecs.GetComponent<ComponentTransform>(probeDebugClone->ID());
 		//transform->SetPosition(glm::vec3(40.0f, 2.5f, 0.0f));
 		//transform->SetScale(30.0f);
 
-		//EntityNew* probeDebugCloneTwo = ecs.Clone(probeDebug);
+		//Entity* probeDebugCloneTwo = ecs.Clone(probeDebug);
 		//transform = ecs.GetComponent<ComponentTransform>(probeDebugCloneTwo->ID());
 		//transform->SetPosition(glm::vec3(40.0f, 2.5f, -20.0f));
 		//transform->SetScale(30.0f);
@@ -341,7 +341,7 @@ namespace Engine {
 		systemManager.ActionPreUpdateSystems();
 		Scene::Update();
 
-		EntityNew* geoBall = ecs.Find("Geo Ball");
+		Entity* geoBall = ecs.Find("Geo Ball");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(geoBall->ID());
 		const glm::quat& currentOrientation = transform->GetOrientation();
 		const glm::quat rotationIncrement = glm::angleAxis(1.0f * Scene::dt, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -356,7 +356,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -393,7 +393,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);

@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include <vector>
 #include <functional>
 #include "ScopeTimer.h"
@@ -8,7 +8,7 @@ namespace Engine {
 	class SystemManager
 	{
 	public:
-		SystemManager(EntityManagerNew* ecs) : ecs(ecs) {}
+		SystemManager(EntityManager* ecs) : ecs(ecs) {}
 		~SystemManager() {}
 
 		template <typename... Components>
@@ -66,7 +66,7 @@ namespace Engine {
 		}
 
 	private:
-		EntityManagerNew* ecs;
+		EntityManager* ecs;
 
 		std::vector<std::string> preUpdateSystemNames;
 		std::unordered_map<std::string, std::function<void()>[3]> preUpdateSystems;

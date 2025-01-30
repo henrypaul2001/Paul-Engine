@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include "ComponentPhysics.h"
 namespace Engine {
 	class Constraint
@@ -8,7 +8,7 @@ namespace Engine {
 		Constraint(unsigned int entityIDA, unsigned int entityIDB, const float bias) : entityIDA(entityIDA), entityIDB(entityIDB), active(true), bias(bias){}
 		~Constraint() {}
 
-		virtual void UpdateConstraint(EntityManagerNew& ecs, const float deltaTime) const = 0;
+		virtual void UpdateConstraint(EntityManager& ecs, const float deltaTime) const = 0;
 
 		float Bias() const { return bias; }
 		void SetBias(const float newBias) { this->bias = newBias; }

@@ -6,7 +6,7 @@ namespace Engine {
 	class SystemSkeletalAnimationUpdater : public System
 	{
 	public:
-		SystemSkeletalAnimationUpdater(EntityManagerNew* ecs) : System(ecs) {}
+		SystemSkeletalAnimationUpdater(EntityManager* ecs) : System(ecs) {}
 		~SystemSkeletalAnimationUpdater() {}
 		
 		constexpr const char* SystemName() override { return "SYSTEM_SKELTAL_ANIM_UPDATE"; }

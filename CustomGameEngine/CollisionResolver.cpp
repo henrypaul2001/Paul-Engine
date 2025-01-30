@@ -1,6 +1,6 @@
 #include "CollisionResolver.h"
 namespace Engine {
-	void CollisionResolver::Run(EntityManagerNew& ecs)
+	void CollisionResolver::Run(EntityManager& ecs)
 	{
 		SCOPE_TIMER("CollisionResolver::Run");
 		for (const CollisionData& collision : collisionManager->GetUnresolvedCollisions()) {

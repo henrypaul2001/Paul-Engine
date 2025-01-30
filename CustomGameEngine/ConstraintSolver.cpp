@@ -1,7 +1,7 @@
 #include "ConstraintSolver.h"
 #include "Scene.h"
 namespace Engine {
-	void ConstraintSolver::Run(EntityManagerNew& ecs)
+	void ConstraintSolver::Run(EntityManager& ecs)
 	{
 		SCOPE_TIMER("ConstraintSolver::Run");
 		const std::vector<Constraint*>& constraints = constraintManager->GetConstraints();

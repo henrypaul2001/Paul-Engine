@@ -43,7 +43,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -61,9 +61,9 @@ namespace Engine {
 		dynamic_cast<UIText*>(canvas->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
 		
 		// Player movement
-		EntityNew* agent = ecs.Find("Agent");
-		EntityNew* agentClone = ecs.Find("Agent (1)");
-		EntityNew* target = ecs.Find("Target");
+		Entity* agent = ecs.Find("Agent");
+		Entity* agentClone = ecs.Find("Agent (1)");
+		Entity* target = ecs.Find("Target");
 
 		const float moveSpeed = 2.5f * Scene::dt;
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(target->ID());
@@ -122,7 +122,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -140,7 +140,7 @@ namespace Engine {
 
 	void AIScene::CreateEntities()
 	{
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Colour = glm::vec3(0.7f, 0.65f, 0.85f) * 2.0f;
@@ -183,7 +183,7 @@ namespace Engine {
 		resources->AddMaterial("wallMaterial", wallMaterial);
 
 		// Pathfinding debug grid
-		//EntityNew* baseInstanceWalkable = ecs.New("Base Instance Non Walkable");
+		//Entity* baseInstanceWalkable = ecs.New("Base Instance Non Walkable");
 		//ecs.GetComponent<ComponentTransform>(baseInstanceWalkable->ID())->SetPosition(glm::vec3(0.0f, -10.0f, 0.0f));
 		//ecs.AddComponent(baseInstanceWalkable->ID(), ComponentGeometry(MODEL_SPHERE, true, true));
 		//ecs.GetComponent<ComponentGeometry>(baseInstanceWalkable->ID())->CastShadows(false);
@@ -232,7 +232,7 @@ namespace Engine {
 
 		// Construct scene based on navigation grid
 		glm::vec3 floorScale = glm::vec3(((xNum - 1.0f) * nodeSize) / 2.0f, 0.5f, ((zNum - 1.0f) * nodeSize) / 2.0f);
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetPosition(glm::vec3(((xNum - 1.0f) * nodeSize) / 2.0f, 0.0f, ((zNum - 1.0f) * nodeSize) / 2.0f));
 		transform->SetScale(floorScale);
@@ -288,7 +288,7 @@ namespace Engine {
 
 					if (rightExtent == 1 && downExtent == 1) {
 						// Wall scales to right
-						EntityNew* wall = ecs.New(std::string("Wall ") + std::string(std::to_string(count)));
+						Entity* wall = ecs.New(std::string("Wall ") + std::string(std::to_string(count)));
 						transform = ecs.GetComponent<ComponentTransform>(wall->ID());
 						transform->SetPosition(glm::vec3(currentNode->worldPosition.x, 1.5f, currentNode->worldPosition.z));
 						ecs.AddComponent(wall->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -300,7 +300,7 @@ namespace Engine {
 					}
 					else if (rightExtent > downExtent) {
 						// Wall scales to right
-						EntityNew* wall = ecs.New(std::string("Wall ") + std::string(std::to_string(count)));
+						Entity* wall = ecs.New(std::string("Wall ") + std::string(std::to_string(count)));
 						transform = ecs.GetComponent<ComponentTransform>(wall->ID());
 						transform->SetPosition(glm::vec3((currentNode->worldPosition.x + (rightExtent / 2.0f) * nodeSize) - (nodeSize / 2.0f), 1.5f, currentNode->worldPosition.z));
 						ecs.AddComponent(wall->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -315,7 +315,7 @@ namespace Engine {
 					}
 					else {
 						//Wall scales down
-						EntityNew* wall = ecs.New(std::string("Wall ") + std::string(std::to_string(count)));
+						Entity* wall = ecs.New(std::string("Wall ") + std::string(std::to_string(count)));
 						transform = ecs.GetComponent<ComponentTransform>(wall->ID());
 						transform->SetPosition(glm::vec3(currentNode->worldPosition.x, 1.5f, (currentNode->worldPosition.z + (downExtent / 2.0f) * nodeSize) - nodeSize));
 						ecs.AddComponent(wall->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -332,7 +332,7 @@ namespace Engine {
 
 		glm::vec3 start = glm::vec3(8.0f, 0.0f, 1.0f) * nodeSize;
 
-		EntityNew* target = ecs.New("Target");
+		Entity* target = ecs.New("Target");
 		transform = ecs.GetComponent<ComponentTransform>(target->ID());
 		transform->SetPosition(glm::vec3(start.x, 1.0f, start.z + 12.5f));
 		ecs.AddComponent(target->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -343,7 +343,7 @@ namespace Engine {
 		light.CastShadows = true;
 		ecs.AddComponent(target->ID(), light);
 
-		EntityNew* agent = ecs.New("Agent");
+		Entity* agent = ecs.New("Agent");
 		transform = ecs.GetComponent<ComponentTransform>(agent->ID());
 		transform->SetPosition(glm::vec3(start.x, 0.75f, start.z));
 		ecs.AddComponent(agent->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -358,19 +358,19 @@ namespace Engine {
 		ComponentStateController agentStateController = ComponentStateController();
 
 		// AI states
-		StateFunc chase = [](void* data, EntityManagerNew* ecs, const unsigned int entityID) {
+		StateFunc chase = [](void* data, EntityManager* ecs, const unsigned int entityID) {
 			ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
 			ComponentPathfinder* pathfinder = ecs->GetComponent<ComponentPathfinder>(entityID);
 			bool success = pathfinder->FindPath(transform->GetWorldPosition(), ecs->GetComponent<ComponentTransform>(ecs->Find("Target")->ID())->GetWorldPosition());
 		};
 
-		StateFunc chaseEnter = [](void* data, EntityManagerNew* ecs, const unsigned int entityID) {
+		StateFunc chaseEnter = [](void* data, EntityManager* ecs, const unsigned int entityID) {
 			ComponentPathfinder* pathfinder = ecs->GetComponent<ComponentPathfinder>(entityID);
 			pathfinder->Reset();
 			pathfinder->SetMoveSpeed(2.5f);
 		};
 
-		StateFunc walkHomeEnter = [](void* data, EntityManagerNew* ecs, const unsigned int entityID) {
+		StateFunc walkHomeEnter = [](void* data, EntityManager* ecs, const unsigned int entityID) {
 			ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
 			ComponentPathfinder* pathfinder = ecs->GetComponent<ComponentPathfinder>(entityID);
 			pathfinder->Reset();
@@ -378,7 +378,7 @@ namespace Engine {
 			pathfinder->FindPath(transform->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
 		};
 
-		StateFunc patrolEnter = [](void* data, EntityManagerNew* ecs, const unsigned int entityID) {
+		StateFunc patrolEnter = [](void* data, EntityManager* ecs, const unsigned int entityID) {
 			ComponentTransform* transform = ecs->GetComponent<ComponentTransform>(entityID);
 			ComponentPathfinder* pathfinder = ecs->GetComponent<ComponentPathfinder>(entityID);
 
@@ -427,21 +427,21 @@ namespace Engine {
 		using EntityFloatFloatFloat = GenericStateTransition<std::string, float, float, float>;
 		using FloatFloatBoolBool = GenericStateTransition<float, float, bool, bool>;
 
-		EntityBoolBoolBool::GenericDataRetrieverFuncA hasReachedDestination = [](EntityBoolBoolBool* owner, EntityManagerNew* ecs, const unsigned int entityID) -> bool {
+		EntityBoolBoolBool::GenericDataRetrieverFuncA hasReachedDestination = [](EntityBoolBoolBool* owner, EntityManager* ecs, const unsigned int entityID) -> bool {
 			return ecs->GetComponent<ComponentPathfinder>(entityID)->HasReachedTarget();
 		};
 
-		EntityFloatFloatFloat::GenericDataRetrieverFuncA distanceToHome = [](EntityFloatFloatFloat* owner, EntityManagerNew* ecs, const unsigned int entityID) -> float {
+		EntityFloatFloatFloat::GenericDataRetrieverFuncA distanceToHome = [](EntityFloatFloatFloat* owner, EntityManager* ecs, const unsigned int entityID) -> float {
 			return glm::distance(ecs->GetComponent<ComponentTransform>(entityID)->GetWorldPosition(), glm::vec3(2.0f, 1.0f, 0.25f));
 		};
 
-		EntityFloatFloatFloat::GenericDataRetrieverFuncA distanceToTarget = [](EntityFloatFloatFloat* owner, EntityManagerNew* ecs, const unsigned int entityID) -> float {
+		EntityFloatFloatFloat::GenericDataRetrieverFuncA distanceToTarget = [](EntityFloatFloatFloat* owner, EntityManager* ecs, const unsigned int entityID) -> float {
 			const std::string& targetName = owner->GetBaseDataA();
 
 			return glm::distance(ecs->GetComponent<ComponentTransform>(entityID)->GetWorldPosition(), ecs->GetComponent<ComponentTransform>(ecs->Find(targetName)->ID())->GetWorldPosition());
 		};
 
-		FloatFloatBoolBool::GenericDataRetrieverFuncA updateSecondsWaited = [](FloatFloatBoolBool* owner, EntityManagerNew* ecs, const unsigned int entityID) -> bool {
+		FloatFloatBoolBool::GenericDataRetrieverFuncA updateSecondsWaited = [](FloatFloatBoolBool* owner, EntityManager* ecs, const unsigned int entityID) -> bool {
 			float secondsWaited = owner->GetBaseDataA();
 			float secondsToWait = owner->GetBaseDataB();
 
@@ -460,7 +460,7 @@ namespace Engine {
 			return readyToPatrol;
 		};
 
-		FloatFloatBoolBool::GenericDataRetrieverFuncB truePassthrough = [](FloatFloatBoolBool* owner, EntityManagerNew* ecs, const unsigned int entityID) -> bool {
+		FloatFloatBoolBool::GenericDataRetrieverFuncB truePassthrough = [](FloatFloatBoolBool* owner, EntityManager* ecs, const unsigned int entityID) -> bool {
 			return true;
 		};
 
@@ -488,7 +488,7 @@ namespace Engine {
 		ecs.AddComponent(agent->ID(), agentStateController);
 		unsigned int agentID = agent->ID();
 
-		EntityNew* cloneTestBase = ecs.New("Clone Test Base");
+		Entity* cloneTestBase = ecs.New("Clone Test Base");
 		transform = ecs.GetComponent<ComponentTransform>(cloneTestBase->ID());
 		transform->SetPosition(glm::vec3(25.0f, 15.0f, 25.0f));
 		ecs.AddComponent(cloneTestBase->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -497,22 +497,22 @@ namespace Engine {
 
 		unsigned int cloneTestBaseID = cloneTestBase->ID();
 
-		EntityNew* cloneTest1 = ecs.Clone(cloneTestBaseID);
+		Entity* cloneTest1 = ecs.Clone(cloneTestBaseID);
 		transform = ecs.GetComponent<ComponentTransform>(cloneTest1->ID());
 		transform->SetPosition(transform->GetWorldPosition() + glm::vec3(15.0f, 0.0f, 0.0f));
 		ecs.GetComponent<ComponentGeometry>(cloneTest1->ID())->ApplyMaterialToModel(path);
 
-		EntityNew* agentCloneTest = ecs.Clone(agentID);
+		Entity* agentCloneTest = ecs.Clone(agentID);
 		transform = ecs.GetComponent<ComponentTransform>(agentCloneTest->ID());
 		transform->SetPosition(glm::vec3(start.x, transform->GetWorldPosition().y, start.z + 35.0f));
 
-		EntityNew* agentCloneTest2 = ecs.Clone(agentCloneTest->ID());
+		Entity* agentCloneTest2 = ecs.Clone(agentCloneTest->ID());
 		transform = ecs.GetComponent<ComponentTransform>(agentCloneTest2->ID());
 		transform->SetPosition(glm::vec3(start.x + 25.0f, transform->GetWorldPosition().y, start.z + 35.0f));
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

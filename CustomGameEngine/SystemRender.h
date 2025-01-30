@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include "LightManager.h"
 #include "Camera.h"
 #include "ComponentTransform.h"
@@ -52,7 +52,7 @@ namespace Engine {
 
 		Camera* activeCamera;
 
-		EntityManagerNew* ecs;
+		EntityManager* ecs;
 		LightManager* lightManager;
 	};
 }

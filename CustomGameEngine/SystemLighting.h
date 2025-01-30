@@ -7,7 +7,7 @@
 namespace Engine {
 	class SystemLighting : public System {
 	public:
-		SystemLighting(EntityManagerNew* ecs, LightManager* lightManager, Camera* activeCamera) : System(ecs), lightManager(lightManager), activeCamera(activeCamera) {}
+		SystemLighting(EntityManager* ecs, LightManager* lightManager, Camera* activeCamera) : System(ecs), lightManager(lightManager), activeCamera(activeCamera) {}
 		~SystemLighting() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_LIGHTING"; }

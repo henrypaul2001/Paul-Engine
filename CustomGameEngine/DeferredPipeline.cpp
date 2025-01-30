@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 
 namespace Engine {
-	void DeferredPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
+	void DeferredPipeline::Run(EntityManager* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
 	{
 		SCOPE_TIMER("DeferredPipeline::Run");
 		RenderPipeline::Run(ecs, lightManager, collisionManager, activeCamera);

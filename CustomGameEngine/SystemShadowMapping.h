@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include "ComponentGeometry.h"
 #include "ComponentTransform.h"
 namespace Engine {
@@ -20,6 +20,6 @@ namespace Engine {
 		void SetDepthMapType(const DepthMapType newType) { type = newType; }
 	private:
 		DepthMapType type;
-		EntityManagerNew* active_ecs;
+		EntityManager* active_ecs;
 	};
 }

@@ -6,7 +6,7 @@ namespace Engine {
 	class SystemParticleUpdater : public System
 	{
     public:
-        SystemParticleUpdater(EntityManagerNew* ecs) : System(ecs) {}
+        SystemParticleUpdater(EntityManager* ecs) : System(ecs) {}
         ~SystemParticleUpdater() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_PARTICLE_UPDATER"; }

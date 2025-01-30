@@ -74,7 +74,7 @@ namespace Engine {
 		transitions.push_back(newTransition);
 	}
 
-	void StateMachine::Update(EntityManagerNew* ecs, const unsigned int entityID)
+	void StateMachine::Update(EntityManager* ecs, const unsigned int entityID)
 	{
 		if (activeState) {
 

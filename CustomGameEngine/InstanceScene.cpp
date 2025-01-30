@@ -44,7 +44,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -90,7 +90,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -108,7 +108,7 @@ namespace Engine {
 
 	void InstanceScene::CreateEntities()
 	{
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -143,12 +143,12 @@ namespace Engine {
 		gold->aoMaps.push_back(resources->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
 		resources->AddMaterial("gold", gold);
 
-		EntityNew* baseInstance = ecs.New("Base Instance");
+		Entity* baseInstance = ecs.New("Base Instance");
 		ecs.AddComponent(baseInstance->ID(), ComponentGeometry(MODEL_CUBE, true, true));
 		ecs.GetComponent<ComponentGeometry>(baseInstance->ID())->ApplyMaterialToModel(gold);
 		const unsigned int baseInstanceID = baseInstance->ID();
 
-		EntityNew* pointLight = ecs.New("Point Light");
+		Entity* pointLight = ecs.New("Point Light");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(pointLight->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.0f, -2.0f));
 		ComponentLight point = ComponentLight(POINT);
@@ -172,7 +172,7 @@ namespace Engine {
 			for (int j = 0; j < xNum; j++) {
 				for (int k = 0; k < zNum; k++) {
 					std::string name = std::string("Box ") + std::string(std::to_string(count));
-					EntityNew* box = ecs.New(name);
+					Entity* box = ecs.New(name);
 					transform = ecs.GetComponent<ComponentTransform>(box->ID());
 					transform->SetPosition(glm::vec3(originX + (j * xDistance), originY + (i * yDistance), originZ + (k * zDistance)));
 					//ecs.GetComponent<ComponentGeometry>(baseInstanceID)->AddNewInstanceSource(box);
@@ -182,7 +182,7 @@ namespace Engine {
 			}
 		}
 
-		EntityNew* baseInstance2 = ecs.New("Base Instance 2");
+		Entity* baseInstance2 = ecs.New("Base Instance 2");
 		transform = ecs.GetComponent<ComponentTransform>(baseInstance2->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.0f, 2.5f));
 		ecs.AddComponent(baseInstance2->ID(), ComponentGeometry(MODEL_CUBE, true, true));
@@ -193,7 +193,7 @@ namespace Engine {
 			for (int j = 0; j < xNum; j++) {
 				for (int k = 0; k < zNum; k++) {
 					std::string name = std::string("Box ") + std::string(std::to_string(count));
-					EntityNew* box = ecs.New(name);
+					Entity* box = ecs.New(name);
 					transform = ecs.GetComponent<ComponentTransform>(box->ID());
 					transform->SetPosition(glm::vec3((originX + (j * xDistance), originY + (i * yDistance), -originZ + (k * -zDistance))));
 					//ecs.GetComponent<ComponentGeometry>(baseInstance2ID)->AddNewInstanceSource(box);
@@ -206,7 +206,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

@@ -6,7 +6,7 @@ namespace Engine {
 	class SystemPathfinding : public System
 	{
     public:
-        SystemPathfinding(EntityManagerNew* ecs) : System(ecs) {}
+        SystemPathfinding(EntityManager* ecs) : System(ecs) {}
         ~SystemPathfinding() {}
 
         constexpr const char* SystemName() override { return "SYSTEM_PATHFINDING"; }

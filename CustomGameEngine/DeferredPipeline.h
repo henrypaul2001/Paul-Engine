@@ -8,7 +8,7 @@ namespace Engine {
 		~DeferredPipeline() {}
 
 		constexpr const char* PipelineName() const override { return "DEFERRED_PIPELINE"; }
-		void Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera) override;
+		void Run(EntityManager* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera) override;
 
 	protected:
 		void SwapScreenTextures() {

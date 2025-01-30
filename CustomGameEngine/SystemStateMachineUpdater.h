@@ -5,7 +5,7 @@ namespace Engine {
 	class SystemStateMachineUpdater : public System
 	{
 	public:
-		SystemStateMachineUpdater(EntityManagerNew* ecs) : System(ecs) {}
+		SystemStateMachineUpdater(EntityManager* ecs) : System(ecs) {}
 		~SystemStateMachineUpdater() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_STATE_UPDATER"; }

@@ -43,7 +43,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -60,7 +60,7 @@ namespace Engine {
 		dynamic_cast<UIText*>(canvas->UIElements()[8])->SetText("BVHN count: " + std::to_string(nodeCount));
 		dynamic_cast<UIText*>(canvas->UIElements()[9])->SetText("AABB Tests: " + std::to_string(aabbTests));
 
-		EntityNew* ball = ecs.Find("Smoke Particles");
+		Entity* ball = ecs.Find("Smoke Particles");
 		ComponentPhysics* ballPhysics = ecs.GetComponent<ComponentPhysics>(ball->ID());
 		float forceMagnitude = 0.3f;
 
@@ -115,7 +115,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -128,7 +128,7 @@ namespace Engine {
 
 	void ParticleScene::keyDown(int key)
 	{
-		EntityNew* ball = ecs.Find("Smoke Particles");
+		Entity* ball = ecs.Find("Smoke Particles");
 		ComponentPhysics* ballPhysics = ecs.GetComponent<ComponentPhysics>(ball->ID());
 		float forceMagnitude = 0.3f;
 
@@ -158,7 +158,7 @@ namespace Engine {
 		lava->shininess = 0.2f;
 		resources->AddMaterial("lava", lava);
 
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -169,7 +169,7 @@ namespace Engine {
 		directional.Far = 150.0f;
 		ecs.AddComponent(dirLight->ID(), directional);
 
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetScale(glm::vec3(10.0f, 0.5f, 10.0f));
 		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
@@ -201,25 +201,25 @@ namespace Engine {
 		energyParams.randomAccelerationYRange = energyParams.randomAccelerationXRange;
 		energyParams.randomAccelerationZRange = energyParams.randomAccelerationXRange;
 
-		EntityNew* particles = ecs.New("Particles");
+		Entity* particles = ecs.New("Particles");
 		transform = ecs.GetComponent<ComponentTransform>(particles->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.8f, 0.0f));
 		ecs.AddComponent(particles->ID(), ComponentParticleGenerator(resources->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 150.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
 		ecs.GetComponent<ComponentParticleGenerator>(particles->ID())->SetRandomParameters(wallParams);
 
-		EntityNew* particles2 = ecs.New("Particles 2");
+		Entity* particles2 = ecs.New("Particles 2");
 		transform = ecs.GetComponent<ComponentTransform>(particles2->ID());
 		transform->SetPosition(glm::vec3(5.0f, 0.8f, 0.0f));
 		ecs.AddComponent(particles2->ID(), ComponentParticleGenerator(resources->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 15000, glm::vec3(0.0f), 3000.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
 		ecs.GetComponent<ComponentParticleGenerator>(particles2->ID())->SetRandomParameters(wallParams);
 
-		EntityNew* particles3 = ecs.New("Particles 3");
+		Entity* particles3 = ecs.New("Particles 3");
 		transform = ecs.GetComponent<ComponentTransform>(particles3->ID());
 		transform->SetPosition(glm::vec3(-5.0f, 0.8f, 0.0f));
 		ecs.AddComponent(particles3->ID(), ComponentParticleGenerator(resources->LoadTexture("Textures/Particles/flame.png", TEXTURE_DIFFUSE, false), 3000, glm::vec3(0.0f), 10.0f, 0.5f, 0.5f, glm::vec3(1.0f), 0.5f));
 		ecs.GetComponent<ComponentParticleGenerator>(particles3->ID())->SetRandomParameters(wallParams);
 
-		EntityNew* energyParticles = ecs.New("Energy Particles");
+		Entity* energyParticles = ecs.New("Energy Particles");
 		transform = ecs.GetComponent<ComponentTransform>(energyParticles->ID());
 		transform->SetPosition(glm::vec3(0.0f, 2.0f, -4.5f));
 		ecs.AddComponent(energyParticles->ID(), ComponentParticleGenerator(resources->LoadTexture("Textures/Particles/energy.png", TEXTURE_DIFFUSE, false), 500, glm::vec3(0.0f), 50.0f, 0.5f, 0.5f, glm::vec3(0.25f), 0.5f, 0.45f, 5.0f));
@@ -234,7 +234,7 @@ namespace Engine {
 		lavaRockLight.Linear = 0.35f;
 		lavaRockLight.Quadratic = 0.44f;
 
-		EntityNew* smokeParticles = ecs.New("Smoke Particles");
+		Entity* smokeParticles = ecs.New("Smoke Particles");
 		transform = ecs.GetComponent<ComponentTransform>(smokeParticles->ID());
 		transform->SetPosition(glm::vec3(-7.0f, 3.0f, -6.5f));
 		transform->SetScale(0.5f);
@@ -246,19 +246,19 @@ namespace Engine {
 		ecs.GetComponent<ComponentParticleGenerator>(smokeParticles->ID())->SetRandomParameters(smokeParams);
 		ecs.AddComponent(smokeParticles->ID(), lavaRockLight);
 
-		EntityNew* orbParticles = ecs.New("Orb Particles");
+		Entity* orbParticles = ecs.New("Orb Particles");
 		transform = ecs.GetComponent<ComponentTransform>(orbParticles->ID());
 		transform->SetPosition(glm::vec3(7.0f, 2.0f, -5.0f));
 		ecs.AddComponent(orbParticles->ID(), ComponentParticleGenerator(resources->LoadTexture("Textures/Particles/orb.png", TEXTURE_DIFFUSE, false), 3, glm::vec3(0.0f), 1.0f, 1.0f, 0.5f, glm::vec3(2.5f)));
 		ecs.GetComponent<ComponentParticleGenerator>(orbParticles->ID())->SetRandomParameters(energyParams);
 
-		EntityNew* window = ecs.New("Window");
+		Entity* window = ecs.New("Window");
 		transform = ecs.GetComponent<ComponentTransform>(window->ID());
 		transform->SetPosition(glm::vec3(10.0f, 3.0f, 2.5f));
 		ecs.AddComponent(window->ID(), ComponentGeometry(MODEL_PLANE));
 		ecs.GetComponent<ComponentGeometry>(window->ID())->ApplyMaterialToModel(windowMaterial);
 
-		EntityNew* leftWall = ecs.New("Left Wall");
+		Entity* leftWall = ecs.New("Left Wall");
 		transform = ecs.GetComponent<ComponentTransform>(leftWall->ID());
 		transform->SetPosition(glm::vec3(-11.0f, 0.25f, 0.0f));
 		transform->SetScale(1.0f, 1.0f, 10.0f);
@@ -266,7 +266,7 @@ namespace Engine {
 		ecs.AddComponent(leftWall->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionAABB>(leftWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* rightWall = ecs.New("Right Wall");
+		Entity* rightWall = ecs.New("Right Wall");
 		transform = ecs.GetComponent<ComponentTransform>(rightWall->ID());
 		transform->SetPosition(glm::vec3(11.0f, 0.25f, 0.0f));
 		transform->SetScale(1.0f, 1.0f, 10.0f);
@@ -274,7 +274,7 @@ namespace Engine {
 		ecs.AddComponent(rightWall->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionAABB>(rightWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* frontWall = ecs.New("Front Wall");
+		Entity* frontWall = ecs.New("Front Wall");
 		transform = ecs.GetComponent<ComponentTransform>(frontWall->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.25f, -11.0f));
 		transform->SetScale(12.0f, 1.0f, 1.0f);
@@ -282,7 +282,7 @@ namespace Engine {
 		ecs.AddComponent(frontWall->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionAABB>(frontWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* backWall = ecs.New("Back Wall");
+		Entity* backWall = ecs.New("Back Wall");
 		transform = ecs.GetComponent<ComponentTransform>(backWall->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.25f, 11.0f));
 		transform->SetScale(12.0f, 1.0f, 1.0f);
@@ -292,7 +292,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

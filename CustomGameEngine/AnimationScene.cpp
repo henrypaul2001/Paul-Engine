@@ -42,7 +42,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -95,13 +95,13 @@ namespace Engine {
 			anim->ChangeAnimation(animations[animIndex]);
 		}
 		if (key == GLFW_KEY_KP_3) {
-			EntityNew* clone = ecs.Clone(ecs.Find("Swat")->ID());
+			Entity* clone = ecs.Clone(ecs.Find("Swat")->ID());
 			ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(clone->ID());
 			transform->SetPosition(transform->GetWorldPosition() + glm::vec3(-5.0f, 0.0f, 0.0f));
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -119,7 +119,7 @@ namespace Engine {
 
 	void AnimationScene::CreateEntities()
 	{
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -152,7 +152,7 @@ namespace Engine {
 		float xDistance = 2.25f;
 		float zDistance = -2.25f;
 
-		EntityNew* vampire = ecs.New("Vampire");
+		Entity* vampire = ecs.New("Vampire");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(vampire->ID());
 		transform->SetPosition(glm::vec3(originX, originY, originZ));
 		ecs.AddComponent(vampire->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
@@ -164,21 +164,21 @@ namespace Engine {
 		for (int j = 0; j < xNum; j++) {
 			for (int k = 0; k < zNum; k++) {
 				if (count != 1) {
-					EntityNew* clone = ecs.Clone(vampireID);
+					Entity* clone = ecs.Clone(vampireID);
 					ecs.GetComponent<ComponentTransform>(clone->ID())->SetPosition(glm::vec3(originX + (j * xDistance), originY, originZ + (k * zDistance)));
 				}
 				count++;
 			}
 		}
 
-		EntityNew* swat = ecs.New("Swat");
+		Entity* swat = ecs.New("Swat");
 		transform = ecs.GetComponent<ComponentTransform>(swat->ID());
 		transform->SetPosition(glm::vec3(-4.0f, -0.5f, 0.0f));
 		//transform->SetScale(0.015f);
 		ecs.AddComponent(swat->ID(), ComponentGeometry("Models/swat/swat.dae", false));
 		ecs.AddComponent(swat->ID(), ComponentAnimator(animations[animIndex]));
 		
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetPosition(glm::vec3(0.0f, -0.6f, 0.0f));
 		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
@@ -186,7 +186,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

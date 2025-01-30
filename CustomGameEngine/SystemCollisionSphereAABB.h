@@ -7,7 +7,7 @@ namespace Engine {
 	class SystemCollisionSphereAABB : public SystemCollision
 	{
 	public:
-		SystemCollisionSphereAABB(EntityManagerNew* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
+		SystemCollisionSphereAABB(EntityManager* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
 		~SystemCollisionSphereAABB() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_COLLISION_SPHERE_AABB"; }

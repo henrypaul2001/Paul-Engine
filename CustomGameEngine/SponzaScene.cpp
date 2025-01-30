@@ -37,7 +37,7 @@ namespace Engine {
 	{
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -63,7 +63,7 @@ namespace Engine {
 		gold->aoMaps.push_back(resources->LoadTexture("Materials/PBR/gold/ao.png", TEXTURE_AO, false));
 		resources->AddMaterial("gold", gold);
 
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight light = ComponentLight(DIRECTIONAL);
 		light.Direction = glm::vec3(0.35f, -0.6f, 0.0f);
 		light.Colour = glm::vec3(5.9f, 5.1f, 9.5f);
@@ -77,16 +77,16 @@ namespace Engine {
 		resources->SetModelLoaderTextureTranslation(TEXTURE_AO, aiTextureType_AMBIENT_OCCLUSION);
 		resources->SetModelLoaderTextureTranslation(TEXTURE_HEIGHT, aiTextureType_HEIGHT);
 
-		EntityNew* sponza = ecs.New("Sponza");
+		Entity* sponza = ecs.New("Sponza");
 		ecs.AddComponent(sponza->ID(), ComponentGeometry("Models/PBR/newSponza/base/NewSponza_Main_glTF_003.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 
-		EntityNew* curtains = ecs.New("Curtains");
+		Entity* curtains = ecs.New("Curtains");
 		ecs.AddComponent(curtains->ID(), ComponentGeometry("Models/PBR/newSponza/curtains/NewSponza_Curtains_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 
-		EntityNew* ivy = ecs.New("Ivy");
+		Entity* ivy = ecs.New("Ivy");
 		ecs.AddComponent(ivy->ID(), ComponentGeometry("Models/PBR/newSponza/ivy/NewSponza_IvyGrowth_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 
-		EntityNew* trees = ecs.New("Trees");
+		Entity* trees = ecs.New("Trees");
 		ecs.AddComponent(trees->ID(), ComponentGeometry("Models/PBR/newSponza/trees/NewSponza_CypressTree_glTF.gltf", true, false, false, defaultAssimpPostProcess | aiProcess_PreTransformVertices));
 		ComponentGeometry* geometry = ecs.GetComponent<ComponentGeometry>(trees->ID());
 		geometry->SetCulling(false, GL_BACK);
@@ -96,7 +96,7 @@ namespace Engine {
 
 		resources->ResetModelLoaderTextureTranslationsToDefault();
 
-		EntityNew* pointLight1 = ecs.New("Point Light 1");
+		Entity* pointLight1 = ecs.New("Point Light 1");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(pointLight1->ID());
 		transform->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
 		ecs.AddComponent(pointLight1->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -110,7 +110,7 @@ namespace Engine {
 		light.CastShadows = false;
 		ecs.AddComponent(pointLight1->ID(), light);
 
-		EntityNew* pointLight2 = ecs.New("Point Light 2");
+		Entity* pointLight2 = ecs.New("Point Light 2");
 		transform = ecs.GetComponent<ComponentTransform>(pointLight2->ID());
 		transform->SetPosition(glm::vec3(-10.0f, 7.5f, 0.0f));
 		ecs.AddComponent(pointLight2->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -124,7 +124,7 @@ namespace Engine {
 		light.CastShadows = false;
 		ecs.AddComponent(pointLight2->ID(), light);
 
-		EntityNew* pointLight3 = ecs.New("Point Light 3");
+		Entity* pointLight3 = ecs.New("Point Light 3");
 		transform = ecs.GetComponent<ComponentTransform>(pointLight3->ID());
 		transform->SetPosition(glm::vec3(16.0f, 1.5f, -1.0f));
 		ecs.AddComponent(pointLight3->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -140,7 +140,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
@@ -197,7 +197,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));

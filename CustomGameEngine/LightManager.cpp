@@ -1,7 +1,7 @@
 #include "LightManager.h"
 #include "RenderManager.h"
 namespace Engine {
-	void LightManager::SetDirectionalLightUniforms(EntityManagerNew& ecs, Shader* shader)
+	void LightManager::SetDirectionalLightUniforms(EntityManager& ecs, Shader* shader)
 	{
 		RenderManager* renderInstance = RenderManager::GetInstance();
 		unsigned int directionalEntityID = directionalLightEntities.front();
@@ -91,7 +91,7 @@ namespace Engine {
 		}
 	}
 
-	void LightManager::SetShaderUniforms(EntityManagerNew& ecs, Shader* shader, Camera* activeCamera)
+	void LightManager::SetShaderUniforms(EntityManager& ecs, Shader* shader, Camera* activeCamera)
 	{
 		RenderManager* renderInstance = RenderManager::GetInstance();
 		const FlatTextureAtlas* spotShadowAtlas = renderInstance->GetFlatShadowmapTextureAtlas();

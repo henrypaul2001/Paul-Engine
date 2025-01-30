@@ -6,7 +6,7 @@ namespace Engine {
 	class SystemCollisionSphere : public SystemCollision
 	{
 	public:
-		SystemCollisionSphere(EntityManagerNew* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
+		SystemCollisionSphere(EntityManager* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
 		~SystemCollisionSphere() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_COLLISION_SPHERE"; }

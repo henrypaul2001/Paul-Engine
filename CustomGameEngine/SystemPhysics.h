@@ -7,7 +7,7 @@ namespace Engine
 	class SystemPhysics : public System
 	{
 	public:
-		SystemPhysics(EntityManagerNew* ecs, const float gravity = 9.8f, const glm::vec3& gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f), const float airDensity = 1.225f) : System(ecs), gravity(gravity), gravityAxis(gravityAxis), airDensity(airDensity) {}
+		SystemPhysics(EntityManager* ecs, const float gravity = 9.8f, const glm::vec3& gravityAxis = glm::vec3(0.0f, 1.0f, 0.0f), const float airDensity = 1.225f) : System(ecs), gravity(gravity), gravityAxis(gravityAxis), airDensity(airDensity) {}
 		~SystemPhysics() {}
 
 		float airDensity; // kg/m3

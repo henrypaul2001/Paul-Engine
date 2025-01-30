@@ -2,7 +2,7 @@
 #include "glm/vec3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include <vector>
-#include "EntityNew.h"
+#include "Entity.h"
 #include <glm/gtc/quaternion.hpp>
 class EntityManagerNew;
 
@@ -11,12 +11,12 @@ namespace Engine
 	class ComponentTransform
 	{
 	public:
-		friend class EntityManagerNew; // transform is a key component in the engine, therefore ECS and transform are tightly coupled and share a unique relationship
+		friend class EntityManager; // transform is a key component in the engine, therefore ECS and transform are tightly coupled and share a unique relationship
 
 		//ComponentTransform(const ComponentTransform& old_component);
-		ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position, const glm::vec3& rotationAxis, const float rotationAngle, const glm::vec3& scale);
-		ComponentTransform(EntityManagerNew* owning_ecs, const glm::vec3& position);
-		ComponentTransform(EntityManagerNew* owning_ecs, const float posX, const float posY, const float posZ);
+		ComponentTransform(EntityManager* owning_ecs, const glm::vec3& position, const glm::vec3& rotationAxis, const float rotationAngle, const glm::vec3& scale);
+		ComponentTransform(EntityManager* owning_ecs, const glm::vec3& position);
+		ComponentTransform(EntityManager* owning_ecs, const float posX, const float posY, const float posZ);
 		~ComponentTransform();
 
 		// Set
@@ -72,7 +72,7 @@ namespace Engine
 
 		const std::vector<unsigned int>& GetChildren() const { return childrenIDs; }
 		
-		const EntityNew* FindChildWithName(const std::string& name) const;
+		const Entity* FindChildWithName(const std::string& name) const;
 		
 		const unsigned int GetParent() const { return parentID; }
 
@@ -96,7 +96,7 @@ namespace Engine
 		unsigned int parentID;
 		std::vector<unsigned int> childrenIDs;
 
-		EntityManagerNew* owning_ecs;
+		EntityManager* owning_ecs;
 		unsigned int ownerID;
 	};
 }

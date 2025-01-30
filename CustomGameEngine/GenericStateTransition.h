@@ -8,8 +8,8 @@ namespace Engine {
     public:
         typedef bool (*GenericTransitionFunc)(RA, RB);
 
-        typedef RA(*GenericDataRetrieverFuncA)(GenericStateTransition*, EntityManagerNew*, const unsigned int);
-        typedef RB(*GenericDataRetrieverFuncB)(GenericStateTransition*, EntityManagerNew*, const unsigned int);
+        typedef RA(*GenericDataRetrieverFuncA)(GenericStateTransition*, EntityManager*, const unsigned int);
+        typedef RB(*GenericDataRetrieverFuncB)(GenericStateTransition*, EntityManager*, const unsigned int);
 
         GenericStateTransition(const GenericStateTransition& old_transition);
         GenericStateTransition(GenericTransitionFunc function, T baseData, U otherBaseData, State* source, State* destination, GenericDataRetrieverFuncA dataRetrieverA, GenericDataRetrieverFuncB dataRetrieverB) : StateTransition(source, destination), dataA(baseData), dataB(otherBaseData) {
@@ -21,7 +21,7 @@ namespace Engine {
 
         StateTransition* Copy() override { return new GenericStateTransition<T, U, RA, RB>(*this); }
 
-        virtual bool Condition(EntityManagerNew* ecs, const unsigned int entityID) override {
+        virtual bool Condition(EntityManager* ecs, const unsigned int entityID) override {
             if (function) {
                 return function(retrieverA(this, ecs, entityID), retrieverB(this, ecs, entityID));
             }
@@ -43,8 +43,8 @@ namespace Engine {
         }
 
         // Generic data retrieval functions
-        static RA PassthroughA(GenericStateTransition* owner, EntityManagerNew* ecs, const unsigned int entityID) { return owner->GetBaseDataA(); }
-        static RB PassthroughB(GenericStateTransition* owner, EntityManagerNew* ecs, const unsigned int entityID) { return owner->GetBaseDataB(); }
+        static RA PassthroughA(GenericStateTransition* owner, EntityManager* ecs, const unsigned int entityID) { return owner->GetBaseDataA(); }
+        static RB PassthroughB(GenericStateTransition* owner, EntityManager* ecs, const unsigned int entityID) { return owner->GetBaseDataB(); }
 
         void SetBaseDataA(T newDataA) { this->dataA = newDataA; }
         void SetBaseDataB(U newDataB) { this->dataB = newDataB; }

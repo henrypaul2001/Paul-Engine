@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 
 namespace Engine {
-	void RenderPipeline::Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
+	void RenderPipeline::Run(EntityManager* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera)
 	{
 		SCOPE_TIMER("RenderPipeline::Run");
 		this->ecs = ecs;

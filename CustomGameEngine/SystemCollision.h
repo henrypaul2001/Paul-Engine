@@ -17,7 +17,7 @@ namespace Engine {
 	class SystemCollision : public System
 	{
 	public:
-		SystemCollision(EntityManagerNew* ecs, CollisionManager* collisionManager) : System(ecs), collisionManager(collisionManager) {}
+		SystemCollision(EntityManager* ecs, CollisionManager* collisionManager) : System(ecs), collisionManager(collisionManager) {}
 		~SystemCollision() {}
 
 		void GetMinMaxOnAxis(const std::vector<glm::vec3>& worldSpacePoints, const glm::vec3& worldSpaceAxis, float& out_min, float& out_max) const;

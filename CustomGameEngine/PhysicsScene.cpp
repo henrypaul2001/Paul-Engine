@@ -44,7 +44,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -89,8 +89,8 @@ namespace Engine {
 			ChangePostProcessEffect();
 		}
 		else if (key == GLFW_KEY_KP_8) {
-			EntityNew* baseBall = ecs.Find("Ball");
-			EntityNew* clonedBall = ecs.Clone(baseBall->ID());
+			Entity* baseBall = ecs.Find("Ball");
+			Entity* clonedBall = ecs.Clone(baseBall->ID());
 			ecs.GetComponent<ComponentTransform>(clonedBall->ID())->SetPosition(glm::vec3(6.5f, 8.5f, -20.0f));
 			ecs.GetComponent<ComponentPhysics>(clonedBall->ID())->SetVelocity(glm::vec3(0.0f));
 
@@ -100,17 +100,17 @@ namespace Engine {
 			physicsSystem.gravityAxis = -physicsSystem.gravityAxis;
 		}
 		else if (key == GLFW_KEY_KP_9) {
-			EntityNew* torqueEntity = ecs.Find("Link 0");
+			Entity* torqueEntity = ecs.Find("Link 0");
 			//ecs.GetComponent<ComponentPhysics>(torqueEntity->ID())->SetTorque(glm::vec3(0.0f, 2.0f, 0.0f));
 			constraintManager->RemoveConstraint(constraintManager->GetConstraints().size() - 1);
 		}
 		else if (key == GLFW_KEY_KP_3) {
-			EntityNew* cube = ecs.Find("Test Cube 2");
+			Entity* cube = ecs.Find("Test Cube 2");
 			ecs.GetComponent<ComponentPhysics>(cube->ID())->SetTorque(glm::vec3(5.0f, 0.0f, 0.0f));
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -135,7 +135,7 @@ namespace Engine {
 		textured->shininess = 5.0f;
 		resources->AddMaterial("textured", textured);
 
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Ambient = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -148,7 +148,7 @@ namespace Engine {
 		directional.ShadowProjectionSize = 30.0f;
 		ecs.AddComponent(dirLight->ID(), directional);
 
-		EntityNew* leftWall = ecs.New("Left Wall");
+		Entity* leftWall = ecs.New("Left Wall");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(leftWall->ID());
 		transform->SetPosition(glm::vec3(-6.15f, -20.0f, -20.0f));
 		ecs.AddComponent(leftWall->ID(), ComponentGeometry(MODEL_CUBE));
@@ -157,7 +157,7 @@ namespace Engine {
 		ecs.AddComponent(leftWall->ID(), ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionBox>(leftWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* rightWall = ecs.New("Right Wall");
+		Entity* rightWall = ecs.New("Right Wall");
 		transform = ecs.GetComponent<ComponentTransform>(rightWall->ID());
 		transform->SetPosition(glm::vec3(6.15f, -20.0f, -20.0f));
 		ecs.AddComponent(rightWall->ID(), ComponentGeometry(MODEL_CUBE));
@@ -166,7 +166,7 @@ namespace Engine {
 		ecs.AddComponent(rightWall->ID(), ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionBox>(rightWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* backWall = ecs.New("Back Wall");
+		Entity* backWall = ecs.New("Back Wall");
 		transform = ecs.GetComponent<ComponentTransform>(backWall->ID());
 		transform->SetPosition(glm::vec3(0.0f, -20.0f, -31.5f));
 		ecs.AddComponent(backWall->ID(), ComponentGeometry(MODEL_CUBE));
@@ -175,7 +175,7 @@ namespace Engine {
 		ecs.AddComponent(backWall->ID(), ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionBox>(backWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* frontWall = ecs.New("Front Wall");
+		Entity* frontWall = ecs.New("Front Wall");
 		transform = ecs.GetComponent<ComponentTransform>(frontWall->ID());
 		transform->SetPosition(glm::vec3(0.0f, -20.0f, -8.5f));
 		ecs.AddComponent(frontWall->ID(), ComponentGeometry(MODEL_CUBE));
@@ -184,14 +184,14 @@ namespace Engine {
 		ecs.AddComponent(frontWall->ID(), ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionBox>(frontWall->ID())->IsMovedByCollisions(false);
 
-		EntityNew* physicsBall = ecs.New("Physics Ball");
+		Entity* physicsBall = ecs.New("Physics Ball");
 		transform = ecs.GetComponent<ComponentTransform>(physicsBall->ID());
 		transform->SetPosition(glm::vec3(8.0f, 30.0f, -20.0f));
 		ecs.AddComponent(physicsBall->ID(), ComponentGeometry(MODEL_SPHERE));
 		ecs.AddComponent(physicsBall->ID(), ComponentCollisionSphere(1.0f));
 		ecs.AddComponent(physicsBall->ID(), ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
 
-		EntityNew* physicsBall2 = ecs.New("Ball");
+		Entity* physicsBall2 = ecs.New("Ball");
 		transform = ecs.GetComponent<ComponentTransform>(physicsBall2->ID());
 		transform->SetPosition(glm::vec3(6.5f, 8.5f, -20.0f));
 		ecs.AddComponent(physicsBall2->ID(), ComponentGeometry(MODEL_SPHERE));
@@ -199,7 +199,7 @@ namespace Engine {
 		ecs.AddComponent(physicsBall2->ID(), ComponentPhysics(30.0f, 0.47f, 0.5f, true)); // drag coefficient of a sphere, surface area = 0.5
 		ecs.GetComponent<ComponentCollisionSphere>(physicsBall2->ID())->IsMovedByCollisions(true);
 
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetPosition(glm::vec3(0.0f, -2.0f, 0.0f));
 		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE));
@@ -207,7 +207,7 @@ namespace Engine {
 		ecs.AddComponent(floor->ID(), ComponentCollisionAABB(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.GetComponent<ComponentCollisionAABB>(floor->ID())->IsMovedByCollisions(false);
 
-		EntityNew* inelasticBall = ecs.New("Inelastic Ball");
+		Entity* inelasticBall = ecs.New("Inelastic Ball");
 		transform = ecs.GetComponent<ComponentTransform>(inelasticBall->ID());
 		transform->SetPosition(glm::vec3(2.0f, 4.0f, -1.0f));
 		ecs.AddComponent(inelasticBall->ID(), ComponentGeometry(MODEL_SPHERE));
@@ -215,7 +215,7 @@ namespace Engine {
 		ecs.AddComponent(inelasticBall->ID(), ComponentCollisionSphere(1.0f));
 		ecs.AddComponent(inelasticBall->ID(), ComponentPhysics(10.0f, 0.47f, 0.5f, 0.15f, true));
 
-		EntityNew* elasticBall = ecs.New("Elastic Ball");
+		Entity* elasticBall = ecs.New("Elastic Ball");
 		transform = ecs.GetComponent<ComponentTransform>(elasticBall->ID());
 		transform->SetPosition(glm::vec3(2.0f, 8.0f, -1.0f));
 		ecs.AddComponent(elasticBall->ID(), ComponentGeometry(MODEL_SPHERE));
@@ -224,7 +224,7 @@ namespace Engine {
 		ecs.AddComponent(elasticBall->ID(), ComponentCollisionSphere(1.0f));
 		ecs.AddComponent(elasticBall->ID(), ComponentPhysics(10.0f, 0.47f, 0.5f, 1.0f, true));
 
-		EntityNew* box = ecs.New("Box");
+		Entity* box = ecs.New("Box");
 		transform = ecs.GetComponent<ComponentTransform>(box->ID());
 		transform->SetPosition(glm::vec3(-5.0f, 10.0f, -1.0f));
 		//transform->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
@@ -232,7 +232,7 @@ namespace Engine {
 		ecs.AddComponent(box->ID(), ComponentCollisionBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f));
 		ecs.AddComponent(box->ID(), ComponentPhysics(5.0f, 1.05f, 2.0f, 0.7f, true, true));
 
-		//EntityNew* box2 = ecs.New("Box 2");
+		//Entity* box2 = ecs.New("Box 2");
 		//transform = ecs.GetComponent<ComponentTransform>(box2->ID());
 		//transform->SetPosition(glm::vec3(-4.5f, 13.0f, -1.0f));
 		//transform->SetRotation(glm::vec3(0.5f, 0.0f, 1.0f), 45.0f);
@@ -250,7 +250,7 @@ namespace Engine {
 
 		glm::vec3 startPosition = glm::vec3(-25.0f, 5.0f, 17.0f);
 
-		EntityNew* bridgeStart = ecs.New("Bridge Start");
+		Entity* bridgeStart = ecs.New("Bridge Start");
 		transform = ecs.GetComponent<ComponentTransform>(bridgeStart->ID());
 		transform->SetPosition(startPosition);
 		transform->SetScale(linkSize);
@@ -258,7 +258,7 @@ namespace Engine {
 		//ecs.AddComponent(bridgeStart->ID(), ComponentPhysics(10000.0f, 1.05f, 2.0f, 0.7f, false, true));
 		unsigned int previous = bridgeStart->ID();
 
-		EntityNew* bridgeEnd = ecs.New("Bridge End");
+		Entity* bridgeEnd = ecs.New("Bridge End");
 		transform = ecs.GetComponent<ComponentTransform>(bridgeEnd->ID());
 		transform->SetPosition(startPosition + glm::vec3(0.0f, 0.0f, (links + 1) * linkDistance));
 		transform->SetScale(linkSize);
@@ -268,7 +268,7 @@ namespace Engine {
 
 		for (int i = 0; i < links; i++) {
 			std::string name = std::string("Link ") + std::string(std::to_string(i));
-			EntityNew* newLink = ecs.New(name);
+			Entity* newLink = ecs.New(name);
 			transform = ecs.GetComponent<ComponentTransform>(newLink->ID());
 			transform->SetPosition(startPosition + glm::vec3(0.0f, 0.0f, (i + 1) * linkDistance));
 			transform->SetScale(linkSize);
@@ -280,7 +280,7 @@ namespace Engine {
 		}
 		constraintManager->AddNewConstraint(new ConstraintPosition(previous, bridgeEndID, maxConstraintDistance, bias, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 
-		EntityNew* testCube = ecs.New("Test Cube");
+		Entity* testCube = ecs.New("Test Cube");
 		transform = ecs.GetComponent<ComponentTransform>(testCube->ID());
 		transform->SetPosition(glm::vec3(0.0f, 10.0f, 15.0f));
 		ecs.AddComponent(testCube->ID(), ComponentGeometry(MODEL_CUBE));
@@ -288,7 +288,7 @@ namespace Engine {
 		//transform->SetOrientation(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.5f)));
 		const unsigned int testCubeID = testCube->ID();
 
-		EntityNew* testCube2 = ecs.New("Test Cube 2");
+		Entity* testCube2 = ecs.New("Test Cube 2");
 		transform = ecs.GetComponent<ComponentTransform>(testCube2->ID());
 		transform->SetPosition(glm::vec3(2.0f, 10.0f, 15.0f));
 		ecs.AddComponent(testCube2->ID(), ComponentGeometry(MODEL_CUBE));
@@ -296,7 +296,7 @@ namespace Engine {
 
 		constraintManager->AddNewConstraint(new ConstraintRotation(testCubeID, testCube2->ID(), glm::vec3(20.0f, 0.0f, 0.0f)));
 
-		EntityNew* aabbCube = ecs.New("AABB Cube");
+		Entity* aabbCube = ecs.New("AABB Cube");
 		transform = ecs.GetComponent<ComponentTransform>(aabbCube->ID());
 		transform->SetPosition(glm::vec3(3.0f, 2.0f, 2.0f));
 		ecs.AddComponent(aabbCube->ID(), ComponentGeometry(MODEL_CUBE));
@@ -305,7 +305,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

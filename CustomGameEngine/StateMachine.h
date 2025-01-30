@@ -20,7 +20,7 @@ namespace Engine {
 		void AddState(State* newState);
 		void AddTransition(StateTransition* newTransition);
 		
-		void Update(EntityManagerNew* ecs, const unsigned int entityID);
+		void Update(EntityManager* ecs, const unsigned int entityID);
 
 		const std::queue<State*>& GetStateHistory() const { return stateHistory; }
 

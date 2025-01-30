@@ -1,5 +1,5 @@
 #pragma once
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include "ReflectionProbe.h"
 #include "LightManager.h"
 #include "Camera.h"
@@ -12,7 +12,7 @@ namespace Engine {
 
 		void OnAction(const unsigned int entityID, ComponentTransform& transform, ComponentGeometry& geometry);
 
-		void Run(EntityManagerNew* ecs, LightManager* lightManager, const bool discardUnfilteredCapture = true);
+		void Run(EntityManager* ecs, LightManager* lightManager, const bool discardUnfilteredCapture = true);
 
 		void SetActiveCamera(Camera* newCamera) { activeCamera = newCamera; }
 	private:
@@ -29,7 +29,7 @@ namespace Engine {
 		glm::mat4 currentProjection;
 		glm::vec3 currentViewPos;
 
-		EntityManagerNew* ecs;
+		EntityManager* ecs;
 		LightManager* lightManager;
 	};
 }

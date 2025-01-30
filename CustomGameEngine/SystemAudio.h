@@ -6,7 +6,7 @@ namespace Engine {
     class SystemAudio : public System
     {
     public:
-        SystemAudio(EntityManagerNew* ecs) : System(ecs) {}
+        SystemAudio(EntityManager* ecs) : System(ecs) {}
         ~SystemAudio() {}
 
         constexpr const char* SystemName() override { return "SYSTEM_AUDIO"; }

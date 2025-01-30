@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "EntityManagerNew.h"
+#include "EntityManager.h"
 #include "LightManager.h"
 #include "CollisionManager.h"
 #include "ResourceManager.h"
@@ -33,7 +33,7 @@ namespace Engine {
 		SystemRenderColliders& GetColliderDebugRenderSystem() { return colliderDebugRenderSystem; }
 
 		virtual constexpr const char* PipelineName() const = 0;
-		void virtual Run(EntityManagerNew* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera);
+		void virtual Run(EntityManager* ecs, LightManager* lightManager, CollisionManager* collisionManager, Camera* activeCamera);
 	protected:
 		void virtual DirLightShadowStep();
 		void virtual ActiveLightsShadowStep();
@@ -44,7 +44,7 @@ namespace Engine {
 		void virtual AdvancedBloomStep(const unsigned int activeScreenTexture);
 		void virtual DebugCollidersStep();
 
-		EntityManagerNew* ecs;
+		EntityManager* ecs;
 		LightManager* lightManager;
 		CollisionManager* collisionManager;
 		RenderManager* renderInstance;

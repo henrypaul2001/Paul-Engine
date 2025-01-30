@@ -25,7 +25,7 @@ namespace Engine {
 		};
 
 	public:
-		SystemAnimatedGeometryAABBGeneration(EntityManagerNew* ecs) : System(ecs) {
+		SystemAnimatedGeometryAABBGeneration(EntityManager* ecs) : System(ecs) {
 			minMaxVerticesShader = ResourceManager::GetInstance()->LoadComputeShader("Shaders/Compute/verticesMinMax.comp");
 			minMaxOutput = minMaxVerticesShader->AddNewSSBO(1);
 		}

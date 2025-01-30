@@ -635,7 +635,7 @@ namespace Engine {
 		SCOPE_TIMER("PBRScene::CreateEntities");
 		ambientStrength = 0.08f;
 
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		directionalLightEntity = dirLight->ID();
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
@@ -796,7 +796,7 @@ namespace Engine {
 		{
 			SCOPE_TIMER("PBRScene::CreateEntities::Scene");
 #pragma region scene
-			EntityNew* floor = ecs.New("Floor");
+			Entity* floor = ecs.New("Floor");
 			ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 			transform->SetPosition(glm::vec3(0.0f, -1.0f, 0.0));
 			ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -806,7 +806,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 			transform->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 
-			EntityNew* ceiling = ecs.New("Cieling");
+			Entity* ceiling = ecs.New("Cieling");
 			transform = ecs.GetComponent<ComponentTransform>(ceiling->ID());
 			transform->SetPosition(glm::vec3(0.0f, 5.0f, 0.0));
 			ecs.AddComponent(ceiling->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -816,7 +816,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 			transform->SetRotation(glm::vec3(1.0, 0.0, 0.0), 90.0f);
 
-			EntityNew* rainFloor = ecs.New("Rain Floor");
+			Entity* rainFloor = ecs.New("Rain Floor");
 			transform = ecs.GetComponent<ComponentTransform>(rainFloor->ID());
 			transform->SetPosition(glm::vec3(0.0f, -0.99f, 0.0f));
 			ecs.AddComponent(rainFloor->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -826,7 +826,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 			transform->SetRotation(glm::vec3(1.0, 0.0, 0.0), -90.0f);
 
-			EntityNew* wall1 = ecs.New("Wall 1");
+			Entity* wall1 = ecs.New("Wall 1");
 			transform = ecs.GetComponent<ComponentTransform>(wall1->ID());
 			transform->SetPosition(glm::vec3(0.0f, 0.0f, 10.0f));
 			ecs.AddComponent(wall1->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -837,7 +837,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
 			transform->SetRotation(glm::vec3(0.0, 1.0, 0.0), 180.0f);
 
-			EntityNew* wall2 = ecs.New("Wall 2");
+			Entity* wall2 = ecs.New("Wall 2");
 			transform = ecs.GetComponent<ComponentTransform>(wall2->ID());
 			transform->SetPosition(glm::vec3(0.0f, 0.0f, -10.0f));
 			ecs.AddComponent(wall2->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -847,7 +847,7 @@ namespace Engine {
 			geometry->SetCulling(false, GL_BACK);
 			transform ->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
 
-			EntityNew* wall3 = ecs.New("Wall 3");
+			Entity* wall3 = ecs.New("Wall 3");
 			transform = ecs.GetComponent<ComponentTransform>(wall3->ID());
 			transform->SetPosition(glm::vec3(10.0f, 0.0f, 0.0f));
 			ecs.AddComponent(wall3->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -858,7 +858,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
 			transform->SetRotation(glm::vec3(0.0, 1.0, 0.0), -90.0f);
 
-			EntityNew* wall4 = ecs.New("Wall 4");
+			Entity* wall4 = ecs.New("Wall 4");
 			transform = ecs.GetComponent<ComponentTransform>(wall4->ID());
 			transform->SetPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
 			ecs.AddComponent(wall4->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -869,7 +869,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(13.0f, 5.0f, 1.0f));
 			transform->SetRotation(glm::vec3(0.0, 1.0, 0.0), 90.0f);
 
-			EntityNew* pointLight = ecs.New("Point Light");
+			Entity* pointLight = ecs.New("Point Light");
 			transform = ecs.GetComponent<ComponentTransform>(pointLight->ID());
 			transform->SetPosition(glm::vec3(6.5f, 4.0f, -6.5f));
 			ecs.AddComponent(pointLight->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -884,7 +884,7 @@ namespace Engine {
 			light.Active = true;
 			ecs.AddComponent(pointLight->ID(), light);
 
-			EntityNew* pointLight2 = ecs.New("Point Light2");
+			Entity* pointLight2 = ecs.New("Point Light2");
 			transform = ecs.GetComponent<ComponentTransform>(pointLight2->ID());
 			transform->SetPosition(glm::vec3(-8.5f, 4.0f, 8.5f));
 			ecs.AddComponent(pointLight2->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -899,7 +899,7 @@ namespace Engine {
 			light2.Active = true;
 			ecs.AddComponent(pointLight2->ID(), light2);
 
-			EntityNew* pointLight3 = ecs.New("Point Light3");
+			Entity* pointLight3 = ecs.New("Point Light3");
 			transform = ecs.GetComponent<ComponentTransform>(pointLight3->ID());
 			transform->SetPosition(glm::vec3(6.5f, 4.0f, 6.5f));
 			ecs.AddComponent(pointLight3->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -914,7 +914,7 @@ namespace Engine {
 			light3.Active = true;
 			ecs.AddComponent(pointLight3->ID(), light3);
 
-			EntityNew* pointLight4 = ecs.New("Point Light4");
+			Entity* pointLight4 = ecs.New("Point Light4");
 			transform = ecs.GetComponent<ComponentTransform>(pointLight4->ID());
 			transform->SetPosition(glm::vec3(-6.5f, 2.0f, -6.5f));
 			ecs.AddComponent(pointLight4->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -929,7 +929,7 @@ namespace Engine {
 			light4.Active = true;
 			ecs.AddComponent(pointLight4->ID(), light4);
 
-			EntityNew* pointLight5 = ecs.New("Point Light5");
+			Entity* pointLight5 = ecs.New("Point Light5");
 			transform = ecs.GetComponent<ComponentTransform>(pointLight5->ID());
 			transform->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
 			ecs.AddComponent(pointLight5->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -946,7 +946,7 @@ namespace Engine {
 			light5.Active = true;
 			ecs.AddComponent(pointLight5->ID(), light5);
 
-			EntityNew* spotParent = ecs.New("Spot Parent");
+			Entity* spotParent = ecs.New("Spot Parent");
 			transform = ecs.GetComponent<ComponentTransform>(spotParent->ID());
 			transform->SetPosition(glm::vec3(1.0f, 0.0f, 4.6f));
 			ecs.AddComponent(spotParent->ID(), ComponentGeometry(MODEL_CUBE, true));
@@ -956,7 +956,7 @@ namespace Engine {
 			transform->SetScale(glm::vec3(1.0f));
 			const unsigned int parentID = spotParent->ID();
 
-			EntityNew* spotLight = ecs.New("Spot Light");
+			Entity* spotLight = ecs.New("Spot Light");
 			//ecs.GetComponent<ComponentTransform>(parentID)->AddChild(spotLight->ID());
 			transform = ecs.GetComponent<ComponentTransform>(spotLight->ID());
 			transform->SetPosition(glm::vec3(-5.5f, 1.0f, 0.0f));
@@ -974,26 +974,26 @@ namespace Engine {
 			spot.OuterCutoff = glm::cos(glm::radians(32.0f));
 			ecs.AddComponent(spotLight->ID(), spot);
 
-			EntityNew* goblet = ecs.New("Goblet");
+			Entity* goblet = ecs.New("Goblet");
 			transform = ecs.GetComponent<ComponentTransform>(goblet->ID());
 			transform->SetPosition(glm::vec3(0.0f, 0.35f, 0.0f));
 			transform->SetScale(glm::vec3(4.0f));
 			ecs.AddComponent(goblet->ID(), ComponentGeometry("Models/PBR/brass_goblet/brass_goblet.obj", true));
 			const unsigned int gobletID = goblet->ID();
 
-			EntityNew* gobletClone = ecs.Clone(gobletID);
+			Entity* gobletClone = ecs.Clone(gobletID);
 			transform = ecs.GetComponent<ComponentTransform>(gobletClone->ID());
 			transform->SetPosition(transform->GetWorldPosition() + glm::vec3(0.0f, 5.0f, 0.0f));
 			geometry = ecs.GetComponent<ComponentGeometry>(gobletClone->ID());
 			geometry->ApplyMaterialToModel(mirror);
 
-			EntityNew* cart = ecs.New("Cart");
+			Entity* cart = ecs.New("Cart");
 			transform = ecs.GetComponent<ComponentTransform>(cart->ID());
 			transform->SetPosition(glm::vec3(5.0f, -1.0f, 2.0f));
 			transform->SetScale(glm::vec3(2.0f));
 			ecs.AddComponent(cart->ID(), ComponentGeometry("Models/PBR/cart/cart.obj", true));
 
-			//EntityNew* bloomCube = ecs.New("Bloom Cube");
+			//Entity* bloomCube = ecs.New("Bloom Cube");
 			//transform = ecs.GetComponent<ComponentTransform>(bloomCube->ID());
 			//transform->SetPosition(glm::vec3(-2.5f, 0.35f, 2.5f));
 			//transform->SetScale(glm::vec3(0.5f));
@@ -1011,7 +1011,7 @@ namespace Engine {
 			SCOPE_TIMER("PBRScene::CreateEntities::UI");
 #pragma region ui
 			TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-			EntityNew* uiCanvas = ecs.New("Canvas");
+			Entity* uiCanvas = ecs.New("Canvas");
 			ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 			canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));
@@ -1679,7 +1679,7 @@ namespace Engine {
 		nonPBRMat->shininess = 100.0f;
 		resources->AddMaterial("Non PBR Mat", nonPBRMat);
 
-		EntityNew* nonPBRTest = ecs.New("NON PBR TEST");
+		Entity* nonPBRTest = ecs.New("NON PBR TEST");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(nonPBRTest->ID());
 		transform->SetPosition(glm::vec3(-5.0f, 0.35f, 2.5f));
 		ecs.AddComponent(nonPBRTest->ID(), ComponentGeometry(MODEL_CUBE));
@@ -1784,7 +1784,7 @@ namespace Engine {
 	
 		float time = (float)glfwGetTime();
 
-		EntityNew* spotLight = ecs.Find("Spot Light");
+		Entity* spotLight = ecs.Find("Spot Light");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(spotLight->ID());
 		glm::vec3 axis = transform->RotationAxis();
 		//axis.x += 0.3 * Scene::dt * sin(time);
@@ -1800,7 +1800,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -1847,7 +1847,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);

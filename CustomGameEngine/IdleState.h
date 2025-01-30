@@ -11,9 +11,9 @@ namespace Engine {
 		IdleState();
 		~IdleState();
 
-		void Update(EntityManagerNew* ecs, const unsigned int entityID) override;
-		void Enter(EntityManagerNew* ecs, const unsigned int entityID) override;
-		void Exit(EntityManagerNew* ecs, const unsigned int entityID) override;
+		void Update(EntityManager* ecs, const unsigned int entityID) override;
+		void Enter(EntityManager* ecs, const unsigned int entityID) override;
+		void Exit(EntityManager* ecs, const unsigned int entityID) override;
 
 		State* Copy() override { return new IdleState(*this); }
 

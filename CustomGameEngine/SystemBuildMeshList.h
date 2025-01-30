@@ -7,7 +7,7 @@
 namespace Engine {
 	class SystemBuildMeshList : public System {
 	public:
-		SystemBuildMeshList(EntityManagerNew* ecs) : System(ecs) {}
+		SystemBuildMeshList(EntityManager* ecs) : System(ecs) {}
 		~SystemBuildMeshList() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_BUILD_MESH_LIST"; }

@@ -54,7 +54,7 @@ namespace Engine {
 
 		glm::vec3 colour = glm::vec3(1.0f - targetFPSPercentage, 0.0f + targetFPSPercentage, 0.0f);
 
-		EntityNew* canvasEntity = ecs.Find("Canvas");
+		Entity* canvasEntity = ecs.Find("Canvas");
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(canvasEntity->ID());
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetColour(colour);
 		dynamic_cast<UIText*>(canvas->UIElements()[1])->SetText("FPS: " + std::to_string((int)fps));
@@ -99,7 +99,7 @@ namespace Engine {
 		}
 		if (key == GLFW_KEY_G) {
 			bool renderGeometryColliders = (renderManager->GetRenderParams()->GetRenderOptions() & RENDER_GEOMETRY_COLLIDERS) != 0;
-			EntityNew* uiCanvas = ecs.Find("Canvas");
+			Entity* uiCanvas = ecs.Find("Canvas");
 			ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 
 			canvas->UIElements()[5]->SetActive(!renderGeometryColliders);
@@ -117,7 +117,7 @@ namespace Engine {
 
 	void SSRScene::CreateEntities()
 	{
-		EntityNew* dirLight = ecs.New("Directional Light");
+		Entity* dirLight = ecs.New("Directional Light");
 		ComponentLight directional = ComponentLight(DIRECTIONAL);
 		directional.CastShadows = true;
 		directional.Colour = glm::vec3(3.9f, 3.1f, 7.5f);
@@ -193,25 +193,25 @@ namespace Engine {
 #pragma endregion
 
 #pragma region Scene
-		EntityNew* floor = ecs.New("Floor");
+		Entity* floor = ecs.New("Floor");
 		ComponentTransform* transform = ecs.GetComponent<ComponentTransform>(floor->ID());
 		transform->SetPosition(glm::vec3(0.0f, -0.5f, 0.0f));
 		transform->SetScale(glm::vec3(25.0f, 0.5, 25.0f));
 		ecs.AddComponent(floor->ID(), ComponentGeometry(MODEL_CUBE, true));
 		ecs.GetComponent<ComponentGeometry>(floor->ID())->ApplyMaterialToModel(stoneTiles);
 
-		EntityNew* pillar = ecs.New("Pillar");
+		Entity* pillar = ecs.New("Pillar");
 		transform = ecs.GetComponent<ComponentTransform>(pillar->ID());
 		transform->SetPosition(glm::vec3(2.5, 5.0f, -5.0f));
 		ecs.AddComponent(pillar->ID(), ComponentGeometry(MODEL_CUBE, true));
 		transform->SetScale(glm::vec3(1.0f, 5.0f, 1.0f));
 		ecs.GetComponent<ComponentGeometry>(pillar->ID())->ApplyMaterialToModel(marbleTile);
 
-		EntityNew* pillarClone = ecs.Clone(pillar->ID());
+		Entity* pillarClone = ecs.Clone(pillar->ID());
 		transform = ecs.GetComponent<ComponentTransform>(pillarClone->ID());
 		transform->SetPosition(transform->GetWorldPosition() + glm::vec3(-4.5f, 0.0f, -2.5f));
 
-		EntityNew* goldSheet = ecs.New("Gold Sheet");
+		Entity* goldSheet = ecs.New("Gold Sheet");
 		transform = ecs.GetComponent<ComponentTransform>(goldSheet->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 		transform->SetScale(glm::vec3(3.5f, 0.025f, 3.5f));
@@ -219,24 +219,24 @@ namespace Engine {
 		ecs.GetComponent<ComponentGeometry>(goldSheet->ID())->ApplyMaterialToModel(gold);
 
 		SkeletalAnimation* vampireDanceAnim = resources->LoadAnimation("Models/vampire/dancing_vampire.dae");
-		EntityNew* vampire = ecs.New("Vampire");
+		Entity* vampire = ecs.New("Vampire");
 		transform = ecs.GetComponent<ComponentTransform>(vampire->ID());
 		transform->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 		ecs.AddComponent(vampire->ID(), ComponentGeometry("Models/vampire/dancing_vampire.dae", false));
 		ecs.AddComponent(vampire->ID(), ComponentAnimator(vampireDanceAnim));
 
-		EntityNew* vent = ecs.New("Vent");
+		Entity* vent = ecs.New("Vent");
 		transform = ecs.GetComponent<ComponentTransform>(vent->ID());
 		transform->SetPosition(glm::vec3(-5.0f, 1.0f, 0.0f));
 		ecs.AddComponent(vent->ID(), ComponentGeometry(MODEL_CUBE, true));
 		ecs.GetComponent<ComponentGeometry>(vent->ID())->ApplyMaterialToModel(metalVent);
 
-		EntityNew* block = ecs.Clone(vent->ID());
+		Entity* block = ecs.Clone(vent->ID());
 		transform = ecs.GetComponent<ComponentTransform>(block->ID());
 		transform->SetPosition(transform->GetWorldPosition() + glm::vec3(0.05f, 2.0f, -0.1f));
 		ecs.GetComponent<ComponentGeometry>(block->ID())->ApplyMaterialToModel(metalGrid);
 
-		EntityNew* woodPlane = ecs.New("Wood Plane");
+		Entity* woodPlane = ecs.New("Wood Plane");
 		transform = ecs.GetComponent<ComponentTransform>(woodPlane->ID());
 		transform->SetPosition(glm::vec3(8.5f, 2.0f, 1.0f));
 		ecs.AddComponent(woodPlane->ID(), ComponentGeometry(MODEL_PLANE, true));
@@ -244,7 +244,7 @@ namespace Engine {
 		transform->SetScale(glm::vec3(5.0f, 4.0f, 1.0f));
 		transform->SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), -135.0f);
 
-		EntityNew* pointLight = ecs.New("Light");
+		Entity* pointLight = ecs.New("Light");
 		transform = ecs.GetComponent<ComponentTransform>(pointLight->ID());
 		transform->SetPosition(glm::vec3(6.0f, 2.5f, -1.0f));
 		ecs.AddComponent(pointLight->ID(), ComponentGeometry(MODEL_SPHERE, true));
@@ -254,7 +254,7 @@ namespace Engine {
 		light.CastShadows = true;
 		ecs.AddComponent(pointLight->ID(), light);
 
-		EntityNew* testEnvironment = ecs.New("Test Environment");
+		Entity* testEnvironment = ecs.New("Test Environment");
 		ecs.AddComponent(testEnvironment->ID(), ComponentGeometry("Models/PBR/SSRTestEnvironment/ssrTestEnvironment.obj", true));
 
 		Model* testScene = ecs.GetComponent<ComponentGeometry>(testEnvironment->ID())->GetModel();
@@ -270,7 +270,7 @@ namespace Engine {
 
 #pragma region UI
 		TextFont* font = ResourceManager::GetInstance()->LoadTextFont("Fonts/arial.ttf");
-		EntityNew* uiCanvas = ecs.New("Canvas");
+		Entity* uiCanvas = ecs.New("Canvas");
 		ecs.AddComponent(uiCanvas->ID(), ComponentUICanvas(SCREEN_SPACE));
 		ComponentUICanvas* canvas = ecs.GetComponent<ComponentUICanvas>(uiCanvas->ID());
 		canvas->AddUIElement(new UIText(std::string("Paul Engine"), glm::vec2(25.0f, 135.0f), glm::vec2(0.25f, 0.25f), font, glm::vec3(0.0f, 0.0f, 0.0f)));

@@ -4,7 +4,7 @@ namespace Engine {
     class SystemCollisionSphereBox : public SystemCollision
     {
 	public:
-		SystemCollisionSphereBox(EntityManagerNew* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
+		SystemCollisionSphereBox(EntityManager* ecs, CollisionManager* collisionManager) : SystemCollision(ecs, collisionManager) {}
 		~SystemCollisionSphereBox() {}
 
 		constexpr const char* SystemName() override { return "SYSTEM_COLLISION_SPHERE_BOX"; }
