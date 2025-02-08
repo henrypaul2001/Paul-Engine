@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.vcxproj", "{D506E5B7-24E2-4340-B6A1-5B81E798C365}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PaulEngine", "PaulEngine\PaulEngine.vcxproj", "{581492D2-406F-42B2-B594-EB3F2912DE8A}"
 EndProject
 Global
@@ -15,6 +17,10 @@ Global
 		{581492D2-406F-42B2-B594-EB3F2912DE8A}.Debug|x64.Build.0 = Debug|x64
 		{581492D2-406F-42B2-B594-EB3F2912DE8A}.Release|x64.ActiveCfg = Release|x64
 		{581492D2-406F-42B2-B594-EB3F2912DE8A}.Release|x64.Build.0 = Release|x64
+		{D506E5B7-24E2-4340-B6A1-5B81E798C365}.Debug|x64.ActiveCfg = Debug|x64
+		{D506E5B7-24E2-4340-B6A1-5B81E798C365}.Debug|x64.Build.0 = Debug|x64
+		{D506E5B7-24E2-4340-B6A1-5B81E798C365}.Release|x64.ActiveCfg = Release|x64
+		{D506E5B7-24E2-4340-B6A1-5B81E798C365}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
