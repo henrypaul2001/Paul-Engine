@@ -6,8 +6,6 @@ public:
 	~Sandbox() {}
 };
 
-int main() {
-	Sandbox* sandbox = new Sandbox();
-	sandbox->Run();
-	delete sandbox;
+PaulEngine::Application* PaulEngine::CreateApplication() {
+	return new Sandbox();
 }

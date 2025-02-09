@@ -10,4 +10,7 @@ namespace PaulEngine {
 
 		void Run();
 	};
+
+	// To be defined by client
+	Application* CreateApplication();
 }
