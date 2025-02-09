@@ -67,6 +67,7 @@
       <PreprocessorDefinitions>PE_PLATFORM_WINDOWS;PE_BUILD_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)PaulEngine\vendor\spdlog\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -82,6 +83,7 @@
       <PreprocessorDefinitions>PE_PLATFORM_WINDOWS;PE_BUILD_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)PaulEngine\vendor\spdlog\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

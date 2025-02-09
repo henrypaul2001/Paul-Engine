@@ -1,5 +1,4 @@
 #pragma once
-#include "Application.h"
 #ifdef PE_PLATFORM_WINDOWS
 
 extern PaulEngine::Application* PaulEngine::CreateApplication();
