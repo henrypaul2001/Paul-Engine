@@ -2,6 +2,7 @@
 #include <string>
 #include <functional>
 #include <ostream>
+#include <sstream>
 
 namespace PaulEngine {
 	enum class EventType {
@@ -29,7 +30,7 @@ namespace PaulEngine {
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
 	// Abstract event class
-	class Event {
+	class PAUL_API Event {
 		friend class EventDispatcher;
 	public:
 		virtual ~Event() = default;

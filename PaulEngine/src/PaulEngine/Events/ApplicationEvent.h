@@ -1,9 +1,8 @@
 #pragma once
 #include "PaulEngine/Events/Event.h"
-#include <sstream>
 
 namespace PaulEngine {
-	class WindowResizeEvent : public Event {
+	class PAUL_API WindowResizeEvent : public Event {
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height) : m_Width(width), m_Height(height) {}
 
@@ -22,7 +21,7 @@ namespace PaulEngine {
 		unsigned int m_Width, m_Height;
 	};
 
-	class WindowCloseEvent : public Event {
+	class PAUL_API WindowCloseEvent : public Event {
 	public:
 		WindowCloseEvent() = default;
 
@@ -30,7 +29,7 @@ namespace PaulEngine {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class AppTickEvent : public Event {
+	class PAUL_API AppTickEvent : public Event {
 	public:
 		AppTickEvent() = default;
 
@@ -38,7 +37,7 @@ namespace PaulEngine {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class AppUpdateEvent : public Event {
+	class PAUL_API AppUpdateEvent : public Event {
 	public:
 		AppUpdateEvent() = default;
 
@@ -46,7 +45,7 @@ namespace PaulEngine {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class AppRenderEvent : public Event {
+	class PAUL_API AppRenderEvent : public Event {
 	public:
 		AppRenderEvent() = default;
 
