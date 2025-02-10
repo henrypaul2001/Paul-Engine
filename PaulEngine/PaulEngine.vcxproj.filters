@@ -20,6 +20,9 @@
       <Filter>PaulEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Events\Event.h" />
+    <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\PaulEngine\Events\KeyEvent.h" />
+    <ClInclude Include="src\PaulEngine\Events\MouseEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp">
