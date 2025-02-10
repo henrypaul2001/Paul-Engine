@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
+#include <ostream>
 
 namespace PaulEngine {
 	enum class EventType {
@@ -63,4 +64,8 @@ namespace PaulEngine {
 	private:
 		Event& m_Event;
 	};
+
+	inline std::string format_as(const Event& e) {
+		return e.ToString();
+	}
 }
