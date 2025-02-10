@@ -26,6 +26,7 @@ project "PaulEngine"
 
 	includedirs
 	{
+		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include"
 	}
 
