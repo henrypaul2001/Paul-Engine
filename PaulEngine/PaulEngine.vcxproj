@@ -153,6 +153,7 @@
     <ClInclude Include="src\PaulEngine\Application.h" />
     <ClInclude Include="src\PaulEngine\Core.h" />
     <ClInclude Include="src\PaulEngine\EntryPoint.h" />
+    <ClInclude Include="src\PaulEngine\Events\Event.h" />
     <ClInclude Include="src\PaulEngine\Log.h" />
   </ItemGroup>
   <ItemGroup>

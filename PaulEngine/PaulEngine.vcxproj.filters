@@ -19,6 +19,7 @@
     <ClInclude Include="src\PaulEngine\Log.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Events\Event.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp">
