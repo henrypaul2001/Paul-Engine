@@ -1,3 +1,4 @@
+#include "pepch.h"
 #include "Log.h"
 namespace PaulEngine {
 	std::shared_ptr<spdlog::logger> Log::s_CoreLogger;

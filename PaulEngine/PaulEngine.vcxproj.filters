@@ -4,6 +4,9 @@
     <Filter Include="PaulEngine">
       <UniqueIdentifier>{4DBABEB8-3972-0006-A279-D9618E509BF6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PaulEngine\Events">
+      <UniqueIdentifier>{912DEC66-FD43-EAFC-46BB-751EB210BB84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PaulEngine.h" />
@@ -16,13 +19,22 @@
     <ClInclude Include="src\PaulEngine\EntryPoint.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h">
+      <Filter>PaulEngine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Events\Event.h">
+      <Filter>PaulEngine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Events\KeyEvent.h">
+      <Filter>PaulEngine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Events\MouseEvent.h">
+      <Filter>PaulEngine\Events</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Log.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Events\Event.h" />
-    <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h" />
-    <ClInclude Include="src\PaulEngine\Events\KeyEvent.h" />
-    <ClInclude Include="src\PaulEngine\Events\MouseEvent.h" />
+    <ClInclude Include="src\pepch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp">
@@ -31,5 +43,6 @@
     <ClCompile Include="src\PaulEngine\Log.cpp">
       <Filter>PaulEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\pepch.cpp" />
   </ItemGroup>
 </Project>

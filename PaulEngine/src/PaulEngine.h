@@ -2,6 +2,7 @@
 
 // For use by applications only. Not for use in PaulEngine source
 
+#include "pepch.h"
 #include "PaulEngine/Application.h"
 #include "PaulEngine/Log.h"
 

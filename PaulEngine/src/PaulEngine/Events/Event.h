@@ -1,9 +1,4 @@
 #pragma once
-#include <string>
-#include <functional>
-#include <ostream>
-#include <sstream>
-
 namespace PaulEngine {
 	enum class EventType {
 		None = 0,
