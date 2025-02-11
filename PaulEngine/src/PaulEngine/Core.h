@@ -18,3 +18,6 @@
 #endif
 
 #define BIT(x) (1 << x)
+
+#define PE_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define PE_BIND_EVENT_FN_PTR(fn, ptr) std::bind(&fn, ptr, std::placeholders::_1)
