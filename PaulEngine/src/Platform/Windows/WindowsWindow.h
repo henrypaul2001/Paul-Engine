@@ -1,6 +1,7 @@
 #pragma once
 #include "PaulEngine/Window.h"
-#include <GLFW/glfw3.h>
+
+struct GLFWwindow;
 
 namespace PaulEngine {
 	class WindowsWindow : public Window {

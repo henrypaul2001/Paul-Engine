@@ -5,6 +5,9 @@
 #include "PaulEngine/Events/MouseEvent.h"
 #include "PaulEngine/Events/KeyEvent.h"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 namespace PaulEngine {
 	static bool s_GLFWInitialised = false;
 
@@ -37,6 +40,10 @@ namespace PaulEngine {
 
 		m_Window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		PE_CORE_ASSERT(status, "Failed to initialise Glad!");
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
