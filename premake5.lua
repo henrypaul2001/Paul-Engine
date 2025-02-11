@@ -64,7 +64,11 @@ project "PaulEngine"
 		}
 
 	filter "configurations:Debug"
-		defines "PE_DEBUG"
+		defines 
+		{
+			"PE_DEBUG",
+			"PE_ENABLE_ASSERTS"
+		}
 		symbols "On"
 
 	filter "configurations:Release"
