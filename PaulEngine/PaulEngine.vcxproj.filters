@@ -7,6 +7,12 @@
     <Filter Include="PaulEngine\Events">
       <UniqueIdentifier>{912DEC66-FD43-EAFC-46BB-751EB210BB84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PaulEngine.h" />
@@ -31,8 +37,20 @@
     <ClInclude Include="src\PaulEngine\Events\MouseEvent.h">
       <Filter>PaulEngine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Layer.h">
+      <Filter>PaulEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\LayerStack.h">
+      <Filter>PaulEngine</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Log.h">
       <Filter>PaulEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Window.h">
+      <Filter>PaulEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\pepch.h" />
   </ItemGroup>
@@ -40,8 +58,17 @@
     <ClCompile Include="src\PaulEngine\Application.cpp">
       <Filter>PaulEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Layer.cpp">
+      <Filter>PaulEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\LayerStack.cpp">
+      <Filter>PaulEngine</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Log.cpp">
       <Filter>PaulEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\pepch.cpp" />
   </ItemGroup>

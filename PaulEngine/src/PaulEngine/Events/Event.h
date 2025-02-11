@@ -39,6 +39,7 @@ namespace PaulEngine {
 			return GetCategoryFlags() & category;
 		}
 
+		inline bool Handled() const { return handled; }
 	private:
 		bool handled = false;
 	};

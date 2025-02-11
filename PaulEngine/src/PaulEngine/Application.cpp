@@ -17,13 +17,35 @@ namespace PaulEngine {
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<WindowCloseEvent>(PE_BIND_EVENT_FN(Application::OnWindowClosed));
 		PE_CORE_INFO(e);
+
+		// Events propagate down the layer stack, starting with overlays until the event is handled or all layers have received the event
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
+			(*--it)->OnEvent(e);
+			if (e.Handled()) { break; }
+		}
 	}
 
 	void Application::Run()
 	{
 		while (m_Running) {
+
+			// Update layers
+			for (auto it = m_LayerStack.begin(); it != m_LayerStack.end(); it++) {
+				(*it)->OnUpdate();
+			}
+
 			m_Window->OnUpdate();
 		}
+	}
+
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* overlay)
+	{
+		m_LayerStack.PushOverlay(overlay);
 	}
 
 	bool Application::OnWindowClosed(WindowCloseEvent& e)
