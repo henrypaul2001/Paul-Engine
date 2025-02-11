@@ -1,3 +1,6 @@
 [submodule "PaulEngine/vendor/spdlog"]
 	path = PaulEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "PaulEngine/vendor/GLFW/GLFW"]
+	path = PaulEngine/vendor/GLFW/GLFW
+	url = https://github.com/glfw/glfw
