@@ -5,10 +5,7 @@ extern PaulEngine::Application* PaulEngine::CreateApplication();
 
 int main(int argc, char** argv) {
 	PaulEngine::Log::Init();
-	PE_CORE_WARN("Warning log");
-	int a = 5;
-	PE_INFO("Hello! Var={0}", a);
-
+	PE_CORE_TRACE("Welcome to Paul Engine.");
 	auto app = PaulEngine::CreateApplication();
 	app->Run();
 	delete app;
