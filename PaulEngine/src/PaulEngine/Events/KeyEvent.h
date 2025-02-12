@@ -5,18 +5,20 @@ namespace PaulEngine {
 	class PAUL_API KeyEvent : public Event {
 	public:
 		inline int GetKeyCode() const { return m_Keycode; }
+		inline int GetScancode() const { return m_Scancode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
 	protected:
-		KeyEvent(int keycode) : m_Keycode(keycode) {}
+		KeyEvent(int keycode, int scancode) : m_Keycode(keycode), m_Scancode(scancode) {}
 
 		int m_Keycode;
+		int m_Scancode;
 	};
 
 	class PAUL_API KeyPressedEvent : public KeyEvent {
 	public:
-		KeyPressedEvent(int keycode, int repeatCount) : KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+		KeyPressedEvent(int keycode, int scancode, int repeatCount) : KeyEvent(keycode, scancode), m_RepeatCount(repeatCount) {}
 
 		inline int GetRepeatCount() const { return m_RepeatCount; }
 
@@ -33,7 +35,7 @@ namespace PaulEngine {
 
 	class PAUL_API KeyReleasedEvent : public KeyEvent {
 	public:
-		KeyReleasedEvent(int keycode) : KeyEvent(keycode) {}
+		KeyReleasedEvent(int keycode, int scancode) : KeyEvent(keycode, scancode) {}
 
 		std::string ToString() const override {
 			std::stringstream ss;

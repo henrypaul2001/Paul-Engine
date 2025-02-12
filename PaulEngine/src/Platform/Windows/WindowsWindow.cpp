@@ -73,19 +73,19 @@ namespace PaulEngine {
 			switch (action) {
 				case GLFW_PRESS:
 				{
-					KeyPressedEvent event = KeyPressedEvent(key, 0);
+					KeyPressedEvent event = KeyPressedEvent(key, scancode, 0);
 					data.eventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					KeyReleasedEvent event = KeyReleasedEvent(key);
+					KeyReleasedEvent event = KeyReleasedEvent(key, scancode);
 					data.eventCallback(event);
 					break;
 				}
 				case GLFW_REPEAT:
 				{
-					KeyPressedEvent event = KeyPressedEvent(key, 1);
+					KeyPressedEvent event = KeyPressedEvent(key, scancode, 1);
 					data.eventCallback(event);
 					break;
 				}
