@@ -4,3 +4,6 @@
 [submodule "PaulEngine/vendor/GLFW/GLFW"]
 	path = PaulEngine/vendor/GLFW/GLFW
 	url = https://github.com/glfw/glfw
+[submodule "PaulEngine/vendor/imgui/imgui"]
+	path = PaulEngine/vendor/imgui/imgui
+	url = https://github.com/ocornut/imgui.git
