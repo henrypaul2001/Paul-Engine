@@ -7,3 +7,5 @@
 #include "PaulEngine/Log.h"
 
 #include "PaulEngine/EntryPoint.h"
+
+#include "PaulEngine/ImGui/ImGuiLayer.h"

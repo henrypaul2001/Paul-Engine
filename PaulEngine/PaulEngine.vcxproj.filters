@@ -7,6 +7,9 @@
     <Filter Include="PaulEngine\Events">
       <UniqueIdentifier>{912DEC66-FD43-EAFC-46BB-751EB210BB84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PaulEngine\ImGui">
+      <UniqueIdentifier>{37F5AE39-23EE-CD8B-4C20-B3103878AD97}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
     </Filter>
@@ -37,6 +40,9 @@
     <ClInclude Include="src\PaulEngine\Events\MouseEvent.h">
       <Filter>PaulEngine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h">
+      <Filter>PaulEngine\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Layer.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
@@ -57,6 +63,9 @@
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp">
       <Filter>PaulEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp">
+      <Filter>PaulEngine\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Layer.cpp">
       <Filter>PaulEngine</Filter>

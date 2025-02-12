@@ -18,6 +18,8 @@ namespace PaulEngine {
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
 
+		GLFWwindow* GetGLFWwindow() { return m_Window; }
+
 	private:
 		virtual void Init(const WindowProperties& properties);
 		virtual void Shutdown();

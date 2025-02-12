@@ -17,6 +17,7 @@ class Sandbox : public PaulEngine::Application {
 public:
 	Sandbox() {
 		PushLayer(new TestLayer());
+		PushOverlay(new PaulEngine::ImGuiLayer());
 	}
 	~Sandbox() {}
 };
