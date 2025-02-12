@@ -187,6 +187,7 @@ namespace PaulEngine {
 		dispatcher.DispatchEvent<MouseScrolledEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnMouseScroll));
 		dispatcher.DispatchEvent<KeyPressedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnKeyDown));
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnKeyUp));
+		dispatcher.DispatchEvent<KeyTypedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnKeyTyped));
 		dispatcher.DispatchEvent<MouseMovedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnMouseMoved));
 		dispatcher.DispatchEvent<WindowResizeEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnWindowResize));
 	}
@@ -201,7 +202,6 @@ namespace PaulEngine {
 		ImGuiIO& io = ImGui::GetIO();
 		if (button >= 0 && button < ImGuiMouseButton_COUNT) {
 			io.AddMouseButtonEvent(button, GLFW_PRESS);
-			return true;
 		}
 		return false;
 	}
@@ -216,7 +216,6 @@ namespace PaulEngine {
 		ImGuiIO& io = ImGui::GetIO();
 		if (button >= 0 && button < ImGuiMouseButton_COUNT) {
 			io.AddMouseButtonEvent(button, GLFW_RELEASE);
-			return true;
 		}
 		return false;
 	}
@@ -225,7 +224,7 @@ namespace PaulEngine {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddMouseWheelEvent(e.GetXOffset(), e.GetYOffset());
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::OnKeyDown(KeyPressedEvent& e)
@@ -242,7 +241,7 @@ namespace PaulEngine {
 		ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(keycode);
 		io.AddKeyEvent(imgui_key, true);
 		io.SetKeyEventNativeData(imgui_key, keycode, scancode); // To support legacy indexing (<1.87 user code)
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::OnKeyUp(KeyReleasedEvent& e)
@@ -257,14 +256,21 @@ namespace PaulEngine {
 		ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(keycode);
 		io.AddKeyEvent(imgui_key, false);
 		io.SetKeyEventNativeData(imgui_key, keycode, scancode); // To support legacy indexing (<1.87 user code)
-		return true;
+		return false;
+	}
+
+	bool ImGuiLayer::OnKeyTyped(KeyTypedEvent& e)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.AddInputCharacter(e.GetKeyCode());
+		return false;
 	}
 
 	bool ImGuiLayer::OnMouseMoved(MouseMovedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddMousePosEvent(e.GetX(), e.GetY());
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::OnWindowResize(WindowResizeEvent& e)

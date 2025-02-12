@@ -45,4 +45,18 @@ namespace PaulEngine {
 
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
+
+	class PAUL_API KeyTypedEvent : public KeyEvent {
+	public:
+		KeyTypedEvent(int keycode, int scancode) : KeyEvent(keycode, scancode) {}
+
+		std::string ToString() const override {
+			std::stringstream ss;
+			ss << "KeyTypeEvent: " << m_Keycode;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyTyped)
+
+	};
 }

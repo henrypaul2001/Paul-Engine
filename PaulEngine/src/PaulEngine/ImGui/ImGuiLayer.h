@@ -26,6 +26,7 @@ namespace PaulEngine {
 		bool OnMouseScroll(MouseScrolledEvent& e);
 		bool OnKeyDown(KeyPressedEvent& e);
 		bool OnKeyUp(KeyReleasedEvent& e);
+		bool OnKeyTyped(KeyTypedEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 		static void ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window);

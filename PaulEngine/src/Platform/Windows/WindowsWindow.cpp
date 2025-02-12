@@ -92,6 +92,13 @@ namespace PaulEngine {
 			}
 		});
 
+		// Key typed
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			KeyTypedEvent event = KeyTypedEvent(keycode, -1);
+			data.eventCallback(event);
+		});
+
 		// Mouse button
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
