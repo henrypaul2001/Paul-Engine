@@ -17,16 +17,15 @@ namespace PaulEngine {
 		void OnUpdate() override;
 		void OnEvent(Event& e) override;
 
+	private:
+		float m_Time = 0.0f;
+
 		bool OnMousePressed(MouseButtonPressedEvent& e);
 		bool OnMouseReleased(MouseButtonReleasedEvent& e);
 		bool OnMouseScroll(MouseScrolledEvent& e);
 		bool OnKeyDown(KeyPressedEvent& e);
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
-
-	private:
-		float m_Time = 0.0f;
-
 		static void ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window);
 	};
 }
