@@ -148,7 +148,6 @@ namespace PaulEngine {
 		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;			// Enable docking
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;			// Enable multi-viewport
 
-
 		// Init for platform backends
 		ImGui_ImplOpenGL3_Init();
 
@@ -189,6 +188,7 @@ namespace PaulEngine {
 		dispatcher.DispatchEvent<KeyPressedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnKeyDown));
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnKeyUp));
 		dispatcher.DispatchEvent<MouseMovedEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnMouseMoved));
+		dispatcher.DispatchEvent<WindowResizeEvent>(PE_BIND_EVENT_FN(ImGuiLayer::OnWindowResize));
 	}
 
 	bool ImGuiLayer::OnMousePressed(MouseButtonPressedEvent& e)
@@ -265,6 +265,14 @@ namespace PaulEngine {
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddMousePosEvent(e.GetX(), e.GetY());
 		return true;
+	}
+
+	bool ImGuiLayer::OnWindowResize(WindowResizeEvent& e)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
+		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+		return false;
 	}
 
 	void ImGuiLayer::ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window)

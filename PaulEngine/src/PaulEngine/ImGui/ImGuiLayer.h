@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Layer.h"
+#include <PaulEngine/Events/ApplicationEvent.h>
 #include <PaulEngine/Events/MouseEvent.h>
 #include <PaulEngine/Events/KeyEvent.h>
 
@@ -26,6 +27,7 @@ namespace PaulEngine {
 		bool OnKeyDown(KeyPressedEvent& e);
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 		static void ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window);
 	};
 }
