@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "PaulEngine/vendor/GLFW/GLFW/include"
 IncludeDir["glad"] = "PaulEngine/vendor/glad/include"
 IncludeDir["ImGui"] = "PaulEngine/vendor/imgui/imgui"
+IncludeDir["glm"] = "PaulEngine/vendor/glm"
 
 include "PaulEngine/vendor/GLFW"
 include "PaulEngine/vendor/glad"
@@ -45,7 +46,8 @@ project "PaulEngine"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -111,7 +113,8 @@ project "Sandbox"
 	includedirs
 	{
 		"PaulEngine/vendor/spdlog/include",
-		"PaulEngine/src"
+		"PaulEngine/src",
+		"%{IncludeDir.glm}"
 	}
 
 	links

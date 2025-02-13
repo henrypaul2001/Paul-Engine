@@ -49,6 +49,12 @@
     <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h">
       <Filter>PaulEngine\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Input.h">
+      <Filter>PaulEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\KeyCodes.h">
+      <Filter>PaulEngine</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Layer.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
@@ -58,11 +64,17 @@
     <ClInclude Include="src\PaulEngine\Log.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\MouseButtonCodes.h">
+      <Filter>PaulEngine</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Window.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\TempImGui\imgui_impl_opengl3.h">
       <Filter>Platform\OpenGL\TempImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
+      <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
@@ -87,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\TempImGui\imgui_impl_opengl3.cpp">
       <Filter>Platform\OpenGL\TempImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
+      <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
