@@ -194,7 +194,7 @@ namespace PaulEngine {
 
 	bool ImGuiLayer::OnMousePressed(MouseButtonPressedEvent& e)
 	{
-		GLFWwindow* window = static_cast<WindowsWindow*>(&Application::Get().GetWindow())->GetGLFWwindow();
+		GLFWwindow* window = (GLFWwindow*)Application::Get().GetWindow().GetNativeWindow();
 		ImGui_ImplGlfw_UpdateKeyModifiers(window);
 
 		int button = e.GetMouseButton();
@@ -208,7 +208,7 @@ namespace PaulEngine {
 
 	bool ImGuiLayer::OnMouseReleased(MouseButtonReleasedEvent& e)
 	{
-		GLFWwindow* window = static_cast<WindowsWindow*>(&Application::Get().GetWindow())->GetGLFWwindow();
+		GLFWwindow* window = (GLFWwindow*)Application::Get().GetWindow().GetNativeWindow();
 		ImGui_ImplGlfw_UpdateKeyModifiers(window);
 
 		int button = e.GetMouseButton();
@@ -231,7 +231,7 @@ namespace PaulEngine {
 	{
 		if (e.GetRepeatCount() > 0) { return false; }
 
-		GLFWwindow* window = static_cast<WindowsWindow*>(&Application::Get().GetWindow())->GetGLFWwindow();
+		GLFWwindow* window = (GLFWwindow*)Application::Get().GetWindow().GetNativeWindow();
 		ImGui_ImplGlfw_UpdateKeyModifiers(window);
 
 		int keycode = e.GetKeyCode();
@@ -246,7 +246,7 @@ namespace PaulEngine {
 
 	bool ImGuiLayer::OnKeyUp(KeyReleasedEvent& e)
 	{
-		GLFWwindow* window = static_cast<WindowsWindow*>(&Application::Get().GetWindow())->GetGLFWwindow();
+		GLFWwindow* window = (GLFWwindow*)Application::Get().GetWindow().GetNativeWindow();
 		ImGui_ImplGlfw_UpdateKeyModifiers(window);
 
 		int keycode = e.GetKeyCode();
