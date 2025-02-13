@@ -5,7 +5,9 @@ public:
 	TestLayer() : Layer("Test Layer") {}
 
 	void OnUpdate() override {
-		PE_INFO("TestLayer::Update");
+		//PE_INFO("TestLayer::Update");
+		auto [x, y] = PaulEngine::Input::GetMousePosition();
+		PE_TRACE("{0}, {1}", x, y);
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {

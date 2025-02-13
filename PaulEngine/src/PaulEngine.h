@@ -4,6 +4,7 @@
 
 #include "pepch.h"
 #include "PaulEngine/Application.h"
+#include "PaulEngine/Input.h"
 #include "PaulEngine/Log.h"
 
 #include "PaulEngine/EntryPoint.h"
