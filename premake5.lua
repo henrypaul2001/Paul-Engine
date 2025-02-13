@@ -114,7 +114,8 @@ project "Sandbox"
 	{
 		"PaulEngine/vendor/spdlog/include",
 		"PaulEngine/src",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links

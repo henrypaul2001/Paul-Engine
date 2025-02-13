@@ -13,12 +13,6 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Platform\OpenGL">
-      <UniqueIdentifier>{1E7D2C1D-8A08-9AE1-9319-1DD6FF23F6E1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Platform\OpenGL\TempImGui">
-      <UniqueIdentifier>{FE547C67-6A17-B0F1-B3C7-3E7E1FC988CF}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Platform\Windows">
       <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
     </Filter>
@@ -70,9 +64,6 @@
     <ClInclude Include="src\PaulEngine\Window.h">
       <Filter>PaulEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\TempImGui\imgui_impl_opengl3.h">
-      <Filter>Platform\OpenGL\TempImGui</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsInput.h">
       <Filter>Platform\Windows</Filter>
     </ClInclude>
@@ -85,6 +76,9 @@
     <ClCompile Include="src\PaulEngine\Application.cpp">
       <Filter>PaulEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp">
+      <Filter>PaulEngine\ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp">
       <Filter>PaulEngine\ImGui</Filter>
     </ClCompile>
@@ -96,9 +90,6 @@
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Log.cpp">
       <Filter>PaulEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\TempImGui\imgui_impl_opengl3.cpp">
-      <Filter>Platform\OpenGL\TempImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>Platform\Windows</Filter>

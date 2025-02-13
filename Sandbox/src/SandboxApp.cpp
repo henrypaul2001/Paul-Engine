@@ -1,4 +1,5 @@
 #include <PaulEngine.h>
+#include <imgui.h>
 
 class TestLayer : public PaulEngine::Layer {
 public:
@@ -8,6 +9,12 @@ public:
 		//PE_INFO("TestLayer::Update");
 		//auto [x, y] = PaulEngine::Input::GetMousePosition();
 		//PE_TRACE("{0}, {1}", x, y);
+	}
+
+	void OnImGuiRender() override {
+		ImGui::Begin("Test Window");
+		ImGui::Text("Hello World!");
+		ImGui::End();
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {
@@ -25,7 +32,6 @@ class Sandbox : public PaulEngine::Application {
 public:
 	Sandbox() {
 		PushLayer(new TestLayer());
-		PushOverlay(new PaulEngine::ImGuiLayer());
 	}
 	~Sandbox() {}
 };

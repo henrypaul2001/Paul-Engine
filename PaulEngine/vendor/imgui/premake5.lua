@@ -5,6 +5,11 @@ project "ImGui"
 	targetdir ("imgui/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("imgui/bin-int/" .. outputdir .. "/%{prj.name}")
 
+	defines 
+	{
+		"IMGUI_API=__declspec(dllexport)" 
+	}
+
 	files
 	{
 		"imgui/imconfig.h",

@@ -13,22 +13,14 @@ namespace PaulEngine {
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		void OnAttach() override;
-		void OnDetach() override;
-		void OnUpdate() override;
-		void OnEvent(Event& e) override;
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+		virtual void OnImGuiRender() override;
+
+		void Begin();
+		void End();
 
 	private:
 		float m_Time = 0.0f;
-
-		bool OnMousePressed(MouseButtonPressedEvent& e);
-		bool OnMouseReleased(MouseButtonReleasedEvent& e);
-		bool OnMouseScroll(MouseScrolledEvent& e);
-		bool OnKeyDown(KeyPressedEvent& e);
-		bool OnKeyUp(KeyReleasedEvent& e);
-		bool OnKeyTyped(KeyTypedEvent& e);
-		bool OnMouseMoved(MouseMovedEvent& e);
-		bool OnWindowResize(WindowResizeEvent& e);
-		static void ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window);
 	};
 }

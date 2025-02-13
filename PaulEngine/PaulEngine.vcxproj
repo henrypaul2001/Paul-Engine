@@ -171,18 +171,17 @@
     <ClInclude Include="src\PaulEngine\Log.h" />
     <ClInclude Include="src\PaulEngine\MouseButtonCodes.h" />
     <ClInclude Include="src\PaulEngine\Window.h" />
-    <ClInclude Include="src\Platform\OpenGL\TempImGui\imgui_impl_opengl3.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pepch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp" />
+    <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\PaulEngine\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\LayerStack.cpp" />
     <ClCompile Include="src\PaulEngine\Log.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\TempImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\pepch.cpp">

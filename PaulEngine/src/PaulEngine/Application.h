@@ -3,6 +3,7 @@
 #include "Events/ApplicationEvent.h"
 #include "Window.h"
 #include "LayerStack.h"
+#include "ImGui/ImGuiLayer.h"
 
 namespace PaulEngine {
 	class PAUL_API Application
@@ -25,6 +26,7 @@ namespace PaulEngine {
 		bool OnWindowClosed(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
