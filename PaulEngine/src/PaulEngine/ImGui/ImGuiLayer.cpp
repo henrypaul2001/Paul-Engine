@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "Platform/OpenGL/TempImGui/imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
+#include <PaulEngine/KeyCodes.h>
 
 namespace PaulEngine {
 	static ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int keycode)
@@ -283,9 +284,9 @@ namespace PaulEngine {
 	void ImGuiLayer::ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.AddKeyEvent(ImGuiMod_Ctrl, (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS));
-		io.AddKeyEvent(ImGuiMod_Shift, (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS));
-		io.AddKeyEvent(ImGuiMod_Alt, (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS));
-		io.AddKeyEvent(ImGuiMod_Super, (glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS));
+		io.AddKeyEvent(ImGuiMod_Ctrl, (glfwGetKey(window, PE_KEY_LEFT_CONTROL) == GLFW_PRESS) || (glfwGetKey(window, PE_KEY_RIGHT_CONTROL) == GLFW_PRESS));
+		io.AddKeyEvent(ImGuiMod_Shift, (glfwGetKey(window, PE_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, PE_KEY_RIGHT_SHIFT) == GLFW_PRESS));
+		io.AddKeyEvent(ImGuiMod_Alt, (glfwGetKey(window, PE_KEY_LEFT_ALT) == GLFW_PRESS) || (glfwGetKey(window, PE_KEY_RIGHT_ALT) == GLFW_PRESS));
+		io.AddKeyEvent(ImGuiMod_Super, (glfwGetKey(window, PE_KEY_LEFT_SUPER) == GLFW_PRESS) || (glfwGetKey(window, PE_KEY_RIGHT_SUPER) == GLFW_PRESS));
 	}
 }

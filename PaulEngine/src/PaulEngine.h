@@ -4,8 +4,11 @@
 
 #include "pepch.h"
 #include "PaulEngine/Application.h"
-#include "PaulEngine/Input.h"
 #include "PaulEngine/Log.h"
+
+#include "PaulEngine/Input.h"
+#include "PaulEngine/KeyCodes.h"
+#include "PaulEngine/MouseButtonCodes.h"
 
 #include "PaulEngine/EntryPoint.h"
 

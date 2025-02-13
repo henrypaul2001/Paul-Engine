@@ -6,12 +6,18 @@ public:
 
 	void OnUpdate() override {
 		//PE_INFO("TestLayer::Update");
-		auto [x, y] = PaulEngine::Input::GetMousePosition();
-		PE_TRACE("{0}, {1}", x, y);
+		//auto [x, y] = PaulEngine::Input::GetMousePosition();
+		//PE_TRACE("{0}, {1}", x, y);
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {
 		PE_TRACE(e);
+		if (e.GetEventType() == PaulEngine::EventType::KeyPressed) {
+			PaulEngine::KeyPressedEvent& event = (PaulEngine::KeyPressedEvent&)e;
+			if (event.GetKeyCode() == PE_KEY_W) {
+				PE_INFO("W key pressed");
+			}
+		}
 	}
 };
 
