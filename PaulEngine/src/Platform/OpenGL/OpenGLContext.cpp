@@ -19,6 +19,14 @@ namespace PaulEngine {
 		glfwMakeContextCurrent(m_Window);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		PE_CORE_ASSERT(status, "Failed to initialise Glad!");
+
+		const char* vendorInfo = (const char*)glGetString(GL_VENDOR);
+		const char* rendererInfo = (const char*)glGetString(GL_RENDERER);
+		const char* versionInfo = (const char*)glGetString(GL_VERSION);
+		PE_CORE_INFO("OpenGL Info:");
+		PE_CORE_INFO("    Vendor: {0}", vendorInfo);
+		PE_CORE_INFO("    Renderer: {0}", rendererInfo);
+		PE_CORE_INFO("    Version: {0}", versionInfo);
 	}
 
 	void OpenGLContext::SwapBuffers()
