@@ -18,7 +18,7 @@ public:
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {
-		PE_TRACE(e);
+		//PE_TRACE(e);
 		if (e.GetEventType() == PaulEngine::EventType::KeyPressed) {
 			PaulEngine::KeyPressedEvent& event = (PaulEngine::KeyPressedEvent&)e;
 			if (event.GetKeyCode() == PE_KEY_W) {
