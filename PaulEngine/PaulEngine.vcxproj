@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Application.h" />
     <ClInclude Include="src\PaulEngine\Core.h" />
@@ -161,12 +162,14 @@
     <ClInclude Include="src\PaulEngine\LayerStack.h" />
     <ClInclude Include="src\PaulEngine\Log.h" />
     <ClInclude Include="src\PaulEngine\MouseButtonCodes.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\PaulEngine\Window.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pepch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\PaulEngine\Application.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp" />

@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Window.h"
+#include "PaulEngine/Renderer/GraphicsContext.h"
 
 struct GLFWwindow;
 
@@ -24,6 +25,7 @@ namespace PaulEngine {
 		virtual void Shutdown();
 
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData {
 			std::string Title;
