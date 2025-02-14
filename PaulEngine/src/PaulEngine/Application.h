@@ -6,7 +6,7 @@
 #include "ImGui/ImGuiLayer.h"
 
 namespace PaulEngine {
-	class PAUL_API Application
+	class Application
 	{
 	public:
 		Application();

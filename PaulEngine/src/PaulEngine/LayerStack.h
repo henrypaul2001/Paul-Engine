@@ -2,7 +2,7 @@
 #include "PaulEngine/Layer.h"
 
 namespace PaulEngine {
-	class PAUL_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack() = default;

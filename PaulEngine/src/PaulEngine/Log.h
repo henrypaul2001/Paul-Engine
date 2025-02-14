@@ -6,7 +6,7 @@
 #include <spdlog/fmt/ostr.h>
 
 namespace PaulEngine {
-	class PAUL_API Log
+	class Log
 	{
 	public:
 		static void Init();

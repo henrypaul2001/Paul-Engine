@@ -11,7 +11,7 @@ namespace PaulEngine {
 	};
 
 	// Interface for platform specific windows
-	class PAUL_API Window {
+	class Window {
 	public:
 		using EventCallbackFunction = std::function<void(Event&)>;
 		virtual ~Window() = default;

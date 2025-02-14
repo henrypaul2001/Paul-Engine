@@ -2,7 +2,7 @@
 #include "PaulEngine/Events/Event.h"
 
 namespace PaulEngine {
-	class PAUL_API KeyEvent : public Event {
+	class KeyEvent : public Event {
 	public:
 		inline int GetKeyCode() const { return m_Keycode; }
 		inline int GetScancode() const { return m_Scancode; }
@@ -16,7 +16,7 @@ namespace PaulEngine {
 		int m_Scancode;
 	};
 
-	class PAUL_API KeyPressedEvent : public KeyEvent {
+	class KeyPressedEvent : public KeyEvent {
 	public:
 		KeyPressedEvent(int keycode, int scancode, int repeatCount) : KeyEvent(keycode, scancode), m_RepeatCount(repeatCount) {}
 
@@ -33,7 +33,7 @@ namespace PaulEngine {
 		int m_RepeatCount;
 	};
 
-	class PAUL_API KeyReleasedEvent : public KeyEvent {
+	class KeyReleasedEvent : public KeyEvent {
 	public:
 		KeyReleasedEvent(int keycode, int scancode) : KeyEvent(keycode, scancode) {}
 
@@ -46,7 +46,7 @@ namespace PaulEngine {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class PAUL_API KeyTypedEvent : public KeyEvent {
+	class KeyTypedEvent : public KeyEvent {
 	public:
 		KeyTypedEvent(int keycode, int scancode) : KeyEvent(keycode, scancode) {}
 

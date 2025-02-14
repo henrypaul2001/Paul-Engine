@@ -24,15 +24,21 @@ include "PaulEngine/vendor/imgui"
 
 project "PaulEngine"
 	location "PaulEngine"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "Off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pepch.h"
 	pchsource "PaulEngine/src/pepch.cpp"
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
+	}
 
 	files
 	{
@@ -59,7 +65,6 @@ project "PaulEngine"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		buildoptions "/utf-8"
@@ -71,11 +76,6 @@ project "PaulEngine"
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
-		}
-
 	filter "configurations:Debug"
 		defines 
 		{
@@ -83,23 +83,24 @@ project "PaulEngine"
 			"PE_ENABLE_ASSERTS"
 		}
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "PE_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "PE_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "Off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -124,7 +125,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		buildoptions "/utf-8"
@@ -137,14 +137,14 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "PE_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "PE_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "PE_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"

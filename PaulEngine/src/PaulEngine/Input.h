@@ -1,7 +1,7 @@
 #pragma once
 #include "PaulEngine/Core.h"
 namespace PaulEngine {
-	class PAUL_API Input {
+	class Input {
 	public:
 		inline static bool IsKeyPressed(int keycode) { return s_Instance->IsKeyPressedImpl(keycode); }
 		inline static bool IsMouseButtonPressed(int button) { return s_Instance->IsMouseButtonPressedImpl(button); }
