@@ -1,0 +1,17 @@
+#pragma once
+
+namespace PaulEngine{
+	enum class RendererAPI {
+		None = 0,
+		OpenGL = 1,
+		Direct3D = 2, Vulkan = 3 // ambitious I know
+	};
+
+	class Renderer {
+	public:
+		inline static RendererAPI GetAPI() { return s_RendererAPI; }
+
+	private:
+		static RendererAPI s_RendererAPI;
+	};
+}
