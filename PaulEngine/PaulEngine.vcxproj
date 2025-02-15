@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\Shader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Application.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="src\pepch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\PaulEngine\Application.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp" />

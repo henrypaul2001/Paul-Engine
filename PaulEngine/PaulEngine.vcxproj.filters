@@ -71,6 +71,9 @@
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\pepch.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp">
@@ -98,5 +101,7 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\pepch.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Shader.cpp" />
   </ItemGroup>
 </Project>
