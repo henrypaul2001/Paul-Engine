@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Shader.h" />
@@ -171,8 +172,10 @@
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pepch.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Shader.cpp" />
@@ -189,6 +192,7 @@
     <ClCompile Include="src\pepch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
