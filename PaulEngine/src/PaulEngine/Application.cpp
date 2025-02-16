@@ -1,6 +1,7 @@
 #include "pepch.h"
 #include "Application.h"
-#include <glad/glad.h>
+
+#include "Renderer/Renderer.h"
 
 namespace PaulEngine {
 
@@ -156,18 +157,21 @@ namespace PaulEngine {
 	void Application::Run()
 	{
 		while (m_Running) {
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetViewport({ 0, 0 }, { m_Window->GetWidth(), m_Window->GetHeight() });
 
-			glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
 
 			m_Shader2->Bind();
-			m_SquareVertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_SquareVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_SquareVertexArray);
 
 			m_Shader->Bind();
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_VertexArray);
+
+			Renderer::EndScene();
+
 
 			// Update layers
 			for (Layer* layer : m_LayerStack) {

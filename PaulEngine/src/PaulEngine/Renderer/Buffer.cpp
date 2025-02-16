@@ -9,13 +9,13 @@ namespace PaulEngine {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None:		PE_CORE_ASSERT(false, "RendererAPI::None is not supported"); return nullptr;
-			case RendererAPI::OpenGL:	return new OpenGLVertexBuffer(vertices, size);
-			case RendererAPI::Direct3D: PE_CORE_ASSERT(false, "RendererAPI::Direct3D is not supported"); return nullptr;
-			case RendererAPI::Vulkan:	PE_CORE_ASSERT(false, "RendererAPI::Vulkan is not supported"); return nullptr;
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return new OpenGLVertexBuffer(vertices, size);
+			case RenderAPI::API::Direct3D: PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
 
-		PE_CORE_ASSERT(false, "Unknown RendererAPI");
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
 
@@ -23,13 +23,13 @@ namespace PaulEngine {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None:		PE_CORE_ASSERT(false, "RendererAPI::None is not supported"); return nullptr;
-			case RendererAPI::OpenGL:	return new OpenGLIndexBuffer(indices, count);
-			case RendererAPI::Direct3D: PE_CORE_ASSERT(false, "RendererAPI::Direct3D is not supported"); return nullptr;
-			case RendererAPI::Vulkan:	PE_CORE_ASSERT(false, "RendererAPI::Vulkan is not supported"); return nullptr;
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return new OpenGLIndexBuffer(indices, count);
+			case RenderAPI::API::Direct3D: PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
 
-		PE_CORE_ASSERT(false, "Unknown RendererAPI");
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
 }
