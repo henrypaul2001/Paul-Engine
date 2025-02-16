@@ -29,20 +29,22 @@ namespace PaulEngine {
 			0.0f, 0.5f, 0.0f,		0.3f, 0.2f, 0.8f, 1.0f
 		};
 
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		std::shared_ptr<VertexBuffer> vertexBuffer;
+		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		BufferLayout layout = {
 			{ ShaderDataType::Float3, "a_Position", false },
 			{ ShaderDataType::Float4, "a_Colour", true }
 		};
 
-		m_VertexBuffer->SetLayout(layout);
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		vertexBuffer->SetLayout(layout);
+		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
 		// Index buffer
 		uint32_t indices [3] = { 0, 1, 2 };
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, 3));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+		std::shared_ptr<IndexBuffer> indexBuffer;
+		indexBuffer.reset(IndexBuffer::Create(indices, 3));
+		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 
 		// Square
@@ -165,7 +167,7 @@ namespace PaulEngine {
 
 			m_Shader->Bind();
 			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			// Update layers
 			for (Layer* layer : m_LayerStack) {
