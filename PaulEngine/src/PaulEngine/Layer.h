@@ -1,5 +1,6 @@
 #pragma once
 #include "Events/Event.h"
+#include "PaulEngine/Core/Timestep.h"
 
 namespace PaulEngine {
 	class Layer
@@ -10,7 +11,7 @@ namespace PaulEngine {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(const Timestep timestep) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& e) {}
 

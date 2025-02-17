@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Core\Timestep.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderAPI.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderCommand.h" />

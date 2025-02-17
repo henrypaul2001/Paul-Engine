@@ -3,6 +3,8 @@
 
 #include "Renderer/Renderer.h"
 
+#include <GLFW/glfw3.h>
+
 namespace PaulEngine {
 
 	Application* Application::s_Instance = nullptr;
@@ -40,9 +42,14 @@ namespace PaulEngine {
 	void Application::Run()
 	{
 		while (m_Running) {
+
+			float time = (float)glfwGetTime(); // Temporary glfw dependency, change to Platform::GetTime() in future
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
 			// Update layers
 			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate();
+				layer->OnUpdate(timestep);
 			}
 
 			// OnImGuiRender

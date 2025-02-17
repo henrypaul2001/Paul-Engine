@@ -6,6 +6,8 @@
 #include "PaulEngine/Application.h"
 #include "PaulEngine/Log.h"
 
+#include "PaulEngine/Core/Timestep.h"
+
 // Input
 #include "PaulEngine/Input.h"
 #include "PaulEngine/KeyCodes.h"

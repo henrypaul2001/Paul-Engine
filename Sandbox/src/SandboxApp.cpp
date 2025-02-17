@@ -126,11 +126,12 @@ public:
 		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	}
 
-	void OnUpdate() override
+	void OnUpdate(const PaulEngine::Timestep timestep) override
 	{
 		const glm::vec3& currentPosition = m_OrthoCamera.GetPosition();
 		const float currentRotation = m_OrthoCamera.GetRotation();
-		float moveSpeed = 0.01f;
+		float moveSpeed = 1.0f * timestep;
+		float rotateSpeed = 1.5f * timestep;
 		if (PaulEngine::Input::IsKeyPressed(PE_KEY_UP)) {
 			m_OrthoCamera.SetPosition(currentPosition + glm::vec3(0.0f, moveSpeed, 0.0f));
 		}
@@ -144,10 +145,10 @@ public:
 			m_OrthoCamera.SetPosition(currentPosition + glm::vec3(moveSpeed, 0.0f, 0.0f));
 		}
 		if (PaulEngine::Input::IsKeyPressed(PE_KEY_COMMA)) {
-			m_OrthoCamera.SetRotation(currentRotation + -1.0f);
+			m_OrthoCamera.SetRotation(currentRotation + 1.0f);
 		}
 		if (PaulEngine::Input::IsKeyPressed(PE_KEY_PERIOD)) {
-			m_OrthoCamera.SetRotation(currentRotation + 1.0f);
+			m_OrthoCamera.SetRotation(currentRotation + -1.0f);
 		}
 
 		PaulEngine::RenderCommand::SetViewport({ 0, 0 }, { PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight()});
