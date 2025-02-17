@@ -2,12 +2,14 @@
 #include "Application.h"
 
 #include "Renderer/Renderer.h"
+#include "KeyCodes.h"
+#include "Input.h"
 
 namespace PaulEngine {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application()
+	Application::Application() : m_OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		PE_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -76,6 +78,8 @@ namespace PaulEngine {
 			layout (location = 0) in vec3 a_Position;
 			layout (location = 1) in vec4 a_Colour;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Colour;
 
@@ -83,7 +87,7 @@ namespace PaulEngine {
 			{
 				v_Colour = a_Colour;
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -107,12 +111,14 @@ namespace PaulEngine {
 
 			layout (location = 0) in vec3 a_Position;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -134,6 +140,8 @@ namespace PaulEngine {
 		// Shader
 		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
 		m_Shader2.reset(new Shader(vertexSrc2, fragmentSrc2));
+
+		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	}
 
 	Application::~Application()
@@ -157,21 +165,41 @@ namespace PaulEngine {
 	void Application::Run()
 	{
 		while (m_Running) {
+			//m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(0.001f, 0.0f, 0.0f));
+			const glm::vec3& currentPosition = m_OrthoCamera.GetPosition();
+			const float currentRotation = m_OrthoCamera.GetRotation();
+			float moveSpeed = 0.01f;
+			if (Input::IsKeyPressed(PE_KEY_UP)) {
+				m_OrthoCamera.SetPosition(currentPosition + glm::vec3(0.0f, moveSpeed, 0.0f));
+			}
+			if (Input::IsKeyPressed(PE_KEY_DOWN)) {
+				m_OrthoCamera.SetPosition(currentPosition + glm::vec3(0.0f, -moveSpeed, 0.0f));
+			}
+			if (Input::IsKeyPressed(PE_KEY_LEFT)) {
+				m_OrthoCamera.SetPosition(currentPosition + glm::vec3(-moveSpeed, 0.0f, 0.0f));
+			}
+			if (Input::IsKeyPressed(PE_KEY_RIGHT)) {
+				m_OrthoCamera.SetPosition(currentPosition + glm::vec3(moveSpeed, 0.0f, 0.0f));
+			}
+			if (Input::IsKeyPressed(PE_KEY_COMMA)) {
+				m_OrthoCamera.SetRotation(currentRotation + -1.0f);
+			}
+			if (Input::IsKeyPressed(PE_KEY_PERIOD)) {
+				m_OrthoCamera.SetRotation(currentRotation + 1.0f);
+			}
+
 			RenderCommand::SetViewport({ 0, 0 }, { m_Window->GetWidth(), m_Window->GetHeight() });
 
 			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
+			Renderer::BeginScene(m_OrthoCamera);
 
-			m_Shader2->Bind();
-			Renderer::Submit(m_SquareVertexArray);
+			Renderer::Submit(m_Shader2, m_SquareVertexArray);
 
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
+			Renderer::Submit(m_Shader, m_VertexArray);
 
 			Renderer::EndScene();
-
 
 			// Update layers
 			for (Layer* layer : m_LayerStack) {

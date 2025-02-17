@@ -9,6 +9,8 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 
+#include "Renderer/OrthographicCamera.h"
+
 namespace PaulEngine {
 	class Application
 	{
@@ -38,6 +40,8 @@ namespace PaulEngine {
 		std::shared_ptr<Shader> m_Shader2;
 		std::shared_ptr<VertexArray> m_VertexArray;
 		std::shared_ptr<VertexArray> m_SquareVertexArray;
+
+		OrthographicCamera m_OrthoCamera;
 
 		static Application* s_Instance;
 	};
