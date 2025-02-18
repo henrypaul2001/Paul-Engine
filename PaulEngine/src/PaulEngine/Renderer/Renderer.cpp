@@ -1,5 +1,6 @@
 #include "pepch.h"
 #include "Renderer.h"
+#include <Platform/OpenGL/OpenGLShader.h>
 
 namespace PaulEngine {
 	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData();
@@ -16,8 +17,9 @@ namespace PaulEngine {
 	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		shader->Bind();
-		shader->UploadUniformMat4("u_ModelMatrix", transform);
-		shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		// temporary OpenGLShader cast
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ModelMatrix", transform);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}

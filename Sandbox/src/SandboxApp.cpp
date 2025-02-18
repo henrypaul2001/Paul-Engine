@@ -1,6 +1,7 @@
 #include <PaulEngine.h>
 #include <imgui.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <Platform/OpenGL/OpenGLShader.h>
 
 class TestLayer : public PaulEngine::Layer {
 public:
@@ -126,8 +127,8 @@ public:
 		)";
 
 		// Shader
-		m_Shader.reset(new PaulEngine::Shader(vertexSrc, fragmentSrc));
-		m_FlatColourShader.reset(new PaulEngine::Shader(flatColourVertexSrc, flatColourFragmentSrc));
+		m_Shader.reset(PaulEngine::Shader::Create(vertexSrc, fragmentSrc));
+		m_FlatColourShader.reset(PaulEngine::Shader::Create(flatColourVertexSrc, flatColourFragmentSrc));
 
 		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	}
@@ -167,17 +168,14 @@ public:
 		glm::vec4 redColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 		glm::vec4 blueColour = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
 
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_FlatColourShader)->Bind();
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_FlatColourShader)->UploadUniformFloat4("u_Colour", m_SquareColour);
+
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 		for (int y = 0; y < 20; y++) {
 			for (int x = 0; x < 20; x++) {
 				glm::vec3 pos = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				if (x % 2 == 0) {
-					m_FlatColourShader->UploadUniformFloat4("u_Colour", redColour);
-				}
-				else {
-					m_FlatColourShader->UploadUniformFloat4("u_Colour", blueColour);
-				}
 				PaulEngine::Renderer::Submit(m_FlatColourShader, m_SquareVertexArray, transform);
 			}
 		}
@@ -190,7 +188,9 @@ public:
 	}
 
 	void OnImGuiRender() override {
-
+		ImGui::Begin("Colour Edit");
+		ImGui::ColorPicker4("Square Colour", &m_SquareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
+		ImGui::End();
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {
@@ -202,6 +202,8 @@ private:
 	std::shared_ptr<PaulEngine::Shader> m_FlatColourShader;
 	std::shared_ptr<PaulEngine::VertexArray> m_VertexArray;
 	std::shared_ptr<PaulEngine::VertexArray> m_SquareVertexArray;
+
+	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
 	PaulEngine::OrthographicCamera m_OrthoCamera;
 };

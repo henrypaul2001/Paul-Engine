@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\PaulEngine\Core\Timestep.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderAPI.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderCommand.cpp" />
