@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #ifdef PE_PLATFORM_WINDOWS
 #else
 	#error PaulEngine only supports Windows
@@ -16,3 +18,21 @@
 
 #define PE_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 #define PE_BIND_EVENT_FN_PTR(fn, ptr) std::bind(&fn, ptr, std::placeholders::_1)
+
+namespace PaulEngine {
+	template <typename T>
+	// (std::unique_ptr)
+	using Scope = std::unique_ptr<T>;
+	
+	// Room for expansion into custom pointer types
+	/*
+	template <typename T>
+	class Scope {
+
+	};
+	*/
+
+	template <typename T>
+	// (std::shared_ptr)
+	using Ref = std::shared_ptr<T>;
+}

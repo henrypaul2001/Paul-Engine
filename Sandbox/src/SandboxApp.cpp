@@ -16,7 +16,7 @@ public:
 			0.0f, 0.5f, 0.0f,		0.3f, 0.2f, 0.8f, 1.0f
 		};
 
-		std::shared_ptr<PaulEngine::VertexBuffer> vertexBuffer;
+		PaulEngine::Ref<PaulEngine::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(PaulEngine::VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		PaulEngine::BufferLayout layout = {
@@ -29,7 +29,7 @@ public:
 
 		// Index buffer
 		uint32_t indices[3] = { 0, 1, 2 };
-		std::shared_ptr<PaulEngine::IndexBuffer> indexBuffer;
+		PaulEngine::Ref<PaulEngine::IndexBuffer> indexBuffer;
 		indexBuffer.reset(PaulEngine::IndexBuffer::Create(indices, 3));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
@@ -44,7 +44,7 @@ public:
 		};
 
 		m_SquareVertexArray.reset(PaulEngine::VertexArray::Create());
-		std::shared_ptr<PaulEngine::VertexBuffer> squareVB;
+		PaulEngine::Ref<PaulEngine::VertexBuffer> squareVB;
 		squareVB.reset(PaulEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 		squareVB->SetLayout({
 			{ PaulEngine::ShaderDataType::Float3, "a_Position", false }
@@ -52,7 +52,7 @@ public:
 		m_SquareVertexArray->AddVertexBuffer(squareVB);
 
 		uint32_t square_indices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<PaulEngine::IndexBuffer> squareIB;
+		PaulEngine::Ref<PaulEngine::IndexBuffer> squareIB;
 		squareIB.reset(PaulEngine::IndexBuffer::Create(square_indices, 6));
 		m_SquareVertexArray->SetIndexBuffer(squareIB);
 
@@ -198,10 +198,10 @@ public:
 	}
 
 private:
-	std::shared_ptr<PaulEngine::Shader> m_Shader;
-	std::shared_ptr<PaulEngine::Shader> m_FlatColourShader;
-	std::shared_ptr<PaulEngine::VertexArray> m_VertexArray;
-	std::shared_ptr<PaulEngine::VertexArray> m_SquareVertexArray;
+	PaulEngine::Ref<PaulEngine::Shader> m_Shader;
+	PaulEngine::Ref<PaulEngine::Shader> m_FlatColourShader;
+	PaulEngine::Ref<PaulEngine::VertexArray> m_VertexArray;
+	PaulEngine::Ref<PaulEngine::VertexArray> m_SquareVertexArray;
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
