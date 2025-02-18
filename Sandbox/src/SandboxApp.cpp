@@ -165,7 +165,7 @@ public:
 		
 		m_Texture = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
 		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 1);
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(const PaulEngine::Timestep timestep) override
@@ -217,7 +217,7 @@ public:
 
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::scale(transform, glm::vec3(1.5f, 1.5f, 1.0f));
-		m_Texture->Bind(1);
+		m_Texture->Bind(0);
 		PaulEngine::Renderer::Submit(m_TextureShader, m_SquareVertexArray, transform);
 
 		//PaulEngine::Renderer::Submit(m_Shader, m_VertexArray);
