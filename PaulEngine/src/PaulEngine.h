@@ -25,4 +25,5 @@
 #include "PaulEngine/Renderer/Buffer.h"
 #include "PaulEngine/Renderer/VertexArray.h"
 #include "PaulEngine/Renderer/Shader.h"
+#include "PaulEngine/Renderer/Texture.h"
 #include "PaulEngine/Renderer/OrthographicCamera.h"
