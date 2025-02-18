@@ -85,6 +85,9 @@
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\PaulEngine\Core\Timestep.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Texture.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
+    <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Application.cpp">
@@ -124,5 +127,8 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Texture.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
 </Project>

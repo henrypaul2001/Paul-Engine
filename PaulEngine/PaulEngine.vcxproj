@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\PaulEngine\Core\Timestep.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
@@ -179,8 +180,11 @@
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pepch.h" />
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Texture.h" />
+    <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp" />
@@ -204,6 +208,8 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Texture.cpp" />
+    <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
