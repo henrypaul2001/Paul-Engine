@@ -36,19 +36,20 @@ public:
 
 		// Square
 		// ------
-		float squareVertices[4 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5, -0.5f, 0.0f,
-			0.5f, 0.5f, 0.0f,
-			-0.5f, 0.5f, 0.0f
+		float squareVertices[4 * 5] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			0.5, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		m_SquareVertexArray.reset(PaulEngine::VertexArray::Create());
 		PaulEngine::Ref<PaulEngine::VertexBuffer> squareVB;
 		squareVB.reset(PaulEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 		squareVB->SetLayout({
-			{ PaulEngine::ShaderDataType::Float3, "a_Position", false }
-			});
+			{ PaulEngine::ShaderDataType::Float3, "a_Position", false },
+			{ PaulEngine::ShaderDataType::Float2, "a_TexCoords", true }
+		});
 		m_SquareVertexArray->AddVertexBuffer(squareVB);
 
 		uint32_t square_indices[6] = { 0, 1, 2, 2, 3, 0 };
@@ -95,15 +96,13 @@ public:
 			#version 330 core
 
 			layout (location = 0) in vec3 a_Position;
+			layout (location = 1) in vec2 a_TexCoords;
 
 			uniform mat4 u_ModelMatrix;
 			uniform mat4 u_ViewProjection;
 
-			out vec3 v_Position;
-
 			void main()
 			{
-				v_Position = a_Position;
 				gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
 			}
 		)";
@@ -115,8 +114,6 @@ public:
 
 			uniform vec4 u_Colour;
 
-			in vec3 v_Position;	
-
 			void main()
 			{
 				//colour = v_Colour;
@@ -126,11 +123,49 @@ public:
 			}
 		)";
 
+		std::string textureVertexSrc = R"(
+			#version 330 core
+
+			layout (location = 0) in vec3 a_Position;
+			layout (location = 1) in vec2 a_TexCoords;
+
+			uniform mat4 u_ModelMatrix;
+			uniform mat4 u_ViewProjection;
+
+			out vec2 v_TexCoords;
+
+			void main()
+			{
+				v_TexCoords = a_TexCoords;
+				gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string textureFragmentSrc = R"(
+			#version 330 core
+
+			layout (location = 0) out vec4 colour;
+
+			in vec2 v_TexCoords;
+
+			uniform sampler2D u_Texture;
+
+			void main()
+			{
+				colour = texture(u_Texture, v_TexCoords);
+			}
+		)";
+
 		// Shader
 		m_Shader.reset(PaulEngine::Shader::Create(vertexSrc, fragmentSrc));
 		m_FlatColourShader.reset(PaulEngine::Shader::Create(flatColourVertexSrc, flatColourFragmentSrc));
+		m_TextureShader.reset(PaulEngine::Shader::Create(textureVertexSrc, textureFragmentSrc));
 
 		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
+		
+		m_Texture = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->Bind();
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 1);
 	}
 
 	void OnUpdate(const PaulEngine::Timestep timestep) override
@@ -180,9 +215,12 @@ public:
 			}
 		}
 
-		//PaulEngine::Renderer::Submit(m_FlatColourShader, m_SquareVertexArray);
+		glm::mat4 transform = glm::mat4(1.0f);
+		transform = glm::scale(transform, glm::vec3(1.5f, 1.5f, 1.0f));
+		m_Texture->Bind(1);
+		PaulEngine::Renderer::Submit(m_TextureShader, m_SquareVertexArray, transform);
 
-		PaulEngine::Renderer::Submit(m_Shader, m_VertexArray);
+		//PaulEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
 		PaulEngine::Renderer::EndScene();
 	}
@@ -199,9 +237,11 @@ public:
 
 private:
 	PaulEngine::Ref<PaulEngine::Shader> m_Shader;
-	PaulEngine::Ref<PaulEngine::Shader> m_FlatColourShader;
+	PaulEngine::Ref<PaulEngine::Shader> m_FlatColourShader, m_TextureShader;
 	PaulEngine::Ref<PaulEngine::VertexArray> m_VertexArray;
 	PaulEngine::Ref<PaulEngine::VertexArray> m_SquareVertexArray;
+
+	PaulEngine::Ref<PaulEngine::Texture2D> m_Texture;
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
