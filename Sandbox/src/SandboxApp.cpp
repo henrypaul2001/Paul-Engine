@@ -1,9 +1,10 @@
 #include <PaulEngine.h>
 #include <imgui.h>
+#include <glm/ext/matrix_transform.hpp>
 
 class TestLayer : public PaulEngine::Layer {
 public:
-	TestLayer() : Layer("Test Layer"), m_OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f) {
+	TestLayer() : Layer("Test Layer"), m_OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f), m_Transform1(glm::mat4(1.0f)), m_Transform2(glm::mat4(1.0f)) {
 		m_VertexArray.reset(PaulEngine::VertexArray::Create());
 
 		// Vertex buffer
@@ -60,6 +61,7 @@ public:
 			layout (location = 0) in vec3 a_Position;
 			layout (location = 1) in vec4 a_Colour;
 
+			uniform mat4 u_ModelMatrix;
 			uniform mat4 u_ViewProjection;
 
 			out vec3 v_Position;
@@ -69,7 +71,7 @@ public:
 			{
 				v_Colour = a_Colour;
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -93,6 +95,7 @@ public:
 
 			layout (location = 0) in vec3 a_Position;
 
+			uniform mat4 u_ModelMatrix;
 			uniform mat4 u_ViewProjection;
 
 			out vec3 v_Position;
@@ -100,7 +103,7 @@ public:
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -151,6 +154,19 @@ public:
 			m_OrthoCamera.SetRotation(currentRotation + -1.0f);
 		}
 
+		if (PaulEngine::Input::IsKeyPressed(PE_KEY_W)) {
+			m_Transform2 = glm::translate(m_Transform2, glm::vec3(0.0f, moveSpeed, 0.0f));
+		}
+		if (PaulEngine::Input::IsKeyPressed(PE_KEY_S)) {
+			m_Transform2 = glm::translate(m_Transform2, glm::vec3(0.0f, -moveSpeed, 0.0f));
+		}
+		if (PaulEngine::Input::IsKeyPressed(PE_KEY_D)) {
+			m_Transform2 = glm::translate(m_Transform2, glm::vec3(moveSpeed, 0.0f, 0.0f));
+		}
+		if (PaulEngine::Input::IsKeyPressed(PE_KEY_A)) {
+			m_Transform2 = glm::translate(m_Transform2, glm::vec3(-moveSpeed, 0.0f, 0.0f));
+		}
+
 		PaulEngine::RenderCommand::SetViewport({ 0, 0 }, { PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight()});
 
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -158,7 +174,7 @@ public:
 
 		PaulEngine::Renderer::BeginScene(m_OrthoCamera);
 
-		PaulEngine::Renderer::Submit(m_Shader2, m_SquareVertexArray);
+		PaulEngine::Renderer::Submit(m_Shader2, m_SquareVertexArray, m_Transform2);
 
 		PaulEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -178,6 +194,9 @@ private:
 	std::shared_ptr<PaulEngine::Shader> m_Shader2;
 	std::shared_ptr<PaulEngine::VertexArray> m_VertexArray;
 	std::shared_ptr<PaulEngine::VertexArray> m_SquareVertexArray;
+
+	glm::mat4 m_Transform1;
+	glm::mat4 m_Transform2;
 
 	PaulEngine::OrthographicCamera m_OrthoCamera;
 };
