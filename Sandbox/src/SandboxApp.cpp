@@ -4,7 +4,7 @@
 
 class TestLayer : public PaulEngine::Layer {
 public:
-	TestLayer() : Layer("Test Layer"), m_OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f), m_Transform1(glm::mat4(1.0f)), m_Transform2(glm::mat4(1.0f)) {
+	TestLayer() : Layer("Test Layer"), m_OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f) {
 		m_VertexArray.reset(PaulEngine::VertexArray::Create());
 
 		// Vertex buffer
@@ -90,7 +90,7 @@ public:
 			}
 		)";
 
-		std::string vertexSrc2 = R"(
+		std::string flatColourVertexSrc = R"(
 			#version 330 core
 
 			layout (location = 0) in vec3 a_Position;
@@ -107,10 +107,12 @@ public:
 			}
 		)";
 
-		std::string fragmentSrc2 = R"(
+		std::string flatColourFragmentSrc = R"(
 			#version 330 core
 
 			layout (location = 0) out vec4 colour;
+
+			uniform vec4 u_Colour;
 
 			in vec3 v_Position;	
 
@@ -118,13 +120,14 @@ public:
 			{
 				//colour = v_Colour;
 				//colour = vec4(v_Position * 0.5 + 0.5, 1.0);
-				colour = vec4(0.5, 0.5, 0.5, 1.0);
+				//colour = vec4(0.5, 0.5, 0.5, 1.0);
+				colour = u_Colour;
 			}
 		)";
 
 		// Shader
 		m_Shader.reset(new PaulEngine::Shader(vertexSrc, fragmentSrc));
-		m_Shader2.reset(new PaulEngine::Shader(vertexSrc2, fragmentSrc2));
+		m_FlatColourShader.reset(new PaulEngine::Shader(flatColourVertexSrc, flatColourFragmentSrc));
 
 		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	}
@@ -154,19 +157,6 @@ public:
 			m_OrthoCamera.SetRotation(currentRotation + -1.0f);
 		}
 
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_W)) {
-			m_Transform2 = glm::translate(m_Transform2, glm::vec3(0.0f, moveSpeed, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_S)) {
-			m_Transform2 = glm::translate(m_Transform2, glm::vec3(0.0f, -moveSpeed, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_D)) {
-			m_Transform2 = glm::translate(m_Transform2, glm::vec3(moveSpeed, 0.0f, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_A)) {
-			m_Transform2 = glm::translate(m_Transform2, glm::vec3(-moveSpeed, 0.0f, 0.0f));
-		}
-
 		PaulEngine::RenderCommand::SetViewport({ 0, 0 }, { PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight()});
 
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -174,7 +164,25 @@ public:
 
 		PaulEngine::Renderer::BeginScene(m_OrthoCamera);
 
-		PaulEngine::Renderer::Submit(m_Shader2, m_SquareVertexArray, m_Transform2);
+		glm::vec4 redColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
+		glm::vec4 blueColour = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
+
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+		for (int y = 0; y < 20; y++) {
+			for (int x = 0; x < 20; x++) {
+				glm::vec3 pos = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				if (x % 2 == 0) {
+					m_FlatColourShader->UploadUniformFloat4("u_Colour", redColour);
+				}
+				else {
+					m_FlatColourShader->UploadUniformFloat4("u_Colour", blueColour);
+				}
+				PaulEngine::Renderer::Submit(m_FlatColourShader, m_SquareVertexArray, transform);
+			}
+		}
+
+		//PaulEngine::Renderer::Submit(m_FlatColourShader, m_SquareVertexArray);
 
 		PaulEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -191,12 +199,9 @@ public:
 
 private:
 	std::shared_ptr<PaulEngine::Shader> m_Shader;
-	std::shared_ptr<PaulEngine::Shader> m_Shader2;
+	std::shared_ptr<PaulEngine::Shader> m_FlatColourShader;
 	std::shared_ptr<PaulEngine::VertexArray> m_VertexArray;
 	std::shared_ptr<PaulEngine::VertexArray> m_SquareVertexArray;
-
-	glm::mat4 m_Transform1;
-	glm::mat4 m_Transform2;
 
 	PaulEngine::OrthographicCamera m_OrthoCamera;
 };
