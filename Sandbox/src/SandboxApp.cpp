@@ -124,15 +124,15 @@ public:
 		)";
 
 		// Shader
-		m_Shader.reset(PaulEngine::Shader::Create("TestShader", vertexSrc, fragmentSrc));
-		m_FlatColourShader.reset(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc));
-		m_TextureShader.reset(PaulEngine::Shader::Create("assets/shaders/Texture.glsl"));
+		m_ShaderLibrary.Add(PaulEngine::Shader::Create("TestShader", vertexSrc, fragmentSrc));
+		m_ShaderLibrary.Add(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc));
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
 		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 		
 		m_Texture = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 
 		m_TransparentTexture = PaulEngine::Texture2D::Create("assets/textures/awesomeface.png");
 	}
@@ -172,15 +172,16 @@ public:
 		glm::vec4 redColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 		glm::vec4 blueColour = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
 
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_FlatColourShader)->Bind();
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(m_FlatColourShader)->UploadUniformFloat4("u_Colour", m_SquareColour);
+		auto flatColourShader = m_ShaderLibrary.Get("FlatColourShader");
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(flatColourShader)->Bind();
+		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(flatColourShader)->UploadUniformFloat4("u_Colour", m_SquareColour);
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 		for (int y = 0; y < 20; y++) {
 			for (int x = 0; x < 20; x++) {
 				glm::vec3 pos = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				PaulEngine::Renderer::Submit(m_FlatColourShader, m_SquareVertexArray, transform);
+				PaulEngine::Renderer::Submit(flatColourShader, m_SquareVertexArray, transform);
 			}
 		}
 
@@ -188,9 +189,9 @@ public:
 		transform = glm::scale(transform, glm::vec3(1.5f, 1.5f, 1.0f));
 		//m_Texture->Bind(0);
 		m_TransparentTexture->Bind(0);
-		PaulEngine::Renderer::Submit(m_TextureShader, m_SquareVertexArray, transform);
+		PaulEngine::Renderer::Submit(m_ShaderLibrary.Get("Texture"), m_SquareVertexArray, transform);
 
-		//PaulEngine::Renderer::Submit(m_Shader, m_VertexArray);
+		//PaulEngine::Renderer::Submit(m_ShaderLibrary.Get("TestShader"), m_VertexArray);
 
 		PaulEngine::Renderer::EndScene();
 	}
@@ -206,8 +207,8 @@ public:
 	}
 
 private:
-	PaulEngine::Ref<PaulEngine::Shader> m_Shader;
-	PaulEngine::Ref<PaulEngine::Shader> m_FlatColourShader, m_TextureShader;
+	PaulEngine::ShaderLibrary m_ShaderLibrary;
+
 	PaulEngine::Ref<PaulEngine::VertexArray> m_VertexArray;
 	PaulEngine::Ref<PaulEngine::VertexArray> m_SquareVertexArray;
 

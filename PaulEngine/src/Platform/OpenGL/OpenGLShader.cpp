@@ -32,7 +32,7 @@ namespace PaulEngine {
 		startPos = startPos == std::string::npos ? 0 : startPos + 1;
 		auto endPos = filepath.rfind('.');
 		endPos = endPos == std::string::npos ? filepath.size() : endPos;
-		std::string name = filepath.substr(startPos, endPos - startPos);
+		m_Name = filepath.substr(startPos, endPos - startPos);
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -116,6 +116,7 @@ namespace PaulEngine {
 			glAttachShader(program, shader);
 			glShaderIDs[index++] = shader;
 		}
+		m_RendererID = program;
 
 		// Link our program
 		glLinkProgram(program);
@@ -143,7 +144,6 @@ namespace PaulEngine {
 			PE_CORE_ERROR("Shader linking failed: {0}", infoLog.data());
 			return;
 		}
-		m_RendererID = program;
 
 		for (auto id : glShaderIDs) {
 			glDetachShader(m_RendererID, id);
