@@ -219,7 +219,7 @@ public:
 
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::scale(transform, glm::vec3(1.5f, 1.5f, 1.0f));
-		m_Texture->Bind(0);
+		//m_Texture->Bind(0);
 		m_TransparentTexture->Bind(0);
 		PaulEngine::Renderer::Submit(m_TextureShader, m_SquareVertexArray, transform);
 
