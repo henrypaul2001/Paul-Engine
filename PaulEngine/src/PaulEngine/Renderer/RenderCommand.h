@@ -4,6 +4,10 @@
 namespace  PaulEngine {
 	class RenderCommand {
 	public:
+		inline static void Init() {
+			s_RenderAPI->Init();
+		}
+
 		inline static void SetViewport(const glm::vec2& position, const glm::vec2& size) {
 			s_RenderAPI->SetViewport(position, size);
 		}

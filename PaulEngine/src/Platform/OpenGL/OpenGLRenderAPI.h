@@ -7,6 +7,7 @@ namespace PaulEngine {
 		OpenGLRenderAPI();
 		~OpenGLRenderAPI();
 
+		virtual void Init() override;
 		virtual void SetViewport(const glm::vec2& position, const glm::vec2& size) override;
 		virtual void SetClearColour(const glm::vec4& colour) override;
 		virtual void Clear() override;

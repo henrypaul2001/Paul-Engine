@@ -6,6 +6,12 @@ namespace PaulEngine {
 	OpenGLRenderAPI::OpenGLRenderAPI() {}
 	OpenGLRenderAPI::~OpenGLRenderAPI() {}
 
+	void OpenGLRenderAPI::Init()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	void OpenGLRenderAPI::SetViewport(const glm::vec2& position, const glm::vec2& size)
 	{
 		glViewport(position.x, position.y, size.x, size.y);
