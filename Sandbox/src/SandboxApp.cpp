@@ -124,8 +124,8 @@ public:
 		)";
 
 		// Shader
-		m_Shader.reset(PaulEngine::Shader::Create(vertexSrc, fragmentSrc));
-		m_FlatColourShader.reset(PaulEngine::Shader::Create(flatColourVertexSrc, flatColourFragmentSrc));
+		m_Shader.reset(PaulEngine::Shader::Create("TestShader", vertexSrc, fragmentSrc));
+		m_FlatColourShader.reset(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc));
 		m_TextureShader.reset(PaulEngine::Shader::Create("assets/shaders/Texture.glsl"));
 
 		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));

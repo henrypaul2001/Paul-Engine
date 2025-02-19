@@ -13,7 +13,7 @@ namespace PaulEngine {
 		return 0;
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name)
 	{
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
@@ -26,6 +26,13 @@ namespace PaulEngine {
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+	
+		// Get name from filepath
+		auto startPos = filepath.find_last_of("/\\");
+		startPos = startPos == std::string::npos ? 0 : startPos + 1;
+		auto endPos = filepath.rfind('.');
+		endPos = endPos == std::string::npos ? filepath.size() : endPos;
+		std::string name = filepath.substr(startPos, endPos - startPos);
 	}
 
 	OpenGLShader::~OpenGLShader()
