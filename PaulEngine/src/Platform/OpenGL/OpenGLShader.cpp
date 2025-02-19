@@ -74,9 +74,12 @@ namespace PaulEngine {
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> glShaderIDs;
-		glShaderIDs.reserve(shaderSources.size());
 
+		const int maxShaders = 2;
+		PE_CORE_ASSERT(shaderSources.size() <= maxShaders, "Maximum of two shaders supported");
+		GLenum glShaderIDs[2];
+
+		int index = 0;
 		for (auto& kv : shaderSources) {
 			GLenum type = kv.first;
 			const std::string& sourceString = kv.second;
@@ -104,7 +107,7 @@ namespace PaulEngine {
 				break;
 			}
 			glAttachShader(program, shader);
-			glShaderIDs.push_back(shader);
+			glShaderIDs[index++] = shader;
 		}
 
 		// Link our program
