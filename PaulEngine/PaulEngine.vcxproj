@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Application.h" />
     <ClInclude Include="src\PaulEngine\Core.h" />
@@ -602,6 +603,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp" />
     <ClCompile Include="src\PaulEngine\Application.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp" />

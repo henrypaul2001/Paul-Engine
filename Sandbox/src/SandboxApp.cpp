@@ -3,9 +3,11 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <Platform/OpenGL/OpenGLShader.h>
 
+#include <PaulEngine/OrthographicCameraController.h>
+
 class TestLayer : public PaulEngine::Layer {
 public:
-	TestLayer() : Layer("Test Layer"), m_OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f) {
+	TestLayer() : Layer("Test Layer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f) {
 		m_VertexArray.reset(PaulEngine::VertexArray::Create());
 
 		// Vertex buffer
@@ -32,7 +34,6 @@ public:
 		PaulEngine::Ref<PaulEngine::IndexBuffer> indexBuffer;
 		indexBuffer.reset(PaulEngine::IndexBuffer::Create(indices, 3));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
-
 
 		// Square
 		// ------
@@ -127,8 +128,6 @@ public:
 		m_ShaderLibrary.Add(PaulEngine::Shader::Create("TestShader", vertexSrc, fragmentSrc));
 		m_ShaderLibrary.Add(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc));
 		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
-
-		//m_OrthoCamera.SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 		
 		m_Texture = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
 		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(textureShader)->Bind();
@@ -139,35 +138,14 @@ public:
 
 	void OnUpdate(const PaulEngine::Timestep timestep) override
 	{
-		const glm::vec3& currentPosition = m_OrthoCamera.GetPosition();
-		const float currentRotation = m_OrthoCamera.GetRotation();
-		float moveSpeed = 1.0f * timestep;
-		float rotateSpeed = 1.5f * timestep;
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_UP)) {
-			m_OrthoCamera.SetPosition(currentPosition + glm::vec3(0.0f, moveSpeed, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_DOWN)) {
-			m_OrthoCamera.SetPosition(currentPosition + glm::vec3(0.0f, -moveSpeed, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_LEFT)) {
-			m_OrthoCamera.SetPosition(currentPosition + glm::vec3(-moveSpeed, 0.0f, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_RIGHT)) {
-			m_OrthoCamera.SetPosition(currentPosition + glm::vec3(moveSpeed, 0.0f, 0.0f));
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_COMMA)) {
-			m_OrthoCamera.SetRotation(currentRotation + 1.0f);
-		}
-		if (PaulEngine::Input::IsKeyPressed(PE_KEY_PERIOD)) {
-			m_OrthoCamera.SetRotation(currentRotation + -1.0f);
-		}
+		m_CameraController.OnUpdate(timestep);
 
 		PaulEngine::RenderCommand::SetViewport({ 0, 0 }, { PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight()});
 
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 
-		PaulEngine::Renderer::BeginScene(m_OrthoCamera);
+		PaulEngine::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		glm::vec4 redColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 		glm::vec4 blueColour = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
@@ -203,7 +181,7 @@ public:
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {
-
+		m_CameraController.OnEvent(e);
 	}
 
 private:
@@ -216,7 +194,7 @@ private:
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
-	PaulEngine::OrthographicCamera m_OrthoCamera;
+	PaulEngine::OrthographicCameraController m_CameraController;
 };
 
 class Sandbox : public PaulEngine::Application {
