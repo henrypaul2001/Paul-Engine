@@ -13,9 +13,6 @@
 #include "PaulEngine/Core/KeyCodes.h"
 #include "PaulEngine/Core/MouseButtonCodes.h"
 
-// Entry point
-#include "PaulEngine/Core/EntryPoint.h"
-
 // Layer
 #include "PaulEngine/ImGui/ImGuiLayer.h"
 

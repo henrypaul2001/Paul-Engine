@@ -1,4 +1,6 @@
 #include <PaulEngine.h>
+#include <PaulEngine/Core/EntryPoint.h>
+
 #include "Sandbox2D.h"
 
 #include <imgui.h>
