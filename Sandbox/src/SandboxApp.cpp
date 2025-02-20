@@ -1,4 +1,6 @@
 #include <PaulEngine.h>
+#include "Sandbox2D.h"
+
 #include <imgui.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <Platform/OpenGL/OpenGLShader.h>
@@ -8,7 +10,7 @@
 class TestLayer : public PaulEngine::Layer {
 public:
 	TestLayer() : Layer("Test Layer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f) {
-		m_VertexArray.reset(PaulEngine::VertexArray::Create());
+		m_VertexArray = PaulEngine::VertexArray::Create();
 
 		// Vertex buffer
 
@@ -19,7 +21,7 @@ public:
 		};
 
 		PaulEngine::Ref<PaulEngine::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(PaulEngine::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = PaulEngine::VertexBuffer::Create(vertices, sizeof(vertices));
 
 		PaulEngine::BufferLayout layout = {
 			{ PaulEngine::ShaderDataType::Float3, "a_Position", false },
@@ -32,7 +34,7 @@ public:
 		// Index buffer
 		uint32_t indices[3] = { 0, 1, 2 };
 		PaulEngine::Ref<PaulEngine::IndexBuffer> indexBuffer;
-		indexBuffer.reset(PaulEngine::IndexBuffer::Create(indices, 3));
+		indexBuffer = PaulEngine::IndexBuffer::Create(indices, 3);
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		// Square
@@ -44,9 +46,9 @@ public:
 			-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-		m_SquareVertexArray.reset(PaulEngine::VertexArray::Create());
+		m_SquareVertexArray = PaulEngine::VertexArray::Create();
 		PaulEngine::Ref<PaulEngine::VertexBuffer> squareVB;
-		squareVB.reset(PaulEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVB = PaulEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 		squareVB->SetLayout({
 			{ PaulEngine::ShaderDataType::Float3, "a_Position", false },
 			{ PaulEngine::ShaderDataType::Float2, "a_TexCoords", true }
@@ -55,7 +57,7 @@ public:
 
 		uint32_t square_indices[6] = { 0, 1, 2, 2, 3, 0 };
 		PaulEngine::Ref<PaulEngine::IndexBuffer> squareIB;
-		squareIB.reset(PaulEngine::IndexBuffer::Create(square_indices, 6));
+		squareIB = PaulEngine::IndexBuffer::Create(square_indices, 6);
 		m_SquareVertexArray->SetIndexBuffer(squareIB);
 
 		std::string vertexSrc = R"(
@@ -198,7 +200,8 @@ private:
 class Sandbox : public PaulEngine::Application {
 public:
 	Sandbox() {
-		PushLayer(new TestLayer());
+		//PushLayer(new TestLayer());
+		PushLayer(new Sandbox2D());
 	}
 	~Sandbox() {}
 };
