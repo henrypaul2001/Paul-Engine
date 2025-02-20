@@ -140,8 +140,6 @@ public:
 	{
 		m_CameraController.OnUpdate(timestep);
 
-		PaulEngine::RenderCommand::SetViewport({ 0, 0 }, { PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight()});
-
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 
@@ -182,6 +180,12 @@ public:
 
 	void OnEvent(PaulEngine::Event& e) override {
 		m_CameraController.OnEvent(e);
+
+		PaulEngine::EventDispatcher dispatcher(e);
+		dispatcher.DispatchEvent<PaulEngine::WindowResizeEvent>([](PaulEngine::WindowResizeEvent& e)->bool {
+			PaulEngine::RenderCommand::SetViewport({ 0, 0 }, glm::vec2((float)e.GetWidth(), (float)e.GetHeight()));
+			return false;
+		});
 	}
 
 private:
