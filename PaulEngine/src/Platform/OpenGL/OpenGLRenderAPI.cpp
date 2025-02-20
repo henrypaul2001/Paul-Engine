@@ -12,7 +12,7 @@ namespace PaulEngine {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	void OpenGLRenderAPI::SetViewport(const glm::vec2& position, const glm::vec2& size)
+	void OpenGLRenderAPI::SetViewport(const glm::ivec2& position, const glm::ivec2& size)
 	{
 		glViewport(position.x, position.y, size.x, size.y);
 	}

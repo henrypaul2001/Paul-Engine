@@ -13,7 +13,7 @@ namespace PaulEngine {
 
 	public:
 		virtual void Init() = 0;
-		virtual void SetViewport(const glm::vec2& position, const glm::vec2& size) = 0;
+		virtual void SetViewport(const glm::ivec2& position, const glm::ivec2& size) = 0;
 		virtual void SetClearColour(const glm::vec4& colour) = 0;
 		virtual void Clear() = 0;
 

@@ -32,7 +32,7 @@ namespace PaulEngine {
 	{
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<WindowCloseEvent>(PE_BIND_EVENT_FN(Application::OnWindowClosed));
-		//PE_CORE_INFO(e);
+		dispatcher.DispatchEvent<WindowResizeEvent>(PE_BIND_EVENT_FN(Application::OnWindowResize));
 
 		// Events propagate down the layer stack, starting with overlays until the event is handled or all layers have received the event
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
@@ -49,9 +49,11 @@ namespace PaulEngine {
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
-			// Update layers
-			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate(timestep);
+			if (!m_Minimized) {
+				// Update layers
+				for (Layer* layer : m_LayerStack) {
+					layer->OnUpdate(timestep);
+				}
 			}
 
 			// OnImGuiRender
@@ -79,5 +81,18 @@ namespace PaulEngine {
 	{
 		m_Running = false;
 		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0) {
+			m_Minimized = true;
+			return false;
+		}
+		m_Minimized = false;
+
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+		return false;
 	}
 }
