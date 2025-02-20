@@ -1,8 +1,8 @@
 #include "pepch.h"
 #include "OrthographicCameraController.h"
 
-#include "KeyCodes.h"
-#include "Input.h"
+#include "PaulEngine/Core/KeyCodes.h"
+#include "PaulEngine/Core/Input.h"
 
 namespace PaulEngine {
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotationEnabled, float moveSpeed, float rotateSpeed) : m_AspectRatio(aspectRatio), m_Rotation(rotationEnabled), m_MoveSpeed(moveSpeed), 

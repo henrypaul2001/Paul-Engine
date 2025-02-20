@@ -1,9 +1,9 @@
 #pragma once
 #include "Core.h"
-#include "Events/ApplicationEvent.h"
+#include "PaulEngine/Events/ApplicationEvent.h"
 #include "Window.h"
 #include "LayerStack.h"
-#include "ImGui/ImGuiLayer.h"
+#include "PaulEngine/ImGui/ImGuiLayer.h"
 
 #include "PaulEngine/Core/Timestep.h"
 

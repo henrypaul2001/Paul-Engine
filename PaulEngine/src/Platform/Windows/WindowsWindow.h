@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Window.h"
+#include "PaulEngine/Core/Window.h"
 #include "PaulEngine/Renderer/GraphicsContext.h"
 
 struct GLFWwindow;

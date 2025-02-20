@@ -147,21 +147,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\PaulEngine.h" />
-    <ClInclude Include="src\PaulEngine\Application.h" />
-    <ClInclude Include="src\PaulEngine\Core.h" />
+    <ClInclude Include="src\PaulEngine\Core\Application.h" />
+    <ClInclude Include="src\PaulEngine\Core\Core.h" />
+    <ClInclude Include="src\PaulEngine\Core\EntryPoint.h" />
+    <ClInclude Include="src\PaulEngine\Core\Input.h" />
+    <ClInclude Include="src\PaulEngine\Core\KeyCodes.h" />
+    <ClInclude Include="src\PaulEngine\Core\Layer.h" />
+    <ClInclude Include="src\PaulEngine\Core\LayerStack.h" />
+    <ClInclude Include="src\PaulEngine\Core\Log.h" />
+    <ClInclude Include="src\PaulEngine\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\PaulEngine\Core\Timestep.h" />
-    <ClInclude Include="src\PaulEngine\EntryPoint.h" />
+    <ClInclude Include="src\PaulEngine\Core\Window.h" />
     <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h" />
     <ClInclude Include="src\PaulEngine\Events\Event.h" />
     <ClInclude Include="src\PaulEngine\Events\KeyEvent.h" />
     <ClInclude Include="src\PaulEngine\Events\MouseEvent.h" />
     <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\PaulEngine\Input.h" />
-    <ClInclude Include="src\PaulEngine\KeyCodes.h" />
-    <ClInclude Include="src\PaulEngine\Layer.h" />
-    <ClInclude Include="src\PaulEngine\LayerStack.h" />
-    <ClInclude Include="src\PaulEngine\Log.h" />
-    <ClInclude Include="src\PaulEngine\MouseButtonCodes.h" />
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
@@ -172,7 +173,6 @@
     <ClInclude Include="src\PaulEngine\Renderer\Shader.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Texture.h" />
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h" />
-    <ClInclude Include="src\PaulEngine\Window.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h" />
@@ -603,12 +603,12 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PaulEngine\Application.cpp" />
+    <ClCompile Include="src\PaulEngine\Core\Application.cpp" />
+    <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
+    <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />
+    <ClCompile Include="src\PaulEngine\Core\Log.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="src\PaulEngine\Layer.cpp" />
-    <ClCompile Include="src\PaulEngine\LayerStack.cpp" />
-    <ClCompile Include="src\PaulEngine\Log.cpp" />
     <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp" />

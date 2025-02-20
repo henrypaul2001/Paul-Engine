@@ -3,18 +3,18 @@
 // For use by applications only. Not for use in PaulEngine source
 
 #include "pepch.h"
-#include "PaulEngine/Application.h"
-#include "PaulEngine/Log.h"
+#include "PaulEngine/Core/Application.h"
+#include "PaulEngine/Core/Log.h"
 
 #include "PaulEngine/Core/Timestep.h"
 
 // Input
-#include "PaulEngine/Input.h"
-#include "PaulEngine/KeyCodes.h"
-#include "PaulEngine/MouseButtonCodes.h"
+#include "PaulEngine/Core/Input.h"
+#include "PaulEngine/Core/KeyCodes.h"
+#include "PaulEngine/Core/MouseButtonCodes.h"
 
 // Entry point
-#include "PaulEngine/EntryPoint.h"
+#include "PaulEngine/Core/EntryPoint.h"
 
 // Layer
 #include "PaulEngine/ImGui/ImGuiLayer.h"

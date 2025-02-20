@@ -1,7 +1,7 @@
 #include "pepch.h"
 #include "WindowsInput.h"
 
-#include "PaulEngine/Application.h"
+#include "PaulEngine/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace PaulEngine {

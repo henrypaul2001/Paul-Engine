@@ -1,5 +1,5 @@
 #pragma once
-#include "Events/Event.h"
+#include "PaulEngine/Events/Event.h"
 #include "PaulEngine/Core/Timestep.h"
 
 namespace PaulEngine {

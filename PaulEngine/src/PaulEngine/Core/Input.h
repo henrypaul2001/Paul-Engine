@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Core.h"
+#include "PaulEngine/Core/Core.h"
 namespace PaulEngine {
 	class Input {
 	public:

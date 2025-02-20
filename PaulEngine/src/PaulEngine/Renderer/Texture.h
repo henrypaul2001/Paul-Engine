@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "PaulEngine/Core.h"
+#include "PaulEngine/Core/Core.h"
 
 namespace PaulEngine {
 	class Texture

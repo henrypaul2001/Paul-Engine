@@ -1,6 +1,6 @@
 #pragma once
 #include "pepch.h"
-#include "Events/Event.h"
+#include "PaulEngine/Events/Event.h"
 
 namespace PaulEngine {
 	struct WindowProperties {

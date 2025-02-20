@@ -1,7 +1,7 @@
 #include "pepch.h"
 #include "Application.h"
 
-#include "Renderer/Renderer.h"
+#include "PaulEngine/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 
