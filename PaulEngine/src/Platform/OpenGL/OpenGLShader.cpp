@@ -160,6 +160,41 @@ namespace PaulEngine {
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::SetUniformInt(const std::string& name, const int value)
+	{
+		UploadUniformInt(name, value);
+	}
+
+	void OpenGLShader::SetUniformFloat(const std::string& name, const float value)
+	{
+		UploadUniformFloat(name, value);
+	}
+
+	void OpenGLShader::SetUniformFloat2(const std::string& name, const glm::vec2& value)
+	{
+		UploadUniformFloat2(name, value);
+	}
+
+	void OpenGLShader::SetUniformFloat3(const std::string& name, const glm::vec3& value)
+	{
+		UploadUniformFloat3(name, value);
+	}
+
+	void OpenGLShader::SetUniformFloat4(const std::string& name, const glm::vec4& value)
+	{
+		UploadUniformFloat4(name, value);
+	}
+
+	void OpenGLShader::SetUniformMat3(const std::string& name, const glm::mat3& matrix)
+	{
+		UploadUniformMat3(name, matrix);
+	}
+
+	void OpenGLShader::SetUniformMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		UploadUniformMat4(name, matrix);
+	}
+
 	void OpenGLShader::UploadUniformInt(const std::string& name, const int value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
