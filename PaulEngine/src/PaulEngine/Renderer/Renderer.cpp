@@ -3,7 +3,7 @@
 #include <Platform/OpenGL/OpenGLShader.h>
 
 namespace PaulEngine {
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData();
+	Scope<Renderer::SceneData> Renderer::m_SceneData = std::make_unique<Renderer::SceneData>();
 
 	void Renderer::Init()
 	{
