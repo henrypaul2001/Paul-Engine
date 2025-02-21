@@ -27,6 +27,10 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 	PaulEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
 	PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+	PaulEngine::Renderer2D::DrawQuad({ 2.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+	PaulEngine::Renderer2D::DrawQuad({ 4.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+	PaulEngine::Renderer2D::DrawQuad({ 6.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+	PaulEngine::Renderer2D::DrawQuad({ 8.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
 
 	PaulEngine::Renderer2D::EndScene();
 

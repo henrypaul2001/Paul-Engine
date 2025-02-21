@@ -13,7 +13,7 @@ namespace PaulEngine {
 
 	void OrthographicCameraController::OnUpdate(const Timestep timestep)
 	{
-		float moveSpeed = m_MoveSpeed * timestep;
+		float moveSpeed = (m_MoveSpeed * m_ZoomLevel) * timestep;
 		float rotateSpeed = m_RotateSpeed * timestep;
 		if (Input::IsKeyPressed(PE_KEY_W)) {
 			m_CameraPosition += glm::vec3(0.0f, moveSpeed, 0.0f);
