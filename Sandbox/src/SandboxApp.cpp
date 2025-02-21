@@ -5,7 +5,6 @@
 
 #include <imgui.h>
 #include <glm/ext/matrix_transform.hpp>
-#include <Platform/OpenGL/OpenGLShader.h>
 
 #include <PaulEngine/OrthographicCameraController.h>
 
@@ -134,8 +133,8 @@ public:
 		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 		
 		m_Texture = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(textureShader)->Bind();
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
+		textureShader->Bind();
+		textureShader->SetUniformInt("u_Texture", 0);
 
 		m_TransparentTexture = PaulEngine::Texture2D::Create("assets/textures/awesomeface.png");
 	}
@@ -153,8 +152,8 @@ public:
 		glm::vec4 blueColour = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
 
 		auto flatColourShader = m_ShaderLibrary.Get("FlatColourShader");
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(flatColourShader)->Bind();
-		std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(flatColourShader)->UploadUniformFloat4("u_Colour", m_SquareColour);
+		flatColourShader->Bind();
+		flatColourShader->SetUniformFloat4("u_Colour", m_SquareColour);
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 		for (int y = 0; y < 20; y++) {

@@ -1,6 +1,6 @@
 #include "Sandbox2D.h"
 #include <imgui.h>
-#include <Platform/OpenGL/OpenGLShader.h>
+
 #include <glm/ext/matrix_transform.hpp>
 #include <PaulEngine/Renderer/Renderer2D.h>
 
@@ -33,10 +33,6 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 	PaulEngine::Renderer2D::DrawQuad({ 8.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
 
 	PaulEngine::Renderer2D::EndScene();
-
-	//auto flatColourShader = m_ShaderLibrary.Get("FlatColour");
-	//std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(flatColourShader)->Bind();
-	//std::dynamic_pointer_cast<PaulEngine::OpenGLShader>(flatColourShader)->UploadUniformFloat4("u_Colour", m_SquareColour);
 
 	PaulEngine::Renderer::EndScene();
 }
