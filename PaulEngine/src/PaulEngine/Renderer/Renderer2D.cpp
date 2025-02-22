@@ -9,8 +9,8 @@
 namespace PaulEngine {
 	struct Renderer2DStorage {
 		Ref<VertexArray> QuadVertexArray;
-		Ref<Shader> FlatColourShader;
 		Ref<Shader> TextureShader;
+		Ref<Texture2D> WhiteTexture;
 	};
 
 	static Renderer2DStorage* s_RenderData;
@@ -42,8 +42,11 @@ namespace PaulEngine {
 		squareIB = IndexBuffer::Create(square_indices, 6);
 		s_RenderData->QuadVertexArray->SetIndexBuffer(squareIB);
 
+		s_RenderData->WhiteTexture = Texture2D::Create(1, 1);
+		uint32_t whiteTextureData = 0xffffffff;
+		s_RenderData->WhiteTexture->SetData(&whiteTextureData, sizeof(whiteTextureData));
+
 		// Shader
-		s_RenderData->FlatColourShader = Shader::Create("assets/shaders/FlatColour.glsl");
 		s_RenderData->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		s_RenderData->TextureShader->Bind();
 		s_RenderData->TextureShader->SetUniformInt("u_Texture", 0);
@@ -56,10 +59,6 @@ namespace PaulEngine {
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
-		s_RenderData->FlatColourShader->Bind();
-		s_RenderData->FlatColourShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-		s_RenderData->FlatColourShader->SetUniformMat4("u_ModelMatrix", glm::mat4(1.0f));
-
 		s_RenderData->TextureShader->Bind();
 		s_RenderData->TextureShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		s_RenderData->TextureShader->SetUniformMat4("u_ModelMatrix", glm::mat4(1.0f));
@@ -77,13 +76,13 @@ namespace PaulEngine {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& colour)
 	{
-		s_RenderData->FlatColourShader->Bind();
-		s_RenderData->FlatColourShader->SetUniformFloat4("u_Colour", colour);
+		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", colour);
+		s_RenderData->WhiteTexture->Bind(0);
 
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, position);
 		transform = glm::scale(transform, { size.x, size.y, 1.0f } );
-		s_RenderData->FlatColourShader->SetUniformMat4("u_ModelMatrix", transform);
+		s_RenderData->TextureShader->SetUniformMat4("u_ModelMatrix", transform);
 
 		s_RenderData->QuadVertexArray->Bind();
 		RenderCommand::DrawIndexed(s_RenderData->QuadVertexArray);
@@ -96,7 +95,7 @@ namespace PaulEngine {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture)
 	{
-		s_RenderData->TextureShader->Bind();
+		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", glm::vec4(1.0f));
 		texture->Bind(0);
 
 		glm::mat4 transform = glm::mat4(1.0f);
