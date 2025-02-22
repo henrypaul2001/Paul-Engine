@@ -10,8 +10,8 @@ namespace PaulEngine {
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return std::make_shared<OpenGLVertexBuffer>(vertices, size);
-			case RenderAPI::API::Direct3D: PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLVertexBuffer>(vertices, size);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
 
@@ -24,8 +24,8 @@ namespace PaulEngine {
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return std::make_shared<OpenGLIndexBuffer>(indices, count);
-			case RenderAPI::API::Direct3D: PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLIndexBuffer>(indices, count);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
 
