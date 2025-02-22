@@ -10,6 +10,7 @@ namespace PaulEngine {
 	struct Renderer2DStorage {
 		Ref<VertexArray> QuadVertexArray;
 		Ref<Shader> FlatColourShader;
+		Ref<Shader> TextureShader;
 	};
 
 	static Renderer2DStorage* s_RenderData;
@@ -20,19 +21,20 @@ namespace PaulEngine {
 
 		// Square
 		// ------
-		float squareVertices[4 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5, -0.5f, 0.0f,
-			0.5f, 0.5f, 0.0f,
-			-0.5f, 0.5f, 0.0f
+		float squareVertices[4 * 5] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			0.5, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		s_RenderData->QuadVertexArray = VertexArray::Create();
 		Ref<VertexBuffer> squareVB;
 		squareVB = VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 		squareVB->SetLayout({
-			{ ShaderDataType::Float3, "a_Position", false }
-			});
+			{ ShaderDataType::Float3, "a_Position", false },
+			{ ShaderDataType::Float2, "a_TexCoords", true }
+		});
 		s_RenderData->QuadVertexArray->AddVertexBuffer(squareVB);
 
 		uint32_t square_indices[6] = { 0, 1, 2, 2, 3, 0 };
@@ -42,6 +44,9 @@ namespace PaulEngine {
 
 		// Shader
 		s_RenderData->FlatColourShader = Shader::Create("assets/shaders/FlatColour.glsl");
+		s_RenderData->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
+		s_RenderData->TextureShader->Bind();
+		s_RenderData->TextureShader->SetUniformInt("u_Texture", 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -54,6 +59,10 @@ namespace PaulEngine {
 		s_RenderData->FlatColourShader->Bind();
 		s_RenderData->FlatColourShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		s_RenderData->FlatColourShader->SetUniformMat4("u_ModelMatrix", glm::mat4(1.0f));
+
+		s_RenderData->TextureShader->Bind();
+		s_RenderData->TextureShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		s_RenderData->TextureShader->SetUniformMat4("u_ModelMatrix", glm::mat4(1.0f));
 	}
 
 	void Renderer2D::EndScene()
@@ -75,6 +84,25 @@ namespace PaulEngine {
 		transform = glm::translate(transform, position);
 		transform = glm::scale(transform, { size.x, size.y, 1.0f } );
 		s_RenderData->FlatColourShader->SetUniformMat4("u_ModelMatrix", transform);
+
+		s_RenderData->QuadVertexArray->Bind();
+		RenderCommand::DrawIndexed(s_RenderData->QuadVertexArray);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture)
+	{
+		s_RenderData->TextureShader->Bind();
+		texture->Bind(0);
+
+		glm::mat4 transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, position);
+		transform = glm::scale(transform, { size.x, size.y, 1.0f });
+		s_RenderData->TextureShader->SetUniformMat4("u_ModelMatrix", transform);
 
 		s_RenderData->QuadVertexArray->Bind();
 		RenderCommand::DrawIndexed(s_RenderData->QuadVertexArray);

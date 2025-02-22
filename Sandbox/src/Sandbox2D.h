@@ -20,6 +20,7 @@ private:
 
 	PaulEngine::ShaderLibrary m_ShaderLibrary;
 	PaulEngine::OrthographicCameraController m_CameraController;
+	PaulEngine::Ref<PaulEngine::Texture> m_Texture;
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 };

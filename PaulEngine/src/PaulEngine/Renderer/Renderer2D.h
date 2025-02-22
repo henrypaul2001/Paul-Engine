@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Renderer/OrthographicCamera.h"
+#include "PaulEngine/Renderer/Texture.h"
 
 namespace PaulEngine {
 	class Renderer2D
@@ -13,5 +14,7 @@ namespace PaulEngine {
 
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& colour);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& colour);
+		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture);
+		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture);
 	};
 }
