@@ -10,6 +10,8 @@ namespace PaulEngine {
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void OpenGLRenderAPI::SetViewport(const glm::ivec2& position, const glm::ivec2& size)
