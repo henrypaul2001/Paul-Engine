@@ -17,6 +17,7 @@ namespace PaulEngine {
 
 	void Renderer2D::Init()
 	{
+		PE_PROFILE_FUNCTION();
 		s_RenderData = new Renderer2DStorage();
 
 		// Square
@@ -59,6 +60,7 @@ namespace PaulEngine {
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
+		PE_PROFILE_FUNCTION();
 		s_RenderData->TextureShader->Bind();
 		s_RenderData->TextureShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		s_RenderData->TextureShader->SetUniformMat4("u_ModelMatrix", glm::mat4(1.0f));
@@ -76,6 +78,7 @@ namespace PaulEngine {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& colour)
 	{
+		PE_PROFILE_FUNCTION();
 		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", colour);
 		s_RenderData->WhiteTexture->Bind(0);
 
@@ -95,6 +98,7 @@ namespace PaulEngine {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture)
 	{
+		PE_PROFILE_FUNCTION();
 		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", glm::vec4(1.0f));
 		texture->Bind(0);
 

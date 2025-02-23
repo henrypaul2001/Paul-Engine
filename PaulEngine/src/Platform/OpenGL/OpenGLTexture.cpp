@@ -6,6 +6,7 @@
 namespace PaulEngine {
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : m_Width(width), m_Height(height), m_Path("")
 	{
+		PE_PROFILE_FUNCTION();
 		m_InternalFormat = GL_RGBA8;
 		m_DataFormat = GL_RGBA;
 
@@ -21,6 +22,7 @@ namespace PaulEngine {
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_Path(path)
 	{
+		PE_PROFILE_FUNCTION();
 		stbi_set_flip_vertically_on_load(true);
 
 		int width, height, channels;
@@ -73,6 +75,7 @@ namespace PaulEngine {
 
 	void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	{
+		PE_PROFILE_FUNCTION();
 #ifdef PE_ENABLE_ASSERTS
 		uint32_t sizeofpixel = 0;
 		switch (m_DataFormat) {

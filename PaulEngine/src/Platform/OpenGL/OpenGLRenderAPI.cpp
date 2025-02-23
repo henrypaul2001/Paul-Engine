@@ -8,6 +8,7 @@ namespace PaulEngine {
 
 	void OpenGLRenderAPI::Init()
 	{
+		PE_PROFILE_FUNCTION();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -31,6 +32,7 @@ namespace PaulEngine {
 
 	void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray>& vertexArray)
 	{
+		PE_PROFILE_FUNCTION();
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
 }

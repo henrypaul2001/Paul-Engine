@@ -16,7 +16,7 @@ void Sandbox2D::OnAttach()
 
 void Sandbox2D::OnDetach()
 {
-
+	PE_PROFILE_FUNCTION();
 }
 
 void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
@@ -56,5 +56,6 @@ void Sandbox2D::OnImGuiRender()
 
 void Sandbox2D::OnEvent(PaulEngine::Event& e)
 {
+	PE_PROFILE_FUNCTION();
 	m_CameraController.OnEvent(e);
 }

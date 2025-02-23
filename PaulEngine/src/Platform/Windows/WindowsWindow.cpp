@@ -24,6 +24,7 @@ namespace PaulEngine {
 
 	void WindowsWindow::Init(const WindowProperties& properties)
 	{
+		PE_PROFILE_FUNCTION();
 		m_Data.Title = properties.Title;
 		m_Data.Width = properties.Width;
 		m_Data.Height = properties.Height;
@@ -135,11 +136,13 @@ namespace PaulEngine {
 
 	void WindowsWindow::Shutdown()
 	{
+		PE_PROFILE_FUNCTION();
 		glfwDestroyWindow(m_Window);
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
+		PE_PROFILE_FUNCTION();
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}

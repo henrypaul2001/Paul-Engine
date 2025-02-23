@@ -6,6 +6,7 @@ namespace PaulEngine {
 
 	void Log::Init()
 	{
+		PE_PROFILE_FUNCTION();
 		spdlog::set_pattern("%^[%T] %n: %v%$");
 		s_CoreLogger = spdlog::stdout_color_mt("PaulEngine");
 		s_CoreLogger->set_level(spdlog::level::trace);

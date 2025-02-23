@@ -13,6 +13,7 @@ namespace PaulEngine {
 
 	void OrthographicCameraController::OnUpdate(const Timestep timestep)
 	{
+		PE_PROFILE_FUNCTION();
 		float moveSpeed = (m_MoveSpeed * m_ZoomLevel) * timestep;
 		float rotateSpeed = m_RotateSpeed * timestep;
 		if (Input::IsKeyPressed(PE_KEY_W)) {
@@ -40,6 +41,7 @@ namespace PaulEngine {
 
 	void OrthographicCameraController::OnEvent(Event& e)
 	{
+		PE_PROFILE_FUNCTION();
 		EventDispatcher dispatcher(e);
 		dispatcher.DispatchEvent<MouseScrolledEvent>(PE_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 		dispatcher.DispatchEvent<WindowResizeEvent>(PE_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
@@ -47,6 +49,7 @@ namespace PaulEngine {
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
+		PE_PROFILE_FUNCTION();
 		m_ZoomLevel -= e.GetYOffset() * 0.5f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
@@ -55,6 +58,7 @@ namespace PaulEngine {
 
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
 	{
+		PE_PROFILE_FUNCTION();
 		m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;

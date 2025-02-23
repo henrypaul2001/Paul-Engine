@@ -10,6 +10,7 @@ namespace PaulEngine {
 
 	bool WindowsInput::IsKeyPressedImpl(int keycode)
 	{
+		PE_PROFILE_FUNCTION();
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, keycode);
 		return (state == GLFW_PRESS || state == GLFW_REPEAT);
@@ -17,6 +18,7 @@ namespace PaulEngine {
 
 	bool WindowsInput::IsMouseButtonPressedImpl(int button)
 	{
+		PE_PROFILE_FUNCTION();
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, button);
 		return (state == GLFW_PRESS);
@@ -24,6 +26,7 @@ namespace PaulEngine {
 
 	std::pair<float, float> WindowsInput::GetMousePositionImpl()
 	{
+		PE_PROFILE_FUNCTION();
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);

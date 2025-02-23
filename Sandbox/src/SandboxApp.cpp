@@ -11,6 +11,7 @@
 class TestLayer : public PaulEngine::Layer {
 public:
 	TestLayer() : Layer("Test Layer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f) {
+		PE_PROFILE_FUNCTION();
 		m_VertexArray = PaulEngine::VertexArray::Create();
 
 		// Vertex buffer
@@ -141,6 +142,7 @@ public:
 
 	void OnUpdate(const PaulEngine::Timestep timestep) override
 	{
+		PE_PROFILE_FUNCTION();
 		m_CameraController.OnUpdate(timestep);
 
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -176,12 +178,14 @@ public:
 	}
 
 	void OnImGuiRender() override {
+		PE_PROFILE_FUNCTION();
 		ImGui::Begin("Colour Edit");
 		ImGui::ColorPicker4("Square Colour", &m_SquareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
 		ImGui::End();
 	}
 
 	void OnEvent(PaulEngine::Event& e) override {
+		PE_PROFILE_FUNCTION();
 		m_CameraController.OnEvent(e);
 	}
 
@@ -201,6 +205,7 @@ private:
 class Sandbox : public PaulEngine::Application {
 public:
 	Sandbox() {
+		PE_PROFILE_FUNCTION();
 		//PushLayer(new TestLayer());
 		PushLayer(new Sandbox2D());
 	}

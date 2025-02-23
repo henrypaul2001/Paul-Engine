@@ -7,6 +7,7 @@
 namespace PaulEngine {
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
 	{
+		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
@@ -21,6 +22,7 @@ namespace PaulEngine {
 
 	Ref<Texture2D> Texture2D::Create(const std::string& path)
 	{
+		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;

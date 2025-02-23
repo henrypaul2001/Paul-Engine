@@ -6,6 +6,7 @@
 namespace PaulEngine {
 
 	static GLenum ShaderDataTypeToGLBaseType(ShaderDataType type) {
+		PE_PROFILE_FUNCTION();
 		switch (type) {
 			case ShaderDataType::None:		return 0;
 			case ShaderDataType::Float:		return GL_FLOAT;
@@ -46,6 +47,7 @@ namespace PaulEngine {
 
 	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
+		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex buffer has no layout assigned");
 
 		glBindVertexArray(m_RendererID);

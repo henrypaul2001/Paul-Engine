@@ -7,6 +7,7 @@
 namespace PaulEngine {
 	PaulEngine::Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
+		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
@@ -21,6 +22,7 @@ namespace PaulEngine {
 
 	PaulEngine::Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
 	{
+		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;

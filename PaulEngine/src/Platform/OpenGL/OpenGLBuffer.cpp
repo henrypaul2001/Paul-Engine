@@ -10,6 +10,7 @@ namespace PaulEngine {
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size) : m_RendererID(0)
 	{
+		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -17,6 +18,7 @@ namespace PaulEngine {
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()
 	{
+		PE_PROFILE_FUNCTION();
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
@@ -35,6 +37,7 @@ namespace PaulEngine {
 
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : m_RendererID(0), m_Count(count)
 	{
+		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
@@ -42,6 +45,7 @@ namespace PaulEngine {
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
 	{
+		PE_PROFILE_FUNCTION();
 		glDeleteBuffers(1, &m_RendererID);
 	}
 

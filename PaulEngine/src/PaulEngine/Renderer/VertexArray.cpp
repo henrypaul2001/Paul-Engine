@@ -9,6 +9,7 @@ namespace PaulEngine {
 
 	PaulEngine::Ref<VertexArray> VertexArray::Create()
 	{
+		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
