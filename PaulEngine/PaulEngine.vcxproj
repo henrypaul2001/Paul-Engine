@@ -146,6 +146,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Debug\Instrumentor.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />

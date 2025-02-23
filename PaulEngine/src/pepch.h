@@ -15,6 +15,7 @@
 #include <unordered_set>
 
 #include "PaulEngine/Core/Log.h"
+#include "PaulEngine/Debug/Instrumentor.h"
 
 #ifdef PE_PLATFORM_WINDOWS
 	#include <Windows.h>
