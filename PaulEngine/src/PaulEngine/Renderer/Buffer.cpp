@@ -5,7 +5,22 @@
 
 #include "Renderer.h"
 namespace PaulEngine {
-	PaulEngine::Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
+	{
+		PE_PROFILE_FUNCTION();
+		switch (Renderer::GetAPI())
+		{
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLVertexBuffer>(size);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
+		}
+
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
+		return nullptr;
+	}
+
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
@@ -20,7 +35,7 @@ namespace PaulEngine {
 		return nullptr;
 	}
 
-	PaulEngine::Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
