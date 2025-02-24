@@ -21,7 +21,11 @@ namespace  PaulEngine {
 		}
 
 		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray) {
-			s_RenderAPI->DrawIndexed(vertexArray);
+			s_RenderAPI->DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+		}
+
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) {
+			s_RenderAPI->DrawIndexed(vertexArray, indexCount);
 		}
 
 	private:
