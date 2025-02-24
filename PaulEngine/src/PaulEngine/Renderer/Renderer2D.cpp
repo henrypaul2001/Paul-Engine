@@ -80,6 +80,7 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", colour);
+		s_RenderData->TextureShader->SetUniformFloat2("u_TextureScale", glm::vec2(1.0f));
 		s_RenderData->WhiteTexture->Bind(0);
 
 		glm::mat4 transform = glm::mat4(1.0f);
@@ -91,15 +92,16 @@ namespace PaulEngine {
 		RenderCommand::DrawIndexed(s_RenderData->QuadVertexArray);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture)
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture);
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture, textureScale);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture)
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale)
 	{
 		PE_PROFILE_FUNCTION();
 		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", glm::vec4(1.0f));
+		s_RenderData->TextureShader->SetUniformFloat2("u_TextureScale", textureScale);
 		texture->Bind(0);
 
 		glm::mat4 transform = glm::mat4(1.0f);
