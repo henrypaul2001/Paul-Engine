@@ -19,6 +19,7 @@ namespace PaulEngine {
 		virtual const std::string& GetName() const override { return m_Name; }
 
 		virtual void SetUniformInt(const std::string& name, const int value) override;
+		virtual void SetUniformIntArray(const std::string& name, const int* values, uint32_t count) override;
 
 		virtual void SetUniformFloat(const std::string& name, const float value) override;
 		virtual void SetUniformFloat2(const std::string& name, const glm::vec2& value) override;
@@ -29,6 +30,7 @@ namespace PaulEngine {
 		virtual void SetUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 
 		void UploadUniformInt(const std::string& name, const int value);
+		void UploadUniformIntArray(const std::string& name, const int* values, uint32_t count);
 
 		void UploadUniformFloat(const std::string& name, const float value);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
