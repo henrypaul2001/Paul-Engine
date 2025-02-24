@@ -92,15 +92,15 @@ namespace PaulEngine {
 		RenderCommand::DrawIndexed(s_RenderData->QuadVertexArray);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale)
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, textureScale);
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture, textureScale, tintColour);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale)
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", glm::vec4(1.0f));
+		s_RenderData->TextureShader->SetUniformFloat4("u_Colour", tintColour);
 		s_RenderData->TextureShader->SetUniformFloat2("u_TextureScale", textureScale);
 		texture->Bind(0);
 
