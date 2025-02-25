@@ -27,5 +27,8 @@ namespace PaulEngine {
 		};
 		static void ResetStats();
 		static const Statistics& GetStats();
+
+	private:
+		static void StartNewBatch();
 	};
 }

@@ -51,6 +51,12 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 
 		PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 100.0f, 100.0f }, m_Texture, glm::vec2(10.0f), m_SquareColour, rotation);
 
+		for (float y = -10.0f; y < 10.0f; y += 0.5f) {
+			for (float x = -10.0f; x < 10.0f; x += 0.5f) {
+				glm::vec4 colour = glm::vec4((x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.8f);
+				PaulEngine::Renderer2D::DrawQuad(glm::vec2(x, y), glm::vec2(0.45f), colour);
+			}
+		}
 		PaulEngine::Renderer2D::EndScene();
 	}
 }

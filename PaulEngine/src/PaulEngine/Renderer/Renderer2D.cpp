@@ -17,9 +17,9 @@ namespace PaulEngine {
 
 	struct Renderer2DData {
 		// Per batch
-		const uint32_t MaxQuads = 10000;
-		const uint32_t MaxVertices = MaxQuads * 4;
-		const uint32_t MaxIndices = MaxQuads * 6;
+		static const uint32_t MaxQuads = 10000;
+		static const uint32_t MaxVertices = MaxQuads * 4;
+		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 32;
 
 		Ref<VertexArray> QuadVertexArray;
@@ -111,11 +111,8 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		s_RenderData.TextureShader->Bind();
 		s_RenderData.TextureShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-		s_RenderData.TextureShader->SetUniformMat4("u_ModelMatrix", glm::mat4(1.0f));
 
-		s_RenderData.QuadIndexCount = 0;
-		s_RenderData.TextureSlotIndex = 1;
-		s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
+		StartNewBatch();
 	}
 
 	void Renderer2D::EndScene()
@@ -139,6 +136,13 @@ namespace PaulEngine {
 		s_RenderData.Stats.DrawCalls++;
 	}
 
+	void Renderer2D::StartNewBatch()
+	{
+		s_RenderData.QuadIndexCount = 0;
+		s_RenderData.TextureSlotIndex = 1;
+		s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
+	}
+
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& colour, float rotationDegrees)
 	{
 		DrawQuad({ position.x, position.y, 0.0f }, size, colour, rotationDegrees);
@@ -147,6 +151,11 @@ namespace PaulEngine {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& colour, float rotationDegrees)
 	{
 		PE_PROFILE_FUNCTION();
+
+		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
+			EndScene();
+			StartNewBatch();
+		}
 
 		// Apply transformation
 		glm::mat4 transform = glm::mat4(1.0f);
@@ -202,6 +211,11 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 		
+		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
+			EndScene();
+			StartNewBatch();
+		}
+
 		// Check if texture has already been submitted
 		float textureIndex = 0.0f;
 		for (int i = 1; i < s_RenderData.TextureSlotIndex; i++) {
