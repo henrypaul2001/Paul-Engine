@@ -20,13 +20,17 @@ void Sandbox2D::OnDetach()
 	PE_PROFILE_FUNCTION();
 }
 
+
+static PaulEngine::Timestep deltaTime = 0.0f;
 void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 {
 	PE_PROFILE_FUNCTION();
+	deltaTime = timestep;
 	m_CameraController.OnUpdate(timestep);
 	
 	{
 		PE_PROFILE_SCOPE("Sandbox2D::OnUpdate::Renderer Prep");
+		PaulEngine::Renderer2D::ResetStats();
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 	}
@@ -54,7 +58,17 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 void Sandbox2D::OnImGuiRender()
 {
 	PE_PROFILE_FUNCTION();
-	ImGui::Begin("Colour Edit");
+	const PaulEngine::Renderer2D::Statistics& stats = PaulEngine::Renderer2D::GetStats();
+	ImGui::Begin("Renderer2D");
+	ImGui::SeparatorText("Renderer2D Stats:");
+	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+	ImGui::Text("Quad Count: %d", stats.QuadCount);
+	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+	ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
+	ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
+
+	ImGui::SeparatorText("Edit:");
 	ImGui::ColorPicker4("Square Colour", &m_SquareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
 	ImGui::End();
 }

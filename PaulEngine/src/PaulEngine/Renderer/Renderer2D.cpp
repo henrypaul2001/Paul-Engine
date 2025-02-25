@@ -35,6 +35,8 @@ namespace PaulEngine {
 		uint32_t TextureSlotIndex = 1;
 		
 		glm::vec4 QuadVertexPositions[4];
+
+		Renderer2D::Statistics Stats;
 	};
 
 	static Renderer2DData s_RenderData;
@@ -134,6 +136,7 @@ namespace PaulEngine {
 			s_RenderData.TextureSlots[i]->Bind(i);
 		}
 		RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
+		s_RenderData.Stats.DrawCalls++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& colour, float rotationDegrees)
@@ -186,6 +189,8 @@ namespace PaulEngine {
 		s_RenderData.QuadVertexBufferPtr++;
 
 		s_RenderData.QuadIndexCount += 6;
+
+		s_RenderData.Stats.QuadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour, float rotationDegrees)
@@ -253,5 +258,18 @@ namespace PaulEngine {
 		s_RenderData.QuadVertexBufferPtr++;
 
 		s_RenderData.QuadIndexCount += 6;
+
+		s_RenderData.Stats.QuadCount++;
+	}
+
+	void Renderer2D::ResetStats()
+	{
+		s_RenderData.Stats.DrawCalls = 0;
+		s_RenderData.Stats.QuadCount = 0;
+	}
+
+	const Renderer2D::Statistics& Renderer2D::GetStats()
+	{
+		return s_RenderData.Stats;
 	}
 }
