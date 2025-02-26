@@ -1423,6 +1423,7 @@
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Debug\Instrumentor.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\SubTexture2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1503,5 +1504,6 @@
     <ClCompile Include="src\PaulEngine\Renderer\Renderer2D.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\SubTexture2D.cpp" />
   </ItemGroup>
 </Project>

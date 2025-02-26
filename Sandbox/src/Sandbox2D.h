@@ -21,7 +21,9 @@ private:
 	PaulEngine::ShaderLibrary m_ShaderLibrary;
 	PaulEngine::OrthographicCameraController m_CameraController;
 	PaulEngine::Ref<PaulEngine::Texture> m_Texture, m_Texture2;
-	PaulEngine::Ref<PaulEngine::Texture> m_Spritesheet;
+
+	PaulEngine::Ref<PaulEngine::Texture2D> m_Spritesheet;
+	PaulEngine::Ref<PaulEngine::SubTexture2D> m_TextureStairs, m_TextureBarrel, m_TextureTree;
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 };
