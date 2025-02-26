@@ -13,6 +13,7 @@ void Sandbox2D::OnAttach()
 	PE_PROFILE_FUNCTION();
 	m_Texture = PaulEngine::Texture2D::Create("assets/textures/awesomeFace.png");
 	m_Texture2 = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+	m_Spritesheet = PaulEngine::Texture2D::Create("assets/textures/RPGpack_sheet_2X.png");
 }
 
 void Sandbox2D::OnDetach()
