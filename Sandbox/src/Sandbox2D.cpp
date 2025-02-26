@@ -4,6 +4,19 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <PaulEngine/Renderer/Renderer2D.h>
 
+static const char* s_MapTiles = 
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWDDDDDDDDDDWWWWWWWWW"
+"WWWDDDDDDDDDDDDDDDWWWWWW"
+"WWDDDDDDDDDDDDDDDDDDWWWW"
+"WDDDDDWWWDDDDDDDDDDDWWWW"
+"WDDDDDWWWDDDDDDDDDDDDWWW"
+"WWDDDDDDDDDDDDDDDDDDDWWW"
+"WWWWDDDDDDDDDDDDDDDDDWWc"
+"WWWWWWWWDDDDDDDDDDWWWWWW"
+"WWWWWWWWWWDDDDWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW";
+
 Sandbox2D::Sandbox2D() : Layer("2D_Layer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f) {}
 
 Sandbox2D::~Sandbox2D() {}
@@ -18,6 +31,12 @@ void Sandbox2D::OnAttach()
 	m_TextureStairs =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 7, 6 }, { 128.0f, 128.0f });
 	m_TextureBarrel =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 8, 2 }, { 128.0f, 128.0f });
 	m_TextureTree =		PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
+	m_TextureInvalid =	PaulEngine::SubTexture2D::CreateFromCoords(m_Texture2, { 0, 0 }, { m_Texture2->GetWidth(), m_Texture2->GetHeight() });
+
+	m_MapWidth = 24;
+	m_MapHeight = strlen(s_MapTiles) / m_MapWidth;
+	m_TextureMap['D'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 6, 11 }, { 128.0f, 128.0f });
+	m_TextureMap['W'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 11, 11 }, { 128.0f, 128.0f });
 }
 
 void Sandbox2D::OnDetach()
@@ -72,6 +91,20 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 #if 1
 		{
 			PaulEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
+
+			for (uint32_t y = 0; y < m_MapHeight; y++) {
+				for (uint32_t x = 0; x  <m_MapWidth; x++) {
+					char tile = s_MapTiles[x + y * m_MapWidth];
+					PaulEngine::Ref<PaulEngine::SubTexture2D> texture;
+
+					std::unordered_map<char, PaulEngine::Ref<PaulEngine::SubTexture2D>>::iterator it = m_TextureMap.find(tile);
+					if (it != m_TextureMap.end()) { texture = it->second; }
+					else { texture = m_TextureInvalid; }
+
+					PaulEngine::Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f }, { 1.0f, 1.0f }, texture);
+				}
+			}
+
 			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_TextureStairs);
 			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 1.0f }, { 1.0f, 1.0f }, m_TextureBarrel);
 			PaulEngine::Renderer2D::DrawQuad({ -1.5f, 0.5f }, { 1.0f, 2.0f }, m_TextureTree);

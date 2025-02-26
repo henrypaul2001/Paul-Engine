@@ -20,10 +20,13 @@ private:
 
 	PaulEngine::ShaderLibrary m_ShaderLibrary;
 	PaulEngine::OrthographicCameraController m_CameraController;
-	PaulEngine::Ref<PaulEngine::Texture> m_Texture, m_Texture2;
+	PaulEngine::Ref<PaulEngine::Texture2D> m_Texture, m_Texture2;
 
 	PaulEngine::Ref<PaulEngine::Texture2D> m_Spritesheet;
-	PaulEngine::Ref<PaulEngine::SubTexture2D> m_TextureStairs, m_TextureBarrel, m_TextureTree;
+	PaulEngine::Ref<PaulEngine::SubTexture2D> m_TextureStairs, m_TextureBarrel, m_TextureTree, m_TextureInvalid;
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
+
+	uint32_t m_MapWidth, m_MapHeight;
+	std::unordered_map<char, PaulEngine::Ref<PaulEngine::SubTexture2D>> m_TextureMap;
 };
