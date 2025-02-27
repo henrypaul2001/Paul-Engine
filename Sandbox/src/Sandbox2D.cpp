@@ -136,4 +136,12 @@ void Sandbox2D::OnEvent(PaulEngine::Event& e)
 {
 	PE_PROFILE_FUNCTION();
 	m_CameraController.OnEvent(e);
+
+	PaulEngine::EventDispatcher dispatcher = PaulEngine::EventDispatcher(e);
+	dispatcher.DispatchEvent<PaulEngine::KeyReleasedEvent>(PE_BIND_EVENT_FN(Sandbox2D::OnKeyUp));
+}
+
+bool Sandbox2D::OnKeyUp(PaulEngine::KeyReleasedEvent& e)
+{
+	if (e.GetKeyCode() == PE_KEY_ESCAPE) { PaulEngine::Application::Get().Close(); return true; }
 }

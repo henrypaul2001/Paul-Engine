@@ -15,6 +15,8 @@ public:
 	virtual void OnEvent(PaulEngine::Event& e) override;
 
 private:
+	bool OnKeyUp(PaulEngine::KeyReleasedEvent& e);
+
 	// Temp
 	PaulEngine::Ref<PaulEngine::VertexArray> m_SquareVertexArray;
 
