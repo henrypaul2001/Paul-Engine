@@ -37,6 +37,11 @@ void Sandbox2D::OnAttach()
 	m_MapHeight = strlen(s_MapTiles) / m_MapWidth;
 	m_TextureMap['D'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 6, 11 }, { 128.0f, 128.0f });
 	m_TextureMap['W'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 11, 11 }, { 128.0f, 128.0f });
+
+	PaulEngine::FramebufferSpecification spec;
+	spec.Width = 1280;
+	spec.Height = 720;
+	m_Framebuffer = PaulEngine::Framebuffer::Create(spec);
 }
 
 void Sandbox2D::OnDetach()
@@ -55,6 +60,7 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 	{
 		PE_PROFILE_SCOPE("Sandbox2D::OnUpdate::Renderer Prep");
 		PaulEngine::Renderer2D::ResetStats();
+		m_Framebuffer->Bind();
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 	}
@@ -109,6 +115,7 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 1.0f }, { 1.0f, 1.0f }, m_TextureBarrel);
 			PaulEngine::Renderer2D::DrawQuad({ -1.5f, 0.5f }, { 1.0f, 2.0f }, m_TextureTree);
 			PaulEngine::Renderer2D::EndScene();
+			m_Framebuffer->Unbind();
 		}
 #endif
 	}
@@ -175,6 +182,11 @@ void Sandbox2D::OnImGuiRender()
 
 		ImGui::SeparatorText("Edit:");
 		ImGui::ColorPicker4("Square Colour", &m_SquareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
+		ImGui::End();
+
+		ImGui::Begin("Viewport");
+		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+		ImGui::Image(textureID, ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 	ImGui::End();
