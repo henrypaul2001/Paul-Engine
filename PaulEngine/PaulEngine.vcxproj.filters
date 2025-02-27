@@ -1424,6 +1424,8 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Debug\Instrumentor.h" />
     <ClInclude Include="src\PaulEngine\Renderer\SubTexture2D.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1505,5 +1507,7 @@
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\SubTexture2D.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
   </ItemGroup>
 </Project>

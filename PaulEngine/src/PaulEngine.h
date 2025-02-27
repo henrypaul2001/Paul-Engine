@@ -25,3 +25,4 @@
 #include "PaulEngine/Renderer/Texture.h"
 #include "PaulEngine/Renderer/SubTexture2D.h"
 #include "PaulEngine/Renderer/OrthographicCamera.h"
+#include "PaulEngine/Renderer/Framebuffer.h"
