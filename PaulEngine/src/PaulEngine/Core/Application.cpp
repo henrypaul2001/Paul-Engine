@@ -70,6 +70,11 @@ namespace PaulEngine {
 		}
 	}
 
+	void Application::Close()
+	{
+		OnEvent(WindowCloseEvent());
+	}
+
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
