@@ -26,7 +26,6 @@ private:
 
 	PaulEngine::Ref<PaulEngine::Texture2D> m_Spritesheet;
 	PaulEngine::Ref<PaulEngine::SubTexture2D> m_TextureStairs, m_TextureBarrel, m_TextureTree, m_TextureInvalid;
-	PaulEngine::Ref<PaulEngine::Framebuffer> m_Framebuffer;
 
 	glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
