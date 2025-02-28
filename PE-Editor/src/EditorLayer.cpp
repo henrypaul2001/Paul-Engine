@@ -62,6 +62,7 @@ namespace PaulEngine {
 			PE_PROFILE_SCOPE("Sandbox2D::OnUpdate::Renderer Prep");
 			Renderer2D::ResetStats();
 			m_Framebuffer->Bind();
+			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
 			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 			RenderCommand::Clear();
 		}
@@ -185,10 +186,19 @@ namespace PaulEngine {
 		ImGui::ColorPicker4("Square Colour", &m_SquareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
 		ImGui::End();
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+		if (m_ViewportSize != glm::vec2(viewportPanelSize.x, viewportPanelSize.y)) {
+			// Viewport panel has changed, resize framebuffer
+			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_CameraController.ResizeBounds(m_ViewportSize.x, m_ViewportSize.y);
+		}
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
-		ImGui::Image(textureID, ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
+		ImGui::PopStyleVar();
 
 		ImGui::End();
 	}

@@ -17,6 +17,8 @@ namespace PaulEngine {
 		void OnUpdate(const Timestep timestep);
 		void OnEvent(Event& e);
 
+		void ResizeBounds(float width, float height);
+
 		float m_MoveSpeed;
 		float m_RotateSpeed;
 	private:

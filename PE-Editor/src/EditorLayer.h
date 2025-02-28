@@ -29,6 +29,8 @@ namespace PaulEngine {
 		Ref<SubTexture2D> m_TextureStairs, m_TextureBarrel, m_TextureTree, m_TextureInvalid;
 		Ref<Framebuffer> m_Framebuffer;
 
+		glm::vec2 m_ViewportSize;
+
 		glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
 		uint32_t m_MapWidth, m_MapHeight;

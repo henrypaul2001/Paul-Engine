@@ -20,6 +20,11 @@ namespace PaulEngine {
 	{
 		m_Spec.Width = width;
 		m_Spec.Height = height;
+
+		glDeleteFramebuffers(1, &m_RendererID);
+		glDeleteTextures(1, &m_ColourAttachment);
+		glDeleteTextures(1, &m_DepthAttachment);
+
 		Regenerate();
 	}
 

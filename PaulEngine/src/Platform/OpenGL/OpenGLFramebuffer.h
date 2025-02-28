@@ -9,7 +9,6 @@ namespace PaulEngine {
 		virtual ~OpenGLFramebuffer();
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
-		void Regenerate();
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Spec; }
 
@@ -19,6 +18,8 @@ namespace PaulEngine {
 		virtual void Unbind() override;
 
 	private:
+		void Regenerate();
+
 		uint32_t m_RendererID, m_ColourAttachment, m_DepthAttachment;
 		FramebufferSpecification m_Spec;
 	};
