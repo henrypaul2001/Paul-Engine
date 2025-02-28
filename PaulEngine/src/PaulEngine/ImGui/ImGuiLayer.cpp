@@ -180,8 +180,6 @@ namespace PaulEngine {
 	void ImGuiLayer::OnImGuiRender()
 	{
 		PE_PROFILE_FUNCTION();
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
 	}
 
 	void ImGuiLayer::Begin()
