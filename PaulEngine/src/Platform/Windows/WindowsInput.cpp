@@ -1,14 +1,12 @@
 #include "pepch.h"
-#include "WindowsInput.h"
+#include "PaulEngine/Core/Input.h"
 
 #include "PaulEngine/Core/Application.h"
 #include <GLFW/glfw3.h>
 
+#ifdef PE_PLATFORM_WINDOWS
 namespace PaulEngine {
-
-	Input* Input::s_Instance = new WindowsInput();
-
-	bool WindowsInput::IsKeyPressedImpl(int keycode)
+	bool Input::IsKeyPressed(int keycode)
 	{
 		PE_PROFILE_FUNCTION();
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -16,7 +14,7 @@ namespace PaulEngine {
 		return (state == GLFW_PRESS || state == GLFW_REPEAT);
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(int button)
+	bool Input::IsMouseButtonPressed(int button)
 	{
 		PE_PROFILE_FUNCTION();
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -24,7 +22,7 @@ namespace PaulEngine {
 		return (state == GLFW_PRESS);
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	std::pair<float, float> Input::GetMousePosition()
 	{
 		PE_PROFILE_FUNCTION();
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -33,15 +31,16 @@ namespace PaulEngine {
 		return { (float)xpos, (float)ypos };
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float Input::GetMouseX()
 	{
-		auto [x, y] = GetMousePositionImpl();
+		auto [x, y] = GetMousePosition();
 		return x;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float Input::GetMouseY()
 	{
-		auto [x, y] = GetMousePositionImpl();
+		auto [x, y] = GetMousePosition();
 		return y;
 	}
 }
+#endif
