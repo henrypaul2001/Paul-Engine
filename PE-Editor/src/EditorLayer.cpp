@@ -56,7 +56,7 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 		deltaTime = timestep;
-		m_CameraController.OnUpdate(timestep);
+		if (m_ViewportFocus) { m_CameraController.OnUpdate(timestep); }
 
 		{
 			PE_PROFILE_SCOPE("Sandbox2D::OnUpdate::Renderer Prep");
@@ -188,6 +188,11 @@ namespace PaulEngine {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
+
+		m_ViewportFocus = ImGui::IsWindowFocused();
+		m_ViewportHovered = ImGui::IsWindowHovered();
+		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocus || !m_ViewportHovered);
+
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		if (m_ViewportSize != glm::vec2(viewportPanelSize.x, viewportPanelSize.y)) {
 			// Viewport panel has changed, resize framebuffer
@@ -195,6 +200,7 @@ namespace PaulEngine {
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.ResizeBounds(m_ViewportSize.x, m_ViewportSize.y);
 		}
+
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
 		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();

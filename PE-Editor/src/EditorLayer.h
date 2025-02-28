@@ -35,5 +35,7 @@ namespace PaulEngine {
 
 		uint32_t m_MapWidth, m_MapHeight;
 		std::unordered_map<char, Ref<SubTexture2D>> m_TextureMap;
+
+		bool m_ViewportFocus = false, m_ViewportHovered = false;
 	};
 }

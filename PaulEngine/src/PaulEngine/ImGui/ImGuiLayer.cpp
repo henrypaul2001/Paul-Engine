@@ -182,6 +182,15 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 	}
 
+	void ImGuiLayer::OnEvent(Event& e)
+	{
+		if (m_BlockEvents) {
+			ImGuiIO& io = ImGui::GetIO();
+			e.handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			e.handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
+	}
+
 	void ImGuiLayer::Begin()
 	{
 		PE_PROFILE_FUNCTION();

@@ -39,7 +39,7 @@ namespace PaulEngine {
 		// Events propagate down the layer stack, starting with overlays until the event is handled or all layers have received the event
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
 			(*--it)->OnEvent(e);
-			if (e.Handled()) { break; }
+			if (e.handled) { break; }
 		}
 	}
 
