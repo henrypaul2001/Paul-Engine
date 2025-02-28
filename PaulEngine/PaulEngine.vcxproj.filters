@@ -10,6 +10,9 @@
     <Filter Include="src\PaulEngine\Core">
       <UniqueIdentifier>{DC7D8190-48DF-5E9E-D14C-A5503DAD955D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Debug">
+      <UniqueIdentifier>{7A94BDA0-6623-476A-0F42-5B65FBAF5710}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\PaulEngine\Events">
       <UniqueIdentifier>{6876FABB-D4E2-B5B6-9DD6-4D140902D81E}</UniqueIdentifier>
     </Filter>
@@ -90,6 +93,9 @@
     <ClInclude Include="src\PaulEngine\Core\Window.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Debug\Instrumentor.h">
+      <Filter>src\PaulEngine\Debug</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h">
       <Filter>src\PaulEngine\Events</Filter>
     </ClInclude>
@@ -111,6 +117,9 @@
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
@@ -126,7 +135,13 @@
     <ClInclude Include="src\PaulEngine\Renderer\Renderer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Renderer2D.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Shader.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\SubTexture2D.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Texture.h">
@@ -139,6 +154,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h">
@@ -1419,13 +1437,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Renderer2D.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Debug\Instrumentor.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\SubTexture2D.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1452,6 +1463,9 @@
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
@@ -1464,7 +1478,13 @@
     <ClCompile Include="src\PaulEngine\Renderer\Renderer.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Renderer2D.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Shader.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\SubTexture2D.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Texture.cpp">
@@ -1477,6 +1497,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp">
@@ -1503,11 +1526,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Renderer2D.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\SubTexture2D.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
   </ItemGroup>
 </Project>

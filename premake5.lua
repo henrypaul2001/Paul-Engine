@@ -154,3 +154,58 @@ project "Sandbox"
 		defines "PE_DIST"
 		runtime "Release"
 		optimize "on"
+
+
+project "PE-Editor"
+	location "PE-Editor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"PaulEngine/vendor/spdlog/include",
+		"PaulEngine/src",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}"
+	}
+
+	links
+	{
+		"PaulEngine"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		buildoptions "/utf-8"
+
+		defines
+		{
+			"PE_PLATFORM_WINDOWS"
+		}
+
+	filter "configurations:Debug"
+		defines "PE_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "PE_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "PE_DIST"
+		runtime "Release"
+		optimize "on"
