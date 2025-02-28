@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 
 namespace PaulEngine {
-	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_FramebufferSpec(spec)
+	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_Spec(spec)
 	{
 		Regenerate();
 	}
@@ -12,6 +12,15 @@ namespace PaulEngine {
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
+		glDeleteTextures(1, &m_ColourAttachment);
+		glDeleteTextures(1, &m_DepthAttachment);
+	}
+
+	void OpenGLFramebuffer::Resize(const uint32_t width, const uint32_t height)
+	{
+		m_Spec.Width = width;
+		m_Spec.Height = height;
+		Regenerate();
 	}
 
 	void OpenGLFramebuffer::Regenerate()
@@ -23,7 +32,7 @@ namespace PaulEngine {
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_ColourAttachment);
 		glBindTexture(GL_TEXTURE_2D, m_ColourAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_FramebufferSpec.Width, m_FramebufferSpec.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Spec.Width, m_Spec.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -31,7 +40,7 @@ namespace PaulEngine {
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);
 		glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_FramebufferSpec.Width, m_FramebufferSpec.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_Spec.Width, m_Spec.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);
 
