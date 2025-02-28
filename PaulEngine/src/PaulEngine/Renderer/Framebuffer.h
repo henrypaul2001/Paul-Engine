@@ -12,6 +12,8 @@ namespace PaulEngine {
 	class Framebuffer
 	{
 	public:
+		virtual ~Framebuffer() {}
+
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
 		virtual uint32_t GetColourAttachmentID() const = 0;
