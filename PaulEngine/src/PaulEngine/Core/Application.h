@@ -11,7 +11,7 @@ namespace PaulEngine {
 	class Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Paul Engine");
 		virtual ~Application();
 
 		void OnEvent(Event& e);
