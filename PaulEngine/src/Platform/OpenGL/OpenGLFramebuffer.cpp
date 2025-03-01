@@ -18,6 +18,11 @@ namespace PaulEngine {
 
 	void OpenGLFramebuffer::Resize(const uint32_t width, const uint32_t height)
 	{
+		if (width == 0 || height == 0) {
+			PE_CORE_WARN("Attempt to resize framebuffer to invalid dimensions: {0}, {1}", width, height);
+			return;
+		}
+
 		m_Spec.Width = width;
 		m_Spec.Height = height;
 
