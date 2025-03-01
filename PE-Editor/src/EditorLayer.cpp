@@ -43,6 +43,13 @@ namespace PaulEngine {
 		spec.Width = 1280;
 		spec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(spec);
+
+		m_ActiveScene = CreateRef<Scene>();
+		entt::entity entity = m_ActiveScene->CreateEntity();
+		m_ActiveScene->GetReg().emplace<ComponentTransform>(entity);
+		m_ActiveScene->GetReg().emplace<Component2DSprite>(entity, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+		m_SquareEntity = entity;
 	}
 
 	void EditorLayer::OnDetach()
@@ -58,69 +65,18 @@ namespace PaulEngine {
 		deltaTime = timestep;
 		if (m_ViewportFocus) { m_CameraController.OnUpdate(timestep); }
 
-		{
-			PE_PROFILE_SCOPE("Sandbox2D::OnUpdate::Renderer Prep");
-			Renderer2D::ResetStats();
-			m_Framebuffer->Bind();
-			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
-			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-			RenderCommand::Clear();
-		}
+		Renderer2D::ResetStats();
+		m_Framebuffer->Bind();
+		RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
+		RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+		RenderCommand::Clear();
 
-		{
-			PE_PROFILE_SCOPE("Sandbox2D::OnUpdate::Renderer Draw");
+		// Update scene
+		Renderer2D::BeginScene(m_CameraController.GetCamera());
+		m_ActiveScene->OnUpdate(timestep);
 
-#if 0
-			{
-				Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-				Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour, -45.0f);
-				Renderer2D::DrawQuad({ 2.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-				Renderer2D::DrawQuad({ 4.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-				Renderer2D::DrawQuad({ 6.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-				Renderer2D::DrawQuad({ 8.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-				Renderer2D::DrawQuad({ 10.0f, 0.0f }, { 1.0f, 1.0f }, m_Texture2);
-
-				static float rotation = 0.0f;
-				rotation += timestep * 25.0f;
-
-				Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 100.0f, 100.0f }, m_Texture, glm::vec2(10.0f), m_SquareColour, rotation);
-
-				for (float y = -10.0f; y < 10.0f; y += 0.5f) {
-					for (float x = -10.0f; x < 10.0f; x += 0.5f) {
-						glm::vec4 colour = glm::vec4((x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.8f);
-						Renderer2D::DrawQuad(glm::vec2(x, y), glm::vec2(0.45f), colour);
-					}
-				}
-				Renderer2D::EndScene();
-			}
-#endif
-
-#if 1
-			{
-				Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-				for (uint32_t y = 0; y < m_MapHeight; y++) {
-					for (uint32_t x = 0; x < m_MapWidth; x++) {
-						char tile = s_MapTiles[x + y * m_MapWidth];
-						Ref<SubTexture2D> texture;
-
-						std::unordered_map<char, Ref<SubTexture2D>>::iterator it = m_TextureMap.find(tile);
-						if (it != m_TextureMap.end()) { texture = it->second; }
-						else { texture = m_TextureInvalid; }
-
-						Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f }, { 1.0f, 1.0f }, texture);
-					}
-				}
-
-				Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_TextureStairs);
-				Renderer2D::DrawQuad({ 0.0f, 1.0f }, { 1.0f, 1.0f }, m_TextureBarrel);
-				Renderer2D::DrawQuad({ -1.5f, 0.5f }, { 1.0f, 2.0f }, m_TextureTree);
-				Renderer2D::EndScene();
-				m_Framebuffer->Unbind();
-			}
-#endif
-		}
+		Renderer2D::EndScene();
+		m_Framebuffer->Unbind();
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -183,7 +139,8 @@ namespace PaulEngine {
 		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
 
 		ImGui::SeparatorText("Edit:");
-		ImGui::ColorPicker4("Square Colour", &m_SquareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
+		auto& squareColour = m_ActiveScene->GetReg().get<Component2DSprite>(m_SquareEntity).Colour;
+		ImGui::ColorPicker4("Square Colour", &squareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

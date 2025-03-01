@@ -16,6 +16,8 @@
 // Layer
 #include "PaulEngine/ImGui/ImGuiLayer.h"
 
+#include "PaulEngine/Scene/Scene.h"
+
 // Render
 #include "PaulEngine/Renderer/Renderer.h"
 #include "PaulEngine/Renderer/RenderCommand.h"
