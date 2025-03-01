@@ -18,6 +18,7 @@ IncludeDir["glad"] = "PaulEngine/vendor/glad/include"
 IncludeDir["ImGui"] = "PaulEngine/vendor/imgui/imgui"
 IncludeDir["glm"] = "PaulEngine/vendor/glm"
 IncludeDir["stb_image"] = "PaulEngine/vendor/stb_image"
+IncludeDir["entt"] = "PaulEngine/vendor/entt/include"
 
 include "PaulEngine/vendor/GLFW"
 include "PaulEngine/vendor/glad"
@@ -59,7 +60,8 @@ project "PaulEngine"
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -122,7 +124,8 @@ project "Sandbox"
 		"PaulEngine/vendor/spdlog/include",
 		"PaulEngine/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -177,7 +180,8 @@ project "PE-Editor"
 		"PaulEngine/vendor/spdlog/include",
 		"PaulEngine/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
