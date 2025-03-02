@@ -1,15 +1,19 @@
 #include "pepch.h"
 #include "Scene.h"
 #include "PaulEngine/Renderer/Renderer2D.h"
+#include "PaulEngine/Scene/Entity.h"
 namespace PaulEngine
 {
 	Scene::Scene() {}
 
 	Scene::~Scene() {}
 
-	entt::entity Scene::CreateEntity()
+	Entity Scene::CreateEntity(const std::string& name)
 	{
-		return m_Registry.create();
+		Entity e = Entity(m_Registry.create(), this);
+		e.AddComponent<ComponentTransform>();
+		e.AddComponent<ComponentTag>(name);
+		return e;
 	}
 
 	void Scene::OnUpdate(Timestep timestep)

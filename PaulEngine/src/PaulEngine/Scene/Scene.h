@@ -6,7 +6,13 @@
 
 namespace PaulEngine
 {
+	class Entity;
 	// Temporary test components
+	struct ComponentTag {
+		std::string Tag;
+
+		ComponentTag(const std::string& tag = std::string()) : Tag(tag) {}
+	};
 	struct ComponentTransform {
 		glm::vec3 Position = glm::vec3(0.0f);
 		glm::vec3 Scale = glm::vec3(1.0f);
@@ -25,14 +31,13 @@ namespace PaulEngine
 		Scene();
 		~Scene();
 
-		entt::entity CreateEntity();
-
-		// temp
-		entt::registry& GetReg() { return m_Registry; }
+		Entity CreateEntity(const std::string& name = "Entity");
 
 		void OnUpdate(Timestep timestep);
 
 	private:
+		friend class Entity;
+
 		entt::registry m_Registry;
 	};
 }

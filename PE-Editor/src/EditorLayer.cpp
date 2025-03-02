@@ -45,11 +45,9 @@ namespace PaulEngine {
 		m_Framebuffer = Framebuffer::Create(spec);
 
 		m_ActiveScene = CreateRef<Scene>();
-		entt::entity entity = m_ActiveScene->CreateEntity();
-		m_ActiveScene->GetReg().emplace<ComponentTransform>(entity);
-		m_ActiveScene->GetReg().emplace<Component2DSprite>(entity, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
-		m_SquareEntity = entity;
+		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
+		m_SquareEntity.HasComponent<ComponentTransform>();
+		m_SquareEntity.AddComponent<Component2DSprite>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	}
 
 	void EditorLayer::OnDetach()
@@ -138,9 +136,13 @@ namespace PaulEngine {
 		ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
 		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
 
-		ImGui::SeparatorText("Edit:");
-		auto& squareColour = m_ActiveScene->GetReg().get<Component2DSprite>(m_SquareEntity).Colour;
-		ImGui::ColorPicker4("Square Colour", &squareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
+		if (m_SquareEntity) {
+			ImGui::Separator();
+			ImGui::Text(m_SquareEntity.Tag().c_str());
+			auto& squareColour = m_SquareEntity.GetComponent<Component2DSprite>().Colour;
+			ImGui::ColorPicker4("Square Colour", &squareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
+			ImGui::Separator();
+		}
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
