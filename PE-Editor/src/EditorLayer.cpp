@@ -48,6 +48,10 @@ namespace PaulEngine {
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
 		m_SquareEntity.HasComponent<ComponentTransform>();
 		m_SquareEntity.AddComponent<Component2DSprite>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		m_CameraEntity.GetComponent<ComponentTransform>().Position = glm::vec3(0.0f, 0.0f, 1.0f);
+		m_CameraEntity.AddComponent<ComponentCamera>(Camera::CreateOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f));
 	}
 
 	void EditorLayer::OnDetach()
@@ -70,10 +74,8 @@ namespace PaulEngine {
 		RenderCommand::Clear();
 
 		// Update scene
-		Renderer2D::BeginScene(m_CameraController.GetCamera());
 		m_ActiveScene->OnUpdate(timestep);
 
-		Renderer2D::EndScene();
 		m_Framebuffer->Unbind();
 	}
 

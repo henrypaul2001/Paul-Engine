@@ -18,7 +18,6 @@ namespace PaulEngine
 
 	struct ComponentCamera {
 		Camera Camera;
-
 	};
 
 	struct Component2DSprite {

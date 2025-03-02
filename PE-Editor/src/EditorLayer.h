@@ -31,6 +31,7 @@ namespace PaulEngine {
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_SquareEntity;
+		Entity m_CameraEntity;
 
 		glm::vec2 m_ViewportSize;
 
