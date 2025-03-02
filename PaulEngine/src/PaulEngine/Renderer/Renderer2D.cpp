@@ -115,6 +115,15 @@ namespace PaulEngine {
 		StartNewBatch();
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
+	{
+		PE_PROFILE_FUNCTION();
+		s_RenderData.TextureShader->Bind();
+		s_RenderData.TextureShader->SetUniformMat4("u_ViewProjection", camera.GetProjection() * glm::inverse(transform));
+
+		StartNewBatch();
+	}
+
 	void Renderer2D::EndScene()
 	{
 		PE_PROFILE_FUNCTION();
