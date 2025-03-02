@@ -1436,6 +1436,8 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Scene\Scene.h" />
     <ClInclude Include="src\PaulEngine\Scene\Entity.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
+    <ClInclude Include="src\PaulEngine\Scene\Components.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
