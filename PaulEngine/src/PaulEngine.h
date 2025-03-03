@@ -19,6 +19,8 @@
 // Scene
 #include "PaulEngine/Scene/Scene.h"
 #include "PaulEngine/Scene/Entity.h"
+#include "PaulEngine/Scene/EntityScript.h"
+#include "PaulEngine/Scene/Components.h"
 
 // Render
 #include "PaulEngine/Renderer/Renderer.h"

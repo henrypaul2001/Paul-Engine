@@ -149,6 +149,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
     <ClInclude Include="src\PaulEngine\Scene\Components.h" />
     <ClInclude Include="src\PaulEngine\Scene\Entity.h" />
+    <ClInclude Include="src\PaulEngine\Scene\EntityScript.h" />
     <ClInclude Include="src\PaulEngine\Scene\Scene.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />

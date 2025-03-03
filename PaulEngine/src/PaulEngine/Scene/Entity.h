@@ -37,11 +37,7 @@ namespace PaulEngine
 		}
 		operator bool() { return IsValid(); }
 
-		const std::string& Tag() {
-			if (HasComponent<ComponentTag>()) {
-				return GetComponent<ComponentTag>().Tag;
-			}
-		}
+		const std::string& Tag();
 
 	private:
 		entt::entity m_EntityHandle;

@@ -1,6 +1,6 @@
 #pragma once
 #include <PaulEngine/Scene/SceneCamera.h>
-
+#include "EntityScript.h"
 namespace PaulEngine
 {
 	struct ComponentTag {
@@ -26,5 +26,18 @@ namespace PaulEngine
 		glm::vec4 Colour = glm::vec4(1.0f);
 
 		Component2DSprite(const glm::vec4& colour = glm::vec4(1.0f)) : Colour(colour) {}
+	};
+
+	struct ComponentNativeScript {
+		EntityScript* Instance = nullptr;
+
+		EntityScript* (*InstantiateScript)();
+		void (*DestroyScript)(ComponentNativeScript*);
+
+		template<typename T>
+		void Bind() {
+			InstantiateScript = []() { return static_cast<EntityScript*>(new T()); };
+			DestroyScript = [](ComponentNativeScript* scriptComponent) { delete scriptComponent->Instance; scriptComponent->Instance = nullptr; };
+		}
 	};
 }
