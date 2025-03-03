@@ -2,6 +2,8 @@
 #include "Scene.h"
 #include "PaulEngine/Renderer/Renderer2D.h"
 #include "PaulEngine/Scene/Entity.h"
+#include "Components.h"
+
 namespace PaulEngine
 {
 	Scene::Scene() : m_ViewportWidth(0), m_ViewportHeight(0) {}
@@ -20,12 +22,28 @@ namespace PaulEngine
 	void Scene::OnUpdate(Timestep timestep)
 	{
 		PE_PROFILE_FUNCTION();
+
+		// Update scripts
+		{
+			PE_PROFILE_SCOPE("Run scripts");
+			m_Registry.view<ComponentNativeScript>().each([=](auto entity, auto& script) {
+				// Script instantiation will be moved to OnSceneStart
+				if (!script.Instance) {
+					script.Instance = script.InstantiateScript();
+					script.Instance->m_Entity = Entity(entity, this);
+					script.Instance->OnCreate();
+				}
+
+				script.Instance->OnUpdate(timestep);
+			});
+		}
+
 		Camera* mainCamera = nullptr;
 		glm::mat4 transformation = glm::mat4(1.0f);
 		{
 			auto group = m_Registry.group<ComponentCamera>(entt::get<ComponentTransform>);
 			for (auto entity : group) {
-				auto& [transform, camera] = group.get<ComponentTransform, ComponentCamera>(entity);
+				auto [transform, camera] = group.get<ComponentTransform, ComponentCamera>(entity);
 
 				// if camera.primary
 				mainCamera = &camera.Camera;
@@ -39,7 +57,7 @@ namespace PaulEngine
 			Renderer2D::BeginScene(*mainCamera, transformation);
 			auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
 			for (auto entity : group) {
-				auto& [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entity);
+				auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entity);
 				Renderer2D::DrawQuad(transform.Position, glm::vec2(transform.Scale.x, transform.Scale.y), sprite.Colour);
 			}
 			Renderer2D::EndScene();

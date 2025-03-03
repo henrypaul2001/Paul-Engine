@@ -1,6 +1,6 @@
 #pragma once
 #include <entt.hpp>
-#include "Components.h"
+//#include "Components.h"
 
 #include "PaulEngine/Core/Timestep.h"
 

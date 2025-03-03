@@ -52,6 +52,37 @@ namespace PaulEngine {
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
 		m_CameraEntity.GetComponent<ComponentTransform>().Position = glm::vec3(0.0f, 0.0f, -1.0f);
 		m_CameraEntity.AddComponent<ComponentCamera>(SCENE_CAMERA_ORTHOGRAPHIC);
+
+		class CameraController : public EntityScript {
+		public:
+			void OnCreate() override {
+				PE_INFO("Camera Controller Created!");
+			}
+
+			void OnDestroy() override {
+				PE_INFO("Camera Controller Destroyed");
+			}
+
+			void OnUpdate(Timestep timestep) override {
+				ComponentTransform& transform = m_Entity.GetComponent<ComponentTransform>();
+				float speed = 5.0f;
+
+				if (Input::IsKeyPressed(PE_KEY_W)) {
+					transform.Position.y += speed * timestep;
+				}
+				if (Input::IsKeyPressed(PE_KEY_S)) {
+					transform.Position.y -= speed * timestep;
+				}
+				if (Input::IsKeyPressed(PE_KEY_A)) {
+					transform.Position.x -= speed * timestep;
+				}
+				if (Input::IsKeyPressed(PE_KEY_D)) {
+					transform.Position.x += speed * timestep;
+				}
+			}
+		};
+
+		m_CameraEntity.AddComponent<ComponentNativeScript>().Bind<CameraController>();
 	}
 
 	void EditorLayer::OnDetach()
