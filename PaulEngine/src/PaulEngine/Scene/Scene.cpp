@@ -10,6 +10,7 @@ namespace PaulEngine
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{
+		PE_PROFILE_FUNCTION();
 		Entity e = Entity(m_Registry.create(), this);
 		e.AddComponent<ComponentTransform>();
 		e.AddComponent<ComponentTag>(name);
@@ -18,6 +19,7 @@ namespace PaulEngine
 
 	void Scene::OnUpdate(Timestep timestep)
 	{
+		PE_PROFILE_FUNCTION();
 		Camera* mainCamera = nullptr;
 		glm::mat4 transformation = glm::mat4(1.0f);
 		{
@@ -46,6 +48,7 @@ namespace PaulEngine
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
+		PE_PROFILE_FUNCTION();
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 

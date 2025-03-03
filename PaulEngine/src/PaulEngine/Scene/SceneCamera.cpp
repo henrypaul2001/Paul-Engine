@@ -15,6 +15,7 @@ namespace PaulEngine
 
 	void SceneCamera::SetPerspective(const float vfov, const float aspect, const float nearClip, const float farClip)
 	{
+		PE_PROFILE_FUNCTION();
 		m_Type = SCENE_CAMERA_PERSPECTIVE;
 		m_NearClip = nearClip;
 		m_FarClip = farClip;
@@ -26,6 +27,7 @@ namespace PaulEngine
 
 	void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)
 	{
+		PE_PROFILE_FUNCTION();
 		m_Type = SCENE_CAMERA_ORTHOGRAPHIC;
 		m_NearClip = nearClip;
 		m_FarClip = farClip;
