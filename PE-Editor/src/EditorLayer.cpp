@@ -50,8 +50,8 @@ namespace PaulEngine {
 		m_SquareEntity.AddComponent<Component2DSprite>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		m_CameraEntity.GetComponent<ComponentTransform>().Position = glm::vec3(0.0f, 0.0f, 1.0f);
-		m_CameraEntity.AddComponent<ComponentCamera>(Camera::CreateOrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f));
+		m_CameraEntity.GetComponent<ComponentTransform>().Position = glm::vec3(0.0f, 0.0f, -1.0f);
+		m_CameraEntity.AddComponent<ComponentCamera>(SCENE_CAMERA_ORTHOGRAPHIC);
 	}
 
 	void EditorLayer::OnDetach()
@@ -71,6 +71,8 @@ namespace PaulEngine {
 		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.ResizeBounds(m_ViewportSize.x, m_ViewportSize.y);
+
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		if (m_ViewportFocus) { m_CameraController.OnUpdate(timestep); }
@@ -151,6 +153,14 @@ namespace PaulEngine {
 			ImGui::Text(m_SquareEntity.Tag().c_str());
 			auto& squareColour = m_SquareEntity.GetComponent<Component2DSprite>().Colour;
 			ImGui::ColorPicker4("Square Colour", &squareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
+			ImGui::Separator();
+		}
+		if (m_CameraEntity) {
+			ImGui::Separator();
+			ImGui::Text("Camera");
+			auto& transform = m_CameraEntity.GetComponent<ComponentTransform>();
+			auto& cameraComponent = m_CameraEntity.GetComponent<ComponentCamera>();
+			ImGui::DragFloat3("Position", &transform.Position[0], 0.01f);
 			ImGui::Separator();
 		}
 		ImGui::End();
