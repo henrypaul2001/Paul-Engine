@@ -1,5 +1,5 @@
 #pragma once
-#include <PaulEngine/Renderer/Camera.h>
+#include <PaulEngine/Scene/SceneCamera.h>
 
 namespace PaulEngine
 {
@@ -17,7 +17,9 @@ namespace PaulEngine
 	};
 
 	struct ComponentCamera {
-		Camera Camera;
+		SceneCamera Camera;
+		// bool Primary = true;
+		bool FixedAspectRatio = false;
 	};
 
 	struct Component2DSprite {

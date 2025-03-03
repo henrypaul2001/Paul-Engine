@@ -16,10 +16,13 @@ namespace PaulEngine
 		Entity CreateEntity(const std::string& name = "Entity");
 
 		void OnUpdate(Timestep timestep);
+		void OnViewportResize(uint32_t width, uint32_t height);
 
 	private:
 		friend class Entity;
 
 		entt::registry m_Registry;
+
+		uint32_t m_ViewportWidth, m_ViewportHeight;
 	};
 }

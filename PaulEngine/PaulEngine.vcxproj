@@ -181,6 +181,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Texture.h" />
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h" />
+    <ClInclude Include="src\PaulEngine\Scene\SceneCamera.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
@@ -631,6 +632,7 @@
     <ClCompile Include="src\PaulEngine\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Texture.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\PaulEngine\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />

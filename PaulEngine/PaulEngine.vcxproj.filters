@@ -1438,6 +1438,7 @@
     <ClInclude Include="src\PaulEngine\Scene\Entity.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
     <ClInclude Include="src\PaulEngine\Scene\Components.h" />
+    <ClInclude Include="src\PaulEngine\Scene\SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1529,5 +1530,6 @@
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\PaulEngine\Scene\Entity.cpp" />
+    <ClCompile Include="src\PaulEngine\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>

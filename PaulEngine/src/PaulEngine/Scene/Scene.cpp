@@ -4,7 +4,7 @@
 #include "PaulEngine/Scene/Entity.h"
 namespace PaulEngine
 {
-	Scene::Scene() {}
+	Scene::Scene() : m_ViewportWidth(0), m_ViewportHeight(0) {}
 
 	Scene::~Scene() {}
 
@@ -41,6 +41,21 @@ namespace PaulEngine
 				Renderer2D::DrawQuad(transform.Position, glm::vec2(transform.Scale.x, transform.Scale.y), sprite.Colour);
 			}
 			Renderer2D::EndScene();
+		}
+	}
+
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		m_ViewportWidth = width;
+		m_ViewportHeight = height;
+
+		// Resize non fixed aspect ratio cameras
+		auto view = m_Registry.view<ComponentCamera>();
+		for (auto entity : view) {
+			auto& cameraComponent = view.get<ComponentCamera>(entity);
+			if (!cameraComponent.FixedAspectRatio) {
+				cameraComponent.Camera.SetViewportSize(width, height);
+			}
 		}
 	}
 }
