@@ -5,39 +5,13 @@
 #include <PaulEngine/Renderer/Renderer2D.h>
 
 namespace PaulEngine {
-	static const char* s_MapTiles =
-		"WWWWWWWWWWWWWWWWWWWWWWWW"
-		"WWWWWDDDDDDDDDDWWWWWWWWW"
-		"WWWDDDDDDDDDDDDDDDWWWWWW"
-		"WWDDDDDDDDDDDDDDDDDDWWWW"
-		"WDDDDDWWWDDDDDDDDDDDWWWW"
-		"WDDDDDWWWDDDDDDDDDDDDWWW"
-		"WWDDDDDDDDDDDDDDDDDDDWWW"
-		"WWWWDDDDDDDDDDDDDDDDDWWc"
-		"WWWWWWWWDDDDDDDDDDWWWWWW"
-		"WWWWWWWWWWDDDDWWWWWWWWWW"
-		"WWWWWWWWWWWWWWWWWWWWWWWW";
-
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f), m_ViewportSize(1280.0f, 720.0f) {}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f) {}
 
 	EditorLayer::~EditorLayer() {}
 
 	void EditorLayer::OnAttach()
 	{
 		PE_PROFILE_FUNCTION();
-		m_Texture = Texture2D::Create("assets/textures/awesomeFace.png");
-		m_Texture2 = Texture2D::Create("assets/textures/Checkerboard.png");
-
-		m_Spritesheet = Texture2D::Create("assets/textures/RPGpack_sheet_2X.png");
-		m_TextureStairs = SubTexture2D::CreateFromCoords(m_Spritesheet, { 7, 6 }, { 128.0f, 128.0f });
-		m_TextureBarrel = SubTexture2D::CreateFromCoords(m_Spritesheet, { 8, 2 }, { 128.0f, 128.0f });
-		m_TextureTree = SubTexture2D::CreateFromCoords(m_Spritesheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
-		m_TextureInvalid = SubTexture2D::CreateFromCoords(m_Texture2, { 0, 0 }, { m_Texture2->GetWidth(), m_Texture2->GetHeight() });
-
-		m_MapWidth = 24;
-		m_MapHeight = strlen(s_MapTiles) / m_MapWidth;
-		m_TextureMap['D'] = SubTexture2D::CreateFromCoords(m_Spritesheet, { 6, 11 }, { 128.0f, 128.0f });
-		m_TextureMap['W'] = SubTexture2D::CreateFromCoords(m_Spritesheet, { 11, 11 }, { 128.0f, 128.0f });
 
 		FramebufferSpecification spec;
 		spec.Width = 1280;
@@ -101,12 +75,9 @@ namespace PaulEngine {
 		const FramebufferSpecification& spec = m_Framebuffer->GetSpecification();
 		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_CameraController.ResizeBounds(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
-
-		if (m_ViewportFocus) { m_CameraController.OnUpdate(timestep); }
 
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
@@ -219,7 +190,6 @@ namespace PaulEngine {
 	void EditorLayer::OnEvent(Event& e)
 	{
 		PE_PROFILE_FUNCTION();
-		m_CameraController.OnEvent(e);
 
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
