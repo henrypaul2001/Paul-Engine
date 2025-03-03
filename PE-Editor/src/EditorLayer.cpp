@@ -18,7 +18,7 @@ namespace PaulEngine {
 		"WWWWWWWWWWDDDDWWWWWWWWWW"
 		"WWWWWWWWWWWWWWWWWWWWWWWW";
 
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f) {}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1.6f / 0.9f, true, 1.0f, 1.5f), m_ViewportSize(1280.0f, 720.0f) {}
 
 	EditorLayer::~EditorLayer() {}
 
@@ -65,6 +65,14 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 		deltaTime = timestep;
+
+		// Resize
+		const FramebufferSpecification& spec = m_Framebuffer->GetSpecification();
+		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_CameraController.ResizeBounds(m_ViewportSize.x, m_ViewportSize.y);
+		}
+
 		if (m_ViewportFocus) { m_CameraController.OnUpdate(timestep); }
 
 		Renderer2D::ResetStats();
@@ -156,10 +164,7 @@ namespace PaulEngine {
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		if (m_ViewportSize != glm::vec2(viewportPanelSize.x, viewportPanelSize.y)) {
-			// Viewport panel has changed, resize framebuffer
 			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_CameraController.ResizeBounds(m_ViewportSize.x, m_ViewportSize.y);
 		}
 
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
