@@ -57,6 +57,8 @@ namespace PaulEngine {
 		};
 
 		m_CameraEntity.AddComponent<ComponentNativeScript>().Bind<CameraController>();
+
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -183,6 +185,8 @@ namespace PaulEngine {
 		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 		ImGui::PopStyleVar();
+
+		m_SceneHierarchyPanel.OnImGuiRender();
 
 		ImGui::End();
 	}

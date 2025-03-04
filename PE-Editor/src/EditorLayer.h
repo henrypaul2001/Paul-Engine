@@ -1,5 +1,6 @@
 #pragma once
 #include <PaulEngine.h>
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace PaulEngine {
 	class EditorLayer : public Layer
@@ -30,5 +31,8 @@ namespace PaulEngine {
 		glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 
 		bool m_ViewportFocus = false, m_ViewportHovered = false;
+
+		// Panels
+		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 }
