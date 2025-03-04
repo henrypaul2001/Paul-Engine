@@ -37,7 +37,11 @@ namespace PaulEngine
 		}
 		operator bool() { return IsValid(); }
 
+		bool operator== (const Entity& other) const { return (m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene); }
+		bool operator!= (const Entity& other) const { return !(*this == other); }
+
 		const std::string& Tag();
+		uint32_t GetID() const { return (uint32_t)m_EntityHandle; }
 
 	private:
 		entt::entity m_EntityHandle;
