@@ -16,6 +16,9 @@ namespace PaulEngine
 		void OnImGuiRender();
 	
 	private:
+		void DrawEntityNode(Entity entity);
+
 		Ref<Scene> m_Context;
+		Entity m_SelectedEntity;
 	};
 }
