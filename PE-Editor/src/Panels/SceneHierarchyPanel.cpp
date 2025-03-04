@@ -83,5 +83,57 @@ namespace PaulEngine
 				ImGui::TreePop();
 			}
 		}
+
+		if (entity.HasComponent<ComponentCamera>()) {
+			if (ImGui::TreeNodeEx((void*)typeid(ComponentCamera).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera Component")) {
+				ComponentCamera& camera = entity.GetComponent<ComponentCamera>();
+
+				const char* projectionTypeStrings[] = { "Orthographic", "Perspective" };
+				const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.Camera.IsPerspective()];
+				if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
+
+					for (int i = 0; i < 2; i++) {
+						bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
+						if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
+							currentProjectionTypeString = projectionTypeStrings[i];
+							camera.Camera.SwitchProjectionType((SceneCameraType)i);
+						}
+
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+
+				bool propertyChanged = false;
+				float vfov = camera.Camera.GetVFOV();
+				float orthoSize = camera.Camera.GetOrthoSize();
+				float nearClip = camera.Camera.GetNearClip();
+				float farClip = camera.Camera.GetFarClip();
+				float aspectRatio = camera.Camera.GetAspectRatio();
+
+				if (camera.Camera.IsPerspective()) {
+					if (ImGui::DragFloat("FOV", &vfov, 0.5f)) { propertyChanged = true; }
+				}
+				else {
+					if (ImGui::DragFloat("Size", &orthoSize, 0.5f)) { propertyChanged = true; }
+				}
+
+				if (ImGui::DragFloat("Asepct Ratio", &aspectRatio, 0.1f)) { propertyChanged = true; }
+				if (ImGui::DragFloat("Near Clip", &nearClip, 0.5f)) { propertyChanged = true; }
+				if (ImGui::DragFloat("Far Clip", &farClip, 0.5f)) { propertyChanged = true; }
+
+				ImGui::Checkbox("Fixed Aspect Ratio", &camera.FixedAspectRatio);
+
+				if (propertyChanged) {
+					if (camera.Camera.IsPerspective()) { camera.Camera.SetPerspective(vfov, aspectRatio, nearClip, farClip); }
+					else							   { camera.Camera.SetOrthographic(orthoSize, aspectRatio, nearClip, farClip); }
+				}
+
+				ImGui::TreePop();
+			}
+		}
 	}
 }
