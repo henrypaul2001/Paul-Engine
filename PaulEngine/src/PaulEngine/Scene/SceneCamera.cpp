@@ -21,17 +21,17 @@ namespace PaulEngine
 		m_FarClip = farClip;
 		m_AspectRatio = aspect;
 		m_PerspectiveVFOV = vfov;
-
-		m_Projection = glm::perspective(m_PerspectiveVFOV, m_AspectRatio, m_NearClip, m_FarClip);
+		m_Projection = glm::perspective(glm::radians(m_PerspectiveVFOV), m_AspectRatio, m_NearClip, m_FarClip);
 	}
 
-	void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)
+	void SceneCamera::SetOrthographic(float size, float aspect, float nearClip, float farClip)
 	{
 		PE_PROFILE_FUNCTION();
 		m_Type = SCENE_CAMERA_ORTHOGRAPHIC;
 		m_NearClip = nearClip;
 		m_FarClip = farClip;
 		m_OrthographicSize = size;
+		m_AspectRatio = aspect;
 
 		float orthoLeft = -m_OrthographicSize * m_AspectRatio * 0.5f;
 		float orthoRight = m_OrthographicSize * m_AspectRatio * 0.5f;
@@ -46,6 +46,21 @@ namespace PaulEngine
 		m_AspectRatio = (float)width / (float)height;
 
 		if (IsPerspective()) { SetPerspective(m_PerspectiveVFOV, m_AspectRatio, m_NearClip, m_FarClip); }
-		else { SetOrthographic(m_OrthographicSize, m_NearClip, m_FarClip); }
+		else { SetOrthographic(m_OrthographicSize, m_AspectRatio, m_NearClip, m_FarClip); }
+	}
+
+	void SceneCamera::SwitchProjectionType(SceneCameraType projectionType)
+	{
+		PE_PROFILE_FUNCTION();
+		if (projectionType != m_Type) {
+			switch (projectionType) {
+			case SCENE_CAMERA_ORTHOGRAPHIC:
+				SetOrthographic(m_OrthographicSize, m_AspectRatio, m_NearClip, m_FarClip);
+				break;
+			case SCENE_CAMERA_PERSPECTIVE:
+				SetPerspective(m_PerspectiveVFOV, m_AspectRatio, m_NearClip, m_FarClip);
+				break;
+			}
+		}
 	}
 }
