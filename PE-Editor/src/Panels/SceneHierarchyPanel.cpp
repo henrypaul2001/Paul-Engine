@@ -57,6 +57,24 @@ namespace PaulEngine
 		ImGui::Begin("Properties");
 		if (m_SelectedEntity) {
 			DrawComponents(m_SelectedEntity);
+
+			if (ImGui::Button("Add Component...")) {
+				ImGui::OpenPopup("AddComponent");
+			}
+
+			if (ImGui::BeginPopup("AddComponent")) {
+				
+				if (ImGui::MenuItem("Camera Component")) {
+					m_SelectedEntity.AddComponent<ComponentCamera>();
+					ImGui::CloseCurrentPopup();
+				}
+				if (ImGui::MenuItem("Sprite Component")) {
+					m_SelectedEntity.AddComponent<Component2DSprite>();
+					ImGui::CloseCurrentPopup();
+				}
+				
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::End();
@@ -165,6 +183,7 @@ namespace PaulEngine
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (entity.HasComponent<ComponentTag>()) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
 			if (ImGui::TreeNodeEx((void*)typeid(ComponentTag).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Tag Component")) {
 				ComponentTag& tagComponent = entity.GetComponent<ComponentTag>();
 
@@ -177,10 +196,17 @@ namespace PaulEngine
 
 				ImGui::TreePop();
 			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+			ImGui::PopStyleVar();
 		}
-		
+	
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
 		if (entity.HasComponent<ComponentTransform>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(ComponentTransform).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform Component")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+			if (ImGui::TreeNodeEx((void*)typeid(ComponentTransform).hash_code(), treeNodeFlags, "Transform Component")) {
 				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
 
 				DrawVec3Control("Position", transform.Position, 0.0f);
@@ -192,10 +218,32 @@ namespace PaulEngine
 			
 				ImGui::TreePop();
 			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+			ImGui::PopStyleVar();
 		}
 
 		if (entity.HasComponent<ComponentCamera>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(ComponentCamera).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera Component")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+			bool open = (ImGui::TreeNodeEx((void*)typeid(ComponentCamera).hash_code(), treeNodeFlags, "Camera Component"));
+			ImGui::SameLine(ImGui::GetWindowWidth() - 40.0f);
+			if (ImGui::Button("...", ImVec2(25, 20))) {
+				ImGui::OpenPopup("ComponentSettings");
+			}
+			ImGui::PopStyleVar();
+
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("ComponentSettings")) {
+				
+				if (ImGui::MenuItem("Remove component")) {
+					removeComponent = true;
+				}
+				
+				ImGui::EndPopup();
+			}
+
+			if (open) {
 				ComponentCamera& camera = entity.GetComponent<ComponentCamera>();
 
 				const char* projectionTypeStrings[] = { "Orthographic", "Perspective" };
@@ -244,15 +292,47 @@ namespace PaulEngine
 
 				ImGui::TreePop();
 			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (removeComponent) {
+				entity.RemoveComponent<ComponentCamera>();
+			}
 		}
 
 		if (entity.HasComponent<Component2DSprite>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(Component2DSprite).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+			bool open = (ImGui::TreeNodeEx((void*)typeid(Component2DSprite).hash_code(), treeNodeFlags, "Sprite Renderer"));
+			ImGui::SameLine(ImGui::GetWindowWidth() - 40.0f);
+			if (ImGui::Button("...", ImVec2(25, 20))) {
+				ImGui::OpenPopup("ComponentSettings");
+			}
+			ImGui::PopStyleVar();
+
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("ComponentSettings")) {
+
+				if (ImGui::MenuItem("Remove component")) {
+					removeComponent = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			if (open) {
 				Component2DSprite& spriteRenderer = entity.GetComponent<Component2DSprite>();
 
 				ImGui::ColorEdit4("Colour", &spriteRenderer.Colour[0]);
 
 				ImGui::TreePop();
+			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (removeComponent) {
+				entity.RemoveComponent<Component2DSprite>();
 			}
 		}
 	}
