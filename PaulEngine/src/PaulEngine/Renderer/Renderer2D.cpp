@@ -152,30 +152,13 @@ namespace PaulEngine {
 		s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& colour, float rotationDegrees)
-	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, colour, rotationDegrees);
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& colour, float rotationDegrees)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& colour)
 	{
 		PE_PROFILE_FUNCTION();
 
 		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
 			StartNewBatch();
-		}
-
-		// Apply transformation
-		glm::mat4 transform = glm::mat4(1.0f);
-		if (rotationDegrees != 0.0f) {
-			transform = glm::translate(transform, position);
-			transform = glm::rotate(transform, glm::radians(rotationDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-			transform = glm::scale(transform, glm::vec3(size, 1.0f));
-		}
-		else {
-			transform = glm::translate(transform, position);
-			transform = glm::scale(transform, glm::vec3(size, 1.0f));
 		}
 
 		const glm::vec2 textureCoords[] = {
@@ -199,12 +182,7 @@ namespace PaulEngine {
 		s_RenderData.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour, float rotationDegrees)
-	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, textureScale, tintColour, rotationDegrees);
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour, float rotationDegrees)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour)
 	{
 		PE_PROFILE_FUNCTION();
 		
@@ -228,18 +206,6 @@ namespace PaulEngine {
 			s_RenderData.TextureSlotIndex++;
 		}
 
-		// Apply transformation
-		glm::mat4 transform = glm::mat4(1.0f);
-		if (rotationDegrees != 0.0f) {
-			transform = glm::translate(transform, position);
-			transform = glm::rotate(transform, glm::radians(rotationDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-			transform = glm::scale(transform, glm::vec3(size, 1.0f));
-		}
-		else {
-			transform = glm::translate(transform, position);
-			transform = glm::scale(transform, glm::vec3(size, 1.0f));
-		}
-
 		const glm::vec2 textureCoords[] = {
 			{ 0.0f, 0.0f },
 			{ 1.0f, 0.0f },
@@ -261,12 +227,7 @@ namespace PaulEngine {
 		s_RenderData.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2 & position, const glm::vec2 & size, const Ref<SubTexture2D>& subtexture, const glm::vec2 & textureScale, const glm::vec4 & tintColour, float rotationDegrees)
-	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, subtexture, textureScale, tintColour, rotationDegrees);
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale, const glm::vec4& tintColour, float rotationDegrees)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale, const glm::vec4& tintColour)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -288,18 +249,6 @@ namespace PaulEngine {
 			textureIndex = (float)s_RenderData.TextureSlotIndex;
 			s_RenderData.TextureSlots[s_RenderData.TextureSlotIndex] = subtexture->GetTexture();
 			s_RenderData.TextureSlotIndex++;
-		}
-
-		// Apply transformation
-		glm::mat4 transform = glm::mat4(1.0f);
-		if (rotationDegrees != 0.0f) {
-			transform = glm::translate(transform, position);
-			transform = glm::rotate(transform, glm::radians(rotationDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-			transform = glm::scale(transform, glm::vec3(size, 1.0f));
-		}
-		else {
-			transform = glm::translate(transform, position);
-			transform = glm::scale(transform, glm::vec3(size, 1.0f));
 		}
 
 		const glm::vec2* textureCoords = subtexture->GetTexCoords();

@@ -47,8 +47,7 @@ namespace PaulEngine
 
 				// if camera.primary
 				mainCamera = &camera.Camera;
-				transformation = glm::translate(transformation, transform.Position);
-				transformation = glm::scale(transformation, transform.Scale);
+				transformation = transform.GetTransform();
 				break;
 			}
 		}
@@ -58,7 +57,7 @@ namespace PaulEngine
 			auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
 			for (auto entity : group) {
 				auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entity);
-				Renderer2D::DrawQuad(transform.Position, glm::vec2(transform.Scale.x, transform.Scale.y), sprite.Colour);
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour);
 			}
 			Renderer2D::EndScene();
 		}

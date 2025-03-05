@@ -11,9 +11,24 @@ namespace PaulEngine
 
 	struct ComponentTransform {
 		glm::vec3 Position = glm::vec3(0.0f);
+		glm::vec3 Rotation = glm::vec3(0.0f);
 		glm::vec3 Scale = glm::vec3(1.0f);
 
-		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : Position(position), Scale(scale) {}
+		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : Position(position), Rotation(rotation), Scale(scale) {}
+
+		glm::mat4 GetTransform() const {
+			glm::mat4 transform = glm::mat4(1.0f);
+			transform = glm::translate(transform, Position);
+			
+			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, { 1.0f, 0.0f, 0.0f });
+			rotation = glm::rotate(rotation, Rotation.y, { 0.0f, 1.0f, 0.0f });
+			rotation = glm::rotate(rotation, Rotation.z, { 0.0f, 0.0f, 1.0f });
+
+			transform *= rotation;
+
+			transform = glm::scale(transform, Scale);
+			return transform;
+		}
 	};
 
 	struct ComponentCamera {

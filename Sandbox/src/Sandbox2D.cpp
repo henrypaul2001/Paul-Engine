@@ -66,22 +66,22 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 		{
 			PaulEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour, -45.0f);
-			PaulEngine::Renderer2D::DrawQuad({ 2.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-			PaulEngine::Renderer2D::DrawQuad({ 4.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-			PaulEngine::Renderer2D::DrawQuad({ 6.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-			PaulEngine::Renderer2D::DrawQuad({ 8.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
-			PaulEngine::Renderer2D::DrawQuad({ 10.0f, 0.0f }, { 1.0f, 1.0f }, m_Texture2);
+			//PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour, -45.0f);
+			//PaulEngine::Renderer2D::DrawQuad({ 2.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+			//PaulEngine::Renderer2D::DrawQuad({ 4.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+			//PaulEngine::Renderer2D::DrawQuad({ 6.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+			//PaulEngine::Renderer2D::DrawQuad({ 8.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColour);
+			//PaulEngine::Renderer2D::DrawQuad({ 10.0f, 0.0f }, { 1.0f, 1.0f }, m_Texture2);
 
 			static float rotation = 0.0f;
 			rotation += timestep * 25.0f;
 
-			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 100.0f, 100.0f }, m_Texture, glm::vec2(10.0f), m_SquareColour, rotation);
+			//PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 100.0f, 100.0f }, m_Texture, glm::vec2(10.0f), m_SquareColour, rotation);
 
 			for (float y = -10.0f; y < 10.0f; y += 0.5f) {
 				for (float x = -10.0f; x < 10.0f; x += 0.5f) {
 					glm::vec4 colour = glm::vec4((x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.8f);
-					PaulEngine::Renderer2D::DrawQuad(glm::vec2(x, y), glm::vec2(0.45f), colour);
+					//PaulEngine::Renderer2D::DrawQuad(glm::vec2(x, y), glm::vec2(0.45f), colour);
 				}
 			}
 			PaulEngine::Renderer2D::EndScene();
@@ -101,13 +101,13 @@ void Sandbox2D::OnUpdate(const PaulEngine::Timestep timestep)
 					if (it != m_TextureMap.end()) { texture = it->second; }
 					else { texture = m_TextureInvalid; }
 
-					PaulEngine::Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f }, { 1.0f, 1.0f }, texture);
+					//PaulEngine::Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f }, { 1.0f, 1.0f }, texture);
 				}
 			}
 
-			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_TextureStairs);
-			PaulEngine::Renderer2D::DrawQuad({ 0.0f, 1.0f }, { 1.0f, 1.0f }, m_TextureBarrel);
-			PaulEngine::Renderer2D::DrawQuad({ -1.5f, 0.5f }, { 1.0f, 2.0f }, m_TextureTree);
+			//PaulEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_TextureStairs);
+			//PaulEngine::Renderer2D::DrawQuad({ 0.0f, 1.0f }, { 1.0f, 1.0f }, m_TextureBarrel);
+			//PaulEngine::Renderer2D::DrawQuad({ -1.5f, 0.5f }, { 1.0f, 2.0f }, m_TextureTree);
 			PaulEngine::Renderer2D::EndScene();
 		}
 #endif
