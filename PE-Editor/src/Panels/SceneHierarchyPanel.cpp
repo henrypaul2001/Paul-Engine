@@ -28,6 +28,30 @@ namespace PaulEngine
 
 			DrawEntityNode(entity);
 		});
+
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+			m_SelectedEntity = Entity();
+		}
+
+		if (ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems)) {
+			ImGui::Text("Scene");
+			ImGui::Separator();
+			if (ImGui::BeginMenu("Add...")) {
+				if (ImGui::MenuItem("Empty Entity")) {
+					m_SelectedEntity = m_Context->CreateEntity("Empty Entity");
+				}
+				ImGui::Spacing();
+				if (ImGui::MenuItem("Sprite")) {
+					Entity sprite = m_Context->CreateEntity("Sprite");
+					sprite.AddComponent<Component2DSprite>();
+					m_SelectedEntity = sprite;
+				}
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndPopup();
+		}
+
 		ImGui::End();
 
 		ImGui::Begin("Properties");
@@ -48,13 +72,27 @@ namespace PaulEngine
 			m_SelectedEntity = entity;
 		}
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
-			m_SelectedEntity = Entity();
+		bool entityDeleted = false;
+		if (ImGui::BeginPopupContextItem()) {
+			ImGui::Text(tag.c_str());
+			ImGui::Separator();
+			if (ImGui::MenuItem("Delete")) {
+				entityDeleted = true;
+			}
+
+			ImGui::EndPopup();
 		}
 
 		if (opened) {
 			ImGui::Text("Hello");
 			ImGui::TreePop();
+		}
+
+		if (entityDeleted) {
+			if (m_SelectedEntity == entity) {
+				m_SelectedEntity = Entity();
+			}
+			m_Context->DestroyEntity(entity);
 		}
 	}
 

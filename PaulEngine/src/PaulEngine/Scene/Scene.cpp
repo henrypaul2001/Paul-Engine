@@ -19,6 +19,11 @@ namespace PaulEngine
 		return e;
 	}
 
+	void Scene::DestroyEntity(Entity entity)
+	{
+		m_Registry.destroy(entity);
+	}
+
 	void Scene::OnUpdate(Timestep timestep)
 	{
 		PE_PROFILE_FUNCTION();
