@@ -135,5 +135,15 @@ namespace PaulEngine
 				ImGui::TreePop();
 			}
 		}
+
+		if (entity.HasComponent<Component2DSprite>()) {
+			if (ImGui::TreeNodeEx((void*)typeid(Component2DSprite).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+				Component2DSprite& spriteRenderer = entity.GetComponent<Component2DSprite>();
+
+				ImGui::ColorEdit4("Colour", &spriteRenderer.Colour[0]);
+
+				ImGui::TreePop();
+			}
+		}
 	}
 }
