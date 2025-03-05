@@ -151,22 +151,6 @@ namespace PaulEngine {
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 		ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
 		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
-
-		if (m_SquareEntity) {
-			ImGui::Separator();
-			ImGui::Text(m_SquareEntity.Tag().c_str());
-			auto& squareColour = m_SquareEntity.GetComponent<Component2DSprite>().Colour;
-			ImGui::ColorPicker4("Square Colour", &squareColour[0], ImGuiColorEditFlags_AlphaPreviewHalf);
-			ImGui::Separator();
-		}
-		if (m_CameraEntity) {
-			ImGui::Separator();
-			ImGui::Text("Camera");
-			auto& transform = m_CameraEntity.GetComponent<ComponentTransform>();
-			auto& cameraComponent = m_CameraEntity.GetComponent<ComponentCamera>();
-			ImGui::DragFloat3("Position", &transform.Position[0], 0.01f);
-			ImGui::Separator();
-		}
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

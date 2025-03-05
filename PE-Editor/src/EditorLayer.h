@@ -28,8 +28,6 @@ namespace PaulEngine {
 
 		glm::vec2 m_ViewportSize;
 
-		glm::vec4 m_SquareColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-
 		bool m_ViewportFocus = false, m_ViewportHovered = false;
 
 		// Panels
