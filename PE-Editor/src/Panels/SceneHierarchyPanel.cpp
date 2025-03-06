@@ -85,6 +85,7 @@ namespace PaulEngine
 		const std::string& tag = entity.GetComponent<ComponentTag>().Tag;
 
 		ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)entity.GetID(), flags, tag.c_str());
 		if (ImGui::IsItemClicked()) {
 			m_SelectedEntity = entity;
@@ -189,160 +190,118 @@ namespace PaulEngine
 		return edited;
 	}
 
+	template<typename T, typename UIFunction>
+	static void DrawComponent(const std::string& name, Entity entity, bool canBeRemoved, UIFunction uiFunction) {
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+		if (entity.HasComponent<T>()) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+			bool open = (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str()));
+			if (canBeRemoved) {
+				ImGui::SameLine(ImGui::GetWindowWidth() - 40.0f);
+				if (ImGui::Button("...", ImVec2(25, 20))) {
+					ImGui::OpenPopup("ComponentSettings");
+				}
+			}
+			ImGui::PopStyleVar();
+
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("ComponentSettings")) {
+
+				if (ImGui::MenuItem("Remove component")) {
+					removeComponent = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			if (open) {
+				T& component = entity.GetComponent<T>();
+				uiFunction(component);
+				ImGui::TreePop();
+			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (removeComponent) {
+				entity.RemoveComponent<T>();
+			}
+		}
+	}
+
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
-		if (entity.HasComponent<ComponentTag>()) {
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-			if (ImGui::TreeNodeEx((void*)typeid(ComponentTag).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Tag Component")) {
-				ComponentTag& tagComponent = entity.GetComponent<ComponentTag>();
-
-				char buffer[256];
-				memset(buffer, 0, sizeof(buffer));
-				strcpy_s(buffer, sizeof(buffer), tagComponent.Tag.c_str());
-				if (ImGui::InputText("Tag", buffer, sizeof(buffer))) {
-					tagComponent.Tag = std::string(buffer);
-				}
-
-				ImGui::TreePop();
+		// Tag
+		DrawComponent<ComponentTag>("Tag Component", entity, false, [](ComponentTag& component) {
+			char buffer[256];
+			memset(buffer, 0, sizeof(buffer));
+			strcpy_s(buffer, sizeof(buffer), component.Tag.c_str());
+			if (ImGui::InputText("Tag", buffer, sizeof(buffer))) {
+				component.Tag = std::string(buffer);
 			}
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-			ImGui::PopStyleVar();
-		}
-	
-		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+		});
 
-		if (entity.HasComponent<ComponentTransform>()) {
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-			if (ImGui::TreeNodeEx((void*)typeid(ComponentTransform).hash_code(), treeNodeFlags, "Transform Component")) {
-				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
-
-				DrawVec3Control("Position", transform.Position, 0.0f);
-				glm::vec3 rotationDegrees = glm::degrees(transform.Rotation);
-				if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) {
-					transform.Rotation = glm::radians(rotationDegrees);
-				}
-				DrawVec3Control("Scale", transform.Scale, 1.0f);
-			
-				ImGui::TreePop();
+		// Transform
+		DrawComponent<ComponentTransform>("Transform Component", entity, false, [](ComponentTransform& component) {
+			DrawVec3Control("Position", component.Position, 0.0f);
+			glm::vec3 rotationDegrees = glm::degrees(component.Rotation);
+			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) {
+				component.Rotation = glm::radians(rotationDegrees);
 			}
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-			ImGui::PopStyleVar();
-		}
+			DrawVec3Control("Scale", component.Scale, 1.0f);
+		});
 
-		if (entity.HasComponent<ComponentCamera>()) {
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-			bool open = (ImGui::TreeNodeEx((void*)typeid(ComponentCamera).hash_code(), treeNodeFlags, "Camera Component"));
-			ImGui::SameLine(ImGui::GetWindowWidth() - 40.0f);
-			if (ImGui::Button("...", ImVec2(25, 20))) {
-				ImGui::OpenPopup("ComponentSettings");
-			}
-			ImGui::PopStyleVar();
+		// Camera
+		DrawComponent<ComponentCamera>("Camera Component", entity, true, [](ComponentCamera& component) {
+			const char* projectionTypeStrings[] = { "Orthographic", "Perspective" };
+			const char* currentProjectionTypeString = projectionTypeStrings[(int)component.Camera.IsPerspective()];
+			if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
 
-			bool removeComponent = false;
-			if (ImGui::BeginPopup("ComponentSettings")) {
-				
-				if (ImGui::MenuItem("Remove component")) {
-					removeComponent = true;
-				}
-				
-				ImGui::EndPopup();
-			}
-
-			if (open) {
-				ComponentCamera& camera = entity.GetComponent<ComponentCamera>();
-
-				const char* projectionTypeStrings[] = { "Orthographic", "Perspective" };
-				const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.Camera.IsPerspective()];
-				if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
-
-					for (int i = 0; i < 2; i++) {
-						bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
-						if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
-							currentProjectionTypeString = projectionTypeStrings[i];
-							camera.Camera.SwitchProjectionType((SceneCameraType)i);
-						}
-
-						if (isSelected) {
-							ImGui::SetItemDefaultFocus();
-						}
+				for (int i = 0; i < 2; i++) {
+					bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
+					if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
+						currentProjectionTypeString = projectionTypeStrings[i];
+						component.Camera.SwitchProjectionType((SceneCameraType)i);
 					}
 
-					ImGui::EndCombo();
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
 				}
 
-				bool propertyChanged = false;
-				float vfov = camera.Camera.GetVFOV();
-				float orthoSize = camera.Camera.GetOrthoSize();
-				float nearClip = camera.Camera.GetNearClip();
-				float farClip = camera.Camera.GetFarClip();
-				float aspectRatio = camera.Camera.GetAspectRatio();
-
-				if (camera.Camera.IsPerspective()) {
-					if (ImGui::DragFloat("FOV", &vfov, 0.5f)) { propertyChanged = true; }
-				}
-				else {
-					if (ImGui::DragFloat("Size", &orthoSize, 0.5f)) { propertyChanged = true; }
-				}
-
-				if (ImGui::DragFloat("Asepct Ratio", &aspectRatio, 0.1f)) { propertyChanged = true; }
-				if (ImGui::DragFloat("Near Clip", &nearClip, 0.5f)) { propertyChanged = true; }
-				if (ImGui::DragFloat("Far Clip", &farClip, 0.5f)) { propertyChanged = true; }
-
-				ImGui::Checkbox("Fixed Aspect Ratio", &camera.FixedAspectRatio);
-
-				if (propertyChanged) {
-					if (camera.Camera.IsPerspective()) { camera.Camera.SetPerspective(vfov, aspectRatio, nearClip, farClip); }
-					else							   { camera.Camera.SetOrthographic(orthoSize, aspectRatio, nearClip, farClip); }
-				}
-
-				ImGui::TreePop();
-			}
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-
-			if (removeComponent) {
-				entity.RemoveComponent<ComponentCamera>();
-			}
-		}
-
-		if (entity.HasComponent<Component2DSprite>()) {
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-			bool open = (ImGui::TreeNodeEx((void*)typeid(Component2DSprite).hash_code(), treeNodeFlags, "Sprite Renderer"));
-			ImGui::SameLine(ImGui::GetWindowWidth() - 40.0f);
-			if (ImGui::Button("...", ImVec2(25, 20))) {
-				ImGui::OpenPopup("ComponentSettings");
-			}
-			ImGui::PopStyleVar();
-
-			bool removeComponent = false;
-			if (ImGui::BeginPopup("ComponentSettings")) {
-
-				if (ImGui::MenuItem("Remove component")) {
-					removeComponent = true;
-				}
-
-				ImGui::EndPopup();
+				ImGui::EndCombo();
 			}
 
-			if (open) {
-				Component2DSprite& spriteRenderer = entity.GetComponent<Component2DSprite>();
+			bool propertyChanged = false;
+			float vfov = component.Camera.GetVFOV();
+			float orthoSize = component.Camera.GetOrthoSize();
+			float nearClip = component.Camera.GetNearClip();
+			float farClip = component.Camera.GetFarClip();
+			float aspectRatio = component.Camera.GetAspectRatio();
 
-				ImGui::ColorEdit4("Colour", &spriteRenderer.Colour[0]);
-
-				ImGui::TreePop();
+			if (component.Camera.IsPerspective()) {
+				if (ImGui::DragFloat("FOV", &vfov, 0.5f)) { propertyChanged = true; }
 			}
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-
-			if (removeComponent) {
-				entity.RemoveComponent<Component2DSprite>();
+			else {
+				if (ImGui::DragFloat("Size", &orthoSize, 0.5f)) { propertyChanged = true; }
 			}
-		}
+
+			if (ImGui::DragFloat("Asepct Ratio", &aspectRatio, 0.1f)) { propertyChanged = true; }
+			if (ImGui::DragFloat("Near Clip", &nearClip, 0.5f)) { propertyChanged = true; }
+			if (ImGui::DragFloat("Far Clip", &farClip, 0.5f)) { propertyChanged = true; }
+
+			ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
+
+			if (propertyChanged) {
+				if (component.Camera.IsPerspective()) { component.Camera.SetPerspective(vfov, aspectRatio, nearClip, farClip); }
+				else { component.Camera.SetOrthographic(orthoSize, aspectRatio, nearClip, farClip); }
+			}
+		});
+
+		// Sprite
+		DrawComponent<Component2DSprite>("Sprite Component", entity, true, [](Component2DSprite& component) {
+			ImGui::ColorEdit4("Colour", &component.Colour[0]);
+		});
+
 	}
 }
