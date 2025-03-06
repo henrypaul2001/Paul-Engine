@@ -194,15 +194,22 @@ namespace PaulEngine
 	static void DrawComponent(const std::string& name, Entity entity, bool canBeRemoved, UIFunction uiFunction) {
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 		if (entity.HasComponent<T>()) {
+			
+			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			ImGui::Separator();
+
 			bool open = (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str()));
+			ImGui::PopStyleVar();
+
 			if (canBeRemoved) {
-				ImGui::SameLine(ImGui::GetWindowWidth() - 40.0f);
-				if (ImGui::Button("...", ImVec2(25, 20))) {
+				ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+				if (ImGui::Button("---", ImVec2(lineHeight, lineHeight))) {
 					ImGui::OpenPopup("ComponentSettings");
 				}
 			}
-			ImGui::PopStyleVar();
 
 			bool removeComponent = false;
 			if (ImGui::BeginPopup("ComponentSettings")) {
@@ -219,9 +226,6 @@ namespace PaulEngine
 				uiFunction(component);
 				ImGui::TreePop();
 			}
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
 
 			if (removeComponent) {
 				entity.RemoveComponent<T>();
