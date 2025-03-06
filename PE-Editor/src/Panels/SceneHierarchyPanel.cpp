@@ -115,6 +115,9 @@ namespace PaulEngine
 	}
 
 	static bool DrawVec3Control(const std::string& label, glm::vec3& value, float resetValue = 0.0f, float columnWidth = 100.0f) {
+		ImGuiIO& io = ImGui::GetIO();
+		auto boldFont = io.Fonts->Fonts[0];
+
 		bool edited = false;
 
 		ImGui::PushID(label.c_str());
@@ -133,11 +136,13 @@ namespace PaulEngine
 		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.9f, 0.2f, 0.25f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(1.0f, 0.05f, 0.1f, 1.0f));
+		ImGui::PushFont(boldFont);
 		if (ImGui::Button("X", buttonSize)) {
 			value.x = resetValue;
 			edited = true;
 		}
 		ImGui::PopStyleColor(3);
+		ImGui::PopFont();
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##X", &value.x, 0.1f, 0.0f, 0.0f, "%.2f")) { edited = true; }
@@ -147,11 +152,13 @@ namespace PaulEngine
 		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.15f, 0.8f, 0.1f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.25f, 0.9f, 0.2f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(0.1f, 1.0f, 0.05f, 1.0f));
+		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Y", buttonSize)) {
 			value.y = resetValue;
 			edited = true;
 		}
 		ImGui::PopStyleColor(3);
+		ImGui::PopFont();
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Y", &value.y, 0.1f, 0.0f, 0.0f, "%.2f")) { edited = true; }
@@ -161,11 +168,13 @@ namespace PaulEngine
 		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.1f, 0.15f, 0.8f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.2f, 0.25f, 0.8f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(0.05f, 0.1f, 1.0f, 1.0f));
+		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Z", buttonSize)) {
 			value.z = resetValue;
 			edited = true;
 		}
 		ImGui::PopStyleColor(3);
+		ImGui::PopFont();
 
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##Z", &value.z, 0.1f, 0.0f, 0.0f, "%.2f")) { edited = true; }

@@ -153,7 +153,8 @@ namespace PaulEngine {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;			// Enable docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;			// Enable multi-viewport
 
-		io.Fonts->AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", 20.0f);
+		io.Fonts->AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", 20.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", 20.0f);
 
 		ImGui::StyleColorsDark();
 
