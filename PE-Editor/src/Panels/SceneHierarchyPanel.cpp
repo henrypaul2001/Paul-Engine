@@ -57,24 +57,6 @@ namespace PaulEngine
 		ImGui::Begin("Properties");
 		if (m_SelectedEntity) {
 			DrawComponents(m_SelectedEntity);
-
-			if (ImGui::Button("Add Component...")) {
-				ImGui::OpenPopup("AddComponent");
-			}
-
-			if (ImGui::BeginPopup("AddComponent")) {
-				
-				if (ImGui::MenuItem("Camera Component")) {
-					m_SelectedEntity.AddComponent<ComponentCamera>();
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::MenuItem("Sprite Component")) {
-					m_SelectedEntity.AddComponent<Component2DSprite>();
-					ImGui::CloseCurrentPopup();
-				}
-				
-				ImGui::EndPopup();
-			}
 		}
 
 		ImGui::End();
@@ -235,15 +217,40 @@ namespace PaulEngine
 
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
 		// Tag
-		DrawComponent<ComponentTag>("Tag Component", entity, false, [](ComponentTag& component) {
+		if (entity.HasComponent<ComponentTag>()) {
+			ComponentTag& tagComponent = entity.GetComponent<ComponentTag>();
+		
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
-			strcpy_s(buffer, sizeof(buffer), component.Tag.c_str());
-			if (ImGui::InputText("Tag", buffer, sizeof(buffer))) {
-				component.Tag = std::string(buffer);
+			strcpy_s(buffer, sizeof(buffer), tagComponent.Tag.c_str());
+			if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
+				tagComponent.Tag = std::string(buffer);
 			}
-		});
+		}
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		
+		if (ImGui::Button("Add Component...")) {
+			ImGui::OpenPopup("AddComponent");
+		}
+		
+		if (ImGui::BeginPopup("AddComponent")) {
+		
+			if (ImGui::MenuItem("Camera Component")) {
+				m_SelectedEntity.AddComponent<ComponentCamera>();
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Sprite Component")) {
+				m_SelectedEntity.AddComponent<Component2DSprite>();
+				ImGui::CloseCurrentPopup();
+			}
+		
+			ImGui::EndPopup();
+		}
+		ImGui::PopItemWidth();
+		ImGui::PopStyleVar();
 
 		// Transform
 		DrawComponent<ComponentTransform>("Transform Component", entity, false, [](ComponentTransform& component) {
