@@ -54,6 +54,7 @@ namespace PaulEngine
 
 		ImGui::End();
 
+		ImGui::SetNextWindowSizeConstraints(ImVec2(380, 0), ImVec2(FLT_MAX, FLT_MAX), 0, nullptr);
 		ImGui::Begin("Properties");
 		if (m_SelectedEntity) {
 			DrawComponents(m_SelectedEntity);
@@ -232,7 +233,7 @@ namespace PaulEngine
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
 		
-		if (ImGui::Button("Add Component...")) {
+		if (ImGui::Button("Add Component")) {
 			ImGui::OpenPopup("AddComponent");
 		}
 		
