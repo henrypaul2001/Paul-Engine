@@ -153,22 +153,22 @@ namespace PaulEngine {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N")) {
+				if (ImGui::MenuItem("New", "LCtrl+N")) {
 					NewScene();
 				}
-				if (ImGui::MenuItem("Open...", "Crtl+O"))
+				if (ImGui::MenuItem("Open...", "LCrtl+O"))
 				{
 					OpenScene();
 				}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				if (ImGui::MenuItem("Save", "LCtrl+S")) {
 					SaveSceneAs(m_CurrentFilepath);
 				}
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+				if (ImGui::MenuItem("Save As...", "LCtrl+LShift+S")) {
 					SaveSceneAs();
 				}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Exit")) { Application::Get().Close(); }
+				if (ImGui::MenuItem("Exit", "ESC")) { Application::Get().Close(); }
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
@@ -217,7 +217,34 @@ namespace PaulEngine {
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
 	{
-		if (e.GetKeyCode() == PE_KEY_ESCAPE) { Application::Get().Close(); return true; }
+		switch (e.GetKeyCode()) {
+			case PE_KEY_ESCAPE:
+				Application::Get().Close();
+				return true;
+				break;
+			case PE_KEY_N:
+				if (Input::IsKeyPressed(PE_KEY_LEFT_CONTROL))
+				{
+					NewScene();
+					return true;
+				}
+				break;
+			case PE_KEY_O:
+				if (Input::IsKeyPressed(PE_KEY_LEFT_CONTROL))
+				{
+					OpenScene();
+					return true;
+				}
+				break;
+			case PE_KEY_S:
+				if (Input::IsKeyPressed(PE_KEY_LEFT_CONTROL))
+				{
+					if (Input::IsKeyPressed(PE_KEY_LEFT_SHIFT)) { SaveSceneAs(); }
+					else { SaveSceneAs(m_CurrentFilepath); }
+				}
+				return true;
+				break;
+		}
 	}
 
 	void EditorLayer::NewScene()
