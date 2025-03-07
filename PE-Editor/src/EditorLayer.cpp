@@ -4,6 +4,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <PaulEngine/Renderer/Renderer2D.h>
 
+#include <PaulEngine/Scene/SceneSerializer.h>
+
 namespace PaulEngine {
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f) {}
 
@@ -63,6 +65,9 @@ namespace PaulEngine {
 		m_CameraEntity.AddComponent<ComponentNativeScript>().Bind<CameraController>();
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+		serializer.SerializeYAML("assets/scenes/Example.paul");
 	}
 
 	void EditorLayer::OnDetach()
