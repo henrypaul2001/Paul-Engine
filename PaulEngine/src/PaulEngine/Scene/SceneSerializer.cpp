@@ -5,6 +5,79 @@
 
 #include <yaml-cpp/yaml.h>
 
+// Type conversions
+namespace YAML
+{
+	template<>
+	struct convert<glm::vec2>
+	{
+		static Node encode(const glm::vec2& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& rhs) {
+			if (!node.IsSequence() || node.size() != 2) {
+				return false;
+			}
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::vec3>
+	{
+		static Node encode(const glm::vec3& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec3& rhs) {
+			if (!node.IsSequence() || node.size() != 3) {
+				return false;
+			}
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::vec4>
+	{
+		static Node encode(const glm::vec4& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec4& rhs) {
+			if (!node.IsSequence() || node.size() != 4) {
+				return false;
+			}
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			rhs.w = node[3].as<float>();
+			return true;
+		}
+	};
+}
+
 namespace PaulEngine
 {
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v) {
@@ -12,13 +85,11 @@ namespace PaulEngine
 		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
 		return out;
 	}
-
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
 		out << YAML::Flow;
 		out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
 		return out;
 	}
-
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& v) {
 		out << YAML::Flow;
 		out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
@@ -115,7 +186,72 @@ namespace PaulEngine
 
 	bool SceneSerializer::DeserializeYAML(const std::string& filepath)
 	{
-		return false;
+		std::ifstream stream = std::ifstream(filepath);
+		std::stringstream ss;
+		ss << stream.rdbuf();
+
+		YAML::Node data = YAML::Load(ss.str());
+		if (!data["Scene"]) { return false; }
+
+		std::string sceneName = data["Scene"].as<std::string>();
+		PE_CORE_TRACE("Deserializing scene '{0}'", sceneName);
+
+		YAML::Node entities = data["Entities"];
+		if (entities) {
+			for (YAML::Node entity : entities) {
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
+
+				std::string name;
+				YAML::Node tagNode = entity["TagComponent"];
+				if (tagNode) {
+					name = tagNode["Tag"].as<std::string>();
+
+					PE_CORE_TRACE("Deserializing entity with ID = {0}, name = {1}", uuid, name);
+				}
+
+				Entity deserializedEntity = m_Scene->CreateEntity(name);
+
+				YAML::Node transformNode = entity["TransformComponent"];
+				if (transformNode) {
+					ComponentTransform& transform = deserializedEntity.GetComponent<ComponentTransform>();
+					transform.Position = transformNode["Position"].as<glm::vec3>();
+					transform.Rotation = transformNode["Rotation"].as<glm::vec3>();
+					transform.Scale = transformNode["Scale"].as<glm::vec3>();
+				}
+
+				YAML::Node cameraNode = entity["CameraComponent"];
+				if (cameraNode) {
+					ComponentCamera& cameraComponent = deserializedEntity.AddComponent<ComponentCamera>();
+					SceneCamera& camera = cameraComponent.Camera;
+					YAML::Node cameraProperties = cameraNode["Camera"];
+					
+					// Get properties
+					SceneCameraType projectionType = (SceneCameraType)cameraProperties["ProjectionType"].as<int>();
+					camera.m_PerspectiveVFOV = cameraProperties["PerspectiveFOV"].as<float>();
+					camera.m_NearClip = cameraProperties["NearClip"].as<float>();
+					camera.m_FarClip = cameraProperties["FarClip"].as<float>();
+					camera.m_OrthographicSize = cameraProperties["OrthoSize"].as<float>();
+					camera.m_AspectRatio = cameraProperties["AspectRatio"].as<float>();
+
+					if (projectionType == SCENE_CAMERA_PERSPECTIVE) {
+						camera.SetPerspective(camera.m_PerspectiveVFOV, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);
+					}
+					else {
+						camera.SetOrthographic(camera.m_OrthographicSize, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);
+					}
+
+					cameraComponent.FixedAspectRatio = cameraNode["FixedAspect"].as<bool>();
+				}
+
+				YAML::Node spriteNode = entity["SpriteComponent"];
+				if (spriteNode) {
+					Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
+					spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
+				}
+			}
+		}
+
+		return true;
 	}
 
 	bool SceneSerializer::DeserializeBinary(const std::string& filepath)

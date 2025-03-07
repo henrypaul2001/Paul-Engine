@@ -30,6 +30,8 @@ namespace PaulEngine
 		inline float GetAspectRatio() const { return m_AspectRatio; }
 
 	private:
+		friend class SceneSerializer;
+
 		float m_OrthographicSize;
 		float m_NearClip, m_FarClip;
 
