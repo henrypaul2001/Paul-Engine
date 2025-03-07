@@ -21,6 +21,8 @@ namespace PaulEngine {
 		m_Framebuffer = Framebuffer::Create(spec);
 
 		m_ActiveScene = CreateRef<Scene>();
+
+#if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
 		m_SquareEntity.HasComponent<ComponentTransform>();
 		m_SquareEntity.AddComponent<Component2DSprite>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -63,11 +65,12 @@ namespace PaulEngine {
 		};
 
 		m_CameraEntity.AddComponent<ComponentNativeScript>().Bind<CameraController>();
+#endif
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-		serializer.SerializeYAML("assets/scenes/Example.paul");
+		//SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+		//serializer.DeserializeYAML("assets/scenes/Example.paul");
 	}
 
 	void EditorLayer::OnDetach()
@@ -150,6 +153,17 @@ namespace PaulEngine {
 			if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("Exit")) { Application::Get().Close(); }
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Test")) {
+				if (ImGui::MenuItem("Serialize")) {
+					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+					serializer.SerializeYAML("assets/scenes/Example.paul");
+				}
+				if (ImGui::MenuItem("Deserialize")) {
+					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+					serializer.DeserializeYAML("assets/scenes/Example.paul");
+				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
