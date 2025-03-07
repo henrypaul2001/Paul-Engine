@@ -19,10 +19,14 @@ IncludeDir["ImGui"] = "PaulEngine/vendor/imgui/imgui"
 IncludeDir["glm"] = "PaulEngine/vendor/glm"
 IncludeDir["stb_image"] = "PaulEngine/vendor/stb_image"
 IncludeDir["entt"] = "PaulEngine/vendor/entt/include"
+IncludeDir["yaml"] = "PaulEngine/vendor/yaml/yaml-cpp"
 
-include "PaulEngine/vendor/GLFW"
-include "PaulEngine/vendor/glad"
-include "PaulEngine/vendor/imgui"
+group "Dependencies"
+	include "PaulEngine/vendor/GLFW"
+	include "PaulEngine/vendor/glad"
+	include "PaulEngine/vendor/imgui"
+	include "PaulEngine/vendor/yaml"
+group ""
 
 project "PaulEngine"
 	location "PaulEngine"
@@ -39,7 +43,8 @@ project "PaulEngine"
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	files
@@ -61,7 +66,8 @@ project "PaulEngine"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml}/include"
 	}
 
 	links
@@ -69,7 +75,8 @@ project "PaulEngine"
 		"GLFW",
 		"glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"yaml-cpp"
 	}
 
 	filter "system:windows"
@@ -81,7 +88,7 @@ project "PaulEngine"
 		{
 			"PE_PLATFORM_WINDOWS",
 			"PE_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
 		}
 
 	filter "configurations:Debug"
@@ -125,12 +132,18 @@ project "Sandbox"
 		"PaulEngine/src",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml}"
 	}
 
 	links
 	{
 		"PaulEngine"
+	}
+
+	defines
+	{
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	filter "system:windows"
@@ -181,12 +194,18 @@ project "PE-Editor"
 		"PaulEngine/src",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"{IncludeDir.yaml}"
 	}
 
 	links
 	{
 		"PaulEngine"
+	}
+
+	defines
+	{
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	filter "system:windows"

@@ -76,8 +76,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;PE_PLATFORM_WINDOWS;PE_BUILD_DLL;GLFW_INCLUDE_NONE;PE_DEBUG;PE_ENABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_BUILD_DLL;GLFW_INCLUDE_NONE;PE_DEBUG;PE_ENABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -98,8 +98,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;PE_PLATFORM_WINDOWS;PE_BUILD_DLL;GLFW_INCLUDE_NONE;PE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_BUILD_DLL;GLFW_INCLUDE_NONE;PE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -124,8 +124,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;PE_PLATFORM_WINDOWS;PE_BUILD_DLL;GLFW_INCLUDE_NONE;PE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_BUILD_DLL;GLFW_INCLUDE_NONE;PE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -146,11 +146,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
-    <ClInclude Include="src\PaulEngine\Scene\Components.h" />
-    <ClInclude Include="src\PaulEngine\Scene\Entity.h" />
-    <ClInclude Include="src\PaulEngine\Scene\EntityScript.h" />
-    <ClInclude Include="src\PaulEngine\Scene\Scene.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />
     <ClInclude Include="src\PaulEngine\Core\Core.h" />
@@ -171,6 +166,7 @@
     <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
@@ -182,7 +178,12 @@
     <ClInclude Include="src\PaulEngine\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Texture.h" />
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h" />
+    <ClInclude Include="src\PaulEngine\Scene\Components.h" />
+    <ClInclude Include="src\PaulEngine\Scene\Entity.h" />
+    <ClInclude Include="src\PaulEngine\Scene\EntityScript.h" />
+    <ClInclude Include="src\PaulEngine\Scene\Scene.h" />
     <ClInclude Include="src\PaulEngine\Scene\SceneCamera.h" />
+    <ClInclude Include="src\PaulEngine\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
@@ -613,8 +614,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PaulEngine\Scene\Entity.cpp" />
-    <ClCompile Include="src\PaulEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Application.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />
@@ -633,7 +632,10 @@
     <ClCompile Include="src\PaulEngine\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Texture.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\PaulEngine\Scene\Entity.cpp" />
+    <ClCompile Include="src\PaulEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\PaulEngine\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\PaulEngine\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
@@ -657,6 +659,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\yaml\yaml-cpp.vcxproj">
+      <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

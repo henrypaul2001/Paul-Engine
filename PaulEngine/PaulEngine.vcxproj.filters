@@ -22,6 +22,9 @@
     <Filter Include="src\PaulEngine\Renderer">
       <UniqueIdentifier>{2ABF6C9B-96F6-B432-9F00-19560BB7DB2B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Scene">
+      <UniqueIdentifier>{21F7CBA1-0D86-556B-B6A4-6966A2126611}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
@@ -117,6 +120,9 @@
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Camera.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
@@ -149,6 +155,24 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h">
       <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\Components.h">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\Entity.h">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\EntityScript.h">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\Scene.h">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\SceneCamera.h">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\SceneSerializer.h">
+      <Filter>src\PaulEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
@@ -1434,12 +1458,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Scene\Scene.h" />
-    <ClInclude Include="src\PaulEngine\Scene\Entity.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
-    <ClInclude Include="src\PaulEngine\Scene\Components.h" />
-    <ClInclude Include="src\PaulEngine\Scene\SceneCamera.h" />
-    <ClInclude Include="src\PaulEngine\Scene\EntityScript.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1496,6 +1514,18 @@
     <ClCompile Include="src\PaulEngine\Renderer\VertexArray.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Scene\Entity.cpp">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Scene\Scene.cpp">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Scene\SceneCamera.cpp">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Scene\SceneSerializer.cpp">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1529,8 +1559,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Scene\Scene.cpp" />
-    <ClCompile Include="src\PaulEngine\Scene\Entity.cpp" />
-    <ClCompile Include="src\PaulEngine\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>

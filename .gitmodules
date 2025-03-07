@@ -10,3 +10,6 @@
 [submodule "PaulEngine/vendor/glm"]
 	path = PaulEngine/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "PaulEngine/vendor/yaml/yaml-cpp"]
+	path = PaulEngine/vendor/yaml/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
