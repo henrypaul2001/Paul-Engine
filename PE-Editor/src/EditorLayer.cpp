@@ -5,9 +5,10 @@
 #include <PaulEngine/Renderer/Renderer2D.h>
 
 #include <PaulEngine/Scene/SceneSerializer.h>
+#include <PaulEngine/Utils/PlatformUtils.h>
 
 namespace PaulEngine {
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f) {}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {}
 
 	EditorLayer::~EditorLayer() {}
 
@@ -152,18 +153,22 @@ namespace PaulEngine {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::MenuItem("New", "Ctrl+N")) {
+					NewScene();
+				}
+				if (ImGui::MenuItem("Open...", "Crtl+O"))
+				{
+					OpenScene();
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Save", "Ctrl+S")) {
+					SaveSceneAs(m_CurrentFilepath);
+				}
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+					SaveSceneAs();
+				}
+				ImGui::Separator();
 				if (ImGui::MenuItem("Exit")) { Application::Get().Close(); }
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Test")) {
-				if (ImGui::MenuItem("Serialize")) {
-					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-					serializer.SerializeYAML("assets/scenes/Example.paul");
-				}
-				if (ImGui::MenuItem("Deserialize")) {
-					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-					serializer.DeserializeYAML("assets/scenes/Example.paul");
-				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
@@ -213,5 +218,40 @@ namespace PaulEngine {
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
 	{
 		if (e.GetKeyCode() == PE_KEY_ESCAPE) { Application::Get().Close(); return true; }
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_CurrentFilepath = std::string();
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("Paul Engine Scene (*.paul)\0*.paul\0");
+
+		if (!filepath.empty())
+		{
+			NewScene();
+
+			SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+			serializer.DeserializeYAML(filepath);
+			m_CurrentFilepath = filepath;
+		}
+	}
+
+	void EditorLayer::SaveSceneAs(const std::string& filepath)
+	{
+		std::string path = filepath;
+		if (path.empty()) {
+			path = FileDialogs::SaveFile("Paul Engine Scene (*.paul)\0*.paul\0");
+		}
+		if (!path.empty()) {
+			SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+			serializer.SerializeYAML(path);
+			m_CurrentFilepath = path;
+		}
 	}
 }

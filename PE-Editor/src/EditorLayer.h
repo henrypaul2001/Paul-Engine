@@ -18,6 +18,12 @@ namespace PaulEngine {
 	private:
 		bool OnKeyUp(KeyReleasedEvent& e);
 
+		void NewScene();
+		void OpenScene();
+		void SaveSceneAs(const std::string& filepath = std::string());
+
+		std::string m_CurrentFilepath;
+
 		ShaderLibrary m_ShaderLibrary;
 
 		Ref<Framebuffer> m_Framebuffer;
