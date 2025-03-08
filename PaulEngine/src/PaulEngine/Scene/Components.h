@@ -1,6 +1,10 @@
 #pragma once
 #include <PaulEngine/Scene/SceneCamera.h>
 #include "EntityScript.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 namespace PaulEngine
 {
 	struct ComponentTag {
@@ -19,10 +23,8 @@ namespace PaulEngine
 		glm::mat4 GetTransform() const {
 			glm::mat4 transform = glm::mat4(1.0f);
 			transform = glm::translate(transform, Position);
-			
-			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, { 1.0f, 0.0f, 0.0f });
-			rotation = glm::rotate(rotation, Rotation.y, { 0.0f, 1.0f, 0.0f });
-			rotation = glm::rotate(rotation, Rotation.z, { 0.0f, 0.0f, 1.0f });
+
+			glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
 			transform *= rotation;
 
