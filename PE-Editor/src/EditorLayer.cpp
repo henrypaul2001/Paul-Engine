@@ -7,6 +7,9 @@
 #include <PaulEngine/Scene/SceneSerializer.h>
 #include <PaulEngine/Utils/PlatformUtils.h>
 
+#include <ImGuizmo.h>
+#include <PaulEngine/Maths/Maths.h>
+
 namespace PaulEngine {
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {}
 
@@ -185,6 +188,9 @@ namespace PaulEngine {
 		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
 		ImGui::End();
 
+
+		// -- Viewport --
+		// --------------
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
 
@@ -199,6 +205,48 @@ namespace PaulEngine {
 
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
 		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+		// Gizmos
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1) {
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+
+			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			SceneCamera& camera = cameraEntity.GetComponent<ComponentCamera>().Camera;
+
+			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<ComponentTransform>().GetTransform());
+			const glm::mat4& cameraProjection = camera.GetProjection();
+
+			// Selected entity
+			ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+			glm::mat4 entityTransform = transformComponent.GetTransform();
+
+			// Snapping
+			bool snap = Input::IsKeyPressed(PE_KEY_LEFT_CONTROL);
+			float snapValue = 0.25f;
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
+				snapValue = 45.0f;
+			}
+
+			float snapValues[3] = { snapValue, snapValue, snapValue };
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(entityTransform), 
+				nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 position = glm::vec3();
+				glm::vec3 rotation = glm::vec3();
+				glm::vec3 scale = glm::vec3();
+				Maths::DecomposeTransform(entityTransform, position, rotation, scale);
+				glm::vec3 deltaRotation = rotation - transformComponent.Rotation;
+
+				transformComponent.Position = position;
+				transformComponent.Rotation += deltaRotation;
+				transformComponent.Scale = scale;
+			}
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -217,31 +265,53 @@ namespace PaulEngine {
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
 	{
+		bool LControl = Input::IsKeyPressed(PE_KEY_LEFT_CONTROL);
+		bool LShift = Input::IsKeyPressed(PE_KEY_LEFT_SHIFT);
 		switch (e.GetKeyCode()) {
+
+			// File shortcuts
 			case PE_KEY_ESCAPE:
 				Application::Get().Close();
 				return true;
 				break;
 			case PE_KEY_N:
-				if (Input::IsKeyPressed(PE_KEY_LEFT_CONTROL))
+				if (LControl)
 				{
 					NewScene();
 					return true;
 				}
 				break;
 			case PE_KEY_O:
-				if (Input::IsKeyPressed(PE_KEY_LEFT_CONTROL))
+				if (LControl)
 				{
 					OpenScene();
 					return true;
 				}
 				break;
 			case PE_KEY_S:
-				if (Input::IsKeyPressed(PE_KEY_LEFT_CONTROL))
+				if (LControl)
 				{
-					if (Input::IsKeyPressed(PE_KEY_LEFT_SHIFT)) { SaveSceneAs(); }
+					if (LShift) { SaveSceneAs(); }
 					else { SaveSceneAs(m_CurrentFilepath); }
 				}
+				return true;
+				break;
+
+			// Gizmo shortcuts
+			case PE_KEY_Q:
+				m_GizmoType = -1;
+				return true;
+				break;
+			case PE_KEY_W:
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				return true;
+				break;
+			case PE_KEY_E:
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				return true;
+				break;
+			case PE_KEY_R:
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				return true;
 				break;
 		}

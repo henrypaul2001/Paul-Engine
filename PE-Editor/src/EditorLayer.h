@@ -39,5 +39,8 @@ namespace PaulEngine {
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+
+		int m_GizmoType = -1;
+
 	};
 }
