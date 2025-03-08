@@ -141,7 +141,8 @@ project "Sandbox"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml}"
+		"%{IncludeDir.yaml}",
+		"%{IncludeDir.imguizmo}"
 	}
 
 	links
@@ -203,7 +204,8 @@ project "PE-Editor"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",
-		"{IncludeDir.yaml}"
+		"{IncludeDir.yaml}",
+		"%{IncludeDir.imguizmo}"
 	}
 
 	links
