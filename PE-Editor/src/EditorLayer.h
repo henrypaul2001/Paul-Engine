@@ -1,6 +1,7 @@
 #pragma once
 #include <PaulEngine.h>
 #include "Panels/SceneHierarchyPanel.h"
+#include <PaulEngine/Renderer/EditorCamera.h>
 
 namespace PaulEngine {
 	class EditorLayer : public Layer
@@ -29,13 +30,12 @@ namespace PaulEngine {
 		Ref<Framebuffer> m_Framebuffer;
 
 		Ref<Scene> m_ActiveScene;
-		Entity m_SquareEntity;
-		Entity m_SquareTwo;
-		Entity m_CameraEntity;
 
 		glm::vec2 m_ViewportSize;
 
 		bool m_ViewportFocus = false, m_ViewportHovered = false;
+
+		EditorCamera m_Camera;
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

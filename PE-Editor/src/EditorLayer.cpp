@@ -73,6 +73,8 @@ namespace PaulEngine {
 
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+		m_Camera = EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f);
+
 		//SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 		//serializer.DeserializeYAML("assets/scenes/Example.paul");
 	}
@@ -95,7 +97,10 @@ namespace PaulEngine {
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		}
+
+		m_Camera.OnUpdate(timestep);
 
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
@@ -104,7 +109,7 @@ namespace PaulEngine {
 		RenderCommand::Clear();
 
 		// Update scene
-		m_ActiveScene->OnUpdate(timestep);
+		m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
 
 		m_Framebuffer->Unbind();
 	}
@@ -213,11 +218,8 @@ namespace PaulEngine {
 			ImGuizmo::SetDrawlist();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
-			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-			SceneCamera& camera = cameraEntity.GetComponent<ComponentCamera>().Camera;
-
-			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<ComponentTransform>().GetTransform());
-			const glm::mat4& cameraProjection = camera.GetProjection();
+			glm::mat4 cameraView = m_Camera.GetViewMatrix();
+			const glm::mat4& cameraProjection = m_Camera.GetProjection();
 
 			// Selected entity
 			ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
@@ -258,6 +260,8 @@ namespace PaulEngine {
 	void EditorLayer::OnEvent(Event& e)
 	{
 		PE_PROFILE_FUNCTION();
+
+		m_Camera.OnEvent(e);
 
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
@@ -315,6 +319,7 @@ namespace PaulEngine {
 				return true;
 				break;
 		}
+		return false;
 	}
 
 	void EditorLayer::NewScene()

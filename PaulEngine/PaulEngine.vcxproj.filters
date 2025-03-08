@@ -1470,6 +1470,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Maths\Maths.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1577,5 +1579,7 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Maths\Maths.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

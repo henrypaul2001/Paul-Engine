@@ -3,6 +3,7 @@
 //#include "Components.h"
 
 #include "PaulEngine/Core/Timestep.h"
+#include <PaulEngine/Renderer/EditorCamera.h>
 
 namespace PaulEngine
 {
@@ -16,11 +17,10 @@ namespace PaulEngine
 		Entity CreateEntity(const std::string& name = "Entity");
 		void DestroyEntity(Entity entity);
 
-		void OnUpdate(Timestep timestep);
+		void OnUpdateRuntime(Timestep timestep);
+		void OnUpdateOffline(Timestep timestep, EditorCamera& camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
-		// Temp function to iterate through all camera component entities and return active camera
-		Entity GetPrimaryCameraEntity();
 	private:
 		friend class Entity;
 		friend class SceneHierarchyPanel;

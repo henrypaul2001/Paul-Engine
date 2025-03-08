@@ -24,7 +24,7 @@ namespace PaulEngine
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::OnUpdate(Timestep timestep)
+	void Scene::OnUpdateRuntime(Timestep timestep)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -40,7 +40,7 @@ namespace PaulEngine
 				}
 
 				script.Instance->OnUpdate(timestep);
-			});
+				});
 		}
 
 		Camera* mainCamera = nullptr;
@@ -68,6 +68,19 @@ namespace PaulEngine
 		}
 	}
 
+	void Scene::OnUpdateOffline(Timestep timestep, EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
+		for (auto entity : group) {
+			auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entity);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour);
+		}
+
+		Renderer2D::EndScene();
+	}
+
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		PE_PROFILE_FUNCTION();
@@ -82,16 +95,5 @@ namespace PaulEngine
 				cameraComponent.Camera.SetViewportSize(width, height);
 			}
 		}
-	}
-
-	Entity Scene::GetPrimaryCameraEntity()
-	{
-		auto view = m_Registry.view<ComponentCamera>();
-		for (auto entity : view) {
-			auto& cameraComponent = view.get<ComponentCamera>(entity);
-			// if (cameraComponent.Primary)
-			return Entity(entity, this);
-		}
-		return Entity();
 	}
 }
