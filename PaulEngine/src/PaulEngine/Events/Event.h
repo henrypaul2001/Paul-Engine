@@ -1,4 +1,5 @@
 #pragma once
+#include <sstream>
 namespace PaulEngine {
 	enum class EventType {
 		None = 0,
