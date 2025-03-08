@@ -20,6 +20,7 @@ IncludeDir["glm"] = "PaulEngine/vendor/glm"
 IncludeDir["stb_image"] = "PaulEngine/vendor/stb_image"
 IncludeDir["entt"] = "PaulEngine/vendor/entt/include"
 IncludeDir["yaml"] = "PaulEngine/vendor/yaml/yaml-cpp"
+IncludeDir["imguizmo"] = "PaulEngine/vendor/imguizmo"
 
 group "Dependencies"
 	include "PaulEngine/vendor/GLFW"
@@ -54,7 +55,9 @@ project "PaulEngine"
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp"
 	}
 
 	includedirs
@@ -67,7 +70,8 @@ project "PaulEngine"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml}/include"
+		"%{IncludeDir.yaml}/include",
+		"%{IncludeDir.imguizmo}"
 	}
 
 	links
@@ -78,6 +82,10 @@ project "PaulEngine"
 		"opengl32.lib",
 		"yaml-cpp"
 	}
+
+	filter "files:PaulEngine/vendor/imguizmo/**.cpp"
+	flags { "NoPCH"}
+
 
 	filter "system:windows"
 		systemversion "latest"
