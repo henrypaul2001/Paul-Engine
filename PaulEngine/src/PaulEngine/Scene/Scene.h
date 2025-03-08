@@ -19,6 +19,8 @@ namespace PaulEngine
 		void OnUpdate(Timestep timestep);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
+		// Temp function to iterate through all camera component entities and return active camera
+		Entity GetPrimaryCameraEntity();
 	private:
 		friend class Entity;
 		friend class SceneHierarchyPanel;

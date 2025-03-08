@@ -83,4 +83,15 @@ namespace PaulEngine
 			}
 		}
 	}
+
+	Entity Scene::GetPrimaryCameraEntity()
+	{
+		auto view = m_Registry.view<ComponentCamera>();
+		for (auto entity : view) {
+			auto& cameraComponent = view.get<ComponentCamera>(entity);
+			// if (cameraComponent.Primary)
+			return Entity(entity, this);
+		}
+		return Entity();
+	}
 }
