@@ -59,6 +59,18 @@ namespace PaulEngine {
 			}
 			return false;
 		}
+
+		static GLenum PETexFormatToGLTexFormat(FramebufferTextureFormat format) {
+			switch (format) {
+			case FramebufferTextureFormat::RGBA8:
+				return GL_RGBA8;
+			case FramebufferTextureFormat::RED_INTEGER:
+				return GL_RED_INTEGER;
+	}
+
+			PE_CORE_ASSERT(false, "Undefined texture format translation");
+			return 0;
+		}
 	}
 
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_Spec(spec)
@@ -157,6 +169,12 @@ namespace PaulEngine {
 		if (m_DepthAttachment) {
 			glDeleteTextures(1, &m_DepthAttachment);
 		}
+	}
+
+	void OpenGLFramebuffer::ClearColourAttachment(uint32_t index, const int value)
+	{
+		PE_CORE_ASSERT(index < m_ColourAttachments.size(), "Colour attachment index out of bounds!");
+		glClearTexImage(m_ColourAttachments[index], 0, FramebufferUtils::PETexFormatToGLTexFormat(m_ColourAttachmentSpecs[index].TextureFormat), GL_INT, &value);
 	}
 
 	void OpenGLFramebuffer::Bind()
