@@ -57,6 +57,7 @@ namespace PaulEngine {
 		virtual void Unbind() = 0;
 
 		virtual void Resize(const uint32_t width, const uint32_t height) = 0;
+		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
 		static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
 	};

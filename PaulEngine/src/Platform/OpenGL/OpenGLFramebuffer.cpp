@@ -66,7 +66,7 @@ namespace PaulEngine {
 				return GL_RGBA8;
 			case FramebufferTextureFormat::RED_INTEGER:
 				return GL_RED_INTEGER;
-	}
+			}
 
 			PE_CORE_ASSERT(false, "Undefined texture format translation");
 			return 0;
@@ -103,6 +103,15 @@ namespace PaulEngine {
 		m_Spec.Height = height;
 
 		Regenerate();
+	}
+
+	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
+	{
+		PE_CORE_ASSERT(attachmentIndex < m_ColourAttachments.size(), "Framebuffer attachment index out of bounds");
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		return pixelData;
 	}
 
 	void OpenGLFramebuffer::Regenerate()

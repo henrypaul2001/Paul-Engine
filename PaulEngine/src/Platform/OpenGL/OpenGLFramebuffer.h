@@ -9,6 +9,7 @@ namespace PaulEngine {
 		virtual ~OpenGLFramebuffer();
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
+		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Spec; }
 
