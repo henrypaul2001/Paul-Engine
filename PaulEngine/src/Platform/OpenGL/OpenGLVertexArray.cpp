@@ -5,6 +5,10 @@
 
 namespace PaulEngine {
 
+	static bool ShaderDataTypeIsInteger(ShaderDataType type) {
+		return (type == ShaderDataType::Int || type == ShaderDataType::Int2 || type == ShaderDataType::Int3 || type == ShaderDataType::Int4);
+	}
+
 	static GLenum ShaderDataTypeToGLBaseType(ShaderDataType type) {
 		PE_PROFILE_FUNCTION();
 		switch (type) {
@@ -56,14 +60,25 @@ namespace PaulEngine {
 		uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout) {
+			bool isInteger = ShaderDataTypeIsInteger(element.Type);
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(
-				index,
-				element.GetComponentCount(),
-				ShaderDataTypeToGLBaseType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)element.Offset);
+			if (!isInteger) {
+				glVertexAttribPointer(
+					index,
+					element.GetComponentCount(),
+					ShaderDataTypeToGLBaseType(element.Type),
+					element.Normalized ? GL_TRUE : GL_FALSE,
+					layout.GetStride(),
+					(const void*)element.Offset);
+			}
+			else {
+				glVertexAttribIPointer(
+					index,
+					element.GetComponentCount(),
+					ShaderDataTypeToGLBaseType(element.Type),
+					layout.GetStride(),
+					(const void*)element.Offset);
+			}
 			index++;
 		}
 		m_VertexBuffers.push_back(vertexBuffer);
