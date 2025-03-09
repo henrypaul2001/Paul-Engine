@@ -2,8 +2,41 @@
 #include "PaulEngine/Core/Core.h"
 
 namespace PaulEngine {
-	struct FramebufferSpecification {
-		uint32_t Width, Height;
+	enum class FramebufferTextureFormat
+	{
+		None = 0,
+
+		// Colour
+		RGBA8,
+
+		// Depth / stencil
+		DEPTH24STENCIL8,
+
+		// Defaults
+		Depth = DEPTH24STENCIL8
+	};
+
+	struct FramebufferTextureSpecification
+	{
+		FramebufferTextureSpecification() = default;
+		FramebufferTextureSpecification(FramebufferTextureFormat format) : TextureFormat(format) {}
+
+		FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
+		// filtering / wrap
+	};
+
+	struct FramebufferAttachmentSpecification
+	{
+		FramebufferAttachmentSpecification() = default;
+		FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments) : TextureAttachments(attachments) {}
+		std::vector<FramebufferTextureSpecification> TextureAttachments;
+	};
+
+	struct FramebufferSpecification
+	{
+		uint32_t Width = 0, Height = 0;
+		FramebufferAttachmentSpecification Attachments;
+
 		uint32_t Samples = 1;
 
 		bool SwapChainTarget = false;
@@ -16,7 +49,7 @@ namespace PaulEngine {
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
-		virtual uint32_t GetColourAttachmentID() const = 0;
+		virtual uint32_t GetColourAttachmentID(uint32_t index = 0) const = 0;
 
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;

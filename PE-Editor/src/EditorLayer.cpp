@@ -20,6 +20,7 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		FramebufferSpecification spec;
+		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 		spec.Width = 1280;
 		spec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(spec);
