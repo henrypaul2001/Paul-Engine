@@ -12,7 +12,7 @@ uniform mat4 u_ViewProjection;
 
 out vec2 v_TexCoords;
 out vec4 v_Colour;
-out float v_TexIndex;
+flat out float v_TexIndex;
 out vec2 v_TextureScale;
 flat out int v_EntityID;
 
@@ -34,7 +34,7 @@ layout(location = 1) out int entityID;
 
 in vec2 v_TexCoords;
 in vec4 v_Colour;
-in float v_TexIndex;
+flat in float v_TexIndex;
 in vec2 v_TextureScale;
 flat in int v_EntityID;
 

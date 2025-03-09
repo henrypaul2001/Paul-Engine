@@ -109,8 +109,25 @@ namespace PaulEngine {
 		RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::Clear();
 
+		// Clear entity ID attachment to -1
+		m_Framebuffer->ClearColourAttachment(1, -1);
+
 		// Update scene
 		m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
+
+		ImVec2 mousePos = ImGui::GetMousePos();
+		mousePos.x -= m_ViewportBounds[0].x;
+		mousePos.y -= m_ViewportBounds[0].y;
+		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+		mousePos.y = viewportSize.y - mousePos.y;
+
+		int mouseX = (int)mousePos.x;
+		int mouseY = (int)mousePos.y;
+
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		{
+			m_HoveredEntityID = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+		}
 
 		m_Framebuffer->Unbind();
 	}
@@ -185,6 +202,7 @@ namespace PaulEngine {
 
 		const Renderer2D::Statistics& stats = Renderer2D::GetStats();
 		ImGui::Begin("Renderer2D");
+		ImGui::Text("Hovered entity: %d", m_HoveredEntityID);
 		ImGui::SeparatorText("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quad Count: %d", stats.QuadCount);
@@ -199,6 +217,7 @@ namespace PaulEngine {
 		// --------------
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
+		ImVec2 viewportOffset = ImGui::GetCursorPos(); // Includes tab bar
 
 		m_ViewportFocus = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
@@ -211,6 +230,15 @@ namespace PaulEngine {
 
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
 		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+		ImVec2 windowSize = ImGui::GetWindowSize();
+		ImVec2 minBound = ImGui::GetWindowPos();
+		minBound.x += viewportOffset.x;
+		minBound.y += viewportOffset.y;
+
+		ImVec2 maxBound = ImVec2(minBound.x + windowSize.x, minBound.y + windowSize.y);
+		m_ViewportBounds[0] = glm::vec2(minBound.x, minBound.y);
+		m_ViewportBounds[1] = glm::vec2(maxBound.x, maxBound.y);
 
 		// Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
@@ -266,6 +294,7 @@ namespace PaulEngine {
 
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
+		dispatcher.DispatchEvent<MouseButtonReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnMouseUp));
 	}
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
@@ -319,6 +348,15 @@ namespace PaulEngine {
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				return true;
 				break;
+		}
+		return false;
+	}
+
+	bool EditorLayer::OnMouseUp(MouseButtonReleasedEvent& e)
+	{
+		if (e.GetMouseButton() == PE_MOUSE_BUTTON_LEFT && m_HoveredEntityID != -1) {
+			m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntityID);
+			return true;
 		}
 		return false;
 	}

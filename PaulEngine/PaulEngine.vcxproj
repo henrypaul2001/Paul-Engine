@@ -146,7 +146,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />
     <ClInclude Include="src\PaulEngine\Core\Core.h" />
@@ -169,6 +168,7 @@
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
@@ -618,7 +618,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Application.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />
@@ -628,6 +627,7 @@
     <ClCompile Include="src\PaulEngine\Maths\Maths.cpp" />
     <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp" />

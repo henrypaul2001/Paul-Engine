@@ -5,7 +5,7 @@
 
 namespace PaulEngine {
 
-	static bool ShaderDataTypeIsInteger(ShaderDataType type) {
+	static constexpr bool ShaderDataTypeIsInteger(ShaderDataType type) {
 		return (type == ShaderDataType::Int || type == ShaderDataType::Int2 || type == ShaderDataType::Int3 || type == ShaderDataType::Int4);
 	}
 

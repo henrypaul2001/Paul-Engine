@@ -19,6 +19,9 @@
     <Filter Include="src\PaulEngine\ImGui">
       <UniqueIdentifier>{2EFF1BA1-1A8E-A56A-C3AC-B965AF1AB610}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Maths">
+      <UniqueIdentifier>{708A5EA1-5C19-E86A-0538-FC65F1A5F810}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\PaulEngine\Renderer">
       <UniqueIdentifier>{2ABF6C9B-96F6-B432-9F00-19560BB7DB2B}</UniqueIdentifier>
     </Filter>
@@ -120,6 +123,9 @@
     <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h">
       <Filter>src\PaulEngine\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Maths\Maths.h">
+      <Filter>src\PaulEngine\Maths</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h">
       <Filter>src\PaulEngine</Filter>
     </ClInclude>
@@ -127,6 +133,9 @@
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Camera.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h">
@@ -1470,8 +1479,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Maths\Maths.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1492,10 +1499,16 @@
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp">
       <Filter>src\PaulEngine\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Maths\Maths.cpp">
+      <Filter>src\PaulEngine\Maths</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp">
       <Filter>src\PaulEngine</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp">
@@ -1579,7 +1592,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Maths\Maths.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

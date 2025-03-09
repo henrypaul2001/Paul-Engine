@@ -18,6 +18,7 @@ namespace PaulEngine {
 
 	private:
 		bool OnKeyUp(KeyReleasedEvent& e);
+		bool OnMouseUp(MouseButtonReleasedEvent& e);
 
 		void NewScene();
 		void OpenScene();
@@ -42,5 +43,8 @@ namespace PaulEngine {
 
 		int m_GizmoType = -1;
 
+		glm::vec2 m_ViewportBounds[2] = { glm::vec2(0.0f), glm::vec2(0.0f) };
+
+		int m_HoveredEntityID = -1;
 	};
 }

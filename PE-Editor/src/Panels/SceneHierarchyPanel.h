@@ -16,6 +16,8 @@ namespace PaulEngine
 		void OnImGuiRender();
 		
 		Entity GetSelectedEntity() const { return m_SelectedEntity; }
+		void SetSelectedEntity(uint32_t entityID);
+		void DeselectEntity();
 
 	private:
 		void DrawEntityNode(Entity entity);
