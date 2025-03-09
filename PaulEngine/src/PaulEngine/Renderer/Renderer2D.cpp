@@ -13,6 +13,7 @@ namespace PaulEngine {
 		glm::vec2 TexCoords;
 		float TextureIndex;
 		glm::vec2 TextureScale;
+		int EntityID;
 	};
 
 	struct Renderer2DData {
@@ -53,7 +54,8 @@ namespace PaulEngine {
 			{ ShaderDataType::Float4, "a_Colour", true },
 			{ ShaderDataType::Float2, "a_TexCoords", true },
 			{ ShaderDataType::Float, "a_TexIndex", false },
-			{ ShaderDataType::Float2, "a_TexScale", false }
+			{ ShaderDataType::Float2, "a_TexScale", false },
+			{ ShaderDataType::Int, "a_EntityID", false }
 		});
 		s_RenderData.QuadVertexArray->AddVertexBuffer(s_RenderData.QuadVertexBuffer);
 
@@ -163,7 +165,7 @@ namespace PaulEngine {
 		s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& colour)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& colour, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -185,6 +187,7 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexBufferPtr->TexCoords = textureCoords[i];
 			s_RenderData.QuadVertexBufferPtr->TextureIndex = 0;
 			s_RenderData.QuadVertexBufferPtr->TextureScale = { 1.0f, 1.0f };
+			s_RenderData.QuadVertexBufferPtr->EntityID = entityID;
 			s_RenderData.QuadVertexBufferPtr++;
 		}
 
@@ -193,7 +196,7 @@ namespace PaulEngine {
 		s_RenderData.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2& textureScale, const glm::vec4& tintColour, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 		
@@ -230,6 +233,7 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexBufferPtr->TexCoords = textureCoords[i];
 			s_RenderData.QuadVertexBufferPtr->TextureIndex = textureIndex;
 			s_RenderData.QuadVertexBufferPtr->TextureScale = textureScale;
+			s_RenderData.QuadVertexBufferPtr->EntityID = entityID;
 			s_RenderData.QuadVertexBufferPtr++;
 		}
 
@@ -238,7 +242,7 @@ namespace PaulEngine {
 		s_RenderData.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale, const glm::vec4& tintColour)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale, const glm::vec4& tintColour, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -270,6 +274,7 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexBufferPtr->TexCoords = textureCoords[i];
 			s_RenderData.QuadVertexBufferPtr->TextureIndex = textureIndex;
 			s_RenderData.QuadVertexBufferPtr->TextureScale = textureScale;
+			s_RenderData.QuadVertexBufferPtr->EntityID = entityID;
 			s_RenderData.QuadVertexBufferPtr++;
 		}
 

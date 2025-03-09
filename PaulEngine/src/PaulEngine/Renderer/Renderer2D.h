@@ -18,9 +18,9 @@ namespace PaulEngine {
 		static void EndScene();
 		static void Flush();
 
-		static void DrawQuad(const glm::mat4& transform, const glm::vec4& colour);
-		static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2& textureScale = glm::vec2(1.0f), const glm::vec4& tintColour = glm::vec4(1.0f));
-		static void DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale = glm::vec2(1.0f), const glm::vec4& tintColour = glm::vec4(1.0f));
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& colour, int entityID = -1);
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2& textureScale = glm::vec2(1.0f), const glm::vec4& tintColour = glm::vec4(1.0f), int entityID = -1);
+		static void DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale = glm::vec2(1.0f), const glm::vec4& tintColour = glm::vec4(1.0f), int entityID = -1);
 
 		struct Statistics {
 			uint32_t DrawCalls = 0;
