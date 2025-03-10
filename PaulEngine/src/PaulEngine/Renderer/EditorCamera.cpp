@@ -18,8 +18,11 @@ namespace PaulEngine
 		UpdateView();
 	}
 
-	void EditorCamera::OnUpdate(const Timestep ts)
+	void EditorCamera::OnUpdate(const Timestep ts, const bool blockMovement)
 	{
+		m_IsMoving = false;
+		m_MovementBlocked = blockMovement;
+
 		if (Input::IsKeyPressed(PE_KEY_LEFT_ALT)) {
 			const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
@@ -71,24 +74,33 @@ namespace PaulEngine
 
 	void EditorCamera::MousePan(const glm::vec2& delta)
 	{
-		auto [xSpeed, ySpeed] = PanSpeed();
-		m_FocalPoint += -GetRightDirection() * delta.x * xSpeed * m_Distance;
-		m_FocalPoint += GetUpDirection() * delta.y * ySpeed * m_Distance;
+		if (!m_MovementBlocked) {
+			m_IsMoving = true;
+			auto [xSpeed, ySpeed] = PanSpeed();
+			m_FocalPoint += -GetRightDirection() * delta.x * xSpeed * m_Distance;
+			m_FocalPoint += GetUpDirection() * delta.y * ySpeed * m_Distance;
+		}
 	}
 
 	void EditorCamera::MouseRotate(const glm::vec2& delta)
 	{
-		float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
-		m_Yaw += yawSign * delta.x * RotationSpeed();
-		m_Pitch += delta.y * RotationSpeed();
+		if (!m_MovementBlocked) {
+			m_IsMoving = true;
+			float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
+			m_Yaw += yawSign * delta.x * RotationSpeed();
+			m_Pitch += delta.y * RotationSpeed();
+		}
 	}
 
 	void EditorCamera::MouseZoom(float delta)
 	{
-		m_Distance -= delta * ZoomSpeed();
-		if (m_Distance < 1.0f) {
-			m_FocalPoint += GetForwardDirection();
-			m_Distance = 1.0f;
+		if (!m_MovementBlocked) {
+			m_IsMoving = true;
+			m_Distance -= delta * ZoomSpeed();
+			if (m_Distance < 1.0f) {
+				m_FocalPoint += GetForwardDirection();
+				m_Distance = 1.0f;
+			}
 		}
 	}
 

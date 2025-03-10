@@ -101,7 +101,7 @@ namespace PaulEngine {
 			m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		}
 
-		m_Camera.OnUpdate(timestep);
+		m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
 
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
@@ -126,7 +126,7 @@ namespace PaulEngine {
 
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
-			m_HoveredEntityID = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
 		}
 
 		m_Framebuffer->Unbind();
@@ -202,7 +202,11 @@ namespace PaulEngine {
 
 		const Renderer2D::Statistics& stats = Renderer2D::GetStats();
 		ImGui::Begin("Renderer2D");
-		ImGui::Text("Hovered entity: %d", m_HoveredEntityID);
+		std::string hoveredEntityName = "null";
+		if (m_HoveredEntity) {
+			hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;
+		}
+		ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
 		ImGui::SeparatorText("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quad Count: %d", stats.QuadCount);
@@ -348,8 +352,8 @@ namespace PaulEngine {
 
 	bool EditorLayer::OnMouseUp(MouseButtonReleasedEvent& e)
 	{
-		if (e.GetMouseButton() == PE_MOUSE_BUTTON_LEFT && m_HoveredEntityID != -1) {
-			m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntityID);
+		if (e.GetMouseButton() == PE_MOUSE_BUTTON_LEFT && CanPickEntities()) {
+			m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
 			return true;
 		}
 		return false;
@@ -388,5 +392,10 @@ namespace PaulEngine {
 			serializer.SerializeYAML(path);
 			m_CurrentFilepath = path;
 		}
+	}
+
+	bool EditorLayer::CanPickEntities()
+	{
+		return m_ViewportHovered && !ImGuizmo::IsOver() && !m_Camera.IsMoving();
 	}
 }

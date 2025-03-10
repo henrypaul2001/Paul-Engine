@@ -64,14 +64,9 @@ namespace PaulEngine
 		ImGui::End();
 	}
 
-	void SceneHierarchyPanel::SetSelectedEntity(uint32_t entityID)
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
 	{
-		m_SelectedEntity = Entity((entt::entity)entityID, m_Context.get());
-	}
-
-	void SceneHierarchyPanel::DeselectEntity()
-	{
-		m_SelectedEntity = Entity();
+		m_SelectedEntity = entity;
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
@@ -102,7 +97,7 @@ namespace PaulEngine
 		}
 
 		if (entityDeleted) {
-			DeselectEntity();
+			SetSelectedEntity(Entity());
 			m_Context->DestroyEntity(entity);
 		}
 	}

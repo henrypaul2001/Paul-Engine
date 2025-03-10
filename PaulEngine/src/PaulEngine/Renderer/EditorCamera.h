@@ -14,7 +14,7 @@ namespace PaulEngine
 		EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
-		void OnUpdate(const Timestep ts);
+		void OnUpdate(const Timestep ts, const bool blockMovement = false);
 		void OnEvent(Event& e);
 
 		inline float GetDistance() const { return m_Distance; }
@@ -33,6 +33,8 @@ namespace PaulEngine
 
 		inline float GetPitch() const { return m_Pitch; }
 		inline float GetYaw() const { return m_Yaw; }
+
+		inline bool IsMoving() const { return m_IsMoving; }
 
 	private:
 		void UpdateProjection();
@@ -63,5 +65,7 @@ namespace PaulEngine
 
 		float m_ViewportWidth = 1280, m_ViewportHeight = 720;
 
+		bool m_IsMoving = false;
+		bool m_MovementBlocked = false;
 	};
 }

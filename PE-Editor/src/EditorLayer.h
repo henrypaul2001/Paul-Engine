@@ -24,6 +24,8 @@ namespace PaulEngine {
 		void OpenScene();
 		void SaveSceneAs(const std::string& filepath = std::string());
 
+		bool CanPickEntities();
+
 		std::string m_CurrentFilepath;
 
 		ShaderLibrary m_ShaderLibrary;
@@ -45,6 +47,6 @@ namespace PaulEngine {
 
 		glm::vec2 m_ViewportBounds[2] = { glm::vec2(0.0f), glm::vec2(0.0f) };
 
-		int m_HoveredEntityID = -1;
+		Entity m_HoveredEntity;
 	};
 }
