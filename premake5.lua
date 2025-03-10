@@ -63,7 +63,8 @@ project "PaulEngine"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml}/include",
-		"%{IncludeDir.imguizmo}"
+		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.VulkanSDK}"
 	}
 
 	links
@@ -100,15 +101,36 @@ project "PaulEngine"
 		runtime "Debug"
 		symbols "on"
 
+		links
+		{
+			"%{Library.ShaderC_Debug}",
+			"%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}"
+		}
+
 	filter "configurations:Release"
 		defines "PE_RELEASE"
 		runtime "Release"
 		optimize "on"
 
+		links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}
+
 	filter "configurations:Dist"
 		defines "PE_DIST"
 		runtime "Release"
 		optimize "on"
+
+		links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}
 
 project "Sandbox"
 	location "Sandbox"
