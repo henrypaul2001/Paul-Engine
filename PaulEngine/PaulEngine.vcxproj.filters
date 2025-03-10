@@ -168,6 +168,9 @@
     <ClInclude Include="src\PaulEngine\Renderer\Texture.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\UniformBuffer.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\VertexArray.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
@@ -208,6 +211,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
@@ -1479,8 +1485,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\UniformBuffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1540,6 +1544,9 @@
     <ClCompile Include="src\PaulEngine\Renderer\Texture.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\UniformBuffer.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\VertexArray.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
@@ -1573,6 +1580,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1594,7 +1604,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\UniformBuffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
   </ItemGroup>
 </Project>
