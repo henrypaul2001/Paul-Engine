@@ -217,35 +217,29 @@ namespace PaulEngine {
 		// --------------
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
-		ImVec2 viewportOffset = ImGui::GetCursorPos(); // Includes tab bar
+
+		ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		ImVec2 viewportOffset = ImGui::GetWindowPos();
+		m_ViewportBounds[0] = glm::vec2(viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y);
+		m_ViewportBounds[1] = glm::vec2(viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y);
 
 		m_ViewportFocus = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocus && !m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize != glm::vec2(viewportPanelSize.x, viewportPanelSize.y)) {
-			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
-		}
+		m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
 
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
 		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-
-		ImVec2 windowSize = ImGui::GetWindowSize();
-		ImVec2 minBound = ImGui::GetWindowPos();
-		minBound.x += viewportOffset.x;
-		minBound.y += viewportOffset.y;
-
-		ImVec2 maxBound = ImVec2(minBound.x + windowSize.x, minBound.y + windowSize.y);
-		m_ViewportBounds[0] = glm::vec2(minBound.x, minBound.y);
-		m_ViewportBounds[1] = glm::vec2(maxBound.x, maxBound.y);
 
 		// Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1) {
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 			glm::mat4 cameraView = m_Camera.GetViewMatrix();
 			const glm::mat4& cameraProjection = m_Camera.GetProjection();
