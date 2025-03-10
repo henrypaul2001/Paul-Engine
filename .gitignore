@@ -34,8 +34,8 @@ bld/
 [Ll]ogs/
 
 # Directories
-vendor/binaries/premake
-scripts/__pycache__
+/vendor/binaries/premake
+/scripts/__pycache__
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
