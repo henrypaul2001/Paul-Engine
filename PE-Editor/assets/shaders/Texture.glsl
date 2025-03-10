@@ -10,14 +10,15 @@ layout(location = 5) in int a_EntityID;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 viewProjection;
+	mat4 ViewProjection;
 } u_CameraBuffer;
 
-out vec2 v_TexCoords;
-out vec4 v_Colour;
-flat out float v_TexIndex;
-out vec2 v_TextureScale;
-flat out int v_EntityID;
+
+layout(location = 0) out vec2 v_TexCoords;
+layout(location = 1) out vec4 v_Colour;
+layout(location = 2) flat out float v_TexIndex;
+layout(location = 3) out vec2 v_TextureScale;
+layout(location = 4) flat out int v_EntityID;
 
 void main()
 {
@@ -26,7 +27,7 @@ void main()
 	v_TexIndex = a_TexIndex;
 	v_TextureScale = a_TexScale;
 	v_EntityID = a_EntityID;
-	gl_Position = u_CameraBuffer.viewProjection * vec4(a_Position, 1.0);
+	gl_Position = u_CameraBuffer.ViewProjection * vec4(a_Position, 1.0);
 }
 
 #type fragment
@@ -35,13 +36,13 @@ void main()
 layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;
 
-in vec2 v_TexCoords;
-in vec4 v_Colour;
-flat in float v_TexIndex;
-in vec2 v_TextureScale;
-flat in int v_EntityID;
+layout(location = 0) in vec2 v_TexCoords;
+layout(location = 1) in vec4 v_Colour;
+layout(location = 2) flat in float v_TexIndex;
+layout(location = 3) in vec2 v_TextureScale;
+layout(location = 4) flat in int v_EntityID;
 
-uniform sampler2D u_Textures[32];
+layout(location = 0) uniform sampler2D u_Textures[32];
 
 void main()
 {
