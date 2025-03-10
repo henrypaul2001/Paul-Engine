@@ -216,7 +216,6 @@ namespace PaulEngine {
 		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
 		ImGui::End();
 
-
 		// -- Viewport --
 		// --------------
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

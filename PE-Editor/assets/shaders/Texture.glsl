@@ -1,5 +1,5 @@
 #type vertex
-#version 330 core
+#version 450 core
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Colour;
@@ -8,7 +8,10 @@ layout(location = 3) in float a_TexIndex;
 layout(location = 4) in vec2 a_TexScale;
 layout(location = 5) in int a_EntityID;
 
-uniform mat4 u_ViewProjection;
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 viewProjection;
+} u_CameraBuffer;
 
 out vec2 v_TexCoords;
 out vec4 v_Colour;
@@ -23,11 +26,11 @@ void main()
 	v_TexIndex = a_TexIndex;
 	v_TextureScale = a_TexScale;
 	v_EntityID = a_EntityID;
-	gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+	gl_Position = u_CameraBuffer.viewProjection * vec4(a_Position, 1.0);
 }
 
 #type fragment
-#version 330 core
+#version 450 core
 
 layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;

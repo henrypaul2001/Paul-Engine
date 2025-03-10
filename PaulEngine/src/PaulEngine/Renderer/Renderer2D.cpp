@@ -2,6 +2,7 @@
 #include "Renderer2D.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "UniformBuffer.h"
 
 #include "RenderCommand.h"
 #include <glm/ext/matrix_transform.hpp>
@@ -38,6 +39,13 @@ namespace PaulEngine {
 		glm::vec4 QuadVertexPositions[4];
 
 		Renderer2D::Statistics Stats;
+
+		struct CameraData
+		{
+			glm::mat4 ViewProjection;
+		};
+		CameraData CameraBuffer;
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	static Renderer2DData s_RenderData;
@@ -101,6 +109,8 @@ namespace PaulEngine {
 		s_RenderData.QuadVertexPositions[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
 		s_RenderData.QuadVertexPositions[2] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
 		s_RenderData.QuadVertexPositions[3] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
+
+		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraBuffer), 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -111,8 +121,9 @@ namespace PaulEngine {
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData.TextureShader->Bind();
-		s_RenderData.TextureShader->SetUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+
+		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
+		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		StartNewBatch();
 	}
@@ -122,8 +133,8 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		glm::mat4 viewProjection = camera.GetViewProjection();
 
-		s_RenderData.TextureShader->Bind();
-		s_RenderData.TextureShader->SetUniformMat4("u_ViewProjection", viewProjection);
+		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		StartNewBatch();
 	}
@@ -131,8 +142,9 @@ namespace PaulEngine {
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData.TextureShader->Bind();
-		s_RenderData.TextureShader->SetUniformMat4("u_ViewProjection", camera.GetProjection() * glm::inverse(transform));
+
+		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		StartNewBatch();
 	}
@@ -151,6 +163,7 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
+		s_RenderData.TextureShader->Bind();
 		for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
 			s_RenderData.TextureSlots[i]->Bind(i);
 		}
