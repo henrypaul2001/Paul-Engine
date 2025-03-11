@@ -95,7 +95,7 @@ project "PaulEngine"
 	filter "configurations:Debug"
 		defines 
 		{
-			"PE_DEBUG",
+			"PE_DEBUG_MODE",
 			"PE_ENABLE_ASSERTS"
 		}
 		runtime "Debug"
@@ -180,7 +180,7 @@ project "Sandbox"
 		}
 
 	filter "configurations:Debug"
-		defines "PE_DEBUG"
+		defines "PE_DEBUG_MODE"
 		runtime "Debug"
 		symbols "on"
 
@@ -243,7 +243,7 @@ project "PE-Editor"
 		}
 
 	filter "configurations:Debug"
-		defines "PE_DEBUG"
+		defines "PE_DEBUG_MODE"
 		runtime "Debug"
 		symbols "on"
 

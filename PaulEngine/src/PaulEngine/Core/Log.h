@@ -23,6 +23,7 @@ namespace PaulEngine {
 // Core lag macros
 #define PE_CORE_TRACE(...) ::PaulEngine::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define PE_CORE_INFO(...)  ::PaulEngine::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define PE_CORE_DEBUG(...) ::PaulEngine::Log::GetCoreLogger()->debug(__VA_ARGS__)
 #define PE_CORE_WARN(...)  ::PaulEngine::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define PE_CORE_ERROR(...) ::PaulEngine::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define PE_CORE_FATAL(...) ::PaulEngine::Log::GetCoreLogger()->fatal(__VA_ARGS__)
@@ -30,6 +31,7 @@ namespace PaulEngine {
 // App log macros
 #define PE_TRACE(...) ::PaulEngine::Log::GetAppLogger()->trace(__VA_ARGS__)
 #define PE_INFO(...)  ::PaulEngine::Log::GetAppLogger()->info(__VA_ARGS__)
+#define PE_DEBUG(...) ::PaulEngine::Log::GetAppLogger()->debug(__VA_ARGS__)
 #define PE_WARN(...)  ::PaulEngine::Log::GetAppLogger()->warn(__VA_ARGS__)
 #define PE_ERROR(...) ::PaulEngine::Log::GetAppLogger()->error(__VA_ARGS__)
 #define PE_FATAL(...) ::PaulEngine::Log::GetAppLogger()->fatal(__VA_ARGS__)
