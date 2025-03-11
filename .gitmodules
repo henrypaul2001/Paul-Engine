@@ -16,3 +16,6 @@
 [submodule "PaulEngine/vendor/yaml-cpp"]
 	path = PaulEngine/vendor/yaml-cpp
 	url = https://github.com/TheCherno/yaml-cpp
+[submodule "PaulEngine/vendor/yaml/yaml-cpp"]
+	path = PaulEngine/vendor/yaml/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp

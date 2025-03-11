@@ -79,10 +79,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_DEBUG_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp\include;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -97,13 +99,14 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp\include;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -119,13 +122,14 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp\include;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>

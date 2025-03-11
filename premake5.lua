@@ -10,7 +10,12 @@ workspace "PaulEngine"
 		"Dist"
 	}
 
-	startproject "Sandbox"
+	flags
+	{
+		"MultiProcessorCompile"
+	}
+
+	startproject "PE-Editor"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -26,7 +31,7 @@ project "PaulEngine"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -62,7 +67,7 @@ project "PaulEngine"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml}/include",
+		"%{IncludeDir.yaml}",
 		"%{IncludeDir.imguizmo}",
 		"%{IncludeDir.VulkanSDK}"
 	}
@@ -88,8 +93,7 @@ project "PaulEngine"
 		defines
 		{
 			"PE_PLATFORM_WINDOWS",
-			"PE_BUILD_DLL",
-			"GLFW_INCLUDE_NONE",
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
@@ -137,7 +141,7 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -200,7 +204,7 @@ project "PE-Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -224,7 +228,8 @@ project "PE-Editor"
 
 	links
 	{
-		"PaulEngine"
+		"PaulEngine",
+		"yaml-cpp"
 	}
 
 	defines
