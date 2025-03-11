@@ -13,19 +13,23 @@ layout(std140, binding = 0) uniform Camera
 	mat4 ViewProjection;
 } u_CameraBuffer;
 
+struct VertexOutput {
+	vec4 Colour;
+	vec2 TexCoords;
+	vec2 TextureScale;
+	float TexIndex;
+};
 
-layout(location = 0) out vec2 v_TexCoords;
-layout(location = 1) out vec4 v_Colour;
-layout(location = 2) flat out float v_TexIndex;
-layout(location = 3) out vec2 v_TextureScale;
-layout(location = 4) flat out int v_EntityID;
+layout(location = 0) out VertexOutput Output;
+layout(location = 5) out flat int v_EntityID;
 
 void main()
 {
-	v_TexCoords = a_TexCoords;
-	v_Colour = a_Colour;
-	v_TexIndex = a_TexIndex;
-	v_TextureScale = a_TexScale;
+	Output.Colour = a_Colour;
+	Output.TexCoords = a_TexCoords;
+	Output.TexIndex = a_TexIndex;
+	Output.TextureScale = a_TexScale;
+
 	v_EntityID = a_EntityID;
 	gl_Position = u_CameraBuffer.ViewProjection * vec4(a_Position, 1.0);
 }
@@ -36,16 +40,20 @@ void main()
 layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;
 
-layout(location = 0) in vec2 v_TexCoords;
-layout(location = 1) in vec4 v_Colour;
-layout(location = 2) flat in float v_TexIndex;
-layout(location = 3) in vec2 v_TextureScale;
-layout(location = 4) flat in int v_EntityID;
+struct VertexOutput {
+	vec4 Colour;
+	vec2 TexCoords;
+	vec2 TextureScale;
+	float TexIndex;
+};
 
-layout(location = 0) uniform sampler2D u_Textures[32];
+layout(location = 0) in VertexOutput Input;
+layout(location = 5) in flat int v_EntityID;
+
+layout(binding = 0) uniform sampler2D u_Textures[32];
 
 void main()
 {
-	colour = texture(u_Textures[int(v_TexIndex)], v_TexCoords * v_TextureScale) * v_Colour;
+	colour = texture(u_Textures[int(Input.TexIndex)], Input.TexCoords * Input.TextureScale) * Input.Colour;
 	entityID = v_EntityID;
 }
