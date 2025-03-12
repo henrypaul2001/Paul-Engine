@@ -279,6 +279,7 @@ namespace PaulEngine {
 		ImGui::PopStyleVar();
 
 		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.ImGuiRender();
 
 		ImGui::End();
 	}

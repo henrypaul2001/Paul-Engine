@@ -1,6 +1,7 @@
 #pragma once
 #include <PaulEngine.h>
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include <PaulEngine/Renderer/EditorCamera.h>
 
 namespace PaulEngine {
@@ -42,6 +43,7 @@ namespace PaulEngine {
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 
 		int m_GizmoType = -1;
 
