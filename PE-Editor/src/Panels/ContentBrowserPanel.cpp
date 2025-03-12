@@ -40,7 +40,9 @@ namespace PaulEngine
 			const std::filesystem::path filename = p.path().filename();
 			ImGui::PushID(id);
 			Ref<Texture2D> icon = p.is_directory() ? m_DirectoryIcon : m_FileIcon;
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::ImageButton("thumbnail", (ImTextureID)icon->GetRendererID(), ImVec2(thumbnailSize, thumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::PopStyleColor();
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 				if (p.is_directory()) {
 					m_CurrentDirectory /= p.path().filename();
