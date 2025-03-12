@@ -326,7 +326,9 @@ namespace PaulEngine {
 		PE_CORE_TRACE("    {0} uniform buffers", resources.uniform_buffers.size());
 		PE_CORE_TRACE("    {0} resources", resources.sampled_images.size());
 
-		PE_CORE_TRACE("Uniform buffers:");
+		if (resources.uniform_buffers.size() > 0) {
+			PE_CORE_TRACE("Uniform buffers:");
+		}
 		for (const auto& resource : resources.uniform_buffers) {
 			const auto& bufferType = compiler.get_type(resource.base_type_id);
 			uint32_t bufferSize = compiler.get_declared_struct_size(bufferType);
