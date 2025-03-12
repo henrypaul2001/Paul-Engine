@@ -1,6 +1,7 @@
 #pragma once
-#include "PaulEngine/Core/Core.h"
 #include <filesystem>
+
+#include "PaulEngine/Renderer/Texture.h"
 
 namespace PaulEngine
 {
@@ -13,5 +14,8 @@ namespace PaulEngine
 
 	private:
 		std::filesystem::path m_CurrentDirectory;
+
+		Ref<Texture2D> m_DirectoryIcon;
+		Ref<Texture2D> m_FileIcon;
 	};
 }
