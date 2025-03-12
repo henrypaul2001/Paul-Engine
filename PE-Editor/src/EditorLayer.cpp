@@ -237,6 +237,15 @@ namespace PaulEngine {
 		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
 		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
+		if (ImGui::BeginDragDropTarget()) {
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+			if (payload) {
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				OpenScene(path);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		// Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1) {
@@ -373,12 +382,23 @@ namespace PaulEngine {
 
 		if (!filepath.empty())
 		{
-			NewScene();
-
-			SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-			serializer.DeserializeYAML(filepath);
-			m_CurrentFilepath = filepath;
+			OpenScene(filepath);
 		}
+	}
+
+	void EditorLayer::OpenScene(std::filesystem::path filepath)
+	{
+		std::filesystem::path extension = filepath.extension();
+		if (extension != ".paul") {
+			PE_CORE_WARN("Invalid scene file extension '{0}', extension '{1}' required", extension.string().c_str(), ".paul");
+			return;
+		}
+
+		NewScene();
+
+		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+		serializer.DeserializeYAML(filepath.string());
+		m_CurrentFilepath = filepath.string();
 	}
 
 	void EditorLayer::SaveSceneAs(const std::string& filepath)

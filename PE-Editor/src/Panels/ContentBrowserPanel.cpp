@@ -37,12 +37,21 @@ namespace PaulEngine
 
 		int id = 0;
 		for (auto& p : std::filesystem::directory_iterator(m_CurrentDirectory)) {
+			const std::string& filepathString = p.path().string();
 			const std::filesystem::path filename = p.path().filename();
+
 			ImGui::PushID(id);
 			Ref<Texture2D> icon = p.is_directory() ? m_DirectoryIcon : m_FileIcon;
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::ImageButton("thumbnail", (ImTextureID)icon->GetRendererID(), ImVec2(thumbnailSize, thumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::PopStyleColor();
+
+			if (ImGui::BeginDragDropSource()) {
+				const wchar_t* itemPath = p.path().c_str();
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+				ImGui::EndDragDropSource();
+			}
+
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 				if (p.is_directory()) {
 					m_CurrentDirectory /= p.path().filename();

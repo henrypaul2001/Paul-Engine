@@ -23,6 +23,7 @@ namespace PaulEngine {
 
 		void NewScene();
 		void OpenScene();
+		void OpenScene(std::filesystem::path filepath);
 		void SaveSceneAs(const std::string& filepath = std::string());
 
 		bool CanPickEntities();
