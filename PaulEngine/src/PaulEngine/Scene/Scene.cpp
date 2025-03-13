@@ -62,7 +62,12 @@ namespace PaulEngine
 			auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
 			for (auto entity : group) {
 				auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entity);
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entity);
+				if (sprite.Texture) {
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entity);
+				}
+				else {
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entity);
+				}
 			}
 			Renderer2D::EndScene();
 		}
@@ -75,7 +80,12 @@ namespace PaulEngine
 		auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
 		for (auto entity : group) {
 			auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entity);
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entity);
+			if (sprite.Texture) {
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entity);
+			}
+			else {
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entity);
+			}
 		}
 
 		Renderer2D::EndScene();

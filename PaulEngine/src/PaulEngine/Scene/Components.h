@@ -5,6 +5,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "PaulEngine/Renderer/Texture.h"
+
 namespace PaulEngine
 {
 	struct ComponentTag {
@@ -41,8 +43,11 @@ namespace PaulEngine
 
 	struct Component2DSprite {
 		glm::vec4 Colour = glm::vec4(1.0f);
+		Ref<Texture2D> Texture;
+		glm::vec2 TextureScale;
 
-		Component2DSprite(const glm::vec4& colour = glm::vec4(1.0f)) : Colour(colour) {}
+		Component2DSprite(const glm::vec4& colour = glm::vec4(1.0f)) : Colour(colour), TextureScale(glm::vec2(1.0f)) {}
+		Component2DSprite(const glm::vec4& colour, const Ref<Texture2D>& texture, const glm::vec2& textureScale = glm::vec2(1.0f)) : Colour(colour), TextureScale(textureScale) {}
 	};
 
 	struct ComponentNativeScript {

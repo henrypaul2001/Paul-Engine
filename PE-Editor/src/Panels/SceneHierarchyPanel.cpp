@@ -5,6 +5,8 @@
 #include "PaulEngine/Scene/Components.h"
 #include <PaulEngine/Debug/Instrumentor.h>
 
+#include <filesystem>
+
 namespace PaulEngine
 {
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
@@ -100,6 +102,66 @@ namespace PaulEngine
 			SetSelectedEntity(Entity());
 			m_Context->DestroyEntity(entity);
 		}
+	}
+
+	static bool DrawVec2Control(const std::string& label, glm::vec2& value, float resetValue = 0.0f, float columnWidth = 100.0f) {
+		ImGuiIO& io = ImGui::GetIO();
+		auto boldFont = io.Fonts->Fonts[0];
+
+		bool edited = false;
+
+		ImGui::PushID(label.c_str());
+
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, columnWidth);
+		ImGui::Text(label.c_str());
+		ImGui::NextColumn();
+
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		ImVec2 buttonSize = ImVec2(lineHeight + 3.0f, lineHeight);
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.2f, 0.25f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.05f, 0.1f, 1.0f));
+		ImGui::PushFont(boldFont);
+		if (ImGui::Button("X", buttonSize)) {
+			value.x = resetValue;
+			edited = true;
+		}
+		ImGui::PopStyleColor(3);
+		ImGui::PopFont();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##X", &value.x, 0.1f, 0.0f, 0.0f, "%.2f")) { edited = true; }
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.8f, 0.1f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.25f, 0.9f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 1.0f, 0.05f, 1.0f));
+		ImGui::PushFont(boldFont);
+		if (ImGui::Button("Y", buttonSize)) {
+			value.y = resetValue;
+			edited = true;
+		}
+		ImGui::PopStyleColor(3);
+		ImGui::PopFont();
+
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##Y", &value.y, 0.1f, 0.0f, 0.0f, "%.2f")) { edited = true; }
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		ImGui::PopStyleVar();
+
+		ImGui::Columns(1);
+
+		ImGui::PopID();
+
+		return edited;
 	}
 
 	static bool DrawVec3Control(const std::string& label, glm::vec3& value, float resetValue = 0.0f, float columnWidth = 100.0f) {
@@ -317,6 +379,23 @@ namespace PaulEngine
 		// Sprite
 		DrawComponent<Component2DSprite>("Sprite Component", entity, true, [](Component2DSprite& component) {
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
+
+			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					std::filesystem::path texturePath = std::filesystem::path(path);
+					const std::string& extension = texturePath.extension().string();
+					if (extension == ".png" || extension == ".jpg" || extension == ".JPG") {
+						component.Texture = Texture2D::Create(texturePath.string());
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+			
+			bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
 		});
 
 	}
