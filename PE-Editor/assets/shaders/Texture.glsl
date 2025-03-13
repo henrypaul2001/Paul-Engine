@@ -17,19 +17,19 @@ struct VertexOutput {
 	vec4 Colour;
 	vec2 TexCoords;
 	vec2 TextureScale;
-	float TexIndex;
 };
 
 layout(location = 0) out VertexOutput Output;
-layout(location = 5) out flat int v_EntityID;
+layout(location = 3) out flat float v_TexIndex;
+layout(location = 4) out flat int v_EntityID;
 
 void main()
 {
 	Output.Colour = a_Colour;
 	Output.TexCoords = a_TexCoords;
-	Output.TexIndex = a_TexIndex;
 	Output.TextureScale = a_TexScale;
 
+	v_TexIndex = a_TexIndex;
 	v_EntityID = a_EntityID;
 	gl_Position = u_CameraBuffer.ViewProjection * vec4(a_Position, 1.0);
 }
@@ -44,16 +44,16 @@ struct VertexOutput {
 	vec4 Colour;
 	vec2 TexCoords;
 	vec2 TextureScale;
-	float TexIndex;
 };
 
 layout(location = 0) in VertexOutput Input;
-layout(location = 5) in flat int v_EntityID;
+layout(location = 3) in flat float v_TexIndex;
+layout(location = 4) in flat int v_EntityID;
 
 layout(binding = 0) uniform sampler2D u_Textures[32];
 
 void main()
 {
-	colour = texture(u_Textures[int(Input.TexIndex)], Input.TexCoords * Input.TextureScale) * Input.Colour;
+	colour = texture(u_Textures[int(v_TexIndex)], Input.TexCoords * Input.TextureScale) * Input.Colour;
 	entityID = v_EntityID;
 }
