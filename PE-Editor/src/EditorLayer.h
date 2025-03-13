@@ -18,6 +18,10 @@ namespace PaulEngine {
 		virtual void OnEvent(Event& e) override;
 
 	private:
+		void OnUIDrawToolbar();
+		void OnScenePlay();
+		void OnSceneStop();
+
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
 
@@ -31,10 +35,11 @@ namespace PaulEngine {
 		std::string m_CurrentFilepath;
 
 		ShaderLibrary m_ShaderLibrary;
-
 		Ref<Framebuffer> m_Framebuffer;
-
 		Ref<Scene> m_ActiveScene;
+
+		Ref<Texture2D> m_IconPlay;
+		Ref<Texture2D> m_IconStop;
 
 		glm::vec2 m_ViewportSize;
 
@@ -51,5 +56,10 @@ namespace PaulEngine {
 		glm::vec2 m_ViewportBounds[2] = { glm::vec2(0.0f), glm::vec2(0.0f) };
 
 		Entity m_HoveredEntity;
+
+		enum class SceneState {
+			Edit = 0, Play = 1
+		};
+		SceneState m_SceneState = SceneState::Edit;
 	};
 }

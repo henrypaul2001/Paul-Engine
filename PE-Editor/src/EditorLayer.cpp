@@ -27,6 +27,9 @@ namespace PaulEngine {
 
 		m_ActiveScene = CreateRef<Scene>();
 
+		m_IconPlay = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
+		m_IconStop = Texture2D::Create("Resources/Icons/mingcute--stop-fill-light.png");
+
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
 		m_SquareEntity.HasComponent<ComponentTransform>();
@@ -101,8 +104,6 @@ namespace PaulEngine {
 			m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		}
 
-		m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
-
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
 		RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
@@ -113,7 +114,13 @@ namespace PaulEngine {
 		m_Framebuffer->ClearColourAttachment(1, -1);
 
 		// Update scene
-		m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
+		if (m_SceneState == SceneState::Edit) {
+			m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
+			m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
+		}
+		else {
+			m_ActiveScene->OnUpdateRuntime(timestep);
+		}
 
 		ImVec2 mousePos = ImGui::GetMousePos();
 		mousePos.x -= m_ViewportBounds[0].x;
@@ -290,7 +297,50 @@ namespace PaulEngine {
 		m_SceneHierarchyPanel.OnImGuiRender();
 		m_ContentBrowserPanel.ImGuiRender();
 
+		OnUIDrawToolbar();
+
 		ImGui::End();
+	}
+
+	void EditorLayer::OnUIDrawToolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colours = ImGui::GetStyle().Colors;
+		auto& hovered = colours[ImGuiCol_ButtonHovered];
+		auto& active = colours[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(hovered.x, hovered.y, hovered.z, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(active.x, active.y, active.z, 0.5f));
+
+		ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+		float size = ImGui::GetContentRegionAvail().y - 4.0f;
+		Ref<Texture2D> m_Icon = (m_SceneState == SceneState::Edit) ? m_IconPlay : m_IconStop;
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+		if (ImGui::ImageButton("##switch_state", m_Icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0))) {
+			if (m_SceneState == SceneState::Edit) {
+				OnScenePlay();
+			}
+			else if (m_SceneState == SceneState::Play) {
+				OnSceneStop();
+			}
+		}
+
+		ImGui::End();
+	
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+	}
+
+	void EditorLayer::OnScenePlay()
+	{
+		m_SceneState = SceneState::Play;
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		m_SceneState = SceneState::Edit;
 	}
 
 	void EditorLayer::OnEvent(Event& e)
