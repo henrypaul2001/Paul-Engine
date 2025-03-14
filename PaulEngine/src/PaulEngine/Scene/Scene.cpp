@@ -4,11 +4,17 @@
 #include "PaulEngine/Scene/Entity.h"
 #include "Components.h"
 
+#include <box2d/box2d.h>
+
 namespace PaulEngine
 {
-	Scene::Scene() : m_ViewportWidth(0), m_ViewportHeight(0) {}
+	Scene::Scene() : m_ViewportWidth(0), m_ViewportHeight(0) {
+		m_PhysicsWorld = new b2WorldId();
+	}
 
-	Scene::~Scene() {}
+	Scene::~Scene() {
+		if (m_PhysicsWorld) { delete m_PhysicsWorld; }
+	}
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{
@@ -22,6 +28,18 @@ namespace PaulEngine
 	void Scene::DestroyEntity(Entity entity)
 	{
 		m_Registry.destroy(entity);
+	}
+
+	void Scene::OnRuntimeStart()
+	{
+		b2WorldDef worldDefinition = b2DefaultWorldDef();
+		worldDefinition.gravity = { 0.0f, -9.8f };
+		*m_PhysicsWorld = b2CreateWorld(&worldDefinition);
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		b2DestroyWorld(*m_PhysicsWorld);
 	}
 
 	void Scene::OnUpdateRuntime(Timestep timestep)
