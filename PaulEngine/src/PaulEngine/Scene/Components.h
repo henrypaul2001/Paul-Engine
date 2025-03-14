@@ -62,4 +62,25 @@ namespace PaulEngine
 			DestroyScript = [](ComponentNativeScript* scriptComponent) { delete scriptComponent->Instance; scriptComponent->Instance = nullptr; };
 		}
 	};
+
+	struct ComponentRigidBody2D {
+		enum class BodyType { Static = 0, Dynamic, Kinematic };
+		
+		BodyType Type = BodyType::Static;
+		bool FixedRotation = false;
+
+		void* RuntimeBody = nullptr;
+	};
+
+	struct ComponentBoxCollider2D {
+		glm::vec2 Offset = glm::vec2(0.0f);
+		glm::vec2 Size = glm::vec2(0.5f);
+
+		float Density = 1.0f;
+		float Friction = 0.5f;
+		float Restitution = 0.0f;
+		float RestitutionThreshold = 0.5f;
+
+		void* RuntimeFixture = nullptr;
+	};
 }
