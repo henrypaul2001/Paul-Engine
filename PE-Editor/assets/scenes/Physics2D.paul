@@ -1,0 +1,54 @@
+Scene: Untitled
+Entities:
+  - Entity: 128137235692
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [0, -10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [25, 2, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+    Rigid2DComponent:
+      Type: 0
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+  - Entity: 128137235692
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 0, 9.75]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 1.7777778
+      FixedAspect: false
+  - Entity: 128137235692
+    TagComponent:
+      Tag: PhysicsBox
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 1]
+    SpriteComponent:
+      Colour: [0.911032, 0.28206328, 0.28206328, 1]
+    Rigid2DComponent:
+      Type: 1
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0

@@ -157,6 +157,31 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentRigidBody2D>()) {
+			out << YAML::Key << "Rigid2DComponent";
+			out << YAML::BeginMap;
+
+			ComponentRigidBody2D& rb2d = entity.GetComponent<ComponentRigidBody2D>();
+			out << YAML::Key << "Type" << YAML::Value << (int)rb2d.Type;
+			out << YAML::Key << "FixedRotation" << YAML::Value << rb2d.FixedRotation;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<ComponentBoxCollider2D>()) {
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap;
+
+			ComponentBoxCollider2D& box2D = entity.GetComponent<ComponentBoxCollider2D>();
+			out << YAML::Key << "Offset" << YAML::Value << box2D.Offset;
+			out << YAML::Key << "Size" << YAML::Value << box2D.Size;
+			out << YAML::Key << "Density" << YAML::Value << box2D.Density;
+			out << YAML::Key << "Friction" << YAML::Value << box2D.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << box2D.Restitution;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -247,6 +272,24 @@ namespace PaulEngine
 				if (spriteNode) {
 					Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
 					spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
+				}
+
+				YAML::Node rb2dNode = entity["Rigid2DComponent"];
+				if (rb2dNode) {
+					ComponentRigidBody2D& rb2dComponent = deserializedEntity.AddComponent<ComponentRigidBody2D>();
+					rb2dComponent.Type = (ComponentRigidBody2D::BodyType)rb2dNode["Type"].as<int>();
+					rb2dComponent.FixedRotation = rb2dNode["FixedRotation"].as<bool>();
+				}
+
+				YAML::Node box2DNode = entity["BoxCollider2DComponent"];
+				if (box2DNode) {
+					ComponentBoxCollider2D& box2DComponent = deserializedEntity.AddComponent<ComponentBoxCollider2D>();
+					box2DComponent.Offset = box2DNode["Offset"].as<glm::vec2>();
+					box2DComponent.Size = box2DNode["Size"].as<glm::vec2>();
+
+					box2DComponent.Density = box2DNode["Density"].as<float>();
+					box2DComponent.Friction = box2DNode["Friction"].as<float>();
+					box2DComponent.Restitution = box2DNode["Restitution"].as<float>();
 				}
 			}
 		}
