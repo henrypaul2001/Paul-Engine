@@ -52,17 +52,17 @@ namespace PaulEngine
 		*m_PhysicsWorld = b2CreateWorld(&worldDefinition);
 
 		// Setup physics bodies
-		auto group = m_Registry.group<ComponentTransform, ComponentRigidBody2D>();
+		auto group = m_Registry.group<ComponentRigidBody2D>(entt::get<ComponentTransform>);
 		for (auto entityID : group) {
 			Entity entity = Entity(entityID, this);
-			auto [transform, rb2d] = group.get<ComponentTransform, ComponentRigidBody2D>(entityID);
+			auto [rb2d, transform] = group.get<ComponentRigidBody2D, ComponentTransform>(entityID);
 
 			b2BodyDef bodyDefinition = b2DefaultBodyDef();
 			bodyDefinition.type = SceneUtils::PEBodyType_To_Box2DBodyType(rb2d.Type);
 			bodyDefinition.fixedRotation = rb2d.FixedRotation;
 			bodyDefinition.position = { transform.Position.x, transform.Position.y };
 			bodyDefinition.rotation = b2MakeRot(transform.Rotation.z);
-			bodyDefinition.userData = (void*)&entity.GetComponent<ComponentTransform>();
+			bodyDefinition.userData = (void*)&transform;
 
 			b2BodyId b2Body = b2CreateBody(*m_PhysicsWorld, &bodyDefinition);
 			rb2d.RuntimeBody.generation = b2Body.generation;
