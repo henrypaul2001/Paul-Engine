@@ -24,6 +24,7 @@ group "Dependencies"
 	include "PaulEngine/vendor/glad"
 	include "PaulEngine/vendor/imgui"
 	include "PaulEngine/vendor/yaml"
+	include "PaulEngine/vendor/box2d"
 group ""
 
 project "PaulEngine"
@@ -69,11 +70,13 @@ project "PaulEngine"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml}",
 		"%{IncludeDir.imguizmo}",
-		"%{IncludeDir.VulkanSDK}"
+		"%{IncludeDir.VulkanSDK}",
+		"%{IncludeDir.Box2D}"
 	}
 
 	links
 	{
+		"Box2D",
 		"GLFW",
 		"glad",
 		"ImGui",
