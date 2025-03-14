@@ -69,7 +69,12 @@ namespace PaulEngine
 		BodyType Type = BodyType::Static;
 		bool FixedRotation = false;
 
-		void* RuntimeBody = nullptr;
+		struct B2RuntimeBody {
+			int32_t index1;
+			uint16_t world0;
+			uint16_t generation;
+		};
+		B2RuntimeBody RuntimeBody = { 0, 0, 0 };
 	};
 
 	struct ComponentBoxCollider2D {
@@ -79,8 +84,12 @@ namespace PaulEngine
 		float Density = 1.0f;
 		float Friction = 0.5f;
 		float Restitution = 0.0f;
-		float RestitutionThreshold = 0.5f;
 
-		void* RuntimeFixture = nullptr;
+		struct B2RuntimeFixture {
+			int32_t index1;
+			uint16_t world0;
+			uint16_t generation;
+		};
+		B2RuntimeFixture RuntimeFixture = { 0, 0, 0 };
 	};
 }
