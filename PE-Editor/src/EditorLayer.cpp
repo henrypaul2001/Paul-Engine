@@ -101,6 +101,7 @@ namespace PaulEngine {
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			if (m_RuntimeScene) { m_RuntimeScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y); }
 			m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		}
 
@@ -119,7 +120,7 @@ namespace PaulEngine {
 			m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
 		}
 		else {
-			m_ActiveScene->OnUpdateRuntime(timestep);
+			m_RuntimeScene->OnUpdateRuntime(timestep);
 		}
 
 		ImVec2 mousePos = ImGui::GetMousePos();
@@ -133,7 +134,7 @@ namespace PaulEngine {
 
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
-			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
+			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), (m_RuntimeScene) ? m_RuntimeScene.get() : m_ActiveScene.get());
 		}
 
 		m_Framebuffer->Unbind();
@@ -335,13 +336,19 @@ namespace PaulEngine {
 
 	void EditorLayer::OnScenePlay()
 	{
-		m_ActiveScene->OnRuntimeStart();
+		m_RuntimeScene = Scene::Copy(m_ActiveScene);
+		m_RuntimeScene->OnRuntimeStart();
+		m_RuntimeScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_RuntimeScene);
 		m_SceneState = SceneState::Play;
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
-		m_ActiveScene->OnRuntimeStop();
+		if (m_RuntimeScene) { m_RuntimeScene->OnRuntimeStop(); }
+		m_RuntimeScene = nullptr;
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneState = SceneState::Edit;
 	}
 
@@ -422,6 +429,7 @@ namespace PaulEngine {
 
 	void EditorLayer::NewScene()
 	{
+		OnSceneStop();
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);

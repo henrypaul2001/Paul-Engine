@@ -36,7 +36,9 @@ namespace PaulEngine {
 
 		ShaderLibrary m_ShaderLibrary;
 		Ref<Framebuffer> m_Framebuffer;
+
 		Ref<Scene> m_ActiveScene;
+		Ref<Scene> m_RuntimeScene;
 
 		Ref<Texture2D> m_IconPlay;
 		Ref<Texture2D> m_IconStop;

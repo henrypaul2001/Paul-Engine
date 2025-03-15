@@ -32,6 +32,19 @@ namespace PaulEngine
 	}
 
 	template<typename Component>
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& entityMap)
+	{
+		auto view = src.view<Component>();
+		for (auto entityID : view) {
+			UUID uuid = src.get<ComponentID>(entityID).ID;
+			PE_CORE_ASSERT(entityMap.find(uuid) != entityMap.end(), "Entity UUID already exists");
+			entt::entity dstEntityID = entityMap.at(uuid);
+
+			auto& component = src.get<Component>(entityID);
+			dst.emplace_or_replace<Component>(dstEntityID, component);
+		}
+	}
+
 	template<typename Component>
 	static void CopyComponentIfExists(Entity dst, Entity src)
 	{
@@ -69,6 +82,7 @@ namespace PaulEngine
 
 		return newScene;
 	}
+
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		return CreateEntityWithUUID(UUID(), name);
@@ -182,14 +196,31 @@ namespace PaulEngine
 
 			b2World_Step(*m_PhysicsWorld, timestep, 4);
 
-			b2BodyEvents events = b2World_GetBodyEvents(*m_PhysicsWorld);
-			for (int i = 0; i < events.moveCount; i++) {
-				const b2BodyMoveEvent* event = events.moveEvents + i;
-				ComponentTransform* transformPtr = static_cast<ComponentTransform*>(event->userData);
+			//b2BodyEvents events = b2World_GetBodyEvents(*m_PhysicsWorld);
+			//for (int i = 0; i < events.moveCount; i++) {
+			//	const b2BodyMoveEvent* event = events.moveEvents + i;
+			//	ComponentTransform* transformPtr = static_cast<ComponentTransform*>(event->userData);
+			//
+			//	transformPtr->Position.x = event->transform.p.x;
+			//	transformPtr->Position.y = event->transform.p.y;
+			//	transformPtr->Rotation.z = b2Rot_GetAngle(event->transform.q);
+			//}
 
-				transformPtr->Position.x = event->transform.p.x;
-				transformPtr->Position.y = event->transform.p.y;
-				transformPtr->Rotation.z = b2Rot_GetAngle(event->transform.q);
+			auto view = m_Registry.view<ComponentRigidBody2D>();
+			for (auto entityID : view) {
+				Entity entity = Entity(entityID, this);
+				auto& transform = entity.GetComponent<ComponentTransform>();
+				auto& rb2d = entity.GetComponent<ComponentRigidBody2D>();
+
+				b2BodyId body = {
+					rb2d.RuntimeBody.index1,
+					rb2d.RuntimeBody.world0,
+					rb2d.RuntimeBody.generation
+				};
+				b2Transform box2DTransform = b2Body_GetTransform(body);
+				transform.Position.x = box2DTransform.p.x;
+				transform.Position.y = box2DTransform.p.y;
+				transform.Rotation.z = b2Rot_GetAngle(box2DTransform.q);
 			}
 		}
 

@@ -70,7 +70,7 @@ namespace PaulEngine
 	};
 
 	struct ComponentRigidBody2D {
-		enum class BodyType { Static = 0, Dynamic, Kinematic };
+		enum class BodyType { Static = 0, Dynamic = 1, Kinematic = 2 };
 		
 		BodyType Type = BodyType::Static;
 		bool FixedRotation = false;
