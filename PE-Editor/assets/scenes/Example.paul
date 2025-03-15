@@ -1,6 +1,24 @@
 Scene: Untitled
 Entities:
-  - Entity: 128137235692
+  - Entity: 3417043274122471441
+    TagComponent:
+      Tag: Square
+    TransformComponent:
+      Position: [1.5277104, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [0, 1, 0, 1]
+  - Entity: 12526598711108418683
+    TagComponent:
+      Tag: Square 2
+    TransformComponent:
+      Position: [-1.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 0, 0, 1]
+  - Entity: 17585499174510702181
     TagComponent:
       Tag: Camera Entity
     TransformComponent:
@@ -16,21 +34,3 @@ Entities:
         OrthoSize: 10
         AspectRatio: 1.7777778
       FixedAspect: false
-  - Entity: 128137235692
-    TagComponent:
-      Tag: Square 2
-    TransformComponent:
-      Position: [-1.5, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      Colour: [1, 0, 0, 1]
-  - Entity: 128137235692
-    TagComponent:
-      Tag: Square
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      Colour: [0, 1, 0, 1]

@@ -33,9 +33,14 @@ namespace PaulEngine
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{
+		return CreateEntityWithUUID(UUID(), name);
+	}
+
+	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
+	{
 		PE_PROFILE_FUNCTION();
 		Entity e = Entity(m_Registry.create(), this);
-		e.AddComponent<ComponentID>();
+		e.AddComponent<ComponentID>(uuid);
 		e.AddComponent<ComponentTransform>();
 		e.AddComponent<ComponentTag>(name);
 		return e;

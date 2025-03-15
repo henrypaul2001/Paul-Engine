@@ -2,6 +2,8 @@
 #include <entt.hpp>
 //#include "Components.h"
 
+#include "PaulEngine/Core/UUID.h"
+
 #include "PaulEngine/Core/Timestep.h"
 #include <PaulEngine/Renderer/EditorCamera.h>
 
@@ -17,6 +19,7 @@ namespace PaulEngine
 		~Scene();
 
 		Entity CreateEntity(const std::string& name = "Entity");
+		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "Entity");
 		void DestroyEntity(Entity entity);
 
 		void OnRuntimeStart();

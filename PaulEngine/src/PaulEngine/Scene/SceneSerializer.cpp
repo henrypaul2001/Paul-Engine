@@ -101,7 +101,7 @@ namespace PaulEngine
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << "128137235692"; // Entity ID goes here (UUID)
+		out << YAML::Key << "Entity" << YAML::Value << entity.UUID(); // Entity ID goes here (UUID)
 		
 		// Components
 		if (entity.HasComponent<ComponentTag>()) {
@@ -234,7 +234,7 @@ namespace PaulEngine
 					PE_CORE_TRACE("Deserializing entity with ID = {0}, name = {1}", uuid, name);
 				}
 
-				Entity deserializedEntity = m_Scene->CreateEntity(name);
+				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 				YAML::Node transformNode = entity["TransformComponent"];
 				if (transformNode) {
