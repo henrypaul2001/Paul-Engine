@@ -22,6 +22,8 @@ namespace PaulEngine {
 		void OnScenePlay();
 		void OnSceneStop();
 
+		void OnDuplicatedEntity();
+
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
 

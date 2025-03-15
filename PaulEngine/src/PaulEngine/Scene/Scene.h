@@ -17,7 +17,7 @@ namespace PaulEngine
 	public:
 		Scene();
 		~Scene();
-
+		
 		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string& name = "Entity");

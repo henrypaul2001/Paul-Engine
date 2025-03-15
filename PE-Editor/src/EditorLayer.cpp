@@ -352,6 +352,14 @@ namespace PaulEngine {
 		m_SceneState = SceneState::Edit;
 	}
 
+	void EditorLayer::OnDuplicatedEntity()
+	{
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity) {
+			(m_RuntimeScene) ? m_RuntimeScene->DuplicateEntity(selectedEntity) : m_ActiveScene->DuplicateEntity(selectedEntity);
+		}
+	}
+
 	void EditorLayer::OnEvent(Event& e)
 	{
 		PE_PROFILE_FUNCTION();
@@ -412,6 +420,14 @@ namespace PaulEngine {
 				break;
 			case PE_KEY_R:
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				return true;
+				break;
+
+			// Entity shortcuts
+			case PE_KEY_D:
+				if (LControl) {
+					OnDuplicatedEntity();
+				}
 				return true;
 				break;
 		}
