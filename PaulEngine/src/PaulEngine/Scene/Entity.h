@@ -1,6 +1,7 @@
 #pragma once
 #include <entt.hpp>
 #include "Scene.h"
+#include "PaulEngine/Core/UUID.h"
 
 namespace PaulEngine
 {
@@ -45,6 +46,8 @@ namespace PaulEngine
 
 		const std::string& Tag();
 		uint32_t GetID() const { return (uint32_t)m_EntityHandle; }
+
+		const UUID& UUID();
 
 	private:
 		entt::entity m_EntityHandle;

@@ -35,6 +35,7 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 		Entity e = Entity(m_Registry.create(), this);
+		e.AddComponent<ComponentID>();
 		e.AddComponent<ComponentTransform>();
 		e.AddComponent<ComponentTag>(name);
 		return e;

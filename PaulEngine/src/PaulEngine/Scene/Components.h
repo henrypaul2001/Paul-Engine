@@ -1,14 +1,20 @@
 #pragma once
+#include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Core/UUID.h"
+
 #include <PaulEngine/Scene/SceneCamera.h>
 #include "EntityScript.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "PaulEngine/Renderer/Texture.h"
-
 namespace PaulEngine
 {
+	struct ComponentID
+	{
+		UUID ID;
+	};
+
 	struct ComponentTag {
 		std::string Tag;
 

@@ -15,4 +15,11 @@ namespace PaulEngine
 			return GetComponent<ComponentTag>().Tag;
 		}
 	}
+
+	const UUID& Entity::UUID()
+	{
+		if (HasComponent<ComponentID>()) {
+			return GetComponent<ComponentID>().ID;
+		}
+	}
 }

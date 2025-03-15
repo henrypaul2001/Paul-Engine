@@ -161,6 +161,7 @@
     <ClInclude Include="src\PaulEngine\Core\Log.h" />
     <ClInclude Include="src\PaulEngine\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\PaulEngine\Core\Timestep.h" />
+    <ClInclude Include="src\PaulEngine\Core\UUID.h" />
     <ClInclude Include="src\PaulEngine\Core\Window.h" />
     <ClInclude Include="src\PaulEngine\Debug\Instrumentor.h" />
     <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h" />
@@ -628,6 +629,7 @@
     <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Log.cpp" />
+    <ClCompile Include="src\PaulEngine\Core\UUID.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\PaulEngine\Maths\Maths.cpp" />
