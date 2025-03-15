@@ -440,6 +440,8 @@ namespace PaulEngine {
 
 	void EditorLayer::OpenScene(std::filesystem::path filepath)
 	{
+		if (m_SceneState == SceneState::Play) { OnSceneStop(); }
+
 		std::filesystem::path extension = filepath.extension();
 		if (extension != ".paul") {
 			PE_CORE_WARN("Invalid scene file extension '{0}', extension '{1}' required", extension.string().c_str(), ".paul");
