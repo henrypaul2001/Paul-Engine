@@ -20,6 +20,7 @@ namespace PaulEngine
 
 		Entity CreateEntity(const std::string& name = "Entity");
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "Entity");
+		Entity DuplicateEntity(Entity entity);
 		void DestroyEntity(Entity entity);
 
 		void OnRuntimeStart();

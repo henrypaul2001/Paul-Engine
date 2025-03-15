@@ -31,6 +31,44 @@ namespace PaulEngine
 		if (m_PhysicsWorld) { delete m_PhysicsWorld; }
 	}
 
+	template<typename Component>
+	template<typename Component>
+	static void CopyComponentIfExists(Entity dst, Entity src)
+	{
+		if (src.HasComponent<Component>()) {
+			dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+		}
+	}
+
+	Ref<Scene> Scene::Copy(Ref<Scene> other)
+	{
+		Ref<Scene> newScene = CreateRef<Scene>();
+
+		newScene->m_ViewportWidth = other->m_ViewportWidth;
+		newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+		entt::registry& srcSceneRegistry = other->m_Registry;
+		entt::registry& dstSceneRegistry = newScene->m_Registry;
+		std::unordered_map<UUID, entt::entity> entityMap;
+
+		auto idView = srcSceneRegistry.view<ComponentID>();
+		for (auto entityID : idView) {
+			UUID srcUUID = srcSceneRegistry.get<ComponentID>(entityID).ID;
+			const std::string& tag = srcSceneRegistry.get<ComponentTag>(entityID).Tag;
+			Entity newEntity = newScene->CreateEntityWithUUID(srcUUID, tag);
+			entityMap[srcUUID] = (entt::entity)newEntity;
+		}
+
+		// Copy components
+		CopyComponent<ComponentTransform>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<Component2DSprite>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentCamera>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentNativeScript>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentRigidBody2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentBoxCollider2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
+
+		return newScene;
+	}
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		return CreateEntityWithUUID(UUID(), name);
@@ -44,6 +82,21 @@ namespace PaulEngine
 		e.AddComponent<ComponentTransform>();
 		e.AddComponent<ComponentTag>(name);
 		return e;
+	}
+
+	Entity Scene::DuplicateEntity(Entity entity)
+	{
+		const std::string& name = entity.Tag();
+		Entity newEntity = CreateEntity(name);
+
+		CopyComponentIfExists<ComponentTransform>(newEntity, entity);
+		CopyComponentIfExists<Component2DSprite>(newEntity, entity);
+		CopyComponentIfExists<ComponentCamera>(newEntity, entity);
+		CopyComponentIfExists<ComponentNativeScript>(newEntity, entity);
+		CopyComponentIfExists<ComponentRigidBody2D>(newEntity, entity);
+		CopyComponentIfExists<ComponentBoxCollider2D>(newEntity, entity);
+
+		return newEntity;
 	}
 
 	void Scene::DestroyEntity(Entity entity)
