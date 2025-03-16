@@ -56,6 +56,14 @@ namespace PaulEngine
 		Component2DSprite(const glm::vec4& colour, const Ref<Texture2D>& texture, const glm::vec2& textureScale = glm::vec2(1.0f)) : Colour(colour), TextureScale(textureScale) {}
 	};
 
+	struct Component2DCircle {
+		glm::vec4 Colour = glm::vec4(1.0f);
+		float Thickness = 1.0f;
+		float Fade = 0.005f;
+
+		Component2DCircle(const glm::vec4& colour = glm::vec4(1.0f)) : Colour(colour) {}
+	};
+
 	struct ComponentNativeScript {
 		EntityScript* Instance = nullptr;
 

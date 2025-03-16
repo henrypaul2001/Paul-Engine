@@ -316,6 +316,12 @@ namespace PaulEngine
 					ImGui::CloseCurrentPopup();
 				}
 			}
+			if (!entity.HasComponent<Component2DCircle>()) {
+				if (ImGui::MenuItem("Circle 2D Component")) {
+					m_SelectedEntity.AddComponent<Component2DCircle>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
 			if (!entity.HasComponent<ComponentRigidBody2D>()) {
 				if (ImGui::MenuItem("Rigid Body 2D Component")) {
 					m_SelectedEntity.AddComponent<ComponentRigidBody2D>();
@@ -392,7 +398,7 @@ namespace PaulEngine
 		});
 
 		// Sprite
-		DrawComponent<Component2DSprite>("Sprite Component", entity, true, [](Component2DSprite& component) {
+		DrawComponent<Component2DSprite>("Sprite Renderer Component", entity, true, [](Component2DSprite& component) {
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
 
 			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
@@ -411,6 +417,13 @@ namespace PaulEngine
 			}
 			
 			bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
+		});
+
+		// Circle
+		DrawComponent<Component2DCircle>("Circle Renderer Component", entity, true, [](Component2DCircle& component) {
+			ImGui::ColorEdit4("Colour", &component.Colour[0]);
+			ImGui::DragFloat("Thickness", &component.Thickness, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Fade", &component.Fade, 0.01f, 0.0f, 1.0f);
 		});
 
 		// Rigid Body 2D

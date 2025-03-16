@@ -75,6 +75,7 @@ namespace PaulEngine
 		// Copy components
 		CopyComponent<ComponentTransform>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<Component2DSprite>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<Component2DCircle>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentCamera>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentNativeScript>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentRigidBody2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
@@ -105,6 +106,7 @@ namespace PaulEngine
 
 		CopyComponentIfExists<ComponentTransform>(newEntity, entity);
 		CopyComponentIfExists<Component2DSprite>(newEntity, entity);
+		CopyComponentIfExists<Component2DCircle>(newEntity, entity);
 		CopyComponentIfExists<ComponentCamera>(newEntity, entity);
 		CopyComponentIfExists<ComponentNativeScript>(newEntity, entity);
 		CopyComponentIfExists<ComponentRigidBody2D>(newEntity, entity);

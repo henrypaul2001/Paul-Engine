@@ -157,6 +157,18 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<Component2DCircle>()) {
+			out << YAML::Key << "CircleComponent";
+			out << YAML::BeginMap;
+
+			Component2DCircle& circleComponent = entity.GetComponent<Component2DCircle>();
+			out << YAML::Key << "Colour" << YAML::Value << circleComponent.Colour;
+			out << YAML::Key << "Thickness" << YAML::Value << circleComponent.Thickness;
+			out << YAML::Key << "Fade" << YAML::Value << circleComponent.Fade;
+
+			out << YAML::EndMap;
+		}
+
 		if (entity.HasComponent<ComponentRigidBody2D>()) {
 			out << YAML::Key << "Rigid2DComponent";
 			out << YAML::BeginMap;
@@ -272,6 +284,14 @@ namespace PaulEngine
 				if (spriteNode) {
 					Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
 					spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
+				}
+
+				YAML::Node circleNode = entity["CircleComponent"];
+				if (circleNode) {
+					Component2DCircle& circleComponent = deserializedEntity.AddComponent<Component2DCircle>();
+					circleComponent.Colour = circleNode["Colour"].as<glm::vec4>();
+					circleComponent.Thickness = circleNode["Thickness"].as<float>();
+					circleComponent.Fade = circleNode["Fade"].as<float>();
 				}
 
 				YAML::Node rb2dNode = entity["Rigid2DComponent"];
