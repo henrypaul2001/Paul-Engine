@@ -13,7 +13,7 @@ Entities:
     TagComponent:
       Tag: Square 2
     TransformComponent:
-      Position: [-1.5, 0, 0]
+      Position: [-3.0436115, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteComponent:
@@ -34,3 +34,14 @@ Entities:
         OrthoSize: 10
         AspectRatio: 1.7777778
       FixedAspect: false
+  - Entity: 14131960727079634967
+    TagComponent:
+      Tag: Empty Entity
+    TransformComponent:
+      Position: [-0.52407074, -0.011872292, 0]
+      Rotation: [0, 0, 0]
+      Scale: [17.27655, 15.75, 1]
+    CircleComponent:
+      Colour: [0.12941177, 0.6392157, 0.9411765, 0.81960785]
+      Thickness: 0.96
+      Fade: 0.55

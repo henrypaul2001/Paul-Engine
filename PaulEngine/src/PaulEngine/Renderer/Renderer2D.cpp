@@ -17,6 +17,15 @@ namespace PaulEngine {
 		int EntityID;
 	};
 
+	struct CircleVertex {
+		glm::vec3 WorldPosition;
+		glm::vec3 LocalPosition;
+		glm::vec4 Colour;
+		float Thickness;
+		float Fade;
+		int EntityID;
+	};
+
 	struct Renderer2DData {
 		// Per batch
 		static const uint32_t MaxQuads = 10000;
@@ -26,12 +35,20 @@ namespace PaulEngine {
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
-		Ref<Shader> TextureShader;
+		Ref<Shader> QuadShader;
 		Ref<Texture2D> WhiteTexture;
+
+		Ref<VertexArray> CircleVertexArray;
+		Ref<VertexBuffer> CircleVertexBuffer;
+		Ref<Shader> CircleShader;
 	
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
+
+		uint32_t CircleIndexCount = 0;
+		CircleVertex* CircleVertexBufferBase = nullptr;
+		CircleVertex* CircleVertexBufferPtr = nullptr;
 
 		std::array<Ref<Texture>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
@@ -55,6 +72,8 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		//s_RenderData = new Renderer2DData();
 
+		// -- Quad --
+		// ----------
 		s_RenderData.QuadVertexArray = VertexArray::Create();
 		s_RenderData.QuadVertexBuffer = VertexBuffer::Create(s_RenderData.MaxVertices * sizeof(QuadVertex));
 		s_RenderData.QuadVertexBuffer->SetLayout({
@@ -88,6 +107,23 @@ namespace PaulEngine {
 
 		s_RenderData.QuadVertexBufferBase = new QuadVertex[s_RenderData.MaxVertices];
 
+		// - Circle -
+		// ----------
+
+		s_RenderData.CircleVertexArray = VertexArray::Create();
+		s_RenderData.CircleVertexBuffer = VertexBuffer::Create(s_RenderData.MaxVertices * sizeof(CircleVertex));
+		s_RenderData.CircleVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position", false },
+			{ ShaderDataType::Float3, "a_LocalPosition", false },
+			{ ShaderDataType::Float4, "a_Colour", true },
+			{ ShaderDataType::Float, "a_Thickness", true },
+			{ ShaderDataType::Float, "a_Fade", true },
+			{ ShaderDataType::Int, "a_EntityID", false }
+			});
+		s_RenderData.CircleVertexArray->AddVertexBuffer(s_RenderData.CircleVertexBuffer);
+		s_RenderData.CircleVertexArray->SetIndexBuffer(quadIB); // Re-use quadIB
+		s_RenderData.CircleVertexBufferBase = new CircleVertex[s_RenderData.MaxVertices];
+
 		s_RenderData.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_RenderData.WhiteTexture->SetData(&whiteTextureData, sizeof(whiteTextureData));
@@ -99,11 +135,13 @@ namespace PaulEngine {
 			samplers[i] = i;
 		}
 		
-		s_RenderData.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
-		s_RenderData.TextureShader->Bind();
-		s_RenderData.TextureShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
+		s_RenderData.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
+		s_RenderData.QuadShader->Bind();
+		s_RenderData.QuadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
 
 		s_RenderData.TextureSlots[0] = s_RenderData.WhiteTexture;
+
+		s_RenderData.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
 
 		s_RenderData.QuadVertexPositions[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
 		s_RenderData.QuadVertexPositions[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
@@ -153,9 +191,6 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
-		s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
-
 		Flush();
 	}
 
@@ -163,12 +198,26 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		s_RenderData.TextureShader->Bind();
-		for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
-			s_RenderData.TextureSlots[i]->Bind(i);
+		if (s_RenderData.QuadIndexCount) {
+			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
+			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
+
+			s_RenderData.QuadShader->Bind();
+			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
+				s_RenderData.TextureSlots[i]->Bind(i);
+			}
+			RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
+			s_RenderData.Stats.DrawCalls++;
 		}
-		RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
-		s_RenderData.Stats.DrawCalls++;
+
+		if (s_RenderData.CircleIndexCount) {
+			uint32_t dataSize = (uint8_t*)s_RenderData.CircleVertexBufferPtr - (uint8_t*)s_RenderData.CircleVertexBufferBase;
+			s_RenderData.CircleVertexBuffer->SetData(s_RenderData.CircleVertexBufferBase, dataSize);
+
+			s_RenderData.CircleShader->Bind();
+			RenderCommand::DrawIndexed(s_RenderData.CircleVertexArray, s_RenderData.CircleIndexCount);
+			s_RenderData.Stats.DrawCalls++;
+		}
 	}
 
 	void Renderer2D::StartNewBatch()
@@ -176,6 +225,9 @@ namespace PaulEngine {
 		s_RenderData.QuadIndexCount = 0;
 		s_RenderData.TextureSlotIndex = 1;
 		s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
+
+		s_RenderData.CircleIndexCount = 0;
+		s_RenderData.CircleVertexBufferPtr = s_RenderData.CircleVertexBufferBase;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& colour, int entityID)
@@ -294,6 +346,30 @@ namespace PaulEngine {
 		s_RenderData.QuadIndexCount += 6;
 
 		s_RenderData.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& colour, const float thickness, const float fade, const int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		//if (s_RenderData.CircleIndexCount >= Renderer2DData::MaxIndices) {
+		//	EndScene();
+		//	StartNewBatch();
+		//}
+
+		for (int i = 0; i < 4; i++) {
+			s_RenderData.CircleVertexBufferPtr->WorldPosition = transform * s_RenderData.QuadVertexPositions[i];
+			s_RenderData.CircleVertexBufferPtr->LocalPosition = s_RenderData.QuadVertexPositions[i] * 2.0f;
+			s_RenderData.CircleVertexBufferPtr->Colour = colour;
+			s_RenderData.CircleVertexBufferPtr->Thickness = thickness;
+			s_RenderData.CircleVertexBufferPtr->Fade = fade;
+			s_RenderData.CircleVertexBufferPtr->EntityID = entityID;
+			s_RenderData.CircleVertexBufferPtr++;
+		}
+
+		s_RenderData.CircleIndexCount += 6;
+
+		s_RenderData.Stats.CircleCount++;
 	}
 
 	void Renderer2D::ResetStats()
