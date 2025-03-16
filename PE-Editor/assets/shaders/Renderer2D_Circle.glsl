@@ -54,10 +54,9 @@ void main()
 {
 	// Calculate distance
 	float distance = 1.0 - length(Input.LocalPosition.xy);
-	vec3 fade_colour = vec3(smoothstep(0.0, Input.Fade, distance));
-	fade_colour *= vec3(smoothstep(Input.Thickness + Input.Fade, Input.Thickness, distance));
+	float circle_alpha = smoothstep(0.0, Input.Fade, distance);
+	circle_alpha *= smoothstep(Input.Thickness + Input.Fade, Input.Thickness, distance);
 
-	colour = vec4(fade_colour, 1.0);
-	colour *= Input.Colour;
+	colour = vec4(Input.Colour.rgb, Input.Colour.a * circle_alpha);
 	entityID = v_EntityID;
 }
