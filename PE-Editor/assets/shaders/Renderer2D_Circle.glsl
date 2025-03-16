@@ -58,5 +58,9 @@ void main()
 	circle_alpha *= smoothstep(Input.Thickness + Input.Fade, Input.Thickness, distance);
 
 	colour = vec4(Input.Colour.rgb, Input.Colour.a * circle_alpha);
-	entityID = v_EntityID;
+
+	entityID = -1;
+	if (circle_alpha > 0.0) {
+		entityID = v_EntityID;
+	}
 }
