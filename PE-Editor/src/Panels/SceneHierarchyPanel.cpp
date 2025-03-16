@@ -443,8 +443,8 @@ namespace PaulEngine
 			DrawVec2Control("Size", component.Size, 0.5f);
 
 			ImGui::DragFloat("Density", &component.Density);
-			ImGui::DragFloat("Friction", &component.Friction);
-			ImGui::DragFloat("Restitution", &component.Restitution);
+			ImGui::DragFloat("Friction", &component.Friction, 0.1f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.1f, 0.0f, 1.0f);
 		});
 	}
 }
