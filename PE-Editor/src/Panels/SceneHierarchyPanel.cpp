@@ -86,6 +86,9 @@ namespace PaulEngine
 		if (ImGui::BeginPopupContextItem()) {
 			ImGui::Text(tag.c_str());
 			ImGui::Separator();
+			if (ImGui::MenuItem("Duplicate", "LCtrl+D")) {
+				m_Context->DuplicateEntity(m_SelectedEntity);
+			}
 			if (ImGui::MenuItem("Delete")) {
 				entityDeleted = true;
 			}
