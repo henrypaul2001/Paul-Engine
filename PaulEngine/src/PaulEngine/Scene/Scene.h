@@ -25,6 +25,12 @@ namespace PaulEngine
 		Entity DuplicateEntity(Entity entity);
 		void DestroyEntity(Entity entity);
 
+		template<typename... Components>
+		auto GetAllEntitiesWith() {
+			return m_Registry.view<Components...>();
+		}
+		Entity GetPrimaryCameraEntity();
+
 		void OnRuntimeStart();
 		void OnRuntimeStop();
 

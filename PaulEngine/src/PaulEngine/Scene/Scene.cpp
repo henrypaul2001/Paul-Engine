@@ -122,6 +122,17 @@ namespace PaulEngine
 		m_Registry.destroy(entity);
 	}
 
+	Entity Scene::GetPrimaryCameraEntity()
+	{
+		auto view = m_Registry.view<ComponentCamera>();
+		for (auto entityID : view) {
+			const auto& camera = view.get<ComponentCamera>(entityID);
+			// if (camera.Primary)
+			return Entity(entityID, this);
+		}
+		return Entity();
+	}
+
 	void Scene::OnRuntimeStart()
 	{
 		b2WorldDef worldDefinition = b2DefaultWorldDef();
@@ -140,7 +151,7 @@ namespace PaulEngine
 			bodyDefinition.position = { transform.Position.x, transform.Position.y };
 			bodyDefinition.rotation = b2MakeRot(transform.Rotation.z);
 			bodyDefinition.userData = (void*)&transform;	// <---	I didn't have high confidence in this working and I was right, 
-															//		it doesn't work as it's not guaranteed that the refernce inside 
+															//		it doesn't work as it's not guaranteed that the reference inside 
 															//		of the entt::registry will still be valid later
 
 			b2BodyId b2Body = b2CreateBody(*m_PhysicsWorld, &bodyDefinition);
@@ -245,22 +256,10 @@ namespace PaulEngine
 		}
 
 		// Render 2D
-		Camera* mainCamera = nullptr;
-		glm::mat4 transformation = glm::mat4(1.0f);
-		{
-			auto group = m_Registry.group<ComponentCamera>(entt::get<ComponentTransform>);
-			for (auto entity : group) {
-				auto [transform, camera] = group.get<ComponentTransform, ComponentCamera>(entity);
-
-				// if camera.primary
-				mainCamera = &camera.Camera;
-				transformation = transform.GetTransform();
-				break;
-			}
-		}
-
-		if (mainCamera) {
-			Renderer2D::BeginScene(*mainCamera, transformation);
+		Entity cameraEntity = GetPrimaryCameraEntity();
+		if (cameraEntity) {
+			Camera& mainCamera = cameraEntity.GetComponent<ComponentCamera>().Camera;
+			Renderer2D::BeginScene(mainCamera, cameraEntity.GetComponent<ComponentTransform>().GetTransform());
 			{
 				PE_PROFILE_SCOPE("Draw Quads");
 				auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
