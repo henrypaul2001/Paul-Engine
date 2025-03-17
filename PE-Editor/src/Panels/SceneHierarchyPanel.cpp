@@ -337,6 +337,12 @@ namespace PaulEngine
 					ImGui::CloseCurrentPopup();
 				}
 			}
+			if (!entity.HasComponent<ComponentCircleCollider2D>()) {
+				if (ImGui::MenuItem("Circle Collision 2D Component")) {
+					m_SelectedEntity.AddComponent<ComponentCircleCollider2D>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
 		
 			ImGui::EndPopup();
 		}
@@ -458,7 +464,17 @@ namespace PaulEngine
 			DrawVec2Control("Offset", component.Offset, 0.0f);
 			DrawVec2Control("Size", component.Size, 0.5f);
 
-			ImGui::DragFloat("Density", &component.Density);
+			ImGui::DragFloat("Density", &component.Density, 0.1f);
+			ImGui::DragFloat("Friction", &component.Friction, 0.1f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.1f, 0.0f, 1.0f);
+		});
+
+		// Circle Collider 2D
+		DrawComponent<ComponentCircleCollider2D>("Circle Collider 2D", entity, true, [](ComponentCircleCollider2D& component) {
+			DrawVec2Control("Offset", component.Offset, 0.0f);
+			ImGui::DragFloat("Radius", &component.Radius, 0.1f);
+
+			ImGui::DragFloat("Density", &component.Density, 0.1f);
 			ImGui::DragFloat("Friction", &component.Friction, 0.1f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.1f, 0.0f, 1.0f);
 		});

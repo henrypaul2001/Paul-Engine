@@ -80,6 +80,7 @@ namespace PaulEngine
 		CopyComponent<ComponentNativeScript>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentRigidBody2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentBoxCollider2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentCircleCollider2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
 
 		return newScene;
 	}
@@ -111,6 +112,7 @@ namespace PaulEngine
 		CopyComponentIfExists<ComponentNativeScript>(newEntity, entity);
 		CopyComponentIfExists<ComponentRigidBody2D>(newEntity, entity);
 		CopyComponentIfExists<ComponentBoxCollider2D>(newEntity, entity);
+		CopyComponentIfExists<ComponentCircleCollider2D>(newEntity, entity);
 
 		return newEntity;
 	}

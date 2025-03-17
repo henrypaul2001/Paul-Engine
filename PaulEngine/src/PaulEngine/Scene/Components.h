@@ -106,4 +106,20 @@ namespace PaulEngine
 		};
 		B2RuntimeFixture RuntimeFixture = { 0, 0, 0 };
 	};
+
+	struct ComponentCircleCollider2D {
+		glm::vec2 Offset = glm::vec2(0.0f);
+		float Radius = 0.5f;
+
+		float Density = 1.0f;
+		float Friction = 0.5f;
+		float Restitution = 0.0f;
+
+		struct B2RuntimeFixture {
+			int32_t index1;
+			uint16_t world0;
+			uint16_t generation;
+		};
+		B2RuntimeFixture RuntimeFixture = { 0, 0, 0 };
+	};
 }
