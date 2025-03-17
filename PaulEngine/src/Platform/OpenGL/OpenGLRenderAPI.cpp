@@ -35,4 +35,9 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 	}
+
+	void OpenGLRenderAPI::DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount)
+	{
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
 }

@@ -30,6 +30,11 @@ namespace  PaulEngine {
 			s_RenderAPI->DrawIndexed(vertexArray, indexCount);
 		}
 
+		inline static void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) {
+			vertexArray->Bind();
+			s_RenderAPI->DrawLines(vertexArray, vertexCount);
+		}
+
 	private:
 		static RenderAPI* s_RenderAPI;
 	};
