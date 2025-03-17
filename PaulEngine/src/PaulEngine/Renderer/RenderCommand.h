@@ -35,6 +35,10 @@ namespace  PaulEngine {
 			s_RenderAPI->DrawLines(vertexArray, vertexCount);
 		}
 
+		inline static void SetLineWidth(const float thickness) {
+			s_RenderAPI->SetLineWidth(thickness);
+		}
+
 	private:
 		static RenderAPI* s_RenderAPI;
 	};

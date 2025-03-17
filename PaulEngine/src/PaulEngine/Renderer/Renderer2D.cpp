@@ -52,6 +52,8 @@ namespace PaulEngine {
 		Ref<VertexBuffer> LineVertexBuffer;
 		Ref<Shader> LineShader;
 	
+		float LineWidth = 2.0f;
+	
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
@@ -251,6 +253,7 @@ namespace PaulEngine {
 			s_RenderData.LineVertexBuffer->SetData(s_RenderData.LineVertexBufferBase, dataSize);
 
 			s_RenderData.LineShader->Bind();
+			RenderCommand::SetLineWidth(s_RenderData.LineWidth);
 			RenderCommand::DrawLines(s_RenderData.LineVertexArray, s_RenderData.LineVertexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
@@ -434,6 +437,17 @@ namespace PaulEngine {
 
 		s_RenderData.LineVertexCount += 2;
 		s_RenderData.Stats.LineCount++;
+	}
+
+
+	float Renderer2D::GetLineWidth()
+	{
+		return s_RenderData.LineWidth;
+	}
+
+	void Renderer2D::SetLineWidth(const float thickness)
+	{
+		s_RenderData.LineWidth = thickness;
 	}
 
 	void Renderer2D::ResetStats()

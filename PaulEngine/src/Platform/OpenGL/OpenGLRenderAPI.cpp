@@ -13,6 +13,7 @@ namespace PaulEngine {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LINE_SMOOTH);
 	}
 
 	void OpenGLRenderAPI::SetViewport(const glm::ivec2& position, const glm::ivec2& size)
@@ -39,5 +40,10 @@ namespace PaulEngine {
 	void OpenGLRenderAPI::DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount)
 	{
 		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
+
+	void OpenGLRenderAPI::SetLineWidth(const float thickness)
+	{
+		glLineWidth(thickness);
 	}
 }

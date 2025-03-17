@@ -23,7 +23,11 @@ namespace PaulEngine {
 		static void DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale = glm::vec2(1.0f), const glm::vec4& tintColour = glm::vec4(1.0f), int entityID = -1);
 
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& colour, const float thickness, const float fade, const int entityID = -1);
+		
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& colour, const int entityID = -1);
+
+		static float GetLineWidth();
+		static void SetLineWidth(const float thickness);
 
 		struct Statistics {
 			uint32_t DrawCalls = 0;
