@@ -30,7 +30,7 @@ namespace PaulEngine {
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
 		m_IconStop = Texture2D::Create("Resources/Icons/mingcute--stop-fill-light.png");
-		m_IconSimulate = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
+		m_IconSimulate = Texture2D::Create("Resources/Icons/mingcute--play-line-light.png");
 
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
@@ -339,6 +339,7 @@ namespace PaulEngine {
 
 		float size = ImGui::GetContentRegionAvail().y - 4.0f;
 		{
+			const char* tooltip = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? "Play" : "Stop";
 			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
 			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 			if (ImGui::ImageButton("##switch_state", icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
@@ -349,9 +350,11 @@ namespace PaulEngine {
 					OnSceneStop();
 				}
 			}
+			ImGui::SetItemTooltip(tooltip);
 		}
 		ImGui::SameLine();
 		{
+			const char* tooltip = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? "Simulate" : "Stop";
 			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
 			if (ImGui::ImageButton("##switch_state2", icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
 				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) {
@@ -361,6 +364,7 @@ namespace PaulEngine {
 					OnSceneStop();
 				}
 			}
+			ImGui::SetItemTooltip(tooltip);
 		}
 
 		ImGui::PopStyleVar(2);
