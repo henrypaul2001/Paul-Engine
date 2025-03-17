@@ -26,6 +26,12 @@ namespace PaulEngine {
 		int EntityID;
 	};
 
+	struct LineVertex {
+		glm::vec3 Position;
+		glm::vec4 Colour;
+		int EntityID;
+	};
+
 	struct Renderer2DData {
 		// Per batch
 		static const uint32_t MaxQuads = 10000;
@@ -41,6 +47,10 @@ namespace PaulEngine {
 		Ref<VertexArray> CircleVertexArray;
 		Ref<VertexBuffer> CircleVertexBuffer;
 		Ref<Shader> CircleShader;
+
+		Ref<VertexArray> LineVertexArray;
+		Ref<VertexBuffer> LineVertexBuffer;
+		Ref<Shader> LineShader;
 	
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -49,6 +59,10 @@ namespace PaulEngine {
 		uint32_t CircleIndexCount = 0;
 		CircleVertex* CircleVertexBufferBase = nullptr;
 		CircleVertex* CircleVertexBufferPtr = nullptr;
+
+		uint32_t LineVertexCount = 0;
+		LineVertex* LineVertexBufferBase = nullptr;
+		LineVertex* LineVertexBufferPtr = nullptr;
 
 		std::array<Ref<Texture>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
@@ -119,10 +133,22 @@ namespace PaulEngine {
 			{ ShaderDataType::Float, "a_Thickness", true },
 			{ ShaderDataType::Float, "a_Fade", true },
 			{ ShaderDataType::Int, "a_EntityID", false }
-			});
+		});
 		s_RenderData.CircleVertexArray->AddVertexBuffer(s_RenderData.CircleVertexBuffer);
 		s_RenderData.CircleVertexArray->SetIndexBuffer(quadIB); // Re-use quadIB
 		s_RenderData.CircleVertexBufferBase = new CircleVertex[s_RenderData.MaxVertices];
+
+		// -- Line --
+		// ----------
+		s_RenderData.LineVertexArray = VertexArray::Create();
+		s_RenderData.LineVertexBuffer = VertexBuffer::Create(s_RenderData.MaxVertices * sizeof(LineVertex));
+		s_RenderData.LineVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position", false },
+			{ ShaderDataType::Float4, "a_Colour", true },
+			{ ShaderDataType::Int, "a_EntityID", false }
+		});
+		s_RenderData.LineVertexArray->AddVertexBuffer(s_RenderData.LineVertexBuffer);
+		s_RenderData.LineVertexBufferBase = new LineVertex[s_RenderData.MaxVertices];
 
 		s_RenderData.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -136,12 +162,13 @@ namespace PaulEngine {
 		}
 		
 		s_RenderData.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
+		s_RenderData.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
+		s_RenderData.LineShader = Shader::Create("assets/shaders/Renderer2D_Line.glsl");
+
 		s_RenderData.QuadShader->Bind();
 		s_RenderData.QuadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
 
 		s_RenderData.TextureSlots[0] = s_RenderData.WhiteTexture;
-
-		s_RenderData.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
 
 		s_RenderData.QuadVertexPositions[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
 		s_RenderData.QuadVertexPositions[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
@@ -218,6 +245,15 @@ namespace PaulEngine {
 			RenderCommand::DrawIndexed(s_RenderData.CircleVertexArray, s_RenderData.CircleIndexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
+		
+		if (s_RenderData.LineVertexCount) {
+			uint32_t dataSize = (uint8_t*)s_RenderData.LineVertexBufferPtr - (uint8_t*)s_RenderData.LineVertexBufferBase;
+			s_RenderData.LineVertexBuffer->SetData(s_RenderData.LineVertexBufferBase, dataSize);
+
+			s_RenderData.LineShader->Bind();
+			RenderCommand::DrawLines(s_RenderData.LineVertexArray, s_RenderData.LineVertexCount);
+			s_RenderData.Stats.DrawCalls++;
+		}
 	}
 
 	void Renderer2D::StartNewBatch()
@@ -228,6 +264,9 @@ namespace PaulEngine {
 
 		s_RenderData.CircleIndexCount = 0;
 		s_RenderData.CircleVertexBufferPtr = s_RenderData.CircleVertexBufferBase;
+
+		s_RenderData.LineVertexCount = 0;
+		s_RenderData.LineVertexBufferPtr = s_RenderData.LineVertexBufferBase;
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& colour, int entityID)
@@ -352,10 +391,10 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		//if (s_RenderData.CircleIndexCount >= Renderer2DData::MaxIndices) {
-		//	EndScene();
-		//	StartNewBatch();
-		//}
+		if (s_RenderData.CircleIndexCount >= Renderer2DData::MaxIndices) {
+			EndScene();
+			StartNewBatch();
+		}
 
 		for (int i = 0; i < 4; i++) {
 			s_RenderData.CircleVertexBufferPtr->WorldPosition = transform * s_RenderData.QuadVertexPositions[i];
@@ -372,10 +411,37 @@ namespace PaulEngine {
 		s_RenderData.Stats.CircleCount++;
 	}
 
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& colour, const int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		if (s_RenderData.LineVertexCount >= Renderer2DData::MaxIndices) {
+			EndScene();
+			StartNewBatch();
+		}
+
+		s_RenderData.LineVertexBufferPtr->Position = p0;
+		s_RenderData.LineVertexBufferPtr->Colour = colour;
+		s_RenderData.LineVertexBufferPtr->EntityID = entityID;
+
+		s_RenderData.LineVertexBufferPtr++;
+
+		s_RenderData.LineVertexBufferPtr->Position = p1;
+		s_RenderData.LineVertexBufferPtr->Colour = colour;
+		s_RenderData.LineVertexBufferPtr->EntityID = entityID;
+
+		s_RenderData.LineVertexBufferPtr++;
+
+		s_RenderData.LineVertexCount += 2;
+		s_RenderData.Stats.LineCount++;
+	}
+
 	void Renderer2D::ResetStats()
 	{
 		s_RenderData.Stats.DrawCalls = 0;
 		s_RenderData.Stats.QuadCount = 0;
+		s_RenderData.Stats.CircleCount = 0;
+		s_RenderData.Stats.LineCount = 0;
 	}
 
 	const Renderer2D::Statistics& Renderer2D::GetStats()
