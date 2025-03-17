@@ -135,6 +135,26 @@ namespace PaulEngine
 
 	void Scene::OnRuntimeStart()
 	{
+		OnPhysics2DStart();
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		OnPhysics2DStop();
+	}
+
+	void Scene::OnSimulationStart()
+	{
+		OnPhysics2DStart();
+	}
+
+	void Scene::OnSimulationStop()
+	{
+		OnPhysics2DStop();
+	}
+
+	void Scene::OnPhysics2DStart()
+	{
 		b2WorldDef worldDefinition = b2DefaultWorldDef();
 		worldDefinition.gravity = { 0.0f, -9.8f };
 		*m_PhysicsWorld = b2CreateWorld(&worldDefinition);
@@ -151,8 +171,8 @@ namespace PaulEngine
 			bodyDefinition.position = { transform.Position.x, transform.Position.y };
 			bodyDefinition.rotation = b2MakeRot(transform.Rotation.z);
 			bodyDefinition.userData = (void*)&transform;	// <---	I didn't have high confidence in this working and I was right, 
-															//		it doesn't work as it's not guaranteed that the reference inside 
-															//		of the entt::registry will still be valid later
+			//		it doesn't work as it's not guaranteed that the reference inside 
+			//		of the entt::registry will still be valid later
 
 			b2BodyId b2Body = b2CreateBody(*m_PhysicsWorld, &bodyDefinition);
 			rb2d.RuntimeBody.generation = b2Body.generation;
@@ -167,7 +187,7 @@ namespace PaulEngine
 				shapeDef.density = bc2d.Density;
 				shapeDef.friction = bc2d.Friction;
 				shapeDef.restitution = bc2d.Restitution;
-			
+
 				b2ShapeId shapeId = b2CreatePolygonShape(b2Body, &shapeDef, &box);
 				bc2d.RuntimeFixture.generation = shapeId.generation;
 				bc2d.RuntimeFixture.index1 = shapeId.index1;
@@ -176,7 +196,7 @@ namespace PaulEngine
 
 			if (entity.HasComponent<ComponentCircleCollider2D>()) {
 				ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
-				
+
 				b2Circle circle;
 				circle.center = { cc2d.Offset.x, cc2d.Offset.y };
 				float largestScaleFactor = (transform.Scale.x > transform.Scale.y) ? transform.Scale.x : transform.Scale.y;
@@ -195,9 +215,40 @@ namespace PaulEngine
 		}
 	}
 
-	void Scene::OnRuntimeStop()
+	void Scene::OnPhysics2DStop()
 	{
 		b2DestroyWorld(*m_PhysicsWorld);
+		delete m_PhysicsWorld;
+		m_PhysicsWorld = nullptr;
+	}
+
+	void Scene::RenderScene(EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+		{
+			PE_PROFILE_SCOPE("Draw Quads");
+			auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
+			for (auto entityID : group) {
+				auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
+				if (sprite.Texture) {
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
+				}
+				else {
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entityID);
+				}
+			}
+		}
+
+		{
+			PE_PROFILE_SCOPE("Draw Circles");
+			auto view = m_Registry.view<ComponentTransform, Component2DCircle>();
+			for (auto entityID : view) {
+				auto [transform, circle] = view.get<ComponentTransform, Component2DCircle>(entityID);
+
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
+			}
+		}
+		Renderer2D::EndScene();
 	}
 
 	void Scene::OnUpdateRuntime(Timestep timestep)
@@ -287,35 +338,50 @@ namespace PaulEngine
 		}
 	}
 
+	void Scene::OnUpdateSimulation(Timestep timestep, EditorCamera& camera)
+	{
+		// Physics
+		{
+			PE_PROFILE_SCOPE("Box2D Physics");
+			const int32_t velocityIterations = 6;
+			const int32_t positionIteratiorns = 2;
+
+			b2World_Step(*m_PhysicsWorld, timestep, 4);
+
+			//b2BodyEvents events = b2World_GetBodyEvents(*m_PhysicsWorld);
+			//for (int i = 0; i < events.moveCount; i++) {
+			//	const b2BodyMoveEvent* event = events.moveEvents + i;
+			//	ComponentTransform* transformPtr = static_cast<ComponentTransform*>(event->userData);
+			//
+			//	transformPtr->Position.x = event->transform.p.x;
+			//	transformPtr->Position.y = event->transform.p.y;
+			//	transformPtr->Rotation.z = b2Rot_GetAngle(event->transform.q);
+			//}
+
+			auto view = m_Registry.view<ComponentRigidBody2D>();
+			for (auto entityID : view) {
+				Entity entity = Entity(entityID, this);
+				auto& transform = entity.GetComponent<ComponentTransform>();
+				auto& rb2d = entity.GetComponent<ComponentRigidBody2D>();
+
+				b2BodyId body = {
+					rb2d.RuntimeBody.index1,
+					rb2d.RuntimeBody.world0,
+					rb2d.RuntimeBody.generation
+				};
+				b2Transform box2DTransform = b2Body_GetTransform(body);
+				transform.Position.x = box2DTransform.p.x;
+				transform.Position.y = box2DTransform.p.y;
+				transform.Rotation.z = b2Rot_GetAngle(box2DTransform.q);
+			}
+		}
+
+		RenderScene(camera);
+	}
+
 	void Scene::OnUpdateOffline(Timestep timestep, EditorCamera& camera)
 	{
-		Renderer2D::BeginScene(camera);
-
-		{
-			PE_PROFILE_SCOPE("Draw Quads");
-			auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
-			for (auto entityID : group) {
-				auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
-				if (sprite.Texture) {
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
-				}
-				else {
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entityID);
-				}
-			}
-		}
-
-		{
-			PE_PROFILE_SCOPE("Draw Circles");
-			auto view = m_Registry.view<ComponentTransform, Component2DCircle>();
-			for (auto entityID : view) {
-				auto [transform, circle] = view.get<ComponentTransform, Component2DCircle>(entityID);
-
-				Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
-			}
-		}
-
-		Renderer2D::EndScene();
+		RenderScene(camera);
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
