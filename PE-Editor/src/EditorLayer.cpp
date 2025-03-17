@@ -261,8 +261,19 @@ namespace PaulEngine {
 			ImGuizmo::SetDrawlist();
 			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
-			glm::mat4 cameraView = m_Camera.GetViewMatrix();
-			const glm::mat4& cameraProjection = m_Camera.GetProjection();
+			glm::mat4 cameraView;
+			glm::mat4 cameraProjection;
+
+			if (m_RuntimeScene) {
+				Entity runtimeCameraEntity = m_RuntimeScene->GetPrimaryCameraEntity();
+				Camera& camera = runtimeCameraEntity.GetComponent<ComponentCamera>().Camera;
+				cameraView = glm::inverse(runtimeCameraEntity.GetComponent<ComponentTransform>().GetTransform());
+				cameraProjection = camera.GetProjection();
+			}
+			else {
+				cameraView = m_Camera.GetViewMatrix();
+				cameraProjection = m_Camera.GetProjection();
+			}
 
 			// Selected entity
 			ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
