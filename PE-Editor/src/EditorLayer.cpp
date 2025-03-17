@@ -25,10 +25,12 @@ namespace PaulEngine {
 		spec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(spec);
 
-		m_ActiveScene = CreateRef<Scene>();
+		m_EditorScene = CreateRef<Scene>();
+		m_ActiveScene = m_EditorScene;
 
 		m_IconPlay = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
 		m_IconStop = Texture2D::Create("Resources/Icons/mingcute--stop-fill-light.png");
+		m_IconSimulate = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
 
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
@@ -78,9 +80,6 @@ namespace PaulEngine {
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 		m_Camera = EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f);
-
-		//SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-		//serializer.DeserializeYAML("assets/scenes/Example.paul");
 	}
 
 	void EditorLayer::OnDetach()
@@ -101,7 +100,6 @@ namespace PaulEngine {
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			if (m_RuntimeScene) { m_RuntimeScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y); }
 			m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		}
 
@@ -114,13 +112,19 @@ namespace PaulEngine {
 		// Clear entity ID attachment to -1
 		m_Framebuffer->ClearColourAttachment(1, -1);
 
-		// Update scene
-		if (m_SceneState == SceneState::Edit) {
-			m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
-			m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
-		}
-		else {
-			m_RuntimeScene->OnUpdateRuntime(timestep);
+		switch (m_SceneState)
+		{
+			case SceneState::Edit:
+				m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
+				m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
+				break;
+			case SceneState::Simulate:
+				m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
+				m_ActiveScene->OnUpdateSimulation(timestep, m_Camera);
+				break;
+			case SceneState::Play:
+				m_ActiveScene->OnUpdateRuntime(timestep);
+				break;
 		}
 
 		ImVec2 mousePos = ImGui::GetMousePos();
@@ -134,13 +138,10 @@ namespace PaulEngine {
 
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
-			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), (m_RuntimeScene) ? m_RuntimeScene.get() : m_ActiveScene.get());
+			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
 		}
 
-		if (m_ShowColliders) {
-			if (m_SceneState == SceneState::Edit) { OnDebugOverlayDraw(); }
-			else { OnDebugOverlayDrawRuntime(); }
-		}
+		OnDebugOverlayDraw();
 
 		m_Framebuffer->Unbind();
 	}
@@ -273,8 +274,8 @@ namespace PaulEngine {
 			glm::mat4 cameraView;
 			glm::mat4 cameraProjection;
 
-			if (m_RuntimeScene) {
-				Entity runtimeCameraEntity = m_RuntimeScene->GetPrimaryCameraEntity();
+			if (m_SceneState == SceneState::Play) {
+				Entity runtimeCameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 				Camera& camera = runtimeCameraEntity.GetComponent<ComponentCamera>().Camera;
 				cameraView = glm::inverse(runtimeCameraEntity.GetComponent<ComponentTransform>().GetTransform());
 				cameraProjection = camera.GetProjection();
@@ -337,36 +338,74 @@ namespace PaulEngine {
 		ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 		float size = ImGui::GetContentRegionAvail().y - 4.0f;
-		Ref<Texture2D> m_Icon = (m_SceneState == SceneState::Edit) ? m_IconPlay : m_IconStop;
-		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-		if (ImGui::ImageButton("##switch_state", m_Icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0))) {
-			if (m_SceneState == SceneState::Edit) {
-				OnScenePlay();
+		{
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
+			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+			if (ImGui::ImageButton("##switch_state", icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) {
+					OnScenePlay();
+				}
+				else if (m_SceneState == SceneState::Play) {
+					OnSceneStop();
+				}
 			}
-			else if (m_SceneState == SceneState::Play) {
-				OnSceneStop();
+		}
+		ImGui::SameLine();
+		{
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
+			if (ImGui::ImageButton("##switch_state2", icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) {
+					OnSceneSimulate();
+				}
+				else if (m_SceneState == SceneState::Simulate) {
+					OnSceneStop();
+				}
 			}
 		}
 
-		ImGui::End();
-	
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
+		ImGui::End();
 	}
 
 	void EditorLayer::OnScenePlay()
 	{
-		m_RuntimeScene = Scene::Copy(m_ActiveScene);
-		m_RuntimeScene->OnRuntimeStart();
-		m_RuntimeScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_RuntimeScene);
+		if (m_SceneState == SceneState::Simulate) {
+			OnSceneStop();
+		}
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnRuntimeStart();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneState = SceneState::Play;
+	}
+
+	void EditorLayer::OnSceneSimulate()
+	{
+		if (m_SceneState == SceneState::Play) {
+			OnSceneStop();
+		}
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnSimulationStart();
+
+		m_SceneState = SceneState::Simulate;
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
-		if (m_RuntimeScene) { m_RuntimeScene->OnRuntimeStop(); }
-		m_RuntimeScene = nullptr;
+		if (m_SceneState == SceneState::Play) {
+			m_ActiveScene->OnRuntimeStop();
+		}
+		else if (m_SceneState == SceneState::Simulate) {
+			m_ActiveScene->OnSimulationStop();
+		}
+		else {
+			return;
+		}
+
+		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneState = SceneState::Edit;
@@ -374,68 +413,29 @@ namespace PaulEngine {
 
 	void EditorLayer::OnDuplicatedEntity()
 	{
-		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selectedEntity) {
-			(m_RuntimeScene) ? m_RuntimeScene->DuplicateEntity(selectedEntity) : m_ActiveScene->DuplicateEntity(selectedEntity);
+		if (m_SceneState == SceneState::Edit) {
+			Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+			if (selectedEntity) {
+				m_ActiveScene->DuplicateEntity(selectedEntity);
+			}
 		}
 	}
 
 	void EditorLayer::OnDebugOverlayDraw()
 	{
 		PE_PROFILE_FUNCTION();
-		auto circleView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
-		auto boxView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentBoxCollider2D>();
-		Renderer2D::BeginScene(m_Camera);
-
-		for (auto entityID : circleView) {
-			auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
-
-			glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + circle.Offset, 0.01f);
-			glm::vec3 scale = transform.Scale * (circle.Radius * 2.0f);
-			glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-			transformation = glm::scale(transformation, scale);
-
-			Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
+		if (m_SceneState == SceneState::Play) {
+			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			if (!cameraEntity) { return; }
+			Renderer2D::BeginScene(cameraEntity.GetComponent<ComponentCamera>().Camera, cameraEntity.GetComponent<ComponentTransform>().GetTransform());
+		}
+		else {
+			Renderer2D::BeginScene(m_Camera);
 		}
 
-		for (auto entityID : boxView) {
-			auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
-
-			glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + box.Offset, 0.01f);
-			glm::vec3 scale = transform.Scale * (glm::vec3(box.Size * 2.0f, 1.0f));
-			glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-			transformation = glm::rotate(transformation, transform.Rotation.z, glm::vec3(0.0, 0.0, 1.0f));
-			transformation = glm::scale(transformation, scale);
-
-			Renderer2D::SetLineWidth(0.01f);
-			Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
-		}
-
-		Renderer2D::EndScene();
-	}
-
-	void EditorLayer::OnDebugOverlayDrawRuntime()
-	{
-		PE_PROFILE_FUNCTION();
-		Entity cameraEntity = m_RuntimeScene->GetPrimaryCameraEntity();
-		if (cameraEntity) {
-			auto circleView = m_RuntimeScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
-			auto boxView = m_RuntimeScene->GetAllEntitiesWith<ComponentTransform, ComponentBoxCollider2D>();
-			Camera& camera = cameraEntity.GetComponent<ComponentCamera>().Camera;
-			glm::mat4& transform = cameraEntity.GetComponent<ComponentTransform>().GetTransform();
-			Renderer2D::BeginScene(camera, transform);
-
-			for (auto entityID : circleView) {
-				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
-
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + circle.Offset, 0.01f);
-				glm::vec3 scale = transform.Scale * (circle.Radius * 2.0f);
-				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-				transformation = glm::scale(transformation, scale);
-
-				Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
-			}
-
+		if (m_ShowColliders) {
+			// Box colliders
+			auto boxView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentBoxCollider2D>();
 			for (auto entityID : boxView) {
 				auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
 
@@ -449,8 +449,21 @@ namespace PaulEngine {
 				Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
 			}
 
-			Renderer2D::EndScene();
+			// Circle colliders
+			auto circleView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
+			for (auto entityID : circleView) {
+				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
+
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + circle.Offset, 0.01f);
+				glm::vec3 scale = transform.Scale * (circle.Radius * 2.0f);
+				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+				transformation = glm::scale(transformation, scale);
+
+				Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
+			}
 		}
+
+		Renderer2D::EndScene();
 	}
 
 	void EditorLayer::OnEvent(Event& e)
@@ -557,7 +570,7 @@ namespace PaulEngine {
 
 	void EditorLayer::OpenScene(std::filesystem::path filepath)
 	{
-		if (m_SceneState == SceneState::Play) { OnSceneStop(); }
+		if (m_SceneState != SceneState::Edit) { OnSceneStop(); }
 
 		std::filesystem::path extension = filepath.extension();
 		if (extension != ".paul") {
@@ -565,11 +578,18 @@ namespace PaulEngine {
 			return;
 		}
 
-		NewScene();
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer = SceneSerializer(newScene);
+		if (serializer.DeserializeYAML(filepath.string())) {
 
-		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-		serializer.DeserializeYAML(filepath.string());
-		m_CurrentFilepath = filepath.string();
+			m_EditorScene = newScene;
+			m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+			m_ActiveScene = m_EditorScene;
+
+			m_CurrentFilepath = filepath.string();
+		}
 	}
 
 	void EditorLayer::SaveSceneAs(const std::string& filepath)

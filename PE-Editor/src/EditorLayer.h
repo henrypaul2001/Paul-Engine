@@ -20,12 +20,12 @@ namespace PaulEngine {
 	private:
 		void OnUIDrawToolbar();
 		void OnScenePlay();
+		void OnSceneSimulate();
 		void OnSceneStop();
 
 		void OnDuplicatedEntity();
 
 		void OnDebugOverlayDraw();
-		void OnDebugOverlayDrawRuntime();
 
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
@@ -43,10 +43,11 @@ namespace PaulEngine {
 		Ref<Framebuffer> m_Framebuffer;
 
 		Ref<Scene> m_ActiveScene;
-		Ref<Scene> m_RuntimeScene;
+		Ref<Scene> m_EditorScene;
 
 		Ref<Texture2D> m_IconPlay;
 		Ref<Texture2D> m_IconStop;
+		Ref<Texture2D> m_IconSimulate;
 
 		glm::vec2 m_ViewportSize;
 
@@ -66,7 +67,7 @@ namespace PaulEngine {
 		Entity m_HoveredEntity;
 
 		enum class SceneState {
-			Edit = 0, Play = 1
+			Edit = 0, Play = 1, Simulate = 2
 		};
 		SceneState m_SceneState = SceneState::Edit;
 	};
