@@ -20,7 +20,7 @@ namespace PaulEngine {
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) = 0;
-
+		
 		virtual void SetLineWidth(const float thickness) = 0;
 
 		inline static API GetAPI() { return s_API; }

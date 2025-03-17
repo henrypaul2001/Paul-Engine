@@ -51,7 +51,7 @@ namespace PaulEngine {
 		Ref<VertexArray> LineVertexArray;
 		Ref<VertexBuffer> LineVertexBuffer;
 		Ref<Shader> LineShader;
-	
+
 		float LineWidth = 2.0f;
 	
 		uint32_t QuadIndexCount = 0;
@@ -439,6 +439,20 @@ namespace PaulEngine {
 		s_RenderData.Stats.LineCount++;
 	}
 
+	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& colour, const int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		glm::vec3 lineVertices[4];
+		for (int i = 0; i < 4; i++) {
+			lineVertices[i] = transform * s_RenderData.QuadVertexPositions[i];
+		}
+
+		DrawLine(lineVertices[0], lineVertices[1], colour, entityID);
+		DrawLine(lineVertices[1], lineVertices[2], colour, entityID);
+		DrawLine(lineVertices[2], lineVertices[3], colour, entityID);
+		DrawLine(lineVertices[3], lineVertices[0], colour, entityID);
+	}
 
 	float Renderer2D::GetLineWidth()
 	{

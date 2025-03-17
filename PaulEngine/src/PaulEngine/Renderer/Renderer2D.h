@@ -25,6 +25,7 @@ namespace PaulEngine {
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& colour, const float thickness, const float fade, const int entityID = -1);
 		
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& colour, const int entityID = -1);
+		static void DrawRect(const glm::mat4& transform, const glm::vec4& colour, const int entityID = -1);
 
 		static float GetLineWidth();
 		static void SetLineWidth(const float thickness);
