@@ -378,6 +378,7 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 		auto circleView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
+		auto boxView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentBoxCollider2D>();
 		Renderer2D::BeginScene(m_Camera);
 
 		for (auto entityID : circleView) {
@@ -391,15 +392,29 @@ namespace PaulEngine {
 			Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
 		}
 
+		for (auto entityID : boxView) {
+			auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
+
+			glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + box.Offset, 0.01f);
+			glm::vec3 scale = transform.Scale * (glm::vec3(box.Size * 2.0f, 1.0f));
+			glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+			transformation = glm::rotate(transformation, transform.Rotation.z, glm::vec3(0.0, 0.0, 1.0f));
+			transformation = glm::scale(transformation, scale);
+
+			Renderer2D::SetLineWidth(0.01f);
+			Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
+		}
+
 		Renderer2D::EndScene();
 	}
 
 	void EditorLayer::OnDebugOverlayDrawRuntime()
 	{
 		PE_PROFILE_FUNCTION();
-		auto circleView = m_RuntimeScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
 		Entity cameraEntity = m_RuntimeScene->GetPrimaryCameraEntity();
 		if (cameraEntity) {
+			auto circleView = m_RuntimeScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
+			auto boxView = m_RuntimeScene->GetAllEntitiesWith<ComponentTransform, ComponentBoxCollider2D>();
 			Camera& camera = cameraEntity.GetComponent<ComponentCamera>().Camera;
 			glm::mat4& transform = cameraEntity.GetComponent<ComponentTransform>().GetTransform();
 			Renderer2D::BeginScene(camera, transform);
@@ -413,6 +428,19 @@ namespace PaulEngine {
 				transformation = glm::scale(transformation, scale);
 
 				Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
+			}
+
+			for (auto entityID : boxView) {
+				auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
+
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + box.Offset, 0.01f);
+				glm::vec3 scale = transform.Scale * (glm::vec3(box.Size * 2.0f, 1.0f));
+				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+				transformation = glm::rotate(transformation, transform.Rotation.z, glm::vec3(0.0, 0.0, 1.0f));
+				transformation = glm::scale(transformation, scale);
+
+				Renderer2D::SetLineWidth(0.01f);
+				Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
 			}
 
 			Renderer2D::EndScene();
