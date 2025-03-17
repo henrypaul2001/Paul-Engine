@@ -137,8 +137,10 @@ namespace PaulEngine {
 			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), (m_RuntimeScene) ? m_RuntimeScene.get() : m_ActiveScene.get());
 		}
 
-		if (m_SceneState == SceneState::Edit) { OnDebugOverlayDraw(); }
-		else { OnDebugOverlayDrawRuntime(); }
+		if (m_ShowColliders) {
+			if (m_SceneState == SceneState::Edit) { OnDebugOverlayDraw(); }
+			else { OnDebugOverlayDrawRuntime(); }
+		}
 
 		m_Framebuffer->Unbind();
 	}
@@ -206,6 +208,10 @@ namespace PaulEngine {
 				}
 				ImGui::Separator();
 				if (ImGui::MenuItem("Exit", "ESC")) { Application::Get().Close(); }
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit")) {
+				ImGui::Checkbox("Show colliders", &m_ShowColliders);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();

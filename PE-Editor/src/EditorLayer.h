@@ -51,6 +51,7 @@ namespace PaulEngine {
 		glm::vec2 m_ViewportSize;
 
 		bool m_ViewportFocus = false, m_ViewportHovered = false;
+		bool m_ShowColliders = true;
 
 		EditorCamera m_Camera;
 
