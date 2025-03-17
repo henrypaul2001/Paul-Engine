@@ -140,6 +140,9 @@ namespace PaulEngine {
 		{
 			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
 		}
+		else {
+			m_HoveredEntity = Entity();
+		}
 
 		OnDebugOverlayDraw();
 
@@ -221,7 +224,7 @@ namespace PaulEngine {
 		const Renderer2D::Statistics& stats = Renderer2D::GetStats();
 		ImGui::Begin("Renderer2D");
 		std::string hoveredEntityName = "null";
-		if (m_HoveredEntity) {
+		if (m_HoveredEntity.BelongsToScene(m_ActiveScene) && m_HoveredEntity) {
 			hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;
 		}
 		ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());

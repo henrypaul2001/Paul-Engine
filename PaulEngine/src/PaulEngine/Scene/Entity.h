@@ -38,6 +38,7 @@ namespace PaulEngine
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
+		bool BelongsToScene(const Ref<Scene>& scene) { return m_Scene == scene.get(); }
 		bool IsValid() {
 			return (m_Scene && m_Scene->m_Registry.valid(m_EntityHandle));
 		}
