@@ -24,6 +24,9 @@ namespace PaulEngine {
 
 		void OnDuplicatedEntity();
 
+		void OnDebugOverlayDraw();
+		void OnDebugOverlayDrawRuntime();
+
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
 

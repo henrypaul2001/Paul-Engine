@@ -137,6 +137,9 @@ namespace PaulEngine {
 			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), (m_RuntimeScene) ? m_RuntimeScene.get() : m_ActiveScene.get());
 		}
 
+		if (m_SceneState == SceneState::Edit) { OnDebugOverlayDraw(); }
+		else { OnDebugOverlayDrawRuntime(); }
+
 		m_Framebuffer->Unbind();
 	}
 
@@ -368,6 +371,51 @@ namespace PaulEngine {
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity) {
 			(m_RuntimeScene) ? m_RuntimeScene->DuplicateEntity(selectedEntity) : m_ActiveScene->DuplicateEntity(selectedEntity);
+		}
+	}
+
+	void EditorLayer::OnDebugOverlayDraw()
+	{
+		PE_PROFILE_FUNCTION();
+		auto circleView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
+		Renderer2D::BeginScene(m_Camera);
+
+		for (auto entityID : circleView) {
+			auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
+
+			glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + circle.Offset, 0.01f);
+			glm::vec3 scale = transform.Scale * (circle.Radius * 2.0f);
+			glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+			transformation = glm::scale(transformation, scale);
+
+			Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
+		}
+
+		Renderer2D::EndScene();
+	}
+
+	void EditorLayer::OnDebugOverlayDrawRuntime()
+	{
+		PE_PROFILE_FUNCTION();
+		auto circleView = m_RuntimeScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
+		Entity cameraEntity = m_RuntimeScene->GetPrimaryCameraEntity();
+		if (cameraEntity) {
+			Camera& camera = cameraEntity.GetComponent<ComponentCamera>().Camera;
+			glm::mat4& transform = cameraEntity.GetComponent<ComponentTransform>().GetTransform();
+			Renderer2D::BeginScene(camera, transform);
+
+			for (auto entityID : circleView) {
+				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
+
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + circle.Offset, 0.01f);
+				glm::vec3 scale = transform.Scale * (circle.Radius * 2.0f);
+				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+				transformation = glm::scale(transformation, scale);
+
+				Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
+			}
+
+			Renderer2D::EndScene();
 		}
 	}
 
