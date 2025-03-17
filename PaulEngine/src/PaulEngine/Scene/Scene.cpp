@@ -139,7 +139,9 @@ namespace PaulEngine
 			bodyDefinition.fixedRotation = rb2d.FixedRotation;
 			bodyDefinition.position = { transform.Position.x, transform.Position.y };
 			bodyDefinition.rotation = b2MakeRot(transform.Rotation.z);
-			bodyDefinition.userData = (void*)&transform;
+			bodyDefinition.userData = (void*)&transform;	// <---	I didn't have high confidence in this working and I was right, 
+															//		it doesn't work as it's not guaranteed that the refernce inside 
+															//		of the entt::registry will still be valid later
 
 			b2BodyId b2Body = b2CreateBody(*m_PhysicsWorld, &bodyDefinition);
 			rb2d.RuntimeBody.generation = b2Body.generation;
@@ -151,11 +153,6 @@ namespace PaulEngine
 				b2Polygon box = b2MakeBox(transform.Scale.x * bc2d.Size.x, transform.Scale.y * bc2d.Size.y);
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
 
-				float Density = 1.0f;
-				float Friction = 0.5f;
-				float Restitution = 0.0f;
-				float RestitutionThreshold = 0.5f;
-
 				shapeDef.density = bc2d.Density;
 				shapeDef.friction = bc2d.Friction;
 				shapeDef.restitution = bc2d.Restitution;
@@ -164,6 +161,25 @@ namespace PaulEngine
 				bc2d.RuntimeFixture.generation = shapeId.generation;
 				bc2d.RuntimeFixture.index1 = shapeId.index1;
 				bc2d.RuntimeFixture.world0 = shapeId.world0;
+			}
+
+			if (entity.HasComponent<ComponentCircleCollider2D>()) {
+				ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
+				
+				b2Circle circle;
+				circle.center = { cc2d.Offset.x, cc2d.Offset.y };
+				float largestScaleFactor = (transform.Scale.x > transform.Scale.y) ? transform.Scale.x : transform.Scale.y;
+				circle.radius = cc2d.Radius * largestScaleFactor;
+
+				b2ShapeDef shapeDef = b2DefaultShapeDef();
+				shapeDef.density = cc2d.Density;
+				shapeDef.friction = cc2d.Friction;
+				shapeDef.restitution = cc2d.Restitution;
+
+				b2ShapeId shapeId = b2CreateCircleShape(b2Body, &shapeDef, &circle);
+				cc2d.RuntimeFixture.generation = shapeId.generation;
+				cc2d.RuntimeFixture.index1 = shapeId.index1;
+				cc2d.RuntimeFixture.world0 = shapeId.world0;
 			}
 		}
 	}

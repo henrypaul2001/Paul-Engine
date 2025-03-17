@@ -1,5 +1,41 @@
 Scene: Untitled
 Entities:
+  - Entity: 6704442598330159442
+    TagComponent:
+      Tag: LeftWall
+    TransformComponent:
+      Position: [-27.2534, -17.988413, 0]
+      Rotation: [0, 0, -1.5712216]
+      Scale: [56.241333, 1.999738, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+    Rigid2DComponent:
+      Type: 0
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+  - Entity: 3471089487426203683
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [0, -10, 0]
+      Rotation: [0, 0, -0.0004252147]
+      Scale: [56.249985, 1.9999998, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+    Rigid2DComponent:
+      Type: 0
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
   - Entity: 12017498344099085073
     TagComponent:
       Tag: PhysicsBox3
@@ -15,7 +51,7 @@ Entities:
     BoxCollider2DComponent:
       Offset: [0, 0]
       Size: [0.5, 0.5]
-      Density: 5
+      Density: 1
       Friction: 0.1
       Restitution: 0.3
   - Entity: 1934950623545050911
@@ -38,11 +74,11 @@ Entities:
       Restitution: 0.7
   - Entity: 5673999714031653611
     TagComponent:
-      Tag: Floor
+      Tag: RightWall
     TransformComponent:
-      Position: [0, -10, 0]
-      Rotation: [0, 0, -0.0004252147]
-      Scale: [56.249985, 1.9999998, 1]
+      Position: [27.249989, -17.99, 0]
+      Rotation: [0, 0, -1.5712216]
+      Scale: [56.237644, 1.9995918, 1]
     SpriteComponent:
       Colour: [1, 1, 1, 1]
     Rigid2DComponent:
@@ -88,3 +124,23 @@ Entities:
       Density: 20
       Friction: 0.5
       Restitution: 0.2
+  - Entity: 12742820735599443667
+    TagComponent:
+      Tag: Circle
+    TransformComponent:
+      Position: [-3.25, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+    CircleComponent:
+      Colour: [0.8905005, 0.12397257, 0.8932384, 1]
+      Thickness: 0.05
+      Fade: 0
+    Rigid2DComponent:
+      Type: 1
+      FixedRotation: false
+    CircleCollider2DComponent:
+      Offset: [0, 0]
+      Radius: 0.5
+      Density: 0.1
+      Friction: 0.2
+      Restitution: 0.8
