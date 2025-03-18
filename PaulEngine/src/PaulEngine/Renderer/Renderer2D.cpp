@@ -257,6 +257,8 @@ namespace PaulEngine {
 			RenderCommand::DrawLines(s_RenderData.LineVertexArray, s_RenderData.LineVertexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
+
+		StartNewBatch();
 	}
 
 	void Renderer2D::StartNewBatch()
@@ -278,7 +280,6 @@ namespace PaulEngine {
 
 		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
-			StartNewBatch();
 		}
 
 		const glm::vec2 textureCoords[] = {
@@ -309,7 +310,6 @@ namespace PaulEngine {
 		
 		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
-			StartNewBatch();
 		}
 
 		// Check if texture has already been submitted
@@ -355,7 +355,6 @@ namespace PaulEngine {
 
 		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
-			StartNewBatch();
 		}
 
 		// Check if texture has already been submitted
@@ -396,7 +395,6 @@ namespace PaulEngine {
 
 		if (s_RenderData.CircleIndexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
-			StartNewBatch();
 		}
 
 		for (int i = 0; i < 4; i++) {
@@ -420,7 +418,6 @@ namespace PaulEngine {
 
 		if (s_RenderData.LineVertexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
-			StartNewBatch();
 		}
 
 		s_RenderData.LineVertexBufferPtr->Position = p0;
