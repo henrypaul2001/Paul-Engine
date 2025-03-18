@@ -9,13 +9,18 @@ namespace PaulEngine {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const std::string& name)
+	Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
 	{
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create(WindowProperties(name)));
+		// Set working directory
+		if (!m_Specification.WorkingDirectory.empty()) {
+			std::filesystem::current_path(m_Specification.WorkingDirectory);
+		}
+
+		m_Window = std::unique_ptr<Window>(Window::Create(WindowProperties(m_Specification.Name)));
 		m_Window->SetEventCallback(PE_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();

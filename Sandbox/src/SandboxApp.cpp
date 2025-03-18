@@ -204,7 +204,7 @@ private:
 
 class Sandbox : public PaulEngine::Application {
 public:
-	Sandbox() {
+	Sandbox(const PaulEngine::ApplicationSpecification& specification) : PaulEngine::Application(specification) {
 		PE_PROFILE_FUNCTION();
 		//PushLayer(new TestLayer());
 		PushLayer(new Sandbox2D());
@@ -212,6 +212,11 @@ public:
 	~Sandbox() {}
 };
 
-PaulEngine::Application* PaulEngine::CreateApplication() {
-	return new Sandbox();
+PaulEngine::Application* PaulEngine::CreateApplication(PaulEngine::ApplicationCommandLineArgs args) {
+	ApplicationSpecification spec;
+	spec.Name = "Sandbox";
+	spec.WorkingDirectory = "../PE-Editor";
+	spec.CommandLineArgs = args;
+
+	return new Sandbox(spec);
 }

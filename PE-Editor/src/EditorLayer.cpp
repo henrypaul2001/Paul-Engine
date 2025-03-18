@@ -32,6 +32,13 @@ namespace PaulEngine {
 		m_IconStop = Texture2D::Create("Resources/Icons/mingcute--stop-fill-light.png");
 		m_IconSimulate = Texture2D::Create("Resources/Icons/mingcute--play-line-light.png");
 
+		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+		if (commandLineArgs.Count > 1) {
+			auto sceneFilepath = commandLineArgs[1];
+			SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+			serializer.DeserializeYAML(sceneFilepath);
+		}
+
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
 		m_SquareEntity.HasComponent<ComponentTransform>();
