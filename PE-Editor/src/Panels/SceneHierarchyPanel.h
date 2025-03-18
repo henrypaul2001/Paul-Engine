@@ -19,6 +19,8 @@ namespace PaulEngine
 		void SetSelectedEntity(Entity entity);
 
 	private:
+		template <typename T>
+		void DrawAddComponentEntry(const std::string& entryName);
 		void DrawEntityNode(Entity entity);
 		void DrawComponents(Entity entity);
 
