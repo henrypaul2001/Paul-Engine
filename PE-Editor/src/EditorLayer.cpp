@@ -477,7 +477,9 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		m_Camera.OnEvent(e);
+		if (m_SceneState != SceneState::Play) {
+			m_Camera.OnEvent(e);
+		}
 
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
