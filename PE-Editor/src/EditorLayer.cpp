@@ -455,7 +455,7 @@ namespace PaulEngine {
 				Renderer2D::SetLineWidth(0.01f);
 				Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
 			}
-
+			
 			// Circle colliders
 			auto circleView = m_ActiveScene->GetAllEntitiesWith<ComponentTransform, ComponentCircleCollider2D>();
 			for (auto entityID : circleView) {
@@ -468,6 +468,14 @@ namespace PaulEngine {
 
 				Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
 			}
+		}
+		Renderer2D::Flush();
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
+			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
+			transformCopy.Position.z = 0.01f;
+			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
+			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
 		}
 
 		Renderer2D::EndScene();

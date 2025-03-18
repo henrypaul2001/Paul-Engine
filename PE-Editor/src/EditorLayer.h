@@ -66,6 +66,9 @@ namespace PaulEngine {
 
 		Entity m_HoveredEntity;
 
+		glm::vec4 m_EntityOutlineColour = glm::vec4(1.0f, 0.5f, 0.8f, 1.0f);
+		float m_EntityOutlineThickness = 5.0f;
+
 		enum class SceneState {
 			Edit = 0, Play = 1, Simulate = 2
 		};
