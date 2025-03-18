@@ -59,8 +59,10 @@ void main()
 
 	colour = vec4(Input.Colour.rgb, Input.Colour.a * circle_alpha);
 
-	entityID = -1;
-	if (circle_alpha > 0.0) {
+	if (colour.a == 0.0) {
+		discard;
+	}
+	else {
 		entityID = v_EntityID;
 	}
 }

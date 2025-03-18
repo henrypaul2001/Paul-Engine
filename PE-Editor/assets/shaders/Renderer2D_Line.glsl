@@ -33,5 +33,10 @@ layout(location = 1) in flat int v_EntityID;
 void main()
 {
 	colour = v_Colour;
-	entityID = v_EntityID;
+	if (colour.a == 0.0) {
+		discard;
+	}
+	else {
+		entityID = v_EntityID;
+	}
 }
