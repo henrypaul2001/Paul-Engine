@@ -473,7 +473,7 @@ namespace PaulEngine {
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
 			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-			transformCopy.Position.z = 0.01f;
+			transformCopy.Position.z += 0.01f;
 			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
 			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
 		}
