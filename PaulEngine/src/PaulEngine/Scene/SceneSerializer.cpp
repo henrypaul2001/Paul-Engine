@@ -153,7 +153,15 @@ namespace PaulEngine
 
 			Component2DSprite& spriteComponent = entity.GetComponent<Component2DSprite>();
 			out << YAML::Key << "Colour" << YAML::Value << spriteComponent.Colour;
-
+			out << YAML::Key << "TexturePath";
+			if (spriteComponent.Texture) {
+				out << YAML::Value << spriteComponent.Texture->GetPath();
+			}
+			else {
+				out << YAML::Value << "";
+			}
+			out << YAML::Value << "TextureScale" << YAML::Value << spriteComponent.TextureScale;
+		
 			out << YAML::EndMap;
 		}
 
@@ -298,6 +306,12 @@ namespace PaulEngine
 				if (spriteNode) {
 					Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
 					spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
+
+					std::string filepath = spriteNode["TexturePath"].as<std::string>();
+					if (!filepath.empty()) {
+						spriteComponent.Texture = Texture2D::Create(filepath);
+					}
+					spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();
 				}
 
 				YAML::Node circleNode = entity["CircleComponent"];
