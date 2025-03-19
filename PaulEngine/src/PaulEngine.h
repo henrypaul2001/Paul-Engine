@@ -22,6 +22,8 @@
 #include "PaulEngine/Scene/EntityScript.h"
 #include "PaulEngine/Scene/Components.h"
 
+#include "PaulEngine/Project/Project.h"
+
 // Render
 #include "PaulEngine/Renderer/Renderer.h"
 #include "PaulEngine/Renderer/RenderCommand.h"

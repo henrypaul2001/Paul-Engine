@@ -1486,6 +1486,8 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\UUID.h" />
+    <ClInclude Include="src\PaulEngine\Project\Project.h" />
+    <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1606,5 +1608,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Core\UUID.cpp" />
+    <ClCompile Include="src\PaulEngine\Project\Project.cpp" />
+    <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp" />
   </ItemGroup>
 </Project>
