@@ -34,9 +34,11 @@ namespace PaulEngine {
 
 		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
 		if (commandLineArgs.Count > 1) {
-			auto sceneFilepath = commandLineArgs[1];
-			SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-			serializer.DeserializeYAML(sceneFilepath);
+			auto projectFilepath = commandLineArgs[1];
+			OpenProject(projectFilepath);
+		}
+		else {
+			NewProject();
 		}
 
 #if 0
@@ -327,7 +329,7 @@ namespace PaulEngine {
 		ImGui::PopStyleVar();
 
 		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel.ImGuiRender();
+		m_ContentBrowserPanel->ImGuiRender();
 
 		OnUIDrawToolbar();
 
@@ -628,6 +630,25 @@ namespace PaulEngine {
 			serializer.SerializeYAML(path);
 			m_CurrentFilepath = path;
 		}
+	}
+
+	void EditorLayer::NewProject()
+	{
+		Project::New();
+	}
+
+	void EditorLayer::OpenProject(const std::filesystem::path& path)
+	{
+		if (Project::Load(path)) {
+			std::filesystem::path startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetSpecification().StartScenePath);
+			OpenScene(startScenePath);
+			m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+		}
+	}
+
+	void EditorLayer::SaveProject()
+	{
+		// Project::SaveActive(Project::GetProjectDirectory());
 	}
 
 	bool EditorLayer::CanPickEntities()

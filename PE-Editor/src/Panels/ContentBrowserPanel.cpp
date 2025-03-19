@@ -1,12 +1,12 @@
 #include "ContentBrowserPanel.h"
 
+#include "PaulEngine/Project/Project.h"
+
 #include <imgui.h>
 
 namespace PaulEngine
 {
-	static const std::filesystem::path s_AssetsDirectory = "assets";
-
-	ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(s_AssetsDirectory)
+	ContentBrowserPanel::ContentBrowserPanel() : m_BaseDirectory(Project::GetAssetDirectory()), m_CurrentDirectory(m_BaseDirectory)
 	{
 		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/mingcute--folder-2-fill-light.png");
 		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/mingcute--file-line-light.png");
@@ -16,7 +16,7 @@ namespace PaulEngine
 	{
 		ImGui::Begin("Content Browser");
 
-		if (m_CurrentDirectory != s_AssetsDirectory) {
+		if (m_CurrentDirectory != m_BaseDirectory) {
 			ImGui::SameLine();
 			if (ImGui::Button("...")) {
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();

@@ -35,6 +35,10 @@ namespace PaulEngine {
 		void OpenScene(std::filesystem::path filepath);
 		void SaveSceneAs(const std::string& filepath = std::string());
 
+		void NewProject();
+		void OpenProject(const std::filesystem::path& path);
+		void SaveProject();
+
 		bool CanPickEntities();
 
 		std::string m_CurrentFilepath;
@@ -58,7 +62,7 @@ namespace PaulEngine {
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
-		ContentBrowserPanel m_ContentBrowserPanel;
+		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
 
 		int m_GizmoType = -1;
 

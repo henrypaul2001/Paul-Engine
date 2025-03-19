@@ -3,6 +3,8 @@
 #include "Entity.h"
 #include "Components.h"
 
+#include "PaulEngine/Project/Project.h"
+
 #include <yaml-cpp/yaml.h>
 
 // Type conversions
@@ -155,7 +157,10 @@ namespace PaulEngine
 			out << YAML::Key << "Colour" << YAML::Value << spriteComponent.Colour;
 			out << YAML::Key << "TexturePath";
 			if (spriteComponent.Texture) {
-				out << YAML::Value << spriteComponent.Texture->GetPath();
+				std::string filepathString = spriteComponent.Texture->GetPath();
+				std::filesystem::path relativePath = std::filesystem::path(filepathString).lexically_relative(Project::GetAssetDirectory());
+
+				out << YAML::Value << relativePath.string();
 			}
 			else {
 				out << YAML::Value << "";
@@ -309,7 +314,7 @@ namespace PaulEngine
 
 					std::string filepath = spriteNode["TexturePath"].as<std::string>();
 					if (!filepath.empty()) {
-						spriteComponent.Texture = Texture2D::Create(filepath);
+						spriteComponent.Texture = Texture2D::Create(Project::GetAssetFileSystemPath(filepath).string());
 					}
 					spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();
 				}

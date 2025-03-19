@@ -17,6 +17,7 @@ namespace PaulEngine {
 		ApplicationSpecification spec;
 		spec.Name = "Paul Engine - Editor";
 		spec.CommandLineArgs = args;
+
 		return new EditorApp(spec);
 	}
 }
