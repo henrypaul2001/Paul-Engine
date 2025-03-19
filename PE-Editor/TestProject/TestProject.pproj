@@ -1,0 +1,4 @@
+Project:
+  Name: Test Project
+  StartScenePath: "scenes/3DCube.paul"
+  AssetDirectory: "assets"
