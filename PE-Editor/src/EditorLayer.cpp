@@ -534,6 +534,16 @@ namespace PaulEngine {
 				Application::Get().Close();
 				return true;
 				break;
+			case PE_KEY_DELETE:
+				{
+					Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+					if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
+						m_SceneHierarchyPanel.SetSelectedEntity(Entity());
+						m_ActiveScene->DestroyEntity(selectedEntity);
+					}
+					return true;
+					break;
+				}
 			case PE_KEY_N:
 				if (LControl)
 				{
