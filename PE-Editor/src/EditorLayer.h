@@ -36,8 +36,9 @@ namespace PaulEngine {
 		void SaveSceneAs(const std::string& filepath = std::string());
 
 		void NewProject();
+		bool OpenProject();
 		void OpenProject(const std::filesystem::path& path);
-		void SaveProject();
+		void SaveProjectAs();
 
 		bool CanPickEntities();
 

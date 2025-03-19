@@ -38,7 +38,20 @@ namespace PaulEngine {
 			OpenProject(projectFilepath);
 		}
 		else {
-			NewProject();
+			// TODO: Once a default project spec has been provided for NewProject(), this will be replaced with:
+			// if (!OpenProject()) { NewProject(); }
+			bool projectSelected = OpenProject();
+			int attempts = 0;
+			while (!projectSelected) {
+				PE_CORE_WARN("Invalid project file");
+				projectSelected = OpenProject();
+				attempts++;
+
+				if (attempts > 5) {
+					Application::Get().Close();
+					break;
+				}
+			}
 		}
 
 #if 0
@@ -205,6 +218,7 @@ namespace PaulEngine {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				ImGui::SeparatorText("Scene");
 				if (ImGui::MenuItem("New", "LCtrl+N")) {
 					NewScene();
 				}
@@ -219,7 +233,12 @@ namespace PaulEngine {
 				if (ImGui::MenuItem("Save As...", "LCtrl+LShift+S")) {
 					SaveSceneAs();
 				}
-				ImGui::Separator();
+				ImGui::SeparatorText("Project");
+				ImGui::BeginDisabled();
+				if (ImGui::MenuItem("New Project")) { NewProject(); }
+				ImGui::EndDisabled();
+				if (ImGui::MenuItem("Open Project...")) { OpenProject(); }
+				if (ImGui::MenuItem("Save Project As...")) { SaveProjectAs(); }
 				if (ImGui::MenuItem("Exit", "ESC")) { Application::Get().Close(); }
 				ImGui::EndMenu();
 			}
@@ -637,6 +656,20 @@ namespace PaulEngine {
 		Project::New();
 	}
 
+	bool EditorLayer::OpenProject()
+	{
+		std::string filepath = FileDialogs::OpenFile("Paul Engine Project (*.pproj)\0*.pproj\0");
+
+		if (!filepath.empty())
+		{
+			OpenProject(filepath);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	void EditorLayer::OpenProject(const std::filesystem::path& path)
 	{
 		if (Project::Load(path)) {
@@ -646,9 +679,12 @@ namespace PaulEngine {
 		}
 	}
 
-	void EditorLayer::SaveProject()
+	void EditorLayer::SaveProjectAs()
 	{
-		// Project::SaveActive(Project::GetProjectDirectory());
+		std::string path = FileDialogs::SaveFile("Paul Engine Project (*.pproj)\0*.pproj\0");
+		if (!path.empty()) {
+			Project::SaveActive(path);
+		}
 	}
 
 	bool EditorLayer::CanPickEntities()
