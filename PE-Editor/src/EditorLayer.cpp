@@ -451,7 +451,8 @@ namespace PaulEngine {
 		if (m_SceneState == SceneState::Edit) {
 			Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 			if (selectedEntity) {
-				m_ActiveScene->DuplicateEntity(selectedEntity);
+				Entity newEntity = m_ActiveScene->DuplicateEntity(selectedEntity);
+				m_SceneHierarchyPanel.SetSelectedEntity(newEntity);
 			}
 		}
 	}
