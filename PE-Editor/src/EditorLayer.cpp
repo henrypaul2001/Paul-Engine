@@ -13,8 +13,11 @@
 #include "PaulEngine/Renderer/Font.h"
 
 namespace PaulEngine {
+
+	static Font* s_Font;
+
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {
-		Font font = Font("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf");
+		s_Font = new Font("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf");
 	}
 
 	EditorLayer::~EditorLayer() {}
@@ -260,6 +263,10 @@ namespace PaulEngine {
 			hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;
 		}
 		ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
+		
+		// Test font display
+		ImGui::Image((ImTextureID)s_Font->GetAtlasTexture()->GetRendererID(), ImVec2(512, 512), ImVec2(0, 1), ImVec2(1, 0));
+
 		ImGui::SeparatorText("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quad Count: %d", stats.QuadCount);
