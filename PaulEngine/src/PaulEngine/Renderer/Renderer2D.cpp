@@ -52,6 +52,8 @@ namespace PaulEngine {
 		Ref<VertexBuffer> LineVertexBuffer;
 		Ref<Shader> LineShader;
 
+		Ref<Shader> TextShader;
+
 		float LineWidth = 2.0f;
 	
 		uint32_t QuadIndexCount = 0;
@@ -166,6 +168,7 @@ namespace PaulEngine {
 		s_RenderData.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
 		s_RenderData.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
 		s_RenderData.LineShader = Shader::Create("assets/shaders/Renderer2D_Line.glsl");
+		s_RenderData.TextShader = Shader::Create("assets/shaders/Renderer2D_Text.glsl");
 
 		s_RenderData.QuadShader->Bind();
 		s_RenderData.QuadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
