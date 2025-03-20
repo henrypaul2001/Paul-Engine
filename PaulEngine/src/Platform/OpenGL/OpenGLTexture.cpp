@@ -4,11 +4,38 @@
 #include "stb_image.h"
 
 namespace PaulEngine {
-	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : m_Width(width), m_Height(height), m_Path("")
+	namespace OpenGLTextureUtils
+	{
+		static GLenum PEImageFormatToGLDataFormat(ImageFormat format) {
+			switch (format) {
+				case ImageFormat::R8: return GL_RED;
+				case ImageFormat::RGB8: return GL_RGB;
+				case ImageFormat::RGBA8: return GL_RGBA;
+				case ImageFormat::RGBA32F: return GL_RGBA;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image format translation");
+			return 0;
+		}
+
+		static GLenum PEImageFormatToGLInternalFormat(ImageFormat format) {
+			switch (format) {
+				case ImageFormat::R8: return GL_R8;
+				case ImageFormat::RGB8: return GL_RGB8;
+				case ImageFormat::RGBA8: return GL_RGBA8;
+				case ImageFormat::RGBA32F: return GL_RGBA32F;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image format translation");
+			return 0;
+		}
+	}
+
+	OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& specification) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height), m_Path("")
 	{
 		PE_PROFILE_FUNCTION();
-		m_InternalFormat = GL_RGBA8;
-		m_DataFormat = GL_RGBA;
+		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
+		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
