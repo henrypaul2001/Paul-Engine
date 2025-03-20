@@ -179,6 +179,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\Font.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\MSDFData.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderAPI.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderCommand.h" />

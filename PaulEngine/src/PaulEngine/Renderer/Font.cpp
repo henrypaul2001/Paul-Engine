@@ -1,20 +1,12 @@
 #include "pepch.h"
 #include "Font.h"
 
-#undef INFINITE
-#include <msdf-atlas-gen.h>
-
-#include <GlyphGeometry.h>
+#include "PaulEngine/Renderer/MSDFData.h"
 
 #include "Texture.h"
 
 namespace PaulEngine
 {
-	struct MSDFData {
-		std::vector<msdf_atlas::GlyphGeometry> Glyphs;
-		msdf_atlas::FontGeometry FontGeometry;
-	};
-
 	template<typename T, typename S, int N, msdf_atlas::GeneratorFunction<S, N> GenFunc>
 	static Ref<Texture2D> CreateAndCacheAtlas(const std::string& fontName, float fontSize, const std::vector<msdf_atlas::GlyphGeometry>& glyphs, const msdf_atlas::FontGeometry& fontGeometry, uint32_t width, uint32_t height) {
 		msdf_atlas::GeneratorAttributes attributes;
