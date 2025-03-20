@@ -15,6 +15,8 @@ IncludeDir["shaderc"] = "PaulEngine/vendor/shaderc/include"
 IncludeDir["SPIRV_Cross"] = "PaulEngine/vendor/SPIRV-Cross"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 IncludeDir["Box2D"] = "PaulEngine/vendor/box2d/box2d/include"
+IncludeDir["msdfgen"] = "PaulEngine/vendor/msdfgen/msdfgen"
+IncludeDir["msdf_atlas_gen"] = "PaulEngine/vendor/msdfgen/msdf-atlas-gen"
 
 LibraryDir = {}
 

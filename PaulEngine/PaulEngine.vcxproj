@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;PE_DEBUG_MODE;PE_ENABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -101,7 +101,7 @@
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;PE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -128,7 +128,7 @@
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;PE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -150,8 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h" />
-    <ClInclude Include="src\PaulEngine\Project\Project.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Font.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />
     <ClInclude Include="src\PaulEngine\Core\Core.h" />
@@ -173,6 +172,8 @@
     <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\PaulEngine\Maths\Maths.h" />
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />
+    <ClInclude Include="src\PaulEngine\Project\Project.h" />
+    <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h" />
@@ -627,8 +628,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp" />
-    <ClCompile Include="src\PaulEngine\Project\Project.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Font.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Application.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />
@@ -638,6 +638,8 @@
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\PaulEngine\Maths\Maths.cpp" />
     <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp" />
+    <ClCompile Include="src\PaulEngine\Project\Project.cpp" />
+    <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
@@ -689,6 +691,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\yaml\yaml-cpp.vcxproj">
       <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\msdfgen\msdf-atlas-gen.vcxproj">
+      <Project>{38BD587B-248B-4C81-0D1F-BDA7F98B28E6}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

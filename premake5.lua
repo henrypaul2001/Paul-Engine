@@ -25,6 +25,7 @@ group "Dependencies"
 	include "PaulEngine/vendor/imgui"
 	include "PaulEngine/vendor/yaml"
 	include "PaulEngine/vendor/box2d"
+	include "PaulEngine/vendor/msdfgen"
 group ""
 
 project "PaulEngine"
@@ -71,7 +72,9 @@ project "PaulEngine"
 		"%{IncludeDir.yaml}",
 		"%{IncludeDir.imguizmo}",
 		"%{IncludeDir.VulkanSDK}",
-		"%{IncludeDir.Box2D}"
+		"%{IncludeDir.Box2D}",
+		"%{IncludeDir.msdfgen}",
+		"%{IncludeDir.msdf_atlas_gen}"
 	}
 
 	links
@@ -81,7 +84,8 @@ project "PaulEngine"
 		"glad",
 		"ImGui",
 		"opengl32.lib",
-		"yaml-cpp"
+		"yaml-cpp",
+		"msdf-atlas-gen"
 	}
 
 	filter "files:PaulEngine/vendor/imguizmo/**.cpp"

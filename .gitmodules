@@ -19,3 +19,6 @@
 [submodule "PaulEngine/vendor/box2d/box2d"]
 	path = PaulEngine/vendor/box2d/box2d
 	url = https://github.com/erincatto/box2d
+[submodule "PaulEngine/vendor/msdfgen"]
+	path = PaulEngine/vendor/msdfgen
+	url = https://github.com/TheCherno/msdf-atlas-gen

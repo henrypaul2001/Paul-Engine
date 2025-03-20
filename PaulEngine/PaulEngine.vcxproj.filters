@@ -22,6 +22,9 @@
     <Filter Include="src\PaulEngine\Maths">
       <UniqueIdentifier>{708A5EA1-5C19-E86A-0538-FC65F1A5F810}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Project">
+      <UniqueIdentifier>{4ABF6781-36B9-90D3-1F26-27E40BBFF63F}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\PaulEngine\Renderer">
       <UniqueIdentifier>{2ABF6C9B-96F6-B432-9F00-19560BB7DB2B}</UniqueIdentifier>
     </Filter>
@@ -102,6 +105,9 @@
     <ClInclude Include="src\PaulEngine\Core\Timestep.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Core\UUID.h">
+      <Filter>src\PaulEngine\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\Window.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
@@ -128,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h">
       <Filter>src\PaulEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Project\Project.h">
+      <Filter>src\PaulEngine\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h">
+      <Filter>src\PaulEngine\Project</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Buffer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
@@ -1485,9 +1497,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Core\UUID.h" />
-    <ClInclude Include="src\PaulEngine\Project\Project.h" />
-    <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Font.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1502,6 +1512,9 @@
     <ClCompile Include="src\PaulEngine\Core\Log.cpp">
       <Filter>src\PaulEngine\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Core\UUID.cpp">
+      <Filter>src\PaulEngine\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\ImGui\ImGuiBuild.cpp">
       <Filter>src\PaulEngine\ImGui</Filter>
     </ClCompile>
@@ -1513,6 +1526,12 @@
     </ClCompile>
     <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp">
       <Filter>src\PaulEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Project\Project.cpp">
+      <Filter>src\PaulEngine\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp">
+      <Filter>src\PaulEngine\Project</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
@@ -1607,8 +1626,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Core\UUID.cpp" />
-    <ClCompile Include="src\PaulEngine\Project\Project.cpp" />
-    <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Font.cpp" />
   </ItemGroup>
 </Project>
