@@ -4,6 +4,7 @@
 #include "PaulEngine/Renderer/SubTexture2D.h"
 #include "PaulEngine/Renderer/Camera.h"
 #include "PaulEngine/Renderer/EditorCamera.h"
+#include "PaulEngine/Renderer/Font.h"
 
 namespace PaulEngine {
 	class Renderer2D
@@ -26,6 +27,8 @@ namespace PaulEngine {
 		
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& colour, const int entityID = -1);
 		static void DrawRect(const glm::mat4& transform, const glm::vec4& colour, const int entityID = -1);
+
+		static void DrawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const glm::vec4& colour);
 
 		static float GetLineWidth();
 		static void SetLineWidth(const float thickness);
