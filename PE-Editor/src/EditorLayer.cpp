@@ -10,8 +10,12 @@
 #include <ImGuizmo.h>
 #include <PaulEngine/Maths/Maths.h>
 
+#include "PaulEngine/Renderer/Font.h"
+
 namespace PaulEngine {
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {
+		Font font = Font("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf");
+	}
 
 	EditorLayer::~EditorLayer() {}
 
