@@ -248,10 +248,22 @@ namespace PaulEngine
 				Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
 			}
 		}
-		Renderer2D::TextParams params = Renderer2D::TextParams();
-		params.Kerning = 0.1f;
-		params.LineSpacing = 0.1f;
-		Renderer2D::DrawString("Hello, World!\r\nHello, new line!", Font::GetDefault(), glm::mat4(1.0f), params, -1);
+
+		{
+			PE_PROFILE_SCOPE("Draw Text");
+			auto view = m_Registry.view<ComponentTransform, ComponentTextRenderer>();
+			for (auto entityID : view) {
+				auto [transform, text] = view.get<ComponentTransform, ComponentTextRenderer>(entityID);
+
+				Renderer2D::TextParams params;
+				params.Colour = text.Colour;
+				params.Kerning = text.Kerning;
+				params.LineSpacing = text.LineSpacing;
+
+				Renderer2D::DrawString(text.TextString, text.FontAsset, transform.GetTransform(), params, (int)entityID);
+			}
+		}
+
 		Renderer2D::EndScene();
 	}
 
