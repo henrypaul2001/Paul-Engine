@@ -221,6 +221,20 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentTextRenderer>()) {
+			out << YAML::Key << "TextRendererComponent";
+			out << YAML::BeginMap;
+
+			ComponentTextRenderer& textComponent = entity.GetComponent<ComponentTextRenderer>();
+			out << YAML::Key << "TextString" << YAML::Value << textComponent.TextString;
+			// out << FontAsset;
+			out << YAML::Key << "Colour" << YAML::Value << textComponent.Colour;
+			out << YAML::Key << "Kerning" << YAML::Value << textComponent.Kerning;
+			out << YAML::Key << "LineSpacing" << YAML::Value << textComponent.LineSpacing;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -354,6 +368,16 @@ namespace PaulEngine
 					circle2DComponent.Density = circle2DNode["Density"].as<float>();
 					circle2DComponent.Friction = circle2DNode["Friction"].as<float>();
 					circle2DComponent.Restitution = circle2DNode["Restitution"].as<float>();
+				}
+
+				YAML::Node textNode = entity["TextRendererComponent"];
+				if (textNode) {
+					ComponentTextRenderer& textComponent = deserializedEntity.AddComponent<ComponentTextRenderer>();
+					textComponent.TextString = textNode["TextString"].as<std::string>();
+					textComponent.FontAsset = Font::GetDefault();
+					textComponent.Colour = textNode["Colour"].as<glm::vec4>();
+					textComponent.Kerning = textNode["Kerning"].as<float>();
+					textComponent.LineSpacing = textNode["LineSpacing"].as<float>();
 				}
 			}
 		}

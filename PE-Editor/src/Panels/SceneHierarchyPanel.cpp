@@ -1,6 +1,8 @@
 #include "SceneHierarchyPanel.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 #include "PaulEngine/Scene/Components.h"
 #include <PaulEngine/Debug/Instrumentor.h>
@@ -324,6 +326,7 @@ namespace PaulEngine
 			DrawAddComponentEntry<ComponentRigidBody2D>("Rigid Body 2D Component");
 			DrawAddComponentEntry<ComponentBoxCollider2D>("Box Collision 2D Component");
 			DrawAddComponentEntry<ComponentCircleCollider2D>("Circle Collision Component 2D");
+			DrawAddComponentEntry<ComponentTextRenderer>("Text Renderer Component");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -457,6 +460,14 @@ namespace PaulEngine
 			ImGui::DragFloat("Density", &component.Density, 0.1f);
 			ImGui::DragFloat("Friction", &component.Friction, 0.1f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.1f, 0.0f, 1.0f);
+		});
+
+		// Text Component
+		DrawComponent<ComponentTextRenderer>("Text Renderer", entity, true, [](ComponentTextRenderer& component) {
+			ImGui::InputTextMultiline("Text String", &component.TextString);
+			ImGui::ColorEdit4("Colour", &component.Colour[0]);
+			ImGui::DragFloat("Kerning", &component.Kerning, 0.025f);
+			ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.025f);
 		});
 	}
 }

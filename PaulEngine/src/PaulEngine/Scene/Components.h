@@ -1,6 +1,7 @@
 #pragma once
-#include "PaulEngine/Renderer/Texture.h"
 #include "PaulEngine/Core/UUID.h"
+#include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Renderer/Font.h"
 
 #include <PaulEngine/Scene/SceneCamera.h>
 #include "EntityScript.h"
@@ -121,5 +122,13 @@ namespace PaulEngine
 			uint16_t generation;
 		};
 		B2RuntimeFixture RuntimeFixture = { 0, 0, 0 };
+	};
+
+	struct ComponentTextRenderer {
+		std::string TextString;
+		Ref<Font> FontAsset = Font::GetDefault();
+		glm::vec4 Colour = glm::vec4(1.0f);
+		float Kerning = 0.0f;
+		float LineSpacing = 0.0f;
 	};
 }
