@@ -28,7 +28,12 @@ namespace PaulEngine {
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& colour, const int entityID = -1);
 		static void DrawRect(const glm::mat4& transform, const glm::vec4& colour, const int entityID = -1);
 
-		static void DrawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const glm::vec4& colour);
+		struct TextParams {
+			glm::vec4 Colour = glm::vec4(1.0f);
+			float Kerning = 0.0f;
+			float LineSpacing = 0.0f;
+		};
+		static void DrawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const TextParams& textParams, int entityID = -1);
 
 		static float GetLineWidth();
 		static void SetLineWidth(const float thickness);
