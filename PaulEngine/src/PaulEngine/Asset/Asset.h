@@ -1,6 +1,8 @@
 #pragma once
 #include "PaulEngine/Core/UUID.h"
 
+#include <filesystem>
+
 namespace PaulEngine
 {
 	using AssetHandle = UUID;

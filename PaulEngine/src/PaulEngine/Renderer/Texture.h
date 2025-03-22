@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "PaulEngine/Asset/Asset.h"
 #include "PaulEngine/Core/Core.h"
 
 namespace PaulEngine {
@@ -20,7 +21,7 @@ namespace PaulEngine {
 		bool GenerateMips = true;
 	};
 
-	class Texture
+	class Texture : public Asset
 	{
 	public:
 		virtual ~Texture() = default;
@@ -44,5 +45,8 @@ namespace PaulEngine {
 	public:
 		static Ref<Texture2D> Create(const TextureSpecification& specification);
 		static Ref<Texture2D> Create(const std::string& path);
+
+		static AssetType GetStaticType() { return AssetType::Texture2D; }
+		virtual AssetType GetType() const { return GetStaticType(); }
 	};
 }
