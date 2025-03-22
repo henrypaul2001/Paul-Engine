@@ -150,6 +150,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h" />
+    <ClInclude Include="src\PaulEngine\Asset\EditorAssetManager.h" />
+    <ClInclude Include="src\PaulEngine\Asset\AssetManagerBase.h" />
+    <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
+    <ClInclude Include="src\PaulEngine\Asset\AssetManager.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />
     <ClInclude Include="src\PaulEngine\Core\Core.h" />
@@ -629,6 +634,11 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\EditorAssetManager.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\AssetManagerBase.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\AssetManager.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Application.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />

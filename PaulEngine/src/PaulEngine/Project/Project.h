@@ -1,4 +1,7 @@
 #pragma once
+#include "PaulEngine/Asset/RuntimeAssetManager.h"
+#include "PaulEngine/Asset/EditorAssetManager.h"
+
 namespace PaulEngine
 {
 	struct ProjectSpecification
@@ -29,6 +32,10 @@ namespace PaulEngine
 		ProjectSpecification& GetSpecification() { return m_Spec; }
 		static Ref<Project> GetActive() { return s_ActiveProject; }
 
+		Ref<AssetManagerBase> GetAssetManager() { return m_AssetManager; }
+		Ref<RuntimeAssetManager> GetRuntimeAssetManager() { return std::static_pointer_cast<RuntimeAssetManager>(m_AssetManager); }
+		Ref<EditorAssetManager> GetEditorAssetManager() { return std::static_pointer_cast<EditorAssetManager>(m_AssetManager); }
+
 		static Ref<Project> New();
 		static Ref<Project> Load(const std::filesystem::path& path);
 		static bool SaveActive(const std::filesystem::path& path);
@@ -36,6 +43,7 @@ namespace PaulEngine
 	private:
 		ProjectSpecification m_Spec;
 		std::filesystem::path m_ProjectDirectory;
+		Ref<AssetManagerBase> m_AssetManager;
 
 		inline static Ref<Project> s_ActiveProject;
 	};
