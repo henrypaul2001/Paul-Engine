@@ -29,6 +29,7 @@ namespace PaulEngine {
 
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
+		bool OnWindowDrop(WindowDropEvent& e);
 
 		void NewScene();
 		void OpenScene();

@@ -532,6 +532,7 @@ namespace PaulEngine {
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
 		dispatcher.DispatchEvent<MouseButtonReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnMouseUp));
+		dispatcher.DispatchEvent<WindowDropEvent>(PE_BIND_EVENT_FN(EditorLayer::OnWindowDrop));
 	}
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
@@ -614,6 +615,16 @@ namespace PaulEngine {
 			return true;
 		}
 		return false;
+	}
+
+	bool EditorLayer::OnWindowDrop(WindowDropEvent& e)
+	{
+		for (const std::filesystem::path& path : e.GetPaths()) {
+			PE_CORE_INFO("File dropped in window with path: '{0}'", path.string().c_str());
+		}
+
+		// TODO: ImportAsset();
+		return true;
 	}
 
 	void EditorLayer::NewScene()

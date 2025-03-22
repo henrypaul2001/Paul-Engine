@@ -132,6 +132,19 @@ namespace PaulEngine {
 			MouseMovedEvent event = MouseMovedEvent((float)xpos, (float)ypos);
 			data.eventCallback(event);
 		});
+	
+		// Window drop
+		glfwSetDropCallback(m_Window, [](GLFWwindow* window, int pathCount, const char* paths[]) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			std::vector<std::filesystem::path> filepaths = std::vector<std::filesystem::path>(pathCount);
+			for (int i = 0; i < pathCount; i++) {
+				filepaths[i] = paths[i];
+			}
+
+			WindowDropEvent event = WindowDropEvent(std::move(filepaths));
+			data.eventCallback(event);
+		});
 	}
 
 	void WindowsWindow::Shutdown()
