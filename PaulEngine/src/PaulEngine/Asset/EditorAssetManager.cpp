@@ -1,4 +1,6 @@
 #include "pepch.h"
+
+#include "AssetImporter.h"
 #include "EditorAssetManager.h"
 
 namespace PaulEngine
@@ -26,7 +28,7 @@ namespace PaulEngine
 		else {
 			// Load asset if not already loaded
 			const AssetMetadata& metadata = GetMetadata(handle);
-			//asset = AssetImporter::ImportAsset(handle, metadata);
+			asset = AssetImporter::ImportAsset(handle, metadata);
 			if (!asset) {
 				PE_CORE_ERROR("Asset import failed at path '{0}'", metadata.FilePath.string().c_str());
 			}

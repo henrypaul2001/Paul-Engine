@@ -16,6 +16,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "PaulEngine/Core/Core.h"
+#include "PaulEngine/Core/Buffer.h"
+
 #include "PaulEngine/Core/Log.h"
 #include "PaulEngine/Debug/Instrumentor.h"
 

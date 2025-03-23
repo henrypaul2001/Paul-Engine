@@ -1510,6 +1510,7 @@
     <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h" />
     <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
     <ClInclude Include="src\PaulEngine\Asset\TextureImporter.h" />
+    <ClInclude Include="src\PaulEngine\Core\Buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
