@@ -133,11 +133,11 @@ public:
 		m_ShaderLibrary.Add(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc));
 		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 		
-		//m_Texture = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_Texture = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/Checkerboard.png");
 		textureShader->Bind();
 		textureShader->SetUniformInt("u_Texture", 0);
 
-		//m_TransparentTexture = PaulEngine::Texture2D::Create("assets/textures/awesomeface.png");
+		m_TransparentTexture = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/awesomeface.png");
 	}
 
 	void OnUpdate(const PaulEngine::Timestep timestep) override

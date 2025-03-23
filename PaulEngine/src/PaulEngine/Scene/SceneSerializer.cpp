@@ -4,6 +4,7 @@
 #include "Components.h"
 
 #include "PaulEngine/Project/Project.h"
+#include "PaulEngine/Asset/TextureImporter.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -330,7 +331,7 @@ namespace PaulEngine
 
 					std::string filepath = spriteNode["TexturePath"].as<std::string>();
 					if (!filepath.empty()) {
-						//spriteComponent.Texture = Texture2D::Create(Project::GetAssetFileSystemPath(filepath).string());
+						spriteComponent.Texture = TextureImporter::LoadTexture2D(Project::GetAssetFileSystemPath(filepath).string());
 						//spriteComponent.Texture = AssetImporter::ImportAsset()
 					}
 					spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();

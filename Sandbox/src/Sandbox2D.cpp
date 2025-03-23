@@ -24,10 +24,10 @@ Sandbox2D::~Sandbox2D() {}
 void Sandbox2D::OnAttach()
 {
 	PE_PROFILE_FUNCTION();
-	//m_Texture = PaulEngine::Texture2D::Create("assets/textures/awesomeFace.png");
-	//m_Texture2 = PaulEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+	m_Texture = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/awesomeFace.png");
+	m_Texture2 = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/Checkerboard.png");
 
-	//m_Spritesheet =		PaulEngine::Texture2D::Create("assets/textures/RPGpack_sheet_2X.png");
+	m_Spritesheet = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/RPGpack_sheet_2X.png");
 	m_TextureStairs =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 7, 6 }, { 128.0f, 128.0f });
 	m_TextureBarrel =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 8, 2 }, { 128.0f, 128.0f });
 	m_TextureTree =		PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
