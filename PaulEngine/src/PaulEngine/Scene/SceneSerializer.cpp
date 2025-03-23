@@ -157,7 +157,9 @@ namespace PaulEngine
 			out << YAML::Key << "Colour" << YAML::Value << spriteComponent.Colour;
 			out << YAML::Key << "TexturePath";
 			if (spriteComponent.Texture) {
-				std::string filepathString = spriteComponent.Texture->GetPath();
+				const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(spriteComponent.Texture->Handle);
+				//	std::string filepathString = spriteComponent.Texture->GetPath();
+				std::string filepathString = metadata.FilePath.string();
 				std::filesystem::path relativePath = std::filesystem::path(filepathString).lexically_relative(Project::GetAssetDirectory());
 
 				out << YAML::Value << relativePath.string();
@@ -328,7 +330,8 @@ namespace PaulEngine
 
 					std::string filepath = spriteNode["TexturePath"].as<std::string>();
 					if (!filepath.empty()) {
-						spriteComponent.Texture = Texture2D::Create(Project::GetAssetFileSystemPath(filepath).string());
+						//spriteComponent.Texture = Texture2D::Create(Project::GetAssetFileSystemPath(filepath).string());
+						//spriteComponent.Texture = AssetImporter::ImportAsset()
 					}
 					spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();
 				}

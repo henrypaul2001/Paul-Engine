@@ -174,9 +174,8 @@ namespace PaulEngine {
 		s_RenderData.LineVertexArray->AddVertexBuffer(s_RenderData.LineVertexBuffer);
 		s_RenderData.LineVertexBufferBase = new LineVertex[s_RenderData.MaxVertices];
 
-		s_RenderData.WhiteTexture = Texture2D::Create(TextureSpecification());
 		uint32_t whiteTextureData = 0xffffffff;
-		s_RenderData.WhiteTexture->SetData(&whiteTextureData, sizeof(whiteTextureData));
+		s_RenderData.WhiteTexture = Texture2D::Create(TextureSpecification(), Buffer(&whiteTextureData, sizeof(uint32_t)));
 
 		// -- Text --
 		// ----------

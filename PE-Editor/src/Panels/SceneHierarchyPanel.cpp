@@ -402,7 +402,7 @@ namespace PaulEngine
 					std::filesystem::path texturePath = std::filesystem::path(path);
 					const std::string& extension = texturePath.extension().string();
 					if (extension == ".png" || extension == ".jpg" || extension == ".JPG") {
-						component.Texture = Texture2D::Create(texturePath.string());
+						//component.Texture = Texture2D::Create(texturePath.string());
 					}
 				}
 				ImGui::EndDragDropTarget();

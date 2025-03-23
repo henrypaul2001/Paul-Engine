@@ -35,9 +35,13 @@ namespace PaulEngine {
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
 
-		m_IconPlay = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
-		m_IconStop = Texture2D::Create("Resources/Icons/mingcute--stop-fill-light.png");
-		m_IconSimulate = Texture2D::Create("Resources/Icons/mingcute--play-line-light.png");
+		//m_IconPlay = Texture2D::Create("Resources/Icons/mingcute--play-fill-light.png");
+		//m_IconStop = Texture2D::Create("Resources/Icons/mingcute--stop-fill-light.png");
+		//m_IconSimulate = Texture2D::Create("Resources/Icons/mingcute--play-line-light.png");
+
+		m_IconPlay = Texture2D::Create(TextureSpecification(), Buffer());
+		m_IconStop = Texture2D::Create(TextureSpecification(), Buffer());
+		m_IconSimulate = Texture2D::Create(TextureSpecification(), Buffer());
 
 		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
 		if (commandLineArgs.Count > 1) {

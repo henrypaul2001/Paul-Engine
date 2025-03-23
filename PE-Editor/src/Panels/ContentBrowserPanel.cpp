@@ -8,8 +8,10 @@ namespace PaulEngine
 {
 	ContentBrowserPanel::ContentBrowserPanel() : m_BaseDirectory(Project::GetAssetDirectory()), m_CurrentDirectory(m_BaseDirectory)
 	{
-		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/mingcute--folder-2-fill-light.png");
-		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/mingcute--file-line-light.png");
+		//m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/mingcute--folder-2-fill-light.png");
+		//m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/mingcute--file-line-light.png");
+		m_DirectoryIcon = Texture2D::Create(TextureSpecification(), Buffer());
+		m_FileIcon = Texture2D::Create(TextureSpecification(), Buffer());
 	}
 
 	void ContentBrowserPanel::ImGuiRender()
