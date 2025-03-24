@@ -32,6 +32,7 @@ namespace PaulEngine
 		ProjectSerializer serializer = ProjectSerializer(s_ActiveProject);
 		if (serializer.Serialize(path)) {
 			s_ActiveProject->m_ProjectDirectory = path.parent_path();
+			s_ActiveProject->GetEditorAssetManager()->SerializeAssetRegistry();
 			return true;
 		}
 
