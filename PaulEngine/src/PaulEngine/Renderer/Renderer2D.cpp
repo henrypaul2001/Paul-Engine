@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "UniformBuffer.h"
 
+#include "PaulEngine/Asset/AssetManager.h"
+
 #include "RenderCommand.h"
 #include <glm/ext/matrix_transform.hpp>
 
@@ -360,7 +362,7 @@ namespace PaulEngine {
 		if (s_RenderData.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			EndScene();
 		}
-
+	
 		// Check if texture has already been submitted
 		float textureIndex = 0.0f;
 		for (int i = 1; i < s_RenderData.TextureSlotIndex; i++) {
@@ -369,20 +371,20 @@ namespace PaulEngine {
 				break;
 			}
 		}
-
+	
 		if (textureIndex == 0.0f) {
 			textureIndex = (float)s_RenderData.TextureSlotIndex;
 			s_RenderData.TextureSlots[s_RenderData.TextureSlotIndex] = texture;
 			s_RenderData.TextureSlotIndex++;
 		}
-
+	
 		const glm::vec2 textureCoords[] = {
 			{ 0.0f, 0.0f },
 			{ 1.0f, 0.0f },
 			{ 1.0f, 1.0f },
 			{ 0.0f, 1.0f }
 		};
-
+	
 		for (int i = 0; i < 4; i++) {
 			s_RenderData.QuadVertexBufferPtr->Position = transform * s_RenderData.QuadVertexPositions[i];
 			s_RenderData.QuadVertexBufferPtr->Colour = tintColour;
@@ -392,10 +394,24 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexBufferPtr->EntityID = entityID;
 			s_RenderData.QuadVertexBufferPtr++;
 		}
-
+	
 		s_RenderData.QuadIndexCount += 6;
-
+	
 		s_RenderData.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const AssetHandle textureHandle, const glm::vec2& textureScale, const glm::vec4& tintColour, int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		if (textureHandle)
+		{
+			Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(textureHandle);
+			DrawQuad(transform, texture, textureScale, tintColour, entityID);
+		}
+		else {
+			DrawQuad(transform, tintColour, entityID);
+		}
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale, const glm::vec4& tintColour, int entityID)
