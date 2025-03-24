@@ -79,6 +79,21 @@ namespace YAML
 			return true;
 		}
 	};
+
+	template<>
+	struct convert<PaulEngine::UUID>
+	{
+		static Node encode(const PaulEngine::UUID& uuid) {
+			Node node;
+			node.push_back((uint64_t)uuid);
+			return node;
+		}
+
+		static bool decode(const Node& node, PaulEngine::UUID& uuid) {
+			uuid = node.as<uint64_t>();
+			return true;
+		}
+	};
 }
 
 namespace PaulEngine
@@ -156,18 +171,19 @@ namespace PaulEngine
 
 			Component2DSprite& spriteComponent = entity.GetComponent<Component2DSprite>();
 			out << YAML::Key << "Colour" << YAML::Value << spriteComponent.Colour;
-			out << YAML::Key << "TexturePath";
-			if (spriteComponent.Texture) {
-				const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(spriteComponent.Texture->Handle);
-				//	std::string filepathString = spriteComponent.Texture->GetPath();
-				std::string filepathString = metadata.FilePath.string();
-				std::filesystem::path relativePath = std::filesystem::path(filepathString).lexically_relative(Project::GetAssetDirectory());
-
-				out << YAML::Value << relativePath.string();
-			}
-			else {
-				out << YAML::Value << "";
-			}
+			out << YAML::Key << "TextureHandle" << YAML::Value << spriteComponent.Texture;
+			//out << YAML::Key << "TexturePath";
+			//if (spriteComponent.Texture) {
+			//	//const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(spriteComponent.Texture->Handle);
+			//	//	std::string filepathString = spriteComponent.Texture->GetPath();
+			//	//std::string filepathString = metadata.FilePath.string();
+			//	//std::filesystem::path relativePath = std::filesystem::path(filepathString).lexically_relative(Project::GetAssetDirectory());
+			//
+			//	//out << YAML::Value << relativePath.string();
+			//}
+			//else {
+			//	out << YAML::Value << "";
+			//}
 			out << YAML::Value << "TextureScale" << YAML::Value << spriteComponent.TextureScale;
 		
 			out << YAML::EndMap;
@@ -329,11 +345,13 @@ namespace PaulEngine
 					Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
 					spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
 
-					std::string filepath = spriteNode["TexturePath"].as<std::string>();
-					if (!filepath.empty()) {
-						spriteComponent.Texture = TextureImporter::LoadTexture2D(Project::GetAssetFileSystemPath(filepath).string());
-						//spriteComponent.Texture = AssetImporter::ImportAsset()
-					}
+					spriteComponent.Texture = spriteNode["TextureHandle"].as<AssetHandle>();
+
+					//std::string filepath = spriteNode["TexturePath"].as<std::string>();
+					//if (!filepath.empty()) {
+					//	spriteComponent.Texture = TextureImporter::LoadTexture2D(Project::GetAssetFileSystemPath(filepath).string());
+					//	//spriteComponent.Texture = AssetImporter::ImportAsset()
+					//}
 					spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();
 				}
 
