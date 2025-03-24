@@ -1,39 +1,16 @@
 Scene: Untitled
 Entities:
-  - Entity: 2999612662127236149
+  - Entity: 14131960727079634967
     TagComponent:
-      Tag: TextTest
+      Tag: Empty Entity
     TransformComponent:
-      Position: [7.5, 3.500001, 2.25]
-      Rotation: [0, 0, 5.9604645e-08]
-      Scale: [1, 1, 1]
-    TextRendererComponent:
-      TextString: "Hello, World!\nHello, new line!"
-      Colour: [0.24741329, 0.7263112, 0.7900356, 1]
-      Kerning: 0.3
-      LineSpacing: 1.9
-  - Entity: 3417043274122471441
-    TagComponent:
-      Tag: Square
-    TransformComponent:
-      Position: [0.92358446, 0, 0.2]
+      Position: [-0.52407074, -0.011872292, -0.4]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      Colour: [0, 1, 0, 1]
-      TexturePath: textures\awesomeface.png
-      TextureScale: [1, 1]
-  - Entity: 12526598711108418683
-    TagComponent:
-      Tag: Square 2
-    TransformComponent:
-      Position: [0.7625714, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [5, 5, 1]
-    SpriteComponent:
-      Colour: [1, 0, 0, 1]
-      TexturePath: textures\Checkerboard.png
-      TextureScale: [5, 5]
+      Scale: [17.27655, 15.75, 1]
+    CircleComponent:
+      Colour: [0.12941177, 0.6392157, 0.9411765, 0.81960785]
+      Thickness: 0.96
+      Fade: 0.55
   - Entity: 17585499174510702181
     TagComponent:
       Tag: Camera Entity
@@ -48,16 +25,39 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0644295
+        AspectRatio: 3.5833333
       FixedAspect: false
-  - Entity: 14131960727079634967
+  - Entity: 12526598711108418683
     TagComponent:
-      Tag: Empty Entity
+      Tag: Square 2
     TransformComponent:
-      Position: [-0.52407074, -0.011872292, -0.4]
+      Position: [0.7625714, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [17.27655, 15.75, 1]
-    CircleComponent:
-      Colour: [0.12941177, 0.6392157, 0.9411765, 0.81960785]
-      Thickness: 0.96
-      Fade: 0.55
+      Scale: [5, 5, 1]
+    SpriteComponent:
+      Colour: [1, 0, 0, 1]
+      TextureHandle: 0
+      TextureScale: [5, 5]
+  - Entity: 3417043274122471441
+    TagComponent:
+      Tag: Square
+    TransformComponent:
+      Position: [0.92358446, 0, 0.2]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [0, 1, 0, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+  - Entity: 2999612662127236149
+    TagComponent:
+      Tag: TextTest
+    TransformComponent:
+      Position: [7.5, 3.500001, 2.25]
+      Rotation: [0, 0, 5.9604645e-08]
+      Scale: [1, 1, 1]
+    TextRendererComponent:
+      TextString: "Hello, World!\nHello, new line!"
+      Colour: [0.24741329, 0.7263112, 0.7900356, 1]
+      Kerning: 0.3
+      LineSpacing: 1.9

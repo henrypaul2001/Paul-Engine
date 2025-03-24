@@ -99,10 +99,14 @@ namespace PaulEngine
 	{
 		const std::filesystem::path& path = Project::GetAssetRegistryPath();
 
+		std::ifstream stream = std::ifstream(path);
+		std::stringstream ss;
+		ss << stream.rdbuf();
+
 		YAML::Node data;
 		try
 		{
-			data = YAML::Load(path.string());
+			data = YAML::Load(ss.str());
 		}
 		catch (YAML::ParserException e)
 		{
