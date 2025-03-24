@@ -10,6 +10,7 @@ namespace PaulEngine
 		
 		std::filesystem::path StartScenePath;
 		std::filesystem::path AssetDirectory;
+		std::filesystem::path AssetRegistryPath;
 	};
 
 	class Project
@@ -19,6 +20,12 @@ namespace PaulEngine
 			PE_CORE_ASSERT(s_ActiveProject, "No active project");
 			return s_ActiveProject->m_ProjectDirectory;
 		}
+	
+		static std::filesystem::path GetAssetRegistryPath() {
+			PE_CORE_ASSERT(s_ActiveProject, "No active project");
+			return GetAssetDirectory() / s_ActiveProject->m_Spec.AssetRegistryPath;
+		}
+
 		static std::filesystem::path GetAssetDirectory() {
 			PE_CORE_ASSERT(s_ActiveProject, "No active project");
 			return GetProjectDirectory() / s_ActiveProject->m_Spec.AssetDirectory;

@@ -18,6 +18,9 @@ namespace PaulEngine
 		if (serializer.Deserialize(path)) {
 			project->m_ProjectDirectory = path.parent_path();
 			s_ActiveProject = project;
+			Ref<EditorAssetManager> editorAssetManager = CreateRef<EditorAssetManager>();
+			s_ActiveProject->m_AssetManager = editorAssetManager;
+			editorAssetManager->DeserializeAssetRegistry();
 			return s_ActiveProject;
 		}
 

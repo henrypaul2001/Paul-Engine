@@ -22,6 +22,9 @@ namespace PaulEngine
 		operator bool() const { return Type != AssetType::None; }
 	};
 
+	std::string AssetTypeToString(AssetType type);
+	AssetType AssetTypeFromString(const std::string& assetType);
+
 	class Asset
 	{
 	public:
