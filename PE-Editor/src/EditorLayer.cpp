@@ -300,8 +300,8 @@ namespace PaulEngine {
 		if (ImGui::BeginDragDropTarget()) {
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
 			if (payload) {
-				const wchar_t* path = (const wchar_t*)payload->Data;
-				OpenScene(path);
+				AssetHandle handle = *(AssetHandle*)payload->Data;
+				OpenScene(handle);
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -634,46 +634,45 @@ namespace PaulEngine {
 		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-		m_CurrentFilepath = std::string();
+		m_CurrentFilepath = std::filesystem::path();
 	}
 
 	void EditorLayer::OpenScene()
 	{
-		std::string filepath = FileDialogs::OpenFile("Paul Engine Scene (*.paul)\0*.paul\0");
-
-		if (!filepath.empty())
-		{
-			OpenScene(filepath);
-		}
+		//std::string filepath = FileDialogs::OpenFile("Paul Engine Scene (*.paul)\0*.paul\0");
+		//
+		//if (!filepath.empty())
+		//{
+		//	OpenScene(filepath);
+		//}
 	}
 
-	void EditorLayer::OpenScene(std::filesystem::path filepath)
+	void EditorLayer::OpenScene(AssetHandle handle)
 	{
+		PE_CORE_ASSERT(handle, "Invalid scene handle");
 		if (m_SceneState != SceneState::Edit) { OnSceneStop(); }
 
-		std::filesystem::path extension = filepath.extension();
-		if (extension != ".paul") {
-			PE_CORE_WARN("Invalid scene file extension '{0}', extension '{1}' required", extension.string().c_str(), ".paul");
-			return;
-		}
+		//std::filesystem::path extension = filepath.extension();
+		//if (extension != ".paul") {
+		//	PE_CORE_WARN("Invalid scene file extension '{0}', extension '{1}' required", extension.string().c_str(), ".paul");
+		//	return;
+		//}
 
-		Ref<Scene> newScene = CreateRef<Scene>();
-		SceneSerializer serializer = SceneSerializer(newScene);
-		if (serializer.DeserializeYAML(filepath.string())) {
+		Ref<Scene> readOnlyScene = AssetManager::GetAsset<Scene>(handle);
+		Ref<Scene> newScene = Scene::Copy(readOnlyScene);
 
-			m_EditorScene = newScene;
-			m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetContext(m_EditorScene);
+		m_EditorScene = newScene;
+		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
-			m_ActiveScene = m_EditorScene;
+		m_ActiveScene = m_EditorScene;
 
-			m_CurrentFilepath = filepath.string();
-		}
+		m_CurrentFilepath = Project::GetActive()->GetEditorAssetManager()->GetFilepath(handle);
 	}
 
-	void EditorLayer::SaveSceneAs(const std::string& filepath)
+	void EditorLayer::SaveSceneAs(const std::filesystem::path& filepath)
 	{
-		std::string path = filepath;
+		std::string path = filepath.string();
 		if (path.empty()) {
 			path = FileDialogs::SaveFile("Paul Engine Scene (*.paul)\0*.paul\0");
 		}
@@ -706,8 +705,10 @@ namespace PaulEngine {
 	void EditorLayer::OpenProject(const std::filesystem::path& path)
 	{
 		if (Project::Load(path)) {
-			std::filesystem::path startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetSpecification().StartScenePath);
-			OpenScene(startScenePath);
+			AssetHandle startScene = Project::GetActive()->GetSpecification().StartScene;
+			if (startScene) {
+				OpenScene(startScene);
+			}
 			m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
 		}
 	}

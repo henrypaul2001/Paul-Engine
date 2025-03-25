@@ -33,8 +33,8 @@ namespace PaulEngine {
 
 		void NewScene();
 		void OpenScene();
-		void OpenScene(std::filesystem::path filepath);
-		void SaveSceneAs(const std::string& filepath = std::string());
+		void OpenScene(AssetHandle handle);
+		void SaveSceneAs(const std::filesystem::path& filepath = std::filesystem::path());
 
 		void NewProject();
 		bool OpenProject();
@@ -43,7 +43,7 @@ namespace PaulEngine {
 
 		bool CanPickEntities();
 
-		std::string m_CurrentFilepath;
+		std::filesystem::path m_CurrentFilepath;
 
 		ShaderLibrary m_ShaderLibrary;
 		Ref<Framebuffer> m_Framebuffer;

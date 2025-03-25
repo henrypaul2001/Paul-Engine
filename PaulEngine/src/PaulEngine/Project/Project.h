@@ -8,7 +8,7 @@ namespace PaulEngine
 	{
 		std::string Name = "Untitled Project";
 		
-		std::filesystem::path StartScenePath;
+		AssetHandle StartScene = 0;
 		std::filesystem::path AssetDirectory;
 		std::filesystem::path AssetRegistryPath;
 	};

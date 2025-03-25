@@ -1,7 +1,7 @@
 #pragma once
 #include <entt.hpp>
-//#include "Components.h"
 
+#include "PaulEngine/Asset/Asset.h"
 #include "PaulEngine/Core/UUID.h"
 
 #include "PaulEngine/Core/Timestep.h"
@@ -12,13 +12,15 @@ struct b2WorldId;
 namespace PaulEngine
 {
 	class Entity;
-	class Scene
+	class Scene : public Asset
 	{
 	public:
 		Scene();
 		~Scene();
 		
 		static Ref<Scene> Copy(Ref<Scene> other);
+
+		virtual AssetType GetType() const { return AssetType::Scene; }
 
 		Entity CreateEntity(const std::string& name = "Entity");
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "Entity");

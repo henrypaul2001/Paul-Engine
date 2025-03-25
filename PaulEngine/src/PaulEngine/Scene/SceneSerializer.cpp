@@ -257,7 +257,7 @@ namespace PaulEngine
 		out << YAML::EndMap;
 	}
 
-	void SceneSerializer::SerializeYAML(const std::string& filepath)
+	void SceneSerializer::SerializeYAML(const std::filesystem::path& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -276,12 +276,12 @@ namespace PaulEngine
 		fout << out.c_str();
 	}
 
-	void SceneSerializer::SerializeBinary(const std::string& filepath)
+	void SceneSerializer::SerializeBinary(const std::filesystem::path& filepath)
 	{
 		PE_CORE_ASSERT(false, "Not yet implemented");
 	}
 
-	bool SceneSerializer::DeserializeYAML(const std::string& filepath)
+	bool SceneSerializer::DeserializeYAML(const std::filesystem::path& filepath)
 	{
 		std::ifstream stream = std::ifstream(filepath);
 		std::stringstream ss;
@@ -407,7 +407,7 @@ namespace PaulEngine
 		return true;
 	}
 
-	bool SceneSerializer::DeserializeBinary(const std::string& filepath)
+	bool SceneSerializer::DeserializeBinary(const std::filesystem::path& filepath)
 	{
 		PE_CORE_ASSERT(false, "Not yet implemented");
 		return false;
