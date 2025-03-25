@@ -666,7 +666,12 @@ namespace PaulEngine {
 		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
+		if (m_ActiveSceneHandle != 0) {
+			Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
+		}
+
 		m_ActiveScene = m_EditorScene;
+		m_ActiveSceneHandle = handle;
 
 		m_CurrentFilepath = Project::GetActive()->GetEditorAssetManager()->GetFilepath(handle);
 	}

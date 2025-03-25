@@ -48,6 +48,7 @@ namespace PaulEngine {
 		ShaderLibrary m_ShaderLibrary;
 		Ref<Framebuffer> m_Framebuffer;
 
+		AssetHandle m_ActiveSceneHandle = 0;
 		Ref<Scene> m_ActiveScene;
 		Ref<Scene> m_EditorScene;
 

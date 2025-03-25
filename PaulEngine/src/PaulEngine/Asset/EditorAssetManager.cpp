@@ -107,8 +107,12 @@ namespace PaulEngine
 		return GetMetadata(handle).FilePath;
 	}
 
-	void EditorAssetManager::UnloadAsset(AssetHandle handle)
+	void EditorAssetManager::UnloadAsset(AssetHandle& handle)
 	{
+		if (m_LoadedAssets.erase(handle) == 0) {
+			PE_CORE_WARN("Attempted to unload asset not currently loaded with handle '{0}'", (uint64_t)handle);
+		}
+		handle = 0;
 	}
 
 	void EditorAssetManager::SerializeAssetRegistry()

@@ -47,7 +47,7 @@ Entities:
       Scale: [1, 1, 1]
     SpriteComponent:
       Colour: [0, 1, 0, 1]
-      TextureHandle: 0
+      TextureHandle: 266139391440945140
       TextureScale: [1, 1]
   - Entity: 2999612662127236149
     TagComponent:
