@@ -4,6 +4,7 @@
 #include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Scene/Components.h"
 #include <PaulEngine/Debug/Instrumentor.h>
 
@@ -393,20 +394,49 @@ namespace PaulEngine
 		DrawComponent<Component2DSprite>("Sprite Renderer Component", entity, true, [](Component2DSprite& component) {
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
 
-			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+			std::string label = "None";
+			bool isTextureValid = false;
+			if (component.Texture != 0) {
+				if (AssetManager::IsAssetHandleValid(component.Texture) && AssetManager::GetAssetType(component.Texture) == AssetType::Texture2D) {
+					const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(component.Texture);
+					label = metadata.FilePath.filename().string();
+					isTextureValid = true;
+				}
+				else {
+					label = "Invalid";
+				}
+			}
+
+			ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+			buttonLabelSize.x += 20.0f;
+			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+			ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 				{
-					const wchar_t* path = (const wchar_t*)payload->Data;
-					std::filesystem::path texturePath = std::filesystem::path(path);
-					const std::string& extension = texturePath.extension().string();
-					if (extension == ".png" || extension == ".jpg" || extension == ".JPG") {
-						//component.Texture = Texture2D::Create(texturePath.string());
+					AssetHandle handle = *(AssetHandle*)payload->Data;
+					if (AssetManager::GetAssetType(handle) == AssetType::Texture2D) {
+						component.Texture = handle;
+					}
+					else {
+						PE_CORE_WARN("Invalid asset type. Texture2D needed for sprite component");
 					}
 				}
 				ImGui::EndDragDropTarget();
 			}
+
+			if (isTextureValid) {
+				ImGui::SameLine();
+				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+					component.Texture = 0;
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text("Texture");
 			
 			bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
 		});

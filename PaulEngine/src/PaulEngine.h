@@ -36,4 +36,6 @@
 #include "PaulEngine/Renderer/Framebuffer.h"
 #include "PaulEngine/Renderer/UniformBuffer.h"
 
+#include "PaulEngine/Asset/AssetManager.h"
+#include "PaulEngine/Asset/AssetImporter.h"
 #include "PaulEngine/Asset/TextureImporter.h"

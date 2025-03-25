@@ -1,2 +1,7 @@
 AssetRegistry:
-  []
+  - Handle: 266139391440945140
+    Filepath: textures\awesomeface.png
+    Type: AssetType::Texture2D
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Type: AssetType::Texture2D

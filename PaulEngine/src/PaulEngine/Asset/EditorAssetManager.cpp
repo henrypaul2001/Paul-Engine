@@ -8,6 +8,22 @@
 
 namespace PaulEngine
 {
+	static std::map<std::filesystem::path, AssetType> s_AssetExtensionMap = {
+		{ ".paul", AssetType::Scene },
+		{ ".png", AssetType::Texture2D },
+		{ ".jpg", AssetType::Texture2D },
+		{ ".jpeg", AssetType::Texture2D }
+	};
+
+	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {
+		if (s_AssetExtensionMap.find(extension) == s_AssetExtensionMap.end()) {
+			PE_CORE_WARN("Could not find AssetType for file extension '{0}'", extension.string().c_str());
+			return AssetType::None;
+		}
+		
+		return s_AssetExtensionMap.at(extension);
+	}
+
 	bool EditorAssetManager::IsAssetHandleValid(AssetHandle handle) const
 	{
 		return handle != 0 && m_AssetRegistry.find(handle) != m_AssetRegistry.end();
@@ -18,24 +34,42 @@ namespace PaulEngine
 		return m_LoadedAssets.find(handle) != m_LoadedAssets.end();
 	}
 
-	void EditorAssetManager::ImportAsset(const std::filesystem::path& filepath)
+	AssetType EditorAssetManager::GetAssetType(AssetHandle handle) const
 	{
+		if (!IsAssetHandleValid(handle)) {
+			return AssetType::None;
+		}
+		return m_AssetRegistry.at(handle).Type;
+	}
+
+	AssetHandle EditorAssetManager::ImportAsset(const std::filesystem::path& filepath)
+	{
+		if (IsAssetRegistered(filepath)) {
+			return m_AssetFileRegistry.at(filepath);
+		}
+
 		AssetHandle handle;
 		AssetMetadata metadata;
 		metadata.FilePath = filepath;
-		metadata.Type = AssetType::Texture2D; // TODO: hardcoded texture2D asset type for now
+		metadata.Type = GetAssetTypeFromFileExtension(filepath.extension());
+		if (metadata.Type == AssetType::None) {
+			return AssetHandle(0);
+		}
 		Ref<Asset> asset = AssetImporter::ImportAsset(handle, metadata);
-		asset->Handle = handle;
 		
 		if (asset)
 		{
+			asset->Handle = handle;
 			m_LoadedAssets[handle] = asset;
 			m_AssetRegistry[handle] = metadata;
+			m_AssetFileRegistry[filepath] = handle;
 			SerializeAssetRegistry();
 		}
+
+		return handle;
 	}
 
-	Ref<Asset> EditorAssetManager::GetAsset(AssetHandle handle) const
+	Ref<Asset> EditorAssetManager::GetAsset(AssetHandle handle)
 	{
 		if (!IsAssetHandleValid(handle)) {
 			return nullptr;
@@ -52,6 +86,7 @@ namespace PaulEngine
 			if (!asset) {
 				PE_CORE_ERROR("Asset import failed at path '{0}'", metadata.FilePath.string().c_str());
 			}
+			m_LoadedAssets[handle] = asset;
 		}
 
 		return asset;
@@ -65,6 +100,11 @@ namespace PaulEngine
 			return s_NullMetadata;
 		}
 		return it->second;
+	}
+
+	const std::filesystem::path& EditorAssetManager::GetFilepath(AssetHandle handle) const
+	{
+		return GetMetadata(handle).FilePath;
 	}
 
 	void EditorAssetManager::SerializeAssetRegistry()
@@ -125,6 +165,7 @@ namespace PaulEngine
 			auto& metadata = m_AssetRegistry[handle];
 			metadata.FilePath = node["Filepath"].as<std::string>();
 			metadata.Type = AssetTypeFromString(node["Type"].as<std::string>());
+			m_AssetFileRegistry[metadata.FilePath] = handle;
 		}
 
 		return true;

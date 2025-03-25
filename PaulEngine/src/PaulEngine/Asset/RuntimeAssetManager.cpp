@@ -3,7 +3,7 @@
 
 namespace PaulEngine
 {
-	Ref<Asset> RuntimeAssetManager::GetAsset(AssetHandle handle) const
+	Ref<Asset> RuntimeAssetManager::GetAsset(AssetHandle handle)
 	{
 		PE_CORE_ASSERT(false, "Not yet implemented");
 		return Ref<Asset>();
