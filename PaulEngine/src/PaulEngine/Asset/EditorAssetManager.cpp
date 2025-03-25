@@ -107,6 +107,10 @@ namespace PaulEngine
 		return GetMetadata(handle).FilePath;
 	}
 
+	void EditorAssetManager::UnloadAsset(AssetHandle handle)
+	{
+	}
+
 	void EditorAssetManager::SerializeAssetRegistry()
 	{
 		const std::filesystem::path& path = Project::GetAssetRegistryPath();

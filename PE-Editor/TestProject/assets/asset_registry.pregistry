@@ -5,3 +5,12 @@ AssetRegistry:
   - Handle: 1732625535741970896
     Filepath: textures\Checkerboard.png
     Type: AssetType::Texture2D
+  - Handle: 4566192558940935376
+    Filepath: scenes\3DCube.paul
+    Type: AssetType::Scene
+  - Handle: 2510263345310005911
+    Filepath: scenes\Example.paul
+    Type: AssetType::Scene
+  - Handle: 11922114141701769481
+    Filepath: scenes\Physics2D.paul
+    Type: AssetType::Scene

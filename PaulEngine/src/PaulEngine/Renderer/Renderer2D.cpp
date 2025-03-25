@@ -312,7 +312,11 @@ namespace PaulEngine {
 	void Renderer2D::StartNewBatch()
 	{
 		s_RenderData.QuadIndexCount = 0;
+		
 		s_RenderData.TextureSlotIndex = 1;
+		s_RenderData.TextureSlots.fill(Ref<Texture2D>());
+		s_RenderData.TextureSlots[0] = s_RenderData.WhiteTexture;
+
 		s_RenderData.QuadVertexBufferPtr = s_RenderData.QuadVertexBufferBase;
 
 		s_RenderData.CircleIndexCount = 0;

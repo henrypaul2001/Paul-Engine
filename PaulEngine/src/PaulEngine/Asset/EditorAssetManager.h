@@ -28,6 +28,8 @@ namespace PaulEngine
 
 		const AssetRegistry& GetAssetRegistry() const { return m_AssetRegistry; }
 
+		void UnloadAsset(AssetHandle handle);
+
 		void SerializeAssetRegistry();
 		bool DeserializeAssetRegistry();
 	private:

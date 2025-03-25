@@ -12,6 +12,8 @@
 
 #include "PaulEngine/Renderer/Font.h"
 
+#include "PaulEngine/Asset/SceneImporter.h"
+
 namespace PaulEngine {
 
 	static Ref<Font> s_Font;
@@ -650,13 +652,12 @@ namespace PaulEngine {
 	void EditorLayer::OpenScene(AssetHandle handle)
 	{
 		PE_CORE_ASSERT(handle, "Invalid scene handle");
+		AssetType type = Project::GetActive()->GetEditorAssetManager()->GetAssetType(handle);
+		if (type != AssetType::Scene) {
+			PE_CORE_ERROR("Invalid asset type '{0}', '{1}' required", AssetTypeToString(type), AssetTypeToString(AssetType::Scene));
+			return;
+		}
 		if (m_SceneState != SceneState::Edit) { OnSceneStop(); }
-
-		//std::filesystem::path extension = filepath.extension();
-		//if (extension != ".paul") {
-		//	PE_CORE_WARN("Invalid scene file extension '{0}', extension '{1}' required", extension.string().c_str(), ".paul");
-		//	return;
-		//}
 
 		Ref<Scene> readOnlyScene = AssetManager::GetAsset<Scene>(handle);
 		Ref<Scene> newScene = Scene::Copy(readOnlyScene);
@@ -677,8 +678,7 @@ namespace PaulEngine {
 			path = FileDialogs::SaveFile("Paul Engine Scene (*.paul)\0*.paul\0");
 		}
 		if (!path.empty()) {
-			SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-			serializer.SerializeYAML(path);
+			SceneImporter::SaveScene(m_ActiveScene, filepath);
 			m_CurrentFilepath = path;
 		}
 	}

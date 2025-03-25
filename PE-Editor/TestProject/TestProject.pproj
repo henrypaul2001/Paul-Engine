@@ -1,5 +1,5 @@
 Project:
   Name: Test Project
-  StartScenePath: scenes/3DCube.paul
+  StartScene: 4566192558940935376
   AssetDirectory: assets
   AssetRegistryPath: asset_registry.pregistry
