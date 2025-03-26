@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Asset\FontImporter.h" />
     <ClInclude Include="src\PaulEngine\Asset\SceneImporter.h" />
     <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
     <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h" />
@@ -638,6 +639,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Asset\FontImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\SceneImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp" />

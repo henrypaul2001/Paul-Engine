@@ -10,6 +10,7 @@ namespace PaulEngine
             case AssetType::None: return "AssetType::None";
             case AssetType::Scene: return "AssetType::Scene";
             case AssetType::Texture2D: return "AssetType::Texture2D";
+            case AssetType::Font: return "AssetType::Font";
         }
         return "AssetType::!Unknown!";
     }
@@ -19,6 +20,7 @@ namespace PaulEngine
         if (assetType == "AssetType::None") { return AssetType::None; }
         if (assetType == "AssetType::Scene") { return AssetType::Scene; }
         if (assetType == "AssetType::Texture2D") { return AssetType::Texture2D; }
+        if (assetType == "AssetType::Font") { return AssetType::Font; }
         return AssetType::None;
     }
 }

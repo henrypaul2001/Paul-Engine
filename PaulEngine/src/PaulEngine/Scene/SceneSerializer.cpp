@@ -246,7 +246,7 @@ namespace PaulEngine
 
 			ComponentTextRenderer& textComponent = entity.GetComponent<ComponentTextRenderer>();
 			out << YAML::Key << "TextString" << YAML::Value << textComponent.TextString;
-			// out << FontAsset;
+			out << YAML::Key << "FontHandle" << YAML::Value << textComponent.Font;
 			out << YAML::Key << "Colour" << YAML::Value << textComponent.Colour;
 			out << YAML::Key << "Kerning" << YAML::Value << textComponent.Kerning;
 			out << YAML::Key << "LineSpacing" << YAML::Value << textComponent.LineSpacing;
@@ -396,7 +396,7 @@ namespace PaulEngine
 				if (textNode) {
 					ComponentTextRenderer& textComponent = deserializedEntity.AddComponent<ComponentTextRenderer>();
 					textComponent.TextString = textNode["TextString"].as<std::string>();
-					textComponent.FontAsset = Font::GetDefault();
+					textComponent.Font = textNode["FontHandle"].as<uint64_t>();
 					textComponent.Colour = textNode["Colour"].as<glm::vec4>();
 					textComponent.Kerning = textNode["Kerning"].as<float>();
 					textComponent.LineSpacing = textNode["LineSpacing"].as<float>();

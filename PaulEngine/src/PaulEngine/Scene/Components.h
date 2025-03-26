@@ -126,7 +126,7 @@ namespace PaulEngine
 
 	struct ComponentTextRenderer {
 		std::string TextString;
-		Ref<Font> FontAsset = Font::GetDefault();
+		AssetHandle Font = 0;
 		glm::vec4 Colour = glm::vec4(1.0f);
 		float Kerning = 0.0f;
 		float LineSpacing = 0.0f;

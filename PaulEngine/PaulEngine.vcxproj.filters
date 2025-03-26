@@ -1512,6 +1512,7 @@
     <ClInclude Include="src\PaulEngine\Asset\TextureImporter.h" />
     <ClInclude Include="src\PaulEngine\Core\Buffer.h" />
     <ClInclude Include="src\PaulEngine\Asset\SceneImporter.h" />
+    <ClInclude Include="src\PaulEngine\Asset\FontImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
@@ -1651,5 +1652,6 @@
     <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\TextureImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\SceneImporter.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\FontImporter.cpp" />
   </ItemGroup>
 </Project>

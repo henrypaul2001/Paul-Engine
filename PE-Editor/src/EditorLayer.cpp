@@ -18,9 +18,7 @@ namespace PaulEngine {
 
 	static Ref<Font> s_Font;
 
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {
-		s_Font = Font::GetDefault();
-	}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {}
 
 	EditorLayer::~EditorLayer() {}
 
@@ -63,6 +61,11 @@ namespace PaulEngine {
 				}
 			}
 		}
+
+		s_Font = Font::GetDefault();
+		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(m_IconPlay, true);
+		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(m_IconStop, true);
+		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(m_IconSimulate, true);
 
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");

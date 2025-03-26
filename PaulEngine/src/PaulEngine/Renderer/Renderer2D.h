@@ -35,6 +35,7 @@ namespace PaulEngine {
 			float LineSpacing = 0.0f;
 		};
 		static void DrawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const TextParams& textParams, int entityID = -1);
+		static void DrawString(const std::string& string, AssetHandle fontHandle , const glm::mat4& transform, const TextParams& textParams, int entityID = -1);
 
 		static float GetLineWidth();
 		static void SetLineWidth(const float thickness);

@@ -3,6 +3,10 @@ AssetRegistry:
     Filepath: textures\awesomeface.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 4817566063772792482
+    Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
+    Persistent: true
+    Type: AssetType::Font
   - Handle: 1732625535741970896
     Filepath: textures\Checkerboard.png
     Persistent: false

@@ -58,6 +58,7 @@ Entities:
       Scale: [1, 1, 1]
     TextRendererComponent:
       TextString: "Hello, World!\nHello, new line!"
+      FontHandle: 4817566063772792482
       Colour: [0.24741329, 0.7263112, 0.7900356, 1]
       Kerning: 0.3
       LineSpacing: 1.9

@@ -261,7 +261,7 @@ namespace PaulEngine
 				params.Kerning = text.Kerning;
 				params.LineSpacing = text.LineSpacing;
 
-				Renderer2D::DrawString(text.TextString, text.FontAsset, transform.GetTransform(), params, (int)entityID);
+				Renderer2D::DrawString(text.TextString, text.Font, transform.GetTransform(), params, (int)entityID);
 			}
 		}
 
@@ -364,7 +364,7 @@ namespace PaulEngine
 					params.Kerning = text.Kerning;
 					params.LineSpacing = text.LineSpacing;
 
-					Renderer2D::DrawString(text.TextString, text.FontAsset, transform.GetTransform(), params, (int)entityID);
+					Renderer2D::DrawString(text.TextString, text.Font, transform.GetTransform(), params, (int)entityID);
 				}
 			}
 

@@ -3,6 +3,7 @@
 
 #include "TextureImporter.h"
 #include "SceneImporter.h"
+#include "FontImporter.h"
 
 #include <unordered_map>
 
@@ -12,7 +13,8 @@ namespace PaulEngine
 
 	static std::unordered_map<AssetType, AssetImportFunction> s_AssetImportFunctions = {
 		{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
-		{ AssetType::Scene, SceneImporter::ImportScene }
+		{ AssetType::Scene, SceneImporter::ImportScene },
+		{ AssetType::Font, FontImporter::ImportFont }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

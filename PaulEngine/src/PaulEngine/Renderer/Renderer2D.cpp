@@ -628,6 +628,21 @@ namespace PaulEngine {
 		}
 	}
 
+	void Renderer2D::DrawString(const std::string& string, AssetHandle fontHandle, const glm::mat4& transform, const TextParams& textParams, int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		if (fontHandle)
+		{
+			Ref<Font> font = AssetManager::GetAsset<Font>(fontHandle);
+			DrawString(string, font, transform, textParams, entityID);
+		}
+		else {
+			PE_CORE_WARN("Invalid font handle '{0}'. Using default", (uint64_t)fontHandle);
+			DrawString(string, Font::GetDefault(), transform, textParams, entityID);
+		}
+	}
+
 	float Renderer2D::GetLineWidth()
 	{
 		return s_RenderData.LineWidth;

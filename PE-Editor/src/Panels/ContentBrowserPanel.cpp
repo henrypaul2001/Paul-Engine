@@ -109,38 +109,40 @@ namespace PaulEngine
 			for (const auto& [item, treeNodeIndex] : node->Children) {
 				bool isDirectory = std::filesystem::is_directory(Project::GetAssetDirectory() / item);
 				std::string itemString = item.string();
+				if (itemString != "..") {
 
-				ImGui::PushID(itemString.c_str());
-				Ref<Texture2D> icon = isDirectory ? m_DirectoryIcon : m_FileIcon;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-				ImGui::ImageButton("thumbnail", (ImTextureID)icon->GetRendererID(), ImVec2(m_ThumbnailSize, m_ThumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::PushID(itemString.c_str());
+					Ref<Texture2D> icon = isDirectory ? m_DirectoryIcon : m_FileIcon;
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+					ImGui::ImageButton("thumbnail", (ImTextureID)icon->GetRendererID(), ImVec2(m_ThumbnailSize, m_ThumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
 
-				if (ImGui::BeginPopupContextItem()) {
-					if (ImGui::MenuItem("Delete"))
-					{
-						PE_CORE_WARN("Asset delete not yet implemented");
+					if (ImGui::BeginPopupContextItem()) {
+						if (ImGui::MenuItem("Delete"))
+						{
+							PE_CORE_WARN("Asset delete not yet implemented");
+						}
+						ImGui::EndPopup();
 					}
-					ImGui::EndPopup();
-				}
 
-				if (ImGui::BeginDragDropSource()) {
-					AssetHandle handle = m_TreeNodes[treeNodeIndex].Handle;
-					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &handle, sizeof(AssetHandle));
-					ImGui::EndDragDropSource();
-				}
-
-				ImGui::PopStyleColor();
-
-				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-					if (isDirectory) {
-						m_CurrentDirectory /= item.filename();
+					if (ImGui::BeginDragDropSource()) {
+						AssetHandle handle = m_TreeNodes[treeNodeIndex].Handle;
+						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &handle, sizeof(AssetHandle));
+						ImGui::EndDragDropSource();
 					}
+
+					ImGui::PopStyleColor();
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+						if (isDirectory) {
+							m_CurrentDirectory /= item.filename();
+						}
+					}
+
+					ImGui::TextWrapped(itemString.c_str());
+
+					ImGui::NextColumn();
+					ImGui::PopID();
 				}
-
-				ImGui::TextWrapped(itemString.c_str());
-
-				ImGui::NextColumn();
-				ImGui::PopID();
 			}
 		}
 	}
