@@ -328,6 +328,7 @@ namespace PaulEngine
 		if (cameraEntity) {
 			Camera& mainCamera = cameraEntity.GetComponent<ComponentCamera>().Camera;
 			Renderer2D::BeginScene(mainCamera, cameraEntity.GetComponent<ComponentTransform>().GetTransform());
+			
 			{
 				PE_PROFILE_SCOPE("Draw Quads");
 				auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
@@ -351,6 +352,22 @@ namespace PaulEngine
 					Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
 				}
 			}
+
+			{
+				PE_PROFILE_SCOPE("Draw Text");
+				auto view = m_Registry.view<ComponentTransform, ComponentTextRenderer>();
+				for (auto entityID : view) {
+					auto [transform, text] = view.get<ComponentTransform, ComponentTextRenderer>(entityID);
+
+					Renderer2D::TextParams params;
+					params.Colour = text.Colour;
+					params.Kerning = text.Kerning;
+					params.LineSpacing = text.LineSpacing;
+
+					Renderer2D::DrawString(text.TextString, text.FontAsset, transform.GetTransform(), params, (int)entityID);
+				}
+			}
+
 			Renderer2D::EndScene();
 		}
 	}
