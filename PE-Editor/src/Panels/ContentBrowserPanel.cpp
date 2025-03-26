@@ -158,11 +158,17 @@ namespace PaulEngine
 			ImGui::ImageButton("thumbnail", (ImTextureID)icon->GetRendererID(), ImVec2(m_ThumbnailSize, m_ThumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
 
 			if (ImGui::BeginPopupContextItem()) {
-				if (ImGui::MenuItem("Import"))
-				{
-					auto relativePath = std::filesystem::relative(p.path(), Project::GetAssetDirectory());
-					Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativePath);
-					RefreshAssetTree();
+				auto relativePath = std::filesystem::relative(p.path(), Project::GetAssetDirectory());
+				if (!Project::GetActive()->GetEditorAssetManager()->IsAssetRegistered(relativePath)) {
+					if (ImGui::MenuItem("Import temporary"))
+					{
+						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativePath, false);
+						RefreshAssetTree();
+					}
+					if (ImGui::MenuItem("Import persistent")) {
+						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativePath, true);
+						RefreshAssetTree();
+					}
 				}
 				ImGui::EndPopup();
 			}

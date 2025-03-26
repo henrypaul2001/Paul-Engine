@@ -366,6 +366,24 @@ namespace PaulEngine {
 
 		OnUIDrawToolbar();
 
+		ImGui::Begin("Asset Manager Debug");
+		const AssetMap& tempAssets = Project::GetActive()->GetEditorAssetManager()->GetTempAssetMap();
+		const AssetMap& persistentAssets = Project::GetActive()->GetEditorAssetManager()->GetPersistentAssetMap();
+
+		ImGui::Text("Temp Assets: %d", tempAssets.size());
+		ImGui::Separator();
+		for (auto& [handle, asset] : tempAssets) {
+			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
+		}
+
+		ImGui::Text("Persistent Assets: %d", persistentAssets.size());
+		ImGui::Separator();
+		for (auto& [handle, asset] : persistentAssets) {
+			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
+		}
+
+		ImGui::End();
+
 		ImGui::End();
 	}
 

@@ -36,6 +36,9 @@ namespace PaulEngine
 		void AddToLoadedAssets(Ref<Asset> asset, bool persistent = false);
 		void UnloadAsset(AssetHandle& handle);
 
+		const AssetMap& GetTempAssetMap() const { return m_LoadedAssets; }
+		const AssetMap& GetPersistentAssetMap() const { return m_LoadedPersistentAssets; }
+
 		void SerializeAssetRegistry();
 		bool DeserializeAssetRegistry();
 	private:
