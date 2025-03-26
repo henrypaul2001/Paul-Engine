@@ -18,6 +18,7 @@ namespace PaulEngine
 	{
 		AssetType Type = AssetType::None;
 		std::filesystem::path FilePath;
+		bool Persistent = false;
 
 		operator bool() const { return Type != AssetType::None; }
 	};
@@ -29,6 +30,7 @@ namespace PaulEngine
 	{
 	public:
 		AssetHandle Handle;
+		virtual ~Asset() {}
 
 		virtual AssetType GetType() const = 0;
 	};

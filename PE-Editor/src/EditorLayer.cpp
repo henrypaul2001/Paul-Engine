@@ -36,6 +36,7 @@ namespace PaulEngine {
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
+		m_ActiveSceneHandle = 0;
 
 		m_IconPlay = TextureImporter::LoadTexture2D("Resources/Icons/mingcute--play-fill-light.png");
 		m_IconStop = TextureImporter::LoadTexture2D("Resources/Icons/mingcute--stop-fill-light.png");
@@ -667,7 +668,8 @@ namespace PaulEngine {
 		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
 		if (m_ActiveSceneHandle != 0) {
-			Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
+			//Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
+			Project::GetActive()->GetEditorAssetManager()->ReleaseTempAssets();
 		}
 
 		m_ActiveScene = m_EditorScene;

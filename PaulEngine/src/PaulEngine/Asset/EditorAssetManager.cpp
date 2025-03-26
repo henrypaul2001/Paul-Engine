@@ -24,25 +24,40 @@ namespace PaulEngine
 		return s_AssetExtensionMap.at(extension);
 	}
 
-	bool EditorAssetManager::IsAssetHandleValid(AssetHandle handle) const
+	bool EditorAssetManager::IsAssetRegistered(AssetHandle handle) const
 	{
 		return handle != 0 && m_AssetRegistry.find(handle) != m_AssetRegistry.end();
 	}
 
 	bool EditorAssetManager::IsAssetLoaded(AssetHandle handle) const
 	{
-		return m_LoadedAssets.find(handle) != m_LoadedAssets.end();
+		return (IsAssetPersistentLoaded(handle) || IsAssetTempLoaded(handle));
 	}
 
 	AssetType EditorAssetManager::GetAssetType(AssetHandle handle) const
 	{
-		if (!IsAssetHandleValid(handle)) {
+		if (!IsAssetRegistered(handle)) {
 			return AssetType::None;
 		}
 		return m_AssetRegistry.at(handle).Type;
 	}
 
-	AssetHandle EditorAssetManager::ImportAsset(const std::filesystem::path& filepath)
+	bool EditorAssetManager::IsAssetTempLoaded(AssetHandle handle) const
+	{
+		return m_LoadedAssets.find(handle) != m_LoadedAssets.end();
+	}
+
+	bool EditorAssetManager::IsAssetPersistentLoaded(AssetHandle handle) const
+	{
+		return m_LoadedPersistentAssets.find(handle) != m_LoadedPersistentAssets.end();
+	}
+
+	void EditorAssetManager::ReleaseTempAssets()
+	{
+		m_LoadedAssets.clear();
+	}
+
+	AssetHandle EditorAssetManager::ImportAsset(const std::filesystem::path& filepath, const bool persistent)
 	{
 		if (IsAssetRegistered(filepath)) {
 			return m_AssetFileRegistry.at(filepath);
@@ -55,12 +70,13 @@ namespace PaulEngine
 		if (metadata.Type == AssetType::None) {
 			return AssetHandle(0);
 		}
+		metadata.Persistent = persistent;
+
 		Ref<Asset> asset = AssetImporter::ImportAsset(handle, metadata);
-		
 		if (asset)
 		{
 			asset->Handle = handle;
-			m_LoadedAssets[handle] = asset;
+			AddToLoadedAssets(asset, persistent);
 			m_AssetRegistry[handle] = metadata;
 			m_AssetFileRegistry[filepath] = handle;
 			SerializeAssetRegistry();
@@ -71,13 +87,16 @@ namespace PaulEngine
 
 	Ref<Asset> EditorAssetManager::GetAsset(AssetHandle handle)
 	{
-		if (!IsAssetHandleValid(handle)) {
+		if (!IsAssetRegistered(handle)) {
 			return nullptr;
 		}
 
 		Ref<Asset> asset;
-		if (IsAssetLoaded(handle)) {
+		if (IsAssetTempLoaded(handle)) {
 			asset = m_LoadedAssets.at(handle);
+		}
+		else if (IsAssetPersistentLoaded(handle)) {
+			asset = m_LoadedPersistentAssets.at(handle);
 		}
 		else {
 			// Load asset if not already loaded
@@ -86,7 +105,7 @@ namespace PaulEngine
 			if (!asset) {
 				PE_CORE_ERROR("Asset import failed at path '{0}'", metadata.FilePath.string().c_str());
 			}
-			m_LoadedAssets[handle] = asset;
+			AddToLoadedAssets(asset, metadata.Persistent);
 		}
 
 		return asset;
@@ -107,9 +126,29 @@ namespace PaulEngine
 		return GetMetadata(handle).FilePath;
 	}
 
+	void EditorAssetManager::AddToLoadedAssets(Ref<Asset> asset, bool persistent)
+	{
+		if (persistent) {
+			m_LoadedPersistentAssets[asset->Handle] = asset;
+		}
+		else {
+			m_LoadedAssets[asset->Handle] = asset;
+		}
+	}
+
 	void EditorAssetManager::UnloadAsset(AssetHandle& handle)
 	{
-		if (m_LoadedAssets.erase(handle) == 0) {
+		if (IsAssetTempLoaded(handle)) {
+			if (m_LoadedAssets.erase(handle) == 0) {
+				PE_CORE_WARN("Attempted to unload temp asset not currently loaded with handle '{0}'", (uint64_t)handle);
+			}
+		}
+		else if (IsAssetPersistentLoaded(handle)) {
+			if (m_LoadedPersistentAssets.erase(handle) == 0) {
+				PE_CORE_WARN("Attempted to unload persistent asset not currently loaded with handle '{0}'", (uint64_t)handle);
+			}
+		}
+		else {
 			PE_CORE_WARN("Attempted to unload asset not currently loaded with handle '{0}'", (uint64_t)handle);
 		}
 		handle = 0;
@@ -131,6 +170,8 @@ namespace PaulEngine
 
 				std::string filepathString = metadata.FilePath.string();
 				out << YAML::Key << "Filepath" << YAML::Value << filepathString;
+
+				out << YAML::Key << "Persistent" << YAML::Value << metadata.Persistent;
 
 				out << YAML::Value << "Type" << YAML::Value << AssetTypeToString(metadata.Type);
 				out << YAML::EndMap;
@@ -172,6 +213,7 @@ namespace PaulEngine
 			AssetHandle handle = node["Handle"].as<uint64_t>();
 			auto& metadata = m_AssetRegistry[handle];
 			metadata.FilePath = node["Filepath"].as<std::string>();
+			metadata.Persistent = node["Persistent"].as<bool>();
 			metadata.Type = AssetTypeFromString(node["Type"].as<std::string>());
 			m_AssetFileRegistry[metadata.FilePath] = handle;
 		}

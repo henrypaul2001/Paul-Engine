@@ -16,7 +16,7 @@ namespace PaulEngine
 
 		static bool IsAssetHandleValid(AssetHandle handle)
 		{
-			return Project::GetActive()->GetAssetManager()->IsAssetHandleValid(handle);
+			return Project::GetActive()->GetAssetManager()->IsAssetRegistered(handle);
 		}
 
 		static bool IsAssetLoaded(AssetHandle handle)

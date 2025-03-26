@@ -9,7 +9,7 @@ namespace PaulEngine
 		return Ref<Asset>();
 	}
 
-	bool RuntimeAssetManager::IsAssetHandleValid(AssetHandle handle) const
+	bool RuntimeAssetManager::IsAssetRegistered(AssetHandle handle) const
 	{
 		PE_CORE_ASSERT(false, "Not yet implemented");
 		return false;
