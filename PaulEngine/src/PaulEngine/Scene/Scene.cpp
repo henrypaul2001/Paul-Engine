@@ -81,6 +81,7 @@ namespace PaulEngine
 		CopyComponent<ComponentRigidBody2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentBoxCollider2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentCircleCollider2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentTextRenderer>(dstSceneRegistry, srcSceneRegistry, entityMap);
 
 		return newScene;
 	}
