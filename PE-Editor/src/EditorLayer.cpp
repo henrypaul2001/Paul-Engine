@@ -63,9 +63,6 @@ namespace PaulEngine {
 		}
 
 		s_Font = Font::GetDefault();
-		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(m_IconPlay, true);
-		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(m_IconStop, true);
-		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(m_IconSimulate, true);
 
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");

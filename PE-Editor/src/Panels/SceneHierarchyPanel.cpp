@@ -495,6 +495,53 @@ namespace PaulEngine
 		// Text Component
 		DrawComponent<ComponentTextRenderer>("Text Renderer", entity, true, [](ComponentTextRenderer& component) {
 			ImGui::InputTextMultiline("Text String", &component.TextString);
+
+			{
+				std::string label = "None";
+				bool isFontValid = false;
+				if (component.Font != 0) {
+					if (AssetManager::IsAssetHandleValid(component.Font) && AssetManager::GetAssetType(component.Font) == AssetType::Font) {
+						const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(component.Font);
+						label = metadata.FilePath.filename().string();
+						isFontValid = true;
+					}
+					else {
+						label = "Invalid";
+					}
+				}
+
+				ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+				buttonLabelSize.x += 20.0f;
+				float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+				ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+					{
+						AssetHandle handle = *(AssetHandle*)payload->Data;
+						if (AssetManager::GetAssetType(handle) == AssetType::Font) {
+							component.Font = handle;
+						}
+						else {
+							PE_CORE_WARN("Invalid asset type. Font needed for text component");
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+				if (isFontValid) {
+					ImGui::SameLine();
+					ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+					float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+					if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+						component.Font = Font::GetDefault()->Handle;
+					}
+				}
+				ImGui::SameLine();
+				ImGui::Text("Font");
+			}
+
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
 			ImGui::DragFloat("Kerning", &component.Kerning, 0.025f);
 			ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.025f);

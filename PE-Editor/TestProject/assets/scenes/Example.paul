@@ -53,12 +53,12 @@ Entities:
     TagComponent:
       Tag: TextTest
     TransformComponent:
-      Position: [7.5, 3.500001, 2.25]
+      Position: [5.25, 3.500001, 0.26373935]
       Rotation: [0, 0, 5.9604645e-08]
       Scale: [1, 1, 1]
     TextRendererComponent:
       TextString: "Hello, World!\nHello, new line!"
-      FontHandle: 4817566063772792482
+      FontHandle: 3231254291038093228
       Colour: [0.24741329, 0.7263112, 0.7900356, 1]
       Kerning: 0.3
       LineSpacing: 1.9

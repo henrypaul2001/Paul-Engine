@@ -638,7 +638,6 @@ namespace PaulEngine {
 			DrawString(string, font, transform, textParams, entityID);
 		}
 		else {
-			PE_CORE_WARN("Invalid font handle '{0}'. Using default", (uint64_t)fontHandle);
 			DrawString(string, Font::GetDefault(), transform, textParams, entityID);
 		}
 	}
