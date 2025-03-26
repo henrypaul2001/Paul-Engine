@@ -260,15 +260,12 @@ namespace PaulEngine {
 		}
 
 		const Renderer2D::Statistics& stats = Renderer2D::GetStats();
-		ImGui::Begin("Renderer2D");
+		ImGui::Begin("Renderer 2D Debug");
 		std::string hoveredEntityName = "null";
 		if (m_HoveredEntity.BelongsToScene(m_ActiveScene) && m_HoveredEntity) {
 			hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;
 		}
 		ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
-		
-		// Test font display
-		ImGui::Image((ImTextureID)s_Font->GetAtlasTexture()->GetRendererID(), ImVec2(512, 512), ImVec2(0, 1), ImVec2(1, 0));
 
 		ImGui::SeparatorText("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
@@ -277,6 +274,24 @@ namespace PaulEngine {
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 		ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
 		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
+		ImGui::End();
+
+		ImGui::Begin("Asset Manager Debug");
+		const AssetMap& tempAssets = Project::GetActive()->GetEditorAssetManager()->GetTempAssetMap();
+		const AssetMap& persistentAssets = Project::GetActive()->GetEditorAssetManager()->GetPersistentAssetMap();
+
+		ImGui::Text("Temp Assets: %d", tempAssets.size());
+		ImGui::Separator();
+		for (auto& [handle, asset] : tempAssets) {
+			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
+		}
+
+		ImGui::Text("Persistent Assets: %d", persistentAssets.size());
+		ImGui::Separator();
+		for (auto& [handle, asset] : persistentAssets) {
+			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
+		}
+
 		ImGui::End();
 
 		// -- Viewport --
@@ -365,24 +380,6 @@ namespace PaulEngine {
 		m_ContentBrowserPanel->ImGuiRender();
 
 		OnUIDrawToolbar();
-
-		ImGui::Begin("Asset Manager Debug");
-		const AssetMap& tempAssets = Project::GetActive()->GetEditorAssetManager()->GetTempAssetMap();
-		const AssetMap& persistentAssets = Project::GetActive()->GetEditorAssetManager()->GetPersistentAssetMap();
-
-		ImGui::Text("Temp Assets: %d", tempAssets.size());
-		ImGui::Separator();
-		for (auto& [handle, asset] : tempAssets) {
-			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
-		}
-
-		ImGui::Text("Persistent Assets: %d", persistentAssets.size());
-		ImGui::Separator();
-		for (auto& [handle, asset] : persistentAssets) {
-			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
-		}
-
-		ImGui::End();
 
 		ImGui::End();
 	}
