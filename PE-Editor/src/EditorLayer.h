@@ -36,7 +36,7 @@ namespace PaulEngine {
 		void OpenScene(AssetHandle handle);
 		void SaveSceneAs(const std::filesystem::path& filepath = std::filesystem::path());
 
-		void NewProject();
+		void NewProject(std::filesystem::path filepath = std::filesystem::path());
 		bool OpenProject();
 		void OpenProject(const std::filesystem::path& path);
 		void SaveProjectAs();

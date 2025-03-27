@@ -1,20 +1,20 @@
 AssetRegistry:
+  - Handle: 266139391440945140
+    Filepath: textures\awesomeface.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 3231254291038093228
     Filepath: fonts\Bangers-Regular.ttf
     Persistent: false
     Type: AssetType::Font
-  - Handle: 266139391440945140
-    Filepath: textures\awesomeface.png
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 4566192558940935376
     Filepath: scenes\3DCube.paul
     Persistent: false

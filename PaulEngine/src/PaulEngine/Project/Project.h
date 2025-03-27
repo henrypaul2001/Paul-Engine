@@ -11,6 +11,7 @@ namespace PaulEngine
 		AssetHandle StartScene = 0;
 		std::filesystem::path AssetDirectory;
 		std::filesystem::path AssetRegistryPath;
+		std::filesystem::path ProjectDirectory;
 	};
 
 	class Project
@@ -43,7 +44,7 @@ namespace PaulEngine
 		Ref<RuntimeAssetManager> GetRuntimeAssetManager() { return std::static_pointer_cast<RuntimeAssetManager>(m_AssetManager); }
 		Ref<EditorAssetManager> GetEditorAssetManager() { return std::static_pointer_cast<EditorAssetManager>(m_AssetManager); }
 
-		static Ref<Project> New();
+		static Ref<Project> New(const ProjectSpecification& spec);
 		static Ref<Project> Load(const std::filesystem::path& path);
 		static bool SaveActive(const std::filesystem::path& path);
 

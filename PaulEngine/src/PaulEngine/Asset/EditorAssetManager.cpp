@@ -78,8 +78,7 @@ namespace PaulEngine
 		{
 			asset->Handle = handle;
 			AddToLoadedAssets(asset, persistent);
-			m_AssetRegistry[handle] = metadata;
-			m_AssetFileRegistry[filepath] = handle;
+			RegisterAsset(handle, metadata);
 			SerializeAssetRegistry();
 		}
 
@@ -125,6 +124,12 @@ namespace PaulEngine
 	const std::filesystem::path& EditorAssetManager::GetFilepath(AssetHandle handle) const
 	{
 		return GetMetadata(handle).FilePath;
+	}
+
+	void EditorAssetManager::RegisterAsset(AssetHandle handle, AssetMetadata metadata)
+	{
+		m_AssetRegistry[handle] = metadata;
+		m_AssetFileRegistry[metadata.FilePath] = handle;
 	}
 
 	void EditorAssetManager::AddToLoadedAssets(Ref<Asset> asset, bool persistent)
@@ -182,7 +187,7 @@ namespace PaulEngine
 		}
 
 		std::error_code error;
-		std::filesystem::create_directories(path, error);
+		std::filesystem::create_directories(path.parent_path(), error);
 		std::ofstream fout = std::ofstream(path);
 		fout << out.c_str();
 	}

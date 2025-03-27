@@ -46,19 +46,8 @@ namespace PaulEngine {
 			OpenProject(projectFilepath);
 		}
 		else {
-			// TODO: Once a default project spec has been provided for NewProject(), this will be replaced with:
-			// if (!OpenProject()) { NewProject(); }
-			bool projectSelected = OpenProject();
-			int attempts = 0;
-			while (!projectSelected) {
-				PE_CORE_WARN("Invalid project file");
-				projectSelected = OpenProject();
-				attempts++;
-
-				if (attempts > 5) {
-					Application::Get().Close();
-					break;
-				}
+			if (!OpenProject()) {
+				NewProject();
 			}
 		}
 
@@ -653,6 +642,7 @@ namespace PaulEngine {
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_CurrentFilepath = std::filesystem::path();
+		m_ActiveSceneHandle = m_ActiveScene->Handle;
 	}
 
 	void EditorLayer::OpenScene()
@@ -668,7 +658,8 @@ namespace PaulEngine {
 	void EditorLayer::OpenScene(AssetHandle handle)
 	{
 		PE_CORE_ASSERT(handle, "Invalid scene handle");
-		AssetType type = Project::GetActive()->GetEditorAssetManager()->GetAssetType(handle);
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		AssetType type = assetManager->GetAssetType(handle);
 		if (type != AssetType::Scene) {
 			PE_CORE_ERROR("Invalid asset type '{0}', '{1}' required", AssetTypeToString(type), AssetTypeToString(AssetType::Scene));
 			return;
@@ -684,13 +675,14 @@ namespace PaulEngine {
 
 		if (m_ActiveSceneHandle != 0) {
 			//Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
-			Project::GetActive()->GetEditorAssetManager()->ReleaseTempAssets();
+			assetManager->ReleaseTempAssets();
 		}
 
 		m_ActiveScene = m_EditorScene;
 		m_ActiveSceneHandle = handle;
 
-		m_CurrentFilepath = Project::GetActive()->GetEditorAssetManager()->GetFilepath(handle);
+		m_CurrentFilepath = assetManager->GetFilepath(handle);
+		if (!assetManager->IsAssetLoaded(handle)) { assetManager->AddToLoadedAssets(m_ActiveScene, assetManager->GetMetadata(handle).Persistent); }
 	}
 
 	void EditorLayer::SaveSceneAs(const std::filesystem::path& filepath)
@@ -705,9 +697,35 @@ namespace PaulEngine {
 		}
 	}
 
-	void EditorLayer::NewProject()
+	void EditorLayer::NewProject(std::filesystem::path filepath)
 	{
-		Project::New();
+		while(filepath.empty())
+		{
+			filepath = std::filesystem::proximate(FileDialogs::SaveFile("Paul Engine Project (*.pproj)\0*.pproj\0"));
+		}
+
+		ProjectSpecification spec;
+		spec.Name = filepath.filename().string();
+		spec.AssetDirectory = "assets";
+		spec.AssetRegistryPath = "asset_registry.pregistry";
+		spec.ProjectDirectory = filepath;
+		
+		NewScene();
+		spec.StartScene = m_ActiveSceneHandle;
+		Project::New(spec);
+
+		SaveSceneAs("Scenes/UntitledScene.paul");
+
+		AssetMetadata sceneData;
+		sceneData.FilePath = m_CurrentFilepath;
+		sceneData.Persistent = false;
+		sceneData.Type = AssetType::Scene;
+
+		Project::GetActive()->GetEditorAssetManager()->RegisterAsset(m_ActiveSceneHandle, sceneData);
+
+		Project::SaveActive(filepath);
+
+		m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
 	}
 
 	bool EditorLayer::OpenProject()
@@ -716,7 +734,7 @@ namespace PaulEngine {
 
 		if (!filepath.empty())
 		{
-			OpenProject(filepath);
+			OpenProject(std::filesystem::proximate(filepath));
 			return true;
 		}
 		else {
@@ -739,7 +757,7 @@ namespace PaulEngine {
 	{
 		std::string path = FileDialogs::SaveFile("Paul Engine Project (*.pproj)\0*.pproj\0");
 		if (!path.empty()) {
-			Project::SaveActive(path);
+			Project::SaveActive(std::filesystem::proximate(path));
 		}
 	}
 

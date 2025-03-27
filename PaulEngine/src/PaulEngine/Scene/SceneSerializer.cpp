@@ -273,7 +273,7 @@ namespace PaulEngine
 		out << YAML::EndMap;
 
 		std::error_code error;
-		std::filesystem::create_directories(filepath, error);
+		std::filesystem::create_directories(filepath.parent_path(), error);
 		std::ofstream fout = std::ofstream(filepath);
 		fout << out.c_str();
 	}

@@ -4,9 +4,13 @@
 
 namespace PaulEngine
 {
-	Ref<Project> Project::New()
+	Ref<Project> Project::New(const ProjectSpecification& spec)
 	{
 		s_ActiveProject = CreateRef<Project>();
+		s_ActiveProject->m_Spec = spec;
+		s_ActiveProject->m_ProjectDirectory = spec.ProjectDirectory.parent_path();
+		Ref<EditorAssetManager> editorAssetManager = CreateRef<EditorAssetManager>();
+		s_ActiveProject->m_AssetManager = editorAssetManager;
 		return s_ActiveProject;
 	}
 

@@ -33,6 +33,7 @@ namespace PaulEngine
 
 		const AssetRegistry& GetAssetRegistry() const { return m_AssetRegistry; }
 
+		void RegisterAsset(AssetHandle handle, AssetMetadata metadata);
 		void AddToLoadedAssets(Ref<Asset> asset, bool persistent = false);
 		void UnloadAsset(AssetHandle& handle);
 

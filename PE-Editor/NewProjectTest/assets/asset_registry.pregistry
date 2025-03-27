@@ -1,0 +1,9 @@
+AssetRegistry:
+  - Handle: 5898227015900433967
+    Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
+    Persistent: true
+    Type: AssetType::Font
+  - Handle: 13659759646985167498
+    Filepath: Scenes/UntitledScene.paul
+    Persistent: false
+    Type: AssetType::Scene
