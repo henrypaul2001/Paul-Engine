@@ -36,10 +36,12 @@ namespace PaulEngine {
 		void OpenScene(AssetHandle handle);
 		void SaveSceneAs(const std::filesystem::path& filepath = std::filesystem::path());
 
-		void NewProject(std::filesystem::path filepath = std::filesystem::path());
+		bool NewProject(std::filesystem::path filepath = std::filesystem::path());
 		bool OpenProject();
 		bool OpenProject(const std::filesystem::path& path);
 		void SaveProjectAs();
+
+		void DrawProjectSelectUI();
 
 		bool CanPickEntities();
 
@@ -80,5 +82,7 @@ namespace PaulEngine {
 			Edit = 0, Play = 1, Simulate = 2
 		};
 		SceneState m_SceneState = SceneState::Edit;
+
+		bool m_ProjectSelected = false;
 	};
 }

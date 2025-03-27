@@ -41,19 +41,12 @@ namespace PaulEngine {
 		m_IconSimulate = TextureImporter::LoadTexture2D("Resources/Icons/mingcute--play-line-light.png");
 
 		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
-		bool success = false;
 		if (commandLineArgs.Count > 1) {
 			auto projectFilepath = commandLineArgs[1];
-			success = OpenProject(projectFilepath);
+			m_ProjectSelected = OpenProject(projectFilepath);
 		}
 
-		if (!success) {
-			if (!OpenProject()) {
-				NewProject();
-			}
-		}
-
-		s_Font = Font::GetDefault();
+		if (m_ProjectSelected) { s_Font = Font::GetDefault(); }
 
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
@@ -135,8 +128,9 @@ namespace PaulEngine {
 		// Clear entity ID attachment to -1
 		m_Framebuffer->ClearColourAttachment(1, -1);
 
-		switch (m_SceneState)
-		{
+		if (m_ProjectSelected) {
+			switch (m_SceneState)
+			{
 			case SceneState::Edit:
 				m_Camera.OnUpdate(timestep, ImGuizmo::IsOver());
 				m_ActiveScene->OnUpdateOffline(timestep, m_Camera);
@@ -148,26 +142,27 @@ namespace PaulEngine {
 			case SceneState::Play:
 				m_ActiveScene->OnUpdateRuntime(timestep);
 				break;
+			}
+
+			ImVec2 mousePos = ImGui::GetMousePos();
+			mousePos.x -= m_ViewportBounds[0].x;
+			mousePos.y -= m_ViewportBounds[0].y;
+			glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+			mousePos.y = viewportSize.y - mousePos.y;
+
+			int mouseX = (int)mousePos.x;
+			int mouseY = (int)mousePos.y;
+
+			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+			{
+				m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
+			}
+			else {
+				m_HoveredEntity = Entity();
+			}
+
+			OnDebugOverlayDraw();
 		}
-
-		ImVec2 mousePos = ImGui::GetMousePos();
-		mousePos.x -= m_ViewportBounds[0].x;
-		mousePos.y -= m_ViewportBounds[0].y;
-		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-		mousePos.y = viewportSize.y - mousePos.y;
-
-		int mouseX = (int)mousePos.x;
-		int mouseY = (int)mousePos.y;
-
-		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
-		{
-			m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
-		}
-		else {
-			m_HoveredEntity = Entity();
-		}
-
-		OnDebugOverlayDraw();
 
 		m_Framebuffer->Unbind();
 	}
@@ -204,174 +199,180 @@ namespace PaulEngine {
 			ImGui::PopStyleVar(2);
 		}
 
-		// Dockspace
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiStyle& style = ImGui::GetStyle();
-		float minWindowSizeX = style.WindowMinSize.x;
-		style.WindowMinSize.x = 380.0f;
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
-		style.WindowMinSize.x = minWindowSizeX;
-
-		if (ImGui::BeginMenuBar())
+		if (m_ProjectSelected)
 		{
-			if (ImGui::BeginMenu("File"))
+			// Dockspace
+			ImGuiIO& io = ImGui::GetIO();
+			ImGuiStyle& style = ImGui::GetStyle();
+			float minWindowSizeX = style.WindowMinSize.x;
+			style.WindowMinSize.x = 380.0f;
+			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+			}
+			style.WindowMinSize.x = minWindowSizeX;
+
+			if (ImGui::BeginMenuBar())
 			{
-				ImGui::SeparatorText("Scene");
-				if (ImGui::MenuItem("New", "LCtrl+N")) {
-					NewScene();
-				}
-				if (ImGui::MenuItem("Open...", "LCrtl+O"))
+				if (ImGui::BeginMenu("File"))
 				{
-					OpenScene();
+					ImGui::SeparatorText("Scene");
+					if (ImGui::MenuItem("New", "LCtrl+N")) {
+						NewScene();
+					}
+					if (ImGui::MenuItem("Open...", "LCrtl+O"))
+					{
+						OpenScene();
+					}
+					ImGui::Separator();
+					if (ImGui::MenuItem("Save", "LCtrl+S")) {
+						SaveSceneAs(m_CurrentFilepath);
+					}
+					if (ImGui::MenuItem("Save As...", "LCtrl+LShift+S")) {
+						SaveSceneAs();
+					}
+					ImGui::SeparatorText("Project");
+					ImGui::BeginDisabled();
+					if (ImGui::MenuItem("New Project")) { NewProject(); }
+					ImGui::EndDisabled();
+					if (ImGui::MenuItem("Open Project...")) { OpenProject(); }
+					if (ImGui::MenuItem("Save Project As...")) { SaveProjectAs(); }
+					if (ImGui::MenuItem("Exit", "ESC")) { Application::Get().Close(); }
+					ImGui::EndMenu();
 				}
-				ImGui::Separator();
-				if (ImGui::MenuItem("Save", "LCtrl+S")) {
-					SaveSceneAs(m_CurrentFilepath);
+				if (ImGui::BeginMenu("Edit")) {
+					ImGui::Checkbox("Show colliders", &m_ShowColliders);
+					ImGui::EndMenu();
 				}
-				if (ImGui::MenuItem("Save As...", "LCtrl+LShift+S")) {
-					SaveSceneAs();
+				ImGui::EndMenuBar();
+			}
+
+			const Renderer2D::Statistics& stats = Renderer2D::GetStats();
+			ImGui::Begin("Renderer 2D Debug");
+			std::string hoveredEntityName = "null";
+			if (m_HoveredEntity.BelongsToScene(m_ActiveScene) && m_HoveredEntity) {
+				hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;
+			}
+			ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
+
+			ImGui::SeparatorText("Renderer2D Stats:");
+			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+			ImGui::Text("Quad Count: %d", stats.QuadCount);
+			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
+			ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
+			ImGui::End();
+
+			ImGui::Begin("Asset Manager Debug");
+			const AssetMap& tempAssets = Project::GetActive()->GetEditorAssetManager()->GetTempAssetMap();
+			const AssetMap& persistentAssets = Project::GetActive()->GetEditorAssetManager()->GetPersistentAssetMap();
+
+			ImGui::Text("Temp Assets: %d", tempAssets.size());
+			ImGui::Separator();
+			for (auto& [handle, asset] : tempAssets) {
+				ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
+			}
+
+			ImGui::Text("Persistent Assets: %d", persistentAssets.size());
+			ImGui::Separator();
+			for (auto& [handle, asset] : persistentAssets) {
+				ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
+			}
+
+			ImGui::End();
+
+			// -- Viewport --
+			// --------------
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::Begin("Viewport");
+
+			ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+			ImVec2 viewportOffset = ImGui::GetWindowPos();
+			m_ViewportBounds[0] = glm::vec2(viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y);
+			m_ViewportBounds[1] = glm::vec2(viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y);
+
+			m_ViewportFocus = ImGui::IsWindowFocused();
+			m_ViewportHovered = ImGui::IsWindowHovered();
+			Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocus && !m_ViewportHovered);
+
+			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
+
+			uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+			ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+			if (ImGui::BeginDragDropTarget()) {
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+				if (payload) {
+					AssetHandle handle = *(AssetHandle*)payload->Data;
+					OpenScene(handle);
 				}
-				ImGui::SeparatorText("Project");
-				ImGui::BeginDisabled();
-				if (ImGui::MenuItem("New Project")) { NewProject(); }
-				ImGui::EndDisabled();
-				if (ImGui::MenuItem("Open Project...")) { OpenProject(); }
-				if (ImGui::MenuItem("Save Project As...")) { SaveProjectAs(); }
-				if (ImGui::MenuItem("Exit", "ESC")) { Application::Get().Close(); }
-				ImGui::EndMenu();
+				ImGui::EndDragDropTarget();
 			}
-			if (ImGui::BeginMenu("Edit")) {
-				ImGui::Checkbox("Show colliders", &m_ShowColliders);
-				ImGui::EndMenu();
+
+			// Gizmos
+			Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+			if (selectedEntity && m_GizmoType != -1) {
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::SetDrawlist();
+				ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
+
+				glm::mat4 cameraView;
+				glm::mat4 cameraProjection;
+
+				if (m_SceneState == SceneState::Play) {
+					Entity runtimeCameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+					Camera& camera = runtimeCameraEntity.GetComponent<ComponentCamera>().Camera;
+					cameraView = glm::inverse(runtimeCameraEntity.GetComponent<ComponentTransform>().GetTransform());
+					cameraProjection = camera.GetProjection();
+				}
+				else {
+					cameraView = m_Camera.GetViewMatrix();
+					cameraProjection = m_Camera.GetProjection();
+				}
+
+				// Selected entity
+				ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+				glm::mat4 entityTransform = transformComponent.GetTransform();
+
+				// Snapping
+				bool snap = Input::IsKeyPressed(PE_KEY_LEFT_CONTROL);
+				float snapValue = 0.25f;
+				if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
+					snapValue = 45.0f;
+				}
+
+				float snapValues[3] = { snapValue, snapValue, snapValue };
+				ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(entityTransform),
+					nullptr, snap ? snapValues : nullptr);
+
+				if (ImGuizmo::IsUsing()) {
+					glm::vec3 position = glm::vec3();
+					glm::vec3 rotation = glm::vec3();
+					glm::vec3 scale = glm::vec3();
+					Maths::DecomposeTransform(entityTransform, position, rotation, scale);
+					glm::vec3 deltaRotation = rotation - transformComponent.Rotation;
+
+					transformComponent.Position = position;
+					transformComponent.Rotation += deltaRotation;
+					transformComponent.Scale = scale;
+				}
 			}
-			ImGui::EndMenuBar();
+
+			ImGui::End();
+			ImGui::PopStyleVar();
+
+			m_SceneHierarchyPanel.OnImGuiRender();
+			m_ContentBrowserPanel->ImGuiRender();
+
+			OnUIDrawToolbar();
 		}
-
-		const Renderer2D::Statistics& stats = Renderer2D::GetStats();
-		ImGui::Begin("Renderer 2D Debug");
-		std::string hoveredEntityName = "null";
-		if (m_HoveredEntity.BelongsToScene(m_ActiveScene) && m_HoveredEntity) {
-			hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;
+		else 
+		{
+			DrawProjectSelectUI();
 		}
-		ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
-
-		ImGui::SeparatorText("Renderer2D Stats:");
-		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-		ImGui::Text("Quad Count: %d", stats.QuadCount);
-		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
-		ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
-		ImGui::End();
-
-		ImGui::Begin("Asset Manager Debug");
-		const AssetMap& tempAssets = Project::GetActive()->GetEditorAssetManager()->GetTempAssetMap();
-		const AssetMap& persistentAssets = Project::GetActive()->GetEditorAssetManager()->GetPersistentAssetMap();
-
-		ImGui::Text("Temp Assets: %d", tempAssets.size());
-		ImGui::Separator();
-		for (auto& [handle, asset] : tempAssets) {
-			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
-		}
-
-		ImGui::Text("Persistent Assets: %d", persistentAssets.size());
-		ImGui::Separator();
-		for (auto& [handle, asset] : persistentAssets) {
-			ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
-		}
-
-		ImGui::End();
-
-		// -- Viewport --
-		// --------------
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("Viewport");
-
-		ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
-		ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
-		ImVec2 viewportOffset = ImGui::GetWindowPos();
-		m_ViewportBounds[0] = glm::vec2(viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y);
-		m_ViewportBounds[1] = glm::vec2(viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y);
-
-		m_ViewportFocus = ImGui::IsWindowFocused();
-		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocus && !m_ViewportHovered);
-
-		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
-
-		uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
-		ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-
-		if (ImGui::BeginDragDropTarget()) {
-			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
-			if (payload) {
-				AssetHandle handle = *(AssetHandle*)payload->Data;
-				OpenScene(handle);
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		// Gizmos
-		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selectedEntity && m_GizmoType != -1) {
-			ImGuizmo::SetOrthographic(false);
-			ImGuizmo::SetDrawlist();
-			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
-
-			glm::mat4 cameraView;
-			glm::mat4 cameraProjection;
-
-			if (m_SceneState == SceneState::Play) {
-				Entity runtimeCameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-				Camera& camera = runtimeCameraEntity.GetComponent<ComponentCamera>().Camera;
-				cameraView = glm::inverse(runtimeCameraEntity.GetComponent<ComponentTransform>().GetTransform());
-				cameraProjection = camera.GetProjection();
-			}
-			else {
-				cameraView = m_Camera.GetViewMatrix();
-				cameraProjection = m_Camera.GetProjection();
-			}
-
-			// Selected entity
-			ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
-			glm::mat4 entityTransform = transformComponent.GetTransform();
-
-			// Snapping
-			bool snap = Input::IsKeyPressed(PE_KEY_LEFT_CONTROL);
-			float snapValue = 0.25f;
-			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
-				snapValue = 45.0f;
-			}
-
-			float snapValues[3] = { snapValue, snapValue, snapValue };
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(entityTransform), 
-				nullptr, snap ? snapValues : nullptr);
-
-			if (ImGuizmo::IsUsing()) {
-				glm::vec3 position = glm::vec3();
-				glm::vec3 rotation = glm::vec3();
-				glm::vec3 scale = glm::vec3();
-				Maths::DecomposeTransform(entityTransform, position, rotation, scale);
-				glm::vec3 deltaRotation = rotation - transformComponent.Rotation;
-
-				transformComponent.Position = position;
-				transformComponent.Rotation += deltaRotation;
-				transformComponent.Scale = scale;
-			}
-		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
-
-		m_SceneHierarchyPanel.OnImGuiRender();
-		m_ContentBrowserPanel->ImGuiRender();
-
-		OnUIDrawToolbar();
-
 		ImGui::End();
 	}
 
@@ -699,12 +700,14 @@ namespace PaulEngine {
 		}
 	}
 
-	void EditorLayer::NewProject(std::filesystem::path filepath)
+	bool EditorLayer::NewProject(std::filesystem::path filepath)
 	{
-		while(filepath.empty())
+
+		if (filepath.empty())
 		{
 			filepath = std::filesystem::proximate(FileDialogs::SaveFile("Paul Engine Project (*.pproj)\0*.pproj\0"));
 		}
+		if (filepath.empty()) { return false; }
 
 		ProjectSpecification spec;
 		spec.Name = filepath.filename().string();
@@ -728,6 +731,8 @@ namespace PaulEngine {
 		Project::SaveActive(filepath);
 
 		m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+
+		return true;
 	}
 
 	bool EditorLayer::OpenProject()
@@ -764,6 +769,33 @@ namespace PaulEngine {
 		if (!path.empty()) {
 			Project::SaveActive(std::filesystem::proximate(path));
 		}
+	}
+
+	void EditorLayer::DrawProjectSelectUI()
+	{
+		static bool open = true;
+		ImGui::SetNextWindowSizeConstraints(ImVec2(598.0f, 254.0f), ImVec2(1000.0f, 1000.0f));
+		ImGui::Begin("##Paul Engine", &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+		ImGui::Text("Welcome to Paul Engine.");
+
+		ImVec2 contentAvail = ImGui::GetContentRegionAvail();
+		ImVec2 newTextSize = ImGui::CalcTextSize("New Project..");
+		ImVec2 openTextSize = ImGui::CalcTextSize("Open Project..");
+		ImVec2 newSize = ImVec2(std::max(newTextSize.x, (contentAvail.x / 3.0f)), std::max(newTextSize.y * 2.0f, (contentAvail.y / 4.0f)));
+		ImVec2 openSize = ImVec2(std::max(openTextSize.x, (contentAvail.x / 3.0f)), std::max(openTextSize.y * 2.0f, (contentAvail.y / 4.0f)));
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
+		ImGui::SetCursorPos(ImVec2(contentAvail.x * 0.15f, contentAvail.y - newSize.y));
+		if (ImGui::Button("New Project..", newSize)) {
+			m_ProjectSelected = NewProject();
+		}
+		ImGui::SameLine();
+		ImGui::SetCursorPos(ImVec2(contentAvail.x - (contentAvail.x * 0.15f) - openSize.x, ImGui::GetCursorPosY()));
+		if (ImGui::Button("Open Project..", openSize)) {
+			m_ProjectSelected = OpenProject();
+		}
+		ImGui::PopStyleVar();
+		ImGui::End();
 	}
 
 	bool EditorLayer::CanPickEntities()
