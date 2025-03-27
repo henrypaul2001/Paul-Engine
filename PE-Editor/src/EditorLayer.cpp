@@ -220,7 +220,7 @@ namespace PaulEngine {
 					if (ImGui::MenuItem("New", "LCtrl+N")) {
 						NewScene();
 					}
-					if (ImGui::MenuItem("Open...", "LCrtl+O"))
+					if (ImGui::MenuItem("Open..", "LCrtl+O"))
 					{
 						OpenScene();
 					}
@@ -228,15 +228,13 @@ namespace PaulEngine {
 					if (ImGui::MenuItem("Save", "LCtrl+S")) {
 						SaveSceneAs(m_CurrentFilepath);
 					}
-					if (ImGui::MenuItem("Save As...", "LCtrl+LShift+S")) {
+					if (ImGui::MenuItem("Save As..", "LCtrl+LShift+S")) {
 						SaveSceneAs();
 					}
 					ImGui::SeparatorText("Project");
-					ImGui::BeginDisabled();
-					if (ImGui::MenuItem("New Project")) { NewProject(); }
-					ImGui::EndDisabled();
-					if (ImGui::MenuItem("Open Project...")) { OpenProject(); }
-					if (ImGui::MenuItem("Save Project As...")) { SaveProjectAs(); }
+					if (ImGui::MenuItem("New Project..")) { NewProject(); }
+					if (ImGui::MenuItem("Open Project..")) { OpenProject(); }
+					if (ImGui::MenuItem("Save Project As..")) { SaveProjectAs(); }
 					if (ImGui::MenuItem("Exit", "ESC")) { Application::Get().Close(); }
 					ImGui::EndMenu();
 				}
