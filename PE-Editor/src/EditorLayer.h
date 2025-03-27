@@ -38,7 +38,7 @@ namespace PaulEngine {
 
 		void NewProject(std::filesystem::path filepath = std::filesystem::path());
 		bool OpenProject();
-		void OpenProject(const std::filesystem::path& path);
+		bool OpenProject(const std::filesystem::path& path);
 		void SaveProjectAs();
 
 		bool CanPickEntities();

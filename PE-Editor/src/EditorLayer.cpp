@@ -41,11 +41,13 @@ namespace PaulEngine {
 		m_IconSimulate = TextureImporter::LoadTexture2D("Resources/Icons/mingcute--play-line-light.png");
 
 		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+		bool success = false;
 		if (commandLineArgs.Count > 1) {
 			auto projectFilepath = commandLineArgs[1];
-			OpenProject(projectFilepath);
+			success = OpenProject(projectFilepath);
 		}
-		else {
+
+		if (!success) {
 			if (!OpenProject()) {
 				NewProject();
 			}
@@ -742,7 +744,7 @@ namespace PaulEngine {
 		}
 	}
 
-	void EditorLayer::OpenProject(const std::filesystem::path& path)
+	bool EditorLayer::OpenProject(const std::filesystem::path& path)
 	{
 		if (Project::Load(path)) {
 			AssetHandle startScene = Project::GetActive()->GetSpecification().StartScene;
@@ -750,7 +752,10 @@ namespace PaulEngine {
 				OpenScene(startScene);
 			}
 			m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+			return true;
 		}
+		PE_CORE_ERROR("Failed to open project at path '{0}'", path.string().c_str());
+		return false;
 	}
 
 	void EditorLayer::SaveProjectAs()
