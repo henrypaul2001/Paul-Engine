@@ -143,8 +143,8 @@ project "PaulEngine"
 			"%{Library.SPIRV_Cross_GLSL_Release}"
 		}
 
-project "Sandbox"
-	location "Sandbox"
+project "Runtime"
+	location "Runtime"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"

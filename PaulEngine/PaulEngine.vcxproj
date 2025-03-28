@@ -150,15 +150,16 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\PaulEngine\Asset\FontImporter.h" />
-    <ClInclude Include="src\PaulEngine\Asset\SceneImporter.h" />
-    <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
-    <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h" />
-    <ClInclude Include="src\PaulEngine\Asset\EditorAssetManager.h" />
-    <ClInclude Include="src\PaulEngine\Asset\AssetManagerBase.h" />
-    <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
-    <ClInclude Include="src\PaulEngine\Asset\AssetManager.h" />
     <ClInclude Include="src\PaulEngine.h" />
+    <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
+    <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
+    <ClInclude Include="src\PaulEngine\Asset\AssetManager.h" />
+    <ClInclude Include="src\PaulEngine\Asset\AssetManagerBase.h" />
+    <ClInclude Include="src\PaulEngine\Asset\EditorAssetManager.h" />
+    <ClInclude Include="src\PaulEngine\Asset\FontImporter.h" />
+    <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h" />
+    <ClInclude Include="src\PaulEngine\Asset\SceneImporter.h" />
+    <ClInclude Include="src\PaulEngine\Asset\TextureImporter.h" />
     <ClInclude Include="src\PaulEngine\Core\Application.h" />
     <ClInclude Include="src\PaulEngine\Core\Buffer.h" />
     <ClInclude Include="src\PaulEngine\Core\Core.h" />
@@ -216,7 +217,6 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pepch.h" />
-    <ClInclude Include="src\PaulEngine\Asset\TextureImporter.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -639,14 +639,15 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PaulEngine\Asset\FontImporter.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\SceneImporter.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\EditorAssetManager.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\AssetManagerBase.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetManager.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\AssetManagerBase.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\EditorAssetManager.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\FontImporter.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\SceneImporter.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\TextureImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Application.cpp" />
     <ClCompile Include="src\PaulEngine\Core\Layer.cpp" />
     <ClCompile Include="src\PaulEngine\Core\LayerStack.cpp" />
@@ -690,7 +691,6 @@
     <ClCompile Include="src\pepch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Asset\TextureImporter.cpp" />
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

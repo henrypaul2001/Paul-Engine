@@ -7,6 +7,9 @@
     <Filter Include="src\PaulEngine">
       <UniqueIdentifier>{0457C5EF-F024-B9F5-D9B8-291CC525955A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Asset">
+      <UniqueIdentifier>{933E8FA0-7FCD-186A-28EC-2C65145A2910}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\PaulEngine\Core">
       <UniqueIdentifier>{DC7D8190-48DF-5E9E-D14C-A5503DAD955D}</UniqueIdentifier>
     </Filter>
@@ -75,7 +78,37 @@
     <ClInclude Include="src\PaulEngine.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\Asset.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\AssetManager.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\AssetManagerBase.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\EditorAssetManager.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\FontImporter.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\SceneImporter.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\TextureImporter.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\Application.h">
+      <Filter>src\PaulEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Core\Buffer.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\Core.h">
@@ -1503,18 +1536,35 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Asset\AssetManager.h" />
-    <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
-    <ClInclude Include="src\PaulEngine\Asset\AssetManagerBase.h" />
-    <ClInclude Include="src\PaulEngine\Asset\EditorAssetManager.h" />
-    <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h" />
-    <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
-    <ClInclude Include="src\PaulEngine\Asset\TextureImporter.h" />
-    <ClInclude Include="src\PaulEngine\Core\Buffer.h" />
-    <ClInclude Include="src\PaulEngine\Asset\SceneImporter.h" />
-    <ClInclude Include="src\PaulEngine\Asset\FontImporter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\AssetManager.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\AssetManagerBase.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\EditorAssetManager.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\FontImporter.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\SceneImporter.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\TextureImporter.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Core\Application.cpp">
       <Filter>src\PaulEngine\Core</Filter>
     </ClCompile>
@@ -1644,14 +1694,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Asset\AssetManager.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\AssetManagerBase.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\EditorAssetManager.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\TextureImporter.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\SceneImporter.cpp" />
-    <ClCompile Include="src\PaulEngine\Asset\FontImporter.cpp" />
   </ItemGroup>
 </Project>
