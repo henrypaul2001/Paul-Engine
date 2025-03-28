@@ -11,6 +11,9 @@ namespace PaulEngine
 		bool Serialize(const std::filesystem::path& filepath);
 		bool Deserialize(const std::filesystem::path& filepath);
 
+		// bool SerializeBinary();
+		// bool DeserializeBinary();
+
 	private:
 		Ref<Project> m_Project;
 	};

@@ -14,20 +14,37 @@ namespace PaulEngine
 		return s_ActiveProject;
 	}
 
-	Ref<Project> Project::Load(const std::filesystem::path& path)
+	Ref<Project> Project::Load(const std::filesystem::path& path, const bool runtime)
 	{
 		Ref<Project> project = CreateRef<Project>();
 
 		ProjectSerializer serializer = ProjectSerializer(project);
-		if (serializer.Deserialize(path)) {
-			project->m_ProjectDirectory = path.parent_path();
-			s_ActiveProject = project;
-			Ref<EditorAssetManager> editorAssetManager = CreateRef<EditorAssetManager>();
-			s_ActiveProject->m_AssetManager = editorAssetManager;
-			editorAssetManager->DeserializeAssetRegistry();
-			return s_ActiveProject;
-		}
 
+		if (runtime)
+		{
+			//serializer.DeserializeBinary(); TODO: runtime assets
+			if (serializer.Deserialize(path)) {
+				project->m_ProjectDirectory = path.parent_path();
+				s_ActiveProject = project;
+
+				Ref<RuntimeAssetManager> runtimeAssetManager = CreateRef<RuntimeAssetManager>();
+				s_ActiveProject->m_AssetManager = runtimeAssetManager;
+
+				runtimeAssetManager->DeserializeAssetRegistry();
+				return s_ActiveProject;
+			}
+		}
+		else {
+
+			if (serializer.Deserialize(path)) {
+				project->m_ProjectDirectory = path.parent_path();
+				s_ActiveProject = project;
+				Ref<EditorAssetManager> editorAssetManager = CreateRef<EditorAssetManager>();
+				s_ActiveProject->m_AssetManager = editorAssetManager;
+				editorAssetManager->DeserializeAssetRegistry();
+				return s_ActiveProject;
+			}
+		}
 		return nullptr;
 	}
 
