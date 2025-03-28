@@ -45,7 +45,8 @@ namespace PaulEngine
 		Ref<EditorAssetManager> GetEditorAssetManager() { return std::static_pointer_cast<EditorAssetManager>(m_AssetManager); }
 
 		static Ref<Project> New(const ProjectSpecification& spec);
-		static Ref<Project> Load(const std::filesystem::path& path, const bool runtime = false);
+		static Ref<Project> Load(const std::filesystem::path& path);
+		static Ref<Project> LoadRuntime(const std::filesystem::path& path);
 		static bool SaveActive(const std::filesystem::path& path);
 
 	private:
