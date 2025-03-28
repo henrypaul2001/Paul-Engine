@@ -26,6 +26,7 @@
 
 // Render
 #include "PaulEngine/Renderer/Renderer.h"
+#include "PaulEngine/Renderer/Renderer2D.h"
 #include "PaulEngine/Renderer/RenderCommand.h"
 #include "PaulEngine/Renderer/Buffer.h"
 #include "PaulEngine/Renderer/VertexArray.h"

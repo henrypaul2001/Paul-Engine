@@ -212,11 +212,11 @@ public:
 	~Sandbox() {}
 };
 
-PaulEngine::Application* PaulEngine::CreateApplication(PaulEngine::ApplicationCommandLineArgs args) {
-	ApplicationSpecification spec;
-	spec.Name = "Sandbox";
-	spec.WorkingDirectory = "../PE-Editor";
-	spec.CommandLineArgs = args;
-
-	return new Sandbox(spec);
-}
+//PaulEngine::Application* PaulEngine::CreateApplication(PaulEngine::ApplicationCommandLineArgs args) {
+//	ApplicationSpecification spec;
+//	spec.Name = "Sandbox";
+//	spec.WorkingDirectory = "../PE-Editor";
+//	spec.CommandLineArgs = args;
+//
+//	return new Sandbox(spec);
+//}
