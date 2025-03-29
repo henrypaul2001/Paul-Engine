@@ -16,9 +16,17 @@ public:
 private:
 	bool OnWindowClose(PaulEngine::WindowCloseEvent& e);
 	bool OnWindowResize(PaulEngine::WindowResizeEvent& e);
+	bool OnSceneChanged(PaulEngine::SceneChangedEvent& e);
+	bool OnSceneShouldChange(PaulEngine::SceneShouldChangeEvent& e);
+	bool OnFrameEnd(PaulEngine::FrameEndEvent& e);
+	bool OnKeyUp(PaulEngine::KeyReleasedEvent& e);
+
 	bool OpenProject(const std::filesystem::path& filepath);
 	bool OpenScene(PaulEngine::AssetHandle handle);
 
 	PaulEngine::Ref<PaulEngine::Scene> m_ActiveScene;
 	glm::ivec2 m_ViewportSize;
+
+	bool m_SceneShouldChange = false;
+	PaulEngine::AssetHandle m_NextScene = PaulEngine::AssetHandle(0);
 };

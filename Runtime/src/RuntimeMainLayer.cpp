@@ -49,7 +49,10 @@ void RuntimeMainLayer::OnEvent(PaulEngine::Event& e)
 	PaulEngine::EventDispatcher dispatcher = PaulEngine::EventDispatcher(e);
 	dispatcher.DispatchEvent<PaulEngine::WindowResizeEvent>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnWindowResize));
 	dispatcher.DispatchEvent<PaulEngine::WindowCloseEvent>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnWindowClose));
-	//dispatcher.DispatchEvent<PaulEngine::OnSceneShouldChange>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnSceneShouldChange)); TODO: Create an on scene change event
+	dispatcher.DispatchEvent<PaulEngine::SceneShouldChangeEvent>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnSceneShouldChange));
+	dispatcher.DispatchEvent<PaulEngine::SceneChangedEvent>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnSceneChanged));
+	dispatcher.DispatchEvent<PaulEngine::FrameEndEvent>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnFrameEnd));
+	dispatcher.DispatchEvent<PaulEngine::KeyReleasedEvent>(PE_BIND_EVENT_FN(RuntimeMainLayer::OnKeyUp));
 }
 
 bool RuntimeMainLayer::OnWindowClose(PaulEngine::WindowCloseEvent& e)
@@ -65,6 +68,44 @@ bool RuntimeMainLayer::OnWindowResize(PaulEngine::WindowResizeEvent& e)
 	if (m_ActiveScene) {
 		m_ViewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+	}
+	return false;
+}
+
+bool RuntimeMainLayer::OnSceneChanged(PaulEngine::SceneChangedEvent& e)
+{
+	PE_CORE_INFO(e);
+	return false;
+}
+
+bool RuntimeMainLayer::OnSceneShouldChange(PaulEngine::SceneShouldChangeEvent& e)
+{
+	PE_CORE_INFO(e);
+	m_SceneShouldChange = true;
+	m_NextScene = e.GetSceneHandle();
+	return true;
+}
+
+bool RuntimeMainLayer::OnFrameEnd(PaulEngine::FrameEndEvent& e)
+{
+	if (m_SceneShouldChange) {
+		bool success = OpenScene(m_NextScene);
+		m_SceneShouldChange = false;
+		if (!success) {
+			PE_CORE_WARN("Scene change unsuccessful");
+		}
+	}
+	return false;
+}
+
+bool RuntimeMainLayer::OnKeyUp(PaulEngine::KeyReleasedEvent& e)
+{
+	if (e.GetKeyCode() == PE_KEY_N) {
+		if (PaulEngine::Input::IsKeyPressed(PE_KEY_LEFT_SHIFT)) {
+			//PaulEngine::Application::Get().OnEvent(PaulEngine::SceneShouldChangeEvent(11922114141701769481));
+			PaulEngine::Application::Get().OnEvent(PaulEngine::SceneShouldChangeEvent(2510263345310005911));
+			//PaulEngine::Application::Get().OnEvent(PaulEngine::SceneShouldChangeEvent(0));
+		}
 	}
 	return false;
 }
@@ -93,6 +134,12 @@ bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 	}
 
 	PaulEngine::Ref<PaulEngine::Scene> loadedScene = PaulEngine::AssetManager::GetAsset<PaulEngine::Scene>(handle);
+	// TODO:
+	/*
+	* If the requested scene is already loaded, then all that will follow is the runtime being stopped then immediately resumed where it left off
+	* This is because the scene and its assets are already loaded
+	* Consider unloading the current scene and reloading it if the asset handle matches because the intention of opening the current scene again may be to reset the scene to its original state
+	*/
 
 	if (loadedScene) {
 		if (m_ActiveScene) {
@@ -112,6 +159,8 @@ bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 	m_ActiveScene->OnViewportResize(viewportSize.x, viewportSize.y);
 
 	if (!assetManager->IsAssetLoaded(handle)) { assetManager->AddToLoadedAssets(m_ActiveScene, assetManager->GetMetadata(handle).Persistent); }
+
+	PaulEngine::Application::Get().OnEvent(PaulEngine::SceneChangedEvent(m_ActiveScene->Handle));
 
 	return true;
 }
