@@ -49,6 +49,7 @@ namespace PaulEngine
 		friend class SceneHierarchyPanel;
 		friend class SceneSerializer;
 
+		void OnPhysics2DStep(Timestep timestep);
 		void OnPhysics2DStart();
 		void OnPhysics2DStop();
 

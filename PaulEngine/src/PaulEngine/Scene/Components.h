@@ -28,11 +28,11 @@ namespace PaulEngine
 		const glm::vec3& Rotation() const	{ return m_Rotation; }
 		const glm::vec3&    Scale()	const	{ return m_Scale; }
 
-		void SetPosition (const glm::vec3& position) { m_Position = position; m_Dirty = true; }
-		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_Dirty = true; }
-		void SetScale	 (const glm::vec3& scale)	 { m_Scale = scale; m_Dirty = true; }
+		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; }
+		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; }
+		void SetScale	 (const glm::vec3& scale)	 { m_Scale = scale; m_PhysicsDirty = true; }
 
-		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_Position(position), m_Rotation(rotation), m_Scale(scale), m_Dirty(false) {}
+		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false) {}
 
 		glm::mat4 GetTransform() const {
 			glm::mat4 transform = glm::mat4(1.0f);
@@ -52,7 +52,7 @@ namespace PaulEngine
 		glm::vec3 m_Position = glm::vec3(0.0f);
 		glm::vec3 m_Rotation = glm::vec3(0.0f); // Radians
 		glm::vec3 m_Scale = glm::vec3(1.0f);
-		bool m_Dirty;
+		bool m_PhysicsDirty;
 	};
 
 	struct ComponentCamera {

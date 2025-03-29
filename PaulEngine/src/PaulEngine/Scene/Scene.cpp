@@ -154,6 +154,105 @@ namespace PaulEngine
 		OnPhysics2DStop();
 	}
 
+	void Scene::OnPhysics2DStep(Timestep timestep)
+	{
+		{
+			PE_PROFILE_SCOPE("Box2D Physics");
+			{
+				PE_PROFILE_SCOPE("Box2D: Update dirty physics objects");
+				// Update dirty physics objects
+				// TODO: dirty flags for physics colliders
+				auto group = m_Registry.group<ComponentRigidBody2D>(entt::get<ComponentTransform>);
+				for (auto entityID : group) {
+					Entity entity = Entity(entityID, this);
+					auto [rb2d, transform] = group.get<ComponentRigidBody2D, ComponentTransform>(entityID);
+
+					if (transform.m_PhysicsDirty) {
+						b2BodyId bodyID;
+						bodyID.generation = rb2d.RuntimeBody.generation;
+						bodyID.index1 = rb2d.RuntimeBody.index1;
+						bodyID.world0 = rb2d.RuntimeBody.world0;
+						b2Body_SetTransform(bodyID, { transform.m_Position.x, transform.m_Position.y }, b2MakeRot(transform.m_Rotation.z));
+
+						if (entity.HasComponent<ComponentBoxCollider2D>()) {
+							ComponentBoxCollider2D& bc2d = entity.GetComponent<ComponentBoxCollider2D>();
+							b2ShapeId shapeID;
+							shapeID.generation = bc2d.RuntimeFixture.generation;
+							shapeID.index1 = bc2d.RuntimeFixture.index1;
+							shapeID.world0 = bc2d.RuntimeFixture.world0;
+
+							b2Polygon box = b2MakeBox(transform.m_Scale.x * bc2d.Size.x, transform.m_Scale.y * bc2d.Size.y);
+							b2Shape_SetPolygon(shapeID, &box);
+
+							// TODO: do this somewhere
+							//if (bc2d.isDirty()) {
+							//	shapeDef.density = bc2d.Density;
+							//	shapeDef.friction = bc2d.Friction;
+							//	shapeDef.restitution = bc2d.Restitution;
+							//  bc2d.isDirty = false;
+							//}
+						}
+
+						if (entity.HasComponent<ComponentCircleCollider2D>()) {
+							ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
+							b2ShapeId shapeID;
+							shapeID.generation = cc2d.RuntimeFixture.generation;
+							shapeID.index1 = cc2d.RuntimeFixture.index1;
+							shapeID.world0 = cc2d.RuntimeFixture.world0;
+
+							b2Circle circle;
+							circle.center = { cc2d.Offset.x, cc2d.Offset.y };
+							float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
+							circle.radius = cc2d.Radius * largestScaleFactor;
+
+							b2Shape_SetCircle(shapeID, &circle);
+						}
+
+						transform.m_PhysicsDirty = false;
+					}
+				}
+			}
+
+			{
+				PE_PROFILE_SCOPE("Box2D: World step");
+				const int32_t velocityIterations = 6;
+				const int32_t positionIteratiorns = 2;
+
+				b2World_Step(*m_PhysicsWorld, timestep, 4);
+			}
+
+			{
+				PE_PROFILE_SCOPE("Box2D: Update transform components with new, simulated values");
+				//b2BodyEvents events = b2World_GetBodyEvents(*m_PhysicsWorld);
+				//for (int i = 0; i < events.moveCount; i++) {
+				//	const b2BodyMoveEvent* event = events.moveEvents + i;
+				//	ComponentTransform* transformPtr = static_cast<ComponentTransform*>(event->userData);
+				//
+				//	transformPtr->Position.x = event->transform.p.x;
+				//	transformPtr->Position.y = event->transform.p.y;
+				//	transformPtr->Rotation.z = b2Rot_GetAngle(event->transform.q);
+				//}
+
+				auto view = m_Registry.view<ComponentRigidBody2D>();
+				for (auto entityID : view) {
+					Entity entity = Entity(entityID, this);
+					auto& transform = entity.GetComponent<ComponentTransform>();
+					auto& rb2d = entity.GetComponent<ComponentRigidBody2D>();
+
+					b2BodyId body = {
+						rb2d.RuntimeBody.index1,
+						rb2d.RuntimeBody.world0,
+						rb2d.RuntimeBody.generation
+					};
+					b2Transform box2DTransform = b2Body_GetTransform(body);
+					transform.m_Position.x = box2DTransform.p.x;
+					transform.m_Position.y = box2DTransform.p.y;
+					transform.m_Rotation.z = b2Rot_GetAngle(box2DTransform.q);
+				}
+			}
+		}
+	}
+
 	void Scene::OnPhysics2DStart()
 	{
 		b2WorldDef worldDefinition = b2DefaultWorldDef();
@@ -288,41 +387,7 @@ namespace PaulEngine
 			});
 		}
 
-		// Physics
-		{
-			PE_PROFILE_SCOPE("Box2D Physics");
-			const int32_t velocityIterations = 6;
-			const int32_t positionIteratiorns = 2;
-
-			b2World_Step(*m_PhysicsWorld, timestep, 4);
-
-			//b2BodyEvents events = b2World_GetBodyEvents(*m_PhysicsWorld);
-			//for (int i = 0; i < events.moveCount; i++) {
-			//	const b2BodyMoveEvent* event = events.moveEvents + i;
-			//	ComponentTransform* transformPtr = static_cast<ComponentTransform*>(event->userData);
-			//
-			//	transformPtr->Position.x = event->transform.p.x;
-			//	transformPtr->Position.y = event->transform.p.y;
-			//	transformPtr->Rotation.z = b2Rot_GetAngle(event->transform.q);
-			//}
-
-			auto view = m_Registry.view<ComponentRigidBody2D>();
-			for (auto entityID : view) {
-				Entity entity = Entity(entityID, this);
-				auto& transform = entity.GetComponent<ComponentTransform>();
-				auto& rb2d = entity.GetComponent<ComponentRigidBody2D>();
-
-				b2BodyId body = {
-					rb2d.RuntimeBody.index1,
-					rb2d.RuntimeBody.world0,
-					rb2d.RuntimeBody.generation
-				};
-				b2Transform box2DTransform = b2Body_GetTransform(body);
-				transform.m_Position.x = box2DTransform.p.x;
-				transform.m_Position.y = box2DTransform.p.y;
-				transform.m_Rotation.z = b2Rot_GetAngle(box2DTransform.q);
-			}
-		}
+		OnPhysics2DStep(timestep);
 
 		// Render 2D
 		Entity cameraEntity = GetPrimaryCameraEntity();
@@ -375,41 +440,7 @@ namespace PaulEngine
 
 	void Scene::OnUpdateSimulation(Timestep timestep, EditorCamera& camera)
 	{
-		// Physics
-		{
-			PE_PROFILE_SCOPE("Box2D Physics");
-			const int32_t velocityIterations = 6;
-			const int32_t positionIteratiorns = 2;
-
-			b2World_Step(*m_PhysicsWorld, timestep, 4);
-
-			//b2BodyEvents events = b2World_GetBodyEvents(*m_PhysicsWorld);
-			//for (int i = 0; i < events.moveCount; i++) {
-			//	const b2BodyMoveEvent* event = events.moveEvents + i;
-			//	ComponentTransform* transformPtr = static_cast<ComponentTransform*>(event->userData);
-			//
-			//	transformPtr->Position.x = event->transform.p.x;
-			//	transformPtr->Position.y = event->transform.p.y;
-			//	transformPtr->Rotation.z = b2Rot_GetAngle(event->transform.q);
-			//}
-
-			auto view = m_Registry.view<ComponentRigidBody2D>();
-			for (auto entityID : view) {
-				Entity entity = Entity(entityID, this);
-				auto& transform = entity.GetComponent<ComponentTransform>();
-				auto& rb2d = entity.GetComponent<ComponentRigidBody2D>();
-
-				b2BodyId body = {
-					rb2d.RuntimeBody.index1,
-					rb2d.RuntimeBody.world0,
-					rb2d.RuntimeBody.generation
-				};
-				b2Transform box2DTransform = b2Body_GetTransform(body);
-				transform.m_Position.x = box2DTransform.p.x;
-				transform.m_Position.y = box2DTransform.p.y;
-				transform.m_Rotation.z = b2Rot_GetAngle(box2DTransform.q);
-			}
-		}
+		OnPhysics2DStep(timestep);
 
 		RenderScene(camera);
 	}
