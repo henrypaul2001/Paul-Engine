@@ -57,6 +57,8 @@ namespace PaulEngine {
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
+			OnEvent(FrameStartEvent());
+
 			if (!m_Minimized) {
 				// Update layers
 				for (Layer* layer : m_LayerStack) {
@@ -72,6 +74,8 @@ namespace PaulEngine {
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
+
+			OnEvent(FrameEndEvent());
 		}
 	}
 

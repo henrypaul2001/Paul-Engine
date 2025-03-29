@@ -4,7 +4,7 @@ namespace PaulEngine {
 	enum class EventType {
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved, WindowDrop,
-		AppTick, AppUpdate, AppRender,
+		AppTick, AppUpdate, AppRender, FrameStart, FrameEnd,
 		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 		SceneShouldChange, SceneChanged

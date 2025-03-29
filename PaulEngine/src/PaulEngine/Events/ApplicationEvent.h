@@ -66,4 +66,20 @@ namespace PaulEngine {
 	private:
 		std::vector<std::filesystem::path> m_Paths;
 	};
+
+	class FrameStartEvent : public Event {
+	public:
+		FrameStartEvent() {}
+
+		EVENT_CLASS_TYPE(FrameStart)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class FrameEndEvent : public Event {
+	public:
+		FrameEndEvent() {}
+
+		EVENT_CLASS_TYPE(FrameEnd)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
 }
