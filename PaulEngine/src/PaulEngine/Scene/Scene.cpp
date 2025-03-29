@@ -158,6 +158,7 @@ namespace PaulEngine
 	{
 		b2WorldDef worldDefinition = b2DefaultWorldDef();
 		worldDefinition.gravity = { 0.0f, -9.8f };
+		if (!m_PhysicsWorld) { m_PhysicsWorld = new b2WorldId(); }
 		*m_PhysicsWorld = b2CreateWorld(&worldDefinition);
 
 		// Setup physics bodies
