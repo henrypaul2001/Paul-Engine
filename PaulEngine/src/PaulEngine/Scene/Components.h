@@ -23,23 +23,36 @@ namespace PaulEngine
 	};
 
 	struct ComponentTransform {
-		glm::vec3 Position = glm::vec3(0.0f);
-		glm::vec3 Rotation = glm::vec3(0.0f); // Radians
-		glm::vec3 Scale = glm::vec3(1.0f);
+	public:
+		const glm::vec3& Position() const	{ return m_Position; }
+		const glm::vec3& Rotation() const	{ return m_Rotation; }
+		const glm::vec3&    Scale()	const	{ return m_Scale; }
 
-		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : Position(position), Rotation(rotation), Scale(scale) {}
+		void SetPosition (const glm::vec3& position) { m_Position = position; m_Dirty = true; }
+		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_Dirty = true; }
+		void SetScale	 (const glm::vec3& scale)	 { m_Scale = scale; m_Dirty = true; }
+
+		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_Position(position), m_Rotation(rotation), m_Scale(scale), m_Dirty(false) {}
 
 		glm::mat4 GetTransform() const {
 			glm::mat4 transform = glm::mat4(1.0f);
-			transform = glm::translate(transform, Position);
+			transform = glm::translate(transform, m_Position);
 
-			glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+			glm::mat4 rotation = glm::toMat4(glm::quat(m_Rotation));
 
 			transform *= rotation;
 
-			transform = glm::scale(transform, Scale);
+			transform = glm::scale(transform, m_Scale);
 			return transform;
 		}
+
+	private:
+		friend class Scene;
+		friend class SceneSerializer;
+		glm::vec3 m_Position = glm::vec3(0.0f);
+		glm::vec3 m_Rotation = glm::vec3(0.0f); // Radians
+		glm::vec3 m_Scale = glm::vec3(1.0f);
+		bool m_Dirty;
 	};
 
 	struct ComponentCamera {

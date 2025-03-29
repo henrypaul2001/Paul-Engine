@@ -170,8 +170,8 @@ namespace PaulEngine
 			b2BodyDef bodyDefinition = b2DefaultBodyDef();
 			bodyDefinition.type = SceneUtils::PEBodyType_To_Box2DBodyType(rb2d.Type);
 			bodyDefinition.fixedRotation = rb2d.FixedRotation;
-			bodyDefinition.position = { transform.Position.x, transform.Position.y };
-			bodyDefinition.rotation = b2MakeRot(transform.Rotation.z);
+			bodyDefinition.position = { transform.m_Position.x, transform.m_Position.y };
+			bodyDefinition.rotation = b2MakeRot(transform.m_Rotation.z);
 			bodyDefinition.userData = (void*)&transform;	// <---	I didn't have high confidence in this working and I was right, 
 			//		it doesn't work as it's not guaranteed that the reference inside 
 			//		of the entt::registry will still be valid later
@@ -183,7 +183,7 @@ namespace PaulEngine
 
 			if (entity.HasComponent<ComponentBoxCollider2D>()) {
 				ComponentBoxCollider2D& bc2d = entity.GetComponent<ComponentBoxCollider2D>();
-				b2Polygon box = b2MakeBox(transform.Scale.x * bc2d.Size.x, transform.Scale.y * bc2d.Size.y);
+				b2Polygon box = b2MakeBox(transform.m_Scale.x * bc2d.Size.x, transform.m_Scale.y * bc2d.Size.y);
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
 
 				shapeDef.density = bc2d.Density;
@@ -201,7 +201,7 @@ namespace PaulEngine
 
 				b2Circle circle;
 				circle.center = { cc2d.Offset.x, cc2d.Offset.y };
-				float largestScaleFactor = (transform.Scale.x > transform.Scale.y) ? transform.Scale.x : transform.Scale.y;
+				float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
 				circle.radius = cc2d.Radius * largestScaleFactor;
 
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -318,9 +318,9 @@ namespace PaulEngine
 					rb2d.RuntimeBody.generation
 				};
 				b2Transform box2DTransform = b2Body_GetTransform(body);
-				transform.Position.x = box2DTransform.p.x;
-				transform.Position.y = box2DTransform.p.y;
-				transform.Rotation.z = b2Rot_GetAngle(box2DTransform.q);
+				transform.m_Position.x = box2DTransform.p.x;
+				transform.m_Position.y = box2DTransform.p.y;
+				transform.m_Rotation.z = b2Rot_GetAngle(box2DTransform.q);
 			}
 		}
 
@@ -405,9 +405,9 @@ namespace PaulEngine
 					rb2d.RuntimeBody.generation
 				};
 				b2Transform box2DTransform = b2Body_GetTransform(body);
-				transform.Position.x = box2DTransform.p.x;
-				transform.Position.y = box2DTransform.p.y;
-				transform.Rotation.z = b2Rot_GetAngle(box2DTransform.q);
+				transform.m_Position.x = box2DTransform.p.x;
+				transform.m_Position.y = box2DTransform.p.y;
+				transform.m_Rotation.z = b2Rot_GetAngle(box2DTransform.q);
 			}
 		}
 

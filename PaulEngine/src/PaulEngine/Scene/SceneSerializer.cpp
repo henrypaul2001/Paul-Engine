@@ -137,9 +137,9 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentTransform& transformComponent = entity.GetComponent<ComponentTransform>();
-			out << YAML::Key << "Position" << YAML::Value << transformComponent.Position;
-			out << YAML::Key << "Rotation" << YAML::Value << transformComponent.Rotation;
-			out << YAML::Key << "Scale" << YAML::Value << transformComponent.Scale;
+			out << YAML::Key << "Position" << YAML::Value << transformComponent.Position();
+			out << YAML::Key << "Rotation" << YAML::Value << transformComponent.Rotation();
+			out << YAML::Key << "Scale" << YAML::Value << transformComponent.Scale();
 
 			out << YAML::EndMap;
 		}
@@ -313,9 +313,9 @@ namespace PaulEngine
 				YAML::Node transformNode = entity["TransformComponent"];
 				if (transformNode) {
 					ComponentTransform& transform = deserializedEntity.GetComponent<ComponentTransform>();
-					transform.Position = transformNode["Position"].as<glm::vec3>();
-					transform.Rotation = transformNode["Rotation"].as<glm::vec3>();
-					transform.Scale = transformNode["Scale"].as<glm::vec3>();
+					transform.m_Position = transformNode["Position"].as<glm::vec3>();
+					transform.m_Rotation = transformNode["Rotation"].as<glm::vec3>();
+					transform.m_Scale = transformNode["Scale"].as<glm::vec3>();
 				}
 
 				YAML::Node cameraNode = entity["CameraComponent"];

@@ -335,12 +335,12 @@ namespace PaulEngine
 
 		// Transform
 		DrawComponent<ComponentTransform>("Transform Component", entity, false, [](ComponentTransform& component) {
-			DrawVec3Control("Position", component.Position, 0.0f);
-			glm::vec3 rotationDegrees = glm::degrees(component.Rotation);
-			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) {
-				component.Rotation = glm::radians(rotationDegrees);
-			}
-			DrawVec3Control("Scale", component.Scale, 1.0f);
+			glm::vec3 position = component.Position();
+			glm::vec3 rotationDegrees = glm::degrees(component.Rotation());
+			glm::vec3 scale = component.Scale();
+			if (DrawVec3Control("Position", position, 0.0f)) { component.SetPosition(position); }
+			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) { component.SetRotation(glm::radians(rotationDegrees)); }
+			if (DrawVec3Control("Scale", scale, 1.0f)) { component.SetScale(scale); }
 		});
 
 		// Camera

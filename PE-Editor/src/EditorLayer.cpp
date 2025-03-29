@@ -353,11 +353,11 @@ namespace PaulEngine {
 					glm::vec3 rotation = glm::vec3();
 					glm::vec3 scale = glm::vec3();
 					Maths::DecomposeTransform(entityTransform, position, rotation, scale);
-					glm::vec3 deltaRotation = rotation - transformComponent.Rotation;
+					glm::vec3 deltaRotation = rotation - transformComponent.Rotation();
 
-					transformComponent.Position = position;
-					transformComponent.Rotation += deltaRotation;
-					transformComponent.Scale = scale;
+					transformComponent.SetPosition(position);
+					transformComponent.SetRotation(transformComponent.Rotation() + deltaRotation);
+					transformComponent.SetScale(scale);
 				}
 			}
 
@@ -496,10 +496,10 @@ namespace PaulEngine {
 			for (auto entityID : boxView) {
 				auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
 
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + box.Offset, 0.01f);
-				glm::vec3 scale = transform.Scale * (glm::vec3(box.Size * 2.0f, 1.0f));
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()) + box.Offset, 0.01f);
+				glm::vec3 scale = transform.Scale() * (glm::vec3(box.Size * 2.0f, 1.0f));
 				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-				transformation = glm::rotate(transformation, transform.Rotation.z, glm::vec3(0.0, 0.0, 1.0f));
+				transformation = glm::rotate(transformation, transform.Rotation().z, glm::vec3(0.0, 0.0, 1.0f));
 				transformation = glm::scale(transformation, scale);
 
 				Renderer2D::SetLineWidth(0.01f);
@@ -511,8 +511,8 @@ namespace PaulEngine {
 			for (auto entityID : circleView) {
 				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
 
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position) + circle.Offset, 0.01f);
-				glm::vec3 scale = transform.Scale * (circle.Radius * 2.0f);
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()) + circle.Offset, 0.01f);
+				glm::vec3 scale = transform.Scale() * (circle.Radius * 2.0f);
 				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
 				transformation = glm::scale(transformation, scale);
 
@@ -523,7 +523,7 @@ namespace PaulEngine {
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
 			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-			transformCopy.Position.z += 0.01f;
+			transformCopy.SetPosition(transformCopy.Position() + glm::vec3(0.0f, 0.0f, 0.01f));
 			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
 			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
 		}
