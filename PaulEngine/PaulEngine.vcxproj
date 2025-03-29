@@ -178,6 +178,7 @@
     <ClInclude Include="src\PaulEngine\Events\Event.h" />
     <ClInclude Include="src\PaulEngine\Events\KeyEvent.h" />
     <ClInclude Include="src\PaulEngine\Events\MouseEvent.h" />
+    <ClInclude Include="src\PaulEngine\Events\SceneEvent.h" />
     <ClInclude Include="src\PaulEngine\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\PaulEngine\Maths\Maths.h" />
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />

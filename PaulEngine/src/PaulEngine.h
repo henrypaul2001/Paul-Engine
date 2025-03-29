@@ -40,3 +40,10 @@
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/AssetImporter.h"
 #include "PaulEngine/Asset/TextureImporter.h"
+
+// Event
+#include "PaulEngine/Events/Event.h"
+#include "PaulEngine/Events/ApplicationEvent.h"
+#include "PaulEngine/Events/KeyEvent.h"
+#include "PaulEngine/Events/MouseEvent.h"
+#include "PaulEngine/Events/SceneEvent.h"

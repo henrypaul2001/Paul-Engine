@@ -14,6 +14,8 @@
 
 #include "PaulEngine/Asset/SceneImporter.h"
 
+#include "PaulEngine/Events/SceneEvent.h"
+
 namespace PaulEngine {
 
 	static Ref<Font> s_Font;
@@ -541,6 +543,7 @@ namespace PaulEngine {
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
 		dispatcher.DispatchEvent<MouseButtonReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnMouseUp));
 		dispatcher.DispatchEvent<WindowDropEvent>(PE_BIND_EVENT_FN(EditorLayer::OnWindowDrop));
+		dispatcher.DispatchEvent<SceneChangedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnSceneChanged));
 	}
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
@@ -635,6 +638,12 @@ namespace PaulEngine {
 		return true;
 	}
 
+	bool EditorLayer::OnSceneChanged(SceneChangedEvent& e)
+	{
+		PE_CORE_INFO(e);
+		return true;
+	}
+
 	void EditorLayer::NewScene()
 	{
 		OnSceneStop();
@@ -684,6 +693,8 @@ namespace PaulEngine {
 
 		m_CurrentFilepath = assetManager->GetFilepath(handle);
 		if (!assetManager->IsAssetLoaded(handle)) { assetManager->AddToLoadedAssets(m_ActiveScene, assetManager->GetMetadata(handle).Persistent); }
+
+		Application::Get().OnEvent(SceneChangedEvent(m_ActiveSceneHandle));
 	}
 
 	void EditorLayer::SaveSceneAs(const std::filesystem::path& filepath)

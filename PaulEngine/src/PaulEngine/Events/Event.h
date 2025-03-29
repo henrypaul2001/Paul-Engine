@@ -6,7 +6,8 @@ namespace PaulEngine {
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved, WindowDrop,
 		AppTick, AppUpdate, AppRender,
 		KeyPressed, KeyReleased, KeyTyped,
-		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+		SceneShouldChange, SceneChanged
 	};
 
 	enum EventCategory {
@@ -15,7 +16,8 @@ namespace PaulEngine {
 		EventCategoryInput = BIT(1),
 		EventCategoryKeyboard = BIT(2),
 		EventCategoryMouse = BIT(3),
-		EventCategoryMouseButton = BIT(4)
+		EventCategoryMouseButton = BIT(4),
+		EventCategoryScene = BIT(5)
 	};
 
 	// Event member function override macros
