@@ -230,11 +230,11 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentCircleCollider2D& circle2D = entity.GetComponent<ComponentCircleCollider2D>();
-			out << YAML::Key << "Offset" << YAML::Value << circle2D.Offset;
-			out << YAML::Key << "Radius" << YAML::Value << circle2D.Radius;
-			out << YAML::Key << "Density" << YAML::Value << circle2D.Density;
-			out << YAML::Key << "Friction" << YAML::Value << circle2D.Friction;
-			out << YAML::Key << "Restitution" << YAML::Value << circle2D.Restitution;
+			out << YAML::Key << "Offset" << YAML::Value << circle2D.Offset();
+			out << YAML::Key << "Radius" << YAML::Value << circle2D.Radius();
+			out << YAML::Key << "Density" << YAML::Value << circle2D.Density();
+			out << YAML::Key << "Friction" << YAML::Value << circle2D.Friction();
+			out << YAML::Key << "Restitution" << YAML::Value << circle2D.Restitution();
 
 			out << YAML::EndMap;
 		}
@@ -384,12 +384,12 @@ namespace PaulEngine
 				YAML::Node circle2DNode = entity["CircleCollider2DComponent"];
 				if (circle2DNode) {
 					ComponentCircleCollider2D& circle2DComponent = deserializedEntity.AddComponent<ComponentCircleCollider2D>();
-					circle2DComponent.Offset = circle2DNode["Offset"].as<glm::vec2>();
-					circle2DComponent.Radius = circle2DNode["Radius"].as<float>();
+					circle2DComponent.m_Offset = circle2DNode["Offset"].as<glm::vec2>();
+					circle2DComponent.m_Radius = circle2DNode["Radius"].as<float>();
 
-					circle2DComponent.Density = circle2DNode["Density"].as<float>();
-					circle2DComponent.Friction = circle2DNode["Friction"].as<float>();
-					circle2DComponent.Restitution = circle2DNode["Restitution"].as<float>();
+					circle2DComponent.m_Density = circle2DNode["Density"].as<float>();
+					circle2DComponent.m_Friction = circle2DNode["Friction"].as<float>();
+					circle2DComponent.m_Restitution = circle2DNode["Restitution"].as<float>();
 				}
 
 				YAML::Node textNode = entity["TextRendererComponent"];

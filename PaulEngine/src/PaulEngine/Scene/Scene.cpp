@@ -162,6 +162,7 @@ namespace PaulEngine
 				PE_PROFILE_SCOPE("Box2D: Update dirty physics objects");
 
 				// Transforms and rigid bodies
+				// TODO:: separate
 				auto group = m_Registry.group<ComponentRigidBody2D>(entt::get<ComponentTransform>);
 				for (auto entityID : group) {
 					Entity entity = Entity(entityID, this);
@@ -193,17 +194,7 @@ namespace PaulEngine
 
 						if (entity.HasComponent<ComponentCircleCollider2D>()) {
 							ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
-							b2ShapeId shapeID;
-							shapeID.generation = cc2d.RuntimeFixture.generation;
-							shapeID.index1 = cc2d.RuntimeFixture.index1;
-							shapeID.world0 = cc2d.RuntimeFixture.world0;
-
-							b2Circle circle;
-							circle.center = { cc2d.Offset.x, cc2d.Offset.y };
-							float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
-							circle.radius = cc2d.Radius * largestScaleFactor;
-
-							b2Shape_SetCircle(shapeID, &circle);
+							cc2d.m_PhysicsDirty = true;
 						}
 
 						transform.m_PhysicsDirty = false;
@@ -211,8 +202,8 @@ namespace PaulEngine
 				}
 
 				// Box colliders
-				auto view = m_Registry.view<ComponentBoxCollider2D>();
-				view.each([this](auto entityID, ComponentBoxCollider2D& bc2d) {
+				auto boxView = m_Registry.view<ComponentBoxCollider2D>();
+				boxView.each([this](auto entityID, ComponentBoxCollider2D& bc2d) {
 					ComponentTransform& transform = Entity(entityID, this).GetComponent<ComponentTransform>();
 					if (bc2d.m_PhysicsDirty) {
 						b2ShapeId shapeID;
@@ -233,6 +224,29 @@ namespace PaulEngine
 				});
 
 				// Circle colliders
+				auto circleView = m_Registry.view<ComponentCircleCollider2D>();
+				circleView.each([this](auto entityID, ComponentCircleCollider2D& cc2d) {
+					ComponentTransform& transform = Entity(entityID, this).GetComponent<ComponentTransform>();
+					if (cc2d.m_PhysicsDirty) {
+						b2ShapeId shapeID;
+						shapeID.generation = cc2d.m_RuntimeFixture.generation;
+						shapeID.index1 = cc2d.m_RuntimeFixture.index1;
+						shapeID.world0 = cc2d.m_RuntimeFixture.world0;
+						
+						b2Circle circle;
+						circle.center = { cc2d.m_Offset.x, cc2d.m_Offset.y };
+						float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
+						circle.radius = cc2d.m_Radius * largestScaleFactor;
+						
+						b2Shape_SetCircle(shapeID, &circle);
+
+						b2Shape_SetDensity(shapeID, cc2d.m_Density, true);
+						b2Shape_SetFriction(shapeID, cc2d.m_Friction);
+						b2Shape_SetRestitution(shapeID, cc2d.m_Restitution);
+
+						cc2d.m_PhysicsDirty = false;
+					}
+				});
 			}
 
 			{
@@ -321,19 +335,19 @@ namespace PaulEngine
 				ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
 
 				b2Circle circle;
-				circle.center = { cc2d.Offset.x, cc2d.Offset.y };
+				circle.center = { cc2d.m_Offset.x, cc2d.m_Offset.y };
 				float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
-				circle.radius = cc2d.Radius * largestScaleFactor;
+				circle.radius = cc2d.m_Radius * largestScaleFactor;
 
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
-				shapeDef.density = cc2d.Density;
-				shapeDef.friction = cc2d.Friction;
-				shapeDef.restitution = cc2d.Restitution;
+				shapeDef.density = cc2d.m_Density;
+				shapeDef.friction = cc2d.m_Friction;
+				shapeDef.restitution = cc2d.m_Restitution;
 
 				b2ShapeId shapeId = b2CreateCircleShape(b2Body, &shapeDef, &circle);
-				cc2d.RuntimeFixture.generation = shapeId.generation;
-				cc2d.RuntimeFixture.index1 = shapeId.index1;
-				cc2d.RuntimeFixture.world0 = shapeId.world0;
+				cc2d.m_RuntimeFixture.generation = shapeId.generation;
+				cc2d.m_RuntimeFixture.index1 = shapeId.index1;
+				cc2d.m_RuntimeFixture.world0 = shapeId.world0;
 			}
 		}
 	}

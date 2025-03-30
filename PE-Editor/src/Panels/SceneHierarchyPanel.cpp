@@ -493,12 +493,18 @@ namespace PaulEngine
 
 		// Circle Collider 2D
 		DrawComponent<ComponentCircleCollider2D>("Circle Collider 2D", entity, true, [](ComponentCircleCollider2D& component) {
-			DrawVec2Control("Offset", component.Offset, 0.0f);
-			ImGui::DragFloat("Radius", &component.Radius, 0.1f);
+			glm::vec2 offset = component.Offset();
+			float radius = component.Radius();
+			float density = component.Density();
+			float friction = component.Friction();
+			float restitution = component.Restitution();
 
-			ImGui::DragFloat("Density", &component.Density, 0.1f);
-			ImGui::DragFloat("Friction", &component.Friction, 0.1f, 0.0f, 1.0f);
-			ImGui::DragFloat("Restitution", &component.Restitution, 0.1f, 0.0f, 1.0f);
+			if (DrawVec2Control("Offset", offset, 0.0f)) { component.SetOffset(offset); }
+			if (ImGui::DragFloat("Radius", &radius, 0.1f)) { component.SetRadius(radius); }
+
+			if (ImGui::DragFloat("Density", &density, 0.1f)) { component.SetDensity(density); }
+			if (ImGui::DragFloat("Friction", &friction, 0.1f, 0.0f, 1.0f)) { component.SetFriction(friction); }
+			if (ImGui::DragFloat("Restitution", &restitution, 0.1f, 0.0f, 1.0f)) { component.SetRestitution(restitution); }
 		});
 
 		// Text Component

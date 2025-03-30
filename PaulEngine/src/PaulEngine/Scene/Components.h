@@ -120,7 +120,7 @@ namespace PaulEngine
 	};
 
 	struct ComponentBoxCollider2D {
-		const glm::vec2 Size() const { return m_Size; }
+		glm::vec2 Size() const { return m_Size; }
 		float Density() const { return m_Density; }
 		float Friction() const { return m_Friction; }
 		float Restitution() const { return m_Restitution; }
@@ -153,19 +153,39 @@ namespace PaulEngine
 	};
 
 	struct ComponentCircleCollider2D {
-		glm::vec2 Offset = glm::vec2(0.0f);
-		float Radius = 0.5f;
-
-		float Density = 1.0f;
-		float Friction = 0.5f;
-		float Restitution = 0.0f;
+		glm::vec2 Offset() const { return m_Offset; }
+		float Radius() const { return m_Radius; }
+		float Density() const { return m_Density; }
+		float Friction() const { return m_Friction; }
+		float Restitution() const { return m_Restitution; }
 
 		struct B2RuntimeFixture {
 			int32_t index1;
 			uint16_t world0;
 			uint16_t generation;
 		};
-		B2RuntimeFixture RuntimeFixture = { 0, 0, 0 };
+		const B2RuntimeFixture& RuntimeFixture() const { return m_RuntimeFixture; }
+
+		void SetOffset(glm::vec2 offset) { m_Offset = offset; m_PhysicsDirty = true; }
+		void SetRadius(float radius) { m_Radius = radius; m_PhysicsDirty = true; }
+		void SetDensity(float density) { m_Density = density; m_PhysicsDirty = true; }
+		void SetFriction(float friction) { m_Friction = friction; m_PhysicsDirty = true; }
+		void SetRestitution(float restitution) { m_Restitution = restitution; m_PhysicsDirty = true; }
+
+	private:
+		friend class Scene;
+		friend class SceneSerializer;
+
+		glm::vec2 m_Offset = glm::vec2(0.0f);
+		float m_Radius = 0.5f;
+
+		float m_Density = 1.0f;
+		float m_Friction = 0.5f;
+		float m_Restitution = 0.0f;
+
+		B2RuntimeFixture m_RuntimeFixture = { 0, 0, 0 };
+	
+		bool m_PhysicsDirty = false;
 	};
 
 	struct ComponentTextRenderer {
