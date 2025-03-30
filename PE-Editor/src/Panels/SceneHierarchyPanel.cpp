@@ -451,14 +451,14 @@ namespace PaulEngine
 		// Rigid Body 2D
 		DrawComponent<ComponentRigidBody2D>("Rigid Body 2D", entity, true, [](ComponentRigidBody2D& component) {
 			const char* bodyTypeStrings[] = { " Static", "Dynamic", "Kinematic" };
-			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
+			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type()];
 			if (ImGui::BeginCombo("Body Type", currentBodyTypeString)) {
 
 				for (int i = 0; i < 2; i++) {
 					bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
 					if (ImGui::Selectable(bodyTypeStrings[i], isSelected)) {
 						currentBodyTypeString = bodyTypeStrings[i];
-						component.Type = (ComponentRigidBody2D::BodyType)i;
+						component.SetType((ComponentRigidBody2D::BodyType)i);
 					}
 
 					if (isSelected) {
@@ -469,7 +469,10 @@ namespace PaulEngine
 				ImGui::EndCombo();
 			}
 
-			ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
+			bool fixedRotation = component.FixedRotation();
+			if (ImGui::Checkbox("Fixed Rotation", &fixedRotation)) {
+				component.SetFixedRotation(fixedRotation);
+			}
 		});
 
 		// Box Collider 2D

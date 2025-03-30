@@ -206,8 +206,8 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentRigidBody2D& rb2d = entity.GetComponent<ComponentRigidBody2D>();
-			out << YAML::Key << "Type" << YAML::Value << (int)rb2d.Type;
-			out << YAML::Key << "FixedRotation" << YAML::Value << rb2d.FixedRotation;
+			out << YAML::Key << "Type" << YAML::Value << (int)rb2d.Type();
+			out << YAML::Key << "FixedRotation" << YAML::Value << rb2d.FixedRotation();
 
 			out << YAML::EndMap;
 		}
@@ -368,8 +368,8 @@ namespace PaulEngine
 				YAML::Node rb2dNode = entity["Rigid2DComponent"];
 				if (rb2dNode) {
 					ComponentRigidBody2D& rb2dComponent = deserializedEntity.AddComponent<ComponentRigidBody2D>();
-					rb2dComponent.Type = (ComponentRigidBody2D::BodyType)rb2dNode["Type"].as<int>();
-					rb2dComponent.FixedRotation = rb2dNode["FixedRotation"].as<bool>();
+					rb2dComponent.m_Type = (ComponentRigidBody2D::BodyType)rb2dNode["Type"].as<int>();
+					rb2dComponent.m_FixedRotation = rb2dNode["FixedRotation"].as<bool>();
 				}
 
 				YAML::Node box2DNode = entity["BoxCollider2DComponent"];

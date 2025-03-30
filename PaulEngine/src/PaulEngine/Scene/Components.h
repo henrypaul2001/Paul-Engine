@@ -93,16 +93,30 @@ namespace PaulEngine
 
 	struct ComponentRigidBody2D {
 		enum class BodyType { Static = 0, Dynamic = 1, Kinematic = 2 };
-		
-		BodyType Type = BodyType::Static;
-		bool FixedRotation = false;
+
+		BodyType Type() const { return m_Type; }
+		bool FixedRotation() const { return m_FixedRotation; }
+
+		void SetType(BodyType type) { m_Type = type; m_PhysicsDirty = true; }
+		void SetFixedRotation(bool fixed) { m_FixedRotation = fixed; m_PhysicsDirty = true; }
 
 		struct B2RuntimeBody {
 			int32_t index1;
 			uint16_t world0;
 			uint16_t generation;
 		};
-		B2RuntimeBody RuntimeBody = { 0, 0, 0 };
+		const B2RuntimeBody& GetRuntimeBody() const { return m_RuntimeBody; }
+
+	private:
+		friend class Scene;
+		friend class SceneSerializer;
+
+		BodyType m_Type = BodyType::Static;
+		bool m_FixedRotation = false;
+
+		B2RuntimeBody m_RuntimeBody = { 0, 0, 0 };
+
+		bool m_PhysicsDirty = false;
 	};
 
 	struct ComponentBoxCollider2D {

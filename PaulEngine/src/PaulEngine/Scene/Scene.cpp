@@ -167,11 +167,23 @@ namespace PaulEngine
 					Entity entity = Entity(entityID, this);
 					auto [rb2d, transform] = group.get<ComponentRigidBody2D, ComponentTransform>(entityID);
 
+					if (rb2d.m_PhysicsDirty) {
+						b2BodyId bodyID;
+						bodyID.generation = rb2d.m_RuntimeBody.generation;
+						bodyID.index1 = rb2d.m_RuntimeBody.index1;
+						bodyID.world0 = rb2d.m_RuntimeBody.world0;
+
+						b2Body_SetType(bodyID, SceneUtils::PEBodyType_To_Box2DBodyType(rb2d.m_Type));
+						b2Body_SetFixedRotation(bodyID, rb2d.m_FixedRotation);
+						
+						rb2d.m_PhysicsDirty = false;
+					}
+
 					if (transform.m_PhysicsDirty) {
 						b2BodyId bodyID;
-						bodyID.generation = rb2d.RuntimeBody.generation;
-						bodyID.index1 = rb2d.RuntimeBody.index1;
-						bodyID.world0 = rb2d.RuntimeBody.world0;
+						bodyID.generation = rb2d.m_RuntimeBody.generation;
+						bodyID.index1 = rb2d.m_RuntimeBody.index1;
+						bodyID.world0 = rb2d.m_RuntimeBody.world0;
 						b2Body_SetTransform(bodyID, { transform.m_Position.x, transform.m_Position.y }, b2MakeRot(transform.m_Rotation.z));
 
 						if (entity.HasComponent<ComponentBoxCollider2D>()) {
@@ -240,9 +252,9 @@ namespace PaulEngine
 					auto& rb2d = entity.GetComponent<ComponentRigidBody2D>();
 
 					b2BodyId body = {
-						rb2d.RuntimeBody.index1,
-						rb2d.RuntimeBody.world0,
-						rb2d.RuntimeBody.generation
+						rb2d.m_RuntimeBody.index1,
+						rb2d.m_RuntimeBody.world0,
+						rb2d.m_RuntimeBody.generation
 					};
 					b2Transform box2DTransform = b2Body_GetTransform(body);
 					transform.m_Position.x = box2DTransform.p.x;
@@ -267,8 +279,8 @@ namespace PaulEngine
 			auto [rb2d, transform] = group.get<ComponentRigidBody2D, ComponentTransform>(entityID);
 
 			b2BodyDef bodyDefinition = b2DefaultBodyDef();
-			bodyDefinition.type = SceneUtils::PEBodyType_To_Box2DBodyType(rb2d.Type);
-			bodyDefinition.fixedRotation = rb2d.FixedRotation;
+			bodyDefinition.type = SceneUtils::PEBodyType_To_Box2DBodyType(rb2d.m_Type);
+			bodyDefinition.fixedRotation = rb2d.m_FixedRotation;
 			bodyDefinition.position = { transform.m_Position.x, transform.m_Position.y };
 			bodyDefinition.rotation = b2MakeRot(transform.m_Rotation.z);
 			bodyDefinition.userData = (void*)&transform;	// <---	I didn't have high confidence in this working and I was right, 
@@ -276,9 +288,9 @@ namespace PaulEngine
 			//		of the entt::registry will still be valid later
 
 			b2BodyId b2Body = b2CreateBody(*m_PhysicsWorld, &bodyDefinition);
-			rb2d.RuntimeBody.generation = b2Body.generation;
-			rb2d.RuntimeBody.index1 = b2Body.index1;
-			rb2d.RuntimeBody.world0 = b2Body.world0;
+			rb2d.m_RuntimeBody.generation = b2Body.generation;
+			rb2d.m_RuntimeBody.index1 = b2Body.index1;
+			rb2d.m_RuntimeBody.world0 = b2Body.world0;
 
 			if (entity.HasComponent<ComponentBoxCollider2D>()) {
 				ComponentBoxCollider2D& bc2d = entity.GetComponent<ComponentBoxCollider2D>();
