@@ -477,11 +477,18 @@ namespace PaulEngine
 
 		// Box Collider 2D
 		DrawComponent<ComponentBoxCollider2D>("Box Collider 2D", entity, true, [](ComponentBoxCollider2D& component) {
-			DrawVec2Control("Size", component.Size, 0.5f);
+			glm::vec2 size = component.Size();
+			if (DrawVec2Control("Size", size, 0.5f)) {
+				component.SetSize(size);
+			}
 
-			ImGui::DragFloat("Density", &component.Density, 0.1f);
-			ImGui::DragFloat("Friction", &component.Friction, 0.1f, 0.0f, 1.0f);
-			ImGui::DragFloat("Restitution", &component.Restitution, 0.1f, 0.0f, 1.0f);
+			float density = component.Density();
+			float friction = component.Friction();
+			float restitution = component.Restitution();
+
+			if (ImGui::DragFloat("Density", &density, 0.1f)) { component.SetDensity(density); }
+			if (ImGui::DragFloat("Friction", &friction, 0.1f, 0.0f, 1.0f)) { component.SetFriction(friction); }
+			if (ImGui::DragFloat("Restitution", &restitution, 0.1f, 0.0f, 1.0f)) { component.SetRestitution(restitution); }
 		});
 
 		// Circle Collider 2D

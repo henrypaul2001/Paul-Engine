@@ -217,10 +217,10 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentBoxCollider2D& box2D = entity.GetComponent<ComponentBoxCollider2D>();
-			out << YAML::Key << "Size" << YAML::Value << box2D.Size;
-			out << YAML::Key << "Density" << YAML::Value << box2D.Density;
-			out << YAML::Key << "Friction" << YAML::Value << box2D.Friction;
-			out << YAML::Key << "Restitution" << YAML::Value << box2D.Restitution;
+			out << YAML::Key << "Size" << YAML::Value << box2D.Size();
+			out << YAML::Key << "Density" << YAML::Value << box2D.Density();
+			out << YAML::Key << "Friction" << YAML::Value << box2D.Friction();
+			out << YAML::Key << "Restitution" << YAML::Value << box2D.Restitution();
 
 			out << YAML::EndMap;
 		}
@@ -374,11 +374,11 @@ namespace PaulEngine
 				YAML::Node box2DNode = entity["BoxCollider2DComponent"];
 				if (box2DNode) {
 					ComponentBoxCollider2D& box2DComponent = deserializedEntity.AddComponent<ComponentBoxCollider2D>();
-					box2DComponent.Size = box2DNode["Size"].as<glm::vec2>();
+					box2DComponent.m_Size = box2DNode["Size"].as<glm::vec2>();
 
-					box2DComponent.Density = box2DNode["Density"].as<float>();
-					box2DComponent.Friction = box2DNode["Friction"].as<float>();
-					box2DComponent.Restitution = box2DNode["Restitution"].as<float>();
+					box2DComponent.m_Density = box2DNode["Density"].as<float>();
+					box2DComponent.m_Friction = box2DNode["Friction"].as<float>();
+					box2DComponent.m_Restitution = box2DNode["Restitution"].as<float>();
 				}
 
 				YAML::Node circle2DNode = entity["CircleCollider2DComponent"];

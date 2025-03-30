@@ -120,18 +120,36 @@ namespace PaulEngine
 	};
 
 	struct ComponentBoxCollider2D {
-		glm::vec2 Size = glm::vec2(0.5f);
-
-		float Density = 1.0f;
-		float Friction = 0.5f;
-		float Restitution = 0.0f;
+		const glm::vec2 Size() const { return m_Size; }
+		float Density() const { return m_Density; }
+		float Friction() const { return m_Friction; }
+		float Restitution() const { return m_Restitution; }
 
 		struct B2RuntimeFixture {
 			int32_t index1;
 			uint16_t world0;
 			uint16_t generation;
 		};
-		B2RuntimeFixture RuntimeFixture = { 0, 0, 0 };
+		const B2RuntimeFixture& RuntimeFixture() const { return m_RuntimeFixture; }
+
+		void SetSize(glm::vec2 size) { m_Size = size; m_PhysicsDirty = true; }
+		void SetDensity(float density) { m_Density = density; m_PhysicsDirty = true; }
+		void SetFriction(float friction) { m_Friction = friction; m_PhysicsDirty = true; }
+		void SetRestitution(float restitution) { m_Restitution = restitution; m_PhysicsDirty = true; }
+
+	private:
+		friend class Scene;
+		friend class SceneSerializer;
+
+		glm::vec2 m_Size = glm::vec2(0.5f);
+
+		float m_Density = 1.0f;
+		float m_Friction = 0.5f;
+		float m_Restitution = 0.0f;
+
+		B2RuntimeFixture m_RuntimeFixture = { 0, 0, 0 };
+
+		bool m_PhysicsDirty = false;
 	};
 
 	struct ComponentCircleCollider2D {

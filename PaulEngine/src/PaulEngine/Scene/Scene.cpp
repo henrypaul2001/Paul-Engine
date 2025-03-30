@@ -160,8 +160,8 @@ namespace PaulEngine
 			PE_PROFILE_SCOPE("Box2D Physics");
 			{
 				PE_PROFILE_SCOPE("Box2D: Update dirty physics objects");
-				// Update dirty physics objects
-				// TODO: dirty flags for physics colliders
+
+				// Transforms and rigid bodies
 				auto group = m_Registry.group<ComponentRigidBody2D>(entt::get<ComponentTransform>);
 				for (auto entityID : group) {
 					Entity entity = Entity(entityID, this);
@@ -188,21 +188,7 @@ namespace PaulEngine
 
 						if (entity.HasComponent<ComponentBoxCollider2D>()) {
 							ComponentBoxCollider2D& bc2d = entity.GetComponent<ComponentBoxCollider2D>();
-							b2ShapeId shapeID;
-							shapeID.generation = bc2d.RuntimeFixture.generation;
-							shapeID.index1 = bc2d.RuntimeFixture.index1;
-							shapeID.world0 = bc2d.RuntimeFixture.world0;
-
-							b2Polygon box = b2MakeBox(transform.m_Scale.x * bc2d.Size.x, transform.m_Scale.y * bc2d.Size.y);
-							b2Shape_SetPolygon(shapeID, &box);
-
-							// TODO: do this somewhere
-							//if (bc2d.isDirty()) {
-							//	shapeDef.density = bc2d.Density;
-							//	shapeDef.friction = bc2d.Friction;
-							//	shapeDef.restitution = bc2d.Restitution;
-							//  bc2d.isDirty = false;
-							//}
+							bc2d.m_PhysicsDirty = true;
 						}
 
 						if (entity.HasComponent<ComponentCircleCollider2D>()) {
@@ -223,6 +209,30 @@ namespace PaulEngine
 						transform.m_PhysicsDirty = false;
 					}
 				}
+
+				// Box colliders
+				auto view = m_Registry.view<ComponentBoxCollider2D>();
+				view.each([this](auto entityID, ComponentBoxCollider2D& bc2d) {
+					ComponentTransform& transform = Entity(entityID, this).GetComponent<ComponentTransform>();
+					if (bc2d.m_PhysicsDirty) {
+						b2ShapeId shapeID;
+						shapeID.generation = bc2d.m_RuntimeFixture.generation;
+						shapeID.index1 = bc2d.m_RuntimeFixture.index1;
+						shapeID.world0 = bc2d.m_RuntimeFixture.world0;
+
+						b2Polygon box = b2MakeBox(transform.m_Scale.x * bc2d.m_Size.x, transform.m_Scale.y * bc2d.m_Size.y);
+
+						b2Shape_SetPolygon(shapeID, &box);
+
+						b2Shape_SetDensity(shapeID, bc2d.m_Density, true);
+						b2Shape_SetFriction(shapeID, bc2d.m_Friction);
+						b2Shape_SetRestitution(shapeID, bc2d.m_Restitution);
+
+						bc2d.m_PhysicsDirty = false;
+					}
+				});
+
+				// Circle colliders
 			}
 
 			{
@@ -294,17 +304,17 @@ namespace PaulEngine
 
 			if (entity.HasComponent<ComponentBoxCollider2D>()) {
 				ComponentBoxCollider2D& bc2d = entity.GetComponent<ComponentBoxCollider2D>();
-				b2Polygon box = b2MakeBox(transform.m_Scale.x * bc2d.Size.x, transform.m_Scale.y * bc2d.Size.y);
+				b2Polygon box = b2MakeBox(transform.m_Scale.x * bc2d.m_Size.x, transform.m_Scale.y * bc2d.m_Size.y);
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
 
-				shapeDef.density = bc2d.Density;
-				shapeDef.friction = bc2d.Friction;
-				shapeDef.restitution = bc2d.Restitution;
+				shapeDef.density = bc2d.m_Density;
+				shapeDef.friction = bc2d.m_Friction;
+				shapeDef.restitution = bc2d.m_Restitution;
 
 				b2ShapeId shapeId = b2CreatePolygonShape(b2Body, &shapeDef, &box);
-				bc2d.RuntimeFixture.generation = shapeId.generation;
-				bc2d.RuntimeFixture.index1 = shapeId.index1;
-				bc2d.RuntimeFixture.world0 = shapeId.world0;
+				bc2d.m_RuntimeFixture.generation = shapeId.generation;
+				bc2d.m_RuntimeFixture.index1 = shapeId.index1;
+				bc2d.m_RuntimeFixture.world0 = shapeId.world0;
 			}
 
 			if (entity.HasComponent<ComponentCircleCollider2D>()) {
