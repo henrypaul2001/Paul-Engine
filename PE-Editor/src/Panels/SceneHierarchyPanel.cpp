@@ -477,7 +477,6 @@ namespace PaulEngine
 
 		// Box Collider 2D
 		DrawComponent<ComponentBoxCollider2D>("Box Collider 2D", entity, true, [](ComponentBoxCollider2D& component) {
-			DrawVec2Control("Offset", component.Offset, 0.0f);
 			DrawVec2Control("Size", component.Size, 0.5f);
 
 			ImGui::DragFloat("Density", &component.Density, 0.1f);

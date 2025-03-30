@@ -217,7 +217,6 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentBoxCollider2D& box2D = entity.GetComponent<ComponentBoxCollider2D>();
-			out << YAML::Key << "Offset" << YAML::Value << box2D.Offset;
 			out << YAML::Key << "Size" << YAML::Value << box2D.Size;
 			out << YAML::Key << "Density" << YAML::Value << box2D.Density;
 			out << YAML::Key << "Friction" << YAML::Value << box2D.Friction;
@@ -375,7 +374,6 @@ namespace PaulEngine
 				YAML::Node box2DNode = entity["BoxCollider2DComponent"];
 				if (box2DNode) {
 					ComponentBoxCollider2D& box2DComponent = deserializedEntity.AddComponent<ComponentBoxCollider2D>();
-					box2DComponent.Offset = box2DNode["Offset"].as<glm::vec2>();
 					box2DComponent.Size = box2DNode["Size"].as<glm::vec2>();
 
 					box2DComponent.Density = box2DNode["Density"].as<float>();

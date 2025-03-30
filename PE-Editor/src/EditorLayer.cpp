@@ -496,7 +496,7 @@ namespace PaulEngine {
 			for (auto entityID : boxView) {
 				auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
 
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()) + box.Offset, 0.01f);
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()), 0.01f);
 				glm::vec3 scale = transform.Scale() * (glm::vec3(box.Size * 2.0f, 1.0f));
 				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
 				transformation = glm::rotate(transformation, transform.Rotation().z, glm::vec3(0.0, 0.0, 1.0f));

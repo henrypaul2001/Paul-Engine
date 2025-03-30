@@ -120,7 +120,6 @@ namespace PaulEngine
 	};
 
 	struct ComponentBoxCollider2D {
-		glm::vec2 Offset = glm::vec2(0.0f);
 		glm::vec2 Size = glm::vec2(0.5f);
 
 		float Density = 1.0f;
