@@ -161,13 +161,31 @@ namespace PaulEngine
 			{
 				PE_PROFILE_SCOPE("Box2D: Update dirty physics objects");
 
-				// Transforms and rigid bodies
-				// TODO:: separate
-				auto group = m_Registry.group<ComponentRigidBody2D>(entt::get<ComponentTransform>);
-				for (auto entityID : group) {
+				// If transform has changed, dirty all Box2D related components
+				m_Registry.view<ComponentTransform>().each([this](auto entityID, ComponentTransform& transform) {
 					Entity entity = Entity(entityID, this);
-					auto [rb2d, transform] = group.get<ComponentRigidBody2D, ComponentTransform>(entityID);
+					if (transform.m_PhysicsDirty) {
+						if (entity.HasComponent<ComponentRigidBody2D>()) {
+							ComponentRigidBody2D& rb2d = entity.GetComponent<ComponentRigidBody2D>();
+							b2BodyId bodyID;
+							bodyID.generation = rb2d.m_RuntimeBody.generation;
+							bodyID.index1 = rb2d.m_RuntimeBody.index1;
+							bodyID.world0 = rb2d.m_RuntimeBody.world0;
 
+							b2Body_SetTransform(bodyID, { transform.m_Position.x, transform.m_Position.y }, b2MakeRot(transform.m_Rotation.z));
+						}
+						if (entity.HasComponent<ComponentBoxCollider2D>()) {
+							entity.GetComponent<ComponentBoxCollider2D>().m_PhysicsDirty = true;
+						}
+						if (entity.HasComponent<ComponentCircleCollider2D>()) {
+							entity.GetComponent<ComponentCircleCollider2D>().m_PhysicsDirty = true;
+						}
+						transform.m_PhysicsDirty = false;
+					}
+				});
+
+				// Rigid body 2D
+				m_Registry.view<ComponentRigidBody2D>().each([this](auto entityID, ComponentRigidBody2D& rb2d) {
 					if (rb2d.m_PhysicsDirty) {
 						b2BodyId bodyID;
 						bodyID.generation = rb2d.m_RuntimeBody.generation;
@@ -176,34 +194,13 @@ namespace PaulEngine
 
 						b2Body_SetType(bodyID, SceneUtils::PEBodyType_To_Box2DBodyType(rb2d.m_Type));
 						b2Body_SetFixedRotation(bodyID, rb2d.m_FixedRotation);
-						
+
 						rb2d.m_PhysicsDirty = false;
 					}
-
-					if (transform.m_PhysicsDirty) {
-						b2BodyId bodyID;
-						bodyID.generation = rb2d.m_RuntimeBody.generation;
-						bodyID.index1 = rb2d.m_RuntimeBody.index1;
-						bodyID.world0 = rb2d.m_RuntimeBody.world0;
-						b2Body_SetTransform(bodyID, { transform.m_Position.x, transform.m_Position.y }, b2MakeRot(transform.m_Rotation.z));
-
-						if (entity.HasComponent<ComponentBoxCollider2D>()) {
-							ComponentBoxCollider2D& bc2d = entity.GetComponent<ComponentBoxCollider2D>();
-							bc2d.m_PhysicsDirty = true;
-						}
-
-						if (entity.HasComponent<ComponentCircleCollider2D>()) {
-							ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
-							cc2d.m_PhysicsDirty = true;
-						}
-
-						transform.m_PhysicsDirty = false;
-					}
-				}
+				});
 
 				// Box colliders
-				auto boxView = m_Registry.view<ComponentBoxCollider2D>();
-				boxView.each([this](auto entityID, ComponentBoxCollider2D& bc2d) {
+				m_Registry.view<ComponentBoxCollider2D>().each([this](auto entityID, ComponentBoxCollider2D& bc2d) {
 					ComponentTransform& transform = Entity(entityID, this).GetComponent<ComponentTransform>();
 					if (bc2d.m_PhysicsDirty) {
 						b2ShapeId shapeID;
@@ -224,20 +221,19 @@ namespace PaulEngine
 				});
 
 				// Circle colliders
-				auto circleView = m_Registry.view<ComponentCircleCollider2D>();
-				circleView.each([this](auto entityID, ComponentCircleCollider2D& cc2d) {
+				m_Registry.view<ComponentCircleCollider2D>().each([this](auto entityID, ComponentCircleCollider2D& cc2d) {
 					ComponentTransform& transform = Entity(entityID, this).GetComponent<ComponentTransform>();
 					if (cc2d.m_PhysicsDirty) {
 						b2ShapeId shapeID;
 						shapeID.generation = cc2d.m_RuntimeFixture.generation;
 						shapeID.index1 = cc2d.m_RuntimeFixture.index1;
 						shapeID.world0 = cc2d.m_RuntimeFixture.world0;
-						
+
 						b2Circle circle;
 						circle.center = { cc2d.m_Offset.x, cc2d.m_Offset.y };
 						float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
 						circle.radius = cc2d.m_Radius * largestScaleFactor;
-						
+
 						b2Shape_SetCircle(shapeID, &circle);
 
 						b2Shape_SetDensity(shapeID, cc2d.m_Density, true);
