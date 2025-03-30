@@ -153,7 +153,6 @@ namespace PaulEngine
 	};
 
 	struct ComponentCircleCollider2D {
-		glm::vec2 Offset() const { return m_Offset; }
 		float Radius() const { return m_Radius; }
 		float Density() const { return m_Density; }
 		float Friction() const { return m_Friction; }
@@ -166,7 +165,6 @@ namespace PaulEngine
 		};
 		const B2RuntimeFixture& RuntimeFixture() const { return m_RuntimeFixture; }
 
-		void SetOffset(glm::vec2 offset) { m_Offset = offset; m_PhysicsDirty = true; }
 		void SetRadius(float radius) { m_Radius = radius; m_PhysicsDirty = true; }
 		void SetDensity(float density) { m_Density = density; m_PhysicsDirty = true; }
 		void SetFriction(float friction) { m_Friction = friction; m_PhysicsDirty = true; }
@@ -176,7 +174,6 @@ namespace PaulEngine
 		friend class Scene;
 		friend class SceneSerializer;
 
-		glm::vec2 m_Offset = glm::vec2(0.0f);
 		float m_Radius = 0.5f;
 
 		float m_Density = 1.0f;

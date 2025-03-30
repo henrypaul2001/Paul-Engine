@@ -230,7 +230,7 @@ namespace PaulEngine
 						shapeID.world0 = cc2d.m_RuntimeFixture.world0;
 
 						b2Circle circle;
-						circle.center = { cc2d.m_Offset.x, cc2d.m_Offset.y };
+						circle.center = { 0.0f, 0.0f };
 						float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
 						circle.radius = cc2d.m_Radius * largestScaleFactor;
 
@@ -331,7 +331,7 @@ namespace PaulEngine
 				ComponentCircleCollider2D& cc2d = entity.GetComponent<ComponentCircleCollider2D>();
 
 				b2Circle circle;
-				circle.center = { cc2d.m_Offset.x, cc2d.m_Offset.y };
+				circle.center = { 0.0f, 0.0f };
 				float largestScaleFactor = (transform.m_Scale.x > transform.m_Scale.y) ? transform.m_Scale.x : transform.m_Scale.y;
 				circle.radius = cc2d.m_Radius * largestScaleFactor;
 

@@ -493,13 +493,11 @@ namespace PaulEngine
 
 		// Circle Collider 2D
 		DrawComponent<ComponentCircleCollider2D>("Circle Collider 2D", entity, true, [](ComponentCircleCollider2D& component) {
-			glm::vec2 offset = component.Offset();
 			float radius = component.Radius();
 			float density = component.Density();
 			float friction = component.Friction();
 			float restitution = component.Restitution();
 
-			if (DrawVec2Control("Offset", offset, 0.0f)) { component.SetOffset(offset); }
 			if (ImGui::DragFloat("Radius", &radius, 0.1f)) { component.SetRadius(radius); }
 
 			if (ImGui::DragFloat("Density", &density, 0.1f)) { component.SetDensity(density); }

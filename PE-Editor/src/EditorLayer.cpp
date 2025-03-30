@@ -511,7 +511,7 @@ namespace PaulEngine {
 			for (auto entityID : circleView) {
 				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
 
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()) + circle.Offset(), 0.01f);
+				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()), 0.01f);
 				glm::vec3 scale = transform.Scale() * (circle.Radius() * 2.0f);
 				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
 				transformation = glm::scale(transformation, scale);
