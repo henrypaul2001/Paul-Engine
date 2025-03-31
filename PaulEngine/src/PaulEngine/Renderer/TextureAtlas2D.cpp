@@ -14,13 +14,14 @@ namespace PaulEngine
 		m_SubTextureNames.push_back(name);
 	}
 
-	SubTexture2D TextureAtlas2D::GetSubTexture(const std::string& name)
+	Ref<SubTexture2D> TextureAtlas2D::GetSubTexture(const std::string& name)
 	{
 		if (m_SubTextureMap.find(name) != m_SubTextureMap.end()) {
-			return m_SubTextureMap[name];
+			return CreateRef<SubTexture2D>(m_SubTextureMap[name]);
 		}
 		else {
 			PE_CORE_ERROR("Unknown subtexture: '{0}'", name.c_str());
+			return nullptr;
 		}
 	}
 }

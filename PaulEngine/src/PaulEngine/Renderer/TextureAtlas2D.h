@@ -12,7 +12,7 @@ namespace PaulEngine
 		AssetHandle GetBaseTexture() const { return m_BaseTextureHandle; }
 
 		void AddSubTexture(const std::string& name, SubTexture2D subtexture);
-		SubTexture2D GetSubTexture(const std::string& name);
+		Ref<SubTexture2D> GetSubTexture(const std::string& name);
 
 		const std::vector<std::string>& GetSubTextureNames() const { return m_SubTextureNames; }
 

@@ -420,6 +420,8 @@ namespace PaulEngine
 					AssetHandle handle = *(AssetHandle*)payload->Data;
 					if (AssetManager::GetAssetType(handle) == AssetType::Texture2D) {
 						component.Texture = handle;
+						component.TextureAtlas = 0;
+						component.SelectedSubTextureName = "";
 					}
 					else if (AssetManager::GetAssetType(handle) == AssetType::TextureAtlas2D) {
 						component.TextureAtlas = handle;
@@ -440,25 +442,33 @@ namespace PaulEngine
 				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
 					component.Texture = 0;
+					component.TextureAtlas = 0;
+					component.SelectedSubTextureName = "";
 				}
 			}
 			ImGui::SameLine();
 			ImGui::Text("Texture");
 
 			bool isAtlasValid = (AssetManager::IsAssetHandleValid(component.TextureAtlas) && AssetManager::GetAssetType(component.TextureAtlas) == AssetType::TextureAtlas2D);
-			label = (component.TextureAtlas != 0 && component.SelectedSubTextureName == "") ? "None" : component.SelectedSubTextureName;
+			std::string selectedSubTexture = (component.TextureAtlas != 0 && component.SelectedSubTextureName == "") ? "None" : component.SelectedSubTextureName;
 
 			if (isAtlasValid) {
 				Ref<TextureAtlas2D> atlas = AssetManager::GetAsset<TextureAtlas2D>(component.TextureAtlas);
-				const std::vector<std::string>& names = atlas->GetSubTextureNames();
+				std::vector<std::string> copiedNames = atlas->GetSubTextureNames();
+				copiedNames.insert(copiedNames.begin(), { "None" });
 
-				if (ImGui::BeginCombo("Sub Texture", label.c_str())) {
+				if (ImGui::BeginCombo("Sub Texture", selectedSubTexture.c_str())) {
 
-					for (int i = 0; i < names.size(); i++) {
-						bool isSelected = label == names[i];
-						if (ImGui::Selectable(names[i].c_str(), isSelected)) {
-							label = names[i];
-							component.SelectedSubTextureName = label;
+					for (int i = 0; i < copiedNames.size(); i++) {
+						bool isSelected = selectedSubTexture == copiedNames[i];
+						if (ImGui::Selectable(copiedNames[i].c_str(), isSelected)) {
+							selectedSubTexture = copiedNames[i];
+							if (i == 0) {
+								component.SelectedSubTextureName = "";
+							}
+							else {
+								component.SelectedSubTextureName = selectedSubTexture;
+							}
 						}
 
 						if (isSelected) {
@@ -470,7 +480,7 @@ namespace PaulEngine
 				}
 			}
 
-			if (!isAtlasValid || label == "None") {
+			if (!isAtlasValid || selectedSubTexture == "None") {
 				bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
 			}
 

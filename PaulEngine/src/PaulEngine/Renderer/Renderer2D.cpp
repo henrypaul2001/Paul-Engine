@@ -10,6 +10,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "MSDFData.h"
+#include "TextureAtlas2D.h"
 
 namespace PaulEngine {
 	struct QuadVertex {
@@ -418,7 +419,7 @@ namespace PaulEngine {
 		}
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec2& textureScale, const glm::vec4& tintColour, int entityID)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subtexture, const glm::vec4& tintColour, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -449,7 +450,7 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexBufferPtr->Colour = tintColour;
 			s_RenderData.QuadVertexBufferPtr->TexCoords = textureCoords[i];
 			s_RenderData.QuadVertexBufferPtr->TextureIndex = textureIndex;
-			s_RenderData.QuadVertexBufferPtr->TextureScale = textureScale;
+			s_RenderData.QuadVertexBufferPtr->TextureScale = glm::vec2(1.0f, 1.0f);
 			s_RenderData.QuadVertexBufferPtr->EntityID = entityID;
 			s_RenderData.QuadVertexBufferPtr++;
 		}
@@ -457,6 +458,27 @@ namespace PaulEngine {
 		s_RenderData.QuadIndexCount += 6;
 
 		s_RenderData.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const AssetHandle textureAtlasHandle, const std::string& subtextureName, const glm::vec4& tintColour, int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		if (textureAtlasHandle)
+		{
+			Ref<TextureAtlas2D> textureAtlas = AssetManager::GetAsset<TextureAtlas2D>(textureAtlasHandle);
+			if (subtextureName != "") {
+				Ref<SubTexture2D> subtexture = textureAtlas->GetSubTexture(subtextureName);
+				if (subtexture) {
+					DrawQuad(transform, subtexture, tintColour, entityID);
+					return;
+				}
+			}
+			DrawQuad(transform, textureAtlas->GetBaseTexture(), glm::vec2(1.0f, 1.0f), tintColour, entityID);
+		}
+		else {
+			DrawQuad(transform, tintColour, entityID);
+		}
 	}
 
 	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& colour, const float thickness, const float fade, const int entityID)
