@@ -12,7 +12,8 @@ namespace PaulEngine
 		None = 0,
 		Scene,
 		Texture2D,
-		Font
+		Font,
+		TextureAtlas2D
 	};
 
 	struct AssetMetadata
