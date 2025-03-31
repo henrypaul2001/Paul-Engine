@@ -14,7 +14,8 @@ namespace PaulEngine
 	static std::unordered_map<AssetType, AssetImportFunction> s_AssetImportFunctions = {
 		{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
 		{ AssetType::Scene, SceneImporter::ImportScene },
-		{ AssetType::Font, FontImporter::ImportFont }
+		{ AssetType::Font, FontImporter::ImportFont },
+		{ AssetType::TextureAtlas2D, TextureImporter::ImportTextureAtlas2D }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

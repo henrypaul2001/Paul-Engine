@@ -15,6 +15,7 @@ namespace PaulEngine
 		virtual AssetType GetType() const override { return AssetType::TextureAtlas2D; }
 
 	private:
+		friend class TextureImporter;
 		AssetHandle m_BaseTextureHandle;
 		std::unordered_map<std::string, SubTexture2D> m_SubTextureMap;
 	};

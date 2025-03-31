@@ -28,15 +28,15 @@ void Sandbox2D::OnAttach()
 	m_Texture2 = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/Checkerboard.png");
 
 	m_Spritesheet = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/RPGpack_sheet_2X.png");
-	m_TextureStairs =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 7, 6 }, { 128.0f, 128.0f });
-	m_TextureBarrel =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 8, 2 }, { 128.0f, 128.0f });
-	m_TextureTree =		PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
-	m_TextureInvalid =	PaulEngine::SubTexture2D::CreateFromCoords(m_Texture2, { 0, 0 }, { m_Texture2->GetWidth(), m_Texture2->GetHeight() });
-
-	m_MapWidth = 24;
-	m_MapHeight = strlen(s_MapTiles) / m_MapWidth;
-	m_TextureMap['D'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 6, 11 }, { 128.0f, 128.0f });
-	m_TextureMap['W'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 11, 11 }, { 128.0f, 128.0f });
+	//m_TextureStairs =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 7, 6 }, { 128.0f, 128.0f });
+	//m_TextureBarrel =	PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 8, 2 }, { 128.0f, 128.0f });
+	//m_TextureTree =		PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
+	//m_TextureInvalid =	PaulEngine::SubTexture2D::CreateFromCoords(m_Texture2, { 0, 0 }, { m_Texture2->GetWidth(), m_Texture2->GetHeight() });
+	//
+	//m_MapWidth = 24;
+	//m_MapHeight = strlen(s_MapTiles) / m_MapWidth;
+	//m_TextureMap['D'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 6, 11 }, { 128.0f, 128.0f });
+	//m_TextureMap['W'] = PaulEngine::SubTexture2D::CreateFromCoords(m_Spritesheet, { 11, 11 }, { 128.0f, 128.0f });
 }
 
 void Sandbox2D::OnDetach()

@@ -426,10 +426,11 @@ namespace PaulEngine {
 			EndScene();
 		}
 
+		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(subtexture->GetTextureHandle());
 		// Check if texture has already been submitted
 		float textureIndex = 0.0f;
 		for (int i = 1; i < s_RenderData.TextureSlotIndex; i++) {
-			if (*s_RenderData.TextureSlots[i].get() == *subtexture->GetTexture().get()) {
+			if (*s_RenderData.TextureSlots[i].get() == *texture.get()) {
 				textureIndex = (float)i;
 				break;
 			}
@@ -437,7 +438,7 @@ namespace PaulEngine {
 
 		if (textureIndex == 0.0f) {
 			textureIndex = (float)s_RenderData.TextureSlotIndex;
-			s_RenderData.TextureSlots[s_RenderData.TextureSlotIndex] = subtexture->GetTexture();
+			s_RenderData.TextureSlots[s_RenderData.TextureSlotIndex] = texture;
 			s_RenderData.TextureSlotIndex++;
 		}
 

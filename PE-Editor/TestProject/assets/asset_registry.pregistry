@@ -1,24 +1,28 @@
 AssetRegistry:
-  - Handle: 266139391440945140
-    Filepath: textures\awesomeface.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 3231254291038093228
     Filepath: fonts\Bangers-Regular.ttf
     Persistent: false
     Type: AssetType::Font
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
+  - Handle: 266139391440945140
+    Filepath: textures\awesomeface.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 4566192558940935376
     Filepath: scenes\3DCube.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 14046064469291239366
+    Filepath: textures/RPGpack_sheet_2X.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 2510263345310005911
     Filepath: scenes\Example.paul
     Persistent: false
@@ -27,3 +31,7 @@ AssetRegistry:
     Filepath: scenes\Physics2D.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 16608139281889772844
+    Filepath: atlas\RPGpack.patlas
+    Persistent: false
+    Type: AssetType::TextureAtlas2D
