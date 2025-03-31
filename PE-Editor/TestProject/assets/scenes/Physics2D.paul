@@ -30,6 +30,8 @@ Entities:
       Colour: [0.911032, 0.28206328, 0.28206328, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
     Rigid2DComponent:
       Type: 1
       FixedRotation: false
@@ -65,6 +67,8 @@ Entities:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
     Rigid2DComponent:
       Type: 0
       FixedRotation: false
@@ -84,6 +88,8 @@ Entities:
       Colour: [0.51954466, 0.85409254, 0.2553159, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
     Rigid2DComponent:
       Type: 1
       FixedRotation: false
@@ -103,6 +109,8 @@ Entities:
       Colour: [0.32400805, 0.44567746, 0.8754448, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
     Rigid2DComponent:
       Type: 1
       FixedRotation: false
@@ -122,6 +130,8 @@ Entities:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
     Rigid2DComponent:
       Type: 0
       FixedRotation: false
@@ -141,6 +151,8 @@ Entities:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
     Rigid2DComponent:
       Type: 0
       FixedRotation: false

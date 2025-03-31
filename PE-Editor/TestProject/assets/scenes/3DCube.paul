@@ -11,6 +11,8 @@ Entities:
       Colour: [0.8932966, 0.45227394, 0.99288255, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
   - Entity: 4743409944484939423
     TagComponent:
       Tag: Left
@@ -22,6 +24,8 @@ Entities:
       Colour: [0.7258225, 0.19180356, 0.8291815, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
   - Entity: 16638832034582964483
     TagComponent:
       Tag: Right
@@ -33,6 +37,8 @@ Entities:
       Colour: [0.5636249, 0.14680664, 0.6548042, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
   - Entity: 15925714462820858697
     TagComponent:
       Tag: Camera

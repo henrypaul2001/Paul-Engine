@@ -38,6 +38,8 @@ Entities:
       Colour: [1, 0, 0, 1]
       TextureHandle: 1732625535741970896
       TextureScale: [5, 5]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
   - Entity: 3417043274122471441
     TagComponent:
       Tag: Square
@@ -49,6 +51,8 @@ Entities:
       Colour: [0, 1, 0, 1]
       TextureHandle: 266139391440945140
       TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
   - Entity: 2999612662127236149
     TagComponent:
       Tag: TextTest

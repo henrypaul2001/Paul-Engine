@@ -47,8 +47,5 @@ namespace PaulEngine {
 
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		virtual AssetType GetType() const { return GetStaticType(); }
-
-		virtual AssetHandle GetAtlasHandle() const = 0;
-		virtual void SetAtlasHandle(AssetHandle atlasHandle) = 0;
 	};
 }

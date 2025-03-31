@@ -4,6 +4,8 @@
 #include <stb_image.h>
 #include "PaulEngine/Project/Project.h"
 
+#include "AssetManager.h"
+
 #include <yaml-cpp/yaml.h>
 
 // Type conversions
@@ -145,10 +147,10 @@ namespace PaulEngine
 					}
 				}
 
-				textureAtlas.SetSubTexture(name, subTexture2D);
+				textureAtlas.AddSubTexture(name, subTexture2D);
 			}
 		}
-
+		
 		return CreateRef<TextureAtlas2D>(textureAtlas);
 	}
 

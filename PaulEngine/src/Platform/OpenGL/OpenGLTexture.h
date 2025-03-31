@@ -23,9 +23,6 @@ namespace PaulEngine {
 			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
 		}
 
-		virtual AssetHandle GetAtlasHandle() const override { return m_AtlasHandle; }
-		virtual void SetAtlasHandle(AssetHandle atlasHandle) override { m_AtlasHandle = atlasHandle; }
-
 	private:
 		TextureSpecification m_Spec;
 
@@ -34,7 +31,5 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
-
-		AssetHandle m_AtlasHandle = 0;
 	};
 }

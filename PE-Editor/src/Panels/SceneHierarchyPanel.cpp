@@ -9,6 +9,7 @@
 #include <PaulEngine/Debug/Instrumentor.h>
 
 #include <filesystem>
+#include <PaulEngine/Renderer/TextureAtlas2D.h>
 
 namespace PaulEngine
 {
@@ -420,8 +421,14 @@ namespace PaulEngine
 					if (AssetManager::GetAssetType(handle) == AssetType::Texture2D) {
 						component.Texture = handle;
 					}
+					else if (AssetManager::GetAssetType(handle) == AssetType::TextureAtlas2D) {
+						component.TextureAtlas = handle;
+						Ref<TextureAtlas2D> atlas = AssetManager::GetAsset<TextureAtlas2D>(handle);
+						component.Texture = atlas->GetBaseTexture();
+						component.SelectedSubTextureName = "";
+					}
 					else {
-						PE_CORE_WARN("Invalid asset type. Texture2D needed for sprite component");
+						PE_CORE_WARN("Invalid asset type. Texture2D or TextureAtlas2D needed for sprite component");
 					}
 				}
 				ImGui::EndDragDropTarget();
@@ -437,8 +444,36 @@ namespace PaulEngine
 			}
 			ImGui::SameLine();
 			ImGui::Text("Texture");
-			
-			bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
+
+			bool isAtlasValid = (AssetManager::IsAssetHandleValid(component.TextureAtlas) && AssetManager::GetAssetType(component.TextureAtlas) == AssetType::TextureAtlas2D);
+			label = (component.TextureAtlas != 0 && component.SelectedSubTextureName == "") ? "None" : component.SelectedSubTextureName;
+
+			if (isAtlasValid) {
+				Ref<TextureAtlas2D> atlas = AssetManager::GetAsset<TextureAtlas2D>(component.TextureAtlas);
+				const std::vector<std::string>& names = atlas->GetSubTextureNames();
+
+				if (ImGui::BeginCombo("Sub Texture", label.c_str())) {
+
+					for (int i = 0; i < names.size(); i++) {
+						bool isSelected = label == names[i];
+						if (ImGui::Selectable(names[i].c_str(), isSelected)) {
+							label = names[i];
+							component.SelectedSubTextureName = label;
+						}
+
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+			}
+
+			if (!isAtlasValid || label == "None") {
+				bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
+			}
+
 		});
 
 		// Circle

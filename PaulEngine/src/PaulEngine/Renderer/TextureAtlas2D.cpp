@@ -5,9 +5,13 @@ namespace PaulEngine
 {
 	TextureAtlas2D::TextureAtlas2D(AssetHandle baseTexture) : m_BaseTextureHandle(baseTexture) {}
 
-	void TextureAtlas2D::SetSubTexture(const std::string& name, SubTexture2D subtexture)
+	void TextureAtlas2D::AddSubTexture(const std::string& name, SubTexture2D subtexture)
 	{
+		PE_CORE_ASSERT(name != "", "Name cannot be empty");
+		PE_CORE_ASSERT(m_SubTextureMap.find(name) == m_SubTextureMap.end(), "SubTexture name already exists in texture atlas");
+
 		m_SubTextureMap[name] = subtexture;
+		m_SubTextureNames.push_back(name);
 	}
 
 	SubTexture2D TextureAtlas2D::GetSubTexture(const std::string& name)
@@ -16,7 +20,7 @@ namespace PaulEngine
 			return m_SubTextureMap[name];
 		}
 		else {
-			PE_CORE_WARN("Unknown subtexture: '{0}'", name.c_str());
+			PE_CORE_ERROR("Unknown subtexture: '{0}'", name.c_str());
 		}
 	}
 }
