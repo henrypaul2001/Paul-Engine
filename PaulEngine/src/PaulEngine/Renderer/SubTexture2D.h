@@ -6,14 +6,14 @@ namespace PaulEngine {
 	class SubTexture2D
 	{
 	public:
-		SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& min, const glm::vec2& max);
+		SubTexture2D(AssetHandle textureHandle, const glm::vec2& min, const glm::vec2& max);
 
-		const Ref<Texture2D>& GetTexture() const { return m_Texture; }
+		AssetHandle GetTextureHandle() const { return m_TextureHandle; }
 		const glm::vec2* GetTexCoords() const { return m_TexCoords; }
 
-		static Ref<SubTexture2D> CreateFromCoords(const Ref<Texture2D>& texture, const glm::vec2& xy, const glm::vec2& cellSize, const glm::vec2& spriteSize = glm::vec2(1.0f));
+		static SubTexture2D CreateFromCoords(AssetHandle textureHandle, const glm::vec2& xy, const glm::vec2& cellSize, const glm::vec2& spriteSize = glm::vec2(1.0f));
 	private:
-		Ref<Texture2D> m_Texture;
+		AssetHandle m_TextureHandle = 0;
 		glm::vec2 m_TexCoords[4];
 	};
 }
