@@ -253,6 +253,16 @@ namespace PaulEngine {
 					ImGui::Checkbox("Show colliders", &m_ShowColliders);
 					ImGui::EndMenu();
 				}
+				if (ImGui::BeginMenu("Asset")) {
+					if (ImGui::BeginMenu("Create..")) {
+						if (ImGui::MenuItem("Texture Atlas..")) {
+							m_AtlasCreateWindow.SetShowWindow(true);
+							m_AtlasCreateWindow.SetContext(0);
+						}
+						ImGui::EndMenu();
+					}
+					ImGui::EndMenu();
+				}
 				ImGui::EndMenuBar();
 			}
 
@@ -375,6 +385,7 @@ namespace PaulEngine {
 
 			m_SceneHierarchyPanel.OnImGuiRender();
 			m_ContentBrowserPanel->ImGuiRender();
+			m_AtlasCreateWindow.OnImGuiRender();
 
 			OnUIDrawToolbar();
 		}

@@ -3,6 +3,7 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include <PaulEngine/Renderer/EditorCamera.h>
+#include "Window/CreateAtlasWindow.h"
 
 namespace PaulEngine {
 	class EditorLayer : public Layer
@@ -69,6 +70,9 @@ namespace PaulEngine {
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
+
+		// Windows
+		CreateAtlasWindow m_AtlasCreateWindow;
 
 		int m_GizmoType = -1;
 
