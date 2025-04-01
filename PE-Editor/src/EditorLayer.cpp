@@ -710,10 +710,13 @@ namespace PaulEngine {
 	{
 		std::string path = filepath.string();
 		if (path.empty()) {
+			std::filesystem::path absoluteAssetDirPath = std::filesystem::absolute(Project::GetActive()->GetAssetDirectory());
 			path = FileDialogs::SaveFile("Paul Engine Scene (*.paul)\0*.paul\0");
+			std::filesystem::path filepath = path;
+			path = filepath.lexically_relative(absoluteAssetDirPath).string();
 		}
 		if (!path.empty()) {
-			SceneImporter::SaveScene(m_ActiveScene, filepath);
+			SceneImporter::SaveScene(m_ActiveScene, path);
 			m_CurrentFilepath = path;
 		}
 	}
