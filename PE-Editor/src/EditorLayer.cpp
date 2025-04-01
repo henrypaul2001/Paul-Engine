@@ -20,7 +20,7 @@ namespace PaulEngine {
 
 	static Ref<Font> s_Font;
 
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()) {}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0) {}
 
 	EditorLayer::~EditorLayer() {}
 

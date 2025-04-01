@@ -1,6 +1,9 @@
 #include "pepch.h"
 #include "CreateAtlasWindow.h"
 
+#include "PaulEngine/Renderer/Renderer2D.h"
+#include "PaulEngine/Renderer/RenderCommand.h"
+
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/TextureImporter.h"
 
@@ -14,9 +17,20 @@
 
 namespace PaulEngine
 {
-	CreateAtlasWindow::CreateAtlasWindow(AssetHandle baseTexture) : m_BaseTexture(baseTexture)
+	CreateAtlasWindow::CreateAtlasWindow(AssetHandle baseTexture) : m_BaseTexture(baseTexture), m_ViewportSize(128.0f, 128.0f)
 	{
+		Init();
+	}
 
+	void CreateAtlasWindow::Init()
+	{
+		FramebufferSpecification spec;
+		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		spec.Width = 1280;
+		spec.Height = 720;
+		m_Framebuffer = Framebuffer::Create(spec);
+
+		m_Camera = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 	}
 
 	void CreateAtlasWindow::SetContext(AssetHandle baseTexture)
@@ -149,7 +163,49 @@ namespace PaulEngine
 					ImGui::InputFloat2("Sprite size", &subTextureInput->spriteSize[0]);
 					ImGui::Separator();
 
-					ImGui::Text("preview subtexture");
+					// Render preview
+					{
+						glm::vec2 spriteSize = glm::vec2(1.0f);
+						if (selected != "") {
+							spriteSize = m_SubTextureInputMap[selected].spriteSize;
+						}
+						glm::vec2 imageSize = cellSize * spriteSize;
+
+						ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+						m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
+
+						// Resize
+						const FramebufferSpecification& spec = m_Framebuffer->GetSpecification();
+						if ((uint32_t)imageSize.x != spec.Width || (uint32_t)imageSize.y != spec.Height) {
+							m_Framebuffer->Resize((uint32_t)imageSize.x, (uint32_t)imageSize.y);
+							m_Camera.SetViewportSize(imageSize.x, imageSize.y);
+						}
+
+						Renderer2D::ResetStats();
+						m_Framebuffer->Bind();
+						RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)imageSize));
+						RenderCommand::SetClearColour(glm::vec4(1.0f, 0.1f, 0.1f, 1.0f));
+						RenderCommand::Clear();
+
+						Renderer2D::BeginScene(m_Camera, glm::mat4(1.0f));
+						if (selected != "") {
+							const SubTextureInput& input = m_SubTextureInputMap[selected];
+							Ref<SubTexture2D> selectedSubTexture = CreateRef<SubTexture2D>(SubTexture2D::CreateFromCoords(m_BaseTexture, input.cellCoords, cellSize, input.spriteSize));
+
+							glm::vec2 quadSize = glm::vec2(spriteSize.x / spriteSize.y, 1.0f);
+							m_QuadTransform = glm::mat4(1.0f);
+							m_QuadTransform = glm::translate(m_QuadTransform, glm::vec3(0.0f, 0.0f, -0.5f));
+							m_QuadTransform = glm::scale(m_QuadTransform, glm::vec3(quadSize, 1.0f));
+							Renderer2D::DrawQuad(m_QuadTransform, selectedSubTexture, glm::vec4(1.0f), -1);
+						}
+						Renderer2D::EndScene();
+
+						m_Framebuffer->Unbind();
+
+						// Display viewport
+						uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+						ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+					}
 				}
 				ImGui::EndChild();
 
