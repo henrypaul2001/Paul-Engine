@@ -28,12 +28,13 @@ namespace PaulEngine
 			glm::vec2 cellCoords;
 			glm::vec2 spriteSize;
 		};
-		std::unordered_map<std::string, SubTextureInput> m_SubTextureInputMap;
+		std::unordered_map<std::string, int> m_NameToInputIDMap;
+		std::vector<SubTextureInput> m_SubTextureInputList;
+		std::vector<std::string> m_SubTextureNames;
 
 		Ref<Framebuffer> m_Framebuffer;
 	
 		glm::vec2 m_ViewportSize;
-		//glm::vec2 m_ViewportBounds[2] = { glm::vec2(0.0f), glm::vec2(0.0f) };
 		SceneCamera m_Camera;
 
 		glm::mat4 m_QuadTransform;

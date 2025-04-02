@@ -92,13 +92,16 @@ namespace PaulEngine
 			}
 
 			// Left
-			static std::string selected = "";
-			static std::string subTextureDeleted = "";
+			static int selected = -1;
+			static int subTextureDeleted = -1;
 			static glm::vec2 cellSize = glm::vec2(128.0f);
 			static glm::vec2 lastSpriteSize = glm::vec2(1.0f);
+			glm::ivec2 cellCount = (glm::ivec2)textureSize / (glm::ivec2)cellSize;
 			{
 				ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
 
+				ImGui::Text("Sheet dimensions: %d x %d", (int)textureSize.x, (int)textureSize.y);
+				ImGui::Text("Cell count: %d x %d", cellCount.x, cellCount.y);
 				ImGui::InputFloat2("Cell size", &cellSize[0]);
 				if (ImGui::Button("Add new sub-texture")) {
 					ImGui::OpenPopup("Add new sub-texture");
@@ -121,10 +124,13 @@ namespace PaulEngine
 					ImGui::SameLine();
 					if (ImGui::Button("Confirm")) {
 						// Validate
-						const bool uniqueName = m_SubTextureInputMap.find(name) == m_SubTextureInputMap.end();
+						const bool uniqueName = m_NameToInputIDMap.find(name) == m_NameToInputIDMap.end();
 						const bool nameIsntEmpty = (name != "");
 						if (uniqueName && nameIsntEmpty) {
-							m_SubTextureInputMap[name] = { cellCoords, spriteSize };
+							int index = m_SubTextureInputList.size();
+							m_SubTextureInputList.push_back({ cellCoords, spriteSize });
+							m_SubTextureNames.push_back(name);
+							m_NameToInputIDMap[name] = index;
 							ImGui::CloseCurrentPopup();
 						}
 						else {
@@ -134,15 +140,15 @@ namespace PaulEngine
 					ImGui::EndPopup();
 				}
 
-				for (auto& it : m_SubTextureInputMap) {
-					if (ImGui::Selectable(it.first.c_str(), selected == it.first, ImGuiSelectableFlags_SelectOnNav)) {
-						selected = it.first;
+				for (int i = 0; i < m_SubTextureInputList.size(); i++) {
+					if (ImGui::Selectable(m_SubTextureNames[i].c_str(), selected == i, ImGuiSelectableFlags_SelectOnNav)) {
+						selected = i;
 					}
 					if (ImGui::BeginPopupContextItem()) {
 						if (ImGui::MenuItem("Delete")) {
-							subTextureDeleted = it.first;
+							subTextureDeleted = i;
 							if (subTextureDeleted == selected) {
-								selected = "";
+								selected = -1;
 							}
 						}
 						ImGui::EndPopup();
@@ -156,9 +162,9 @@ namespace PaulEngine
 			{
 				ImGui::BeginGroup();
 				ImGui::BeginChild("preview", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-				if (selected != "") {
-					ImGui::Text(selected.c_str());
-					SubTextureInput* subTextureInput = &m_SubTextureInputMap[selected];
+				if (selected != -1) {
+					ImGui::Text(m_SubTextureNames[selected].c_str());
+					SubTextureInput* subTextureInput = &m_SubTextureInputList[selected];
 					ImGui::InputFloat2("Cell coords", &subTextureInput->cellCoords[0]);
 					ImGui::InputFloat2("Sprite size", &subTextureInput->spriteSize[0]);
 					ImGui::Separator();
@@ -166,8 +172,8 @@ namespace PaulEngine
 					// Render preview
 					{
 						glm::vec2 spriteSize = glm::vec2(1.0f);
-						if (selected != "") {
-							spriteSize = m_SubTextureInputMap[selected].spriteSize;
+						if (selected != -1) {
+							spriteSize = m_SubTextureInputList[selected].spriteSize;
 						}
 						glm::vec2 imageSize = cellSize * spriteSize;
 
@@ -188,8 +194,8 @@ namespace PaulEngine
 						RenderCommand::Clear();
 
 						Renderer2D::BeginScene(m_Camera, glm::mat4(1.0f));
-						if (selected != "") {
-							const SubTextureInput& input = m_SubTextureInputMap[selected];
+						if (selected != -1) {
+							const SubTextureInput& input = m_SubTextureInputList[selected];
 							Ref<SubTexture2D> selectedSubTexture = CreateRef<SubTexture2D>(SubTexture2D::CreateFromCoords(m_BaseTexture, input.cellCoords, cellSize, input.spriteSize));
 
 							glm::vec2 quadSize = glm::vec2(spriteSize.x / spriteSize.y, 1.0f);
@@ -211,31 +217,35 @@ namespace PaulEngine
 
 				if (ImGui::Button("Cancel")) {
 					m_ShowWindow = false;
-					m_SubTextureInputMap.clear();
+					m_SubTextureInputList.clear();
+					m_NameToInputIDMap.clear();
+					m_SubTextureNames.clear();
 					m_BaseTexture = 0;
-					selected = "";
+					selected = -1;
 					lastSpriteSize = glm::vec2(128.0f);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Confirm")) {
+				if (ImGui::Button("Save As...")) {
 					// Save As...
 					std::string path = FileDialogs::SaveFile("Paul Engine Texture Atlas (*.patlas)\0*.patlas\0");
 					if (!path.empty()) {
 						TextureAtlas2D textureAtlas = TextureAtlas2D(m_BaseTexture);
-						for (auto& it : m_SubTextureInputMap) {
-							textureAtlas.AddSubTexture(it.first, SubTexture2D::CreateFromCoords(m_BaseTexture, it.second.cellCoords, cellSize, it.second.spriteSize));
+						for (int i = 0; i < m_SubTextureInputList.size(); i++) {
+							textureAtlas.AddSubTexture(m_SubTextureNames[i], SubTexture2D::CreateFromCoords(m_BaseTexture, m_SubTextureInputList[i].cellCoords, cellSize, m_SubTextureInputList[i].spriteSize));
 						}
 
-						std::filesystem::path absoluteProjectPath = std::filesystem::absolute(Project::GetActive()->GetProjectDirectory());
+						std::filesystem::path absoluteProjectPath = std::filesystem::absolute(Project::GetProjectDirectory());
 						std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
 
 						TextureImporter::SaveTextureAtlas2D(textureAtlas, relativeSavePath);
-						AssetHandle handle = Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetActive()->GetAssetDirectory()), false);
+						AssetHandle handle = Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
 
 						m_ShowWindow = false;
-						m_SubTextureInputMap.clear();
+						m_SubTextureInputList.clear();
+						m_NameToInputIDMap.clear();
+						m_SubTextureNames.clear();
 						m_BaseTexture = 0;
-						selected = "";
+						selected = -1;
 						lastSpriteSize = glm::vec2(1.0f);
 					}
 				}
@@ -248,9 +258,16 @@ namespace PaulEngine
 
 			ImGui::End();
 
-			if (subTextureDeleted != "") {
-				m_SubTextureInputMap.erase(subTextureDeleted);
-				subTextureDeleted = "";
+			if (subTextureDeleted != -1) {
+				m_NameToInputIDMap.erase(m_SubTextureNames[subTextureDeleted]);
+
+				m_SubTextureNames.erase(m_SubTextureNames.begin() + subTextureDeleted);
+				m_SubTextureInputList.erase(m_SubTextureInputList.begin() + subTextureDeleted);
+
+				for (int i = subTextureDeleted; i < m_SubTextureNames.size(); i++) {
+					m_NameToInputIDMap[m_SubTextureNames[i]] -= 1;
+				}
+				subTextureDeleted = -1;
 			}
 		}
 	}
