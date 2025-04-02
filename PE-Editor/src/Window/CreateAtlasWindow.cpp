@@ -96,13 +96,15 @@ namespace PaulEngine
 			static int subTextureDeleted = -1;
 			static glm::vec2 cellSize = glm::vec2(128.0f);
 			static glm::vec2 lastSpriteSize = glm::vec2(1.0f);
-			glm::ivec2 cellCount = (glm::ivec2)textureSize / (glm::ivec2)cellSize;
+			glm::ivec2 cellCount = ((glm::ivec2)textureSize / (glm::ivec2)cellSize) - glm::ivec2(1, 1);
 			{
 				ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
 
 				ImGui::Text("Sheet dimensions: %d x %d", (int)textureSize.x, (int)textureSize.y);
-				ImGui::Text("Cell count: %d x %d", cellCount.x, cellCount.y);
-				ImGui::InputFloat2("Cell size", &cellSize[0]);
+				ImGui::Text("Cell count: %d x %d", cellCount.x + 1, cellCount.y + 1);
+				ImGui::DragFloat2("Cell size", &cellSize[0], 1.0f, 1.0f, 1000000.0f, "%.1f");
+				cellSize = glm::min(cellSize, textureSize);
+				cellSize = glm::max(glm::vec2(1.0f), cellSize);
 				if (ImGui::Button("Add new sub-texture")) {
 					ImGui::OpenPopup("Add new sub-texture");
 				}
@@ -113,10 +115,14 @@ namespace PaulEngine
 					ImGui::InputText("Name", &name);
 
 					static glm::vec2 cellCoords = glm::vec2(0.0f);
-					ImGui::InputFloat2("Cell coords", &cellCoords[0]);
+					ImGui::DragFloat2("Cell coords", &cellCoords[0], 1.0f, 0.0f, 0.0f, "%.1f");
+					cellCoords = glm::min(cellCoords, (glm::vec2)cellCount);
+					cellCoords = glm::max(glm::vec2(0.0f), cellCoords);
 
 					static glm::vec2 spriteSize = lastSpriteSize;
-					ImGui::InputFloat2("Sprite size", &spriteSize[0]);
+					ImGui::DragFloat2("Sprite size", &spriteSize[0], 1.0f, 0.0f, 0.0f, "%.1f");
+					spriteSize = glm::min(spriteSize, textureSize);
+					spriteSize = glm::max(glm::vec2(0.0f), spriteSize);
 
 					if (ImGui::Button("Cancel")) {
 						ImGui::CloseCurrentPopup();
@@ -165,8 +171,15 @@ namespace PaulEngine
 				if (selected != -1) {
 					ImGui::Text(m_SubTextureNames[selected].c_str());
 					SubTextureInput* subTextureInput = &m_SubTextureInputList[selected];
-					ImGui::InputFloat2("Cell coords", &subTextureInput->cellCoords[0]);
-					ImGui::InputFloat2("Sprite size", &subTextureInput->spriteSize[0]);
+
+					ImGui::DragFloat2("Cell coords", &subTextureInput->cellCoords[0], 1.0f, 0.0f, 0.0f, "%.1f");
+					subTextureInput->cellCoords = glm::min(subTextureInput->cellCoords, (glm::vec2)cellCount);
+					subTextureInput->cellCoords = glm::max(glm::vec2(0.0f), subTextureInput->cellCoords);
+
+					ImGui::DragFloat2("Sprite size", &subTextureInput->spriteSize[0], 1.0f, 0.0f, 0.0f, "%.1f");
+					subTextureInput->spriteSize = glm::min(subTextureInput->spriteSize, textureSize);
+					subTextureInput->spriteSize = glm::max(glm::vec2(0.0f), subTextureInput->spriteSize);
+
 					ImGui::Separator();
 
 					// Render preview
