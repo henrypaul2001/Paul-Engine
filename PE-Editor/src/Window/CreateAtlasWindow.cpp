@@ -170,6 +170,41 @@ namespace PaulEngine
 				ImGui::BeginChild("preview", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 				if (selected != -1) {
 					ImGui::Text(m_SubTextureNames[selected].c_str());
+					ImGui::SameLine();
+					if (ImGui::Button("Rename")) {
+						ImGui::OpenPopup("Rename sub-texture");
+					}
+					if (ImGui::BeginPopupModal("Rename sub-texture")) {
+						ImGui::Text("Rename sub-texture");
+
+						static std::string selectedName = m_SubTextureNames[selected];
+						ImGui::InputText("Name", &selectedName);
+
+						if (ImGui::Button("Cancel")) {
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Confirm")) {
+							// Validate
+							const bool uniqueName = m_NameToInputIDMap.find(selectedName) == m_NameToInputIDMap.end();
+							const bool nameIsntEmpty = (selectedName != "");
+							if (uniqueName && nameIsntEmpty) {
+								const std::string& previousName = m_SubTextureNames[selected];
+								int index = m_NameToInputIDMap[previousName];
+
+								m_NameToInputIDMap.erase(previousName);
+								m_NameToInputIDMap[selectedName] = index;
+								m_SubTextureNames[index] = selectedName;
+
+								ImGui::CloseCurrentPopup();
+							}
+							else {
+								PE_CORE_ERROR("Error renaming subtexture: uniqueName = '{0}', nameIsntEmpty = '{1}'", uniqueName, nameIsntEmpty);
+							}
+						}
+						ImGui::EndPopup();
+					}
+
 					SubTextureInput* subTextureInput = &m_SubTextureInputList[selected];
 
 					ImGui::DragFloat2("Cell coords", &subTextureInput->cellCoords[0], 1.0f, 0.0f, 0.0f, "%.1f");
