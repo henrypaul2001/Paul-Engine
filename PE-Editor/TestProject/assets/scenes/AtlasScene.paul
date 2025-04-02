@@ -1,0 +1,525 @@
+Scene: Untitled
+Entities:
+  - Entity: 14243574316636137844
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 15781474739044328471
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, 0, 0.012320757]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: LargeDoorOpen
+  - Entity: 16373889681037406450
+    TagComponent:
+      Tag: Atlas
+    TransformComponent:
+      Position: [-8.97229, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [8.25, 8.25, 8.25]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+  - Entity: 16064120369997198887
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-2, 3, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: WaterToGrass_TopLeft
+  - Entity: 14421384130894182839
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-2, 2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: WaterToGrass_BottomLeft
+  - Entity: 11094936484611800703
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-2, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 14516774481373337689
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-2, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 5555066744492363084
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-2, -1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 11843279686430351006
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-2, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 10513133359815976792
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, -1.25, 0.0810585]
+      Rotation: [0, 0, 0]
+      Scale: [1, 2, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: TreeOrange2
+  - Entity: 8809484521888771174
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 3492362123732110003
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 9933188625512636348
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [2, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 6336041398821326536
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [3, -2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 3572792429470675230
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [3, -1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 4634522682300862108
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, -1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 5824994740264032375
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, -1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 9265085983128627632
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, -1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 10174058075116056052
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [2, -1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 6794104418272779990
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [3, 3, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 1229448173313564416
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [3, 2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 14395881435648139189
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [3, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 11596458354300028215
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [3, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 460058640611667609
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, 3, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: WaterToGrass_TopRight
+  - Entity: 8434480907773666029
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, 3, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 12179556248694171249
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, 3, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 5406880282893670110
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [2, 3, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 8436420308207752946
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [2, 2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 9541527651383548297
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, 2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 8644872187609219084
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, 2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: WaterToGrass_BottomRight
+  - Entity: 4349456482732167275
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, 2, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass01
+  - Entity: 13400569045886925466
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: Grass02
+  - Entity: 7718902231248909986
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [-1, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: GrassToDirt_MiddleRight
+  - Entity: 10643185629901802394
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [2, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: StoneFoundation_Right
+  - Entity: 9738569722170968500
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [2, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: StoneWall_Right
+  - Entity: 14455490116923157056
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: StoneWall_Middle
+  - Entity: 17528517970725219207
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, 1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: StoneWall_Left
+  - Entity: 2611439177611552062
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [1, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: StoneFoundation_Middle
+  - Entity: 14217738870809820468
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 0, 5.890293]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 2.0644295
+      FixedAspect: false
+  - Entity: 3852948664864972205
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 14046064469291239366
+      TextureScale: [1, 1]
+      AtlasHandle: 14095763519938001238
+      SelectedSubTextureName: StoneFoundation_Left
