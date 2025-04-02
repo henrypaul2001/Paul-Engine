@@ -435,7 +435,10 @@ namespace PaulEngine
 				auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
 				for (auto entityID : group) {
 					auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
-					if (sprite.Texture) {
+					if (sprite.TextureAtlas) {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.TextureAtlas, sprite.SelectedSubTextureName, sprite.Colour, (int)entityID);
+					}
+					else if (sprite.Texture) {
 						Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
 					}
 					else {
