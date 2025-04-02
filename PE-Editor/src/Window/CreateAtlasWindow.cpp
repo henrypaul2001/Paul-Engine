@@ -91,6 +91,8 @@ namespace PaulEngine
 				textureSize = { (float)baseTextureAsset->GetWidth(), (float)baseTextureAsset->GetHeight() };
 			}
 
+			// TODO: Add support for setting the space between tiles in pixels. For example, 16x16 tile size with 1x1 pixels between tiles
+
 			// Left
 			static int selected = -1;
 			static int subTextureDeleted = -1;
@@ -107,6 +109,10 @@ namespace PaulEngine
 				cellSize = glm::max(glm::vec2(1.0f), cellSize);
 				if (ImGui::Button("Add new sub-texture")) {
 					ImGui::OpenPopup("Add new sub-texture");
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Auto create sub-textures")) {
+					ImGui::OpenPopup("Auto create sub-textures");
 				}
 				if (ImGui::BeginPopupModal("Add new sub-texture")) {
 					ImGui::Text("Create sub-texture");
@@ -145,7 +151,49 @@ namespace PaulEngine
 					}
 					ImGui::EndPopup();
 				}
+				if (ImGui::BeginPopupModal("Auto create sub-textures")) {
+					
+					static std::string baseName = "SubTexture";
+					ImGui::InputText("Base name", &baseName);
 
+					static glm::vec2 startCoords = glm::vec2(0.0f);
+					ImGui::DragFloat2("Starting cell coords", &startCoords[0], 1.0f, 0.0f, 0.0f, "%.1f");
+					startCoords = glm::min(startCoords, (glm::vec2)cellCount);
+					startCoords = glm::max(glm::vec2(0.0f), startCoords);
+
+					static glm::ivec2 cellsToCreate = glm::vec2(1.0f);
+					ImGui::DragInt2("Sub-textures to create", &cellsToCreate[0], 1.0f, 0);
+					cellsToCreate = glm::min(cellsToCreate, (cellCount - (glm::ivec2)startCoords));
+					
+					if (ImGui::Button("Cancel")) {
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Confirm")) {
+						for (int x = 0; x < cellsToCreate.x; x++) {
+							for (int y = 0; y < cellsToCreate.y; y++) {
+								std::string indexedName = baseName + std::to_string(x) + "X" + std::to_string(y);
+								std::string name = indexedName;
+								int count = 1;
+								while (m_NameToInputIDMap.find(name) != m_NameToInputIDMap.end()) {
+									name = indexedName + "(" + std::to_string(count) + ")";
+									count++;
+								}
+
+								glm::vec2 cellCoords = startCoords + glm::vec2(x, y);
+								glm::vec2 spriteSize = glm::vec2(1.0f);
+
+								int index = m_SubTextureInputList.size();
+								m_SubTextureInputList.push_back({ cellCoords, spriteSize });
+								m_SubTextureNames.push_back(name);
+								m_NameToInputIDMap[name] = index;
+							}
+						}
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndPopup();
+				}
 				for (int i = 0; i < m_SubTextureInputList.size(); i++) {
 					if (ImGui::Selectable(m_SubTextureNames[i].c_str(), selected == i, ImGuiSelectableFlags_SelectOnNav)) {
 						selected = i;
