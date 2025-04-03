@@ -1538,6 +1538,7 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Events\SceneEvent.h" />
     <ClInclude Include="src\PaulEngine\Renderer\TextureAtlas2D.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1697,5 +1698,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\TextureAtlas2D.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Material.cpp" />
   </ItemGroup>
 </Project>
