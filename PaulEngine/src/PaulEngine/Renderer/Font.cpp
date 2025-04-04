@@ -10,22 +10,11 @@
 
 namespace PaulEngine
 {
+	AssetHandle Font::s_DefaultFont = 0;
 	Font::Font() : m_Data(new MSDFData()) {}
 
 	Font::~Font()
 	{
 		delete m_Data;
-	}
-
-	Ref<Font> Font::GetDefault()
-	{
-		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
-		return AssetManager::GetAsset<Font>(assetManager->ImportAsset("../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", true));
-		
-		//static Ref<Font> DefaultFont;
-		//if (!DefaultFont) {
-		//	DefaultFont = CreateRef<Font>("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf");
-		//}
-		//return DefaultFont;
 	}
 }

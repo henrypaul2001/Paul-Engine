@@ -661,7 +661,7 @@ namespace PaulEngine {
 			DrawString(string, font, transform, textParams, entityID);
 		}
 		else {
-			DrawString(string, Font::GetDefault(), transform, textParams, entityID);
+			DrawString(string, AssetManager::GetAsset<Font>(Font::s_DefaultFont), transform, textParams, entityID);
 		}
 	}
 

@@ -17,9 +17,6 @@
 #include "PaulEngine/Events/SceneEvent.h"
 
 namespace PaulEngine {
-
-	static Ref<Font> s_Font;
-
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0) {}
 
 	EditorLayer::~EditorLayer() {}
@@ -47,8 +44,6 @@ namespace PaulEngine {
 			auto projectFilepath = commandLineArgs[1];
 			m_ProjectSelected = OpenProject(projectFilepath);
 		}
-
-		if (m_ProjectSelected) { s_Font = Font::GetDefault(); }
 
 #if 0
 		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
@@ -734,7 +729,6 @@ namespace PaulEngine {
 
 	bool EditorLayer::NewProject(std::filesystem::path filepath)
 	{
-
 		if (filepath.empty())
 		{
 			filepath = std::filesystem::proximate(FileDialogs::SaveFile("Paul Engine Project (*.pproj)\0*.pproj\0"));

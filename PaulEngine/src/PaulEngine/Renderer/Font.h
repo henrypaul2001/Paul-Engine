@@ -10,13 +10,13 @@ namespace PaulEngine
 	class Font : public Asset
 	{
 	public:
+		static AssetHandle s_DefaultFont;
 		Font();
 		~Font();
 
 		const MSDFData* GetMSDFData() const { return m_Data; }
 
 		Ref<Texture2D> GetAtlasTexture() const { return m_AtlasTexture; }
-		static Ref<Font> GetDefault();
 
 		virtual AssetType GetType() const override { return AssetType::Font; }
 	private:

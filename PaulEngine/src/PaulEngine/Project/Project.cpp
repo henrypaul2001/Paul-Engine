@@ -1,6 +1,8 @@
 #include "pepch.h"
 #include "Project.h"
 #include "ProjectSerializer.h"
+#include "PaulEngine/Renderer/Font.h"
+#include "PaulEngine/Asset/AssetManager.h"
 
 namespace PaulEngine
 {
@@ -15,6 +17,8 @@ namespace PaulEngine
 		// Create assets directory
 		std::error_code error;
 		std::filesystem::create_directories(GetAssetDirectory(), error);
+
+		ImportEngineAssets();
 
 		return s_ActiveProject;
 	}
@@ -31,6 +35,9 @@ namespace PaulEngine
 			Ref<EditorAssetManager> editorAssetManager = CreateRef<EditorAssetManager>();
 			s_ActiveProject->m_AssetManager = editorAssetManager;
 			editorAssetManager->DeserializeAssetRegistry();
+
+			ImportEngineAssets();
+
 			return s_ActiveProject;
 		}
 
@@ -49,8 +56,10 @@ namespace PaulEngine
 
 			Ref<RuntimeAssetManager> runtimeAssetManager = CreateRef<RuntimeAssetManager>();
 			s_ActiveProject->m_AssetManager = runtimeAssetManager;
-
 			runtimeAssetManager->DeserializeAssetRegistry();
+			
+			ImportEngineAssets();
+
 			return s_ActiveProject;
 		}
 
@@ -67,5 +76,14 @@ namespace PaulEngine
 		}
 
 		return false;
+	}
+
+	void Project::ImportEngineAssets()
+	{
+		PE_CORE_ASSERT(s_ActiveProject, "Project cannot be null when importing engine assets");
+
+		// Import engine assets
+		std::filesystem::path fontRelativeToRegistry = std::filesystem::path("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf").lexically_relative(Project::GetAssetDirectory());
+		Font::s_DefaultFont = Project::GetActive()->GetEditorAssetManager()->ImportAsset(fontRelativeToRegistry, true);
 	}
 }

@@ -593,7 +593,7 @@ namespace PaulEngine
 					ImVec2 xLabelSize = ImGui::CalcTextSize("X");
 					float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 					if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-						component.Font = Font::GetDefault()->Handle;
+						component.Font = Font::s_DefaultFont;
 					}
 				}
 				ImGui::SameLine();

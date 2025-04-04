@@ -49,6 +49,8 @@ namespace PaulEngine
 		static Ref<Project> LoadRuntime(const std::filesystem::path& path);
 		static bool SaveActive(const std::filesystem::path& path);
 
+		static void ImportEngineAssets();
+
 	private:
 		ProjectSpecification m_Spec;
 		std::filesystem::path m_ProjectDirectory;
