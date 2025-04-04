@@ -11,6 +11,11 @@ namespace PaulEngine
 		s_ActiveProject->m_ProjectDirectory = spec.ProjectDirectory.parent_path();
 		Ref<EditorAssetManager> editorAssetManager = CreateRef<EditorAssetManager>();
 		s_ActiveProject->m_AssetManager = editorAssetManager;
+
+		// Create assets directory
+		std::error_code error;
+		std::filesystem::create_directories(GetAssetDirectory(), error);
+
 		return s_ActiveProject;
 	}
 
