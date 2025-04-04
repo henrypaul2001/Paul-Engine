@@ -53,6 +53,8 @@ namespace PaulEngine {
 		static void ResetStats();
 		static const Statistics& GetStats();
 
+		static void ImportShaders();
+
 	private:
 		static void StartNewBatch();
 	};

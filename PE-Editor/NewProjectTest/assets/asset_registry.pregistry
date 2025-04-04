@@ -1,5 +1,25 @@
 AssetRegistry:
+  - Handle: 171503737042724277
+    Filepath: ..\..\assets\shaders/Renderer2D_Circle.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 2826405870682465170
     Filepath: Scenes/UntitledScene.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 1600148219533022302
+    Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 16188798501917013552
+    Filepath: ..\..\assets\fonts\Open_Sans\static\OpenSans-Regular.ttf
+    Persistent: true
+    Type: AssetType::Font
+  - Handle: 1635653154157146252
+    Filepath: ..\..\assets\shaders/Renderer2D_Line.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 6715098253582887070
+    Filepath: ..\..\assets\shaders/Renderer2D_Text.glsl
+    Persistent: true
+    Type: AssetType::Shader

@@ -1,8 +1,11 @@
 #pragma once
+#include "PaulEngine/Asset/Asset.h"
+
 #include <string>
 #include <glm/glm.hpp>
 namespace PaulEngine {
-	class Shader {
+	class Shader : public Asset
+	{
 	public:
 		virtual ~Shader() = default;
 
@@ -24,6 +27,8 @@ namespace PaulEngine {
 
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Ref<Shader> Create(const std::string& filepath);
+
+		virtual AssetType GetType() const override { return AssetType::Shader; }
 	};
 
 	class ShaderLibrary

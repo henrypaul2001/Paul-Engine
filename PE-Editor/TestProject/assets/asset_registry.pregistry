@@ -7,26 +7,26 @@ AssetRegistry:
     Filepath: textures\awesomeface.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 4566192558940935376
     Filepath: scenes\3DCube.paul
-    Persistent: false
-    Type: AssetType::Scene
-  - Handle: 2510263345310005911
-    Filepath: scenes\Example.paul
     Persistent: false
     Type: AssetType::Scene
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 2510263345310005911
+    Filepath: scenes\Example.paul
+    Persistent: false
+    Type: AssetType::Scene
   - Handle: 11922114141701769481
     Filepath: scenes\Physics2D.paul
     Persistent: false
@@ -51,3 +51,19 @@ AssetRegistry:
     Filepath: atlas\TinyTown.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 13960601534352678645
+    Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 1083992321171041232
+    Filepath: ..\..\assets\shaders/Renderer2D_Circle.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 1317345615860744257
+    Filepath: ..\..\assets\shaders/Renderer2D_Line.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 14461653012319348591
+    Filepath: ..\..\assets\shaders/Renderer2D_Text.glsl
+    Persistent: true
+    Type: AssetType::Shader

@@ -14,7 +14,8 @@ namespace PaulEngine
 		Texture2D,
 		Font,
 		TextureAtlas2D,
-		Material
+		Material,
+		Shader
 	};
 
 	struct AssetMetadata

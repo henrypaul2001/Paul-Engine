@@ -1539,6 +1539,7 @@
     <ClInclude Include="src\PaulEngine\Events\SceneEvent.h" />
     <ClInclude Include="src\PaulEngine\Renderer\TextureAtlas2D.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Material.h" />
+    <ClInclude Include="src\PaulEngine\Asset\ShaderImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1699,5 +1700,6 @@
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\TextureAtlas2D.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Material.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\ShaderImporter.cpp" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ namespace PaulEngine
             case AssetType::Texture2D: return "AssetType::Texture2D";
             case AssetType::Font: return "AssetType::Font";
             case AssetType::TextureAtlas2D: return "AssetType::TextureAtlas2D";
+            case AssetType::Shader: return "AssetType::Shader";
         }
         return "AssetType::!Unknown!";
     }
@@ -23,6 +24,7 @@ namespace PaulEngine
         if (assetType == "AssetType::Texture2D") { return AssetType::Texture2D; }
         if (assetType == "AssetType::Font") { return AssetType::Font; }
         if (assetType == "AssetType::TextureAtlas2D") { return AssetType::TextureAtlas2D; }
+        if (assetType == "AssetType::Shader") { return AssetType::Shader; }
         return AssetType::None;
     }
 }

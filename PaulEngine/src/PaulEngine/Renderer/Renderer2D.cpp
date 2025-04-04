@@ -56,20 +56,20 @@ namespace PaulEngine {
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
-		Ref<Shader> QuadShader;
+		AssetHandle QuadShaderHandle = 0;
 		Ref<Texture2D> WhiteTexture;
 
 		Ref<VertexArray> CircleVertexArray;
 		Ref<VertexBuffer> CircleVertexBuffer;
-		Ref<Shader> CircleShader;
+		AssetHandle CircleShaderHandle = 0;
 
 		Ref<VertexArray> LineVertexArray;
 		Ref<VertexBuffer> LineVertexBuffer;
-		Ref<Shader> LineShader;
+		AssetHandle LineShaderHandle = 0;
 
 		Ref<VertexArray> TextVertexArray;
 		Ref<VertexBuffer> TextVertexBuffer;
-		Ref<Shader> TextShader;
+		AssetHandle TextShaderHandle = 0;
 
 		float LineWidth = 2.0f;
 	
@@ -194,21 +194,6 @@ namespace PaulEngine {
 		s_RenderData.TextVertexArray->SetIndexBuffer(quadIB);
 		s_RenderData.TextVertexBufferBase = new TextVertex[s_RenderData.MaxVertices];
 
-		// Shader
-		
-		int samplers[s_RenderData.MaxTextureSlots];
-		for (int i = 0; i < s_RenderData.MaxTextureSlots; i++) {
-			samplers[i] = i;
-		}
-		
-		s_RenderData.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
-		s_RenderData.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
-		s_RenderData.LineShader = Shader::Create("assets/shaders/Renderer2D_Line.glsl");
-		s_RenderData.TextShader = Shader::Create("assets/shaders/Renderer2D_Text.glsl");
-
-		s_RenderData.QuadShader->Bind();
-		s_RenderData.QuadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
-
 		s_RenderData.TextureSlots[0] = s_RenderData.WhiteTexture;
 
 		s_RenderData.QuadVertexPositions[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
@@ -270,7 +255,7 @@ namespace PaulEngine {
 			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
 			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
 
-			s_RenderData.QuadShader->Bind();
+			AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
 			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
 				s_RenderData.TextureSlots[i]->Bind(i);
 			}
@@ -282,7 +267,7 @@ namespace PaulEngine {
 			uint32_t dataSize = (uint8_t*)s_RenderData.CircleVertexBufferPtr - (uint8_t*)s_RenderData.CircleVertexBufferBase;
 			s_RenderData.CircleVertexBuffer->SetData(s_RenderData.CircleVertexBufferBase, dataSize);
 
-			s_RenderData.CircleShader->Bind();
+			AssetManager::GetAsset<Shader>(s_RenderData.CircleShaderHandle)->Bind();
 			RenderCommand::DrawIndexed(s_RenderData.CircleVertexArray, s_RenderData.CircleIndexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
@@ -291,7 +276,7 @@ namespace PaulEngine {
 			uint32_t dataSize = (uint8_t*)s_RenderData.LineVertexBufferPtr - (uint8_t*)s_RenderData.LineVertexBufferBase;
 			s_RenderData.LineVertexBuffer->SetData(s_RenderData.LineVertexBufferBase, dataSize);
 
-			s_RenderData.LineShader->Bind();
+			AssetManager::GetAsset<Shader>(s_RenderData.LineShaderHandle)->Bind();
 			RenderCommand::SetLineWidth(s_RenderData.LineWidth);
 			RenderCommand::DrawLines(s_RenderData.LineVertexArray, s_RenderData.LineVertexCount);
 			s_RenderData.Stats.DrawCalls++;
@@ -301,7 +286,7 @@ namespace PaulEngine {
 			uint32_t dataSize = (uint8_t*)s_RenderData.TextVertexBufferPtr - (uint8_t*)s_RenderData.TextVertexBufferBase;
 			s_RenderData.TextVertexBuffer->SetData(s_RenderData.TextVertexBufferBase, dataSize);
 
-			s_RenderData.TextShader->Bind();
+			AssetManager::GetAsset<Shader>(s_RenderData.TextShaderHandle)->Bind();
 			s_RenderData.FontAtlasTexture->Bind(0);
 			RenderCommand::DrawIndexed(s_RenderData.TextVertexArray, s_RenderData.TextIndexCount);
 			s_RenderData.Stats.DrawCalls++;
@@ -686,5 +671,24 @@ namespace PaulEngine {
 	const Renderer2D::Statistics& Renderer2D::GetStats()
 	{
 		return s_RenderData.Stats;
+	}
+
+	void Renderer2D::ImportShaders()
+	{
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+		s_RenderData.QuadShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Quad.glsl", true);
+		s_RenderData.CircleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Circle.glsl", true);
+		s_RenderData.LineShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Line.glsl", true);
+		s_RenderData.TextShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Text.glsl", true);
+
+		int samplers[s_RenderData.MaxTextureSlots];
+		for (int i = 0; i < s_RenderData.MaxTextureSlots; i++) {
+			samplers[i] = i;
+		}
+
+		Ref<Shader> quadShader = AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle);
+		quadShader->Bind();
+		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
 	}
 }
