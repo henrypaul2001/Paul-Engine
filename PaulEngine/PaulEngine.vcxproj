@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.h" />
     <ClInclude Include="src\PaulEngine\Asset\ShaderImporter.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Material.h" />
     <ClInclude Include="src\PaulEngine.h" />
@@ -221,6 +222,7 @@
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pepch.h" />
     <ClInclude Include="src\PaulEngine\Renderer\TextureAtlas2D.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\UniformBufferStorage.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -643,6 +645,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\ShaderImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Material.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
@@ -698,6 +701,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\TextureAtlas2D.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\UniformBufferStorage.cpp" />
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

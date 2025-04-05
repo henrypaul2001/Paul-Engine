@@ -1540,6 +1540,8 @@
     <ClInclude Include="src\PaulEngine\Renderer\TextureAtlas2D.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Material.h" />
     <ClInclude Include="src\PaulEngine\Asset\ShaderImporter.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\UniformBufferStorage.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1701,5 +1703,7 @@
     <ClCompile Include="src\PaulEngine\Renderer\TextureAtlas2D.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Material.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\ShaderImporter.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\UniformBufferStorage.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.cpp" />
   </ItemGroup>
 </Project>

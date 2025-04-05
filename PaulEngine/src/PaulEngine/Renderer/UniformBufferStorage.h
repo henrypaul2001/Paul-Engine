@@ -1,0 +1,48 @@
+#pragma once
+#include "Buffer.h"
+
+namespace PaulEngine
+{
+	class ShaderDataTypeStorageBase
+	{
+	public:
+		virtual ~ShaderDataTypeStorageBase() {}
+		virtual ShaderDataType GetType() = 0;
+		virtual void* GetData() = 0;
+		virtual void SetData(void* data) = 0;
+		virtual size_t Size() = 0;
+	};
+
+	template <typename T>
+	class ShaderDataTypeStorage : public ShaderDataTypeStorageBase
+	{
+	public:
+		ShaderDataTypeStorage(ShaderDataType type, T* data) : m_Type(type), m_Data(data) {}
+		~ShaderDataTypeStorage() {
+			if (m_Data) {
+				delete m_Data;
+			}
+		}
+
+		virtual ShaderDataType GetType() override { return m_Type; }
+		virtual void* GetData() override { return (void*)m_Data; }
+		virtual void SetData(void* data) override { m_Data = (T*)data; }
+		virtual size_t Size() override { return ShaderDataTypeSize(m_Type); }
+
+	private:
+		ShaderDataType m_Type;
+		T* m_Data;
+	};
+
+	class UniformBufferStorage
+	{
+	public:
+		virtual ~UniformBufferStorage() {}
+
+		virtual void SetLocalData(const std::string& name, void* data) = 0;
+		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) = 0;
+		virtual void UploadStorage() = 0;
+
+		static Ref<UniformBufferStorage> Create(size_t size, uint32_t binding);
+	};
+}

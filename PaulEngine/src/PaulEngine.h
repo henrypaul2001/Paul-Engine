@@ -36,6 +36,7 @@
 #include "PaulEngine/Renderer/OrthographicCamera.h"
 #include "PaulEngine/Renderer/Framebuffer.h"
 #include "PaulEngine/Renderer/UniformBuffer.h"
+#include "PaulEngine/Renderer/UniformBufferStorage.h"
 
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/AssetImporter.h"
