@@ -11,6 +11,6 @@ namespace PaulEngine
 	void Material::Bind()
 	{
 		m_Shader->Bind();
-		m_Paramaters->Bind(m_Shader);
+		//m_Paramaters->Bind(m_Shader);
 	}
 }
