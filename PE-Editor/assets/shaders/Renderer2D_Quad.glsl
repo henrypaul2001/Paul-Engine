@@ -52,10 +52,17 @@ layout(location = 4) in flat int v_EntityID;
 
 layout(binding = 0) uniform sampler2D u_Textures[32];
 
+layout(std140, binding = 1) uniform MaterialValues
+{
+	vec4 Colour;
+	vec2 Other;
+} u_MaterialValues;
+
 void main()
 {
 	colour = texture(u_Textures[int(v_TexIndex)], Input.TexCoords * Input.TextureScale) * Input.Colour;
-	
+	colour *= u_MaterialValues.Colour;
+
 	if (colour.a == 0.0) {
 		discard;
 	}

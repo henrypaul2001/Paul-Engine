@@ -12,6 +12,8 @@
 #include "MSDFData.h"
 #include "TextureAtlas2D.h"
 
+#include "Material.h"
+
 namespace PaulEngine {
 	struct QuadVertex {
 		glm::vec3 Position;
@@ -104,6 +106,8 @@ namespace PaulEngine {
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
+
+		Ref<Material> TestMaterial;
 	};
 
 	static Renderer2DData s_RenderData;
@@ -259,6 +263,9 @@ namespace PaulEngine {
 			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
 				s_RenderData.TextureSlots[i]->Bind(i);
 			}
+
+			s_RenderData.TestMaterial->Bind();
+
 			RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
@@ -690,5 +697,16 @@ namespace PaulEngine {
 		Ref<Shader> quadShader = AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle);
 		quadShader->Bind();
 		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
+
+		s_RenderData.TestMaterial = CreateRef<Material>(s_RenderData.QuadShaderHandle);
+
+		Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(ShaderDataTypeSize(ShaderDataType::Float4) + ShaderDataTypeSize(ShaderDataType::Float2), 1);
+
+		glm::vec4* colour = new glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec2* other = new glm::vec2(1.0f, 1.0f);
+		ubo->UBO()->AddDataType("Colour", CreateRef<ShaderDataTypeStorage<glm::vec4>>(ShaderDataType::Float4, colour));
+		ubo->UBO()->AddDataType("Other", CreateRef<ShaderDataTypeStorage<glm::vec2>>(ShaderDataType::Float2, other));
+
+		s_RenderData.TestMaterial->AddParameterType("MaterialValues", ubo);
 	}
 }
