@@ -2,6 +2,8 @@
 #include "PaulEngine/Asset/Asset.h"
 #include "Shader.h"
 
+#include "ShaderParameterType.h"
+
 namespace PaulEngine
 {
 	/*
@@ -149,14 +151,16 @@ namespace PaulEngine
 	class Material : public Asset
 	{
 	public:
-		Material();
+		Material(AssetHandle shaderHandle);
 
 		void Bind();
-
 		virtual AssetType GetType() const { return AssetType::Material; }
 
+		void AddParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
+		Ref<ShaderParamaterTypeStorageBase> GetParameter(const std::string& name);
+
 	private:
-		Ref<Shader> m_Shader;
-		//Ref<ShaderParameters> m_Paramaters;
+		AssetHandle m_ShaderHandle;
+		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
 	};
 }

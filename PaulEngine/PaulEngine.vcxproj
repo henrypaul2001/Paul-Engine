@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\ShaderParameterType.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.h" />
     <ClInclude Include="src\PaulEngine\Asset\ShaderImporter.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Material.h" />

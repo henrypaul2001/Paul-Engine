@@ -1542,6 +1542,7 @@
     <ClInclude Include="src\PaulEngine\Asset\ShaderImporter.h" />
     <ClInclude Include="src\PaulEngine\Renderer\UniformBufferStorage.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\ShaderParameterType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
