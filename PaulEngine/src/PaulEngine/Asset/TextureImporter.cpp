@@ -6,47 +6,8 @@
 
 #include "AssetManager.h"
 
+#include "PaulEngine/Utils/YamlConversions.h"
 #include <yaml-cpp/yaml.h>
-
-// Type conversions
-namespace YAML
-{
-	template<>
-	struct convert<glm::vec2>
-	{
-		static Node encode(const glm::vec2& rhs) {
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec2& rhs) {
-			if (!node.IsSequence() || node.size() != 2) {
-				return false;
-			}
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<PaulEngine::UUID>
-	{
-		static Node encode(const PaulEngine::UUID& uuid) {
-			Node node;
-			node.push_back((uint64_t)uuid);
-			return node;
-		}
-
-		static bool decode(const Node& node, PaulEngine::UUID& uuid) {
-			uuid = node.as<uint64_t>();
-			return true;
-		}
-	};
-}
 
 namespace PaulEngine
 {
