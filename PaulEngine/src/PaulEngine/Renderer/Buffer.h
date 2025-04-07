@@ -11,6 +11,47 @@ namespace PaulEngine {
 		Bool
 	};
 
+	static std::string ShaderDataTypeToString(ShaderDataType type)
+	{
+		switch (type)
+		{
+			case ShaderDataType::None:		return "None";
+			case ShaderDataType::Float:		return "Float";
+			case ShaderDataType::Float2:	return "Float2";
+			case ShaderDataType::Float3:	return "Float3";
+			case ShaderDataType::Float4:	return "Float4";
+			case ShaderDataType::Mat3:		return "Mat3";
+			case ShaderDataType::Mat4:		return "Mat4";
+			case ShaderDataType::Int:		return "Int";
+			case ShaderDataType::Int2:		return "Int2";
+			case ShaderDataType::Int3:		return "Int3";
+			case ShaderDataType::Int4:		return "Int4";
+			case ShaderDataType::Bool:		return "Bool";
+		}
+
+		PE_CORE_ASSERT(false, "Unknown ShaderDataType");
+		return "Error";
+	}
+
+	static ShaderDataType StringToShaderDataType(const std::string& stringInput)
+	{
+		if (stringInput == "None") { return ShaderDataType::None; }
+		else if (stringInput == "Float") { return ShaderDataType::Float; }
+		else if (stringInput == "Float2") { return ShaderDataType::Float2; }
+		else if (stringInput == "Float3") { return ShaderDataType::Float3; }
+		else if (stringInput == "Float4") { return ShaderDataType::Float4; }
+		else if (stringInput == "Mat3") { return ShaderDataType::Mat3; }
+		else if (stringInput == "Mat4") { return ShaderDataType::Mat4; }
+		else if (stringInput == "Int") { return ShaderDataType::Int; }
+		else if (stringInput == "Int2") { return ShaderDataType::Int2; }
+		else if (stringInput == "Int3") { return ShaderDataType::Int3; }
+		else if (stringInput == "Int4") { return ShaderDataType::Int4; }
+		else if (stringInput == "Bool") { return ShaderDataType::Bool; }
+
+		PE_CORE_ASSERT(false, "Unknown ShaderDataType");
+		return ShaderDataType::None;
+	}
+
 	static uint32_t ShaderDataTypeSize(ShaderDataType type)
 	{
 		switch (type)
