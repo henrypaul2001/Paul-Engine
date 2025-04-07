@@ -1,0 +1,17 @@
+MaterialAsset: TestMaterial
+ShaderHandle: 14505388853857111747
+ShaderParams:
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 1
+      Layout:
+        - Type: Float4
+          Name: Colour
+          Value: [0.19446309, 0.32653427, 0.658363, 1]
+        - Type: Float
+          Name: Roughness
+          Value: 0.5
+        - Type: Float
+          Name: Metalness
+          Value: 0.1

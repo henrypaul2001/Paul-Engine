@@ -15,7 +15,8 @@ namespace PaulEngine
 		{ ".jpeg", AssetType::Texture2D },
 		{ ".ttf", AssetType::Font },
 		{ ".patlas", AssetType::TextureAtlas2D },
-		{ ".glsl", AssetType::Shader }
+		{ ".glsl", AssetType::Shader },
+		{ ".pmat", AssetType::Material }
 	};
 
 	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {

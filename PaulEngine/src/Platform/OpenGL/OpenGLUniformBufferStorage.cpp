@@ -5,7 +5,7 @@
 
 namespace PaulEngine
 {
-	OpenGLUniformBufferStorage::OpenGLUniformBufferStorage(size_t size, uint32_t binding, unsigned int usage)
+	OpenGLUniformBufferStorage::OpenGLUniformBufferStorage(size_t size, uint32_t binding, unsigned int usage) : m_Binding(binding)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glNamedBufferData(m_RendererID, size, nullptr, (GLenum)usage);
@@ -15,6 +15,11 @@ namespace PaulEngine
 	OpenGLUniformBufferStorage::~OpenGLUniformBufferStorage()
 	{
 		glDeleteBuffers(1, &m_RendererID);
+	}
+
+	uint32_t OpenGLUniformBufferStorage::GetBinding() const
+	{
+		return m_Binding;
 	}
 
 	void OpenGLUniformBufferStorage::SetLocalData(const std::string& name, void* data)

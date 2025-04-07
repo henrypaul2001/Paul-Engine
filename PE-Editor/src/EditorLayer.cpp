@@ -13,6 +13,7 @@
 #include "PaulEngine/Renderer/Font.h"
 
 #include "PaulEngine/Asset/SceneImporter.h"
+#include "PaulEngine/Asset/MaterialImporter.h"
 
 #include "PaulEngine/Events/SceneEvent.h"
 #include "PaulEngine/Renderer/Material.h"
@@ -266,8 +267,18 @@ namespace PaulEngine {
 			ImGui::Begin("Renderer 2D Debug");
 
 			ImGui::SeparatorText("Material Test");
-
 			Ref<Material> material = Renderer2D::GetTestMaterial();
+
+			if (ImGui::Button("Save As...")) {
+				std::string path = FileDialogs::SaveFile("Paul Engine Material (*.pmat)\0*.pmat\0");
+				if (!path.empty()) {
+					std::filesystem::path absoluteProjectPath = std::filesystem::absolute(Project::GetProjectDirectory());
+					std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
+
+					MaterialImporter::SaveMaterial(material, relativeSavePath);
+					//AssetHandle handle = Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
+				}
+			}
 			
 			for (auto& it : material->m_ShaderParameters) {
 				switch (it.second->GetType()) {

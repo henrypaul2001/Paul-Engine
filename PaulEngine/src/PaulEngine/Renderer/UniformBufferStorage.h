@@ -1,4 +1,5 @@
 #pragma once
+#include "PaulEngine/Core/Core.h"
 #include "Buffer.h"
 
 namespace PaulEngine
@@ -39,6 +40,7 @@ namespace PaulEngine
 	public:
 		virtual ~UniformBufferStorage() {}
 
+		virtual uint32_t GetBinding() const = 0;
 		virtual void SetLocalData(const std::string& name, void* data) = 0;
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) = 0;
 		virtual void UploadStorage() = 0;

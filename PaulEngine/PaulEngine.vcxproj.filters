@@ -1543,6 +1543,8 @@
     <ClInclude Include="src\PaulEngine\Renderer\UniformBufferStorage.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.h" />
     <ClInclude Include="src\PaulEngine\Renderer\ShaderParameterType.h" />
+    <ClInclude Include="src\PaulEngine\Asset\MaterialImporter.h" />
+    <ClInclude Include="src\PaulEngine\Utils\YamlConversions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1706,5 +1708,7 @@
     <ClCompile Include="src\PaulEngine\Asset\ShaderImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\UniformBufferStorage.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp" />
+    <ClCompile Include="src\PaulEngine\Utils\YamlConversions.cpp" />
   </ItemGroup>
 </Project>

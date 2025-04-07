@@ -161,6 +161,7 @@ namespace PaulEngine
 
 	private:
 		friend class EditorLayer;
+		friend class MaterialImporter;
 		AssetHandle m_ShaderHandle;
 		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
 	};
