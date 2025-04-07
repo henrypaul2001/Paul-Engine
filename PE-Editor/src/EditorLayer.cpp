@@ -15,6 +15,7 @@
 #include "PaulEngine/Asset/SceneImporter.h"
 
 #include "PaulEngine/Events/SceneEvent.h"
+#include "PaulEngine/Renderer/Material.h"
 
 namespace PaulEngine {
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0) {}
@@ -263,6 +264,51 @@ namespace PaulEngine {
 
 			const Renderer2D::Statistics& stats = Renderer2D::GetStats();
 			ImGui::Begin("Renderer 2D Debug");
+
+			ImGui::SeparatorText("Material Test");
+
+			Ref<Material> material = Renderer2D::GetTestMaterial();
+			
+			for (auto& it : material->m_ShaderParameters) {
+				switch (it.second->GetType()) {
+				case ShaderParameterType::UBO:
+					UBOShaderParameterTypeStorage* ubo = dynamic_cast<UBOShaderParameterTypeStorage*>(it.second.get());
+					
+					for (auto& [name, value] : ubo->UBO()->GetLayoutStorage()) {
+						switch (value->GetType()) {
+							case ShaderDataType::Float4:
+							{
+								glm::vec4* data = static_cast<glm::vec4*>(value->GetData());
+								ImGui::ColorEdit4(name.c_str(), &(*data)[0]);
+								break;
+							}
+							case ShaderDataType::Float3:
+							{
+								glm::vec3* data = static_cast<glm::vec3*>(value->GetData());
+								ImGui::ColorEdit3(name.c_str(), &(*data)[0]);
+								break;
+							}
+							case ShaderDataType::Float2:
+							{
+								glm::vec2* data = static_cast<glm::vec2*>(value->GetData());
+								ImGui::DragFloat2(name.c_str(), &(*data)[0]);
+								break;
+							}
+							case ShaderDataType::Float:
+							{
+								float* data = static_cast<float*>(value->GetData());
+								ImGui::DragFloat(name.c_str(), &(*data), 0.1f, 0.0f, 1.0f);
+								break;
+							}
+						}
+						ImGui::Text(name.c_str());
+					}
+					break;
+				}
+			}
+
+			ImGui::Separator();
+
 			std::string hoveredEntityName = "null";
 			if (m_HoveredEntity.BelongsToScene(m_ActiveScene) && m_HoveredEntity) {
 				hoveredEntityName = m_HoveredEntity.GetComponent<ComponentTag>().Tag;

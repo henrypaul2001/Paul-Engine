@@ -107,6 +107,7 @@ namespace PaulEngine {
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
 
+		AssetHandle MaterialShaderHandle;
 		Ref<Material> TestMaterial;
 	};
 
@@ -259,10 +260,10 @@ namespace PaulEngine {
 			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
 			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
 
-			AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
-			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
-				s_RenderData.TextureSlots[i]->Bind(i);
-			}
+			//AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
+			//for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
+			//	s_RenderData.TextureSlots[i]->Bind(i);
+			//}
 
 			s_RenderData.TestMaterial->Bind();
 
@@ -688,6 +689,7 @@ namespace PaulEngine {
 		s_RenderData.CircleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Circle.glsl", true);
 		s_RenderData.LineShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Line.glsl", true);
 		s_RenderData.TextShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Text.glsl", true);
+		s_RenderData.MaterialShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl", true);
 
 		int samplers[s_RenderData.MaxTextureSlots];
 		for (int i = 0; i < s_RenderData.MaxTextureSlots; i++) {
@@ -698,15 +700,26 @@ namespace PaulEngine {
 		quadShader->Bind();
 		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
 
-		s_RenderData.TestMaterial = CreateRef<Material>(s_RenderData.QuadShaderHandle);
+		s_RenderData.TestMaterial = CreateRef<Material>(s_RenderData.MaterialShaderHandle);
 
-		Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(ShaderDataTypeSize(ShaderDataType::Float4) + ShaderDataTypeSize(ShaderDataType::Float2), 1);
+		Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(
+			ShaderDataTypeSize(ShaderDataType::Float4) + 
+			ShaderDataTypeSize(ShaderDataType::Float) +
+			ShaderDataTypeSize(ShaderDataType::Float)
+			, 1);
 
 		glm::vec4* colour = new glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		glm::vec2* other = new glm::vec2(1.0f, 1.0f);
+		float* roughness = new float(1.0f);
+		float* metalness = new float(0.0f);
 		ubo->UBO()->AddDataType("Colour", CreateRef<ShaderDataTypeStorage<glm::vec4>>(ShaderDataType::Float4, colour));
-		ubo->UBO()->AddDataType("Other", CreateRef<ShaderDataTypeStorage<glm::vec2>>(ShaderDataType::Float2, other));
+		ubo->UBO()->AddDataType("Roughness", CreateRef<ShaderDataTypeStorage<float>>(ShaderDataType::Float, roughness));
+		ubo->UBO()->AddDataType("Metalness", CreateRef<ShaderDataTypeStorage<float>>(ShaderDataType::Float, metalness));
 
 		s_RenderData.TestMaterial->AddParameterType("MaterialValues", ubo);
+	}
+
+	Ref<Material> Renderer2D::GetTestMaterial()
+	{
+		return s_RenderData.TestMaterial;
 	}
 }

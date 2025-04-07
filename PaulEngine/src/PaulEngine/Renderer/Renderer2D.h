@@ -5,6 +5,7 @@
 #include "PaulEngine/Renderer/Camera.h"
 #include "PaulEngine/Renderer/EditorCamera.h"
 #include "PaulEngine/Renderer/Font.h"
+#include "Material.h"
 
 namespace PaulEngine {
 	class Renderer2D
@@ -54,6 +55,8 @@ namespace PaulEngine {
 		static const Statistics& GetStats();
 
 		static void ImportShaders();
+
+		static Ref<Material> GetTestMaterial();
 
 	private:
 		static void StartNewBatch();

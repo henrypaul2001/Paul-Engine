@@ -43,6 +43,15 @@ namespace PaulEngine
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) = 0;
 		virtual void UploadStorage() = 0;
 
+		struct LayoutElement
+		{
+			std::string Name;
+			Ref<ShaderDataTypeStorageBase> Data;
+		};
+
+		virtual std::vector<LayoutElement>& GetLayoutStorage() = 0;
+		virtual const std::vector<LayoutElement>& GetLayoutStorage() const = 0;
+
 		static Ref<UniformBufferStorage> Create(size_t size, uint32_t binding);
 	};
 }

@@ -160,6 +160,7 @@ namespace PaulEngine
 		Ref<ShaderParamaterTypeStorageBase> GetParameter(const std::string& name);
 
 	private:
+		friend class EditorLayer;
 		AssetHandle m_ShaderHandle;
 		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
 	};

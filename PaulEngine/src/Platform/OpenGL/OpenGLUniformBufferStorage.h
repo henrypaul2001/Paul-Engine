@@ -14,14 +14,12 @@ namespace PaulEngine
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) override;
 		virtual void UploadStorage() override;
 
+		virtual std::vector<LayoutElement>& GetLayoutStorage() override { return m_LayoutStorage; }
+		virtual const std::vector<LayoutElement>& GetLayoutStorage() const override { return m_LayoutStorage; }
+
 	private:
 		uint32_t m_RendererID;
 
-		struct LayoutElement
-		{
-			std::string Name;
-			Ref<ShaderDataTypeStorageBase> Data;
-		};
 		std::vector<LayoutElement> m_LayoutStorage;
 	};
 }
