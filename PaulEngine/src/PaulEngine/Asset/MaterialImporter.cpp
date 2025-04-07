@@ -76,6 +76,100 @@ namespace PaulEngine
 
 			out << YAML::EndMap;
 		}
+
+		static Ref<UBOShaderParameterTypeStorage> ReadUniformBufferStorageObject(YAML::Node& valueNode)
+		{
+			uint32_t binding = valueNode["Binding"].as<uint64_t>();
+			size_t size = 0;
+
+			std::vector<UniformBufferStorage::LayoutElement> layout;
+
+			YAML::Node layoutNode = valueNode["Layout"];
+			for (YAML::Node layoutEntry : layoutNode) {
+				ShaderDataType type = StringToShaderDataType(layoutEntry["Type"].as<std::string>());
+				std::string name = layoutEntry["Name"].as<std::string>();
+				size += ShaderDataTypeSize(type);
+
+				switch (type)
+				{
+					case ShaderDataType::None:
+						continue;
+						break;
+					case ShaderDataType::Float:
+					{
+						float* data = new float(layoutEntry["Value"].as<float>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<float>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Float2:
+					{
+						glm::vec2* data = new glm::vec2(layoutEntry["Value"].as<glm::vec2>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::vec2>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Float3:
+					{
+						glm::vec3* data = new glm::vec3(layoutEntry["Value"].as<glm::vec3>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::vec3>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Float4:
+					{
+						glm::vec4* data = new glm::vec4(layoutEntry["Value"].as<glm::vec4>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::vec4>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Mat3:
+					{
+						glm::mat3* data = new glm::mat3(layoutEntry["Value"].as<glm::mat3>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::mat3>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Mat4:
+					{
+						glm::mat4* data = new glm::mat4(layoutEntry["Value"].as<glm::mat4>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::mat4>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Int:
+					{
+						int* data = new int(layoutEntry["Value"].as<int>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<int>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Int2:
+					{
+						glm::ivec2* data = new glm::ivec2(layoutEntry["Value"].as<glm::ivec2>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::ivec2>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Int3:
+					{
+						glm::ivec3* data = new glm::ivec3(layoutEntry["Value"].as<glm::ivec3>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::ivec3>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Int4:
+					{
+						glm::ivec4* data = new glm::ivec4(layoutEntry["Value"].as<glm::ivec4>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::ivec4>>(type, data) });
+						break;
+					}
+					case ShaderDataType::Bool:
+					{
+						bool* data = new bool(layoutEntry["Value"].as<bool>());
+						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<bool>>(type, data) });
+						break;
+					}
+				}
+			}
+
+			Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(size, binding);
+			for (auto& [name, data] : layout) {
+				ubo->UBO()->AddDataType(name, data);
+			}
+			return ubo;
+		}
 	}
 
 	static std::string ShaderParameterTypeToString(ShaderParameterType type) {
@@ -109,7 +203,47 @@ namespace PaulEngine
 
 	Ref<Material> MaterialImporter::LoadMaterial(const std::filesystem::path& filepath)
 	{
-		return Ref<Material>();
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(filepath.extension() == ".pmat", "Invalid file extension");
+
+		std::ifstream stream = std::ifstream(filepath);
+		std::stringstream ss;
+		ss << stream.rdbuf();
+
+		YAML::Node data = YAML::Load(ss.str());
+		if (!data["MaterialAsset"]) { return nullptr; }
+
+		std::string materialName = data["MaterialAsset"].as<std::string>();
+		PE_CORE_TRACE("Deserializing material '{0}'", materialName);
+
+		AssetHandle shaderHandle = data["ShaderHandle"].as<AssetHandle>();
+		Material material = Material(shaderHandle);
+
+		YAML::Node shaderParams = data["ShaderParams"];
+		if (shaderParams) {
+			for (YAML::Node shaderParameter : shaderParams) {
+				std::string paramName = shaderParameter["Name"].as<std::string>();
+				ShaderParameterType type = StringToShaderParameterType(shaderParameter["Type"].as<std::string>());
+
+				YAML::Node value = shaderParameter["Value"];
+				switch (type)
+				{
+				case ShaderParameterType::None:
+					break;
+				case ShaderParameterType::UBO:
+					material.AddParameterType(paramName, MaterialImporterUtils::ReadUniformBufferStorageObject(value));
+					break;
+				case ShaderParameterType::Sampler2D:
+					PE_CORE_ASSERT(false, "Sampler2D not yet implemented");
+					break;
+				case ShaderParameterType::Sampler2DArray:
+					PE_CORE_ASSERT(false, "Sampler2DArray not yet implemented");
+					break;
+				}
+			}
+		}
+
+		return CreateRef<Material>(material);
 	}
 
 	void MaterialImporter::SaveMaterial(const Ref<Material> material, const std::filesystem::path& filepath)

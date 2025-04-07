@@ -8,7 +8,7 @@ ShaderParams:
       Layout:
         - Type: Float4
           Name: Colour
-          Value: [0.19446309, 0.32653427, 0.658363, 1]
+          Value: [0.18485072, 0.42751047, 0.63345194, 1]
         - Type: Float
           Name: Roughness
           Value: 0.5
