@@ -57,4 +57,10 @@ namespace PaulEngine
 			offset += e.Data->Size();
 		}
 	}
+
+	void OpenGLUniformBufferStorage::Bind(uint32_t binding)
+	{
+		m_Binding = binding;
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
+	}
 }

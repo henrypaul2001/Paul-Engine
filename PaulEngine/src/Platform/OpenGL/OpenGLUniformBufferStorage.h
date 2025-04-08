@@ -15,6 +15,8 @@ namespace PaulEngine
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) override;
 		virtual void UploadStorage() override;
 
+		virtual void Bind(uint32_t binding) override;
+
 		virtual std::vector<LayoutElement>& GetLayoutStorage() override { return m_LayoutStorage; }
 		virtual const std::vector<LayoutElement>& GetLayoutStorage() const override { return m_LayoutStorage; }
 

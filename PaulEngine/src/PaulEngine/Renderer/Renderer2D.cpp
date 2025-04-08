@@ -251,6 +251,8 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
+		s_RenderData.CameraUniformBuffer->Bind(0);
+
 		if (s_RenderData.QuadIndexCount) {
 			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
 			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);

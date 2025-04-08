@@ -21,4 +21,9 @@ namespace PaulEngine
 	{
 		glNamedBufferSubData(m_RendererID, offset, size, data);
 	}
+
+	void OpenGLUniformBuffer::Bind(uint32_t binding)
+	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
+	}
 }
