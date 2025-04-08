@@ -12,8 +12,6 @@
 #include "MSDFData.h"
 #include "TextureAtlas2D.h"
 
-#include "Material.h"
-
 namespace PaulEngine {
 	struct QuadVertex {
 		glm::vec3 Position;
@@ -106,9 +104,6 @@ namespace PaulEngine {
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
-
-		AssetHandle MaterialShaderHandle;
-		AssetHandle TestMaterialHandle;
 	};
 
 	static Renderer2DData s_RenderData;
@@ -260,12 +255,10 @@ namespace PaulEngine {
 			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
 			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
 
-			//AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
-			//for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
-			//	s_RenderData.TextureSlots[i]->Bind(i);
-			//}
-
-			AssetManager::GetAsset<Material>(s_RenderData.TestMaterialHandle)->Bind();
+			AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
+			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
+				s_RenderData.TextureSlots[i]->Bind(i);
+			}
 
 			RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
 			s_RenderData.Stats.DrawCalls++;
@@ -689,7 +682,6 @@ namespace PaulEngine {
 		s_RenderData.CircleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Circle.glsl", true);
 		s_RenderData.LineShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Line.glsl", true);
 		s_RenderData.TextShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Text.glsl", true);
-		s_RenderData.MaterialShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl", true);
 
 		int samplers[s_RenderData.MaxTextureSlots];
 		for (int i = 0; i < s_RenderData.MaxTextureSlots; i++) {
@@ -699,7 +691,5 @@ namespace PaulEngine {
 		Ref<Shader> quadShader = AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle);
 		quadShader->Bind();
 		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
-
-		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", false);
 	}
 }

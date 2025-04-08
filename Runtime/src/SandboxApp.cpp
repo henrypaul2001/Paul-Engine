@@ -148,7 +148,7 @@ public:
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 
-		PaulEngine::Renderer::BeginScene(m_CameraController.GetCamera());
+		//PaulEngine::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		glm::vec4 redColour = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 		glm::vec4 blueColour = glm::vec4(0.2f, 0.3f, 0.8f, 1.0f);
@@ -162,7 +162,7 @@ public:
 			for (int x = 0; x < 20; x++) {
 				glm::vec3 pos = glm::vec3(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				PaulEngine::Renderer::Submit(flatColourShader, m_SquareVertexArray, transform);
+				//PaulEngine::Renderer::Submit(flatColourShader, m_SquareVertexArray, transform);
 			}
 		}
 
@@ -170,11 +170,11 @@ public:
 		transform = glm::scale(transform, glm::vec3(1.5f, 1.5f, 1.0f));
 		//m_Texture->Bind(0);
 		m_TransparentTexture->Bind(0);
-		PaulEngine::Renderer::Submit(m_ShaderLibrary.Get("Texture"), m_SquareVertexArray, transform);
+		//PaulEngine::Renderer::Submit(m_ShaderLibrary.Get("Texture"), m_SquareVertexArray, transform);
 
 		//PaulEngine::Renderer::Submit(m_ShaderLibrary.Get("TestShader"), m_VertexArray);
 
-		PaulEngine::Renderer::EndScene();
+		//PaulEngine::Renderer::EndScene();
 	}
 
 	void OnImGuiRender() override {

@@ -110,8 +110,6 @@ namespace PaulEngine {
 		}
 		m_Minimized = false;
 
-		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
-
 		return false;
 	}
 }
