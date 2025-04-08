@@ -1,6 +1,7 @@
 #include "pepch.h"
 #include "Project.h"
 #include "ProjectSerializer.h"
+#include "PaulEngine/Renderer/Renderer.h"
 #include "PaulEngine/Renderer/Renderer2D.h"
 #include "PaulEngine/Renderer/Font.h"
 #include "PaulEngine/Asset/AssetManager.h"
@@ -87,6 +88,7 @@ namespace PaulEngine
 		std::filesystem::path fontRelativeToAssets = std::filesystem::path("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf").lexically_relative(Project::GetAssetDirectory());
 		Font::s_DefaultFont = Project::GetActive()->GetEditorAssetManager()->ImportAsset(fontRelativeToAssets, true);
 
+		Renderer::ImportShaders();
 		Renderer2D::ImportShaders();
 	}
 }

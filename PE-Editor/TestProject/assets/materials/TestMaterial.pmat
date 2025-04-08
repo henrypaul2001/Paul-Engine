@@ -4,7 +4,7 @@ ShaderParams:
   - Name: MaterialValues
     Type: UBO
     Value:
-      Binding: 1
+      Binding: 2
       Layout:
         - Type: Float4
           Name: Colour

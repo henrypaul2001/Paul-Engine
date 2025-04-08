@@ -1,5 +1,6 @@
 #include "pepch.h"
 #include "Scene.h"
+#include "PaulEngine/Renderer/Renderer.h"
 #include "PaulEngine/Renderer/Renderer2D.h"
 #include "PaulEngine/Scene/Entity.h"
 #include "Components.h"
@@ -357,50 +358,61 @@ namespace PaulEngine
 
 	void Scene::RenderScene(EditorCamera& camera)
 	{
-		Renderer2D::BeginScene(camera);
 		{
-			PE_PROFILE_SCOPE("Draw Quads");
-			auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
-			for (auto entityID : group) {
-				auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
-				if (sprite.TextureAtlas) {
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.TextureAtlas, sprite.SelectedSubTextureName, sprite.Colour, (int)entityID);
-				}
-				else if (sprite.Texture) {
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
-				}
-				else {
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entityID);
+			Renderer2D::BeginScene(camera);
+			{
+				PE_PROFILE_SCOPE("Draw Quads");
+				auto group = m_Registry.group<ComponentTransform>(entt::get<Component2DSprite>);
+				for (auto entityID : group) {
+					auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
+					if (sprite.TextureAtlas) {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.TextureAtlas, sprite.SelectedSubTextureName, sprite.Colour, (int)entityID);
+					}
+					else if (sprite.Texture) {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
+					}
+					else {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entityID);
+					}
 				}
 			}
-		}
 
-		{
-			PE_PROFILE_SCOPE("Draw Circles");
-			auto view = m_Registry.view<ComponentTransform, Component2DCircle>();
-			for (auto entityID : view) {
-				auto [transform, circle] = view.get<ComponentTransform, Component2DCircle>(entityID);
+			{
+				PE_PROFILE_SCOPE("Draw Circles");
+				auto view = m_Registry.view<ComponentTransform, Component2DCircle>();
+				for (auto entityID : view) {
+					auto [transform, circle] = view.get<ComponentTransform, Component2DCircle>(entityID);
 
-				Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
+					Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
+				}
 			}
-		}
 
-		{
-			PE_PROFILE_SCOPE("Draw Text");
-			auto view = m_Registry.view<ComponentTransform, ComponentTextRenderer>();
-			for (auto entityID : view) {
-				auto [transform, text] = view.get<ComponentTransform, ComponentTextRenderer>(entityID);
+			{
+				PE_PROFILE_SCOPE("Draw Text");
+				auto view = m_Registry.view<ComponentTransform, ComponentTextRenderer>();
+				for (auto entityID : view) {
+					auto [transform, text] = view.get<ComponentTransform, ComponentTextRenderer>(entityID);
 
-				Renderer2D::TextParams params;
-				params.Colour = text.Colour;
-				params.Kerning = text.Kerning;
-				params.LineSpacing = text.LineSpacing;
+					Renderer2D::TextParams params;
+					params.Colour = text.Colour;
+					params.Kerning = text.Kerning;
+					params.LineSpacing = text.LineSpacing;
 
-				Renderer2D::DrawString(text.TextString, text.Font, transform.GetTransform(), params, (int)entityID);
+					Renderer2D::DrawString(text.TextString, text.Font, transform.GetTransform(), params, (int)entityID);
+				}
 			}
+
+			Renderer2D::EndScene();
 		}
 
-		Renderer2D::EndScene();
+		// 3D Render test
+		{
+			Renderer::BeginScene(camera);
+
+			Renderer::SubmitDefaultQuad(-1, glm::mat4(1.0f));
+
+			Renderer::EndScene();
+		}
 	}
 
 	void Scene::OnUpdateRuntime(Timestep timestep)
