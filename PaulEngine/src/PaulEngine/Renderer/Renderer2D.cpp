@@ -108,7 +108,7 @@ namespace PaulEngine {
 		Ref<UniformBuffer> CameraUniformBuffer;
 
 		AssetHandle MaterialShaderHandle;
-		Ref<Material> TestMaterial;
+		AssetHandle TestMaterialHandle;
 	};
 
 	static Renderer2DData s_RenderData;
@@ -265,7 +265,7 @@ namespace PaulEngine {
 			//	s_RenderData.TextureSlots[i]->Bind(i);
 			//}
 
-			s_RenderData.TestMaterial->Bind();
+			AssetManager::GetAsset<Material>(s_RenderData.TestMaterialHandle)->Bind();
 
 			RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
 			s_RenderData.Stats.DrawCalls++;
@@ -700,26 +700,6 @@ namespace PaulEngine {
 		quadShader->Bind();
 		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
 
-		s_RenderData.TestMaterial = CreateRef<Material>(s_RenderData.MaterialShaderHandle);
-
-		Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(
-			ShaderDataTypeSize(ShaderDataType::Float4) + 
-			ShaderDataTypeSize(ShaderDataType::Float) +
-			ShaderDataTypeSize(ShaderDataType::Float)
-			, 1);
-
-		glm::vec4* colour = new glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		float* roughness = new float(1.0f);
-		float* metalness = new float(0.0f);
-		ubo->UBO()->AddDataType("Colour", CreateRef<ShaderDataTypeStorage<glm::vec4>>(ShaderDataType::Float4, colour));
-		ubo->UBO()->AddDataType("Roughness", CreateRef<ShaderDataTypeStorage<float>>(ShaderDataType::Float, roughness));
-		ubo->UBO()->AddDataType("Metalness", CreateRef<ShaderDataTypeStorage<float>>(ShaderDataType::Float, metalness));
-
-		s_RenderData.TestMaterial->AddParameterType("MaterialValues", ubo);
-	}
-
-	Ref<Material> Renderer2D::GetTestMaterial()
-	{
-		return s_RenderData.TestMaterial;
+		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", false);
 	}
 }

@@ -56,8 +56,6 @@ namespace PaulEngine {
 
 		static void ImportShaders();
 
-		static Ref<Material> GetTestMaterial();
-
 	private:
 		static void StartNewBatch();
 	};

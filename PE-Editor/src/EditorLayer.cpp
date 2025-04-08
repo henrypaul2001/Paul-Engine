@@ -267,7 +267,7 @@ namespace PaulEngine {
 			ImGui::Begin("Renderer 2D Debug");
 
 			ImGui::SeparatorText("Material Test");
-			Ref<Material> material = Renderer2D::GetTestMaterial();
+			Ref<Material> material = AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAsset("materials/TestMaterial.pmat", false));
 
 			if (ImGui::Button("Save As...")) {
 				std::string path = FileDialogs::SaveFile("Paul Engine Material (*.pmat)\0*.pmat\0");
