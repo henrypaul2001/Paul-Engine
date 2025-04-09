@@ -1,0 +1,32 @@
+Scene: Untitled
+Entities:
+  - Entity: 3058056560338427120
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [-5.5, -2.25, -0.75]
+      Rotation: [0, 0, 0]
+      Scale: [2.375, 2.375, 2.375]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+  - Entity: 4809895888237990899
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [-5.5, 0, -9]
+      Rotation: [0, 0, 0]
+      Scale: [2.375, 2.375, 2.375]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+  - Entity: 17390793099330006882
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [4.75, 4.75, 4.75]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
