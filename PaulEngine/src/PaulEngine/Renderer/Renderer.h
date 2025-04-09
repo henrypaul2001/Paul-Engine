@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "EditorCamera.h"
+#include "RenderPipeline.h"
 
 namespace PaulEngine{
 	class Renderer {
@@ -30,23 +31,5 @@ namespace PaulEngine{
 		static const Statistics& GetStats();
 
 		static void ImportShaders();
-
-		struct DrawSubmission
-		{
-			Ref<VertexArray> VertexArray;
-			AssetHandle MaterialHandle;
-			glm::mat4 Transform;
-			int EntityID;
-		};
-
-		struct RenderPass
-		{
-			std::vector<DrawSubmission> DrawList;
-			// lighting information
-			// environment info (skybox, reflection probes, shadow maps, etc)
-			// render target
-			// post processing steps
-			// ...
-		};
 	};
 }

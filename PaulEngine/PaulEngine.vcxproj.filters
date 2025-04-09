@@ -1545,6 +1545,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\ShaderParameterType.h" />
     <ClInclude Include="src\PaulEngine\Asset\MaterialImporter.h" />
     <ClInclude Include="src\PaulEngine\Utils\YamlConversions.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1710,5 +1711,6 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBufferStorage.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Utils\YamlConversions.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
   </ItemGroup>
 </Project>

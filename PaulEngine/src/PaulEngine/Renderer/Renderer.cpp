@@ -41,7 +41,7 @@ namespace PaulEngine {
 		MeshSubmissionData MeshDataBuffer;
 		Ref<UniformBuffer> MeshDataUniformBuffer;
 
-		Renderer::RenderPass CurrentRenderPass;
+		RenderPass CurrentRenderPass;
 
 		Renderer::Statistics Stats;
 	};
@@ -136,7 +136,7 @@ namespace PaulEngine {
 	void Renderer::BeginScene(const EditorCamera& camera)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData.CurrentRenderPass = Renderer::RenderPass();
+		s_RenderData.CurrentRenderPass = RenderPass();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
@@ -145,7 +145,7 @@ namespace PaulEngine {
 	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData.CurrentRenderPass = Renderer::RenderPass();
+		s_RenderData.CurrentRenderPass = RenderPass();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
@@ -181,7 +181,7 @@ namespace PaulEngine {
 			s_RenderData.Stats.DrawCalls++;
 		}
 
-		s_RenderData.CurrentRenderPass = Renderer::RenderPass();
+		s_RenderData.CurrentRenderPass = RenderPass();
 		s_RenderData.MeshDataBuffer = Renderer3DData::MeshSubmissionData();
 	}
 
