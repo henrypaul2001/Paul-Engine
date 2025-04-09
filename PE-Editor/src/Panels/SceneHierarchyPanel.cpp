@@ -329,6 +329,7 @@ namespace PaulEngine
 			DrawAddComponentEntry<ComponentBoxCollider2D>("Box Collision 2D Component");
 			DrawAddComponentEntry<ComponentCircleCollider2D>("Circle Collision Component 2D");
 			DrawAddComponentEntry<ComponentTextRenderer>("Text Renderer Component");
+			DrawAddComponentEntry<ComponentMeshRenderer>("Mesh Renderer Component");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -603,6 +604,54 @@ namespace PaulEngine
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
 			ImGui::DragFloat("Kerning", &component.Kerning, 0.025f);
 			ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.025f);
+		});
+
+		// Mesh Component
+		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [](ComponentMeshRenderer& component) {
+
+			std::string label = "None";
+			bool isMaterialValid = false;
+			if (component.MaterialHandle != 0) {
+				if (AssetManager::IsAssetHandleValid(component.MaterialHandle) && AssetManager::GetAssetType(component.MaterialHandle) == AssetType::Material) {
+					const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(component.MaterialHandle);
+					label = metadata.FilePath.filename().stem().string();
+					isMaterialValid = true;
+				}
+				else {
+					label = "Invalid";
+				}
+			}
+
+			ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+			buttonLabelSize.x += 20.0f;
+			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+			ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					AssetHandle handle = *(AssetHandle*)payload->Data;
+					if (AssetManager::GetAssetType(handle) == AssetType::Material) {
+						component.MaterialHandle = handle;
+					}
+					else {
+						PE_CORE_WARN("Invalid asset type. Material needed for mesh component");
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (isMaterialValid) {
+				ImGui::SameLine();
+				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+					component.MaterialHandle = 0;
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text("Material");
 		});
 	}
 }

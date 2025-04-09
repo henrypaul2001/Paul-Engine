@@ -195,4 +195,9 @@ namespace PaulEngine
 		float Kerning = 0.0f;
 		float LineSpacing = 0.0f;
 	};
+
+	struct ComponentMeshRenderer {
+		AssetHandle MaterialHandle = 0;
+		AssetHandle MeshHandle = 0;
+	};
 }

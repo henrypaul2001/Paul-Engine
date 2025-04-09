@@ -142,6 +142,17 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentMeshRenderer>()) {
+			out << YAML::Key << "MeshRendererComponent";
+			out << YAML::BeginMap;
+
+			ComponentMeshRenderer& meshComponent = entity.GetComponent<ComponentMeshRenderer>();
+			out << YAML::Key << "MaterialHandle" << YAML::Value << meshComponent.MaterialHandle;
+			out << YAML::Key << "MeshHandle" << YAML::Value << meshComponent.MeshHandle;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -285,6 +296,13 @@ namespace PaulEngine
 					textComponent.Colour = textNode["Colour"].as<glm::vec4>();
 					textComponent.Kerning = textNode["Kerning"].as<float>();
 					textComponent.LineSpacing = textNode["LineSpacing"].as<float>();
+				}
+
+				YAML::Node meshNode = entity["MeshRendererComponent"];
+				if (meshNode) {
+					ComponentMeshRenderer& meshComponent = deserializedEntity.AddComponent<ComponentMeshRenderer>();
+					meshComponent.MaterialHandle = meshNode["MaterialHandle"].as<AssetHandle>();
+					meshComponent.MeshHandle = meshNode["MeshHandle"].as<AssetHandle>();
 				}
 			}
 		}
