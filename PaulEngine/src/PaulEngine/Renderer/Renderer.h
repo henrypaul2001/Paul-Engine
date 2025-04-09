@@ -14,6 +14,7 @@ namespace PaulEngine{
 		static void EndScene();
 		static void Flush();
 
+		static void SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, int entityID = -1);
 		static void SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, int entityID = -1);
 		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, int entityID = -1);
 

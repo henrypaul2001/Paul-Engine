@@ -20,6 +20,9 @@ namespace PaulEngine {
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
 
+		Ref<VertexArray> CubeVertexArray;
+		Ref<VertexBuffer> CubeVertexBuffer;
+
 		AssetHandle TestMaterialShaderHandle;
 		AssetHandle TestMaterialHandle;
 
@@ -78,6 +81,54 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexArray->SetIndexBuffer(quadIB);
 		}
 
+		// -- Cube --
+		// ----------
+		{
+			s_RenderData.CubeVertexArray = VertexArray::Create();
+			s_RenderData.CubeVertexBuffer = VertexBuffer::Create(8 * sizeof(QuadVertex));
+			s_RenderData.CubeVertexBuffer->SetLayout({
+				{ ShaderDataType::Float3, "a_Position", false },
+				{ ShaderDataType::Float2, "a_TexCoords", true },
+			});
+			s_RenderData.CubeVertexArray->AddVertexBuffer(s_RenderData.CubeVertexBuffer);
+
+			QuadVertex vertices[8] = {
+				{ {	-0.5f, -0.5f, -0.5f	}, { 0.0f, 0.0f } }, // bottom-left back
+				{ { 0.5f, -0.5f, -0.5f	}, { 1.0f, 0.0f } }, // bottom-right back
+				{ { 0.5f, 0.5f, -0.5f	}, { 1.0f, 1.0f } }, // top-right back
+				{ { -0.5f, 0.5f, -0.5f	}, { 0.0f, 1.0f } }, // top-left back
+
+				{ {	-0.5f, -0.5f, 0.5f	}, { 0.0f, 0.0f } }, // bottom-left front
+				{ { 0.5f, -0.5f, 0.5f	}, { 1.0f, 0.0f } }, // bottom-right front
+				{ { 0.5f, 0.5f, 0.5f	}, { 1.0f, 1.0f } }, // top-right front
+				{ { -0.5f, 0.5f, 0.5f	}, { 0.0f, 1.0f } }	 // top-left front
+			};
+			s_RenderData.CubeVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 8);
+
+			uint32_t cubeIndices[36] = {
+				0, 1, 2,
+				2, 3, 0, // back face
+
+				4, 6, 5,
+				6, 4, 7, // front face
+
+				0, 3, 7,
+				7, 4, 0, // left face
+
+				1, 5, 6,
+				6, 2, 1, // right face
+
+				3, 2, 6,
+				6, 7, 3, // top face
+
+				0, 4, 5,
+				5, 1, 0 // bottom face
+			};
+
+			Ref<IndexBuffer> cubeIB = IndexBuffer::Create(cubeIndices, 36);
+			s_RenderData.CubeVertexArray->SetIndexBuffer(cubeIB);
+		}
+
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
 		s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
 	}
@@ -134,18 +185,14 @@ namespace PaulEngine {
 		s_RenderData.MeshDataBuffer = Renderer3DData::MeshSubmissionData();
 	}
 
+	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, int entityID)
+	{
+		SubmitMesh(s_RenderData.CubeVertexArray, materialHandle, transform, entityID);
+	}
+
 	void Renderer::SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, int entityID)
 	{
-		PE_PROFILE_FUNCTION();
-
-		DrawSubmission draw;
-		draw.VertexArray = s_RenderData.QuadVertexArray;
-		draw.MaterialHandle = materialHandle;
-		draw.Transform = transform;
-		draw.EntityID = entityID;
-		s_RenderData.CurrentRenderPass.DrawList.push_back(draw);
-
-		s_RenderData.Stats.MeshCount++;
+		SubmitMesh(s_RenderData.QuadVertexArray, materialHandle, transform, entityID);
 	}
 
 	void Renderer::SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, int entityID)

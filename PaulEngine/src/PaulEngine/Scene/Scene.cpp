@@ -409,7 +409,8 @@ namespace PaulEngine
 		{
 			Renderer::BeginScene(camera);
 
-			Renderer::SubmitDefaultQuad(-1, glm::mat4(1.0f));
+			//Renderer::SubmitDefaultQuad(-1, glm::mat4(1.0f));
+			Renderer::SubmitDefaultCube(-1, glm::mat4(1.0f));
 
 			Renderer::EndScene();
 		}
