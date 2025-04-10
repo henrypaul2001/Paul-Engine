@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Asset\MaterialImporter.h" />
     <ClInclude Include="src\PaulEngine\Renderer\ShaderParameterType.h" />
@@ -649,6 +650,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Utils\YamlConversions.cpp" />

@@ -1546,6 +1546,7 @@
     <ClInclude Include="src\PaulEngine\Asset\MaterialImporter.h" />
     <ClInclude Include="src\PaulEngine\Utils\YamlConversions.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1712,5 +1713,6 @@
     <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Utils\YamlConversions.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
   </ItemGroup>
 </Project>
