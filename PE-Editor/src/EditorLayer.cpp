@@ -119,6 +119,7 @@ namespace PaulEngine {
 		}
 
 		Renderer2D::ResetStats();
+		Renderer::ResetStats();
 		m_Framebuffer->Bind();
 		RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
 		RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -254,8 +255,7 @@ namespace PaulEngine {
 				ImGui::EndMenuBar();
 			}
 
-			const Renderer2D::Statistics& stats = Renderer2D::GetStats();
-			ImGui::Begin("Renderer 2D Debug");
+			ImGui::Begin("Renderer Debug");
 
 			ImGui::SeparatorText("Material Test");
 			Ref<Material> material = AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAsset("materials/TestMaterial.pmat", false));
@@ -317,11 +317,23 @@ namespace PaulEngine {
 			}
 			ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
 
-			ImGui::SeparatorText("Renderer2D Stats:");
+			const Renderer::Statistics& stats = Renderer::GetStats();
+			ImGui::SeparatorText("Renderer3D Stats:");
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			ImGui::Text("Quad Count: %d", stats.QuadCount);
-			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			ImGui::Text("Mesh Count: %d", stats.MeshCount);
+			ImGui::Text("Pipeline Count: %d", stats.PipelineCount);
+
+			ImGui::Spacing();
+
+			const Renderer2D::Statistics& statsTwo = Renderer2D::GetStats();
+			ImGui::SeparatorText("Renderer2D Stats:");
+			ImGui::Text("Draw Calls: %d", statsTwo.DrawCalls);
+			ImGui::Text("Quad Count: %d", statsTwo.QuadCount);
+			ImGui::Text("Vertices: %d", statsTwo.GetTotalVertexCount());
+			ImGui::Text("Indices: %d", statsTwo.GetTotalIndexCount());
+
+			ImGui::Spacing();
+
 			ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
 			ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
 			ImGui::End();
