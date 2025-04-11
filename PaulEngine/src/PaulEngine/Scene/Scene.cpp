@@ -416,9 +416,11 @@ namespace PaulEngine
 				auto view = m_Registry.view<ComponentTransform, ComponentMeshRenderer>();
 				for (auto entityID : view) {
 					auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-					Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), (int)entityID);
+					Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), { DepthFunc::LESS, true, true }, FaceCulling::BACK, (int)entityID);
 				}
 			}
+
+			Renderer::SubmitDefaultCube(0, glm::mat4(1.0f), { DepthFunc::LESS, false, true }, FaceCulling::BACK);
 
 			Renderer::EndScene();
 		}
@@ -506,7 +508,7 @@ namespace PaulEngine
 					auto view = m_Registry.view<ComponentTransform, ComponentMeshRenderer>();
 					for (auto entityID : view) {
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), (int)entityID);
+						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), { DepthFunc::LESS, true, true }, FaceCulling::BACK, (int)entityID);
 					}
 				}
 

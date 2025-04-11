@@ -41,9 +41,9 @@ namespace PaulEngine {
 		MeshSubmissionData MeshDataBuffer;
 		Ref<UniformBuffer> MeshDataUniformBuffer;
 
-		RenderPass CurrentRenderPass;
-
 		Renderer::Statistics Stats;
+
+		std::unordered_map<std::string, Ref<RenderPipeline>> PipelineKeyMap;
 	};
 	static Renderer3DData s_RenderData;
 
@@ -136,7 +136,8 @@ namespace PaulEngine {
 	void Renderer::BeginScene(const EditorCamera& camera)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData.CurrentRenderPass = RenderPass();
+
+		EndScene();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
@@ -145,7 +146,8 @@ namespace PaulEngine {
 	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform)
 	{
 		PE_PROFILE_FUNCTION();
-		s_RenderData.CurrentRenderPass = RenderPass();
+
+		EndScene();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
@@ -165,46 +167,63 @@ namespace PaulEngine {
 		s_RenderData.CameraUniformBuffer->Bind(0);
 		s_RenderData.MeshDataUniformBuffer->Bind(1);
 
-		for (const DrawSubmission& s : s_RenderData.CurrentRenderPass.DrawList) {
-			if (AssetManager::IsAssetHandleValid(s.MaterialHandle)) {
-				AssetManager::GetAsset<Material>(s.MaterialHandle)->Bind();
-			}
-			else {
-				AssetManager::GetAsset<Material>(s_RenderData.TestMaterialHandle)->Bind();
-			}
+		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 
-			s_RenderData.MeshDataBuffer.Transform = s.Transform;
-			s_RenderData.MeshDataBuffer.EntityID = s.EntityID;
-			s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+			pipeline->Bind();
+			const RenderPass& renderPass = pipeline->GetRenderPass();
+			for (const DrawSubmission& d : renderPass.DrawList) {
+				s_RenderData.MeshDataBuffer.Transform = d.Transform;
+				s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
+				s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
 
-			RenderCommand::DrawIndexed(s.VertexArray, s.VertexArray->GetIndexBuffer()->GetCount());
-			s_RenderData.Stats.DrawCalls++;
+				RenderCommand::DrawIndexed(d.VertexArray, d.VertexArray->GetIndexBuffer()->GetCount());
+				s_RenderData.Stats.DrawCalls++;
+			}
 		}
 
-		s_RenderData.CurrentRenderPass = RenderPass();
 		s_RenderData.MeshDataBuffer = Renderer3DData::MeshSubmissionData();
+
+		s_RenderData.PipelineKeyMap.clear();
 	}
 
-	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, int entityID)
+	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)
 	{
-		SubmitMesh(s_RenderData.CubeVertexArray, materialHandle, transform, entityID);
+		SubmitMesh(s_RenderData.CubeVertexArray, materialHandle, transform, depthState, cullState, entityID);
 	}
 
-	void Renderer::SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, int entityID)
+	void Renderer::SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)
 	{
-		SubmitMesh(s_RenderData.QuadVertexArray, materialHandle, transform, entityID);
+		SubmitMesh(s_RenderData.QuadVertexArray, materialHandle, transform, depthState, cullState, entityID);
 	}
 
-	void Renderer::SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, int entityID)
+	void Renderer::SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
 		DrawSubmission draw;
 		draw.VertexArray = vertexArray;
-		draw.MaterialHandle = materialHandle;
+		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.TestMaterialHandle;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
-		s_RenderData.CurrentRenderPass.DrawList.push_back(draw);
+
+
+		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate vertex array
+
+		// Check for duplicate pipeline state
+		std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState);
+
+		if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
+		{
+			// Duplicate pipeline state
+			s_RenderData.PipelineKeyMap[pipelineKey]->GetRenderPass().DrawList.push_back(draw);
+		}
+		else
+		{
+			// Unique pipeline state
+			s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, draw.MaterialHandle);
+			s_RenderData.PipelineKeyMap[pipelineKey]->GetRenderPass().DrawList.push_back(draw);
+			s_RenderData.Stats.PipelineCount++;
+		}
 
 		s_RenderData.Stats.MeshCount++;
 	}
@@ -213,7 +232,7 @@ namespace PaulEngine {
 	{
 		s_RenderData.Stats.DrawCalls = 0;
 		s_RenderData.Stats.MeshCount = 0;
-		s_RenderData.Stats.MaterialCount = 0;
+		s_RenderData.Stats.PipelineCount = 0;
 	}
 
 	const Renderer::Statistics& Renderer::GetStats()
@@ -229,5 +248,14 @@ namespace PaulEngine {
 
 		s_RenderData.TestMaterialShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl", true);
 		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", true);
+	}
+
+	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)
+	{
+		std::string materialString = std::to_string((uint64_t)material);
+		std::string depthString = std::to_string((int)depthState.Func) + std::to_string((int)depthState.Test) + std::to_string((int)depthState.Write);
+		std::string cullString = std::to_string((int)cullState);
+
+		return materialString + depthString + cullString;
 	}
 }
