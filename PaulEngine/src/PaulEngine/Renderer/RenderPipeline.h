@@ -45,9 +45,9 @@ namespace PaulEngine
 
 	struct DepthState
 	{
-		DepthFunc Func;
-		bool Test;
-		bool Write;
+		DepthFunc Func = DepthFunc::LESS;
+		bool Test = true;
+		bool Write = true;
 	};
 
 	class RenderPipeline
@@ -68,7 +68,7 @@ namespace PaulEngine
 		RenderPass m_RenderPass;
 		
 		const AssetHandle m_MaterialHandle;
-		const FaceCulling m_CullState;
+		const FaceCulling m_CullState = FaceCulling::BACK;
 		const DepthState m_DepthState;
 	};
 }

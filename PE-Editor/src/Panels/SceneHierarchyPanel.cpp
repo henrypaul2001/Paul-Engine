@@ -652,6 +652,64 @@ namespace PaulEngine
 			}
 			ImGui::SameLine();
 			ImGui::Text("Material");
+
+			ImGui::Spacing();
+			ImGui::Text("Depth State");
+
+			const char* depthFuncStrings[] = {
+				"Never",
+				"Less", "Less or Equal",
+				"Equal",
+				"Greater", "Greater or Equal",
+				"Not Equal",
+				"Always"
+			};
+			const char* currentDepthFuncString = depthFuncStrings[(int)component.DepthState.Func];
+			if (ImGui::BeginCombo("Func", currentDepthFuncString)) {
+			
+				for (int i = 0; i < 8; i++) {
+					bool isSelected = currentDepthFuncString == depthFuncStrings[i];
+					if (ImGui::Selectable(depthFuncStrings[i], isSelected)) {
+						currentDepthFuncString = depthFuncStrings[i];
+						component.DepthState.Func = (DepthFunc)i;
+					}
+			
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+			
+				ImGui::EndCombo();
+			}
+			ImGui::Checkbox("Test", &component.DepthState.Test);
+			ImGui::Checkbox("Write", &component.DepthState.Write);
+
+			ImGui::Spacing();
+			ImGui::Text("Culling");
+
+			const char* faceCullingStrings[] = {
+				"None",
+				"Front",
+				"Back",
+				"Front and Back"
+			};
+			const char* currentFaceCullingString = faceCullingStrings[(int)component.CullState];
+			if (ImGui::BeginCombo("Face Culling", currentFaceCullingString)) {
+
+				for (int i = 0; i < 4; i++) {
+					bool isSelected = currentFaceCullingString == faceCullingStrings[i];
+					if (ImGui::Selectable(faceCullingStrings[i], isSelected)) {
+						currentFaceCullingString = faceCullingStrings[i];
+						component.CullState = (FaceCulling)i;
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndCombo();
+			}
 		});
 	}
 }

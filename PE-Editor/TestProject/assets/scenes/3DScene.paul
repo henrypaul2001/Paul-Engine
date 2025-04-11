@@ -1,5 +1,21 @@
 Scene: Untitled
 Entities:
+  - Entity: 13149499340971217249
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [-6.9166474, 5.9852176, 11.731807]
+      Rotation: [-0.25458896, -0.35610697, 0]
+      Scale: [1, 0.9999999, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 2.0727763
+      FixedAspect: false
   - Entity: 3058056560338427120
     TagComponent:
       Tag: Cube
@@ -10,6 +26,10 @@ Entities:
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 4809895888237990899
     TagComponent:
       Tag: Cube
@@ -20,6 +40,10 @@ Entities:
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 17390793099330006882
     TagComponent:
       Tag: Cube
@@ -30,3 +54,7 @@ Entities:
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2

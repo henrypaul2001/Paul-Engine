@@ -149,6 +149,10 @@ namespace PaulEngine
 			ComponentMeshRenderer& meshComponent = entity.GetComponent<ComponentMeshRenderer>();
 			out << YAML::Key << "MaterialHandle" << YAML::Value << meshComponent.MaterialHandle;
 			out << YAML::Key << "MeshHandle" << YAML::Value << meshComponent.MeshHandle;
+			out << YAML::Key << "DepthFunc" << YAML::Value << (int)meshComponent.DepthState.Func;
+			out << YAML::Key << "DepthTest" << YAML::Value << meshComponent.DepthState.Test;
+			out << YAML::Key << "DepthWrite" << YAML::Value << meshComponent.DepthState.Write;
+			out << YAML::Key << "FaceCulling" << YAML::Value << (int)meshComponent.CullState;
 
 			out << YAML::EndMap;
 		}
@@ -303,6 +307,10 @@ namespace PaulEngine
 					ComponentMeshRenderer& meshComponent = deserializedEntity.AddComponent<ComponentMeshRenderer>();
 					meshComponent.MaterialHandle = meshNode["MaterialHandle"].as<AssetHandle>();
 					meshComponent.MeshHandle = meshNode["MeshHandle"].as<AssetHandle>();
+					meshComponent.DepthState.Func = (DepthFunc)meshNode["DepthFunc"].as<int>();
+					meshComponent.DepthState.Test = meshNode["DepthTest"].as<bool>();
+					meshComponent.DepthState.Write = meshNode["DepthWrite"].as<bool>();
+					meshComponent.CullState = (FaceCulling)meshNode["FaceCulling"].as<int>();
 				}
 			}
 		}

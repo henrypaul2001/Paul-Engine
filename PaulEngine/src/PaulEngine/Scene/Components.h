@@ -6,6 +6,8 @@
 #include <PaulEngine/Scene/SceneCamera.h>
 #include "EntityScript.h"
 
+#include "PaulEngine/Renderer/RenderPipeline.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
@@ -199,5 +201,7 @@ namespace PaulEngine
 	struct ComponentMeshRenderer {
 		AssetHandle MaterialHandle = 0;
 		AssetHandle MeshHandle = 0;
+		DepthState DepthState;
+		FaceCulling CullState = FaceCulling::BACK;
 	};
 }
