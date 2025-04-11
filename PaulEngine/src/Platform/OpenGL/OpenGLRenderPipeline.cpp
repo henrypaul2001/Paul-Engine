@@ -24,7 +24,7 @@ namespace PaulEngine
 				return;
 			case FaceCulling::BACK:
 				glEnable(GL_CULL_FACE);
-				glCullFace(GL_FRONT);
+				glCullFace(GL_BACK);
 				return;
 			case FaceCulling::FRONT_AND_BACK:
 				glEnable(GL_CULL_FACE);
