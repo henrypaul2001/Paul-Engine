@@ -5,8 +5,8 @@ Entities:
       Tag: Top
     TransformComponent:
       Position: [0, 0.3, -1.85]
-      Rotation: [1.5707964, 0.7853982, 0]
-      Scale: [1, 1, 1]
+      Rotation: [-1.5707964, 0.7853982, -8.429369e-08]
+      Scale: [0.99999994, 1.0000005, 1]
     SpriteComponent:
       Colour: [0.8932966, 0.45227394, 0.99288255, 1]
       TextureHandle: 0
@@ -53,5 +53,5 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 3.5833333
+        AspectRatio: 2.0727763
       FixedAspect: false
