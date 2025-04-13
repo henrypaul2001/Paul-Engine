@@ -76,7 +76,6 @@ namespace PaulEngine
 
 			out << YAML::EndMap;
 		}
-
 		static Ref<UBOShaderParameterTypeStorage> ReadUniformBufferStorageObject(YAML::Node& valueNode)
 		{
 			uint32_t binding = valueNode["Binding"].as<uint64_t>();
@@ -170,6 +169,23 @@ namespace PaulEngine
 			}
 			return ubo;
 		}
+	
+		static void WriteSampler2DObject(YAML::Emitter& out, Sampler2DShaderParameterTypeStorage* sampler2DStorageParameter)
+		{
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "Binding" << YAML::Value << sampler2DStorageParameter->GetBinding();
+			out << YAML::Key << "TextureHandle" << YAML::Value << sampler2DStorageParameter->GetTextureHandle();
+
+			out << YAML::EndMap;
+		}
+		static Ref<Sampler2DShaderParameterTypeStorage> ReadSampler2DObject(YAML::Node& valueNode)
+		{
+			uint32_t binding = valueNode["Binding"].as<uint64_t>();
+			AssetHandle textureHandle = valueNode["TextureHandle"].as<AssetHandle>();
+
+			return CreateRef<Sampler2DShaderParameterTypeStorage>(textureHandle, binding);
+		}
 	}
 
 	static std::string ShaderParameterTypeToString(ShaderParameterType type) {
@@ -234,7 +250,7 @@ namespace PaulEngine
 					material.AddParameterType(paramName, MaterialImporterUtils::ReadUniformBufferStorageObject(value));
 					break;
 				case ShaderParameterType::Sampler2D:
-					PE_CORE_ASSERT(false, "Sampler2D not yet implemented");
+					material.AddParameterType(paramName, MaterialImporterUtils::ReadSampler2DObject(value));
 					break;
 				case ShaderParameterType::Sampler2DArray:
 					PE_CORE_ASSERT(false, "Sampler2DArray not yet implemented");
@@ -282,7 +298,7 @@ namespace PaulEngine
 				}
 				case ShaderParameterType::Sampler2D:
 				{
-					out << YAML::Value << "Not yet implemented";
+					MaterialImporterUtils::WriteSampler2DObject(out, dynamic_cast<Sampler2DShaderParameterTypeStorage*>(parameter.get()));
 					break;
 				}
 				case ShaderParameterType::Sampler2DArray:

@@ -68,6 +68,7 @@ namespace PaulEngine
 			type: "sampler2D"
 			value:
 				location: 1
+				TextureHandle: (AssetHandle)
 		]
 
 		enum class ShaderDataType

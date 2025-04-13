@@ -1714,5 +1714,6 @@
     <ClCompile Include="src\PaulEngine\Utils\YamlConversions.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
   </ItemGroup>
 </Project>

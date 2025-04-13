@@ -101,7 +101,7 @@ namespace PaulEngine {
 				{ { 0.5f, -0.5f,  0.5f },   { 1.0f, 0.0f } },
 				{ { 0.5f,  0.5f,	0.5f }, { 1.0f, 1.0f } },
 				{ { -0.5f,  0.5f,  0.5f },  { 0.0f, 1.0f } },
-
+													   
 				{ { -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f } },
 				{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f } },
 				{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f } },
@@ -269,6 +269,7 @@ namespace PaulEngine {
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)
 	{
+		PE_PROFILE_FUNCTION();
 		std::string materialString = std::to_string((uint64_t)material);
 		std::string depthString = std::to_string((int)depthState.Func) + std::to_string((int)depthState.Test) + std::to_string((int)depthState.Write);
 		std::string cullString = std::to_string((int)cullState);

@@ -16,11 +16,12 @@ layout(std140, binding = 1) uniform MeshSubmission
 } u_MeshSubmission;
 
 layout(location = 0) out flat int v_EntityID;
+layout(location = 1) out vec2 v_TexCoords;
 
 void main()
 {
 	v_EntityID = u_MeshSubmission.EntityID;
-
+	v_TexCoords = a_TexCoords;
 	gl_Position = u_CameraBuffer.ViewProjection * u_MeshSubmission.Transform * vec4(a_Position, 1.0);
 }
 
@@ -31,6 +32,7 @@ layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;
 
 layout(location = 0) in flat int v_EntityID;
+layout(location = 1) in vec2 v_TexCoords;
 
 layout(std140, binding = 2) uniform MaterialValues
 {
@@ -39,9 +41,12 @@ layout(std140, binding = 2) uniform MaterialValues
 	float Metalness;
 } u_MaterialValues;
 
+layout(binding = 0) uniform sampler2D TestTexture;
+
 void main()
 {
-	colour = u_MaterialValues.Colour;
+	colour = texture(TestTexture, v_TexCoords);
+	colour *= u_MaterialValues.Colour;
 	colour.xyz *= 1.0 - u_MaterialValues.Metalness + (0.2 * u_MaterialValues.Roughness);
 
 	if (colour.a == 0.0) { discard; }

@@ -273,39 +273,96 @@ namespace PaulEngine {
 			
 			for (auto& it : material->m_ShaderParameters) {
 				switch (it.second->GetType()) {
-				case ShaderParameterType::UBO:
-					UBOShaderParameterTypeStorage* ubo = dynamic_cast<UBOShaderParameterTypeStorage*>(it.second.get());
-					
-					for (auto& [name, value] : ubo->UBO()->GetLayoutStorage()) {
-						switch (value->GetType()) {
-							case ShaderDataType::Float4:
-							{
-								glm::vec4* data = static_cast<glm::vec4*>(value->GetData());
-								ImGui::ColorEdit4(name.c_str(), &(*data)[0]);
-								break;
+					case ShaderParameterType::UBO:
+					{
+						UBOShaderParameterTypeStorage* ubo = dynamic_cast<UBOShaderParameterTypeStorage*>(it.second.get());
+
+						for (auto& [name, value] : ubo->UBO()->GetLayoutStorage()) {
+							switch (value->GetType()) {
+								case ShaderDataType::Float4:
+								{
+									glm::vec4* data = static_cast<glm::vec4*>(value->GetData());
+									ImGui::ColorEdit4(name.c_str(), &(*data)[0]);
+									break;
+								}
+								case ShaderDataType::Float3:
+								{
+									glm::vec3* data = static_cast<glm::vec3*>(value->GetData());
+									ImGui::ColorEdit3(name.c_str(), &(*data)[0]);
+									break;
+								}
+								case ShaderDataType::Float2:
+								{
+									glm::vec2* data = static_cast<glm::vec2*>(value->GetData());
+									ImGui::DragFloat2(name.c_str(), &(*data)[0]);
+									break;
+								}
+								case ShaderDataType::Float:
+								{
+									float* data = static_cast<float*>(value->GetData());
+									ImGui::DragFloat(name.c_str(), &(*data), 0.1f, 0.0f, 1.0f);
+									break;
+								}
 							}
-							case ShaderDataType::Float3:
-							{
-								glm::vec3* data = static_cast<glm::vec3*>(value->GetData());
-								ImGui::ColorEdit3(name.c_str(), &(*data)[0]);
-								break;
+							ImGui::Text(name.c_str());
+						}
+						break;
+					}
+					case ShaderParameterType::Sampler2D:
+					{
+						const std::string& paramName = it.first;
+						ImGui::Text(paramName.c_str());
+						Sampler2DShaderParameterTypeStorage* sampler2D = dynamic_cast<Sampler2DShaderParameterTypeStorage*>(it.second.get());
+						AssetHandle textureHandle = sampler2D->m_TextureHandle;
+
+						std::string label = "None";
+						bool isTextureValid = false;
+						if (textureHandle != 0) {
+							if (AssetManager::IsAssetHandleValid(textureHandle) && AssetManager::GetAssetType(textureHandle) == AssetType::Texture2D) {
+								const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(textureHandle);
+								label = metadata.FilePath.filename().string();
+								isTextureValid = true;
 							}
-							case ShaderDataType::Float2:
-							{
-								glm::vec2* data = static_cast<glm::vec2*>(value->GetData());
-								ImGui::DragFloat2(name.c_str(), &(*data)[0]);
-								break;
-							}
-							case ShaderDataType::Float:
-							{
-								float* data = static_cast<float*>(value->GetData());
-								ImGui::DragFloat(name.c_str(), &(*data), 0.1f, 0.0f, 1.0f);
-								break;
+							else {
+								label = "Invalid";
 							}
 						}
-						ImGui::Text(name.c_str());
+
+						ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+						buttonLabelSize.x += 20.0f;
+						float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+						ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+						if (ImGui::BeginDragDropTarget())
+						{
+							if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+							{
+								AssetHandle handle = *(AssetHandle*)payload->Data;
+								if (AssetManager::GetAssetType(handle) == AssetType::Texture2D) {
+									sampler2D->m_TextureHandle = handle;
+								}
+								else {
+									PE_CORE_WARN("Invalid asset type. Texture2D needed for sampler2D shader parameter");
+								}
+							}
+							ImGui::EndDragDropTarget();
+						}
+
+						if (isTextureValid) {
+							ImGui::SameLine();
+							ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+							float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+							if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+								sampler2D->m_TextureHandle = 0;
+							}
+						}
+						ImGui::SameLine();
+						ImGui::Text("Texture");
+
+						ImGui::Text("Binding: {0}", sampler2D->m_Binding);
+
+						break;
 					}
-					break;
 				}
 			}
 

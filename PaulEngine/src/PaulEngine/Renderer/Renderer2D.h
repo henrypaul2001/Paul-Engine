@@ -55,6 +55,8 @@ namespace PaulEngine {
 
 		static void ImportShaders();
 
+		static Ref<Texture2D> GetWhiteTexture();
+
 	private:
 		static void StartNewBatch();
 	};

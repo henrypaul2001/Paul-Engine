@@ -727,4 +727,9 @@ namespace PaulEngine {
 		s_RenderData.LinePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.LineMaterialHandle);
 		s_RenderData.TextPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.TextMaterialHandle);
 	}
+
+	Ref<Texture2D> Renderer2D::GetWhiteTexture()
+	{
+		return s_RenderData.WhiteTexture;
+	}
 }

@@ -15,3 +15,8 @@ ShaderParams:
         - Type: Float
           Name: Metalness
           Value: 0.1
+  - Name: test_texture
+    Type: Sampler2D
+    Value:
+      Binding: 0
+      TextureHandle: 1732625535741970896

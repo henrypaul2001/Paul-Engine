@@ -650,6 +650,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp" />
