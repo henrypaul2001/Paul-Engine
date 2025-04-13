@@ -85,50 +85,61 @@ namespace PaulEngine {
 		// ----------
 		{
 			s_RenderData.CubeVertexArray = VertexArray::Create();
-			s_RenderData.CubeVertexBuffer = VertexBuffer::Create(8 * sizeof(QuadVertex));
+			s_RenderData.CubeVertexBuffer = VertexBuffer::Create(24 * sizeof(QuadVertex));
 			s_RenderData.CubeVertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position", false },
 				{ ShaderDataType::Float2, "a_TexCoords", true },
 			});
 			s_RenderData.CubeVertexArray->AddVertexBuffer(s_RenderData.CubeVertexBuffer);
 
-			QuadVertex vertices[8] = {
-				{ {	-0.5f, -0.5f, -0.5f	}, { 0.0f, 0.0f } }, // bottom-left back
-				{ { 0.5f, -0.5f, -0.5f	}, { 1.0f, 0.0f } }, // bottom-right back
-				{ { 0.5f, 0.5f, -0.5f	}, { 1.0f, 1.0f } }, // top-right back
-				{ { -0.5f, 0.5f, -0.5f	}, { 0.0f, 1.0f } }, // top-left back
+			QuadVertex vertices[24] = {
+				{ { -0.5f, -0.5f, -0.5f },  { 0.0f, 0.0f } },
+				{ { 0.5f, -0.5f, -0.5f },   { 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f, -0.5f },   { 1.0f, 1.0f } },
+				{ { -0.5f,  0.5f, -0.5f },  { 0.0f, 1.0f } },
+				{ { -0.5f, -0.5f,  0.5f },  { 0.0f, 0.0f } },
+				{ { 0.5f, -0.5f,  0.5f },   { 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f,	0.5f }, { 1.0f, 1.0f } },
+				{ { -0.5f,  0.5f,  0.5f },  { 0.0f, 1.0f } },
 
-				{ {	-0.5f, -0.5f, 0.5f	}, { 0.0f, 0.0f } }, // bottom-left front
-				{ { 0.5f, -0.5f, 0.5f	}, { 1.0f, 0.0f } }, // bottom-right front
-				{ { 0.5f, 0.5f, 0.5f	}, { 1.0f, 1.0f } }, // top-right front
-				{ { -0.5f, 0.5f, 0.5f	}, { 0.0f, 1.0f } }	 // top-left front
+				{ { -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f } },
+				{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f } },
+				{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f } },
+				{ { -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f } },
+				{ { 0.5f, -0.5f, -0.5f  }, { 0.0f, 0.0f } },
+				{ { 0.5f,  0.5f, -0.5f  }, { 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f,  0.5f  }, { 1.0f, 1.0f } },
+				{ { 0.5f, -0.5f,  0.5f  }, { 0.0f, 1.0f } },
+													   
+				{ { -0.5f, -0.5f, -0.5f,}, { 0.0f, 0.0f } },
+				{ { 0.5f, -0.5f, -0.5f, }, { 1.0f, 0.0f } },
+				{ { 0.5f, -0.5f,  0.5f, }, { 1.0f, 1.0f } },
+				{ { -0.5f, -0.5f,  0.5f,}, { 0.0f, 1.0f } },
+				{ { 0.5f,  0.5f, -0.5f, }, { 0.0f, 0.0f } },
+				{ { -0.5f,  0.5f, -0.5f,}, { 1.0f, 0.0f } },
+				{ { -0.5f,  0.5f,  0.5f,}, { 1.0f, 1.0f } },
+				{ { 0.5f,  0.5f,  0.5f, }, { 0.0f, 1.0f } }
 			};
-			s_RenderData.CubeVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 8);
+			s_RenderData.CubeVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 24);
 
 			uint32_t cubeIndices[36] = {
-				// Back face
-				0, 2, 1,
+				// front and back
 				0, 3, 2,
-
-				// Front face
+				2, 1, 0,
 				4, 5, 6,
-				4, 6, 7,
+				6, 7 ,4,
 
-				// Left face
-				0, 7, 3,
-				0, 4, 7,
+				// left and right
+				11, 8, 9,
+				9, 10, 11,
+				12, 13, 14,
+				14, 15, 12,
 
-				// Right face
-				1, 2, 6,
-				1, 6, 5,
-
-				// Top face
-				3, 7, 6,
-				3, 6, 2,
-
-				// Bottom face
-				0, 1, 5,
-				0, 5, 4
+				// bottom and top
+				16, 17, 18,
+				18, 19, 16,
+				20, 21, 22,
+				22, 23, 20
 			};
 
 			Ref<IndexBuffer> cubeIB = IndexBuffer::Create(cubeIndices, 36);
