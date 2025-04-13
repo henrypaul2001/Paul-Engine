@@ -12,6 +12,11 @@
 #include "MSDFData.h"
 #include "TextureAtlas2D.h"
 
+#include "RenderPipeline.h"
+#include "Material.h"
+
+#include "PaulEngine/Asset/MaterialImporter.h"
+
 namespace PaulEngine {
 	struct QuadVertex {
 		glm::vec3 Position;
@@ -70,6 +75,16 @@ namespace PaulEngine {
 		Ref<VertexArray> TextVertexArray;
 		Ref<VertexBuffer> TextVertexBuffer;
 		AssetHandle TextShaderHandle = 0;
+
+		AssetHandle QuadMaterialHandle;
+		AssetHandle CircleMaterialHandle;
+		AssetHandle LineMaterialHandle;
+		AssetHandle TextMaterialHandle;
+
+		Ref<RenderPipeline> QuadPipeline;
+		Ref<RenderPipeline> CirclePipeline;
+		Ref<RenderPipeline> LinePipeline;
+		Ref<RenderPipeline> TextPipeline;
 
 		float LineWidth = 2.0f;
 	
@@ -254,10 +269,12 @@ namespace PaulEngine {
 		s_RenderData.CameraUniformBuffer->Bind(0);
 
 		if (s_RenderData.QuadIndexCount) {
+			s_RenderData.QuadPipeline->Bind();
+			
 			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
 			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
 
-			AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
+			//AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
 			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
 				s_RenderData.TextureSlots[i]->Bind(i);
 			}
@@ -267,6 +284,8 @@ namespace PaulEngine {
 		}
 
 		if (s_RenderData.CircleIndexCount) {
+			s_RenderData.CirclePipeline->Bind();
+
 			uint32_t dataSize = (uint8_t*)s_RenderData.CircleVertexBufferPtr - (uint8_t*)s_RenderData.CircleVertexBufferBase;
 			s_RenderData.CircleVertexBuffer->SetData(s_RenderData.CircleVertexBufferBase, dataSize);
 
@@ -276,6 +295,8 @@ namespace PaulEngine {
 		}
 		
 		if (s_RenderData.LineVertexCount) {
+			s_RenderData.LinePipeline->Bind();
+
 			uint32_t dataSize = (uint8_t*)s_RenderData.LineVertexBufferPtr - (uint8_t*)s_RenderData.LineVertexBufferBase;
 			s_RenderData.LineVertexBuffer->SetData(s_RenderData.LineVertexBufferBase, dataSize);
 
@@ -286,6 +307,8 @@ namespace PaulEngine {
 		}
 
 		if (s_RenderData.TextIndexCount) {
+			s_RenderData.TextPipeline->Bind();
+
 			uint32_t dataSize = (uint8_t*)s_RenderData.TextVertexBufferPtr - (uint8_t*)s_RenderData.TextVertexBufferBase;
 			s_RenderData.TextVertexBuffer->SetData(s_RenderData.TextVertexBufferBase, dataSize);
 
@@ -693,5 +716,15 @@ namespace PaulEngine {
 		Ref<Shader> quadShader = AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle);
 		quadShader->Bind();
 		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
+
+		s_RenderData.QuadMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Quad2DMaterial.pmat", true);
+		s_RenderData.CircleMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Circle2DMaterial.pmat", true);
+		s_RenderData.LineMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Line2DMaterial.pmat", true);
+		s_RenderData.TextMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Text2DMaterial.pmat", true);
+
+		s_RenderData.QuadPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.TextMaterialHandle);
 	}
 }

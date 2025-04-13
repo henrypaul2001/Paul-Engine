@@ -7,26 +7,30 @@ AssetRegistry:
     Filepath: textures\awesomeface.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 595089826126213518
+    Filepath: ..\..\assets\materials/Line2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
   - Handle: 4566192558940935376
     Filepath: scenes\3DCube.paul
-    Persistent: false
-    Type: AssetType::Scene
-  - Handle: 2510263345310005911
-    Filepath: scenes\Example.paul
     Persistent: false
     Type: AssetType::Scene
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 2510263345310005911
+    Filepath: scenes\Example.paul
+    Persistent: false
+    Type: AssetType::Scene
   - Handle: 11922114141701769481
     Filepath: scenes\Physics2D.paul
     Persistent: false
@@ -79,3 +83,15 @@ AssetRegistry:
     Filepath: scenes\3DScene.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 9022188185105073562
+    Filepath: ..\..\assets\materials/Quad2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
+  - Handle: 1984638280190401155
+    Filepath: ..\..\assets\materials/Circle2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
+  - Handle: 8694202715835494202
+    Filepath: ..\..\assets\materials/Text2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
