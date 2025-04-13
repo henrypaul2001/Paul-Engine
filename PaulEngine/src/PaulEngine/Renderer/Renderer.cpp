@@ -106,23 +106,29 @@ namespace PaulEngine {
 			s_RenderData.CubeVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 8);
 
 			uint32_t cubeIndices[36] = {
-				0, 1, 2,
-				2, 3, 0, // back face
+				// Back face
+				0, 2, 1,
+				0, 3, 2,
 
-				4, 6, 5,
-				6, 4, 7, // front face
+				// Front face
+				4, 5, 6,
+				4, 6, 7,
 
-				0, 3, 7,
-				7, 4, 0, // left face
+				// Left face
+				0, 7, 3,
+				0, 4, 7,
 
-				1, 5, 6,
-				6, 2, 1, // right face
+				// Right face
+				1, 2, 6,
+				1, 6, 5,
 
-				3, 2, 6,
-				6, 7, 3, // top face
+				// Top face
+				3, 7, 6,
+				3, 6, 2,
 
-				0, 4, 5,
-				5, 1, 0 // bottom face
+				// Bottom face
+				0, 1, 5,
+				0, 5, 4
 			};
 
 			Ref<IndexBuffer> cubeIB = IndexBuffer::Create(cubeIndices, 36);
