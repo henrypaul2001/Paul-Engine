@@ -7,6 +7,8 @@
 #include "PaulEngine/Asset/AssetManager.h"
 #include "Material.h"
 
+#include "PaulEngine/Asset/TextureImporter.h"
+
 namespace PaulEngine {
 
 	struct QuadVertex
@@ -44,6 +46,8 @@ namespace PaulEngine {
 		Renderer::Statistics Stats;
 
 		std::unordered_map<std::string, Ref<RenderPipeline>> PipelineKeyMap;
+
+		Ref<Texture2DArray> TestTextureArray;
 	};
 	static Renderer3DData s_RenderData;
 
@@ -187,6 +191,7 @@ namespace PaulEngine {
 		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 
 			pipeline->Bind();
+			s_RenderData.TestTextureArray->Bind(1);
 			const RenderPass& renderPass = pipeline->GetRenderPass();
 			for (const DrawSubmission& d : renderPass.DrawList) {
 				s_RenderData.MeshDataBuffer.Transform = d.Transform;
@@ -265,6 +270,28 @@ namespace PaulEngine {
 
 		s_RenderData.TestMaterialShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl", true);
 		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", true);
+
+		// Test texture array file read
+		TextureImporter::ImageFileReadResult result;
+		Buffer albedoBuffer = TextureImporter::ReadImageFile("assets/textures/albedo.png", result);
+		Buffer aoBuffer = TextureImporter::ReadImageFile("assets/textures/ao.png", result);
+		Buffer heightBuffer = TextureImporter::ReadImageFile("assets/textures/height.png", result);
+		Buffer normalBuffer = TextureImporter::ReadImageFile("assets/textures/normal.png", result);
+		Buffer roughnessBuffer = TextureImporter::ReadImageFile("assets/textures/roughness.png", result);
+		Buffer metallicBuffer = TextureImporter::ReadImageFile("assets/textures/metallic.png", result);
+
+		TextureSpecification spec;
+		spec.Format = ImageFormat::RGB8;
+		spec.Width = result.Width;
+		spec.Height = result.Height;
+
+		s_RenderData.TestTextureArray = Texture2DArray::Create(spec, { albedoBuffer, normalBuffer, roughnessBuffer, metallicBuffer, aoBuffer, heightBuffer });
+		albedoBuffer.Release();
+		aoBuffer.Release();
+		heightBuffer.Release();
+		normalBuffer.Release();
+		roughnessBuffer.Release();
+		metallicBuffer.Release();
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)

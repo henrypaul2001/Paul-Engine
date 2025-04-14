@@ -41,11 +41,24 @@ namespace PaulEngine {
 		virtual bool operator==(const Texture& other) const = 0;
 	};
 
-	class Texture2D : public Texture {
+	class Texture2D : public Texture
+	{
 	public:
 		static Ref<Texture2D> Create(const TextureSpecification& specification, Buffer data = Buffer());
 
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		virtual AssetType GetType() const { return GetStaticType(); }
+	};
+
+	class Texture2DArray : public Texture
+	{
+	public:
+		static Ref<Texture2DArray> Create(const TextureSpecification& specification, std::vector<Buffer> layers);
+		
+		virtual AssetType GetType() const { return AssetType::Texture2DArray; }
+
+		virtual uint8_t GetNumLayers() const = 0;
+
+		virtual void SetData(Buffer data, uint8_t layer) = 0;
 	};
 }
