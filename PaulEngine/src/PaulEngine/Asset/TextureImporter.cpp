@@ -11,18 +11,8 @@
 
 namespace PaulEngine
 {
-	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
+	Buffer TextureImporter::ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical)
 	{
-		PE_PROFILE_FUNCTION();
-		Ref<Texture2D> texture = LoadTexture2D(Project::GetAssetDirectory() / metadata.FilePath);
-		texture->Handle = handle;
-		return texture;
-	}
-
-	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& filepath)
-	{
-		PE_PROFILE_FUNCTION();
-
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(true);
 
@@ -36,16 +26,38 @@ namespace PaulEngine
 		if (imageData == nullptr)
 		{
 			PE_CORE_ERROR("Failed to load image at path: '{0}'", filepath.string());
-			return nullptr;
+			out_result.Width = 0;
+			out_result.Height = 0;
+			out_result.Channels = 0;
+			return Buffer();
 		}
 
-		Buffer data = Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
+		out_result.Width = width;
+		out_result.Height = height;
+		out_result.Channels = channels;
+		return Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
+	}
+
+	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<Texture2D> texture = LoadTexture2D(Project::GetAssetDirectory() / metadata.FilePath);
+		texture->Handle = handle;
+		return texture;
+	}
+
+	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& filepath)
+	{
+		PE_PROFILE_FUNCTION();
+
+		ImageFileReadResult result;
+		Buffer data = ReadImageFile(filepath, result);
 
 		TextureSpecification spec;
-		spec.Width = width;
-		spec.Height = height;
+		spec.Width = result.Width;
+		spec.Height = result.Height;
 
-		switch (channels)
+		switch (result.Channels)
 		{
 		case 4:
 			spec.Format = ImageFormat::RGBA8;
