@@ -52,7 +52,7 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [4.75, 4.75, 4.75]
     MeshRendererComponent:
-      MaterialHandle: 0
+      MaterialHandle: 5492584121324616097
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true

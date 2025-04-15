@@ -202,7 +202,7 @@ namespace PaulEngine
 			AssetHandle textureArrayHandle = valueNode["TextureArrayHandle"].as<AssetHandle>();
 
 			return CreateRef<Sampler2DArrayShaderParameterTypeStorage>(textureArrayHandle, binding);
-	}
+		}
 	}
 
 	static std::string ShaderParameterTypeToString(ShaderParameterType type) {

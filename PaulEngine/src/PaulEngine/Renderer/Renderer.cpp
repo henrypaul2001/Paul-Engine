@@ -191,7 +191,6 @@ namespace PaulEngine {
 		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 
 			pipeline->Bind();
-			s_RenderData.TestTextureArray->Bind(1);
 			const RenderPass& renderPass = pipeline->GetRenderPass();
 			for (const DrawSubmission& d : renderPass.DrawList) {
 				s_RenderData.MeshDataBuffer.Transform = d.Transform;
@@ -271,6 +270,8 @@ namespace PaulEngine {
 		s_RenderData.TestMaterialShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl", true);
 		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", true);
 
+		AssetHandle shaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/TextureArrayTest.glsl", true);
+
 		// Test texture array file read
 		//TextureImporter::ImageFileReadResult result;
 		//Buffer albedoBuffer = TextureImporter::ReadImageFile("assets/textures/albedo.png", result);
@@ -295,7 +296,7 @@ namespace PaulEngine {
 		//roughnessBuffer.Release();
 		//metallicBuffer.Release();
 
-		s_RenderData.TestTextureArray = TextureImporter::ReadBTAFile("assets/test/textureArray.bta");
+		//s_RenderData.TestTextureArray = TextureImporter::ReadBTAFile("assets/test/textureArray.bta");
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)

@@ -5,6 +5,8 @@
 #include <PaulEngine/Renderer/EditorCamera.h>
 #include "Window/CreateAtlasWindow.h"
 
+#include "PaulEngine/Renderer/Material.h"
+
 namespace PaulEngine {
 	class EditorLayer : public Layer
 	{
@@ -46,6 +48,8 @@ namespace PaulEngine {
 		void DrawProjectSelectUI();
 
 		bool CanPickEntities();
+
+		void DrawMaterialEdit(Ref<Material> material);
 
 		std::filesystem::path m_CurrentFilepath;
 

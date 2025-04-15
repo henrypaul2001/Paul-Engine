@@ -42,11 +42,10 @@ layout(std140, binding = 2) uniform MaterialValues
 } u_MaterialValues;
 
 layout(binding = 0) uniform sampler2D TestTexture;
-layout(binding = 1) uniform sampler2DArray TestArray;
 
 void main()
 {
-	colour = texture(TestArray, vec3(v_TexCoords, 0.0));
+	colour = texture(TestTexture, v_TexCoords);
 	colour *= u_MaterialValues.Colour;
 	colour.xyz *= 1.0 - u_MaterialValues.Metalness + (0.2 * u_MaterialValues.Roughness);
 
