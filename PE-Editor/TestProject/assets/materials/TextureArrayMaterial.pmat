@@ -1,0 +1,25 @@
+MaterialAsset: TextureArrayMaterial
+ShaderHandle: 6036446631686507032
+ShaderParams:
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 2
+      Layout:
+        - Type: Float4
+          Name: Colour
+          Value: [1, 1, 1, 1]
+        - Type: Float
+          Name: Roughness
+          Value: 0
+        - Type: Float
+          Name: Metalness
+          Value: 0
+        - Type: Int
+          Name: TexIndex
+          Value: 0
+  - Name: TextureArray
+    Type: Sampler2DArray
+    Value:
+      Binding: 0
+      TextureArrayHandle: 1891188071894036402

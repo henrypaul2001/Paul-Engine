@@ -7,14 +7,14 @@ AssetRegistry:
     Filepath: textures\awesomeface.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 595089826126213518
     Filepath: ..\..\assets\materials/Line2DMaterial.pmat
     Persistent: true
@@ -23,14 +23,14 @@ AssetRegistry:
     Filepath: scenes\3DCube.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 2510263345310005911
-    Filepath: scenes\Example.paul
-    Persistent: false
-    Type: AssetType::Scene
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 2510263345310005911
+    Filepath: scenes\Example.paul
+    Persistent: false
+    Type: AssetType::Scene
   - Handle: 11922114141701769481
     Filepath: scenes\Physics2D.paul
     Persistent: false
@@ -51,14 +51,14 @@ AssetRegistry:
     Filepath: textures\tilemap_packed.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 1891188071894036402
-    Filepath: textures\array_files\spaceBlanket.bta
-    Persistent: false
-    Type: AssetType::Texture2DArray
   - Handle: 7412640952308102654
     Filepath: atlas\TinyTown.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 1891188071894036402
+    Filepath: textures\array_files\spaceBlanket.bta
+    Persistent: false
+    Type: AssetType::Texture2DArray
   - Handle: 13960601534352678645
     Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
     Persistent: true
@@ -95,7 +95,15 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/Circle2DMaterial.pmat
     Persistent: true
     Type: AssetType::Material
+  - Handle: 6036446631686507032
+    Filepath: ..\..\assets\shaders/TextureArrayTest.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 8694202715835494202
     Filepath: ..\..\assets\materials/Text2DMaterial.pmat
     Persistent: true
+    Type: AssetType::Material
+  - Handle: 5492584121324616097
+    Filepath: materials/TextureArrayMaterial.pmat
+    Persistent: false
     Type: AssetType::Material
