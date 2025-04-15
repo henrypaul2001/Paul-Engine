@@ -24,6 +24,7 @@ namespace PaulEngine
 		};
 		static Buffer ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical = true);
 
+		static Ref<Texture2DArray> ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata);
 		static Ref<Texture2DArray> ReadBTAFile(const std::filesystem::path& filepath);
 		static bool SaveBTAFile(const std::filesystem::path& filepath, std::vector<Buffer> layerBuffers, const TextureSpecification spec);
 	};

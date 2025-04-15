@@ -16,7 +16,8 @@ namespace PaulEngine
 		{ ".ttf", AssetType::Font },
 		{ ".patlas", AssetType::TextureAtlas2D },
 		{ ".glsl", AssetType::Shader },
-		{ ".pmat", AssetType::Material }
+		{ ".pmat", AssetType::Material },
+		{ ".bta", AssetType::Texture2DArray }
 	};
 
 	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {

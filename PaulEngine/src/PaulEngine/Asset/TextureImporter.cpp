@@ -40,6 +40,14 @@ namespace PaulEngine
 		return Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
 	}
 
+	Ref<Texture2DArray> TextureImporter::ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata)
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<Texture2DArray> textureArray = ReadBTAFile(Project::GetAssetDirectory() / metadata.FilePath);
+		textureArray->Handle = handle;
+		return textureArray;
+	}
+
 	Ref<Texture2DArray> TextureImporter::ReadBTAFile(const std::filesystem::path& filepath)
 	{
 		PE_PROFILE_FUNCTION();

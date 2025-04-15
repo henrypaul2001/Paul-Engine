@@ -19,7 +19,8 @@ namespace PaulEngine
 		{ AssetType::Font, FontImporter::ImportFont },
 		{ AssetType::TextureAtlas2D, TextureImporter::ImportTextureAtlas2D },
 		{ AssetType::Shader, ShaderImporter::ImportShader },
-		{ AssetType::Material, MaterialImporter::ImportMaterial }
+		{ AssetType::Material, MaterialImporter::ImportMaterial },
+		{ AssetType::Texture2DArray, TextureImporter::ImportTexture2DArray }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)
