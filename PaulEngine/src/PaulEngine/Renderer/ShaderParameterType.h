@@ -52,4 +52,22 @@ namespace PaulEngine
 		AssetHandle m_TextureHandle;
 		uint32_t m_Binding;
 	};
+
+	class Sampler2DArrayShaderParameterTypeStorage : public ShaderParamaterTypeStorageBase
+	{
+	public:
+		Sampler2DArrayShaderParameterTypeStorage(AssetHandle textureArrayHandle, uint32_t binding) : m_TextureArrayHandle(textureArrayHandle), m_Binding(binding) {}
+		~Sampler2DArrayShaderParameterTypeStorage() {}
+
+		virtual ShaderParameterType GetType() override { return ShaderParameterType::Sampler2DArray; }
+		virtual void Bind() override;
+
+		AssetHandle GetTextureArrayHandle() const { return m_TextureArrayHandle; }
+		uint32_t GetBinding() const { return m_Binding; }
+
+	private:
+		friend class EditorLayer;
+		AssetHandle m_TextureArrayHandle;
+		uint32_t m_Binding;
+	};
 }

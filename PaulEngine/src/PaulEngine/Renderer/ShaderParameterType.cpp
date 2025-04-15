@@ -20,4 +20,17 @@ namespace PaulEngine
 			Renderer2D::GetWhiteTexture()->Bind(m_Binding);
 		}
 	}
+
+	void Sampler2DArrayShaderParameterTypeStorage::Bind()
+	{
+		Ref<Texture2DArray> textureArray = AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle);
+		if (textureArray)
+		{
+			textureArray->Bind(m_Binding);
+		}
+		else
+		{
+			// TODO: Bind empty texture array
+		}
+	}
 }

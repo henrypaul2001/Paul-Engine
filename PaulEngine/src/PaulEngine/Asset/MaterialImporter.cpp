@@ -186,6 +186,23 @@ namespace PaulEngine
 
 			return CreateRef<Sampler2DShaderParameterTypeStorage>(textureHandle, binding);
 		}
+
+		static void WriteSampler2DArrayObject(YAML::Emitter& out, Sampler2DArrayShaderParameterTypeStorage* sampler2DArrayStorageParameter)
+		{
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "Binding" << YAML::Value << sampler2DArrayStorageParameter->GetBinding();
+			out << YAML::Key << "TextureArrayHandle" << YAML::Value << sampler2DArrayStorageParameter->GetTextureArrayHandle();
+
+			out << YAML::EndMap;
+		}
+		static Ref<Sampler2DArrayShaderParameterTypeStorage> ReadSampler2DArrayObject(YAML::Node& valueNode)
+		{
+			uint32_t binding = valueNode["Binding"].as<uint64_t>();
+			AssetHandle textureArrayHandle = valueNode["TextureArrayHandle"].as<AssetHandle>();
+
+			return CreateRef<Sampler2DArrayShaderParameterTypeStorage>(textureArrayHandle, binding);
+	}
 	}
 
 	static std::string ShaderParameterTypeToString(ShaderParameterType type) {
@@ -253,7 +270,7 @@ namespace PaulEngine
 					material.AddParameterType(paramName, MaterialImporterUtils::ReadSampler2DObject(value));
 					break;
 				case ShaderParameterType::Sampler2DArray:
-					PE_CORE_ASSERT(false, "Sampler2DArray not yet implemented");
+					material.AddParameterType(paramName, MaterialImporterUtils::ReadSampler2DArrayObject(value));
 					break;
 				}
 			}
@@ -303,7 +320,7 @@ namespace PaulEngine
 				}
 				case ShaderParameterType::Sampler2DArray:
 				{
-					out << YAML::Value << "Not yet implemented";
+					MaterialImporterUtils::WriteSampler2DArrayObject(out, dynamic_cast<Sampler2DArrayShaderParameterTypeStorage*>(parameter.get()));
 					break;
 				}
 			}
