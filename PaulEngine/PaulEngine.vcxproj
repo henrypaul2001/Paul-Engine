@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Asset\MaterialImporter.h" />
@@ -651,6 +652,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\BinarySerializer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp" />

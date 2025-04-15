@@ -23,5 +23,7 @@ namespace PaulEngine
 			int Channels;
 		};
 		static Buffer ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical = true);
+
+		static bool SaveBTAFile(const std::filesystem::path& filepath, std::vector<Buffer> layerBuffers, const TextureSpecification spec);
 	};
 }

@@ -1547,6 +1547,7 @@
     <ClInclude Include="src\PaulEngine\Utils\YamlConversions.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
+    <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1715,5 +1716,6 @@
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
+    <ClCompile Include="src\PaulEngine\Asset\BinarySerializer.cpp" />
   </ItemGroup>
 </Project>

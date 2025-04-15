@@ -7,6 +7,8 @@
 #include "AssetManager.h"
 
 #include "PaulEngine/Utils/YamlConversions.h"
+#include "PaulEngine/Asset/BinarySerializer.h"
+
 #include <yaml-cpp/yaml.h>
 
 namespace PaulEngine
@@ -38,6 +40,69 @@ namespace PaulEngine
 		return Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
 	}
 
+
+	bool TextureImporter::SaveBTAFile(const std::filesystem::path& filepath, std::vector<Buffer> layerBuffers, const TextureSpecification spec)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(filepath.extension() == ".bta", "Invalid file extension");
+
+		int numLayers = layerBuffers.size();
+		PE_CORE_ASSERT(numLayers > 1, "Must include more than one buffer");
+		
+		uint64_t bufferSize = layerBuffers[0].Size();
+		for (int i = 1; i < layerBuffers.size(); i++)
+		{
+			PE_CORE_ASSERT(layerBuffers[i].Size() == bufferSize, "All buffers must be the same size for binary texture array file");
+		}
+
+		int width = spec.Width;
+		int height = spec.Height;
+		int channels = 0;
+
+		switch (spec.Format) {
+		case ImageFormat::R8:
+			channels = 1;
+			break;
+		case ImageFormat::RG8:
+			channels = 2;
+			break;
+		case ImageFormat::RGB8:
+			channels = 3;
+			break;
+		case ImageFormat::RGBA8:
+			channels = 4;
+			break;
+		case ImageFormat::RGBA32F:
+			channels = 4;
+			break;
+		}
+
+		PE_CORE_ASSERT(bufferSize == width * height * channels, "Invalid texture spec for buffer size");
+
+		std::error_code error;
+		std::filesystem::create_directories(filepath.parent_path(), error);
+
+		std::ofstream fout;
+		fout.open(filepath, std::ios::out | std::ios::binary);
+
+		// Write format
+		fout.write((char*)&spec.Format, sizeof(ImageFormat));
+		fout.write((char*)&spec.Width, sizeof(uint32_t));
+		fout.write((char*)&spec.Height, sizeof(uint32_t));
+		fout.write((char*)&spec.GenerateMips, sizeof(bool));
+
+		// Write layer info
+		fout.write((char*)&numLayers, sizeof(int));
+		fout.write((char*)&bufferSize, sizeof(uint64_t));
+
+		// Write buffers
+		for (Buffer& b : layerBuffers) {
+			if (!BinarySerializer::WriteBuffer(fout, b)) { fout.close(); return false; }
+		}
+
+		fout.close();
+		return true;
+	}
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		PE_PROFILE_FUNCTION();
