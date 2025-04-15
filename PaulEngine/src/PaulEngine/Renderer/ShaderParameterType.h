@@ -28,7 +28,7 @@ namespace PaulEngine
 		~UBOShaderParameterTypeStorage() {}
 
 		virtual ShaderParameterType GetType() override { return ShaderParameterType::UBO; }
-		virtual void Bind() override { m_UBO->UploadStorage(); }
+		virtual void Bind() override { m_UBO->Bind(); m_UBO->UploadStorage(); }
 
 		Ref<UniformBufferStorage> UBO() { return m_UBO; }
 	private:

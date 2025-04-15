@@ -16,6 +16,7 @@ namespace PaulEngine
 		virtual void UploadStorage() override;
 
 		virtual void Bind(uint32_t binding) override;
+		virtual void Bind() override { Bind(m_Binding); }
 
 		virtual std::vector<LayoutElement>& GetLayoutStorage() override { return m_LayoutStorage; }
 		virtual const std::vector<LayoutElement>& GetLayoutStorage() const override { return m_LayoutStorage; }
