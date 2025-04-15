@@ -40,6 +40,47 @@ namespace PaulEngine
 		return Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
 	}
 
+	Ref<Texture2DArray> TextureImporter::ReadBTAFile(const std::filesystem::path& filepath)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(filepath.extension() == ".bta", "Invalid file extension");
+
+		std::ifstream fin;
+		fin.open(filepath, std::ios::in | std::ios::binary);
+
+		PE_CORE_ASSERT(fin.is_open(), "Unable to open file");
+
+		// Read format
+		TextureSpecification spec;
+		fin.read((char*)&spec.Format, sizeof(ImageFormat));
+		fin.read((char*)&spec.Width, sizeof(uint32_t));
+		fin.read((char*)&spec.Height, sizeof(uint32_t));
+		fin.read((char*)&spec.GenerateMips, sizeof(bool));
+
+		int numLayers = 0;
+		uint64_t bufferSize = 0;
+
+		// Read layer info
+		fin.read((char*)&numLayers, sizeof(int));
+		fin.read((char*)&bufferSize, sizeof(uint64_t));
+
+		std::vector<Buffer> layerBuffers;
+
+		// Read buffers
+		for (int i = 0; i < numLayers; i++) {
+			layerBuffers.push_back(BinarySerializer::ReadBuffer(fin, bufferSize));
+		}
+
+		fin.close();
+
+		Ref<Texture2DArray> textureArray = Texture2DArray::Create(spec, layerBuffers);
+
+		for (Buffer b : layerBuffers) {
+			b.Release();
+		}
+
+		return textureArray;
+	}
 
 	bool TextureImporter::SaveBTAFile(const std::filesystem::path& filepath, std::vector<Buffer> layerBuffers, const TextureSpecification spec)
 	{
@@ -103,6 +144,7 @@ namespace PaulEngine
 		fout.close();
 		return true;
 	}
+
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		PE_PROFILE_FUNCTION();
