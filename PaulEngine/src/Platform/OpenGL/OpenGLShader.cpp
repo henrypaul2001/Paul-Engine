@@ -1,5 +1,6 @@
 #include "pepch.h"
 #include "OpenGLShader.h"
+#include "PaulEngine/Renderer/ShaderParameterType.h"
 
 #include <glad/glad.h>
 #include <fstream>
@@ -78,6 +79,57 @@ namespace PaulEngine {
 			}
 			PE_CORE_ASSERT(false, "Unknown shader stage");
 			return "";
+		}
+
+		static ShaderDataType SpirTypeToShaderDataType(spirv_cross::SPIRType spirType)
+		{
+			using type = spirv_cross::SPIRType::BaseType;
+			uint32_t vecSize = spirType.vecsize;
+			uint32_t columns = spirType.columns;
+
+			ShaderDataType baseType = ShaderDataType::None;
+
+			switch (spirType.basetype)
+			{
+				case type::Unknown: baseType = ShaderDataType::None; break;
+				case type::Void: baseType = ShaderDataType::None; break;
+				case type::Float: 
+					baseType = ShaderDataType::Float;
+					break;
+				case type::Int: 
+					baseType = ShaderDataType::Int;
+					break;
+				case type::Boolean: baseType = ShaderDataType::Bool; break;
+				default: PE_CORE_WARN("Unsupported data type in shader: {0}", (int)spirType.basetype); baseType = ShaderDataType::None; break;
+			}
+
+			if (columns == 1 && vecSize > 1) {
+				// Vector
+				switch (baseType)
+				{
+				case ShaderDataType::Float:
+					if (vecSize == 2) { return ShaderDataType::Float2; }
+					if (vecSize == 3) { return ShaderDataType::Float3; }
+					if (vecSize == 4) { return ShaderDataType::Float4; }
+					break;
+				case ShaderDataType::Int:
+					if (vecSize == 2) { return ShaderDataType::Int2; }
+					if (vecSize == 3) { return ShaderDataType::Int3; }
+					if (vecSize == 4) { return ShaderDataType::Int4; }
+					PE_CORE_WARN("Unsupported vector type in shader: baseType = {0}, vecSize = {1}", ShaderDataTypeToString(baseType).c_str(), vecSize);
+					break;
+				}
+			}
+			else if (columns > 1 && baseType == ShaderDataType::Float)
+			{
+				// Matrix
+				if (columns == 3 && vecSize == 3) { return ShaderDataType::Mat3; }
+				if (columns == 4 && vecSize == 4) { return ShaderDataType::Mat4; }
+				PE_CORE_WARN("Unsupported matrix type in shader: baseType = {0}, columns = {1}, rows = {2}", ShaderDataTypeToString(baseType).c_str(), columns, vecSize);
+				return ShaderDataType::None;
+			}
+
+			return baseType;
 		}
 	}
 
@@ -177,6 +229,8 @@ namespace PaulEngine {
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 
+		options.SetGenerateDebugInfo();
+
 		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
 		const bool optimize = true;
 		if (optimize) { options.SetOptimizationLevel(shaderc_optimization_level_performance); }
@@ -232,6 +286,8 @@ namespace PaulEngine {
 
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
+
+		options.SetGenerateDebugInfo();
 
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 		const bool optimize = true;
@@ -335,10 +391,16 @@ namespace PaulEngine {
 			uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
 			int memberCount = bufferType.member_types.size();
 
-			PE_CORE_TRACE("  {0}", resource.name);
+			PE_CORE_TRACE("  {0}", resource.name.c_str());
 			PE_CORE_TRACE("    Size = {0}", bufferSize);
 			PE_CORE_TRACE("    Binding = {0}", binding);
 			PE_CORE_TRACE("    Members = {0}", memberCount);
+
+			for (int i = 0; i < memberCount; i++) {
+				const std::string& memberName = compiler.get_member_name(resource.base_type_id, i);
+				spirv_cross::SPIRType memberType = compiler.get_type(compiler.get_type(resource.base_type_id).member_types[i]);
+				PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), ShaderDataTypeToString(OpenGLShaderUtils::SpirTypeToShaderDataType(memberType)).c_str());
+			}
 		}
 	}
 
