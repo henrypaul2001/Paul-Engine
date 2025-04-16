@@ -397,6 +397,7 @@ namespace PaulEngine {
 			PE_CORE_TRACE("    Members = {0}", memberCount);
 
 			Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
+			uboSpec->Size = bufferSize;
 			uboSpec->Binding = binding;
 			uboSpec->Name = resource.name;
 

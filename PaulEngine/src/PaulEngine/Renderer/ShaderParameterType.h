@@ -73,13 +73,14 @@ namespace PaulEngine
 
 	struct ShaderParameterTypeSpecifcationBase
 	{
-		uint32_t Binding = 0;
 		std::string Name = "";
 		virtual ShaderParameterType Type() const = 0;
 	};
 
 	struct UBOShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
 	{
+		uint32_t Size = 0;
+		uint32_t Binding = 0;
 		struct LayoutElement {
 			ShaderDataType Type;
 			std::string Name;
@@ -91,11 +92,13 @@ namespace PaulEngine
 
 	struct Sampler2DShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
 	{
+		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2D; }
 	};
 	
 	struct Sampler2DArrayShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
 	{
+		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2DArray; }
 	};
 }

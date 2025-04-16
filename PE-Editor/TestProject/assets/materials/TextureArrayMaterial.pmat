@@ -18,7 +18,7 @@ ShaderParams:
         - Type: Int
           Name: TexIndex
           Value: 0
-  - Name: TextureArray
+  - Name: TestArray
     Type: Sampler2DArray
     Value:
       Binding: 0

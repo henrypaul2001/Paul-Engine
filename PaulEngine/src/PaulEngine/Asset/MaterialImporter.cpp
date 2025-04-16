@@ -264,13 +264,13 @@ namespace PaulEngine
 				case ShaderParameterType::None:
 					break;
 				case ShaderParameterType::UBO:
-					material.AddParameterType(paramName, MaterialImporterUtils::ReadUniformBufferStorageObject(value));
+					material.SetParameter(paramName, MaterialImporterUtils::ReadUniformBufferStorageObject(value));
 					break;
 				case ShaderParameterType::Sampler2D:
-					material.AddParameterType(paramName, MaterialImporterUtils::ReadSampler2DObject(value));
+					material.SetParameter(paramName, MaterialImporterUtils::ReadSampler2DObject(value));
 					break;
 				case ShaderParameterType::Sampler2DArray:
-					material.AddParameterType(paramName, MaterialImporterUtils::ReadSampler2DArrayObject(value));
+					material.SetParameter(paramName, MaterialImporterUtils::ReadSampler2DArrayObject(value));
 					break;
 				}
 			}
