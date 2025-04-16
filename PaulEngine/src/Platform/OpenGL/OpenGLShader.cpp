@@ -402,6 +402,33 @@ namespace PaulEngine {
 				PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), ShaderDataTypeToString(OpenGLShaderUtils::SpirTypeToShaderDataType(memberType)).c_str());
 			}
 		}
+
+		if (resources.sampled_images.size() > 0) {
+			PE_CORE_TRACE("Image samplers:");
+		}
+		for (const auto& resource : resources.sampled_images) {
+			const auto& samplerType = compiler.get_type(resource.base_type_id);
+			uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+
+			PE_CORE_TRACE("  {0}", resource.name.c_str());
+			PE_CORE_TRACE("    Binding = {0}", binding);
+
+			spv::Dim dimensions = samplerType.image.dim;
+			bool array = samplerType.image.arrayed;
+
+			if (dimensions != spv::Dim::Dim2D) {
+				PE_CORE_WARN("Unsupported sampler dimensions");
+			}
+
+			if (array) { PE_CORE_TRACE("    Type = Sampler2DArray"); }
+			else { PE_CORE_TRACE("    Type = Sampler2D"); }
+
+			const spirv_cross::SPIRType& spirType = compiler.get_type(resource.type_id);
+			if (spirType.array.size() > 0) {
+				PE_CORE_TRACE("    Array dimensions = {0}", spirType.array.size());
+				PE_CORE_TRACE("    Array size = {0}", spirType.array[0]);
+			}
+		}
 	}
 
 	//void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
