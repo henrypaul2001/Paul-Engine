@@ -380,7 +380,7 @@ namespace PaulEngine {
 
 		PE_CORE_TRACE("OpenGLShader::Reflect - {0} {1}", OpenGLShaderUtils::GLShaderStageToString(stage), m_Filepath);
 		PE_CORE_TRACE("    {0} uniform buffers", resources.uniform_buffers.size());
-		PE_CORE_TRACE("    {0} resources", resources.sampled_images.size());
+		PE_CORE_TRACE("    {0} samplers", resources.sampled_images.size());
 
 		if (resources.uniform_buffers.size() > 0) {
 			PE_CORE_TRACE("Uniform buffers:");
@@ -396,11 +396,19 @@ namespace PaulEngine {
 			PE_CORE_TRACE("    Binding = {0}", binding);
 			PE_CORE_TRACE("    Members = {0}", memberCount);
 
+			Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
+			uboSpec->Binding = binding;
+			uboSpec->Name = resource.name;
+
 			for (int i = 0; i < memberCount; i++) {
 				const std::string& memberName = compiler.get_member_name(resource.base_type_id, i);
 				spirv_cross::SPIRType memberType = compiler.get_type(compiler.get_type(resource.base_type_id).member_types[i]);
-				PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), ShaderDataTypeToString(OpenGLShaderUtils::SpirTypeToShaderDataType(memberType)).c_str());
+				ShaderDataType dataType = OpenGLShaderUtils::SpirTypeToShaderDataType(memberType);
+				PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), ShaderDataTypeToString(dataType).c_str());
+
+				uboSpec->BufferLayout.push_back({ dataType, memberName });
 			}
+			m_ReflectionData.push_back(uboSpec);
 		}
 
 		if (resources.sampled_images.size() > 0) {
@@ -420,8 +428,24 @@ namespace PaulEngine {
 				PE_CORE_WARN("Unsupported sampler dimensions");
 			}
 
-			if (array) { PE_CORE_TRACE("    Type = Sampler2DArray"); }
-			else { PE_CORE_TRACE("    Type = Sampler2D"); }
+			if (array) {
+				Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
+				arraySpec->Binding = binding;
+				arraySpec->Name = resource.name;
+
+				m_ReflectionData.push_back(arraySpec);
+
+				PE_CORE_TRACE("    Type = Sampler2DArray");
+			}
+			else {
+				Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
+				imageSpec->Binding = binding;
+				imageSpec->Name = resource.name;
+
+				m_ReflectionData.push_back(imageSpec);
+
+				PE_CORE_TRACE("    Type = Sampler2D");
+			}
 
 			const spirv_cross::SPIRType& spirType = compiler.get_type(resource.type_id);
 			if (spirType.array.size() > 0) {

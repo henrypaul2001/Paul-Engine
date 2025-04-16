@@ -70,4 +70,32 @@ namespace PaulEngine
 		AssetHandle m_TextureArrayHandle;
 		uint32_t m_Binding;
 	};
+
+	struct ShaderParameterTypeSpecifcationBase
+	{
+		uint32_t Binding = 0;
+		std::string Name = "";
+		virtual ShaderParameterType Type() const = 0;
+	};
+
+	struct UBOShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	{
+		struct LayoutElement {
+			ShaderDataType Type;
+			std::string Name;
+		};
+		std::vector<LayoutElement> BufferLayout;
+
+		 virtual ShaderParameterType Type() const override { return ShaderParameterType::UBO; }
+	};
+
+	struct Sampler2DShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	{
+		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2D; }
+	};
+	
+	struct Sampler2DArrayShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	{
+		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2DArray; }
+	};
 }
