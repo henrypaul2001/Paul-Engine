@@ -1,9 +1,14 @@
 #include "pepch.h"
 #include "CreateMaterialWindow.h"
 
-#include "PaulEngine/Asset/AssetManager.h"
+#include "PaulEngine/Renderer/Renderer.h"
+#include "PaulEngine/Renderer/RenderCommand.h"
 
+#include "PaulEngine/Asset/AssetManager.h"
+#include "PaulEngine/Asset/MaterialImporter.h"
 #include "PaulEngine/Renderer/Material.h"
+
+#include "PaulEngine/Utils/PlatformUtils.h"
 
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
@@ -12,6 +17,7 @@
 
 namespace PaulEngine
 {
+	static glm::mat4 s_CubeTransform = glm::mat4(1.0f);
 	CreateMaterialWindow::CreateMaterialWindow(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle), m_ViewportSize(128.0f, 128.0f)
 	{
 		Init();
@@ -26,8 +32,11 @@ namespace PaulEngine
 		m_Framebuffer = Framebuffer::Create(spec);
 
 		m_Camera = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
-	}
 
+		s_CubeTransform = glm::mat4(1.0f);
+		s_CubeTransform = glm::translate(s_CubeTransform, glm::vec3(0.0f, 0.0f, -1.5f));
+		s_CubeTransform = glm::rotate(s_CubeTransform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
 
 	void CreateMaterialWindow::SetContext(AssetHandle shaderHandle)
 	{
@@ -52,11 +61,6 @@ namespace PaulEngine
 				}
 				else { label = "Invalid"; }
 			}
-
-			//ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
-			//buttonLabelSize.x += 20.0f;
-			//float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
-			//buttonLabelWidth = (ImGui::GetContentRegionAvail().x * 0.9f) - ImGui::CalcTextSize("Material shader").x;
 
 			// Engine shader drop down
 			Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
@@ -112,31 +116,88 @@ namespace PaulEngine
 			ImGui::SameLine();
 			ImGui::Text("Material shader");
 
-			// Material edit
-			if (isShaderValid) {
-				const Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
-				for (auto& it : m_Material->m_ShaderParameters) {
-					switch (it.second->GetType()) {
-						case ShaderParameterType::UBO:
-						{
-							UBOShaderParameterTypeStorage* ubo = dynamic_cast<UBOShaderParameterTypeStorage*>(it.second.get());
-							DrawUBOEdit(it.first, *ubo);
-							break;
-						}
-						case ShaderParameterType::Sampler2D:
-						{
-							Sampler2DShaderParameterTypeStorage* sampler2D = dynamic_cast<Sampler2DShaderParameterTypeStorage*>(it.second.get());
-							DrawSampler2DEdit(it.first, *sampler2D);
-							break;
-						}
-						case ShaderParameterType::Sampler2DArray:
-						{
-							Sampler2DArrayShaderParameterTypeStorage* sampler2Darray = dynamic_cast<Sampler2DArrayShaderParameterTypeStorage*>(it.second.get());
-							DrawSampler2DArrayEdit(it.first, *sampler2Darray);
-							break;
+			// Left
+			{
+				ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
+				// Material edit
+				if (isShaderValid) {
+					const Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
+					for (auto& it : m_Material->m_ShaderParameters) {
+						switch (it.second->GetType()) {
+							case ShaderParameterType::UBO:
+							{
+								UBOShaderParameterTypeStorage* ubo = dynamic_cast<UBOShaderParameterTypeStorage*>(it.second.get());
+								DrawUBOEdit(it.first, *ubo);
+								break;
+							}
+							case ShaderParameterType::Sampler2D:
+							{
+								Sampler2DShaderParameterTypeStorage* sampler2D = dynamic_cast<Sampler2DShaderParameterTypeStorage*>(it.second.get());
+								DrawSampler2DEdit(it.first, *sampler2D);
+								break;
+							}
+							case ShaderParameterType::Sampler2DArray:
+							{
+								Sampler2DArrayShaderParameterTypeStorage* sampler2Darray = dynamic_cast<Sampler2DArrayShaderParameterTypeStorage*>(it.second.get());
+								DrawSampler2DArrayEdit(it.first, *sampler2Darray);
+								break;
+							}
 						}
 					}
 				}
+				ImGui::EndChild();
+			}
+			ImGui::SameLine();
+			// Right
+			{
+				ImGui::BeginGroup();
+				ImGui::BeginChild("preview", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+				ImGui::SeparatorText("Material Preview");
+
+				if (isShaderValid) {
+					ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+					m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
+
+					m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+
+					Renderer::ResetStats();
+					m_Framebuffer->Bind();
+					RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
+					RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+					RenderCommand::Clear();
+
+					Renderer::BeginScene(m_Camera, glm::mat4(1.0f));
+					Renderer::DrawDefaultCubeImmediate(m_Material, s_CubeTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK);
+					Renderer::EndScene();
+					m_Framebuffer->Unbind();
+
+					uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+					ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+				}
+
+				ImGui::EndChild();
+
+				// Save or cancel
+				if (ImGui::Button("Cancel")) {
+					m_ShowWindow = false;
+					m_Material = nullptr;
+					m_ShaderHandle = 0;
+					m_DropDownShader = -1;
+				}
+				ImGui::SameLine();
+				if (isShaderValid && ImGui::Button("Save As...")) {
+					std::string path = FileDialogs::SaveFile("Paul Engine Material (*.pmat)\0*.pmat\0");
+					if (!path.empty()) {
+						std::filesystem::path absoluteProjectPath = std::filesystem::absolute(Project::GetProjectDirectory());
+						std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
+
+						MaterialImporter::SaveMaterial(m_Material, relativeSavePath);
+						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
+					}
+				}
+
+				ImGui::EndGroup();
 			}
 
 			ImGui::End();
