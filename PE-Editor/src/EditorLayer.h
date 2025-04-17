@@ -3,7 +3,9 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include <PaulEngine/Renderer/EditorCamera.h>
+
 #include "Window/CreateAtlasWindow.h"
+#include "Window/CreateMaterialWindow.h"
 
 #include "PaulEngine/Renderer/Material.h"
 
@@ -77,6 +79,7 @@ namespace PaulEngine {
 
 		// Windows
 		CreateAtlasWindow m_AtlasCreateWindow;
+		CreateMaterialWindow m_MaterialCreateWindow;
 
 		int m_GizmoType = -1;
 

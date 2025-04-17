@@ -49,6 +49,7 @@ namespace PaulEngine
 
 	private:
 		friend class EditorLayer;
+		friend class CreateMaterialWindow;
 		AssetHandle m_TextureHandle;
 		uint32_t m_Binding;
 	};
@@ -67,6 +68,7 @@ namespace PaulEngine
 
 	private:
 		friend class EditorLayer;
+		friend class CreateMaterialWindow;
 		AssetHandle m_TextureArrayHandle;
 		uint32_t m_Binding;
 	};

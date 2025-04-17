@@ -5,6 +5,7 @@
 
 namespace PaulEngine
 {
+	Material::Material() : m_ShaderHandle(0) {}
 	Material::Material(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle) {
 		PE_PROFILE_FUNCTION();
 		// Generate parameters from shader reflection data

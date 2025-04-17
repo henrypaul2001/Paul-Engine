@@ -32,6 +32,7 @@ namespace PaulEngine
 	class Material : public Asset
 	{
 	public:
+		Material();
 		Material(AssetHandle shaderHandle);
 
 		void Bind();
@@ -46,6 +47,7 @@ namespace PaulEngine
 	private:
 		friend class EditorLayer;
 		friend class MaterialImporter;
+		friend class CreateMaterialWindow;
 		AssetHandle m_ShaderHandle;
 		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
 	};

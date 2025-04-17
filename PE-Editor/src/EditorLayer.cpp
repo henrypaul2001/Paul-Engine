@@ -19,7 +19,7 @@
 #include "PaulEngine/Renderer/Material.h"
 
 namespace PaulEngine {
-	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0) {}
+	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
 
 	EditorLayer::~EditorLayer() {}
 
@@ -244,6 +244,10 @@ namespace PaulEngine {
 				}
 				if (ImGui::BeginMenu("Asset")) {
 					if (ImGui::BeginMenu("Create..")) {
+						if (ImGui::MenuItem("Material..")) {
+							m_MaterialCreateWindow.SetShowWindow(true);
+							m_MaterialCreateWindow.SetContext(0);
+						}
 						if (ImGui::MenuItem("Texture Atlas..")) {
 							m_AtlasCreateWindow.SetShowWindow(true);
 							m_AtlasCreateWindow.SetContext(0);
@@ -386,6 +390,7 @@ namespace PaulEngine {
 
 			m_SceneHierarchyPanel.OnImGuiRender();
 			m_ContentBrowserPanel->ImGuiRender();
+			m_MaterialCreateWindow.OnImGuiRender();
 			m_AtlasCreateWindow.OnImGuiRender();
 
 			DrawMaterialEdit(AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAsset("materials/TestMaterial.pmat", true)));
