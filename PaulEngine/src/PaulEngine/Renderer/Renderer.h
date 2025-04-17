@@ -5,6 +5,8 @@
 #include "EditorCamera.h"
 #include "RenderPipeline.h"
 
+#include "Material.h"
+
 namespace PaulEngine{
 	class Renderer {
 	public:
@@ -18,6 +20,10 @@ namespace PaulEngine{
 		static void SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 		static void SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
+
+		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
+		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
+		static void DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 	

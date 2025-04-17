@@ -227,7 +227,6 @@ namespace PaulEngine {
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
-
 		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate vertex array
 
 		// Check for duplicate pipeline state
@@ -247,6 +246,37 @@ namespace PaulEngine {
 		}
 
 		s_RenderData.Stats.MeshCount++;
+	}
+
+	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)
+	{
+		DrawMeshImmediate(s_RenderData.CubeVertexArray, material, transform, depthState, cullState, entityID);
+	}
+
+	void Renderer::DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)
+	{
+		DrawMeshImmediate(s_RenderData.QuadVertexArray, material, transform, depthState, cullState, entityID);
+	}
+
+	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)
+	{
+		PE_PROFILE_FUNCTION();
+
+		s_RenderData.CameraUniformBuffer->Bind(0);
+		s_RenderData.MeshDataUniformBuffer->Bind(1);
+
+		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, 0);
+		pipeline->Bind();
+		material->Bind();
+
+		s_RenderData.MeshDataBuffer.Transform = transform;
+		s_RenderData.MeshDataBuffer.EntityID = entityID;
+		s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+
+		RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+
+		s_RenderData.Stats.MeshCount++;
+		s_RenderData.Stats.DrawCalls++;
 	}
 
 	void Renderer::ResetStats()
