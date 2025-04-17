@@ -64,6 +64,8 @@ namespace PaulEngine
 
 		OpenGLFaceCulling(m_CullState);
 
-		AssetManager::GetAsset<Material>(m_MaterialHandle)->Bind();
+		if (AssetManager::IsAssetHandleValid(m_MaterialHandle)) {
+			AssetManager::GetAsset<Material>(m_MaterialHandle)->Bind();
+		}
 	}
 }
