@@ -28,7 +28,7 @@ namespace PaulEngine
 				case ShaderParameterType::UBO:
 				{
 					UBOShaderParameterTypeSpecification* uboParam = dynamic_cast<UBOShaderParameterTypeSpecification*>(parameter.get());
-					Ref<UBOShaderParameterTypeStorage> uboStorage = CreateRef<UBOShaderParameterTypeStorage>(uboParam->Size, 0);
+					Ref<UBOShaderParameterTypeStorage> uboStorage = CreateRef<UBOShaderParameterTypeStorage>(uboParam->Size, uboParam->Binding);
 					for (auto& dataType : uboParam->BufferLayout) {
 						const std::string& name = dataType.Name;
 						const ShaderDataType type = dataType.Type;
@@ -112,14 +112,14 @@ namespace PaulEngine
 				case ShaderParameterType::Sampler2D:
 				{
 					Sampler2DShaderParameterTypeSpecification* samplerParam = dynamic_cast<Sampler2DShaderParameterTypeSpecification*>(parameter.get());
-					Ref<Sampler2DShaderParameterTypeStorage> samplerStorage = CreateRef<Sampler2DShaderParameterTypeStorage>(0, 0);
+					Ref<Sampler2DShaderParameterTypeStorage> samplerStorage = CreateRef<Sampler2DShaderParameterTypeStorage>(0, samplerParam->Binding);
 					AddParameterType(parameter->Name, samplerStorage);
 					break;
 				}
 				case ShaderParameterType::Sampler2DArray:
 				{
 					Sampler2DArrayShaderParameterTypeSpecification* samplerArrayParam = dynamic_cast<Sampler2DArrayShaderParameterTypeSpecification*>(parameter.get());
-					Ref<Sampler2DArrayShaderParameterTypeStorage> samplerArrayStorage = CreateRef<Sampler2DArrayShaderParameterTypeStorage>(0, 0);
+					Ref<Sampler2DArrayShaderParameterTypeStorage> samplerArrayStorage = CreateRef<Sampler2DArrayShaderParameterTypeStorage>(0, samplerArrayParam->Binding);
 					AddParameterType(parameter->Name, samplerArrayStorage);
 					break;
 				}
