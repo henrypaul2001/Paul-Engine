@@ -22,6 +22,22 @@ namespace PaulEngine
 			int Width;
 			int Height;
 			int Channels;
+
+			bool operator ==(const ImageFileReadResult& other) {
+				return (
+					Width == other.Width &&
+					Height == other.Height &&
+					Channels == other.Channels
+				);
+			}
+
+			bool operator !=(const ImageFileReadResult& other) {
+				return (
+					Width != other.Width ||
+					Height != other.Height ||
+					Channels != other.Channels
+				);
+			}
 		};
 		static Buffer ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical = true);
 
