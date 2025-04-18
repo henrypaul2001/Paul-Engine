@@ -248,6 +248,9 @@ namespace PaulEngine {
 							m_MaterialCreateWindow.SetShowWindow(true);
 							m_MaterialCreateWindow.SetContext(0);
 						}
+						if (ImGui::MenuItem("Texture array..")) {
+							m_TextureArrayCreateWindow.SetShowWindow(true);
+						}
 						if (ImGui::MenuItem("Texture Atlas..")) {
 							m_AtlasCreateWindow.SetShowWindow(true);
 							m_AtlasCreateWindow.SetContext(0);
@@ -390,6 +393,7 @@ namespace PaulEngine {
 
 			m_SceneHierarchyPanel.OnImGuiRender();
 			m_ContentBrowserPanel->ImGuiRender();
+			m_TextureArrayCreateWindow.OnImGuiRender();
 			m_MaterialCreateWindow.OnImGuiRender();
 			m_AtlasCreateWindow.OnImGuiRender();
 

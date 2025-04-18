@@ -6,6 +6,7 @@
 
 #include "Window/CreateAtlasWindow.h"
 #include "Window/CreateMaterialWindow.h"
+#include "Window/CreateTextureArrayWindow.h"
 
 #include "PaulEngine/Renderer/Material.h"
 
@@ -80,6 +81,7 @@ namespace PaulEngine {
 		// Windows
 		CreateAtlasWindow m_AtlasCreateWindow;
 		CreateMaterialWindow m_MaterialCreateWindow;
+		CreateTextureArrayWindow m_TextureArrayCreateWindow;
 
 		int m_GizmoType = -1;
 

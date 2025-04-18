@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Window\CreateTextureArrayWindow.h" />
     <ClInclude Include="src\Window\CreateMaterialWindow.h" />
     <ClInclude Include="src\Window\CreateAtlasWindow.h" />
     <ClInclude Include="src\EditorLayer.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Window\CreateTextureArrayWindow.cpp" />
     <ClCompile Include="src\Window\CreateMaterialWindow.cpp" />
     <ClCompile Include="src\Window\CreateAtlasWindow.cpp" />
     <ClCompile Include="src\EditorApp.cpp" />

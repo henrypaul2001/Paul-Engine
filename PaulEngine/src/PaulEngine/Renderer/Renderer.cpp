@@ -301,32 +301,6 @@ namespace PaulEngine {
 		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", true);
 
 		AssetHandle shaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/TextureArrayTest.glsl", true);
-
-		// Test texture array file read
-		//TextureImporter::ImageFileReadResult result;
-		//Buffer albedoBuffer = TextureImporter::ReadImageFile("assets/textures/albedo.png", result);
-		//Buffer aoBuffer = TextureImporter::ReadImageFile("assets/textures/ao.png", result);
-		//Buffer heightBuffer = TextureImporter::ReadImageFile("assets/textures/height.png", result);
-		//Buffer normalBuffer = TextureImporter::ReadImageFile("assets/textures/normal.png", result);
-		//Buffer roughnessBuffer = TextureImporter::ReadImageFile("assets/textures/roughness.png", result);
-		//Buffer metallicBuffer = TextureImporter::ReadImageFile("assets/textures/metallic.png", result);
-		//
-		//TextureSpecification spec;
-		//spec.Format = ImageFormat::RGB8;
-		//spec.Width = result.Width;
-		//spec.Height = result.Height;
-		//
-		//TextureImporter::SaveBTAFile("assets/test/textureArray.bta", { albedoBuffer, normalBuffer, roughnessBuffer, metallicBuffer, aoBuffer, heightBuffer }, spec);
-		//
-		//s_RenderData.TestTextureArray = Texture2DArray::Create(spec, { albedoBuffer, normalBuffer, roughnessBuffer, metallicBuffer, aoBuffer, heightBuffer });
-		//albedoBuffer.Release();
-		//aoBuffer.Release();
-		//heightBuffer.Release();
-		//normalBuffer.Release();
-		//roughnessBuffer.Release();
-		//metallicBuffer.Release();
-
-		//s_RenderData.TestTextureArray = TextureImporter::ReadBTAFile("assets/test/textureArray.bta");
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)

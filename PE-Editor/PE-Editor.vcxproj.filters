@@ -15,6 +15,7 @@
     </ClInclude>
     <ClInclude Include="src\Window\CreateAtlasWindow.h" />
     <ClInclude Include="src\Window\CreateMaterialWindow.h" />
+    <ClInclude Include="src\Window\CreateTextureArrayWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
@@ -27,5 +28,6 @@
     </ClCompile>
     <ClCompile Include="src\Window\CreateAtlasWindow.cpp" />
     <ClCompile Include="src\Window\CreateMaterialWindow.cpp" />
+    <ClCompile Include="src\Window\CreateTextureArrayWindow.cpp" />
   </ItemGroup>
 </Project>
