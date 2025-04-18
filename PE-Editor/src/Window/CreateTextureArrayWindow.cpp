@@ -1,6 +1,9 @@
 #include "pepch.h"
 #include "CreateTextureArrayWindow.h"
 
+#include <PaulEngine/Renderer/Renderer2D.h>
+#include <PaulEngine/Renderer/RenderCommand.h>
+
 #include <PaulEngine/Project/Project.h>
 #include <PaulEngine/Utils/PlatformUtils.h>
 
@@ -40,27 +43,25 @@ namespace PaulEngine
 				Buffer imageBuffer = TextureImporter::ReadImageFile(selectedFile, result);
 				
 				bool valid = true;
-				if (m_Buffers.size() > 0) {
-					if (result != m_CurrentConstraint) {
-						PE_CORE_ERROR("Selected file does not match current array constraints:");
-						PE_CORE_ERROR("    - Selected file result:");
-						PE_CORE_ERROR("        Width: {0}", result.Width);
-						PE_CORE_ERROR("        Height: {0}", result.Height);
-						PE_CORE_ERROR("        Channels: {0}", result.Channels);
-						PE_CORE_ERROR("    - Current constraints:");
-						PE_CORE_ERROR("        Width: {0}", m_CurrentConstraint.Width);
-						PE_CORE_ERROR("        Height: {0}", m_CurrentConstraint.Height);
-						PE_CORE_ERROR("        Channels: {0}", m_CurrentConstraint.Channels);
+				if (m_Buffers.size() > 0 && result != m_CurrentConstraint) {
+					PE_CORE_ERROR("Selected file does not match current array constraints:");
+					PE_CORE_ERROR("    - Selected file result:");
+					PE_CORE_ERROR("        Width: {0}", result.Width);
+					PE_CORE_ERROR("        Height: {0}", result.Height);
+					PE_CORE_ERROR("        Channels: {0}", result.Channels);
+					PE_CORE_ERROR("    - Current constraints:");
+					PE_CORE_ERROR("        Width: {0}", m_CurrentConstraint.Width);
+					PE_CORE_ERROR("        Height: {0}", m_CurrentConstraint.Height);
+					PE_CORE_ERROR("        Channels: {0}", m_CurrentConstraint.Channels);
 					
-						imageBuffer.Release();
-						valid = false;
-					}
+					imageBuffer.Release();
+					valid = false;
 				}
 
 				if (valid) {
+					m_CurrentConstraint = result;
 					m_Buffers.push_back(imageBuffer);
 					m_ImageNames.push_back(selectedFile.stem().string());
-					m_CurrentConstraint = result;
 				}
 			}
 
@@ -73,6 +74,25 @@ namespace PaulEngine
 					ImGui::PushID(i);
 					if (ImGui::Selectable(m_ImageNames[i].c_str(), selected == i, ImGuiSelectableFlags_SelectOnNav)) {
 						selected = i;
+						TextureSpecification spec;
+						spec.Width = m_CurrentConstraint.Width;
+						spec.Height = m_CurrentConstraint.Height;
+						switch (m_CurrentConstraint.Channels)
+						{
+						case 4:
+							spec.Format = ImageFormat::RGBA8;
+							break;
+						case 3:
+							spec.Format = ImageFormat::RGB8;
+							break;
+						case 2:
+							spec.Format = ImageFormat::RG8;
+							break;
+						case 1:
+							spec.Format = ImageFormat::R8;
+							break;
+						}
+						m_PreviewTexture = TextureImporter::LoadTexture2D(m_Buffers[i], spec);
 					}
 					if (ImGui::BeginPopupContextItem()) {
 						if (ImGui::MenuItem("Delete")) {
@@ -93,10 +113,31 @@ namespace PaulEngine
 			{
 				ImGui::BeginGroup();
 				ImGui::BeginChild("preview", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
-				if (selected != -1) {
+				if (m_PreviewTexture && selected != -1) {
 					ImGui::Text(m_ImageNames[selected].c_str());
 					ImGui::SameLine();
 					ImGui::Text("   (layer: %d)", selected);
+
+					ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+					m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
+
+					m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+
+					Renderer2D::ResetStats();
+					m_Framebuffer->Bind();
+					RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
+					RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+					RenderCommand::Clear();
+
+					Renderer2D::BeginScene(m_Camera, glm::mat4(1.0f));
+					Renderer2D::DrawQuad(m_QuadTransform, m_PreviewTexture, glm::vec2(1.0f), glm::vec4(1.0f), -1);
+					Renderer2D::EndScene();
+
+					m_Framebuffer->Unbind();
+
+					uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+					ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 				}
 				ImGui::EndChild();
 
@@ -120,7 +161,6 @@ namespace PaulEngine
 						TextureSpecification spec;
 						spec.Width = m_CurrentConstraint.Width;
 						spec.Height = m_CurrentConstraint.Height;
-
 						switch (m_CurrentConstraint.Channels)
 						{
 						case 4:
@@ -161,6 +201,7 @@ namespace PaulEngine
 
 				if (m_Buffers.size() < 1) {
 					m_CurrentConstraint = { 0, 0, 0 };
+					m_PreviewTexture = nullptr;
 				}
 
 				textureDeleted = -1;

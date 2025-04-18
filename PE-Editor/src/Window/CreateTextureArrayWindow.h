@@ -23,38 +23,12 @@ namespace PaulEngine
 		std::vector<Buffer> m_Buffers;
 		std::vector<std::string> m_ImageNames;
 		TextureImporter::ImageFileReadResult m_CurrentConstraint;
-		Ref<Texture2D> m_PreviewTexture;
+		Ref<Texture2D> m_PreviewTexture = nullptr;
 
 		Ref<Framebuffer> m_Framebuffer;
 		glm::vec2 m_ViewportSize;
 		SceneCamera m_Camera;
 
 		glm::mat4 m_QuadTransform;
-
-		// Test texture array file read
-		//TextureImporter::ImageFileReadResult result;
-		//Buffer albedoBuffer = TextureImporter::ReadImageFile("assets/textures/albedo.png", result);
-		//Buffer aoBuffer = TextureImporter::ReadImageFile("assets/textures/ao.png", result);
-		//Buffer heightBuffer = TextureImporter::ReadImageFile("assets/textures/height.png", result);
-		//Buffer normalBuffer = TextureImporter::ReadImageFile("assets/textures/normal.png", result);
-		//Buffer roughnessBuffer = TextureImporter::ReadImageFile("assets/textures/roughness.png", result);
-		//Buffer metallicBuffer = TextureImporter::ReadImageFile("assets/textures/metallic.png", result);
-		//
-		//TextureSpecification spec;
-		//spec.Format = ImageFormat::RGB8;
-		//spec.Width = result.Width;
-		//spec.Height = result.Height;
-		//
-		//TextureImporter::SaveBTAFile("assets/test/textureArray.bta", { albedoBuffer, normalBuffer, roughnessBuffer, metallicBuffer, aoBuffer, heightBuffer }, spec);
-		//
-		//s_RenderData.TestTextureArray = Texture2DArray::Create(spec, { albedoBuffer, normalBuffer, roughnessBuffer, metallicBuffer, aoBuffer, heightBuffer });
-		//albedoBuffer.Release();
-		//aoBuffer.Release();
-		//heightBuffer.Release();
-		//normalBuffer.Release();
-		//roughnessBuffer.Release();
-		//metallicBuffer.Release();
-
-		//s_RenderData.TestTextureArray = TextureImporter::ReadBTAFile("assets/test/textureArray.bta");
 	};
 }
