@@ -194,6 +194,12 @@ namespace PaulEngine
 		return texture;
 	}
 
+	Ref<Texture2D> TextureImporter::LoadTexture2D(const Buffer dataBuffer, TextureSpecification spec)
+	{
+		PE_PROFILE_FUNCTION();
+		return Texture2D::Create(spec, dataBuffer);
+	}
+
 	Ref<TextureAtlas2D> TextureImporter::ImportTextureAtlas2D(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		PE_PROFILE_FUNCTION();
