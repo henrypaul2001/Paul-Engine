@@ -7,6 +7,7 @@ layout(location = 1) in vec2 a_TexCoords;
 layout(std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
+	vec3 ViewPos;
 } u_CameraBuffer;
 
 layout(std140, binding = 1) uniform MeshSubmission

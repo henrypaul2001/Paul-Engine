@@ -9,6 +9,7 @@ layout (location = 3) in int a_EntityID;
 layout (std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
+	vec3 ViewPos;
 } u_CameraBuffer;
 
 layout (location = 0) out vec4 v_Colour;

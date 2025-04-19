@@ -116,6 +116,7 @@ namespace PaulEngine {
 		struct CameraData
 		{
 			glm::mat4 ViewProjection;
+			glm::vec3 ViewPos;
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
@@ -240,6 +241,7 @@ namespace PaulEngine {
 		glm::mat4 viewProjection = camera.GetViewProjection();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		s_RenderData.CameraBuffer.ViewPos = camera.GetPosition();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		StartNewBatch();
@@ -250,6 +252,7 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+		s_RenderData.CameraBuffer.ViewPos = transform[3];
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		StartNewBatch();

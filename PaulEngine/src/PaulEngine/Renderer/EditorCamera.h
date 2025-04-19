@@ -28,7 +28,7 @@ namespace PaulEngine
 		glm::vec3 GetUpDirection() const;
 		glm::vec3 GetRightDirection() const;
 		glm::vec3 GetForwardDirection() const;
-		const glm::vec3& GetPostion() const { return m_Position; }
+		const glm::vec3& GetPosition() const { return m_Position; }
 		glm::quat GetOrientation() const;
 
 		inline float GetPitch() const { return m_Pitch; }
