@@ -122,7 +122,9 @@ namespace PaulEngine
 				// Material edit
 				if (isShaderValid) {
 					const Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
+					int index = 0;
 					for (auto& it : m_Material->m_ShaderParameters) {
+						ImGui::PushID(index);
 						switch (it.second->GetType()) {
 							case ShaderParameterType::UBO:
 							{
@@ -143,6 +145,8 @@ namespace PaulEngine
 								break;
 							}
 						}
+						ImGui::PopID();
+						index++;
 					}
 				}
 				ImGui::EndChild();
