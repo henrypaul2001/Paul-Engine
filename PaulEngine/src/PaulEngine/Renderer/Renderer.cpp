@@ -14,7 +14,10 @@ namespace PaulEngine {
 	struct QuadVertex
 	{
 		glm::vec3 Position;
+		glm::vec3 Normal;
 		glm::vec2 TexCoords;
+		glm::vec3 Tangent;
+		glm::vec3 Bitangent;
 	};
 
 	struct Renderer3DData
@@ -25,8 +28,8 @@ namespace PaulEngine {
 		Ref<VertexArray> CubeVertexArray;
 		Ref<VertexBuffer> CubeVertexBuffer;
 
-		AssetHandle TestMaterialShaderHandle;
-		AssetHandle TestMaterialHandle;
+		AssetHandle DefaultLitShaderHandle;
+		AssetHandle DefaultLitMaterialHandle;
 
 		struct CameraData
 		{
@@ -47,8 +50,6 @@ namespace PaulEngine {
 		Renderer::Statistics Stats;
 
 		std::unordered_map<std::string, Ref<RenderPipeline>> PipelineKeyMap;
-
-		Ref<Texture2DArray> TestTextureArray;
 	};
 	static Renderer3DData s_RenderData;
 
@@ -65,15 +66,18 @@ namespace PaulEngine {
 			s_RenderData.QuadVertexBuffer = VertexBuffer::Create(4 * sizeof(QuadVertex));
 			s_RenderData.QuadVertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position", false },
+				{ ShaderDataType::Float3, "a_Normal", true },
 				{ ShaderDataType::Float2, "a_TexCoords", true },
-				});
+				{ ShaderDataType::Float3, "a_Tangent", true },
+				{ ShaderDataType::Float3, "a_Bitangent", true }
+			});
 			s_RenderData.QuadVertexArray->AddVertexBuffer(s_RenderData.QuadVertexBuffer);
 
 			QuadVertex vertices[4] = {
-				{ {	-0.5f, -0.5f, 0.0f	}, { 0.0f, 0.0f } },
-				{ { 0.5f, -0.5f, 0.0f	}, { 1.0f, 0.0f } },
-				{ { 0.5f, 0.5f, 0.0f	}, { 1.0f, 1.0f } },
-				{ { -0.5f, 0.5f, 0.0f	}, { 0.0f, 1.0f } }
+				{ {	-0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ {  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ {  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } }
 			};
 			s_RenderData.QuadVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 4);
 
@@ -93,37 +97,43 @@ namespace PaulEngine {
 			s_RenderData.CubeVertexBuffer = VertexBuffer::Create(24 * sizeof(QuadVertex));
 			s_RenderData.CubeVertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "a_Position", false },
+				{ ShaderDataType::Float3, "a_Normal", true },
 				{ ShaderDataType::Float2, "a_TexCoords", true },
+				{ ShaderDataType::Float3, "a_Tangent", true },
+				{ ShaderDataType::Float3, "a_Bitangent", true }
 			});
 			s_RenderData.CubeVertexArray->AddVertexBuffer(s_RenderData.CubeVertexBuffer);
 
 			QuadVertex vertices[24] = {
-				{ { -0.5f, -0.5f, -0.5f },  { 0.0f, 0.0f } },
-				{ { 0.5f, -0.5f, -0.5f },   { 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f, -0.5f },   { 1.0f, 1.0f } },
-				{ { -0.5f,  0.5f, -0.5f },  { 0.0f, 1.0f } },
-				{ { -0.5f, -0.5f,  0.5f },  { 0.0f, 0.0f } },
-				{ { 0.5f, -0.5f,  0.5f },   { 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f,	0.5f }, { 1.0f, 1.0f } },
-				{ { -0.5f,  0.5f,  0.5f },  { 0.0f, 1.0f } },
-													   
-				{ { -0.5f,  0.5f, -0.5f }, { 0.0f, 0.0f } },
-				{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f } },
-				{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f } },
-				{ { -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f } },
-				{ { 0.5f, -0.5f, -0.5f  }, { 0.0f, 0.0f } },
-				{ { 0.5f,  0.5f, -0.5f  }, { 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f,  0.5f  }, { 1.0f, 1.0f } },
-				{ { 0.5f, -0.5f,  0.5f  }, { 0.0f, 1.0f } },
-													   
-				{ { -0.5f, -0.5f, -0.5f,}, { 0.0f, 0.0f } },
-				{ { 0.5f, -0.5f, -0.5f, }, { 1.0f, 0.0f } },
-				{ { 0.5f, -0.5f,  0.5f, }, { 1.0f, 1.0f } },
-				{ { -0.5f, -0.5f,  0.5f,}, { 0.0f, 1.0f } },
-				{ { 0.5f,  0.5f, -0.5f, }, { 0.0f, 0.0f } },
-				{ { -0.5f,  0.5f, -0.5f,}, { 1.0f, 0.0f } },
-				{ { -0.5f,  0.5f,  0.5f,}, { 1.0f, 1.0f } },
-				{ { 0.5f,  0.5f,  0.5f, }, { 0.0f, 1.0f } }
+				{ { -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.5f, 0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				
+				{ { -0.5f, -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f,  -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.5f, 0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				
+				{ { -0.5f,  0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.5f, -0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.5f, -0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.5f,  0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+				
+				{ { 0.5f, -0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f,  0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { 0.5f, -0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+				
+				{ { -0.5f, -0.5f, -0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+				{ { 0.5f,  -0.5f, -0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+				{ { 0.5f,  -0.5f,  0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+				{ { -0.5f, -0.5f,  0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+				
+				{ { 0.5f,  0.5f, -0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+				{ { -0.5f, 0.5f, -0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+				{ { -0.5f, 0.5f,  0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+				{ { 0.5f,  0.5f,  0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }
 			};
 			s_RenderData.CubeVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 24);
 
@@ -133,13 +143,13 @@ namespace PaulEngine {
 				2, 1, 0,
 				4, 5, 6,
 				6, 7 ,4,
-
+				
 				// left and right
 				11, 8, 9,
 				9, 10, 11,
 				12, 13, 14,
 				14, 15, 12,
-
+				
 				// bottom and top
 				16, 17, 18,
 				18, 19, 16,
@@ -226,7 +236,7 @@ namespace PaulEngine {
 
 		DrawSubmission draw;
 		draw.VertexArray = vertexArray;
-		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.TestMaterialHandle;
+		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultLitMaterialHandle;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
@@ -300,10 +310,8 @@ namespace PaulEngine {
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		s_RenderData.TestMaterialShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl", true);
-		s_RenderData.TestMaterialHandle = assetManager->ImportAsset("materials/TestMaterial.pmat", true);
-
-		AssetHandle shaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/TextureArrayTest.glsl", true);
+		s_RenderData.DefaultLitShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl", true);
+		s_RenderData.DefaultLitMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/DefaultLit.pmat", true);
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)

@@ -1,5 +1,19 @@
 Scene: Untitled
 Entities:
+  - Entity: 5071226659569923851
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [10, -0.30847955, -3.513398]
+      Rotation: [0, 0, 0]
+      Scale: [4.750002, 4.7499924, 4.7499986]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 13149499340971217249
     TagComponent:
       Tag: Camera
@@ -24,7 +38,7 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [2.375, 2.375, 2.375]
     MeshRendererComponent:
-      MaterialHandle: 0
+      MaterialHandle: 1897318988700985028
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true
@@ -38,7 +52,7 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [2.375, 2.375, 2.375]
     MeshRendererComponent:
-      MaterialHandle: 0
+      MaterialHandle: 1897318988700985028
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true
@@ -48,7 +62,7 @@ Entities:
     TagComponent:
       Tag: Cube
     TransformComponent:
-      Position: [0, 0, 0]
+      Position: [0.04043591, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [4.75, 4.75, 4.75]
     MeshRendererComponent:

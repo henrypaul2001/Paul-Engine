@@ -67,12 +67,10 @@ namespace PaulEngine
 			std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
 			static std::unordered_map<const char*, std::filesystem::path> nameToFilepath;
-			nameToFilepath["TestMaterialShader"] = engineAssetsRelativeToProjectAssets / "shaders/MaterialTest.glsl";
-			nameToFilepath["TextureArrayTestShader"] = engineAssetsRelativeToProjectAssets / "shaders/TextureArrayTest.glsl";
+			nameToFilepath["DefaultLit"] = engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl";
 
 			static const char* shaderNames[] = {
-				"TestMaterialShader",
-				"TextureArrayTestShader"
+				"DefaultLit",
 			};
 
 			if (m_DropDownShader != -1) {
@@ -80,7 +78,7 @@ namespace PaulEngine
 			}
 			if (ImGui::BeginCombo("##EngineShaderDropDown", label.c_str())) {
 
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i < 1; i++) {
 					bool isSelected = m_DropDownShader == i;
 					if (ImGui::Selectable(shaderNames[i], isSelected)) {
 						m_DropDownShader = i;
@@ -198,6 +196,11 @@ namespace PaulEngine
 
 						MaterialImporter::SaveMaterial(m_Material, relativeSavePath);
 						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
+					
+						m_ShowWindow = false;
+						m_Material = nullptr;
+						m_ShaderHandle = 0;
+						m_DropDownShader = -1;
 					}
 				}
 
