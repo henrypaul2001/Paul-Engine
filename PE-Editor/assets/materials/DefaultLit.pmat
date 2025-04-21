@@ -25,6 +25,14 @@ ShaderParams:
         - Type: Float
           Name: Shininess
           Value: 1
+        - Type: Int
+          Name: UseNormalMap
+          Value: 0
         - Type: Float2
           Name: TextureScale
           Value: [1, 1]
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 2
+      TextureHandle: 0

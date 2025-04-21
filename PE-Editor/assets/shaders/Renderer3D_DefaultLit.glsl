@@ -94,11 +94,13 @@ layout(std140, binding = 2) uniform MaterialValues
 	vec4 Albedo;
 	vec4 Specular;
 	float Shininess;
+	int UseNormalMap;
 	vec2 TextureScale;
 } u_MaterialValues;
 
 layout(binding = 0) uniform sampler2D AlbedoMap;
 layout(binding = 1) uniform sampler2D SpecularMap;
+layout(binding = 2) uniform sampler2D NormalMap;
 
 vec2 ScaledTexCoords;
 
@@ -117,8 +119,12 @@ void main()
 	vec3 SpecularSample = vec3(texture(SpecularMap, ScaledTexCoords).r);
 
 	vec3 Normal = normalize(v_VertexData.Normal);
-	// normal map sample will go here in the future
-		// Normal = v_VertexData.TBN * normalSample; // tangent -> world space
+	if (u_MaterialValues.UseNormalMap != 0)
+	{
+		Normal = texture(NormalMap, ScaledTexCoords).rgb;
+		Normal = normalize(Normal * 2.0 - 1.0);
+		Normal = normalize(v_VertexData.TBN * Normal);
+	}
 
 	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
