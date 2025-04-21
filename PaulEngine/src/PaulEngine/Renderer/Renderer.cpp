@@ -10,7 +10,6 @@
 #include "PaulEngine/Asset/TextureImporter.h"
 
 namespace PaulEngine {
-
 	struct QuadVertex
 	{
 		glm::vec3 Position;
@@ -19,6 +18,52 @@ namespace PaulEngine {
 		glm::vec3 Tangent;
 		glm::vec3 Bitangent;
 	};
+
+	static void ComputeTangentsIndexed(QuadVertex* vertices, uint32_t* indices, size_t indexCount, size_t vertexCount) {
+		// Initialize accumulators
+		for (size_t i = 0; i < vertexCount; i++)
+		{
+			vertices[i].Tangent = glm::vec3(0.0f);
+			vertices[i].Bitangent = glm::vec3(0.0f);
+		}
+
+		for (size_t i = 0; i < indexCount; i += 3)
+		{
+			uint32_t i0 = indices[i + 0];
+			uint32_t i1 = indices[i + 1];
+			uint32_t i2 = indices[i + 2];
+
+			QuadVertex& v0 = vertices[i0];
+			QuadVertex& v1 = vertices[i1];
+			QuadVertex& v2 = vertices[i2];
+
+			glm::vec3 edge1 = v1.Position - v0.Position;
+			glm::vec3 edge2 = v2.Position - v0.Position;
+			glm::vec2 deltaUV1 = v1.TexCoords - v0.TexCoords;
+			glm::vec2 deltaUV2 = v2.TexCoords - v0.TexCoords;
+
+			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+			glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
+			glm::vec3 bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
+
+			// Accumulate
+			v0.Tangent += tangent;
+			v1.Tangent += tangent;
+			v2.Tangent += tangent;
+
+			v0.Bitangent += bitangent;
+			v1.Bitangent += bitangent;
+			v2.Bitangent += bitangent;
+		}
+
+		// Normalize all accumulated tangents and bitangents
+		for (size_t i = 0; i < vertexCount; i++)
+		{
+			vertices[i].Tangent = glm::normalize(vertices[i].Tangent);
+			vertices[i].Bitangent = glm::normalize(vertices[i].Bitangent);
+		}
+	}
 
 	struct Renderer3DData
 	{
@@ -85,6 +130,8 @@ namespace PaulEngine {
 				0, 1, 2,
 				2, 3, 0
 			};
+
+			ComputeTangentsIndexed(&vertices[0], &quadIndices[0], 6, 4);
 
 			Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, 6);
 			s_RenderData.QuadVertexArray->SetIndexBuffer(quadIB);
@@ -156,6 +203,8 @@ namespace PaulEngine {
 				20, 21, 22,
 				22, 23, 20
 			};
+
+			ComputeTangentsIndexed(&vertices[0], &cubeIndices[0], 36, 24);
 
 			Ref<IndexBuffer> cubeIB = IndexBuffer::Create(cubeIndices, 36);
 			s_RenderData.CubeVertexArray->SetIndexBuffer(cubeIB);
