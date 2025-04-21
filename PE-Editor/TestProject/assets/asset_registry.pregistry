@@ -27,6 +27,10 @@ AssetRegistry:
     Filepath: scenes\Example.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 5699979129781682678
+    Filepath: materials\CobbleFloor.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
@@ -59,10 +63,18 @@ AssetRegistry:
     Filepath: atlas\TinyTown.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 803195346929345758
+    Filepath: textures\space_blanket\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 13960601534352678645
     Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
     Persistent: true
     Type: AssetType::Shader
+  - Handle: 10162016685960967100
+    Filepath: textures\cobble_floor\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 1083992321171041232
     Filepath: ..\..\assets\shaders/Renderer2D_Circle.glsl
     Persistent: true
@@ -123,6 +135,10 @@ AssetRegistry:
     Filepath: textures\earth_specular.jpg
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 14877410352446370834
+    Filepath: materials\SpaceBlanket.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 792892647836043778
     Filepath: materials\earth.pmat
     Persistent: false
@@ -131,3 +147,19 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/DefaultLit.pmat
     Persistent: true
     Type: AssetType::Material
+  - Handle: 10529896942821464162
+    Filepath: textures\cobble_floor\specular.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 17945211788953022010
+    Filepath: textures\cobble_floor\diffuse.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 18407604419576479724
+    Filepath: textures\space_blanket\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15644780486505557580
+    Filepath: textures\space_blanket\metallic.png
+    Persistent: false
+    Type: AssetType::Texture2D

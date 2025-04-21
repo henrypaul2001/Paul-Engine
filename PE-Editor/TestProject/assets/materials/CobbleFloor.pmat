@@ -1,0 +1,38 @@
+MaterialAsset: CobbleFloor
+ShaderHandle: 11556801733716284571
+ShaderParams:
+  - Name: SpecularMap
+    Type: Sampler2D
+    Value:
+      Binding: 1
+      TextureHandle: 10529896942821464162
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 0
+      TextureHandle: 17945211788953022010
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 2
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float4
+          Name: Specular
+          Value: [1, 1, 1, 1]
+        - Type: Float
+          Name: Shininess
+          Value: 1
+        - Type: Int
+          Name: UseNormalMap
+          Value: 1
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 2
+      TextureHandle: 10162016685960967100

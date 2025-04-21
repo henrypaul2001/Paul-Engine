@@ -1,0 +1,38 @@
+MaterialAsset: SpaceBlanket
+ShaderHandle: 11556801733716284571
+ShaderParams:
+  - Name: SpecularMap
+    Type: Sampler2D
+    Value:
+      Binding: 1
+      TextureHandle: 15644780486505557580
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 0
+      TextureHandle: 18407604419576479724
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 2
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float4
+          Name: Specular
+          Value: [1, 1, 1, 1]
+        - Type: Float
+          Name: Shininess
+          Value: 1
+        - Type: Int
+          Name: UseNormalMap
+          Value: 1
+        - Type: Float2
+          Name: TextureScale
+          Value: [0, 0]
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 2
+      TextureHandle: 803195346929345758
