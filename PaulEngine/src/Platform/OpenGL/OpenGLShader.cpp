@@ -131,6 +131,56 @@ namespace PaulEngine {
 
 			return baseType;
 		}
+
+		static void AddSpirTypeToUBOSpecRecursive(const spirv_cross::Compiler& compiler, spirv_cross::SPIRType memberType, const std::string& memberName, Ref<UBOShaderParameterTypeSpecification> uboSpec)
+		{
+			int arrayDimensions = memberType.array.size();
+			if (arrayDimensions > 0) {
+				for (int dimension = 0; dimension < arrayDimensions; dimension++)
+				{
+					for (int x = 0; x < memberType.array[dimension]; x++) {
+						int childCount = memberType.member_types.size();
+						if (childCount > 0) {
+							for (int child = 0; child < childCount; child++) {
+								spirv_cross::TypeID childTypeID = memberType.member_types[child];
+								spirv_cross::SPIRType childType = compiler.get_type(childTypeID);
+								std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
+								const std::string childName = indexedName + "." + compiler.get_member_name(memberType.self, child);
+
+								AddSpirTypeToUBOSpecRecursive(compiler, childType, childName, uboSpec);
+							}
+						}
+						else {
+							ShaderDataType dataType = OpenGLShaderUtils::SpirTypeToShaderDataType(memberType);
+							std::string shaderDataTypeString = ShaderDataTypeToString(dataType);
+
+							std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
+							PE_CORE_TRACE("       - {0}: {1} ({2})", 0, indexedName.c_str(), shaderDataTypeString.c_str());
+							uboSpec->BufferLayout.push_back({ dataType, indexedName });
+						}
+					}
+				}
+			}
+			else {
+				int childCount = memberType.member_types.size();
+				if (childCount > 0) {
+					for (int child = 0; child < childCount; child++) {
+						spirv_cross::TypeID childTypeID = memberType.member_types[child];
+						spirv_cross::SPIRType childType = compiler.get_type(childTypeID);
+						const std::string childName = memberName + "." + compiler.get_member_name(memberType.self, child);
+
+						AddSpirTypeToUBOSpecRecursive(compiler, childType, childName, uboSpec);
+					}
+				}
+				else {
+					ShaderDataType dataType = OpenGLShaderUtils::SpirTypeToShaderDataType(memberType);
+					std::string shaderDataTypeString = ShaderDataTypeToString(dataType);
+
+					PE_CORE_TRACE("       - {0}: {1} ({2})", 0, memberName.c_str(), shaderDataTypeString.c_str());
+					uboSpec->BufferLayout.push_back({ dataType, memberName });
+				}
+			}
+		}
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name), m_Filepath("null"), m_RendererID(0)
@@ -402,28 +452,52 @@ namespace PaulEngine {
 			uboSpec->Name = resource.name;
 
 			for (int i = 0; i < memberCount; i++) {
+				spirv_cross::TypeID memberTypeID = bufferType.member_types[i];
 				const std::string& memberName = compiler.get_member_name(resource.base_type_id, i);
-				spirv_cross::SPIRType memberType = compiler.get_type(compiler.get_type(resource.base_type_id).member_types[i]);
-				ShaderDataType dataType = OpenGLShaderUtils::SpirTypeToShaderDataType(memberType);
-				int arrayDimensions = memberType.array.size();
-				std::string shaderDataTypeString = ShaderDataTypeToString(dataType);
+				spirv_cross::SPIRType memberType = compiler.get_type(memberTypeID);
 
-				if (arrayDimensions > 0) {
-					for (int dimension = 0; dimension < arrayDimensions; dimension++)
-					{
-						for (int x = 0; x < memberType.array[dimension]; x++) {
-							std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
-							PE_CORE_TRACE("       - {0}: {1} ({2})", i, indexedName.c_str(), shaderDataTypeString.c_str());
-							uboSpec->BufferLayout.push_back({ dataType, indexedName });
-						}
-					}
-				}
-				else {
-					PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), shaderDataTypeString.c_str());
+				OpenGLShaderUtils::AddSpirTypeToUBOSpecRecursive(compiler, memberType, memberName, uboSpec);
 
-					uboSpec->BufferLayout.push_back({ dataType, memberName });
-				}
-	
+				//if (memberType.basetype == spirv_cross::SPIRType::BaseType::Struct)
+				//{
+				//	int arrayDimensions = memberType.array.size();
+				//
+				//	if (arrayDimensions > 0)
+				//	{
+				//		for (int dimension = 0; dimension < arrayDimensions; dimension++)
+				//		{
+				//			for (int x = 0; x < memberType.array[dimension]; x++)
+				//			{
+				//				int childCount = memberType.member_types.size();
+				//
+				//				for (int child = 0; child < childCount; child++)
+				//				{
+				//					spirv_cross::TypeID childTypeID = memberType.member_types[child];
+				//					spirv_cross::SPIRType childType = compiler.get_type(childTypeID);
+				//					std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
+				//					const std::string childName = indexedName + "." + compiler.get_member_name(memberType.self, child);
+				//
+				//					OpenGLShaderUtils::AddSPIRTypeToUBOSpec(childType, childName, uboSpec);
+				//				}
+				//			}
+				//		}
+				//	}
+				//	else
+				//	{
+				//		int childCount = memberType.member_types.size();
+				//		for (int child = 0; child < childCount; child++) {
+				//			spirv_cross::TypeID childTypeID = memberType.member_types[child];
+				//			spirv_cross::SPIRType childType = compiler.get_type(childTypeID);
+				//			const std::string childName = memberName + "." + compiler.get_member_name(memberType.self, child);
+				//
+				//			OpenGLShaderUtils::AddSPIRTypeToUBOSpec(childType, childName, uboSpec);
+				//		}
+				//	}
+				//}
+				//else
+				//{
+				//	OpenGLShaderUtils::AddSPIRTypeToUBOSpec(memberType, memberName, uboSpec);
+				//}
 			}
 			m_ReflectionData.push_back(uboSpec);
 		}
