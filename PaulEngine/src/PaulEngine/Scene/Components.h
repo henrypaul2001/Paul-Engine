@@ -204,4 +204,10 @@ namespace PaulEngine
 		DepthState DepthState;
 		FaceCulling CullState = FaceCulling::BACK;
 	};
+
+	struct ComponentDirectionalLight {
+		glm::vec3 Diffuse;
+		glm::vec3 Specular;
+		glm::vec3 Ambient;
+	};
 }

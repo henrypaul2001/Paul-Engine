@@ -330,6 +330,7 @@ namespace PaulEngine
 			DrawAddComponentEntry<ComponentCircleCollider2D>("Circle Collision Component 2D");
 			DrawAddComponentEntry<ComponentTextRenderer>("Text Renderer Component");
 			DrawAddComponentEntry<ComponentMeshRenderer>("Mesh Renderer Component");
+			DrawAddComponentEntry<ComponentDirectionalLight>("Directional Light Component");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -710,6 +711,13 @@ namespace PaulEngine
 
 				ImGui::EndCombo();
 			}
+		});
+	
+		// Directional Light
+		DrawComponent<ComponentDirectionalLight>("Directional Light", entity, true, [](ComponentDirectionalLight& component) {
+			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float);
+			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float);
+			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float);
 		});
 	}
 }

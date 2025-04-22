@@ -157,6 +157,18 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentDirectionalLight>()) {
+			out << YAML::Key << "DirectionalLightComponent";
+			out << YAML::BeginMap;
+
+			ComponentDirectionalLight& lightComponent = entity.GetComponent<ComponentDirectionalLight>();
+			out << YAML::Key << "Diffuse" << YAML::Value << lightComponent.Diffuse;
+			out << YAML::Key << "Specular" << YAML::Value << lightComponent.Specular;
+			out << YAML::Key << "Ambient" << YAML::Value << lightComponent.Ambient;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -312,9 +324,16 @@ namespace PaulEngine
 					meshComponent.DepthState.Write = meshNode["DepthWrite"].as<bool>();
 					meshComponent.CullState = (FaceCulling)meshNode["FaceCulling"].as<int>();
 				}
+
+				YAML::Node lightNode = entity["DirectionalLightComponent"];
+				if (lightNode) {
+					ComponentDirectionalLight& lightComponent = deserializedEntity.AddComponent<ComponentDirectionalLight>();
+					lightComponent.Diffuse = lightNode["Diffuse"].as<glm::vec3>();
+					lightComponent.Specular = lightNode["Specular"].as<glm::vec3>();
+					lightComponent.Ambient = lightNode["Ambient"].as<glm::vec3>();
+				}
 			}
 		}
-
 		return true;
 	}
 
