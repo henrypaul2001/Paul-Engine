@@ -405,9 +405,25 @@ namespace PaulEngine {
 				const std::string& memberName = compiler.get_member_name(resource.base_type_id, i);
 				spirv_cross::SPIRType memberType = compiler.get_type(compiler.get_type(resource.base_type_id).member_types[i]);
 				ShaderDataType dataType = OpenGLShaderUtils::SpirTypeToShaderDataType(memberType);
-				PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), ShaderDataTypeToString(dataType).c_str());
+				int arrayDimensions = memberType.array.size();
+				std::string shaderDataTypeString = ShaderDataTypeToString(dataType);
 
-				uboSpec->BufferLayout.push_back({ dataType, memberName });
+				if (arrayDimensions > 0) {
+					for (int dimension = 0; dimension < arrayDimensions; dimension++)
+					{
+						for (int x = 0; x < memberType.array[dimension]; x++) {
+							std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
+							PE_CORE_TRACE("       - {0}: {1} ({2})", i, indexedName.c_str(), shaderDataTypeString.c_str());
+							uboSpec->BufferLayout.push_back({ dataType, indexedName });
+						}
+					}
+				}
+				else {
+					PE_CORE_TRACE("       - {0}: {1} ({2})", i, memberName.c_str(), shaderDataTypeString.c_str());
+
+					uboSpec->BufferLayout.push_back({ dataType, memberName });
+				}
+	
 			}
 			m_ReflectionData.push_back(uboSpec);
 		}
