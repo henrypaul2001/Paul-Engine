@@ -76,20 +76,25 @@ struct VertexData
 	mat3 TBN;
 };
 
-struct DirectionalLight
+struct DirectionalLight // vec4 for padding
 {
-	vec3 Direction;
+	vec4 Direction;
 
-	vec3 Ambient;
-	vec3 Diffuse;
-	vec3 Specular;
+	vec4 Ambient;
+	vec4 Diffuse;
+	vec4 Specular;
 };
 
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat ViewData v_ViewData;
 layout(location = 3) in VertexData v_VertexData;
 
-layout(std140, binding = 2) uniform MaterialValues
+layout(std140, binding = 2) uniform SceneData
+{
+	DirectionalLight DirLight;
+} u_SceneData;
+
+layout(std140, binding = 3) uniform MaterialValues
 {
 	vec4 Albedo;
 	vec4 Specular;
@@ -109,11 +114,11 @@ void main()
 	ScaledTexCoords = v_VertexData.TexCoords;
 	//ScaledTexCoords *= u_MaterialValues.TextureScale;
 
-	DirectionalLight light;
-	light.Direction = vec3(-0.2, -0.5, -0.3);
-	light.Ambient = vec3(0.2, 0.2, 0.2);
-	light.Diffuse = vec3(0.5, 0.5, 0.5);
-	light.Specular = vec3(1.0, 1.0, 1.0);
+	DirectionalLight light = u_SceneData.DirLight;
+	//light.Direction = vec3(-0.2, -0.5, -0.3);
+	//light.Ambient = vec3(0.2, 0.2, 0.2);
+	//light.Diffuse = vec3(0.5, 0.5, 0.5);
+	//light.Specular = vec3(1.0, 1.0, 1.0);
 
 	vec3 AlbedoSample = texture(AlbedoMap, ScaledTexCoords).rgb;
 	vec3 SpecularSample = vec3(texture(SpecularMap, ScaledTexCoords).r);
@@ -129,18 +134,18 @@ void main()
 	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
-	vec3 ambient = light.Ambient * MaterialAlbedo;
+	vec3 ambient = light.Ambient.rgb * MaterialAlbedo;
 
 	// diffuse
-	vec3 lightDir = normalize(-light.Direction);
+	vec3 lightDir = normalize(-light.Direction.xyz);
 	float diff = max(dot(Normal, lightDir), 0.0);
-	vec3 diffuse = light.Diffuse * diff * MaterialAlbedo;
+	vec3 diffuse = light.Diffuse.rgb * diff * MaterialAlbedo;
 
 	// specular
 	vec3 viewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
-	vec3 specular = (light.Specular * spec * MaterialSpecular) * diff;
+	vec3 specular = (light.Specular.rgb * spec * MaterialSpecular) * diff;
 
 	vec3 result = ambient + diffuse + specular;
 	colour = vec4(result, u_MaterialValues.Albedo.a);

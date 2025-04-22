@@ -14,7 +14,7 @@ ShaderParams:
   - Name: MaterialValues
     Type: UBO
     Value:
-      Binding: 2
+      Binding: 3
       Layout:
         - Type: Float4
           Name: Albedo

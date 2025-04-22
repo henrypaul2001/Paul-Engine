@@ -37,7 +37,7 @@ layout(location = 1) out int entityID;
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in vec2 v_TexCoords;
 
-layout(std140, binding = 2) uniform MaterialValues
+layout(std140, binding = 3) uniform MaterialValues
 {
 	vec4 Colour;
 	float Roughness;
