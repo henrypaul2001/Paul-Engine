@@ -18,6 +18,7 @@ namespace PaulEngine
 			if (parameter->Name == "Camera") { continue; }
 			if (parameter->Name == "u_Textures") { continue; }
 			if (parameter->Name == "MeshSubmission") { continue; }
+			if (parameter->Name == "SceneData") { continue; }
 
 			switch (parameter->Type())
 			{

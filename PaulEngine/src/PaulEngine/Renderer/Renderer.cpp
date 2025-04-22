@@ -92,6 +92,13 @@ namespace PaulEngine {
 		MeshSubmissionData MeshDataBuffer;
 		Ref<UniformBuffer> MeshDataUniformBuffer;
 
+		struct SceneData
+		{
+			Renderer::DirectionalLight DirLight;
+		};
+		SceneData SceneDataBuffer;
+		Ref<UniformBuffer> SceneDataUniformBuffer;
+
 		Renderer::Statistics Stats;
 
 		std::unordered_map<std::string, Ref<RenderPipeline>> PipelineKeyMap;
@@ -212,6 +219,16 @@ namespace PaulEngine {
 
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
 		s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
+		s_RenderData.SceneDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::SceneDataBuffer), 2);
+
+		DirectionalLight dirLight;
+		dirLight.Direction = glm::vec4(-0.2, -0.5, -0.3, 1.0f);
+		dirLight.Ambient = glm::vec4(0.2, 0.2, 0.2, 1.0f);
+		dirLight.Diffuse = glm::vec4(0.5, 0.5, 0.5, 1.0f);
+		dirLight.Specular = glm::vec4(1.0, 1.0, 1.0, 1.0f);
+
+		s_RenderData.SceneDataBuffer.DirLight = dirLight;
+		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 	}
 
 	void Renderer::BeginScene(const EditorCamera& camera)
@@ -223,6 +240,8 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		s_RenderData.CameraBuffer.ViewPos = camera.GetPosition();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
+
+		s_RenderData.SceneDataBuffer.DirLight = Renderer::DirectionalLight();
 	}
 
 	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform)
@@ -234,6 +253,8 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
 		s_RenderData.CameraBuffer.ViewPos = transform[3];
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
+
+		s_RenderData.SceneDataBuffer.DirLight = Renderer::DirectionalLight();
 	}
 
 	void Renderer::EndScene()
@@ -249,6 +270,8 @@ namespace PaulEngine {
 
 		s_RenderData.CameraUniformBuffer->Bind(0);
 		s_RenderData.MeshDataUniformBuffer->Bind(1);
+		s_RenderData.SceneDataUniformBuffer->Bind(2);
+		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(s_RenderData.SceneDataBuffer));
 
 		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 
@@ -308,6 +331,11 @@ namespace PaulEngine {
 		}
 
 		s_RenderData.Stats.MeshCount++;
+	}
+
+	void Renderer::SubmitDirectionalLightSource(const DirectionalLight& light)
+	{
+		s_RenderData.SceneDataBuffer.DirLight = light;
 	}
 
 	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)

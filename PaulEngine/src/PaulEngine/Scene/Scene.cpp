@@ -84,6 +84,7 @@ namespace PaulEngine
 		CopyComponent<ComponentCircleCollider2D>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentTextRenderer>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentMeshRenderer>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentDirectionalLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 
 		return newScene;
 	}
@@ -117,6 +118,7 @@ namespace PaulEngine
 		CopyComponentIfExists<ComponentBoxCollider2D>(newEntity, entity);
 		CopyComponentIfExists<ComponentCircleCollider2D>(newEntity, entity);
 		CopyComponentIfExists<ComponentMeshRenderer>(newEntity, entity);
+		CopyComponentIfExists<ComponentDirectionalLight>(newEntity, entity);
 
 		return newEntity;
 	}
@@ -420,6 +422,28 @@ namespace PaulEngine
 				}
 			}
 
+			{
+				PE_PROFILE_SCOPE("Submit lights");
+				auto view = m_Registry.view<ComponentTransform, ComponentDirectionalLight>();
+				for (auto entityID : view) {
+					auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
+					glm::mat4 transformMatrix = transform.GetTransform();
+					glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+					rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+					Renderer::DirectionalLight lightSource;
+					lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), 1.0f);
+					lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+					lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+					lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+
+					Renderer::SubmitDirectionalLightSource(lightSource);
+				}
+			}
+
 			Renderer::EndScene();
 		}
 	}
@@ -507,6 +531,28 @@ namespace PaulEngine
 					for (auto entityID : view) {
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+					}
+				}
+
+				{
+					PE_PROFILE_SCOPE("Submit lights");
+					auto view = m_Registry.view<ComponentTransform, ComponentDirectionalLight>();
+					for (auto entityID : view) {
+						auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
+						glm::mat4 transformMatrix = transform.GetTransform();
+						glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+						rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+						rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+						rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+						Renderer::DirectionalLight lightSource;
+						lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), 1.0f);
+						lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+						lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+						lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+
+						Renderer::SubmitDirectionalLightSource(lightSource);
 					}
 				}
 

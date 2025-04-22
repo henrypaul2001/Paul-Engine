@@ -1,5 +1,22 @@
 Scene: Untitled
 Entities:
+  - Entity: 9807174053992465922
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [2.3807697, 6.066804, 17.73724]
+      Rotation: [-2.8680031, 0.81868774, -3.1415925]
+      Scale: [0.9999995, 1, 1.0000001]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [0.6725979, 0.6325883, 0.5265891]
+      Specular: [0.4519573, 0.4519573, 0.4519573]
+      Ambient: [0.1, 0.1, 0.1]
   - Entity: 9630015821987678863
     TagComponent:
       Tag: TexturedShadedCube

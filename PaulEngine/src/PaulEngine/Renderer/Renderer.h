@@ -7,9 +7,16 @@
 
 #include "Material.h"
 
-namespace PaulEngine{
+namespace PaulEngine {
 	class Renderer {
 	public:
+		struct DirectionalLight // vec4 for padding
+		{
+			glm::vec4 Direction = glm::vec4(-0.2f, -0.5f, -0.3f, 1.0f);
+			glm::vec4 Ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+			glm::vec4 Diffuse = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+			glm::vec4 Specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		};
 		static void Init();
 
 		static void BeginScene(const EditorCamera& camera);
@@ -21,12 +28,14 @@ namespace PaulEngine{
 		static void SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 
+		static void SubmitDirectionalLightSource(const DirectionalLight& light);
+
 		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 		static void DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
-	
+
 		struct Statistics
 		{
 			uint32_t DrawCalls = 0;
