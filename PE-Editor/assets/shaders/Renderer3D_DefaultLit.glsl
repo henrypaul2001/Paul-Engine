@@ -89,6 +89,15 @@ struct DirectionalLight // vec4 for padding
 	vec4 Specular;
 };
 
+struct PointLight // vec4 for padding
+{
+	vec4 Position; // w = range
+
+	vec4 Ambient;
+	vec4 Diffuse;
+	vec4 Specular;
+};
+
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat ViewData v_ViewData;
 layout(location = 3) in VertexData v_VertexData;
@@ -96,7 +105,9 @@ layout(location = 3) in VertexData v_VertexData;
 layout(std140, binding = 2) uniform SceneData
 {
 	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
+	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	int ActiveDirLights;
+	int ActivePointLights;
 } u_SceneData;
 
 layout(std140, binding = 3) uniform MaterialValues
@@ -113,6 +124,7 @@ layout(binding = 1) uniform sampler2D SpecularMap;
 layout(binding = 2) uniform sampler2D NormalMap;
 
 vec2 ScaledTexCoords;
+vec3 ViewDir;
 
 vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
 {
@@ -124,10 +136,38 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	vec3 diffuse = u_SceneData.DirLights[lightIndex].Diffuse.rgb * diff * MaterialAlbedo;
 
 	// specular
-	vec3 viewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
-	vec3 halfwayDir = normalize(lightDir + viewDir);
+	vec3 halfwayDir = normalize(lightDir + ViewDir);
 	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
+
+	return ambient + diffuse + specular;
+}
+
+vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
+{
+	// attenuation
+	vec4 lightPos = u_SceneData.PointLights[lightIndex].Position;
+	float range = lightPos.w;
+	float constant = 1.0;
+
+	// derive unfriendly linear and quadratic values from range value
+	float linear = 4.5 / range;
+	float quadratic = 75.0 / (range * range);
+
+	float dist = length(lightPos.xyz - v_VertexData.WorldFragPos);
+	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
+
+	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation;
+	vec3 lightDir = normalize(lightPos.xyz - v_VertexData.WorldFragPos);
+
+	// diffuse
+	float diff = max(dot(Normal, lightDir), 0.0);
+	vec3 diffuse = u_SceneData.PointLights[lightIndex].Diffuse.rgb * diff * MaterialAlbedo * attenuation;
+
+	// specular
+	vec3 halfwayDir = normalize(lightDir + ViewDir);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
 	return ambient + diffuse + specular;
 }
@@ -136,6 +176,8 @@ void main()
 {
 	ScaledTexCoords = v_VertexData.TexCoords;
 	//ScaledTexCoords *= u_MaterialValues.TextureScale;
+
+	ViewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
 
 	vec3 AlbedoSample = texture(AlbedoMap, ScaledTexCoords).rgb;
 	vec3 SpecularSample = vec3(texture(SpecularMap, ScaledTexCoords).r);
@@ -152,9 +194,19 @@ void main()
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
 	vec3 Result = vec3(0.0);
-	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++) {
+
+	// Directional lights
+	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++)
+	{
 		Result += DirectionalLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
 	}
+
+	// Point lights
+	for (int i = 0; i < u_SceneData.ActivePointLights && i < MAX_ACTIVE_POINT_LIGHTS; i++)
+	{
+		Result += PointLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
+	}
+
 	colour = vec4(Result, u_MaterialValues.Albedo.a);
 
 	if (colour.a == 0.0) { discard; }

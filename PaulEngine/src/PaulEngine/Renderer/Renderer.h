@@ -17,6 +17,13 @@ namespace PaulEngine {
 			glm::vec4 Diffuse = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 			glm::vec4 Specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		};
+		struct PointLight // vec4 for padding
+		{
+			glm::vec4 Position = glm::vec4(0.0f, 0.0f, 0.0f, 25.0f); // w = range
+			glm::vec4 Ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+			glm::vec4 Diffuse = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+			glm::vec4 Specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		};
 		static void Init();
 
 		static void BeginScene(const EditorCamera& camera);
@@ -29,6 +36,7 @@ namespace PaulEngine {
 		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 
 		static void SubmitDirectionalLightSource(const DirectionalLight& light);
+		static void SubmitPointLightSource(const PointLight& light);
 
 		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
 		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);

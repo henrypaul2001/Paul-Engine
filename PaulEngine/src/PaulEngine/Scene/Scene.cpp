@@ -442,6 +442,13 @@ namespace PaulEngine
 
 					Renderer::SubmitDirectionalLightSource(lightSource);
 				}
+				
+				// Submit test point light
+				Renderer::PointLight pointLight;
+				pointLight.Diffuse = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+				pointLight.Specular = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+				pointLight.Ambient = glm::vec4(0.1f, 0.0f, 0.0f, 1.0f);
+				Renderer::SubmitPointLightSource(pointLight);
 			}
 
 			Renderer::EndScene();
@@ -554,6 +561,13 @@ namespace PaulEngine
 
 						Renderer::SubmitDirectionalLightSource(lightSource);
 					}
+
+					// Submit test point light
+					Renderer::PointLight pointLight;
+					pointLight.Diffuse = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+					pointLight.Specular = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+					pointLight.Ambient = glm::vec4(0.1f, 0.0f, 0.0f, 1.0f);
+					Renderer::SubmitPointLightSource(pointLight);
 				}
 
 				Renderer::EndScene();
