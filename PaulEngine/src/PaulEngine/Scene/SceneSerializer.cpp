@@ -169,6 +169,19 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentPointLight>()) {
+			out << YAML::Key << "PointLightComponent";
+			out << YAML::BeginMap;
+
+			ComponentPointLight& lightComponent = entity.GetComponent<ComponentPointLight>();
+			out << YAML::Key << "Radius" << YAML::Value << lightComponent.Radius;
+			out << YAML::Key << "Diffuse" << YAML::Value << lightComponent.Diffuse;
+			out << YAML::Key << "Specular" << YAML::Value << lightComponent.Specular;
+			out << YAML::Key << "Ambient" << YAML::Value << lightComponent.Ambient;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -325,12 +338,21 @@ namespace PaulEngine
 					meshComponent.CullState = (FaceCulling)meshNode["FaceCulling"].as<int>();
 				}
 
-				YAML::Node lightNode = entity["DirectionalLightComponent"];
-				if (lightNode) {
+				YAML::Node dirLightNode = entity["DirectionalLightComponent"];
+				if (dirLightNode) {
 					ComponentDirectionalLight& lightComponent = deserializedEntity.AddComponent<ComponentDirectionalLight>();
-					lightComponent.Diffuse = lightNode["Diffuse"].as<glm::vec3>();
-					lightComponent.Specular = lightNode["Specular"].as<glm::vec3>();
-					lightComponent.Ambient = lightNode["Ambient"].as<glm::vec3>();
+					lightComponent.Diffuse = dirLightNode["Diffuse"].as<glm::vec3>();
+					lightComponent.Specular = dirLightNode["Specular"].as<glm::vec3>();
+					lightComponent.Ambient = dirLightNode["Ambient"].as<glm::vec3>();
+				}
+
+				YAML::Node pointLightNode = entity["PointLightComponent"];
+				if (pointLightNode) {
+					ComponentPointLight& lightComponent = deserializedEntity.AddComponent<ComponentPointLight>();
+					lightComponent.Radius = pointLightNode["Radius"].as<float>();
+					lightComponent.Diffuse = pointLightNode["Diffuse"].as<glm::vec3>();
+					lightComponent.Specular = pointLightNode["Specular"].as<glm::vec3>();
+					lightComponent.Ambient = pointLightNode["Ambient"].as<glm::vec3>();
 				}
 			}
 		}

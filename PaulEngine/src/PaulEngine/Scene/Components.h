@@ -206,8 +206,16 @@ namespace PaulEngine
 	};
 
 	struct ComponentDirectionalLight {
-		glm::vec3 Diffuse;
-		glm::vec3 Specular;
-		glm::vec3 Ambient;
+		glm::vec3 Diffuse = glm::vec3(0.5f);
+		glm::vec3 Specular = glm::vec3(0.5f);
+		glm::vec3 Ambient = glm::vec3(0.1f);
+	};
+
+	struct ComponentPointLight {
+		float Radius = 25.0f;
+
+		glm::vec3 Diffuse = glm::vec3(0.5f);
+		glm::vec3 Specular = glm::vec3(0.5f);
+		glm::vec3 Ambient = glm::vec3(0.1f);
 	};
 }

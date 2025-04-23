@@ -1,5 +1,24 @@
 Scene: Untitled
 Entities:
+  - Entity: 8740984974100164074
+    TagComponent:
+      Tag: PointLight
+    TransformComponent:
+      Position: [22.24105, 4.6649866, 6.5169764]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 133
+      Diffuse: [1, 0, 0]
+      Specular: [1, 0, 0]
+      Ambient: [0.1, 0, 0]
   - Entity: 9807174053992465922
     TagComponent:
       Tag: Directional Light
