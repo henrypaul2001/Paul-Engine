@@ -62,6 +62,10 @@ void main()
 layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;
 
+const int MAX_ACTIVE_DIR_LIGHTS = 8;
+const int MAX_ACTIVE_POINT_LIGHTS = 8;
+const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+
 struct ViewData
 {
 	vec3 ViewPos;
@@ -91,7 +95,8 @@ layout(location = 3) in VertexData v_VertexData;
 
 layout(std140, binding = 2) uniform SceneData
 {
-	DirectionalLight DirLight;
+	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
+	int ActiveDirLights;
 } u_SceneData;
 
 layout(std140, binding = 3) uniform MaterialValues
@@ -109,16 +114,28 @@ layout(binding = 2) uniform sampler2D NormalMap;
 
 vec2 ScaledTexCoords;
 
+vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
+{
+	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo;
+
+	// diffuse
+	vec3 lightDir = normalize(-u_SceneData.DirLights[lightIndex].Direction.xyz);
+	float diff = max(dot(Normal, lightDir), 0.0);
+	vec3 diffuse = u_SceneData.DirLights[lightIndex].Diffuse.rgb * diff * MaterialAlbedo;
+
+	// specular
+	vec3 viewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
+
+	return ambient + diffuse + specular;
+}
+
 void main()
 {
 	ScaledTexCoords = v_VertexData.TexCoords;
 	//ScaledTexCoords *= u_MaterialValues.TextureScale;
-
-	DirectionalLight light = u_SceneData.DirLight;
-	//light.Direction = vec3(-0.2, -0.5, -0.3);
-	//light.Ambient = vec3(0.2, 0.2, 0.2);
-	//light.Diffuse = vec3(0.5, 0.5, 0.5);
-	//light.Specular = vec3(1.0, 1.0, 1.0);
 
 	vec3 AlbedoSample = texture(AlbedoMap, ScaledTexCoords).rgb;
 	vec3 SpecularSample = vec3(texture(SpecularMap, ScaledTexCoords).r);
@@ -134,21 +151,11 @@ void main()
 	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
-	vec3 ambient = light.Ambient.rgb * MaterialAlbedo;
-
-	// diffuse
-	vec3 lightDir = normalize(-light.Direction.xyz);
-	float diff = max(dot(Normal, lightDir), 0.0);
-	vec3 diffuse = light.Diffuse.rgb * diff * MaterialAlbedo;
-
-	// specular
-	vec3 viewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
-	vec3 specular = (light.Specular.rgb * spec * MaterialSpecular) * diff;
-
-	vec3 result = ambient + diffuse + specular;
-	colour = vec4(result, u_MaterialValues.Albedo.a);
+	vec3 Result = vec3(0.0);
+	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++) {
+		Result += DirectionalLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
+	}
+	colour = vec4(Result, u_MaterialValues.Albedo.a);
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }
