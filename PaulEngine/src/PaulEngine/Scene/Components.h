@@ -218,4 +218,14 @@ namespace PaulEngine
 		glm::vec3 Specular = glm::vec3(0.5f);
 		glm::vec3 Ambient = glm::vec3(0.1f);
 	};
+
+	struct ComponentSpotLight {
+		float Range = 25.0f;
+		float InnerCutoff = 20.0f;
+		float OuterCutoff = 30.0f;
+
+		glm::vec3 Diffuse = glm::vec3(0.5f);
+		glm::vec3 Specular = glm::vec3(0.5f);
+		glm::vec3 Ambient = glm::vec3(0.1f);
+	};
 }

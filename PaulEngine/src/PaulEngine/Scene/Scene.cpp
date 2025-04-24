@@ -86,6 +86,7 @@ namespace PaulEngine
 		CopyComponent<ComponentMeshRenderer>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentDirectionalLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentPointLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ComponentSpotLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 
 		return newScene;
 	}
@@ -121,6 +122,7 @@ namespace PaulEngine
 		CopyComponentIfExists<ComponentMeshRenderer>(newEntity, entity);
 		CopyComponentIfExists<ComponentDirectionalLight>(newEntity, entity);
 		CopyComponentIfExists<ComponentPointLight>(newEntity, entity);
+		CopyComponentIfExists<ComponentSpotLight>(newEntity, entity);
 
 		return newEntity;
 	}
@@ -466,14 +468,26 @@ namespace PaulEngine
 
 				{
 					PE_PROFILE_SCOPE("Spot lights");
-					// Test spot light
-					Renderer::SpotLight spotLightTest;
-					spotLightTest.Position = glm::vec4(0.0f, -20.0f, 0.0f, 25.0f);
-					spotLightTest.Direction = glm::vec4(0.0f, -1.0f, 0.0f, glm::cos(glm::radians(12.5f)));
-					spotLightTest.Ambient = glm::vec4(0.0f, 0.0f, 0.1f, glm::cos(glm::radians(17.5f)));
-					spotLightTest.Diffuse = glm::vec4(0.0f, 0.0f, 10.0f, 1.0f);
-					spotLightTest.Specular = glm::vec4(0.0f, 0.0f, 10.0f, 1.0f);
-					Renderer::SubmitSpotLightSource(spotLightTest);
+					auto view = m_Registry.view<ComponentTransform, ComponentSpotLight>();
+					for (auto entityID : view) {
+						auto [transform, light] = view.get<ComponentTransform, ComponentSpotLight>(entityID);
+						glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
+
+						rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+						rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+						rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+						glm::vec3 position = transform.Position();
+						glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);;
+
+						Renderer::SpotLight lightSource;
+						lightSource.Position = glm::vec4(position, light.Range);
+						lightSource.Direction = glm::vec4(direction, glm::cos(glm::radians(light.InnerCutoff)));
+						lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+						lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+						lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+						Renderer::SubmitSpotLightSource(lightSource);
+					}
 				}
 			}
 
@@ -604,6 +618,30 @@ namespace PaulEngine
 							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
 							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
 							Renderer::SubmitPointLightSource(lightSource);
+						}
+					}
+
+					{
+						PE_PROFILE_SCOPE("Spot lights");
+						auto view = m_Registry.view<ComponentTransform, ComponentSpotLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentSpotLight>(entityID);
+							glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
+
+							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+							glm::vec3 position = transform.Position();
+							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);;
+
+							Renderer::SpotLight lightSource;
+							lightSource.Position = glm::vec4(position, light.Range);
+							lightSource.Direction = glm::vec4(direction, glm::cos(glm::radians(light.InnerCutoff)));
+							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+							lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+							Renderer::SubmitSpotLightSource(lightSource);
 						}
 					}
 				}

@@ -332,6 +332,7 @@ namespace PaulEngine
 			DrawAddComponentEntry<ComponentMeshRenderer>("Mesh Renderer Component");
 			DrawAddComponentEntry<ComponentDirectionalLight>("Directional Light Component");
 			DrawAddComponentEntry<ComponentPointLight>("Point Light Component");
+			DrawAddComponentEntry<ComponentSpotLight>("Spot Light Component");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -724,6 +725,16 @@ namespace PaulEngine
 		// Point Light
 		DrawComponent<ComponentPointLight>("Point Light", entity, true, [](ComponentPointLight& component) {
 			ImGui::DragFloat("Radius", &component.Radius, 1.0f, 0.0f);
+			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+		});
+	
+		// Spot Light
+		DrawComponent<ComponentSpotLight>("Spot Light", entity, true, [](ComponentSpotLight& component) {
+			ImGui::DragFloat("Range", &component.Range, 1.0f, 0.0f);
+			ImGui::DragFloat("Inner Cutoff", &component.InnerCutoff);
+			ImGui::DragFloat("Outer Cutoff", &component.OuterCutoff);
 			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
 			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
 			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);

@@ -182,6 +182,21 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentSpotLight>()) {
+			out << YAML::Key << "SpotLightComponent";
+			out << YAML::BeginMap;
+
+			ComponentSpotLight& lightComponent = entity.GetComponent<ComponentSpotLight>();
+			out << YAML::Key << "Range" << YAML::Value << lightComponent.Range;
+			out << YAML::Key << "InnerCutoff" << YAML::Value << lightComponent.InnerCutoff;
+			out << YAML::Key << "OuterCutoff" << YAML::Value << lightComponent.OuterCutoff;
+			out << YAML::Key << "Diffuse" << YAML::Value << lightComponent.Diffuse;
+			out << YAML::Key << "Specular" << YAML::Value << lightComponent.Specular;
+			out << YAML::Key << "Ambient" << YAML::Value << lightComponent.Ambient;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -353,6 +368,17 @@ namespace PaulEngine
 					lightComponent.Diffuse = pointLightNode["Diffuse"].as<glm::vec3>();
 					lightComponent.Specular = pointLightNode["Specular"].as<glm::vec3>();
 					lightComponent.Ambient = pointLightNode["Ambient"].as<glm::vec3>();
+				}
+
+				YAML::Node spotLightNode = entity["SpotLightComponent"];
+				if (spotLightNode) {
+					ComponentSpotLight& lightComponent = deserializedEntity.AddComponent<ComponentSpotLight>();
+					lightComponent.Range = spotLightNode["Range"].as<float>();
+					lightComponent.InnerCutoff = spotLightNode["InnerCutoff"].as<float>();
+					lightComponent.OuterCutoff = spotLightNode["OuterCutoff"].as<float>();
+					lightComponent.Diffuse = spotLightNode["Diffuse"].as<glm::vec3>();
+					lightComponent.Specular = spotLightNode["Specular"].as<glm::vec3>();
+					lightComponent.Ambient = spotLightNode["Ambient"].as<glm::vec3>();
 				}
 			}
 		}
