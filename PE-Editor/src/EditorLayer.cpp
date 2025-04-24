@@ -2,6 +2,7 @@
 #include <imgui.h>
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include <PaulEngine/Renderer/Renderer2D.h>
 
 #include <PaulEngine/Scene/SceneSerializer.h>
@@ -586,6 +587,44 @@ namespace PaulEngine {
 				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+			}
+
+			// Spot light
+			if (selectedEntity.HasComponent<ComponentSpotLight>()) {
+				ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+				ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
+				glm::vec3 position = transformComponent.Position();
+				glm::quat rotationQuat = glm::quat(transformComponent.Rotation());
+				float radius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
+				float thickness = 0.005f;
+				float fade = 0.0f;
+
+				glm::mat4 transform = glm::mat4(1.0f);
+				transform = glm::translate(transform, position);
+				glm::mat4 rotation = glm::toMat4(rotationQuat);
+				transform *= rotation;
+				transform = glm::translate(transform, glm::vec3(0.0, 0.0f, -spotLight.Range));
+				glm::mat4 circleTransform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+
+				Renderer2D::DrawCircle(circleTransform, glm::vec4(1.0f), thickness, fade);
+
+				// Cone
+				glm::vec3 forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
+				glm::vec3 right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
+				glm::vec3 up = glm::cross(forward, right);
+
+				Renderer2D::SetLineWidth(thickness);
+				glm::vec3 line = forward * spotLight.Range + right * radius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				line = forward * spotLight.Range - right * radius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				line = forward * spotLight.Range + up * radius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				line = forward * spotLight.Range - up * radius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
 			}
 		}
 
