@@ -12,7 +12,6 @@
 #include "MSDFData.h"
 #include "TextureAtlas2D.h"
 
-#include "RenderPipeline.h"
 #include "Material.h"
 
 #include "PaulEngine/Asset/MaterialImporter.h"
@@ -225,17 +224,22 @@ namespace PaulEngine {
 		//delete s_RenderData;
 	}
 
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
+	void Renderer2D::BeginScene(const OrthographicCamera& camera, FaceCulling cullState, DepthState depthState)
 	{
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+
 		StartNewBatch();
 	}
 
-	void Renderer2D::BeginScene(const EditorCamera& camera)
+	void Renderer2D::BeginScene(const EditorCamera& camera, FaceCulling cullState, DepthState depthState)
 	{
 		PE_PROFILE_FUNCTION();
 		glm::mat4 viewProjection = camera.GetViewProjection();
@@ -244,16 +248,26 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.ViewPos = camera.GetPosition();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+
 		StartNewBatch();
 	}
 
-	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform, FaceCulling cullState, DepthState depthState)
 	{
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
 		s_RenderData.CameraBuffer.ViewPos = transform[3];
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
+
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
 
 		StartNewBatch();
 	}

@@ -1,4 +1,5 @@
 #pragma once
+#include "PaulEngine/Renderer/RenderPipeline.h"
 #include "PaulEngine/Renderer/OrthographicCamera.h"
 #include "PaulEngine/Renderer/Texture.h"
 #include "PaulEngine/Renderer/SubTexture2D.h"
@@ -13,9 +14,9 @@ namespace PaulEngine {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const OrthographicCamera& camera);
-		static void BeginScene(const EditorCamera& camera);
-		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const OrthographicCamera& camera, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = { DepthFunc::LESS, true, true });
+		static void BeginScene(const EditorCamera& camera, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = {DepthFunc::LESS, true, true });
+		static void BeginScene(const Camera& camera, const glm::mat4& transform, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = { DepthFunc::LESS, true, true });
 		static void EndScene();
 		static void Flush();
 
