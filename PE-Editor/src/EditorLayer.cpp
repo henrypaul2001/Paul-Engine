@@ -517,10 +517,10 @@ namespace PaulEngine {
 		if (m_SceneState == SceneState::Play) {
 			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 			if (!cameraEntity) { return; }
-			Renderer2D::BeginScene(cameraEntity.GetComponent<ComponentCamera>().Camera, cameraEntity.GetComponent<ComponentTransform>().GetTransform());
+			Renderer2D::BeginScene(cameraEntity.GetComponent<ComponentCamera>().Camera, cameraEntity.GetComponent<ComponentTransform>().GetTransform(), FaceCulling::NONE);
 		}
 		else {
-			Renderer2D::BeginScene(m_Camera);
+			Renderer2D::BeginScene(m_Camera, FaceCulling::NONE);
 		}
 
 		if (m_ShowColliders) {
@@ -553,12 +553,40 @@ namespace PaulEngine {
 			}
 		}
 		Renderer2D::Flush();
+
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
+			// Entity outline
 			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
 			transformCopy.SetPosition(transformCopy.Position() + glm::vec3(0.0f, 0.0f, 0.01f));
 			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
 			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
+		
+			// Point light radius
+			if (selectedEntity.HasComponent<ComponentPointLight>()) {
+				ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+				ComponentPointLight& pointLight = selectedEntity.GetComponent<ComponentPointLight>();
+				float radius = pointLight.Radius;
+				float thickness = 0.005f;
+				float fade = 0.0f;
+
+				glm::mat4 transform = glm::mat4(1.0f);
+				transform = glm::translate(transform, transformComponent.Position());
+				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+
+				transform = glm::mat4(1.0f);
+				transform = glm::translate(transform, transformComponent.Position());
+				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+
+				transform = glm::mat4(1.0f);
+				transform = glm::translate(transform, transformComponent.Position());
+				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+			}
 		}
 
 		Renderer2D::EndScene();
