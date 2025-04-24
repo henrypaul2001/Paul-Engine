@@ -463,6 +463,18 @@ namespace PaulEngine
 						Renderer::SubmitPointLightSource(lightSource);
 					}
 				}
+
+				{
+					PE_PROFILE_SCOPE("Spot lights");
+					// Test spot light
+					Renderer::SpotLight spotLightTest;
+					spotLightTest.Position = glm::vec4(0.0f, -20.0f, 0.0f, 25.0f);
+					spotLightTest.Direction = glm::vec4(0.0f, -1.0f, 0.0f, glm::cos(glm::radians(12.5f)));
+					spotLightTest.Ambient = glm::vec4(0.0f, 0.0f, 0.1f, glm::cos(glm::radians(17.5f)));
+					spotLightTest.Diffuse = glm::vec4(0.0f, 0.0f, 10.0f, 1.0f);
+					spotLightTest.Specular = glm::vec4(0.0f, 0.0f, 10.0f, 1.0f);
+					Renderer::SubmitSpotLightSource(spotLightTest);
+				}
 			}
 
 			Renderer::EndScene();

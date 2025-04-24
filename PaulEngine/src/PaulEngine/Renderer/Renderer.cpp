@@ -100,14 +100,17 @@ namespace PaulEngine {
 		{
 			int DirLightsHead = 0;
 			int PointLightsHead = 0;
+			int SpotLightsHead = 0;
 		};
 		SceneMetaData SceneBufferMetaData;
 		struct SceneData
 		{
 			Renderer::DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
 			Renderer::PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
+			Renderer::SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
 			int ActiveDirLights = 0;
 			int ActivePointLights = 0;
+			int ActiveSpotLights = 0;
 		};
 		SceneData SceneDataBuffer;
 		Ref<UniformBuffer> SceneDataUniformBuffer;
@@ -234,16 +237,12 @@ namespace PaulEngine {
 		s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
 		s_RenderData.SceneDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::SceneDataBuffer), 2);
 
-		DirectionalLight dirLight;
-		dirLight.Direction = glm::vec4(-0.2, -0.5, -0.3, 1.0f);
-		dirLight.Ambient = glm::vec4(0.2, 0.2, 0.2, 1.0f);
-		dirLight.Diffuse = glm::vec4(0.5, 0.5, 0.5, 1.0f);
-		dirLight.Specular = glm::vec4(1.0, 1.0, 1.0, 1.0f);
-
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 	}
 
@@ -259,8 +258,10 @@ namespace PaulEngine {
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 	}
 
 	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform)
@@ -275,8 +276,10 @@ namespace PaulEngine {
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 	}
 
 	void Renderer::EndScene()
@@ -314,6 +317,7 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer = Renderer3DData::SceneData();
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 
 		s_RenderData.PipelineKeyMap.clear();
 	}
@@ -371,6 +375,13 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.PointLights[s_RenderData.SceneBufferMetaData.PointLightsHead] = light;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = ++s_RenderData.SceneBufferMetaData.PointLightsHead % MAX_ACTIVE_POINT_LIGHTS;
 		s_RenderData.SceneDataBuffer.ActivePointLights = std::min(MAX_ACTIVE_POINT_LIGHTS, ++s_RenderData.SceneDataBuffer.ActivePointLights);
+	}
+
+	void Renderer::SubmitSpotLightSource(const SpotLight& light)
+	{
+		s_RenderData.SceneDataBuffer.SpotLights[s_RenderData.SceneBufferMetaData.SpotLightsHead] = light;
+		s_RenderData.SceneBufferMetaData.SpotLightsHead = ++s_RenderData.SceneBufferMetaData.SpotLightsHead % MAX_ACTIVE_SPOT_LIGHTS;
+		s_RenderData.SceneDataBuffer.ActiveSpotLights = std::min(MAX_ACTIVE_SPOT_LIGHTS, ++s_RenderData.SceneDataBuffer.ActiveSpotLights);
 	}
 
 	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID)

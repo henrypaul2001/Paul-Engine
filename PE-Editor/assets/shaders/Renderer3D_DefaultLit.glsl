@@ -98,6 +98,16 @@ struct PointLight // vec4 for padding
 	vec4 Specular;
 };
 
+struct SpotLight
+{
+	vec4 Position; // w = range
+	vec4 Direction; // w = cutoff
+
+	vec4 Ambient; // w = outer cutoff
+	vec4 Diffuse;
+	vec4 Specular;
+};
+
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat ViewData v_ViewData;
 layout(location = 3) in VertexData v_VertexData;
@@ -106,8 +116,10 @@ layout(std140, binding = 2) uniform SceneData
 {
 	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
+	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
 	int ActiveDirLights;
 	int ActivePointLights;
+	int ActiveSpotLights;
 } u_SceneData;
 
 layout(std140, binding = 3) uniform MaterialValues
@@ -172,6 +184,45 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 	return ambient + diffuse + specular;
 }
 
+vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
+{
+	vec4 lightPos = u_SceneData.SpotLights[lightIndex].Position;
+	vec3 lightDir = normalize(lightPos.xyz - v_VertexData.WorldFragPos);
+
+	// spotlight
+	vec3 direction = u_SceneData.SpotLights[lightIndex].Direction.xyz;
+	float cutoff = u_SceneData.SpotLights[lightIndex].Direction.w;
+	float outerCutoff = u_SceneData.SpotLights[lightIndex].Ambient.w;
+
+	float theta = dot(-lightDir, normalize(direction));
+	float epsilon = cutoff - outerCutoff;
+	float intensity = clamp((theta - outerCutoff) / epsilon, 0.0, 1.0);
+
+	// attenuation
+	float range = lightPos.w;
+	float constant = 1.0;
+
+	// derive unfriendly linear and quadratic values from range value
+	float linear = 4.5 / range;
+	float quadratic = 75.0 / (range * range);
+
+	float dist = length(lightPos.xyz - v_VertexData.WorldFragPos);
+	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
+
+	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation;
+
+	// diffuse
+	float diff = max(dot(Normal, lightDir), 0.0);
+	vec3 diffuse = u_SceneData.SpotLights[lightIndex].Diffuse.rgb * diff * MaterialAlbedo * attenuation * intensity;
+
+	// specular
+	vec3 halfwayDir = normalize(lightDir + ViewDir);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
+
+	return ambient + diffuse + specular;
+}
+
 void main()
 {
 	ScaledTexCoords = v_VertexData.TexCoords;
@@ -205,6 +256,12 @@ void main()
 	for (int i = 0; i < u_SceneData.ActivePointLights && i < MAX_ACTIVE_POINT_LIGHTS; i++)
 	{
 		Result += PointLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
+	}
+
+	// Spot lights
+	for (int i = 0; i < u_SceneData.ActiveSpotLights; i++)
+	{
+		Result += SpotLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
 	}
 
 	colour = vec4(Result, u_MaterialValues.Albedo.a);
