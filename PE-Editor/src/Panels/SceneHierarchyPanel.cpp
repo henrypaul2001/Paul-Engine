@@ -716,17 +716,17 @@ namespace PaulEngine
 	
 		// Directional Light
 		DrawComponent<ComponentDirectionalLight>("Directional Light", entity, true, [](ComponentDirectionalLight& component) {
-			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float);
-			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float);
-			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float);
+			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
 		});
 
 		// Point Light
 		DrawComponent<ComponentPointLight>("Point Light", entity, true, [](ComponentPointLight& component) {
 			ImGui::DragFloat("Radius", &component.Radius, 1.0f, 0.0f);
-			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float);
-			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float);
-			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float);
+			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
 		});
 	}
 }
