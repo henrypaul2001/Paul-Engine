@@ -1,16 +1,16 @@
-MaterialAsset: SpaceBlanket
+MaterialAsset: ParallaxedCobbleFloor
 ShaderHandle: 11556801733716284571
 ShaderParams:
   - Name: SpecularMap
     Type: Sampler2D
     Value:
       Binding: 1
-      TextureHandle: 15644780486505557580
+      TextureHandle: 10529896942821464162
   - Name: AlbedoMap
     Type: Sampler2D
     Value:
       Binding: 0
-      TextureHandle: 18407604419576479724
+      TextureHandle: 17945211788953022010
   - Name: MaterialValues
     Type: UBO
     Value:
@@ -24,26 +24,26 @@ ShaderParams:
           Value: [1, 1, 1, 1]
         - Type: Float2
           Name: TextureScale
-          Value: [0, 0]
+          Value: [1, 1]
         - Type: Float
           Name: Shininess
           Value: 1
         - Type: Float
           Name: HeightScale
-          Value: 1
+          Value: -0.1
         - Type: Int
           Name: UseNormalMap
           Value: 1
         - Type: Int
           Name: UseDisplacementMap
-          Value: 0
-  - Name: NormalMap
-    Type: Sampler2D
-    Value:
-      Binding: 2
-      TextureHandle: 803195346929345758
+          Value: 1
   - Name: DisplacementMap
     Type: Sampler2D
     Value:
       Binding: 3
-      TextureHandle: 0
+      TextureHandle: 15601380242474439612
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 2
+      TextureHandle: 10162016685960967100

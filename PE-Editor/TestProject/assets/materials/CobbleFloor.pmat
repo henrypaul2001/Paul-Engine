@@ -22,17 +22,28 @@ ShaderParams:
         - Type: Float4
           Name: Specular
           Value: [1, 1, 1, 1]
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
         - Type: Float
           Name: Shininess
+          Value: 1
+        - Type: Float
+          Name: HeightScale
           Value: 1
         - Type: Int
           Name: UseNormalMap
           Value: 1
-        - Type: Float2
-          Name: TextureScale
-          Value: [1, 1]
+        - Type: Int
+          Name: UseDisplacementMap
+          Value: 0
   - Name: NormalMap
     Type: Sampler2D
     Value:
       Binding: 2
       TextureHandle: 10162016685960967100
+  - Name: DisplacementMap
+    Type: Sampler2D
+    Value:
+      Binding: 3
+      TextureHandle: 0

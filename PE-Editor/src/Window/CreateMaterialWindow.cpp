@@ -170,6 +170,9 @@ namespace PaulEngine
 					RenderCommand::Clear();
 
 					Renderer::BeginScene(m_Camera, glm::mat4(1.0f));
+					Renderer::PointLight pointLight;
+					pointLight.Position = glm::vec4(0.0f, 0.0f, 0.0f, 25.0f);
+					Renderer::SubmitPointLightSource(pointLight);
 					Renderer::DrawDefaultCubeImmediate(m_Material, s_CubeTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK);
 					Renderer::EndScene();
 					m_Framebuffer->Unbind();
@@ -242,13 +245,13 @@ namespace PaulEngine
 				case ShaderDataType::Float:
 				{
 					float* data = static_cast<float*>(value->GetData());
-					ImGui::DragFloat(name.c_str(), &(*data), 0.1f, 0.0f, 1.0f);
+					ImGui::DragFloat(name.c_str(), &(*data), 0.1f);
 					break;
 				}
 				case ShaderDataType::Int:
 				{
 					int* data = static_cast<int*>(value->GetData());
-					ImGui::DragInt(name.c_str(), &(*data), 1.0f, 0, 1000);
+					ImGui::DragInt(name.c_str(), &(*data), 1.0f);
 					break;
 				}
 			}

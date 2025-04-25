@@ -4,9 +4,9 @@ Entities:
     TagComponent:
       Tag: SpotLight
     TransformComponent:
-      Position: [16.495674, -16.020443, -10.491034]
-      Rotation: [-0.51815104, 0, 0]
-      Scale: [0.24999931, 0.2499912, 0.24999994]
+      Position: [-4.1347604, -10.065089, -9.014904]
+      Rotation: [-1.5707963, 0, 0]
+      Scale: [0.24999931, 0.24999246, 0.24999999]
     MeshRendererComponent:
       MaterialHandle: 1897318988700985028
       MeshHandle: 0
@@ -15,11 +15,11 @@ Entities:
       DepthWrite: true
       FaceCulling: 2
     SpotLightComponent:
-      Range: 17
-      InnerCutoff: 4
-      OuterCutoff: 68
-      Diffuse: [0.1, 0.7, 2]
-      Specular: [0.1, 0.7, 2]
+      Range: 16
+      InnerCutoff: 13
+      OuterCutoff: 49
+      Diffuse: [1, 7, 10]
+      Specular: [1, 7, 10]
       Ambient: [0, 0, 0]
   - Entity: 10541037527128033745
     TagComponent:
@@ -90,10 +90,10 @@ Entities:
       Tag: TexturedShadedCube
     TransformComponent:
       Position: [17.362707, 0.0903337, 1.2588725]
-      Rotation: [0, 0, 0]
-      Scale: [6.75, 6.75, 6.75]
+      Rotation: [-1.7359138e-08, -0.011814962, 1.9572703e-08]
+      Scale: [6.750002, 6.75, 6.750002]
     MeshRendererComponent:
-      MaterialHandle: 5699979129781682678
+      MaterialHandle: 814898203706997051
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true

@@ -400,6 +400,7 @@ namespace PaulEngine {
 
 		s_RenderData.CameraUniformBuffer->Bind(0);
 		s_RenderData.MeshDataUniformBuffer->Bind(1);
+		s_RenderData.SceneDataUniformBuffer->Bind(2);
 
 		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, 0);
 		pipeline->Bind();
@@ -408,6 +409,8 @@ namespace PaulEngine {
 		s_RenderData.MeshDataBuffer.Transform = transform;
 		s_RenderData.MeshDataBuffer.EntityID = entityID;
 		s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+
+		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 
 		RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
 
