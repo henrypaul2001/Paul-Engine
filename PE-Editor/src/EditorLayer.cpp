@@ -518,10 +518,10 @@ namespace PaulEngine {
 		if (m_SceneState == SceneState::Play) {
 			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 			if (!cameraEntity) { return; }
-			Renderer2D::BeginScene(cameraEntity.GetComponent<ComponentCamera>().Camera, cameraEntity.GetComponent<ComponentTransform>().GetTransform(), FaceCulling::NONE);
+			Renderer2D::BeginScene(cameraEntity.GetComponent<ComponentCamera>().Camera, cameraEntity.GetComponent<ComponentTransform>().GetTransform(), FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
 		}
 		else {
-			Renderer2D::BeginScene(m_Camera, FaceCulling::NONE);
+			Renderer2D::BeginScene(m_Camera, FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
 		}
 
 		if (m_ShowColliders) {
@@ -595,7 +595,8 @@ namespace PaulEngine {
 				ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
 				glm::vec3 position = transformComponent.Position();
 				glm::quat rotationQuat = glm::quat(transformComponent.Rotation());
-				float radius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
+				float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
+				float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
 				float thickness = 0.005f;
 				float fade = 0.0f;
 
@@ -604,26 +605,43 @@ namespace PaulEngine {
 				glm::mat4 rotation = glm::toMat4(rotationQuat);
 				transform *= rotation;
 				transform = glm::translate(transform, glm::vec3(0.0, 0.0f, -spotLight.Range));
-				glm::mat4 circleTransform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 
-				Renderer2D::DrawCircle(circleTransform, glm::vec4(1.0f), thickness, fade);
-
-				// Cone
 				glm::vec3 forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
 				glm::vec3 right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
 				glm::vec3 up = glm::cross(forward, right);
 
 				Renderer2D::SetLineWidth(thickness);
-				glm::vec3 line = forward * spotLight.Range + right * radius * 0.5f;
+
+				// Outer cone
+				glm::mat4 outerCircleTransform = glm::scale(transform, glm::vec3(outerRadius, outerRadius, 1.0f));
+				Renderer2D::DrawCircle(outerCircleTransform, glm::vec4(1.0f), thickness, fade);
+
+				glm::vec3 line = forward * spotLight.Range + right * outerRadius * 0.5f;
 				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
 
-				line = forward * spotLight.Range - right * radius * 0.5f;
+				line = forward * spotLight.Range - right * outerRadius * 0.5f;
 				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
 
-				line = forward * spotLight.Range + up * radius * 0.5f;
+				line = forward * spotLight.Range + up * outerRadius * 0.5f;
 				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
 
-				line = forward * spotLight.Range - up * radius * 0.5f;
+				line = forward * spotLight.Range - up * outerRadius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				// Inner cone
+				glm::mat4 innerCircleTransform = glm::scale(transform, glm::vec3(innerRadius, innerRadius, 1.0f));
+				Renderer2D::DrawCircle(innerCircleTransform, glm::vec4(1.0f), thickness, fade);
+
+				line = forward * spotLight.Range + right * innerRadius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				line = forward * spotLight.Range - right * innerRadius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				line = forward * spotLight.Range + up * innerRadius * 0.5f;
+				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+				line = forward * spotLight.Range - up * innerRadius * 0.5f;
 				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
 			}
 		}
