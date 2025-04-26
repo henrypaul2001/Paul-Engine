@@ -188,4 +188,16 @@ namespace PaulEngine {
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+
+	bool OpenGLFramebuffer::operator==(const Framebuffer* other) const
+	{
+		if (!other) { return false; }
+		return m_RendererID == dynamic_cast<const OpenGLFramebuffer*>(other)->m_RendererID;
+	}
+
+	bool OpenGLFramebuffer::operator!=(const Framebuffer* other) const
+	{
+		if (!other) { return true; }
+		return m_RendererID != dynamic_cast<const OpenGLFramebuffer*>(other)->m_RendererID;
+	}
 }

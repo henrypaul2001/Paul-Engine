@@ -19,6 +19,9 @@ namespace PaulEngine {
 		virtual void Bind() override;
 		virtual void Unbind() override;
 
+		virtual bool operator ==(const Framebuffer* other) const override;
+		virtual bool operator !=(const Framebuffer* other) const override;
+
 	private:
 		void Regenerate();
 		void Deallocate();

@@ -60,5 +60,8 @@ namespace PaulEngine {
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
 		static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
+
+		virtual bool operator ==(const Framebuffer* other) const = 0;
+		virtual bool operator !=(const Framebuffer* other) const = 0;
 	};
 }
