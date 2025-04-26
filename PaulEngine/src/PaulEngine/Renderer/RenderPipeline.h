@@ -15,15 +15,15 @@ namespace PaulEngine
 		int EntityID;
 	};
 
-	struct RenderPass
-	{
-		std::vector<DrawSubmission> DrawList;
-		// lighting information
-		// environment info (skybox, reflection probes, shadow maps, etc)
-		// render target
-		// post processing steps
-		// ...
-	};
+	//struct RenderPass
+	//{
+	//	std::vector<DrawSubmission> DrawList;
+	//	// lighting information
+	//	// environment info (skybox, reflection probes, shadow maps, etc)
+	//	// render target
+	//	// post processing steps
+	//	// ...
+	//};
 
 	enum class DepthFunc
 	{
@@ -59,13 +59,13 @@ namespace PaulEngine
 
 		virtual void Bind() const = 0;
 
-		const RenderPass& GetRenderPass() const { return m_RenderPass; }
-		RenderPass& GetRenderPass() { return m_RenderPass; }
+		const std::vector<DrawSubmission>& GetDrawList() const { return m_DrawList; }
+		std::vector<DrawSubmission>& GetDrawList() { return m_DrawList; }
 		const FaceCulling& GetCullState() const { return m_CullState; }
 		const DepthState& GetDepthState() const { return m_DepthState; }
 
 	protected:
-		RenderPass m_RenderPass;
+		std::vector<DrawSubmission> m_DrawList;
 		
 		const AssetHandle m_MaterialHandle;
 		const FaceCulling m_CullState = FaceCulling::BACK;

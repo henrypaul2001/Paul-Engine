@@ -301,8 +301,8 @@ namespace PaulEngine {
 		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 
 			pipeline->Bind();
-			const RenderPass& renderPass = pipeline->GetRenderPass();
-			for (const DrawSubmission& d : renderPass.DrawList) {
+			const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
+			for (const DrawSubmission& d : drawList) {
 				s_RenderData.MeshDataBuffer.Transform = d.Transform;
 				s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
 				s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
@@ -350,13 +350,13 @@ namespace PaulEngine {
 		if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
 		{
 			// Duplicate pipeline state
-			s_RenderData.PipelineKeyMap[pipelineKey]->GetRenderPass().DrawList.push_back(draw);
+			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
 		}
 		else
 		{
 			// Unique pipeline state
 			s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, draw.MaterialHandle);
-			s_RenderData.PipelineKeyMap[pipelineKey]->GetRenderPass().DrawList.push_back(draw);
+			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
 			s_RenderData.Stats.PipelineCount++;
 		}
 
