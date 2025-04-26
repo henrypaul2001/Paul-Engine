@@ -26,7 +26,7 @@ namespace PaulEngine
 		using OnEndFunc = std::function<void(RenderPassContext&)>;
 
 		RenderPass(RenderPassInputs inputs, Ref<Framebuffer> targetFramebuffer, OnRenderFunc renderFunc, OnStartFunc startFunc = [](RenderPassContext&) {}, OnEndFunc endFunc = [](RenderPassContext&) {}) :
-			m_Context({inputs.SourceTextures, inputs.SourceFramebuffer, targetFramebuffer}),
+			m_Context({ inputs.SourceTextures, inputs.SourceFramebuffer, targetFramebuffer }),
 			m_StartFunc(startFunc), m_RenderFunc(renderFunc), m_EndFunc(endFunc) {}
 
 		void OnStart() { m_StartFunc(m_Context); }
@@ -39,5 +39,7 @@ namespace PaulEngine
 		OnEndFunc m_EndFunc;
 
 		RenderPassContext m_Context;
+
+		friend class FrameRenderer;
 	};
 }

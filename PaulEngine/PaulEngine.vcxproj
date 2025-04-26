@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPass.h" />
     <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
@@ -652,6 +653,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\BinarySerializer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderPipeline.cpp" />
