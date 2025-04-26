@@ -83,6 +83,21 @@ namespace PaulEngine {
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}
+
+	GLenum OpenGLTexture2D::TextureTarget(bool multisampled)
+	{
+		return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+	}
+
+	void OpenGLTexture2D::CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count)
+	{
+		glCreateTextures(TextureTarget(multisampled), count, out_ID);
+	}
+
+	void OpenGLTexture2D::BindTexture(uint32_t slot, uint32_t id)
+	{
+		glBindTextureUnit(slot, id);
+	}
 #pragma endregion
 
 #pragma region Texture2DArray

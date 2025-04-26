@@ -19,6 +19,10 @@ namespace PaulEngine {
 
 		virtual void Bind(const uint32_t slot = 0) const override;
 	
+		static GLenum TextureTarget(bool multisampled);
+		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);
+		static void BindTexture(uint32_t slot, uint32_t id);
+
 		virtual bool operator==(const Texture& other) const override {
 			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
 		}

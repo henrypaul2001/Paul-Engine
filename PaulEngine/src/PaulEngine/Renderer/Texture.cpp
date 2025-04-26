@@ -20,6 +20,34 @@ namespace PaulEngine {
 		return nullptr;
 	}
 
+	void Texture2D::CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count)
+	{
+		PE_PROFILE_FUNCTION();
+		switch (Renderer::GetAPI())
+		{
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported");
+			case RenderAPI::API::OpenGL:	OpenGLTexture2D::CreateTextures(multisampled, out_ID, count);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported");
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported");
+		}
+
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
+	}
+
+	void Texture2D::BindTexture(uint32_t slot, uint32_t id)
+	{
+		PE_PROFILE_FUNCTION();
+		switch (Renderer::GetAPI())
+		{
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported");
+			case RenderAPI::API::OpenGL:	OpenGLTexture2D::BindTexture(slot, id);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported");
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported");
+		}
+
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
+	}
+
 	Ref<Texture2DArray> Texture2DArray::Create(const TextureSpecification& specification, std::vector<Buffer> layers)
 	{
 		PE_PROFILE_FUNCTION();

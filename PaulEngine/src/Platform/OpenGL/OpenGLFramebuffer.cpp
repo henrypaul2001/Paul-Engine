@@ -1,5 +1,6 @@
 #include "pepch.h"
 #include "OpenGLFramebuffer.h"
+#include "OpenGLTexture.h"
 
 #include <glad/glad.h>
 
@@ -8,15 +9,7 @@ namespace PaulEngine {
 	namespace FramebufferUtils
 	{
 		static GLenum TextureTarget(bool multisampled) {
-			return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-		}
-
-		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count) {
-			glCreateTextures(TextureTarget(multisampled), count, out_ID);
-		}
-
-		static void BindTexture(bool multisampled, uint32_t id) {
-			glBindTexture(TextureTarget(multisampled), id);
+			return OpenGLTexture2D::TextureTarget(multisampled);
 		}
 
 		static void AttachColourTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index) {
@@ -129,10 +122,10 @@ namespace PaulEngine {
 		bool multisample = (m_Spec.Samples > 1);
 		if (m_ColourAttachmentSpecs.size() > 0) {
 			m_ColourAttachments.resize(m_ColourAttachmentSpecs.size());
-			FramebufferUtils::CreateTextures(multisample, &m_ColourAttachments[0], m_ColourAttachments.size());
+			OpenGLTexture2D::CreateTextures(multisample, &m_ColourAttachments[0], m_ColourAttachments.size());
 
 			for (size_t i = 0; i < m_ColourAttachmentSpecs.size(); i++) {
-				FramebufferUtils::BindTexture(multisample, m_ColourAttachments[i]);
+				OpenGLTexture2D::BindTexture(0, m_ColourAttachments[i]);
 				switch (m_ColourAttachmentSpecs[i].TextureFormat) {
 					case FramebufferTextureFormat::RGBA8:
 						FramebufferUtils::AttachColourTexture(m_ColourAttachments[i], m_Spec.Samples, GL_RGBA8, GL_RGBA, m_Spec.Width, m_Spec.Height, i);
@@ -145,8 +138,8 @@ namespace PaulEngine {
 		}
 
 		if (m_DepthAttachmentSpec.TextureFormat != FramebufferTextureFormat::None) {
-			FramebufferUtils::CreateTextures(multisample, &m_DepthAttachment, 1);
-			FramebufferUtils::BindTexture(multisample, m_DepthAttachment);
+			OpenGLTexture2D::CreateTextures(multisample, &m_DepthAttachment, 1);
+			OpenGLTexture2D::BindTexture(0, m_DepthAttachment);
 			switch (m_DepthAttachmentSpec.TextureFormat) {
 				case FramebufferTextureFormat::DEPTH24STENCIL8:
 					FramebufferUtils::AttachDepthTexture(m_DepthAttachment, m_Spec.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Spec.Width, m_Spec.Height);

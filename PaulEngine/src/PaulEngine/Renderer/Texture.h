@@ -48,6 +48,17 @@ namespace PaulEngine {
 
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		virtual AssetType GetType() const { return GetStaticType(); }
+
+		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);
+		static void BindTexture(uint32_t slot, uint32_t id);
+
+		//static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count) {
+		//	glCreateTextures(TextureTarget(multisampled), count, out_ID);
+		//}
+		//
+		//static void BindTexture(bool multisampled, uint32_t id) {
+		//	glBindTexture(TextureTarget(multisampled), id);
+		//}
 	};
 
 	class Texture2DArray : public Texture
