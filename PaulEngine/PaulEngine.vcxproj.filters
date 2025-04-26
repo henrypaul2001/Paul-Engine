@@ -1548,6 +1548,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\RenderPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">

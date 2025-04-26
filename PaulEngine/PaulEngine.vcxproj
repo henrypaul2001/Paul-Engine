@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\RenderPass.h" />
     <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
