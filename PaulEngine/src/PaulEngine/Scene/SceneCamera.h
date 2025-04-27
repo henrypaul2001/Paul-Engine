@@ -23,6 +23,8 @@ namespace PaulEngine
 
 		inline bool IsPerspective() const { return m_Type; }
 
+		virtual const glm::mat4& GetProjection() const { return m_Projection; }
+
 		inline float GetOrthoSize() const { return m_OrthographicSize; }
 		inline float GetNearClip() const { return m_NearClip; }
 		inline float GetFarClip() const { return m_FarClip; }
@@ -31,6 +33,8 @@ namespace PaulEngine
 
 	private:
 		friend class SceneSerializer;
+
+		glm::mat4 m_Projection;
 
 		float m_OrthographicSize;
 		float m_NearClip, m_FarClip;

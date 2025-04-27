@@ -13,7 +13,7 @@
 namespace PaulEngine
 {
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip) : m_FOV(fov), m_AspectRatio(aspectRatio), m_NearClip(nearClip), m_FarClip(farClip), 
-		Camera(glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip))
+		m_Projection(glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip))
 	{
 		UpdateView();
 	}
