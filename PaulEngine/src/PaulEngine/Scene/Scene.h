@@ -44,6 +44,36 @@ namespace PaulEngine
 		void OnUpdateOffline(Timestep timestep, EditorCamera& camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
+		template <typename... Components>
+		auto View() {
+			return m_Registry.view<Components...>();
+		}
+
+		template <typename... Owned, typename... Get>
+		auto View(entt::get_t<Get...> get) {
+			return m_Registry.view<Components...>(get);
+		}
+
+		template <typename... Owned, typename... Get, typename... Exclude>
+		auto View(entt::get_t<Get...> get, entt::exclude_t<Exclude...> exclude) {
+			return m_Registry.view<Components...>(get, exclude);
+		}
+
+		template <typename... Components>
+		auto Group() {
+			return m_Registry.group<Components...>();
+		}
+
+		template <typename... Owned, typename... Get>
+		auto Group(entt::get_t<Get...> get) {
+			return m_Registry.group<Owned...>(get);
+		}
+
+		template <typename... Owned, typename... Get, typename... Exclude>
+		auto Group(entt::get_t<Get...> get, entt::exclude_t<Exclude...> exclude) {
+			return m_Registry.group<Owned...>(get, exclude);
+		}
+
 	private:
 		friend class Entity;
 		friend class SceneHierarchyPanel;
