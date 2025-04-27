@@ -25,6 +25,7 @@
 #include "PaulEngine/Project/Project.h"
 
 // Render
+#include "PaulEngine/Renderer/FrameRenderer.h"
 #include "PaulEngine/Renderer/Renderer.h"
 #include "PaulEngine/Renderer/Renderer2D.h"
 #include "PaulEngine/Renderer/RenderCommand.h"

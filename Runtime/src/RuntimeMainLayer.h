@@ -24,6 +24,8 @@ private:
 	bool OpenProject(const std::filesystem::path& filepath);
 	bool OpenScene(PaulEngine::AssetHandle handle);
 
+	PaulEngine::FrameRenderer m_Renderer;
+
 	PaulEngine::Ref<PaulEngine::Scene> m_ActiveScene;
 	glm::ivec2 m_ViewportSize;
 
