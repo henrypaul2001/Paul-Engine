@@ -10,6 +10,8 @@
 
 #include "PaulEngine/Renderer/Material.h"
 
+#include "PaulEngine/Renderer/FrameRenderer.h"
+
 namespace PaulEngine {
 	class EditorLayer : public Layer
 	{
@@ -30,6 +32,9 @@ namespace PaulEngine {
 		void OnSceneStop();
 
 		void OnDuplicatedEntity();
+
+		FrameRenderer CreateEditorRenderer();
+		FrameRenderer CreateRuntimeRenderer();
 
 		void OnDebugOverlayDraw();
 
@@ -56,6 +61,8 @@ namespace PaulEngine {
 
 		std::filesystem::path m_CurrentFilepath;
 
+		FrameRenderer m_Renderer;
+
 		ShaderLibrary m_ShaderLibrary;
 		Ref<Framebuffer> m_Framebuffer;
 
@@ -72,7 +79,7 @@ namespace PaulEngine {
 		bool m_ViewportFocus = false, m_ViewportHovered = false;
 		bool m_ShowColliders = true;
 
-		EditorCamera m_Camera;
+		Ref<EditorCamera> m_Camera;
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

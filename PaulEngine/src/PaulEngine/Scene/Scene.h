@@ -27,10 +27,6 @@ namespace PaulEngine
 		Entity DuplicateEntity(Entity entity);
 		void DestroyEntity(Entity entity);
 
-		template<typename... Components>
-		auto GetAllEntitiesWith() {
-			return m_Registry.view<Components...>();
-		}
 		Entity GetPrimaryCameraEntity();
 
 		void OnRuntimeStart();
@@ -41,7 +37,6 @@ namespace PaulEngine
 
 		void OnUpdateRuntime(Timestep timestep);
 		void OnUpdateSimulation(Timestep timestep, EditorCamera& camera);
-		void OnUpdateOffline(Timestep timestep, EditorCamera& camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		template <typename... Components>
@@ -82,8 +77,6 @@ namespace PaulEngine
 		void OnPhysics2DStep(Timestep timestep);
 		void OnPhysics2DStart();
 		void OnPhysics2DStop();
-
-		void RenderScene(EditorCamera& camera);
 
 		entt::registry m_Registry;
 
