@@ -1,0 +1,173 @@
+Scene: Untitled
+Entities:
+  - Entity: 13732826914999760753
+    TagComponent:
+      Tag: SpotLight
+    TransformComponent:
+      Position: [-4.1347604, -10.065089, -9.014904]
+      Rotation: [-1.5707963, 0, 0]
+      Scale: [0.24999931, 0.24999246, 0.24999999]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    SpotLightComponent:
+      Range: 16
+      InnerCutoff: 13
+      OuterCutoff: 49
+      Diffuse: [1, 7, 10]
+      Specular: [1, 7, 10]
+      Ambient: [0, 0, 0]
+  - Entity: 10541037527128033745
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [0, -21.295044, 0]
+      Rotation: [0, 0, 0]
+      Scale: [50, 0.1, 50]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8740984974100164074
+    TagComponent:
+      Tag: PointLight
+    TransformComponent:
+      Position: [16.497835, -0.2136965, 8.6094675]
+      Rotation: [0, 0, 0]
+      Scale: [0.25, 0.25, 0.25]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 10
+      Diffuse: [12, 0, 0]
+      Specular: [12, 0, 0]
+      Ambient: [0.1, 0, 0]
+  - Entity: 9807174053992465922
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [2.3807697, 6.066804, 17.73724]
+      Rotation: [-2.8680031, 0.81868774, -3.1415925]
+      Scale: [0.9999995, 1, 1.0000001]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [0.6725979, 0.6325883, 0.5265891]
+      Specular: [0.4519573, 0.4519573, 0.4519573]
+      Ambient: [0.1, 0.1, 0.1]
+  - Entity: 9630015821987678863
+    TagComponent:
+      Tag: TexturedShadedCube
+    TransformComponent:
+      Position: [7.0225153, -8.822878, 1.2588725]
+      Rotation: [1.1057526, 0.16097131, 1.1332961]
+      Scale: [7.5937347, 7.5937805, 7.5937304]
+    MeshRendererComponent:
+      MaterialHandle: 14877410352446370834
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3828388179490595829
+    TagComponent:
+      Tag: TexturedShadedCube
+    TransformComponent:
+      Position: [17.362707, 0.0903337, 1.2588725]
+      Rotation: [-1.7359138e-08, -0.011814962, 1.9572703e-08]
+      Scale: [6.750002, 6.75, 6.750002]
+    MeshRendererComponent:
+      MaterialHandle: 814898203706997051
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5071226659569923851
+    TagComponent:
+      Tag: ShadedCube
+    TransformComponent:
+      Position: [10, -0.30847955, -3.513398]
+      Rotation: [0, 0, 0]
+      Scale: [4.750002, 4.7499924, 4.7499986]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13149499340971217249
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [-6.9166474, 5.9852176, 11.731807]
+      Rotation: [-0.25458896, -0.35610697, 0]
+      Scale: [1, 0.9999999, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 2.0727763
+      FixedAspect: false
+  - Entity: 3058056560338427120
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [-5.5, -2.25, -0.75]
+      Rotation: [0, 0, 0]
+      Scale: [2.375, 2.375, 2.375]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4809895888237990899
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [-5.5, 0, -9]
+      Rotation: [0, 0, 0]
+      Scale: [2.375, 2.375, 2.375]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17390793099330006882
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [0.04043591, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [4.75, 4.75, 4.75]
+    MeshRendererComponent:
+      MaterialHandle: 5492584121324616097
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2

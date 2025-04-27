@@ -1,0 +1,49 @@
+MaterialAsset: earth
+ShaderHandle: 11556801733716284571
+ShaderParams:
+  - Name: SpecularMap
+    Type: Sampler2D
+    Value:
+      Binding: 1
+      TextureHandle: 16657457123502607496
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 0
+      TextureHandle: 13498097975499482490
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 3
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float4
+          Name: Specular
+          Value: [1, 1, 1, 1]
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
+        - Type: Float
+          Name: Shininess
+          Value: 1
+        - Type: Float
+          Name: HeightScale
+          Value: 1
+        - Type: Int
+          Name: UseNormalMap
+          Value: 0
+        - Type: Int
+          Name: UseDisplacementMap
+          Value: 0
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 2
+      TextureHandle: 0
+  - Name: DisplacementMap
+    Type: Sampler2D
+    Value:
+      Binding: 3
+      TextureHandle: 0

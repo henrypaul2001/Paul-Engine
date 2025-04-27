@@ -1,0 +1,9 @@
+TextureAtlas2D: RPGpack
+TextureHandle: 14046064469291239366
+SubTextures:
+  - Name: Stairs
+    TexCoords:
+      - [0.35, 0.46153846]
+      - [0.4, 0.46153846]
+      - [0.4, 0.53846157]
+      - [0.35, 0.53846157]

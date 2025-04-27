@@ -11,6 +11,7 @@ layout(location = 5) in int a_EntityID;
 layout(std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
+	vec3 ViewPos;
 } u_CameraBuffer;
 
 struct VertexOutput {
@@ -55,7 +56,7 @@ layout(binding = 0) uniform sampler2D u_Textures[32];
 void main()
 {
 	colour = texture(u_Textures[int(v_TexIndex)], Input.TexCoords * Input.TextureScale) * Input.Colour;
-	
+
 	if (colour.a == 0.0) {
 		discard;
 	}
