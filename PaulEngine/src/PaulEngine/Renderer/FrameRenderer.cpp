@@ -3,7 +3,7 @@
 
 namespace PaulEngine
 {
-	void FrameRenderer::RenderFrame()
+	void FrameRenderer::RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera)
 	{
 		Ref<Framebuffer> currentTarget = nullptr;
 		for (RenderPass& p : m_OrderedRenderPasses) {
@@ -22,7 +22,7 @@ namespace PaulEngine
 			}
 			currentTarget = p.m_Context.TargetFramebuffer;
 
-			p.OnRender();
+			p.OnRender(sceneContext, activeCamera);
 		}
 	}
 }
