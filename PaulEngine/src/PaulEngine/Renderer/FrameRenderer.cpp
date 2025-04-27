@@ -22,9 +22,7 @@ namespace PaulEngine
 			}
 			currentTarget = p.m_Context.TargetFramebuffer;
 
-			p.OnStart();
 			p.OnRender();
-			p.OnEnd();
 		}
 	}
 }

@@ -5,7 +5,7 @@ namespace PaulEngine
 	class FrameRenderer
 	{
 	public:
-		FrameRenderer(std::vector<RenderPass> orderedPasses) : m_OrderedRenderPasses(orderedPasses) {}
+		FrameRenderer(std::vector<RenderPass> orderedPasses = {}) : m_OrderedRenderPasses(orderedPasses) {}
 
 		void RenderFrame();
 
