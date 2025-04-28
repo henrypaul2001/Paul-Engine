@@ -25,7 +25,62 @@ namespace PaulEngine
 	{
 		std::vector<RenderPass> renderPasses;
 
-		RenderPass scene2DPass = RenderPass({}, m_Framebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass shadowmapTestPass = RenderPass({}, m_ShadowmapBuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+			RenderCommand::Clear();
+			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
+
+			// Get directional light
+			ComponentDirectionalLight* dirLight = nullptr;
+			glm::vec3 direction = glm::vec3(0.0f);
+			auto view = sceneContext->View<ComponentTransform, ComponentDirectionalLight>();
+			for (auto entityID : view) {
+				auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
+				glm::mat4 transformMatrix = transform.GetTransform();
+				glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+				rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+				rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+				rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+				Renderer::DirectionalLight lightSource;
+				lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), 1.0f);
+				lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+				lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+				lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+
+				direction = lightSource.Direction;
+				dirLight = &light;
+				break;
+			}
+
+			if (dirLight) {
+				float shadowSize = 20.0f;
+				float nearClip = 0.01f;
+				float farClip = 150.0f;
+				glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+				SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
+				cam.SetOrthographic(shadowSize, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
+
+
+				Renderer::BeginScene(cam, cameraTransform);
+
+				{
+					PE_PROFILE_SCOPE("Submit Mesh");
+					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+					for (auto entityID : view) {
+						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+						Renderer::DrawDefaultCubeImmediate(m_ShadowmapMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+					}
+				}
+
+				Renderer::EndScene();
+			}
+		});
+		RenderPass scene2DPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
+			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			RenderCommand::Clear();
+			
 			if (activeCamera && sceneContext) {
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
 				Renderer2D::BeginScene(*editorCamera);
@@ -74,7 +129,7 @@ namespace PaulEngine
 				Renderer2D::EndScene();
 			}
 		});
-		RenderPass scene3DPass = RenderPass({}, m_Framebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass scene3DPass = RenderPass({}, m_MainFramebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (activeCamera && sceneContext) {
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
 				Renderer::BeginScene(*editorCamera);
@@ -156,7 +211,7 @@ namespace PaulEngine
 				Renderer::EndScene();
 			}
 		});
-		RenderPass debugOverlayPass = RenderPass({}, m_Framebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass debugOverlayPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (activeCamera && sceneContext)
 			{
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
@@ -293,6 +348,7 @@ namespace PaulEngine
 				Renderer2D::EndScene();
 			}
 		});
+		renderPasses.push_back(shadowmapTestPass);
 		renderPasses.push_back(scene2DPass);
 		renderPasses.push_back(scene3DPass);
 		renderPasses.push_back(debugOverlayPass);
@@ -304,7 +360,11 @@ namespace PaulEngine
 	{
 		std::vector<RenderPass> renderPasses;
 
-		RenderPass scene2DPass = RenderPass({}, m_Framebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass scene2DPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
+			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			RenderCommand::Clear();
+			
 			if (sceneContext)
 			{
 				Camera* camera = activeCamera.get();
@@ -365,7 +425,7 @@ namespace PaulEngine
 				}
 			}
 		});
-		RenderPass scene3DPass = RenderPass({}, m_Framebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass scene3DPass = RenderPass({}, m_MainFramebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (sceneContext)
 			{
 				Camera* camera = activeCamera.get();
@@ -458,7 +518,7 @@ namespace PaulEngine
 				}
 			}
 		});
-		RenderPass debugOverlayPass = RenderPass({}, m_Framebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass debugOverlayPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (sceneContext)
 			{
 				Camera* camera = activeCamera.get();
@@ -621,10 +681,25 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 
 		FramebufferSpecification spec;
-		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::DepthStencil };
 		spec.Width = 1280;
 		spec.Height = 720;
-		m_Framebuffer = Framebuffer::Create(spec);
+		m_MainFramebuffer = Framebuffer::Create(spec);
+
+		spec = FramebufferSpecification();
+		FramebufferTextureSpecification depthSpec;
+		depthSpec.Border = glm::vec4(1.0f);
+		depthSpec.MinFilter = ImageMinFilter::NEAREST;
+		depthSpec.MagFilter = ImageMagFilter::NEAREST;
+		depthSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.TextureFormat = FramebufferTextureFormat::DEPTH32;
+		spec.Attachments = { depthSpec };
+		spec.Width = m_ShadowWidth;
+		spec.Height = m_ShadowHeight;
+		spec.Samples = 1;
+		m_ShadowmapBuffer = Framebuffer::Create(spec);
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
@@ -689,6 +764,13 @@ namespace PaulEngine
 
 		m_Camera = CreateRef<EditorCamera>(EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f));
 
+		// load test shader
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		m_ShadowmapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapTest.glsl", true);
+		m_ShadowmapMaterial = CreateRef<Material>(m_ShadowmapShaderHandle);
+
 		m_Renderer = CreateEditorRenderer();
 	}
 
@@ -705,9 +787,9 @@ namespace PaulEngine
 		deltaTime = timestep;
 
 		// Resize
-		const FramebufferSpecification& spec = m_Framebuffer->GetSpecification();
+		const FramebufferSpecification& spec = m_MainFramebuffer->GetSpecification();
 		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_MainFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_Camera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
@@ -715,13 +797,13 @@ namespace PaulEngine
 
 		Renderer2D::ResetStats();
 		Renderer::ResetStats();
-		m_Framebuffer->Bind();
+		m_MainFramebuffer->Bind();
 		RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
 		RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::Clear();
 
 		// Clear entity ID attachment to -1
-		m_Framebuffer->ClearColourAttachment(1, -1);
+		m_MainFramebuffer->ClearColourAttachment(1, -1);
 
 		if (m_ProjectSelected) {
 			switch (m_SceneState)
@@ -751,7 +833,7 @@ namespace PaulEngine
 
 			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 			{
-				m_HoveredEntity = Entity((entt::entity)m_Framebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
+				m_HoveredEntity = Entity((entt::entity)m_MainFramebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
 			}
 			else {
 				m_HoveredEntity = Entity();
@@ -760,7 +842,7 @@ namespace PaulEngine
 			//OnDebugOverlayDraw();
 		}
 
-		m_Framebuffer->Unbind();
+		m_MainFramebuffer->Unbind();
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -905,6 +987,12 @@ namespace PaulEngine
 
 			ImGui::End();
 
+			// Test shadowmap view
+			ImGui::Begin("Shadow map test");
+			uint32_t shadowTextureID = m_ShadowmapBuffer->GetDepthAttachmentID();
+			ImGui::Image(shadowTextureID, ImVec2(m_ShadowWidth, m_ShadowHeight), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+			ImGui::End();
+
 			// -- Viewport --
 			// --------------
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -923,7 +1011,7 @@ namespace PaulEngine
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
 
-			uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+			uint32_t textureID = m_MainFramebuffer->GetColourAttachmentID();
 			ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 			if (ImGui::BeginDragDropTarget()) {

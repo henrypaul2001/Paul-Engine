@@ -14,6 +14,7 @@ namespace PaulEngine {
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Spec; }
 
 		virtual uint32_t GetColourAttachmentID(uint32_t index = 0) const override { PE_CORE_ASSERT(index < m_ColourAttachments.size(), "Index out of range"); return m_ColourAttachments[index]; }
+		virtual uint32_t GetDepthAttachmentID() const override { return m_DepthAttachment; }
 		virtual void ClearColourAttachment(uint32_t index, const int value) override;
 
 		virtual void Bind() override;

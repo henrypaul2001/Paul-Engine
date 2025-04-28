@@ -59,6 +59,7 @@ namespace PaulEngine {
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
 		virtual uint32_t GetColourAttachmentID(uint32_t index = 0) const = 0;
+		virtual uint32_t GetDepthAttachmentID() const = 0;
 		virtual void ClearColourAttachment(uint32_t index, const int value) = 0;
 
 		virtual void Bind() = 0;
