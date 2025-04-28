@@ -61,6 +61,12 @@ namespace PaulEngine
 		// Read format
 		TextureSpecification spec;
 		fin.read((char*)&spec.Format, sizeof(ImageFormat));
+		fin.read((char*)&spec.MinFilter, sizeof(ImageMinFilter));
+		fin.read((char*)&spec.MagFilter, sizeof(ImageMagFilter));
+		fin.read((char*)&spec.Wrap_S, sizeof(ImageWrap));
+		fin.read((char*)&spec.Wrap_T, sizeof(ImageWrap));
+		fin.read((char*)&spec.Wrap_R, sizeof(ImageWrap));
+		fin.read((char*)&spec.Border, sizeof(glm::vec4));
 		fin.read((char*)&spec.Width, sizeof(uint32_t));
 		fin.read((char*)&spec.Height, sizeof(uint32_t));
 		fin.read((char*)&spec.GenerateMips, sizeof(bool));
@@ -109,21 +115,24 @@ namespace PaulEngine
 		int channels = 0;
 
 		switch (spec.Format) {
-		case ImageFormat::R8:
-			channels = 1;
-			break;
-		case ImageFormat::RG8:
-			channels = 2;
-			break;
-		case ImageFormat::RGB8:
-			channels = 3;
-			break;
-		case ImageFormat::RGBA8:
-			channels = 4;
-			break;
-		case ImageFormat::RGBA32F:
-			channels = 4;
-			break;
+			case ImageFormat::DEPTH:
+				channels = 1;
+				break;
+			case ImageFormat::R8:
+				channels = 1;
+				break;
+			case ImageFormat::RG8:
+				channels = 2;
+				break;
+			case ImageFormat::RGB8:
+				channels = 3;
+				break;
+			case ImageFormat::RGBA8:
+				channels = 4;
+				break;
+			case ImageFormat::RGBA32F:
+				channels = 4;
+				break;
 		}
 
 		PE_CORE_ASSERT(bufferSize == width * height * channels, "Invalid texture spec for buffer size");
@@ -136,6 +145,12 @@ namespace PaulEngine
 
 		// Write format
 		fout.write((char*)&spec.Format, sizeof(ImageFormat));
+		fout.write((char*)&spec.MinFilter, sizeof(ImageMinFilter));
+		fout.write((char*)&spec.MagFilter, sizeof(ImageMagFilter));
+		fout.write((char*)&spec.Wrap_S, sizeof(ImageWrap));
+		fout.write((char*)&spec.Wrap_T, sizeof(ImageWrap));
+		fout.write((char*)&spec.Wrap_R, sizeof(ImageWrap));
+		fout.write((char*)&spec.Border, sizeof(glm::vec4));
 		fout.write((char*)&spec.Width, sizeof(uint32_t));
 		fout.write((char*)&spec.Height, sizeof(uint32_t));
 		fout.write((char*)&spec.GenerateMips, sizeof(bool));

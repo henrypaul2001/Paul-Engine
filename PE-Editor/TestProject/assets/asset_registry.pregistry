@@ -55,10 +55,6 @@ AssetRegistry:
     Filepath: textures\tilemap_packed.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 1891188071894036402
-    Filepath: textures\array_files\spaceBlanket.bta
-    Persistent: false
-    Type: AssetType::Texture2DArray
   - Handle: 7412640952308102654
     Filepath: atlas\TinyTown.patlas
     Persistent: false

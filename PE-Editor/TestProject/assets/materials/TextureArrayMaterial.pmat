@@ -22,4 +22,4 @@ ShaderParams:
     Type: Sampler2DArray
     Value:
       Binding: 0
-      TextureArrayHandle: 1891188071894036402
+      TextureArrayHandle: 0
