@@ -38,7 +38,7 @@ namespace PaulEngine
 		float orthoBottom = -m_OrthographicSize * 0.5f;
 		float orthoTop = m_OrthographicSize * 0.5f;
 
-		m_Projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop);
+		m_Projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, nearClip, farClip);
 	}
 
 	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
