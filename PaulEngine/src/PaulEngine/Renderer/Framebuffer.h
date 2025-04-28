@@ -1,6 +1,7 @@
 #pragma once
 #include "PaulEngine/Core/Core.h"
-
+#include "Texture.h"
+#include <glm/glm.hpp>
 namespace PaulEngine {
 	enum class FramebufferTextureFormat
 	{
@@ -11,10 +12,14 @@ namespace PaulEngine {
 		RED_INTEGER,
 
 		// Depth / stencil
+		DEPTH16,
+		DEPTH24,
+		DEPTH32,
 		DEPTH24STENCIL8,
 
 		// Defaults
-		Depth = DEPTH24STENCIL8
+		DepthStencil = DEPTH24STENCIL8,
+		Depth = DEPTH32
 	};
 
 	struct FramebufferTextureSpecification
@@ -23,7 +28,12 @@ namespace PaulEngine {
 		FramebufferTextureSpecification(FramebufferTextureFormat format) : TextureFormat(format) {}
 
 		FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
-		// filtering / wrap
+		ImageMinFilter MinFilter = ImageMinFilter::NEAREST;
+		ImageMagFilter MagFilter = ImageMagFilter::NEAREST;
+		ImageWrap Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		ImageWrap Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		ImageWrap Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		glm::vec4 Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	};
 
 	struct FramebufferAttachmentSpecification
@@ -39,8 +49,6 @@ namespace PaulEngine {
 		FramebufferAttachmentSpecification Attachments;
 
 		uint32_t Samples = 1;
-
-		bool SwapChainTarget = false;
 	};
 
 	class Framebuffer

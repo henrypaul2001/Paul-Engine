@@ -26,7 +26,7 @@ namespace PaulEngine
 	void CreateMaterialWindow::Init()
 	{
 		FramebufferSpecification spec;
-		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::DepthStencil };
 		spec.Width = 1280;
 		spec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(spec);
