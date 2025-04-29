@@ -27,7 +27,7 @@ Entities:
     TransformComponent:
       Position: [0, -21.295044, 0]
       Rotation: [0, 0, 0]
-      Scale: [50, 0.1, 50]
+      Scale: [250, 0.1, 250]
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -127,7 +127,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0727763
+        AspectRatio: 1.2021563
       FixedAspect: false
   - Entity: 3058056560338427120
     TagComponent:

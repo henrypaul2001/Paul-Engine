@@ -16,6 +16,7 @@ namespace PaulEngine {
 			glm::vec4 Ambient = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
 			glm::vec4 Diffuse = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 			glm::vec4 Specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			glm::mat4 LightMatrix = glm::mat4(1.0f);
 		};
 		struct PointLight // vec4 for padding
 		{

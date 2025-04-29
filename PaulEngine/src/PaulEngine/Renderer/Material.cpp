@@ -19,6 +19,7 @@ namespace PaulEngine
 			if (parameter->Name == "u_Textures") { continue; }
 			if (parameter->Name == "MeshSubmission") { continue; }
 			if (parameter->Name == "SceneData") { continue; }
+			if (parameter->Name == "ShadowMapTest") { continue; }
 
 			switch (parameter->Type())
 			{

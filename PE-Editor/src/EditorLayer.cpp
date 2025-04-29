@@ -44,10 +44,6 @@ namespace PaulEngine
 
 				Renderer::DirectionalLight lightSource;
 				lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), 1.0f);
-				lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
-				lightSource.Specular = glm::vec4(light.Specular, 1.0f);
-				lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
-
 				direction = lightSource.Direction;
 				dirLight = &light;
 				break;
@@ -60,7 +56,6 @@ namespace PaulEngine
 				glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 				SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
 				cam.SetOrthographic(shadowSize, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
-
 
 				Renderer::BeginScene(cam, cameraTransform);
 
@@ -129,7 +124,10 @@ namespace PaulEngine
 				Renderer2D::EndScene();
 			}
 		});
-		RenderPass scene3DPass = RenderPass({}, m_MainFramebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		
+		RenderPassInputs scene3DPassInputs;
+		scene3DPassInputs.SourceFramebuffer = m_ShadowmapBuffer;
+		RenderPass scene3DPass = RenderPass(scene3DPassInputs, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (activeCamera && sceneContext) {
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
 				Renderer::BeginScene(*editorCamera);
@@ -162,6 +160,20 @@ namespace PaulEngine
 							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
 							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
 							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+
+							float shadowSize = 20.0f;
+							float nearClip = 0.01f;
+							float farClip = 150.0f;
+
+							glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+							float aspectRatio = (float)m_ShadowWidth / (float)m_ShadowHeight;
+							float orthoLeft = -shadowSize * aspectRatio * 0.5f;
+							float orthoRight = shadowSize * aspectRatio * 0.5f;
+							float orthoBottom = -shadowSize * 0.5f;
+							float orthoTop = shadowSize * 0.5f;
+
+							glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, nearClip, farClip);
+							lightSource.LightMatrix = lightProjection * lightView;
 
 							Renderer::SubmitDirectionalLightSource(lightSource);
 						}
@@ -208,6 +220,7 @@ namespace PaulEngine
 					}
 				}
 
+				Texture2D::BindTexture(4, passContext.SourceFramebuffer->GetDepthAttachmentID());
 				Renderer::EndScene();
 			}
 		});
@@ -425,7 +438,7 @@ namespace PaulEngine
 				}
 			}
 		});
-		RenderPass scene3DPass = RenderPass({}, m_MainFramebuffer, [](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass scene3DPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (sceneContext)
 			{
 				Camera* camera = activeCamera.get();
@@ -468,6 +481,20 @@ namespace PaulEngine
 								lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
 								lightSource.Specular = glm::vec4(light.Specular, 1.0f);
 								lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+
+								float shadowSize = 20.0f;
+								float nearClip = 0.01f;
+								float farClip = 150.0f;
+
+								glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+								float aspectRatio = (float)m_ShadowWidth / (float)m_ShadowHeight;
+								float orthoLeft = -shadowSize * aspectRatio * 0.5f;
+								float orthoRight = shadowSize * aspectRatio * 0.5f;
+								float orthoBottom = -shadowSize * 0.5f;
+								float orthoTop = shadowSize * 0.5f;
+
+								glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, nearClip, farClip);
+								lightSource.LightMatrix = lightProjection * lightView;
 
 								Renderer::SubmitDirectionalLightSource(lightSource);
 							}
