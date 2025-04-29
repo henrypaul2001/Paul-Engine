@@ -25,10 +25,10 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
-			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported");
-			case RenderAPI::API::OpenGL:	OpenGLTexture2D::CreateTextures(multisampled, out_ID, count);
-			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported");
-			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported");
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return;
+			case RenderAPI::API::OpenGL:	OpenGLTexture2D::CreateTextures(multisampled, out_ID, count); return;
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return;
 		}
 
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
@@ -39,10 +39,10 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
-			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported");
-			case RenderAPI::API::OpenGL:	OpenGLTexture2D::BindTexture(slot, id);
-			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported");
-			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported");
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return;
+			case RenderAPI::API::OpenGL:	OpenGLTexture2D::BindTexture(slot, id); return;
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return;
 		}
 
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
