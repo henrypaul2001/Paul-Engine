@@ -112,28 +112,7 @@ namespace PaulEngine
 
 		int width = spec.Width;
 		int height = spec.Height;
-		int channels = 0;
-
-		switch (spec.Format) {
-			case ImageFormat::DEPTH:
-				channels = 1;
-				break;
-			case ImageFormat::R8:
-				channels = 1;
-				break;
-			case ImageFormat::RG8:
-				channels = 2;
-				break;
-			case ImageFormat::RGB8:
-				channels = 3;
-				break;
-			case ImageFormat::RGBA8:
-				channels = 4;
-				break;
-			case ImageFormat::RGBA32F:
-				channels = 4;
-				break;
-		}
+		int channels = NumChannels(spec.Format);
 
 		PE_CORE_ASSERT(bufferSize == width * height * channels, "Invalid texture spec for buffer size");
 

@@ -9,7 +9,11 @@ namespace PaulEngine {
 	enum class ImageFormat
 	{
 		None = 0,
-		DEPTH,
+		Depth16,
+		Depth24,
+		Depth32,
+		Depth24Stencil8,
+		RED_INTEGER,
 		R8,
 		RG8,
 		RGB8,
@@ -58,6 +62,26 @@ namespace PaulEngine {
 		glm::vec4 Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		bool GenerateMips = true;
 	};
+
+	static uint32_t NumChannels(ImageFormat format)
+	{
+		switch (format)
+		{
+			case ImageFormat::Depth16: return 1;
+			case ImageFormat::Depth24: return 1;
+			case ImageFormat::Depth32: return 1;
+			case ImageFormat::Depth24Stencil8: return 2;
+			case ImageFormat::RED_INTEGER: return 1;
+			case ImageFormat::R8: return 1;
+			case ImageFormat::RG8: return 2;
+			case ImageFormat::RGB8: return 3;
+			case ImageFormat::RGBA8: return 4;
+			case ImageFormat::RGBA32F: return 4;
+		}
+
+		PE_CORE_ASSERT(false, "Undefined data format translation");
+		return 0;
+	}
 
 	class Texture : public Asset
 	{

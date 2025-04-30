@@ -7,7 +7,11 @@ namespace PaulEngine {
 	{
 		static GLenum PEImageFormatToGLDataFormat(ImageFormat format) {
 			switch (format) {
-				case ImageFormat::DEPTH: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth16: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth24: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth32: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth24Stencil8: return GL_DEPTH_STENCIL;
+				case ImageFormat::RED_INTEGER: return GL_RED_INTEGER;
 				case ImageFormat::R8: return GL_RED;
 				case ImageFormat::RG8: return GL_RG;
 				case ImageFormat::RGB8: return GL_RGB;
@@ -21,7 +25,11 @@ namespace PaulEngine {
 
 		static GLenum PEImageFormatToGLInternalFormat(ImageFormat format) {
 			switch (format) {
-				case ImageFormat::DEPTH: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth16: return GL_DEPTH_COMPONENT16;
+				case ImageFormat::Depth24: return GL_DEPTH_COMPONENT24;
+				case ImageFormat::Depth32: return GL_DEPTH_COMPONENT32;
+				case ImageFormat::Depth24Stencil8: return GL_DEPTH24_STENCIL8;
+				case ImageFormat::RED_INTEGER: return GL_R32I;
 				case ImageFormat::R8: return GL_R8;
 				case ImageFormat::RG8: return GL_RG8;
 				case ImageFormat::RGB8: return GL_RGB8;
@@ -73,24 +81,6 @@ namespace PaulEngine {
 			}
 
 			PE_CORE_ASSERT(false, "Undefined image mag filter translation");
-			return 0;
-		}
-
-		static uint32_t GetPixelSize(GLenum dataFormat) {
-			switch (dataFormat) {
-				case GL_RGBA:
-					return 4;
-				case GL_RGB:
-					return 3;
-				case GL_RG:
-					return 2;
-				case GL_RED:
-					return 1;
-				case GL_DEPTH_COMPONENT:
-					return 1;
-			}
-
-			PE_CORE_ASSERT(false, "Undefined data format translation");
 			return 0;
 		}
 	}

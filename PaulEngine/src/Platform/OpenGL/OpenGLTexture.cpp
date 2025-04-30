@@ -33,7 +33,7 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 #ifdef PE_ENABLE_ASSERTS
-		uint32_t sizeofpixel = OpenGLTextureUtils::GetPixelSize(m_DataFormat);
+		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
@@ -105,7 +105,7 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(layer < m_NumLayers, "Layer index out of range");
 #ifdef PE_ENABLE_ASSERTS
-		uint32_t sizeofpixel = OpenGLTextureUtils::GetPixelSize(m_DataFormat);
+		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
