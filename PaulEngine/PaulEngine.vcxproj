@@ -150,8 +150,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebufferNew.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\FramebufferNew.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPass.h" />
     <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
@@ -201,7 +201,6 @@
     <ClInclude Include="src\PaulEngine\Renderer\Camera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\EditorCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Font.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\PaulEngine\Renderer\MSDFData.h" />
     <ClInclude Include="src\PaulEngine\Renderer\OrthographicCamera.h" />
@@ -223,7 +222,6 @@
     <ClInclude Include="src\PaulEngine\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
@@ -655,8 +653,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebufferNew.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\FramebufferNew.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\BinarySerializer.cpp" />
@@ -690,7 +688,6 @@
     <ClCompile Include="src\PaulEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Font.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderCommand.cpp" />
@@ -707,7 +704,6 @@
     <ClCompile Include="src\PaulEngine\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />

@@ -186,9 +186,6 @@
     <ClInclude Include="src\PaulEngine\Renderer\Font.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
@@ -250,9 +247,6 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h">
@@ -1550,8 +1544,8 @@
     <ClInclude Include="src\PaulEngine\Asset\BinarySerializer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderPass.h" />
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\FramebufferNew.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebufferNew.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1623,9 +1617,6 @@
     <ClCompile Include="src\PaulEngine\Renderer\Font.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\OrthographicCamera.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
@@ -1674,9 +1665,6 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1722,7 +1710,7 @@
     <ClCompile Include="src\PaulEngine\Renderer\ShaderParameterType.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\BinarySerializer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\FramebufferNew.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebufferNew.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
   </ItemGroup>
 </Project>

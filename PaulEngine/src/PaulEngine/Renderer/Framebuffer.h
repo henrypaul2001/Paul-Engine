@@ -1,53 +1,100 @@
 #pragma once
 #include "PaulEngine/Core/Core.h"
 #include "Texture.h"
-#include <glm/glm.hpp>
-namespace PaulEngine {
-	enum class FramebufferTextureFormat
+
+namespace PaulEngine
+{
+	enum class FramebufferAttachmentType
 	{
 		None = 0,
-
-		// Colour
-		RGBA8,
-		RED_INTEGER,
-
-		// Depth / stencil
-		DEPTH16,
-		DEPTH24,
-		DEPTH32,
-		DEPTH24STENCIL8,
-
-		// Defaults
-		DepthStencil = DEPTH24STENCIL8,
-		Depth = DEPTH32
+		Texture,
+		Renderbuffer
 	};
 
-	struct FramebufferTextureSpecification
+	enum class FramebufferAttachmentPoint
 	{
-		FramebufferTextureSpecification() = default;
-		FramebufferTextureSpecification(FramebufferTextureFormat format) : TextureFormat(format) {}
-
-		FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
-		ImageMinFilter MinFilter = ImageMinFilter::NEAREST;
-		ImageMagFilter MagFilter = ImageMagFilter::NEAREST;
-		ImageWrap Wrap_S = ImageWrap::CLAMP_TO_BORDER;
-		ImageWrap Wrap_T = ImageWrap::CLAMP_TO_BORDER;
-		ImageWrap Wrap_R = ImageWrap::CLAMP_TO_BORDER;
-		glm::vec4 Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		None = 0,
+		Colour0,
+		Colour1,
+		Colour2,
+		Colour3,
+		Colour4,
+		Colour5,
+		Colour6,
+		Colour7,
+		Depth,
+		Stencil,
+		DepthStencil
 	};
 
-	struct FramebufferAttachmentSpecification
+	class Framebuffer;
+
+	class FramebufferAttachment
 	{
-		FramebufferAttachmentSpecification() = default;
-		FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments) : TextureAttachments(attachments) {}
-		std::vector<FramebufferTextureSpecification> TextureAttachments;
+	public:
+		virtual ~FramebufferAttachment() {}
+
+		virtual FramebufferAttachmentPoint GetAttachPoint() const = 0;
+		virtual FramebufferAttachmentType GetType() const = 0;
+
+		static bool IsDepthAttachment(FramebufferAttachmentPoint attachPoint) {
+			switch (attachPoint) {
+				case FramebufferAttachmentPoint::Depth: return true;
+				case FramebufferAttachmentPoint::Stencil: return true;
+				case FramebufferAttachmentPoint::DepthStencil: return true;
+			}
+			return false;
+		}
+
+		virtual void Resize(const uint32_t width, const uint32_t height) = 0;
+
+		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) = 0;
+	};
+
+	class FramebufferTexture2DAttachment : public FramebufferAttachment
+	{
+	public:
+		FramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture) : m_AttachPoint(attachPoint), m_Texture(texture) {}
+		FramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec) : m_AttachPoint(attachPoint), m_Texture(Texture2D::Create(textureSpec)) {}
+		virtual ~FramebufferTexture2DAttachment() {}
+
+		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
+		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Texture; }
+
+		const Ref<Texture2D> GetTexture() { return m_Texture; }
+
+		virtual void Resize(const uint32_t width, const uint32_t height) override;
+
+		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture);
+		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec);
+
+	protected:
+		FramebufferAttachmentPoint m_AttachPoint;
+		Ref<Texture2D> m_Texture;
+	};
+
+	class FramebufferRenderbufferAttachment : public FramebufferAttachment
+	{
+	public:
+		FramebufferRenderbufferAttachment(FramebufferAttachmentPoint attachPoint) : m_AttachPoint(attachPoint) {
+			PE_CORE_ASSERT(false, "Not yet implemented");
+		}
+		virtual ~FramebufferRenderbufferAttachment() {}
+
+		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
+		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Renderbuffer; }
+
+		virtual void Resize(const uint32_t width, const uint32_t height) override { PE_CORE_ASSERT(false, "Not yet implemented"); }
+
+		static Ref<FramebufferRenderbufferAttachment> Create(FramebufferAttachmentPoint attachPoint);
+
+	protected:
+		FramebufferAttachmentPoint m_AttachPoint;
 	};
 
 	struct FramebufferSpecification
 	{
 		uint32_t Width = 0, Height = 0;
-		FramebufferAttachmentSpecification Attachments;
-
 		uint32_t Samples = 1;
 	};
 
@@ -58,17 +105,19 @@ namespace PaulEngine {
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
-		virtual uint32_t GetColourAttachmentID(uint32_t index = 0) const = 0;
-		virtual uint32_t GetDepthAttachmentID() const = 0;
-		virtual void ClearColourAttachment(uint32_t index, const int value) = 0;
+		virtual Ref<FramebufferAttachment> GetAttachment(FramebufferAttachmentPoint attachPoint) = 0;
+		virtual Ref<FramebufferAttachment> GetDepthAttachment() = 0;
+
+		virtual bool AddColourAttachment(Ref<FramebufferAttachment> colourAttachment) = 0;
+		virtual bool SetDepthAttachment(Ref<FramebufferAttachment> depthAttachment) = 0;
 
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
 
 		virtual void Resize(const uint32_t width, const uint32_t height) = 0;
-		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
+		virtual int ReadPixel(FramebufferAttachmentPoint attachPoint, int x, int y) = 0; // If there are no colour buffers and you want to read the depth buffer, glReadBuffer() must be GL_NONE with the data type set to GL_DEPTH_COMPONENT
 
-		static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
+		static Ref<Framebuffer> Create(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments = {}, Ref<FramebufferAttachment> depthAttachment = nullptr);
 
 		virtual bool operator ==(const Framebuffer* other) const = 0;
 		virtual bool operator !=(const Framebuffer* other) const = 0;

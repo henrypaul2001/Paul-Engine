@@ -26,10 +26,30 @@ namespace PaulEngine
 	void CreateMaterialWindow::Init()
 	{
 		FramebufferSpecification spec;
-		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::DepthStencil };
 		spec.Width = 1280;
 		spec.Height = 720;
-		m_Framebuffer = Framebuffer::Create(spec);
+		spec.Samples = 1;
+
+		TextureSpecification texSpec;
+		texSpec.Width = 1280;
+		texSpec.Height = 720;
+		texSpec.GenerateMips = false;
+		texSpec.Format = ImageFormat::RGBA8;
+		texSpec.MinFilter = ImageMinFilter::NEAREST;
+		texSpec.MagFilter = ImageMagFilter::NEAREST;
+		texSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec);
+
+		texSpec.Format = ImageFormat::RED_INTEGER;
+		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec);
+
+		texSpec.Format = ImageFormat::Depth24Stencil8;
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec);
+
+		m_Framebuffer = Framebuffer::Create(spec, { colour0Attach, entityIDAttach }, depthAttach);
 
 		m_Camera = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 
@@ -177,7 +197,8 @@ namespace PaulEngine
 					Renderer::EndScene();
 					m_Framebuffer->Unbind();
 
-					uint32_t textureID = m_Framebuffer->GetColourAttachmentID();
+					FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_Framebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
+					uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
 					ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 				}
 

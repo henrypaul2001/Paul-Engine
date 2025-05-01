@@ -220,7 +220,9 @@ namespace PaulEngine
 					}
 				}
 
-				Texture2D::BindTexture(4, passContext.SourceFramebuffer->GetDepthAttachmentID());
+				FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(passContext.SourceFramebuffer->GetDepthAttachment().get());
+				uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
+				Texture2D::BindTexture(4, textureID);
 				Renderer::EndScene();
 			}
 		});
@@ -708,25 +710,49 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 
 		FramebufferSpecification spec;
-		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::DepthStencil };
 		spec.Width = 1280;
 		spec.Height = 720;
-		m_MainFramebuffer = Framebuffer::Create(spec);
+		spec.Samples = 1;
+
+		TextureSpecification texSpec;
+		texSpec.Width = 1280;
+		texSpec.Height = 720;
+		texSpec.GenerateMips = false;
+		texSpec.Format = ImageFormat::RGBA8;
+		texSpec.MinFilter = ImageMinFilter::NEAREST;
+		texSpec.MagFilter = ImageMagFilter::NEAREST;
+		texSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec);
+
+		texSpec.Format = ImageFormat::RED_INTEGER;
+		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec);
+
+		texSpec.Format = ImageFormat::Depth24Stencil8;
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec);
+
+		m_MainFramebuffer = Framebuffer::Create(spec, { colour0Attach, entityIDAttach }, depthAttach);
 
 		spec = FramebufferSpecification();
-		FramebufferTextureSpecification depthSpec;
+		spec.Width = m_ShadowWidth;
+		spec.Height = m_ShadowHeight;
+		spec.Samples = 1;
+
+		TextureSpecification depthSpec;
 		depthSpec.Border = glm::vec4(1.0f);
+		depthSpec.Width = m_ShadowWidth;
+		depthSpec.Height = m_ShadowHeight;
 		depthSpec.MinFilter = ImageMinFilter::NEAREST;
 		depthSpec.MagFilter = ImageMagFilter::NEAREST;
 		depthSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
-		depthSpec.TextureFormat = FramebufferTextureFormat::DEPTH32;
-		spec.Attachments = { depthSpec };
-		spec.Width = m_ShadowWidth;
-		spec.Height = m_ShadowHeight;
-		spec.Samples = 1;
-		m_ShadowmapBuffer = Framebuffer::Create(spec);
+		depthSpec.Format = ImageFormat::Depth32;
+		Ref<FramebufferTexture2DAttachment> shadowDepthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec);
+
+		m_ShadowmapBuffer = Framebuffer::Create(spec, {}, shadowDepthAttach);
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
@@ -830,7 +856,8 @@ namespace PaulEngine
 		RenderCommand::Clear();
 
 		// Clear entity ID attachment to -1
-		m_MainFramebuffer->ClearColourAttachment(1, -1);
+		FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
+		texAttachment->GetTexture()->Clear(-1);
 
 		if (m_ProjectSelected) {
 			switch (m_SceneState)
@@ -860,13 +887,11 @@ namespace PaulEngine
 
 			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 			{
-				m_HoveredEntity = Entity((entt::entity)m_MainFramebuffer->ReadPixel(1, mouseX, mouseY), m_ActiveScene.get());
+				m_HoveredEntity = Entity((entt::entity)m_MainFramebuffer->ReadPixel(FramebufferAttachmentPoint::Colour1, mouseX, mouseY), m_ActiveScene.get());
 			}
 			else {
 				m_HoveredEntity = Entity();
 			}
-
-			//OnDebugOverlayDraw();
 		}
 
 		m_MainFramebuffer->Unbind();
@@ -1016,7 +1041,8 @@ namespace PaulEngine
 
 			// Test shadowmap view
 			ImGui::Begin("Shadow map test");
-			uint32_t shadowTextureID = m_ShadowmapBuffer->GetDepthAttachmentID();
+			FramebufferTexture2DAttachment* shadowAttach = dynamic_cast<FramebufferTexture2DAttachment*>(m_ShadowmapBuffer->GetDepthAttachment().get());
+			uint32_t shadowTextureID = shadowAttach->GetTexture()->GetRendererID();
 			ImGui::Image(shadowTextureID, ImVec2(m_ShadowWidth, m_ShadowHeight), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 			ImGui::End();
 
@@ -1038,7 +1064,8 @@ namespace PaulEngine
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
 
-			uint32_t textureID = m_MainFramebuffer->GetColourAttachmentID();
+			FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
+			uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
 			ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 			if (ImGui::BeginDragDropTarget()) {

@@ -3,184 +3,59 @@
 #include "OpenGLTexture.h"
 
 #include <glad/glad.h>
+#include <set>
 
-namespace PaulEngine {
-
-	namespace FramebufferUtils
+namespace PaulEngine
+{
+	namespace OpenGLFramebufferUtils
 	{
-		static GLenum TextureTarget(bool multisampled) {
-			return OpenGLTexture2D::TextureTarget(multisampled);
-		}
-
-		static GLenum FramebufferTextureFormatToGLFormat(FramebufferTextureFormat format)
+		static GLenum FramebufferAttachPointToGLenum(FramebufferAttachmentPoint attachPoint)
 		{
-			switch (format) {
-				case FramebufferTextureFormat::RGBA8: return GL_RGBA8;
-				case FramebufferTextureFormat::RED_INTEGER: return GL_R32I;
-				case FramebufferTextureFormat::DEPTH16: return GL_DEPTH_COMPONENT16;
-				case FramebufferTextureFormat::DEPTH24: return GL_DEPTH_COMPONENT24;
-				case FramebufferTextureFormat::DEPTH32: return GL_DEPTH_COMPONENT32;
-				case FramebufferTextureFormat::DEPTH24STENCIL8: return GL_DEPTH24_STENCIL8;
+			switch (attachPoint)
+			{
+				case FramebufferAttachmentPoint::None: return 0;
+				case FramebufferAttachmentPoint::Colour0: return GL_COLOR_ATTACHMENT0;
+				case FramebufferAttachmentPoint::Colour1: return GL_COLOR_ATTACHMENT1;
+				case FramebufferAttachmentPoint::Colour2: return GL_COLOR_ATTACHMENT2;
+				case FramebufferAttachmentPoint::Colour3: return GL_COLOR_ATTACHMENT3;
+				case FramebufferAttachmentPoint::Colour4: return GL_COLOR_ATTACHMENT4;
+				case FramebufferAttachmentPoint::Colour5: return GL_COLOR_ATTACHMENT5;
+				case FramebufferAttachmentPoint::Colour6: return GL_COLOR_ATTACHMENT6;
+				case FramebufferAttachmentPoint::Colour7: return GL_COLOR_ATTACHMENT7;
+				case FramebufferAttachmentPoint::Depth: return GL_DEPTH_ATTACHMENT;
+				case FramebufferAttachmentPoint::Stencil: return GL_STENCIL_ATTACHMENT;
+				case FramebufferAttachmentPoint::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
 			}
-
-			PE_CORE_ASSERT(false, "Undefined FramebufferTextureFormat translation");
-			return 0;
-		}
-
-		static GLenum FramebufferTextureFormatToGLDataFormat(FramebufferTextureFormat format)
-		{
-			switch (format) {
-				case FramebufferTextureFormat::RGBA8: return GL_RGBA;
-				case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
-				case FramebufferTextureFormat::DEPTH16: return GL_DEPTH_ATTACHMENT;
-				case FramebufferTextureFormat::DEPTH24: return GL_DEPTH_ATTACHMENT;
-				case FramebufferTextureFormat::DEPTH32: return GL_DEPTH_ATTACHMENT;
-				case FramebufferTextureFormat::DEPTH24STENCIL8: return GL_DEPTH_STENCIL_ATTACHMENT;
-			}
-
-			PE_CORE_ASSERT(false, "Undefined FramebufferTextureFormat translation");
-			return 0;
-		}
-
-		static void AttachColourTexture(uint32_t id, int samples, uint32_t width, uint32_t height, int index, FramebufferTextureSpecification spec) {
-			bool multisampled = (samples > 1);
-			GLenum format = FramebufferTextureFormatToGLDataFormat(spec.TextureFormat);
-			if (multisampled) {
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
-			}
-			else {
-				glTexImage2D(GL_TEXTURE_2D, 0, FramebufferTextureFormatToGLFormat(spec.TextureFormat), width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(spec.MinFilter));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(spec.MagFilter));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(spec.Wrap_R));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, OpenGLTextureUtils::ImageWrapToGLWrap(spec.Wrap_S));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(spec.Wrap_T));
-				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &spec.Border[0]);
-			}
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
-		}
-
-		static void AttachDepthTexture(uint32_t id, int samples, uint32_t width, uint32_t height, FramebufferTextureSpecification spec) {
-			bool multisampled = (samples > 1);
-			GLenum format = FramebufferTextureFormatToGLDataFormat(spec.TextureFormat);
-			GLenum internalFormat = FramebufferTextureFormatToGLFormat(spec.TextureFormat);
-			if (multisampled) {
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
-			}
-			else {
-				glTexStorage2D(GL_TEXTURE_2D, 1, internalFormat, width, height);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(spec.MinFilter));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(spec.MagFilter));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(spec.Wrap_R));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, OpenGLTextureUtils::ImageWrapToGLWrap(spec.Wrap_S));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(spec.Wrap_T));
-				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &spec.Border[0]);
-			}
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, format, TextureTarget(multisampled), id, 0);
-		}
-
-		static bool IsDepthFormat(FramebufferTextureFormat format) {
-			switch (format) {
-				case FramebufferTextureFormat::DEPTH24STENCIL8: return true;
-				case FramebufferTextureFormat::DEPTH16: return true;
-				case FramebufferTextureFormat::DEPTH24: return true;
-				case FramebufferTextureFormat::DEPTH32: return true;
-			}
-			return false;
-		}
-
-		static GLenum PETexFormatToGLTexFormat(FramebufferTextureFormat format) {
-			switch (format) {
-			case FramebufferTextureFormat::RGBA8:
-				return GL_RGBA8;
-			case FramebufferTextureFormat::RED_INTEGER:
-				return GL_RED_INTEGER;
-			}
-
-			PE_CORE_ASSERT(false, "Undefined texture format translation");
+			PE_CORE_ASSERT(false, "Undefined attachment point translation");
 			return 0;
 		}
 	}
 
-	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_Spec(spec)
-	{
-		for (auto textureAttachment : m_Spec.Attachments.TextureAttachments) {
-			if (!FramebufferUtils::IsDepthFormat(textureAttachment.TextureFormat)) {
-				m_ColourAttachmentSpecs.emplace_back(textureAttachment);
-			}
-			else {
-				m_DepthAttachmentSpec = textureAttachment;
-			}
-		}
-		
-		Regenerate();
-	}
-
-	OpenGLFramebuffer::~OpenGLFramebuffer()
-	{
-		Deallocate();
-	}
-
-	void OpenGLFramebuffer::Resize(const uint32_t width, const uint32_t height)
-	{
-		if (width == 0 || height == 0) {
-			PE_CORE_WARN("Attempt to resize framebuffer to invalid dimensions: {0}, {1}", width, height);
-			return;
-		}
-
-		m_Spec.Width = width;
-		m_Spec.Height = height;
-
-		Regenerate();
-	}
-
-	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
-	{
-		PE_CORE_ASSERT(attachmentIndex < m_ColourAttachments.size(), "Framebuffer attachment index out of bounds");
-		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-		int pixelData;
-		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
-		return pixelData;
-	}
-
-	void OpenGLFramebuffer::Regenerate()
+	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments, Ref<FramebufferAttachment> depthAttachment) : m_RendererID(0), m_Spec(spec)
 	{
 		PE_PROFILE_FUNCTION();
-
-		if (m_RendererID) {
-			Deallocate();
-		}
-
+		PE_CORE_ASSERT(colourAttachments.size() <= 8, "Maximum of 8 colour attachments");
 		glCreateFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
-		// Attachments
-		bool multisample = (m_Spec.Samples > 1);
-		if (m_ColourAttachmentSpecs.size() > 0) {
-			m_ColourAttachments.resize(m_ColourAttachmentSpecs.size());
-			OpenGLTexture2D::CreateTextures(multisample, &m_ColourAttachments[0], m_ColourAttachments.size());
+		glDrawBuffer(GL_NONE);
 
-			for (size_t i = 0; i < m_ColourAttachmentSpecs.size(); i++) {
-				OpenGLTexture2D::BindTexture(0, m_ColourAttachments[i]);
-				FramebufferUtils::AttachColourTexture(m_ColourAttachments[i], m_Spec.Samples, m_Spec.Width, m_Spec.Height, i, m_ColourAttachmentSpecs[i]);
+		bool multisample = (m_Spec.Samples > 1);
+		std::set<FramebufferAttachmentPoint> drawBuffers;
+		for (auto attachment : colourAttachments) {
+			if (AddColourAttachment(attachment)) {
+				drawBuffers.insert(attachment->GetAttachPoint());
 			}
 		}
-
-		if (m_DepthAttachmentSpec.TextureFormat != FramebufferTextureFormat::None) {
-			OpenGLTexture2D::CreateTextures(multisample, &m_DepthAttachment, 1);
-			OpenGLTexture2D::BindTexture(0, m_DepthAttachment);
-			FramebufferUtils::AttachDepthTexture(m_DepthAttachment, m_Spec.Samples, m_Spec.Width, m_Spec.Height, m_DepthAttachmentSpec);
+		if (drawBuffers.size() > 0) {
+			std::vector<GLenum> gl_DrawBuffers;
+			for (auto attach : drawBuffers) {
+				gl_DrawBuffers.push_back(OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attach));
+			}
+			glDrawBuffers(gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
 		}
-
-		if (m_ColourAttachments.size() > 1) {
-			PE_CORE_ASSERT(m_ColourAttachments.size() <= 4, "Maximum of 4 colour attachments");
-			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-			glDrawBuffers(m_ColourAttachments.size(), buffers);
-		}
-		else if (m_ColourAttachments.size() == 0) {
-			glDrawBuffer(GL_NONE);
+		if (depthAttachment) {
+			SetDepthAttachment(depthAttachment);
 		}
 
 		// error check
@@ -193,22 +68,49 @@ namespace PaulEngine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void OpenGLFramebuffer::Deallocate()
+	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
-		if (m_ColourAttachments.size() > 0) {
-			glDeleteTextures(m_ColourAttachments.size(), &m_ColourAttachments[0]);
-			m_ColourAttachments.clear();
-		}
-		if (m_DepthAttachment) {
-			glDeleteTextures(1, &m_DepthAttachment);
-		}
 	}
 
-	void OpenGLFramebuffer::ClearColourAttachment(uint32_t index, const int value)
+	Ref<FramebufferAttachment> OpenGLFramebuffer::GetAttachment(FramebufferAttachmentPoint attachPoint)
 	{
-		PE_CORE_ASSERT(index < m_ColourAttachments.size(), "Colour attachment index out of bounds!");
-		glClearTexImage(m_ColourAttachments[index], 0, FramebufferUtils::PETexFormatToGLTexFormat(m_ColourAttachmentSpecs[index].TextureFormat), GL_INT, &value);
+		PE_PROFILE_FUNCTION();
+		if (FramebufferAttachment::IsDepthAttachment(attachPoint)) {
+			if (m_DepthAttachment && m_DepthAttachment->GetAttachPoint() == attachPoint) {
+				return m_DepthAttachment;
+			}
+		}
+		else {
+			if (m_ColourAttachmentMap.find(attachPoint) != m_ColourAttachmentMap.end()) {
+				return m_ColourAttachmentMap.at(attachPoint);
+			}
+		}
+		PE_CORE_ERROR("No attachments were found on framebuffer with attach point {0}", (int)attachPoint);
+		return nullptr;
+	}
+
+	bool OpenGLFramebuffer::AddColourAttachment(Ref<FramebufferAttachment> colourAttachment)
+	{
+		if (FramebufferAttachment::IsDepthAttachment(colourAttachment->GetAttachPoint())) {
+			PE_CORE_ERROR("Cannot add depth attachment to colour attachments");
+			return false;
+		}
+
+		m_ColourAttachmentMap[colourAttachment->GetAttachPoint()] = colourAttachment;
+		colourAttachment->BindToFramebuffer(this);
+		return true;
+	}
+
+	bool OpenGLFramebuffer::SetDepthAttachment(Ref<FramebufferAttachment> depthAttachment)
+	{
+		if (!FramebufferAttachment::IsDepthAttachment(depthAttachment->GetAttachPoint())) {
+			PE_CORE_ERROR("Cannot add non depth attachment to depth attachment slot");
+			return false;
+		}
+		m_DepthAttachment = depthAttachment;
+		depthAttachment->BindToFramebuffer(this);
+		return true;
 	}
 
 	void OpenGLFramebuffer::Bind()
@@ -221,6 +123,57 @@ namespace PaulEngine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void OpenGLFramebuffer::Resize(const uint32_t width, const uint32_t height)
+	{
+		PE_PROFILE_FUNCTION();
+		if (width == 0 || height == 0) {
+			PE_CORE_WARN("Attempt to resize framebuffer to invalid dimensions: {0}, {1}", width, height);
+			return;
+		}
+
+		if (width != m_Spec.Width || height != m_Spec.Height)
+		{
+			m_Spec.Width = width;
+			m_Spec.Height = height;
+			for (auto colourAttach : m_ColourAttachmentMap) {
+				colourAttach.second->Resize(width, height);
+				colourAttach.second->BindToFramebuffer(this);
+			}
+			if (m_DepthAttachment)
+			{
+				m_DepthAttachment->Resize(width, height);
+				m_DepthAttachment->BindToFramebuffer(this);
+			}
+		}
+	}
+
+	// TODO: make this more elegant and provide more data types. Currently fairly hardcoded to suit reading the EntityID value
+	int OpenGLFramebuffer::ReadPixel(FramebufferAttachmentPoint attachPoint, int x, int y)
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<FramebufferAttachment> attachment = GetAttachment(attachPoint);
+		if (attachment) {
+			GLenum glAttachment = OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attachPoint);
+
+			if (attachment->GetType() == FramebufferAttachmentType::Texture) {
+				FramebufferTexture2DAttachment* textureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(attachment.get());
+				ImageFormat format = textureAttachment->GetTexture()->GetSpecification().Format;
+				GLenum dataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(format);
+
+				if (dataFormat == GL_RED_INTEGER) {
+					glReadBuffer(glAttachment);
+					int pixelData;
+					glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+					return pixelData;
+				}
+				else {
+					PE_CORE_ERROR("Texture format mismatch: requesting {0} from {1}", (int)format, (int)dataFormat);
+				}
+			}
+		}
+		return -1;
+	}
+
 	bool OpenGLFramebuffer::operator==(const Framebuffer* other) const
 	{
 		if (!other) { return false; }
@@ -231,5 +184,18 @@ namespace PaulEngine {
 	{
 		if (!other) { return true; }
 		return m_RendererID != dynamic_cast<const OpenGLFramebuffer*>(other)->m_RendererID;
+	}
+
+	// Renderbuffer attachment
+	void OpenGLFramebufferRenderbufferAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
+	{
+		PE_CORE_ASSERT(false, "Not yet implemented");
+	}
+
+	// Texture2D attachment
+	void OpenGLFramebufferTexture2DAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
+	{
+		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
+		glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_Texture->GetRendererID(), 0);
 	}
 }

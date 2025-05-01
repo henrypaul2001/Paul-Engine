@@ -1,39 +1,54 @@
 #pragma once
 #include "PaulEngine/Renderer/Framebuffer.h"
+namespace PaulEngine
+{
+	class OpenGLFramebufferTexture2DAttachment : public FramebufferTexture2DAttachment
+	{
+	public:
+		OpenGLFramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture) : FramebufferTexture2DAttachment(attachPoint, texture) {}
+		OpenGLFramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec) : FramebufferTexture2DAttachment(attachPoint, textureSpec) {}
 
-namespace PaulEngine {
+		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
+	};
+
+	class OpenGLFramebufferRenderbufferAttachment : public FramebufferRenderbufferAttachment
+	{
+	public:
+		OpenGLFramebufferRenderbufferAttachment(FramebufferAttachmentPoint attachPoint) : FramebufferRenderbufferAttachment(attachPoint) {}
+
+		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
+	};
+
 	class OpenGLFramebuffer : public Framebuffer
 	{
 	public:
-		OpenGLFramebuffer(const FramebufferSpecification& spec);
+		OpenGLFramebuffer(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments = {}, Ref<FramebufferAttachment> depthAttachment = nullptr);
 		virtual ~OpenGLFramebuffer();
-
-		virtual void Resize(const uint32_t width, const uint32_t height) override;
-		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Spec; }
 
-		virtual uint32_t GetColourAttachmentID(uint32_t index = 0) const override { PE_CORE_ASSERT(index < m_ColourAttachments.size(), "Index out of range"); return m_ColourAttachments[index]; }
-		virtual uint32_t GetDepthAttachmentID() const override { return m_DepthAttachment; }
-		virtual void ClearColourAttachment(uint32_t index, const int value) override;
+		virtual Ref<FramebufferAttachment> GetAttachment(FramebufferAttachmentPoint attachPoint) override;
+		virtual Ref<FramebufferAttachment> GetDepthAttachment() override { return m_DepthAttachment; }
+
+		virtual bool AddColourAttachment(Ref<FramebufferAttachment> colourAttachment) override;
+		virtual bool SetDepthAttachment(Ref<FramebufferAttachment> depthAttachment) override;
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
+
+		virtual void Resize(const uint32_t width, const uint32_t height) override;
+		virtual int ReadPixel(FramebufferAttachmentPoint attachPoint, int x, int y) override; // If there are no colour buffers and you want to read the depth buffer, glReadBuffer() must be GL_NONE with the data type set to GL_DEPTH_COMPONENT
+
+		uint32_t GetRendererID() const { return m_RendererID; }
 
 		virtual bool operator ==(const Framebuffer* other) const override;
 		virtual bool operator !=(const Framebuffer* other) const override;
 
 	private:
-		void Regenerate();
-		void Deallocate();
-
 		uint32_t m_RendererID;
 		FramebufferSpecification m_Spec;
 
-		std::vector<FramebufferTextureSpecification> m_ColourAttachmentSpecs;
-		FramebufferTextureSpecification m_DepthAttachmentSpec = FramebufferTextureSpecification(FramebufferTextureFormat::None);
-
-		std::vector<uint32_t> m_ColourAttachments;
-		uint32_t m_DepthAttachment;
+		std::unordered_map<FramebufferAttachmentPoint, Ref<FramebufferAttachment>> m_ColourAttachmentMap;
+		Ref<FramebufferAttachment> m_DepthAttachment = nullptr;
 	};
 }
