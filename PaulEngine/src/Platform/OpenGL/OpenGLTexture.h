@@ -99,6 +99,9 @@ namespace PaulEngine {
 
 		virtual void SetData(Buffer data) override;
 
+		virtual void Clear(int value) override;
+		virtual void Clear(float value) override;
+
 		virtual void Bind(const uint32_t slot = 0) const override;
 	
 		static GLenum TextureTarget(bool multisampled);
@@ -135,6 +138,9 @@ namespace PaulEngine {
 
 		virtual void SetData(Buffer data) override;
 		virtual void SetData(Buffer data, uint8_t layer) override;
+
+		virtual void Clear(int value) override;
+		virtual void Clear(float value) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
 

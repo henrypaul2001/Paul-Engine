@@ -95,6 +95,8 @@ namespace PaulEngine {
 		virtual uint32_t GetRendererID() const = 0;
 
 		virtual void SetData(Buffer data) = 0;
+		virtual void Clear(int value) = 0;
+		virtual void Clear(float value) = 0;
 
 		virtual void Bind(const uint32_t slot = 0) const = 0;
 

@@ -39,6 +39,16 @@ namespace PaulEngine {
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
 	}
 
+	void OpenGLTexture2D::Clear(int value)
+	{
+		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+	}
+
+	void OpenGLTexture2D::Clear(float value)
+	{
+		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+	}
+
 	void OpenGLTexture2D::Bind(const uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
@@ -109,6 +119,16 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+	}
+
+	void OpenGLTexture2DArray::Clear(int value)
+	{
+		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+	}
+
+	void OpenGLTexture2DArray::Clear(float value)
+	{
+		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
 	}
 
 	void OpenGLTexture2DArray::Bind(const uint32_t slot) const
