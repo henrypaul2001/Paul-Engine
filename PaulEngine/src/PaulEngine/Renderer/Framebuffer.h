@@ -7,7 +7,8 @@ namespace PaulEngine
 	enum class FramebufferAttachmentType
 	{
 		None = 0,
-		Texture,
+		Texture2D,
+		Texture2DArray,
 		Renderbuffer
 	};
 
@@ -59,18 +60,45 @@ namespace PaulEngine
 		virtual ~FramebufferTexture2DAttachment() {}
 
 		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
-		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Texture; }
+		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Texture2D; }
 
 		const Ref<Texture2D> GetTexture() { return m_Texture; }
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
-		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture);
+		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> textureArray);
 		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec);
 
 	protected:
 		FramebufferAttachmentPoint m_AttachPoint;
 		Ref<Texture2D> m_Texture;
+	};
+
+	class FramebufferTexture2DArrayAttachment : public FramebufferAttachment
+	{
+	public:
+		FramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2DArray> textureArray) : m_AttachPoint(attachPoint), m_TextureArray(textureArray), m_TargetIndex(0) {}
+		FramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers) : m_AttachPoint(attachPoint), m_TextureArray(Texture2DArray::Create(textureSpec, layers)), m_TargetIndex(0) {}
+		virtual ~FramebufferTexture2DArrayAttachment() {}
+
+		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
+		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Texture2DArray; }
+
+		const Ref<Texture2DArray> GetTexture() { return m_TextureArray; }
+
+		virtual void Resize(const uint32_t width, const uint32_t height) override;
+
+		void SetTargetIndex(uint8_t newTarget) {
+			m_TargetIndex = std::min(newTarget, uint8_t(m_TextureArray->GetNumLayers() - 1));
+		}
+
+		static Ref<FramebufferTexture2DArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2DArray> texture);
+		static Ref<FramebufferTexture2DArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers);
+
+	protected:
+		FramebufferAttachmentPoint m_AttachPoint;
+		Ref<Texture2DArray> m_TextureArray;
+		uint8_t m_TargetIndex;
 	};
 
 	class FramebufferRenderbufferAttachment : public FramebufferAttachment

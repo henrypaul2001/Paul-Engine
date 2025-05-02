@@ -155,7 +155,7 @@ namespace PaulEngine
 		if (attachment) {
 			GLenum glAttachment = OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attachPoint);
 
-			if (attachment->GetType() == FramebufferAttachmentType::Texture) {
+			if (attachment->GetType() == FramebufferAttachmentType::Texture2D) {
 				FramebufferTexture2DAttachment* textureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(attachment.get());
 				ImageFormat format = textureAttachment->GetTexture()->GetSpecification().Format;
 				GLenum dataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(format);
@@ -197,5 +197,12 @@ namespace PaulEngine
 	{
 		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
 		glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_Texture->GetRendererID(), 0);
+	}
+
+	// Texture2DArray attachment
+	void OpenGLFramebufferTexture2DArrayAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
+	{
+		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
+		glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_TextureArray->GetRendererID(), 0, m_TargetIndex);
 	}
 }
