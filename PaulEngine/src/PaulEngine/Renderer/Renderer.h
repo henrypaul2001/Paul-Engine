@@ -10,6 +10,10 @@
 namespace PaulEngine {
 	class Renderer {
 	public:
+		static const int MAX_ACTIVE_DIR_LIGHTS = 8;
+		static const int MAX_ACTIVE_POINT_LIGHTS = 8;
+		static const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+
 		struct DirectionalLight // vec4 for padding
 		{
 			glm::vec4 Direction = glm::vec4(-0.2f, -0.5f, -0.3f, 1.0f);

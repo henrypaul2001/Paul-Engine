@@ -748,7 +748,7 @@ namespace PaulEngine
 		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Format = ImageFormat::Depth32;
-		Ref<FramebufferTexture2DArrayAttachment> shadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(8));
+		Ref<FramebufferTexture2DArrayAttachment> shadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
 
 		m_ShadowmapBuffer = Framebuffer::Create(spec, {}, shadowDepthArrayAttach);
 

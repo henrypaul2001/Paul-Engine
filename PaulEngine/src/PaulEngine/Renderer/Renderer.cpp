@@ -10,10 +10,6 @@
 #include "PaulEngine/Asset/TextureImporter.h"
 
 namespace PaulEngine {
-	const int MAX_ACTIVE_DIR_LIGHTS = 8;
-	const int MAX_ACTIVE_POINT_LIGHTS = 8;
-	const int MAX_ACTIVE_SPOT_LIGHTS = 8;
-
 	struct QuadVertex
 	{
 		glm::vec3 Position;
@@ -105,9 +101,9 @@ namespace PaulEngine {
 		SceneMetaData SceneBufferMetaData;
 		struct SceneData
 		{
-			Renderer::DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
-			Renderer::PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
-			Renderer::SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
+			Renderer::DirectionalLight DirLights[Renderer::MAX_ACTIVE_DIR_LIGHTS];
+			Renderer::PointLight PointLights[Renderer::MAX_ACTIVE_POINT_LIGHTS];
+			Renderer::SpotLight SpotLights[Renderer::MAX_ACTIVE_SPOT_LIGHTS];
 			int ActiveDirLights = 0;
 			int ActivePointLights = 0;
 			int ActiveSpotLights = 0;
