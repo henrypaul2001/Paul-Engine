@@ -50,10 +50,10 @@ namespace PaulEngine
 			}
 
 			if (dirLight) {
-				float shadowSize = 20.0f;
-				float nearClip = 0.01f;
-				float farClip = 150.0f;
-				glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+				float shadowSize = dirLight->ShadowMapProjectionSize;
+				float nearClip = dirLight->ShadowMapNearClip;
+				float farClip = dirLight->ShadowMapFarClip;
+				glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * dirLight->ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 				SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
 				cam.SetOrthographic(shadowSize, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
 
@@ -154,25 +154,23 @@ namespace PaulEngine
 							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
 							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
 							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
-
+		
 							Renderer::DirectionalLight lightSource;
-							lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), 1.0f);
-							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
-							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
-							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+							lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), (float)light.CastShadows);
+							lightSource.Diffuse = glm::vec4(light.Diffuse, light.ShadowMinBias);
+							lightSource.Specular = glm::vec4(light.Specular, light.ShadowMaxBias);
+							lightSource.Ambient = glm::vec4(light.Ambient, light.ShadowMapCameraDistance);
 
-							float shadowSize = 20.0f;
-							float nearClip = 0.01f;
-							float farClip = 150.0f;
+							float shadowSize = light.ShadowMapProjectionSize;
 
-							glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+							glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 							float aspectRatio = (float)m_ShadowWidth / (float)m_ShadowHeight;
 							float orthoLeft = -shadowSize * aspectRatio * 0.5f;
 							float orthoRight = shadowSize * aspectRatio * 0.5f;
 							float orthoBottom = -shadowSize * 0.5f;
 							float orthoTop = shadowSize * 0.5f;
 
-							glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, nearClip, farClip);
+							glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, light.ShadowMapNearClip, light.ShadowMapFarClip);
 							lightSource.LightMatrix = lightProjection * lightView;
 
 							Renderer::SubmitDirectionalLightSource(lightSource);
@@ -220,9 +218,9 @@ namespace PaulEngine
 					}
 				}
 
-				FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(passContext.SourceFramebuffer->GetDepthAttachment().get());
-				uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
-				Texture2D::BindTexture(4, textureID);
+				FramebufferTexture2DArrayAttachment* texAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(passContext.SourceFramebuffer->GetDepthAttachment().get());
+				texAttachment->GetTexture()->Bind(4);
+				//Texture2DArray::BindTexture(4, textureID);
 				Renderer::EndScene();
 			}
 		});
@@ -750,9 +748,9 @@ namespace PaulEngine
 		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Format = ImageFormat::Depth32;
-		Ref<FramebufferTexture2DAttachment> shadowDepthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec);
+		Ref<FramebufferTexture2DArrayAttachment> shadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(8));
 
-		m_ShadowmapBuffer = Framebuffer::Create(spec, {}, shadowDepthAttach);
+		m_ShadowmapBuffer = Framebuffer::Create(spec, {}, shadowDepthArrayAttach);
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
@@ -1037,13 +1035,6 @@ namespace PaulEngine
 				ImGui::BulletText("%d : %s", handle, AssetTypeToString(asset->GetType()).c_str());
 			}
 
-			ImGui::End();
-
-			// Test shadowmap view
-			ImGui::Begin("Shadow map test");
-			FramebufferTexture2DAttachment* shadowAttach = dynamic_cast<FramebufferTexture2DAttachment*>(m_ShadowmapBuffer->GetDepthAttachment().get());
-			uint32_t shadowTextureID = shadowAttach->GetTexture()->GetRendererID();
-			ImGui::Image(shadowTextureID, ImVec2(m_ShadowWidth, m_ShadowHeight), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 			ImGui::End();
 
 			// -- Viewport --

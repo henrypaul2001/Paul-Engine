@@ -82,11 +82,11 @@ struct VertexData
 
 struct DirectionalLight // vec4 for padding
 {
-	vec4 Direction;
+	vec4 Direction; // w = (bool)castShadows
 
-	vec4 Ambient;
-	vec4 Diffuse;
-	vec4 Specular;
+	vec4 Ambient; // w = shadow distance
+	vec4 Diffuse; // w = min bias
+	vec4 Specular; // w = max bias
 
 	mat4 LightMatrix;
 };
@@ -139,7 +139,7 @@ layout(binding = 0) uniform sampler2D AlbedoMap;
 layout(binding = 1) uniform sampler2D SpecularMap;
 layout(binding = 2) uniform sampler2D NormalMap;
 layout(binding = 3) uniform sampler2D DisplacementMap;
-layout(binding = 4) uniform sampler2D ShadowMapTest;
+layout(binding = 4) uniform sampler2DArray ShadowMapArrayTest;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -155,7 +155,8 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 	if (projCoords.z > 1.0) { return 0.0; }
 
 	// closest depth value from lights perspective
-	float closestDepth = texture(ShadowMapTest, projCoords.xy).r;
+	int layer = 0;
+	float closestDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy, layer)).r;
 
 	// get fragment depth
 	float currentDepth = projCoords.z;
@@ -166,12 +167,12 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 
 	// pcf soft shadowing
 	float shadow = 0.0;
-	vec2 texelSize = 1.0 / textureSize(ShadowMapTest, 0);
+	vec2 texelSize = 1.0 / textureSize(ShadowMapArrayTest, 0).xy;
 	for (int x = -1; x <= 1; x++)
 	{
 		for (int y = -1; y <= 1; y++)
 		{
-			float pcfDepth = texture(ShadowMapTest, projCoords.xy + vec2(x, y) * texelSize).r;
+			float pcfDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
 			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
 		}
 	}
@@ -233,12 +234,17 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
 
-	float shadowDistance = 20.0;
-	float minBias = 0.005;
-	float maxBias = 0.05;
-	float shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * 20.0, minBias, maxBias, Normal);
+	// shadow contribution
+	float shadowDistance = u_SceneData.DirLights[lightIndex].Ambient.w;
+	float minBias = u_SceneData.DirLights[lightIndex].Diffuse.w;
+	float maxBias = u_SceneData.DirLights[lightIndex].Specular.w;
+
+	float shadow = 0.0;
+	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
+	{
+		shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal);
+	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
-	//return ambient + diffuse + specular;
 }
 
 vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
