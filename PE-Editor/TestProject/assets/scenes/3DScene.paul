@@ -1,5 +1,29 @@
 Scene: Untitled
 Entities:
+  - Entity: 17589300977564867329
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [19.33841, 6.218174, 28.787687]
+      Rotation: [-2.8509092, -0.28059608, 3.0931199]
+      Scale: [0.99999475, 0.99999976, 0.99998075]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [0.6725979, 0.6325883, 0.5265891]
+      Specular: [0.4519573, 0.4519573, 0.4519573]
+      Ambient: [0.1, 0.1, 0.1]
+      CastShadows: true
+      ShadowMinBias: 0.001
+      ShadowMaxBias: 0
+      ShadowMapCameraDistance: 33.7
+      ShadowMapProjectionSize: 61
+      ShadowMapNearClip: 0.0001
+      ShadowMapFarClip: 500
   - Entity: 13732826914999760753
     TagComponent:
       Tag: SpotLight
@@ -58,9 +82,9 @@ Entities:
     TagComponent:
       Tag: Directional Light
     TransformComponent:
-      Position: [2.280612, 6.087109, 17.735357]
-      Rotation: [-2.8680031, 0.81868774, -3.1415925]
-      Scale: [0.9999995, 1, 1.0000001]
+      Position: [12.688779, 6.23913, 29.6539]
+      Rotation: [-2.736535, 1.083315, -2.9816027]
+      Scale: [0.9999967, 0.99999917, 0.999997]
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -72,10 +96,10 @@ Entities:
       Specular: [0.4519573, 0.4519573, 0.4519573]
       Ambient: [0.1, 0.1, 0.1]
       CastShadows: true
-      ShadowMinBias: 0
-      ShadowMaxBias: 0.0009
+      ShadowMinBias: 0.001
+      ShadowMaxBias: 0
       ShadowMapCameraDistance: 33.7
-      ShadowMapProjectionSize: 40.9
+      ShadowMapProjectionSize: 61
       ShadowMapNearClip: 0.0001
       ShadowMapFarClip: 500
   - Entity: 9630015821987678863
@@ -83,8 +107,8 @@ Entities:
       Tag: TexturedShadedCube
     TransformComponent:
       Position: [7.0225153, -8.822878, 1.2588725]
-      Rotation: [1.1057526, 0.16097131, 1.1332961]
-      Scale: [7.5937347, 7.5937805, 7.5937304]
+      Rotation: [1.1056545, 0.16219683, 1.1326752]
+      Scale: [7.5937157, 7.593777, 7.593734]
     MeshRendererComponent:
       MaterialHandle: 14877410352446370834
       MeshHandle: 0
@@ -110,7 +134,7 @@ Entities:
     TagComponent:
       Tag: ShadedCube
     TransformComponent:
-      Position: [29.515425, -19.25575, -4.785293]
+      Position: [22.934334, -18.80556, -1.1578431]
       Rotation: [0, 0, 0]
       Scale: [4.750002, 4.7499924, 4.7499986]
     MeshRendererComponent:
@@ -134,7 +158,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 1.9858395
+        AspectRatio: 2.0783784
       FixedAspect: false
   - Entity: 3058056560338427120
     TagComponent:

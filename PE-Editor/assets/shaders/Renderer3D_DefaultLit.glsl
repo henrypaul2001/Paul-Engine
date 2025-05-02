@@ -144,7 +144,7 @@ layout(binding = 4) uniform sampler2DArray ShadowMapArrayTest;
 vec2 ScaledTexCoords;
 vec3 ViewDir;
 
-float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
+float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, int shadowMapLayer)
 {
 	// perspective divide
 	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
@@ -155,8 +155,7 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 	if (projCoords.z > 1.0) { return 0.0; }
 
 	// closest depth value from lights perspective
-	int layer = 0;
-	float closestDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy, layer)).r;
+	float closestDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy, shadowMapLayer)).r;
 
 	// get fragment depth
 	float currentDepth = projCoords.z;
@@ -172,7 +171,7 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 	{
 		for (int y = -1; y <= 1; y++)
 		{
-			float pcfDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+			float pcfDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy + vec2(x, y) * texelSize, shadowMapLayer)).r;
 			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
 		}
 	}
@@ -242,7 +241,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	float shadow = 0.0;
 	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
 	{
-		shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal);
+		shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal, lightIndex);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
