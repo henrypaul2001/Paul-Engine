@@ -71,6 +71,13 @@ Entities:
       Diffuse: [0.6725979, 0.6325883, 0.5265891]
       Specular: [0.4519573, 0.4519573, 0.4519573]
       Ambient: [0.1, 0.1, 0.1]
+      CastShadows: true
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapCameraDistance: 20.0
+      ShadowMapProjectionSize: 20.0
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 150.0
   - Entity: 9630015821987678863
     TagComponent:
       Tag: TexturedShadedCube

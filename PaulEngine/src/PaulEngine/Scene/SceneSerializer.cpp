@@ -165,6 +165,13 @@ namespace PaulEngine
 			out << YAML::Key << "Diffuse" << YAML::Value << lightComponent.Diffuse;
 			out << YAML::Key << "Specular" << YAML::Value << lightComponent.Specular;
 			out << YAML::Key << "Ambient" << YAML::Value << lightComponent.Ambient;
+			out << YAML::Key << "CastShadows" << YAML::Value << lightComponent.CastShadows;
+			out << YAML::Key << "ShadowMinBias" << YAML::Value << lightComponent.ShadowMinBias;
+			out << YAML::Key << "ShadowMaxBias" << YAML::Value << lightComponent.ShadowMaxBias;
+			out << YAML::Key << "ShadowMapCameraDistance" << YAML::Value << lightComponent.ShadowMapCameraDistance;
+			out << YAML::Key << "ShadowMapProjectionSize" << YAML::Value << lightComponent.ShadowMapProjectionSize;
+			out << YAML::Key << "ShadowMapNearClip" << YAML::Value << lightComponent.ShadowMapNearClip;
+			out << YAML::Key << "ShadowMapFarClip" << YAML::Value << lightComponent.ShadowMapFarClip;
 
 			out << YAML::EndMap;
 		}
@@ -359,6 +366,13 @@ namespace PaulEngine
 					lightComponent.Diffuse = dirLightNode["Diffuse"].as<glm::vec3>();
 					lightComponent.Specular = dirLightNode["Specular"].as<glm::vec3>();
 					lightComponent.Ambient = dirLightNode["Ambient"].as<glm::vec3>();
+					lightComponent.CastShadows = dirLightNode["CastShadows"].as<bool>();
+					lightComponent.ShadowMinBias = dirLightNode["ShadowMinBias"].as<float>();
+					lightComponent.ShadowMaxBias = dirLightNode["ShadowMaxBias"].as<float>();
+					lightComponent.ShadowMapCameraDistance = dirLightNode["ShadowMapCameraDistance"].as<float>();
+					lightComponent.ShadowMapProjectionSize = dirLightNode["ShadowMapProjectionSize"].as<float>();
+					lightComponent.ShadowMapNearClip = dirLightNode["ShadowMapNearClip"].as<float>();
+					lightComponent.ShadowMapFarClip = dirLightNode["ShadowMapFarClip"].as<float>();
 				}
 
 				YAML::Node pointLightNode = entity["PointLightComponent"];

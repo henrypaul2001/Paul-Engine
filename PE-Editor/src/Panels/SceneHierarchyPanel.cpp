@@ -720,6 +720,20 @@ namespace PaulEngine
 			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
 			ImGui::ColorEdit3("Specular", &component.Specular[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
 			ImGui::ColorEdit3("Ambient", &component.Ambient[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+
+			ImGui::SeparatorText("Shadows");
+			ImGui::Checkbox("Cast shadows", &component.CastShadows);
+			if (component.CastShadows) {
+				ImGui::DragFloat("Min bias", &component.ShadowMinBias, 0.001f);
+				ImGui::DragFloat("Max bias", &component.ShadowMaxBias, 0.001f);
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Text("Shadow map properties");
+				ImGui::DragFloat("Camera distance", &component.ShadowMapCameraDistance, 0.1f, 0.0f, 1000000.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+				ImGui::DragFloat("Projection size", &component.ShadowMapProjectionSize, 0.1f, 1.0f, 1000000.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+				ImGui::DragFloat("Near clip", &component.ShadowMapNearClip, 0.01f);
+				ImGui::DragFloat("Far clip", &component.ShadowMapFarClip, 0.1f);
+			}
 		});
 
 		// Point Light

@@ -209,6 +209,14 @@ namespace PaulEngine
 		glm::vec3 Diffuse = glm::vec3(0.5f);
 		glm::vec3 Specular = glm::vec3(0.5f);
 		glm::vec3 Ambient = glm::vec3(0.1f);
+
+		bool CastShadows = true;
+		float ShadowMinBias = 0.005f;
+		float ShadowMaxBias = 0.05f;
+		float ShadowMapCameraDistance = 20.0f;
+		float ShadowMapProjectionSize = 20.0f;
+		float ShadowMapNearClip = 0.01f;
+		float ShadowMapFarClip = 150.0f;
 	};
 
 	struct ComponentPointLight {
