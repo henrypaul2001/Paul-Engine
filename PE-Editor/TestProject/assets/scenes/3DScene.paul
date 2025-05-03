@@ -45,6 +45,11 @@ Entities:
       Diffuse: [1, 7, 10]
       Specular: [1, 7, 10]
       Ambient: [0, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0.001
+      ShadowMaxBias: 0
+      ShadowMapNearClip: 0.0001
+      ShadowMapFarClip: 500
   - Entity: 10541037527128033745
     TagComponent:
       Tag: Floor

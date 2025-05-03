@@ -200,6 +200,11 @@ namespace PaulEngine
 			out << YAML::Key << "Diffuse" << YAML::Value << lightComponent.Diffuse;
 			out << YAML::Key << "Specular" << YAML::Value << lightComponent.Specular;
 			out << YAML::Key << "Ambient" << YAML::Value << lightComponent.Ambient;
+			out << YAML::Key << "CastShadows" << YAML::Value << lightComponent.CastShadows;
+			out << YAML::Key << "ShadowMinBias" << YAML::Value << lightComponent.ShadowMinBias;
+			out << YAML::Key << "ShadowMaxBias" << YAML::Value << lightComponent.ShadowMaxBias;
+			out << YAML::Key << "ShadowMapNearClip" << YAML::Value << lightComponent.ShadowMapNearClip;
+			out << YAML::Key << "ShadowMapFarClip" << YAML::Value << lightComponent.ShadowMapFarClip;
 
 			out << YAML::EndMap;
 		}
@@ -393,6 +398,11 @@ namespace PaulEngine
 					lightComponent.Diffuse = spotLightNode["Diffuse"].as<glm::vec3>();
 					lightComponent.Specular = spotLightNode["Specular"].as<glm::vec3>();
 					lightComponent.Ambient = spotLightNode["Ambient"].as<glm::vec3>();
+					lightComponent.CastShadows = spotLightNode["CastShadows"].as<bool>();
+					lightComponent.ShadowMinBias = spotLightNode["ShadowMinBias"].as<float>();
+					lightComponent.ShadowMaxBias = spotLightNode["ShadowMaxBias"].as<float>();
+					lightComponent.ShadowMapNearClip = spotLightNode["ShadowMapNearClip"].as<float>();
+					lightComponent.ShadowMapFarClip = spotLightNode["ShadowMapFarClip"].as<float>();
 				}
 			}
 		}
