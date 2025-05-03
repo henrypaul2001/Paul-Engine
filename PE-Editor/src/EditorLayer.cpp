@@ -25,7 +25,8 @@ namespace PaulEngine
 	{
 		std::vector<RenderPass> renderPasses;
 
-		RenderPass shadowmapTestPass = RenderPass({}, m_ShadowmapBuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+		RenderPass dirLightShadowPass = RenderPass({}, m_DirLightShadowsFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+			PE_PROFILE_SCOPE("Directional light shadow map capture pass");
 			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
 
 			Ref<FramebufferAttachment> depthAttachment = passContext.TargetFramebuffer->GetDepthAttachment();
@@ -54,7 +55,7 @@ namespace PaulEngine
 				{
 					FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
 					depthArrayAttachment->SetTargetIndex(i);
-					depthArrayAttachment->BindToFramebuffer(passContext.TargetFramebuffer.get());
+					passContext.TargetFramebuffer->SetDepthAttachment(depthAttachment);
 					RenderCommand::Clear();
 
 					glm::mat4 transformMatrix = transform.GetTransform();
@@ -73,6 +74,71 @@ namespace PaulEngine
 					glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 					SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
 					cam.SetOrthographic(shadowSize, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
+
+					Renderer::BeginScene(cam, cameraTransform);
+
+					{
+						PE_PROFILE_SCOPE("Submit Mesh");
+						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+						for (auto entityID : view) {
+							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+							Renderer::DrawDefaultCubeImmediate(m_ShadowmapMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+						}
+					}
+
+					Renderer::EndScene();
+				}
+			}
+		});
+		RenderPass spotLightShadowPass = RenderPass({}, m_SpotLightShadowsFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+			PE_PROFILE_SCOPE("Spot light shadow map capture pass");
+			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
+
+			Ref<FramebufferAttachment> depthAttachment = passContext.TargetFramebuffer->GetDepthAttachment();
+			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missind depth attachment");
+			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
+
+			std::vector<Entity> spotLights = std::vector<Entity>(Renderer::MAX_ACTIVE_SPOT_LIGHTS);
+			int spotLightsHead = 0;
+			int activeLights = 0;
+			auto view = sceneContext->View<ComponentSpotLight>();
+
+			// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
+			for (auto entityID : view) {
+				spotLights[spotLightsHead] = Entity(entityID, sceneContext.get());
+				spotLightsHead = ++spotLightsHead % Renderer::MAX_ACTIVE_SPOT_LIGHTS;
+				activeLights = std::min(Renderer::MAX_ACTIVE_SPOT_LIGHTS, ++activeLights);
+			}
+
+			// Capture shadow maps for previously gathered light sources
+			for (int i = 0; i < activeLights; i++) {
+				Entity entity = spotLights[i];
+				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+				ComponentSpotLight& light = entity.GetComponent<ComponentSpotLight>();
+
+				if (light.CastShadows)
+				{
+					FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
+					depthArrayAttachment->SetTargetIndex(i);
+					passContext.TargetFramebuffer->SetDepthAttachment(depthAttachment);
+					RenderCommand::Clear();
+
+					glm::mat4 transformMatrix = transform.GetTransform();
+					glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+					rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+					glm::vec3 position = transform.Position();
+					glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
+
+					float nearClip = light.ShadowMapNearClip;
+					float farClip = light.ShadowMapFarClip;
+
+					glm::mat4 cameraTransform = glm::inverse(glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f)));
+					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
+					cam.SetPerspective(90.0f, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
 
 					Renderer::BeginScene(cam, cameraTransform);
 
@@ -144,7 +210,16 @@ namespace PaulEngine
 		});
 		
 		RenderPassInputs scene3DPassInputs;
-		scene3DPassInputs.SourceFramebuffer = m_ShadowmapBuffer;
+		Ref<Texture> dirLightShadowTexture = nullptr;
+		if (m_DirLightShadowsFramebuffer->GetDepthAttachment()->GetType() == FramebufferAttachmentType::Texture2DArray) {
+			dirLightShadowTexture = dynamic_cast<FramebufferTexture2DArrayAttachment*>(m_DirLightShadowsFramebuffer->GetDepthAttachment().get())->GetTexture();
+		}
+		Ref<Texture> spotLightShadowTexture = nullptr;
+		if (m_SpotLightShadowsFramebuffer->GetDepthAttachment()->GetType() == FramebufferAttachmentType::Texture2DArray) {
+			spotLightShadowTexture = dynamic_cast<FramebufferTexture2DArrayAttachment*>(m_SpotLightShadowsFramebuffer->GetDepthAttachment().get())->GetTexture();
+		}
+		scene3DPassInputs.SourceTextures.push_back(dirLightShadowTexture);
+		scene3DPassInputs.SourceTextures.push_back(spotLightShadowTexture);
 		RenderPass scene3DPass = RenderPass(scene3DPassInputs, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (activeCamera && sceneContext) {
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
@@ -223,7 +298,7 @@ namespace PaulEngine
 							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
 
 							glm::vec3 position = transform.Position();
-							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);;
+							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
 
 							Renderer::SpotLight lightSource;
 							lightSource.Position = glm::vec4(position, light.Range);
@@ -236,9 +311,12 @@ namespace PaulEngine
 					}
 				}
 
-				FramebufferTexture2DArrayAttachment* texAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(passContext.SourceFramebuffer->GetDepthAttachment().get());
-				texAttachment->GetTexture()->Bind(4);
-				//Texture2DArray::BindTexture(4, textureID);
+				if (passContext.SourceTextures.size() > 0 && passContext.SourceTextures[0]) {
+					passContext.SourceTextures[0]->Bind(4);
+				}
+				if (passContext.SourceTextures.size() > 1 && passContext.SourceTextures[1]) {
+					passContext.SourceTextures[1]->Bind(5);
+				}
 				Renderer::EndScene();
 			}
 		});
@@ -379,7 +457,8 @@ namespace PaulEngine
 				Renderer2D::EndScene();
 			}
 		});
-		renderPasses.push_back(shadowmapTestPass);
+		renderPasses.push_back(dirLightShadowPass);
+		renderPasses.push_back(spotLightShadowPass);
 		renderPasses.push_back(scene2DPass);
 		renderPasses.push_back(scene3DPass);
 		renderPasses.push_back(debugOverlayPass);
@@ -766,9 +845,12 @@ namespace PaulEngine
 		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Format = ImageFormat::Depth32;
-		Ref<FramebufferTexture2DArrayAttachment> shadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
 
-		m_ShadowmapBuffer = Framebuffer::Create(spec, {}, shadowDepthArrayAttach);
+		Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
+		m_DirLightShadowsFramebuffer = Framebuffer::Create(spec, {}, dirLightShadowDepthArrayAttach);
+
+		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
+		m_SpotLightShadowsFramebuffer = Framebuffer::Create(spec, {}, spotLightShadowDepthArrayAttach);
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;

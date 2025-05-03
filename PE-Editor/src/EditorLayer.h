@@ -68,7 +68,8 @@ namespace PaulEngine {
 		int m_ShadowHeight = 1280;
 		Ref<Framebuffer> m_MainFramebuffer;
 
-		Ref<Framebuffer> m_ShadowmapBuffer;
+		Ref<Framebuffer> m_DirLightShadowsFramebuffer;
+		Ref<Framebuffer> m_SpotLightShadowsFramebuffer;
 		AssetHandle m_ShadowmapShaderHandle;
 		Ref<Material> m_ShadowmapMaterial;
 
