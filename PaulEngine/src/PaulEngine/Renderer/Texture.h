@@ -6,6 +6,16 @@
 #include <glm/glm.hpp>
 #include <string>
 namespace PaulEngine {
+	enum class CubemapFace
+	{
+		POSITIVE_X = 0,
+		NEGATIVE_X = 1,
+		POSITIVE_Y = 2,
+		NEGATIVE_Y = 3,
+		POSITIVE_Z = 4,
+		NEGATIVE_Z = 5
+	};
+
 	enum class ImageFormat
 	{
 		None = 0,
@@ -135,6 +145,6 @@ namespace PaulEngine {
 	
 		virtual AssetType GetType() const override { return AssetType::TextureCubemap; }
 
-		virtual void SetData(Buffer data, uint8_t face) = 0;
+		virtual void SetData(Buffer data, CubemapFace face) = 0;
 	};
 }

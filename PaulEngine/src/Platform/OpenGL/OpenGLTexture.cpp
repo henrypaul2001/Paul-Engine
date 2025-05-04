@@ -161,7 +161,7 @@ namespace PaulEngine {
 		for (uint8_t i = 0; i < 6; i++) {
 			if (faceData[i])
 			{
-				SetData(faceData[i], i);
+				SetData(faceData[i], (CubemapFace)i);
 			}
 		}
 	}
@@ -173,10 +173,10 @@ namespace PaulEngine {
 
 	void OpenGLTextureCubemap::SetData(Buffer data)
 	{
-		SetData(data, 0);
+		SetData(data, CubemapFace::POSITIVE_X);
 	}
 
-	void OpenGLTextureCubemap::SetData(Buffer data, uint8_t face)
+	void OpenGLTextureCubemap::SetData(Buffer data, CubemapFace face)
 	{
 		PE_PROFILE_FUNCTION();
 #ifdef PE_ENABLE_ASSERTS
@@ -185,7 +185,7 @@ namespace PaulEngine {
 #endif
 		// cubemaps are represented internally as a 2D texture array, so access a specific face using a z-offset
 		// cubemap arrays are represented as a 2D texture array with numLayers = 6 (faces) * cubemapArraySize. So z-offset for the "face" of cubemap index "i" would be: i * 6 + face;
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		glTextureSubImage3D(m_RendererID, 0, 0, 0, (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
 	}
 
 	void OpenGLTextureCubemap::Clear(int value)

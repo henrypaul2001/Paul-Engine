@@ -173,7 +173,7 @@ namespace PaulEngine {
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
 
 		virtual void SetData(Buffer data) override;
-		virtual void SetData(Buffer data, uint8_t face) override;
+		virtual void SetData(Buffer data, CubemapFace face) override;
 
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;

@@ -20,6 +20,15 @@ namespace PaulEngine
 		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
 	};
 
+	class OpenGLFramebufferTextureCubemapAttachment : public FramebufferTextureCubemapAttachment
+	{
+	public:
+		OpenGLFramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemap> cubemap) :FramebufferTextureCubemapAttachment(attachPoint, cubemap) {}
+		OpenGLFramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData) : FramebufferTextureCubemapAttachment(attachPoint, textureSpec, faceData) {}
+	
+		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
+	};
+
 	class OpenGLFramebufferRenderbufferAttachment : public FramebufferRenderbufferAttachment
 	{
 	public:
