@@ -118,6 +118,34 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
+	Ref<FramebufferTextureCubemapArrayAttachment> FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemapArray)
+	{
+		PE_PROFILE_FUNCTION();
+		switch (Renderer::GetAPI())
+		{
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapArrayAttachment>(attachPoint, cubemapArray);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
+		}
+
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
+		return nullptr;
+	}
+	Ref<FramebufferTextureCubemapArrayAttachment> FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers)
+	{
+		PE_PROFILE_FUNCTION();
+		switch (Renderer::GetAPI())
+		{
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapArrayAttachment>(attachPoint, textureSpec, faceDataLayers);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
+		}
+
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
+		return nullptr;
+	}
 
 	void FramebufferTexture2DAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
@@ -147,6 +175,18 @@ namespace PaulEngine
 			textureSpec.Width = width;
 			textureSpec.Height = height;
 			m_Cubemap = TextureCubemap::Create(textureSpec, std::vector<Buffer>(6));
+		}
+	}
+
+	void FramebufferTextureCubemapArrayAttachment::Resize(const uint32_t width, const uint32_t height)
+	{
+		TextureSpecification textureSpec = m_CubemapArray->GetSpecification();
+		if (textureSpec.Width != width || textureSpec.Height != height) {
+			textureSpec.Width = width;
+			textureSpec.Height = height;
+			uint8_t numLayers = m_CubemapArray->GetNumLayers();
+			auto faceBuffers = std::vector<Buffer>(6);
+			m_CubemapArray = TextureCubemapArray::Create(textureSpec, std::vector<std::vector<Buffer>>(numLayers, faceBuffers));
 		}
 	}
 }

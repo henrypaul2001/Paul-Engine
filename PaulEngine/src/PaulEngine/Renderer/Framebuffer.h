@@ -10,6 +10,7 @@ namespace PaulEngine
 		Texture2D,
 		Texture2DArray,
 		TextureCubemap,
+		TextureCubemapArray,
 		Renderbuffer
 	};
 
@@ -120,10 +121,38 @@ namespace PaulEngine
 
 		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemap> cubemap);
 		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData);
+
 	protected:
 		FramebufferAttachmentPoint m_AttachPoint;
 		Ref<TextureCubemap> m_Cubemap;
 		CubemapFace m_TargetFace;
+	};
+
+	class FramebufferTextureCubemapArrayAttachment : public FramebufferAttachment
+	{
+	public:
+		FramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemap) : m_AttachPoint(attachPoint), m_CubemapArray(cubemap), m_TargetFace(CubemapFace::POSITIVE_X), m_TargetIndex(0) {}
+		FramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers) : m_AttachPoint(attachPoint), m_CubemapArray(TextureCubemapArray::Create(textureSpec, faceDataLayers)), m_TargetFace(CubemapFace::POSITIVE_X), m_TargetIndex(0) {}
+		virtual ~FramebufferTextureCubemapArrayAttachment() {}
+
+		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
+		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::TextureCubemapArray; }
+
+		const Ref<TextureCubemapArray> GetCubemapArray() { return m_CubemapArray; }
+
+		virtual void Resize(const uint32_t width, const uint32_t height) override;
+
+		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
+		void SetTargetIndex(uint8_t newTarget) { m_TargetIndex = std::min(newTarget, uint8_t(m_CubemapArray->GetNumLayers() - 1)); }
+
+		static Ref<FramebufferTextureCubemapArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemapArray);
+		static Ref<FramebufferTextureCubemapArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers);
+
+	protected:
+		FramebufferAttachmentPoint m_AttachPoint;
+		Ref<TextureCubemapArray> m_CubemapArray;
+		CubemapFace m_TargetFace;
+		uint8_t m_TargetIndex;
 	};
 
 	class FramebufferRenderbufferAttachment : public FramebufferAttachment

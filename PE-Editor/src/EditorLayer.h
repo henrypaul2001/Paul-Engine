@@ -82,8 +82,6 @@ namespace PaulEngine {
 		Ref<Texture2D> m_IconStop;
 		Ref<Texture2D> m_IconSimulate;
 
-		Ref<TextureCubemapArray> m_CubemapArrayTest;
-
 		glm::vec2 m_ViewportSize;
 
 		bool m_ViewportFocus = false, m_ViewportHovered = false;

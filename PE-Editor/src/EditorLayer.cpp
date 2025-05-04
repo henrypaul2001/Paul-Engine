@@ -156,12 +156,12 @@ namespace PaulEngine
 			}
 		});
 		RenderPass pointLightShadowPass = RenderPass({}, m_PointLightShadowsFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
-			PE_PROFILE_SCOPE("Spot light shadow map capture pass");
+			PE_PROFILE_SCOPE("Point light shadow map capture pass");
 			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
 
 			Ref<FramebufferAttachment> depthAttachment = passContext.TargetFramebuffer->GetDepthAttachment();
 			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
-			//PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::TextureCubemapArray, "Shadow map framebuffer depth attachment must be cubemap array");
+			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::TextureCubemapArray, "Shadow map framebuffer depth attachment must be cubemap array");
 
 			std::vector<Entity> pointLights = std::vector<Entity>(Renderer::MAX_ACTIVE_POINT_LIGHTS);
 			int pointLightsHead = 0;
@@ -173,7 +173,6 @@ namespace PaulEngine
 				pointLights[pointLightsHead] = Entity(entityID, sceneContext.get());
 				pointLightsHead = ++pointLightsHead % Renderer::MAX_ACTIVE_POINT_LIGHTS;
 				activeLights = std::min(Renderer::MAX_ACTIVE_POINT_LIGHTS, ++activeLights);
-				break;
 			}
 
 			// Capture shadow maps for previously gathered light sources
@@ -205,8 +204,9 @@ namespace PaulEngine
 
 					for (int face = 0; face < 6; face++)
 					{
-						FramebufferTextureCubemapAttachment* cubemapAttachment = dynamic_cast<FramebufferTextureCubemapAttachment*>(depthAttachment.get());
-						cubemapAttachment->SetTargetFace((CubemapFace)face);
+						FramebufferTextureCubemapArrayAttachment* cubemapArrayAttachment = dynamic_cast<FramebufferTextureCubemapArrayAttachment*>(depthAttachment.get());
+						cubemapArrayAttachment->SetTargetIndex(i);
+						cubemapArrayAttachment->SetTargetFace((CubemapFace)face);
 						passContext.TargetFramebuffer->SetDepthAttachment(depthAttachment);
 						RenderCommand::Clear();
 
@@ -937,7 +937,7 @@ namespace PaulEngine
 		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
 		m_SpotLightShadowsFramebuffer = Framebuffer::Create(spec, {}, spotLightShadowDepthArrayAttach);
 
-		Ref<FramebufferTextureCubemapAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(6));
+		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
 		m_PointLightShadowsFramebuffer = Framebuffer::Create(spec, {}, pointLightShadowDepthAttach);
 
 		m_EditorScene = CreateRef<Scene>();
@@ -1011,32 +1011,6 @@ namespace PaulEngine
 		m_ShadowmapMaterial = CreateRef<Material>(m_ShadowmapShaderHandle);
 
 		m_Renderer = CreateEditorRenderer();
-
-		TextureSpecification cubeSpec;
-		cubeSpec.Width = 2;
-		cubeSpec.Height = 2;
-		cubeSpec.Format = ImageFormat::RGB8;
-
-		uint8_t redArray[12] = {
-			255, 0, 0,   255, 0, 0,
-			255, 0, 0,   255, 0, 0
-		};
-
-		uint8_t greenArray[12] ={
-			0, 255, 0,   0, 255, 0,
-			0, 255, 0,   0, 255, 0
-		};
-
-		uint8_t blueArray[12] = {
-			0, 0, 255,   0, 0, 255,
-			0, 0, 255,   0, 0, 255
-		};
-
-		Buffer redBuffer = Buffer(redArray, 12);
-		Buffer greenBuffer = Buffer(greenArray, 12);
-		Buffer blueBuffer = Buffer(blueArray, 12);
-
-		m_CubemapArrayTest = TextureCubemapArray::Create(cubeSpec, { { redBuffer, greenBuffer, blueBuffer, redBuffer, greenBuffer, blueBuffer }, { blueBuffer, greenBuffer, redBuffer } });
 	}
 
 	void EditorLayer::OnDetach()
