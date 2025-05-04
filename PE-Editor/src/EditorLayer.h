@@ -70,6 +70,7 @@ namespace PaulEngine {
 
 		Ref<Framebuffer> m_DirLightShadowsFramebuffer;
 		Ref<Framebuffer> m_SpotLightShadowsFramebuffer;
+		Ref<Framebuffer> m_PointLightShadowsFramebuffer;
 		AssetHandle m_ShadowmapShaderHandle;
 		Ref<Material> m_ShadowmapMaterial;
 

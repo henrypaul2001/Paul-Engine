@@ -30,7 +30,7 @@ namespace PaulEngine
 			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
 
 			Ref<FramebufferAttachment> depthAttachment = passContext.TargetFramebuffer->GetDepthAttachment();
-			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missind depth attachment");
+			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
 			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
 
 			std::vector<Entity> dirLights = std::vector<Entity>(Renderer::MAX_ACTIVE_DIR_LIGHTS);
@@ -95,7 +95,7 @@ namespace PaulEngine
 			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
 
 			Ref<FramebufferAttachment> depthAttachment = passContext.TargetFramebuffer->GetDepthAttachment();
-			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missind depth attachment");
+			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
 			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
 
 			std::vector<Entity> spotLights = std::vector<Entity>(Renderer::MAX_ACTIVE_SPOT_LIGHTS);
@@ -155,6 +155,78 @@ namespace PaulEngine
 				}
 			}
 		});
+		RenderPass pointLightShadowPass = RenderPass({}, m_PointLightShadowsFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
+			PE_PROFILE_SCOPE("Spot light shadow map capture pass");
+			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
+
+			Ref<FramebufferAttachment> depthAttachment = passContext.TargetFramebuffer->GetDepthAttachment();
+			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
+			//PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::TextureCubemapArray, "Shadow map framebuffer depth attachment must be cubemap array");
+
+			std::vector<Entity> pointLights = std::vector<Entity>(Renderer::MAX_ACTIVE_POINT_LIGHTS);
+			int pointLightsHead = 0;
+			int activeLights = 0;
+			auto view = sceneContext->View<ComponentPointLight>();
+
+			// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
+			for (auto entityID : view) {
+				pointLights[pointLightsHead] = Entity(entityID, sceneContext.get());
+				pointLightsHead = ++pointLightsHead % Renderer::MAX_ACTIVE_POINT_LIGHTS;
+				activeLights = std::min(Renderer::MAX_ACTIVE_POINT_LIGHTS, ++activeLights);
+				break;
+			}
+
+			// Capture shadow maps for previously gathered light sources
+			for (int i = 0; i < activeLights; i++) {
+				Entity entity = pointLights[i];
+				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+				ComponentPointLight& light = entity.GetComponent<ComponentPointLight>();
+
+				if (true) // light.CastShadows
+				{
+					glm::mat4 transformMatrix = transform.GetTransform();
+					glm::vec3 position = transform.Position();
+
+					//float nearClip = light.ShadowMapNearClip;
+					//float farClip = light.ShadowMapFarClip;
+					float nearClip = 0.1f;
+					float farClip = 50.0f;
+					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
+					cam.SetPerspective(90.0f, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
+
+					glm::mat4 cameraTransforms[6] = {
+						glm::inverse(glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // right
+						glm::inverse(glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // left
+						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f))), // up
+						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f))), // down
+						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // back
+						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // front
+					};
+
+					for (int face = 0; face < 6; face++)
+					{
+						FramebufferTextureCubemapAttachment* cubemapAttachment = dynamic_cast<FramebufferTextureCubemapAttachment*>(depthAttachment.get());
+						cubemapAttachment->SetTargetFace((CubemapFace)face);
+						passContext.TargetFramebuffer->SetDepthAttachment(depthAttachment);
+						RenderCommand::Clear();
+
+						Renderer::BeginScene(cam, cameraTransforms[face]);
+
+						{
+							PE_PROFILE_SCOPE("Submit Mesh");
+							auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+							for (auto entityID : view) {
+								auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+								Renderer::DrawDefaultCubeImmediate(m_ShadowmapMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+							}
+						}
+
+						Renderer::EndScene();
+					}
+				}
+			}
+		});
+
 		RenderPass scene2DPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
 			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -465,6 +537,7 @@ namespace PaulEngine
 		});
 		renderPasses.push_back(dirLightShadowPass);
 		renderPasses.push_back(spotLightShadowPass);
+		renderPasses.push_back(pointLightShadowPass);
 		renderPasses.push_back(scene2DPass);
 		renderPasses.push_back(scene3DPass);
 		renderPasses.push_back(debugOverlayPass);
@@ -863,6 +936,9 @@ namespace PaulEngine
 
 		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
 		m_SpotLightShadowsFramebuffer = Framebuffer::Create(spec, {}, spotLightShadowDepthArrayAttach);
+
+		Ref<FramebufferTextureCubemapAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Depth, depthSpec, std::vector<Buffer>(6));
+		m_PointLightShadowsFramebuffer = Framebuffer::Create(spec, {}, pointLightShadowDepthAttach);
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
