@@ -37,7 +37,11 @@ namespace PaulEngine {
 			glm::vec4 Ambient = glm::vec4(0.1f, 0.1f, 0.1f, 35.0f); // w = outer cutoff
 			glm::vec4 Diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 			glm::vec4 Specular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+			glm::vec4 ShadowData = glm::vec4(1.0f); // r = (bool)castShadows, g = minBias, b = maxBias
+			glm::mat4 LightMatrix = glm::mat4(1.0f);
 		};
+
 		static void Init();
 
 		static void BeginScene(const EditorCamera& camera);

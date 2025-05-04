@@ -108,6 +108,10 @@ struct SpotLight
 	vec4 Ambient; // w = outer cutoff
 	vec4 Diffuse;
 	vec4 Specular;
+
+	vec4 ShadowData; // r = (bool)castShadows, g = minBias, b = maxBias
+
+	mat4 LightMatrix;
 };
 
 layout(location = 0) in flat int v_EntityID;
@@ -139,12 +143,13 @@ layout(binding = 0) uniform sampler2D AlbedoMap;
 layout(binding = 1) uniform sampler2D SpecularMap;
 layout(binding = 2) uniform sampler2D NormalMap;
 layout(binding = 3) uniform sampler2D DisplacementMap;
-layout(binding = 4) uniform sampler2DArray ShadowMapArrayTest;
+layout(binding = 4) uniform sampler2DArray DirectionalLightShadowMapArray;
+layout(binding = 5) uniform sampler2DArray SpotLightShadowMapArray;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
 
-float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, int shadowMapLayer)
+float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, sampler2DArray shadowMapArray, int shadowMapLayer)
 {
 	// perspective divide
 	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
@@ -155,7 +160,7 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 	if (projCoords.z > 1.0) { return 0.0; }
 
 	// closest depth value from lights perspective
-	float closestDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy, shadowMapLayer)).r;
+	float closestDepth = texture(shadowMapArray, vec3(projCoords.xy, shadowMapLayer)).r;
 
 	// get fragment depth
 	float currentDepth = projCoords.z;
@@ -166,12 +171,47 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 
 	// pcf soft shadowing
 	float shadow = 0.0;
-	vec2 texelSize = 1.0 / textureSize(ShadowMapArrayTest, 0).xy;
+	vec2 texelSize = 1.0 / textureSize(shadowMapArray, 0).xy;
 	for (int x = -1; x <= 1; x++)
 	{
 		for (int y = -1; y <= 1; y++)
 		{
-			float pcfDepth = texture(ShadowMapArrayTest, vec3(projCoords.xy + vec2(x, y) * texelSize, shadowMapLayer)).r;
+			float pcfDepth = texture(shadowMapArray, vec3(projCoords.xy + vec2(x, y) * texelSize, shadowMapLayer)).r;
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+	shadow /= 9.0;
+	return shadow;
+}
+
+float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, sampler2D shadowMap)
+{
+	// perspective divide
+	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
+
+	// transform to [0, 1]
+	projCoords.xyz = projCoords.xyz * 0.5 + 0.5;
+
+	if (projCoords.z > 1.0) { return 0.0; }
+
+	// closest depth value from lights perspective
+	float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+	// get fragment depth
+	float currentDepth = projCoords.z;
+
+	// check against shadow map sample
+	vec3 lightDir = normalize(lightPos - v_VertexData.WorldFragPos);
+	float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
+
+	// pcf soft shadowing
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0).xy;
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
 			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
 		}
 	}
@@ -241,7 +281,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	float shadow = 0.0;
 	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
 	{
-		shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal, lightIndex);
+		shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal, DirectionalLightShadowMapArray, lightIndex);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
@@ -311,7 +351,16 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
 	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
 
-	return ambient + diffuse + specular;
+	// shadow contribution
+	float minBias = u_SceneData.SpotLights[lightIndex].ShadowData.g;
+	float maxBias = u_SceneData.SpotLights[lightIndex].ShadowData.b;
+
+	float shadow = 0.0;
+	if (bool(u_SceneData.SpotLights[lightIndex].ShadowData.r))
+	{
+		shadow = GetShadowFactor(u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, Normal, SpotLightShadowMapArray, lightIndex);
+	}
+	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
 void main()

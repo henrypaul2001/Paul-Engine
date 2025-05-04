@@ -19,7 +19,8 @@ namespace PaulEngine
 			if (parameter->Name == "u_Textures") { continue; }
 			if (parameter->Name == "MeshSubmission") { continue; }
 			if (parameter->Name == "SceneData") { continue; }
-			if (parameter->Name == "ShadowMapTest") { continue; }
+			if (parameter->Name == "DirectionalLightShadowMapArray") { continue; }
+			if (parameter->Name == "SpotLightShadowMapArray") { continue; }
 
 			switch (parameter->Type())
 			{

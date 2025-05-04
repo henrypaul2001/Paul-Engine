@@ -306,6 +306,12 @@ namespace PaulEngine
 							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
 							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
 							lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+							lightSource.ShadowData = glm::vec4((bool)light.CastShadows, light.ShadowMinBias, light.ShadowMaxBias, 1.0f);
+
+							glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
+							glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)m_ShadowWidth / (float)m_ShadowHeight, light.ShadowMapNearClip, light.ShadowMapFarClip);
+							lightSource.LightMatrix = projection * lightView;
+
 							Renderer::SubmitSpotLightSource(lightSource);
 						}
 					}
@@ -633,6 +639,12 @@ namespace PaulEngine
 								lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
 								lightSource.Specular = glm::vec4(light.Specular, 1.0f);
 								lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+								lightSource.ShadowData = glm::vec4((float)light.CastShadows, light.ShadowMinBias, light.ShadowMaxBias, 1.0f);
+
+								glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
+								glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)m_ShadowWidth / (float)m_ShadowHeight, light.ShadowMapNearClip, light.ShadowMapFarClip);
+								lightSource.LightMatrix = projection * lightView;
+
 								Renderer::SubmitSpotLightSource(lightSource);
 							}
 						}
