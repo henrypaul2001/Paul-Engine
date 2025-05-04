@@ -62,4 +62,19 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
+
+	Ref<TextureCubemap> TextureCubemap::Create(const TextureSpecification& specification, std::vector<Buffer> faceData)
+	{
+		PE_PROFILE_FUNCTION();
+		switch (Renderer::GetAPI())
+		{
+			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLTextureCubemap>(specification, faceData);
+			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
+			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
+		}
+
+		PE_CORE_ASSERT(false, "Unknown RenderAPI");
+		return nullptr;
+	}
 }

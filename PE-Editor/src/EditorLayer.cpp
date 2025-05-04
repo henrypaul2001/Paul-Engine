@@ -935,6 +935,32 @@ namespace PaulEngine
 		m_ShadowmapMaterial = CreateRef<Material>(m_ShadowmapShaderHandle);
 
 		m_Renderer = CreateEditorRenderer();
+
+		TextureSpecification cubeSpec;
+		cubeSpec.Width = 2;
+		cubeSpec.Height = 2;
+		cubeSpec.Format = ImageFormat::RGB8;
+
+		uint8_t redArray[12] = {
+			255, 0, 0,   255, 0, 0,
+			255, 0, 0,   255, 0, 0
+		};
+
+		uint8_t greenArray[12] ={
+			0, 255, 0,   0, 255, 0,
+			0, 255, 0,   0, 255, 0
+		};
+
+		uint8_t blueArray[12] = {
+			0, 0, 255,   0, 0, 255,
+			0, 0, 255,   0, 0, 255
+		};
+
+		Buffer redBuffer = Buffer(redArray, 12);
+		Buffer greenBuffer = Buffer(greenArray, 12);
+		Buffer blueBuffer = Buffer(blueArray, 12);
+
+		m_CubemapTest = TextureCubemap::Create(cubeSpec, { redBuffer, greenBuffer, blueBuffer, redBuffer, greenBuffer, blueBuffer });
 	}
 
 	void EditorLayer::OnDetach()

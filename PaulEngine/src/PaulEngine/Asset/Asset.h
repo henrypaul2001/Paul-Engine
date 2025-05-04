@@ -16,7 +16,8 @@ namespace PaulEngine
 		TextureAtlas2D,
 		Material,
 		Shader,
-		Texture2DArray
+		Texture2DArray,
+		TextureCubemap
 	};
 
 	struct AssetMetadata

@@ -109,7 +109,7 @@ namespace PaulEngine {
 		static Ref<Texture2D> Create(const TextureSpecification& specification, Buffer data = Buffer());
 
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
-		virtual AssetType GetType() const { return GetStaticType(); }
+		virtual AssetType GetType() const override { return GetStaticType(); }
 
 		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);
 		static void BindTexture(uint32_t slot, uint32_t id);
@@ -120,10 +120,21 @@ namespace PaulEngine {
 	public:
 		static Ref<Texture2DArray> Create(const TextureSpecification& specification, std::vector<Buffer> layers);
 		
-		virtual AssetType GetType() const { return AssetType::Texture2DArray; }
+		virtual AssetType GetType() const override { return AssetType::Texture2DArray; }
 
 		virtual uint8_t GetNumLayers() const = 0;
 
 		virtual void SetData(Buffer data, uint8_t layer) = 0;
+	};
+
+	class TextureCubemap : public Texture
+	{
+	public:
+		// First 6 elements of face data are uploaded to cubemap texture in the following face order: right, left, top, bottom, front, back. Empty buffers will be created to match face count if less than 6 buffers are provided
+		static Ref<TextureCubemap> Create(const TextureSpecification& specification, std::vector<Buffer> faceData = std::vector<Buffer>(6));
+	
+		virtual AssetType GetType() const override { return AssetType::TextureCubemap; }
+
+		virtual void SetData(Buffer data, uint8_t face) = 0;
 	};
 }

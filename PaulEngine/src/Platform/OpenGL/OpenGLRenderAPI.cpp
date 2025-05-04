@@ -14,6 +14,8 @@ namespace PaulEngine {
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_LINE_SMOOTH);
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	}
 
 	void OpenGLRenderAPI::SetViewport(const glm::ivec2& position, const glm::ivec2& size)
