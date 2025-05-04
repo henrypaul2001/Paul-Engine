@@ -147,4 +147,17 @@ namespace PaulEngine {
 
 		virtual void SetData(Buffer data, CubemapFace face) = 0;
 	};
+
+	class TextureCubemapArray : public Texture
+	{
+	public:
+		// First 6 elements of face data are uploaded to cubemap texture in the following face order: right, left, top, bottom, front, back. Empty buffers will be created to match face count if less than 6 buffers are provided
+		static Ref<TextureCubemapArray> Create(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers = { std::vector<Buffer>(6), std::vector<Buffer>(6) });
+
+		virtual AssetType GetType() const override { return AssetType::TextureCubemapArray; }
+
+		virtual uint8_t GetNumLayers() const = 0;
+
+		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) = 0;
+	};
 }

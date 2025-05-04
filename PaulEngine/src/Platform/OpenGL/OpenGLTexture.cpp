@@ -203,4 +203,77 @@ namespace PaulEngine {
 		glBindTextureUnit(slot, m_RendererID);
 	}
 #pragma endregion
+
+#pragma region TextureCubemapArray
+	OpenGLTextureCubemapArray::OpenGLTextureCubemapArray(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(faceDataLayers.size() > 0, "Must provide an initial size for cubemap array");
+
+		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
+		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+
+		m_NumLayers = faceDataLayers.size();
+
+		glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_RendererID);
+		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, faceDataLayers.size() * 6);
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_S));
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
+
+		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+
+		for (uint8_t layer = 0; layer < faceDataLayers.size(); layer++)
+		{
+			faceDataLayers[layer].resize(6, Buffer());
+			for (uint8_t face = 0; face < 6; face++) {
+				if (faceDataLayers[layer][face])
+				{
+					SetData(faceDataLayers[layer][face], layer, (CubemapFace)face);
+				}
+			}
+		}
+	}
+
+	OpenGLTextureCubemapArray::~OpenGLTextureCubemapArray()
+	{
+		glDeleteTextures(1, &m_RendererID);
+	}
+
+	void OpenGLTextureCubemapArray::SetData(Buffer data)
+	{
+		SetData(data, 0, CubemapFace::POSITIVE_X);
+	}
+
+	void OpenGLTextureCubemapArray::SetData(Buffer data, uint8_t layer, CubemapFace face)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(layer < m_NumLayers, "Layer index out of range");
+#ifdef PE_ENABLE_ASSERTS
+		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
+		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
+#endif
+		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+	}
+
+	void OpenGLTextureCubemapArray::Clear(int value)
+	{
+		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+	}
+
+	void OpenGLTextureCubemapArray::Clear(float value)
+	{
+		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+	}
+
+	void OpenGLTextureCubemapArray::Bind(const uint32_t slot) const
+	{
+		glBindTextureUnit(slot, m_RendererID);
+	}
+
+#pragma endregion
 }

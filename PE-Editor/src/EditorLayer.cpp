@@ -1036,7 +1036,7 @@ namespace PaulEngine
 		Buffer greenBuffer = Buffer(greenArray, 12);
 		Buffer blueBuffer = Buffer(blueArray, 12);
 
-		m_CubemapTest = TextureCubemap::Create(cubeSpec, { redBuffer, greenBuffer, blueBuffer, redBuffer, greenBuffer, blueBuffer });
+		m_CubemapArrayTest = TextureCubemapArray::Create(cubeSpec, { { redBuffer, greenBuffer, blueBuffer, redBuffer, greenBuffer, blueBuffer }, { blueBuffer, greenBuffer, redBuffer } });
 	}
 
 	void EditorLayer::OnDetach()

@@ -193,4 +193,42 @@ namespace PaulEngine {
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
 	};
+
+	class OpenGLTextureCubemapArray : public TextureCubemapArray
+	{
+	public:
+		OpenGLTextureCubemapArray(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers);
+		virtual ~OpenGLTextureCubemapArray();
+
+		virtual const TextureSpecification& GetSpecification() const override { return m_Spec; }
+
+		virtual uint32_t GetWidth() const override { return m_Width; }
+		virtual uint32_t GetHeight() const override { return m_Height; }
+		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+
+		virtual uint8_t GetNumLayers() const override { return m_NumLayers; }
+
+		virtual void SetData(Buffer data) override;
+		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) override;
+
+		virtual void Clear(int value) override;
+		virtual void Clear(float value) override;
+
+		virtual void Bind(const uint32_t slot = 0) const override;
+
+		virtual bool operator==(const Texture& other) const override {
+			return m_RendererID == ((OpenGLTextureCubemapArray&)other).m_RendererID;
+		}
+
+	private:
+		TextureSpecification m_Spec;
+
+		uint8_t m_NumLayers;
+
+		uint32_t m_Width, m_Height;
+		uint32_t m_RendererID;
+
+		GLenum m_InternalFormat;
+		GLenum m_DataFormat;
+	};
 }

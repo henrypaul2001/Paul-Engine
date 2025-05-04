@@ -82,7 +82,7 @@ namespace PaulEngine {
 		Ref<Texture2D> m_IconStop;
 		Ref<Texture2D> m_IconSimulate;
 
-		Ref<TextureCubemap> m_CubemapTest;
+		Ref<TextureCubemapArray> m_CubemapArrayTest;
 
 		glm::vec2 m_ViewportSize;
 
