@@ -163,7 +163,30 @@ vec3 gridSamplingDisk[20] = vec3[]
 	);
 float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, vec3 lightPos, float minBias, float maxBias, vec3 Normal, float farPlane)
 {
-	return 0.0;
+	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
+	float currentDepth = length(fragToLight);
+
+	float shadow = 0.0;
+	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
+	int samples = 20;
+
+	float viewDistance = length(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
+
+	for (int i = 0; i < samples; i++)
+	{
+		float closestDepth = texture(cubeShadowMapArray, vec4(fragToLight + gridSamplingDisk[i] * diskRadius, shadowMapLayer)).r;
+		closestDepth *= farPlane;
+
+		if (currentDepth - bias > closestDepth)
+		{
+			shadow += 1.0;
+		}
+	}
+
+	shadow /= float(samples);
+
+	return shadow;
 }
 
 float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
