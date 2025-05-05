@@ -21,6 +21,7 @@ namespace PaulEngine
 			if (parameter->Name == "SceneData") { continue; }
 			if (parameter->Name == "DirectionalLightShadowMapArray") { continue; }
 			if (parameter->Name == "SpotLightShadowMapArray") { continue; }
+			if (parameter->Name == "PointLightShadowMapArray") { continue; }
 
 			switch (parameter->Type())
 			{

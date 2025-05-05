@@ -50,7 +50,7 @@ namespace PaulEngine
 				Entity entity = dirLights[i];
 				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
 				ComponentDirectionalLight& light = entity.GetComponent<ComponentDirectionalLight>();
-			
+
 				if (light.CastShadows)
 				{
 					FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
@@ -89,7 +89,7 @@ namespace PaulEngine
 					Renderer::EndScene();
 				}
 			}
-		});
+			});
 		RenderPass spotLightShadowPass = RenderPass({}, m_SpotLightShadowsFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			PE_PROFILE_SCOPE("Spot light shadow map capture pass");
 			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
@@ -154,7 +154,7 @@ namespace PaulEngine
 					Renderer::EndScene();
 				}
 			}
-		});
+			});
 		RenderPass pointLightShadowPass = RenderPass({}, m_PointLightShadowsFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			PE_PROFILE_SCOPE("Point light shadow map capture pass");
 			RenderCommand::SetViewport({ 0, 0 }, { m_ShadowWidth, m_ShadowHeight });
@@ -181,15 +181,13 @@ namespace PaulEngine
 				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
 				ComponentPointLight& light = entity.GetComponent<ComponentPointLight>();
 
-				if (true) // light.CastShadows
+				if (light.CastShadows)
 				{
 					glm::mat4 transformMatrix = transform.GetTransform();
 					glm::vec3 position = transform.Position();
 
-					//float nearClip = light.ShadowMapNearClip;
-					//float farClip = light.ShadowMapFarClip;
-					float nearClip = 0.1f;
-					float farClip = 50.0f;
+					float nearClip = light.ShadowMapNearClip;
+					float farClip = light.ShadowMapFarClip;
 					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 					cam.SetPerspective(90.0f, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
 
@@ -225,13 +223,13 @@ namespace PaulEngine
 					}
 				}
 			}
-		});
+			});
 
 		RenderPass scene2DPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
 			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 			RenderCommand::Clear();
-			
+
 			if (activeCamera && sceneContext) {
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
 				Renderer2D::BeginScene(*editorCamera);
@@ -279,8 +277,8 @@ namespace PaulEngine
 
 				Renderer2D::EndScene();
 			}
-		});
-		
+			});
+
 		RenderPassInputs scene3DPassInputs;
 		Ref<Texture> dirLightShadowTexture = nullptr;
 		if (m_DirLightShadowsFramebuffer->GetDepthAttachment()->GetType() == FramebufferAttachmentType::Texture2DArray) {
@@ -290,8 +288,13 @@ namespace PaulEngine
 		if (m_SpotLightShadowsFramebuffer->GetDepthAttachment()->GetType() == FramebufferAttachmentType::Texture2DArray) {
 			spotLightShadowTexture = dynamic_cast<FramebufferTexture2DArrayAttachment*>(m_SpotLightShadowsFramebuffer->GetDepthAttachment().get())->GetTexture();
 		}
+		Ref<Texture> pointLightShadowTexture = nullptr;
+		if (m_PointLightShadowsFramebuffer->GetDepthAttachment()->GetType() == FramebufferAttachmentType::TextureCubemapArray) {
+			pointLightShadowTexture = dynamic_cast<FramebufferTextureCubemapArrayAttachment*>(m_PointLightShadowsFramebuffer->GetDepthAttachment().get())->GetCubemapArray();
+		}
 		scene3DPassInputs.SourceTextures.push_back(dirLightShadowTexture);
 		scene3DPassInputs.SourceTextures.push_back(spotLightShadowTexture);
+		scene3DPassInputs.SourceTextures.push_back(pointLightShadowTexture);
 		RenderPass scene3DPass = RenderPass(scene3DPassInputs, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			if (activeCamera && sceneContext) {
 				EditorCamera* editorCamera = dynamic_cast<EditorCamera*>(activeCamera.get());
@@ -354,6 +357,7 @@ namespace PaulEngine
 							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
 							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
 							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+							lightSource.ShadowData = glm::vec4(light.ShadowMinBias, light.ShadowMaxBias, light.ShadowMapFarClip, (float)light.CastShadows);
 							Renderer::SubmitPointLightSource(lightSource);
 						}
 					}
@@ -394,6 +398,9 @@ namespace PaulEngine
 				}
 				if (passContext.SourceTextures.size() > 1 && passContext.SourceTextures[1]) {
 					passContext.SourceTextures[1]->Bind(5);
+				}
+				if (passContext.SourceTextures.size() > 2 && passContext.SourceTextures[2]) {
+					passContext.SourceTextures[2]->Bind(6);
 				}
 				Renderer::EndScene();
 			}

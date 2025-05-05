@@ -1,5 +1,19 @@
 Scene: Untitled
 Entities:
+  - Entity: 15695830373297290846
+    TagComponent:
+      Tag: ShadedCube
+    TransformComponent:
+      Position: [-17.643621, -18.805489, 13.112599]
+      Rotation: [0, 0, 0]
+      Scale: [4.750002, 4.7499924, 4.7499986]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 6581284435723094683
     TagComponent:
       Tag: SpotLight
@@ -80,21 +94,19 @@ Entities:
     TagComponent:
       Tag: PointLight
     TransformComponent:
-      Position: [16.497835, -0.2136965, 8.6094675]
+      Position: [-16.206667, -18.7243, 10.636201]
       Rotation: [0, 0, 0]
       Scale: [0.25, 0.25, 0.25]
-    MeshRendererComponent:
-      MaterialHandle: 1897318988700985028
-      MeshHandle: 0
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
     PointLightComponent:
       Radius: 10
       Diffuse: [12, 0, 0]
       Specular: [12, 0, 0]
       Ambient: [0.1, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0
+      ShadowMaxBias: 0
+      ShadowMapNearClip: 0.1
+      ShadowMapFarClip: 10
   - Entity: 9807174053992465922
     TagComponent:
       Tag: Directional Light

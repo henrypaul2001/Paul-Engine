@@ -98,6 +98,8 @@ struct PointLight // vec4 for padding
 	vec4 Ambient;
 	vec4 Diffuse;
 	vec4 Specular;
+
+	vec4 ShadowData; // r = minBias, g = maxBias, b = farPlane, w = (bool)castShadows
 };
 
 struct SpotLight
@@ -145,11 +147,26 @@ layout(binding = 2) uniform sampler2D NormalMap;
 layout(binding = 3) uniform sampler2D DisplacementMap;
 layout(binding = 4) uniform sampler2DArray DirectionalLightShadowMapArray;
 layout(binding = 5) uniform sampler2DArray SpotLightShadowMapArray;
+layout(binding = 6) uniform samplerCubeArray PointLightShadowMapArray;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
 
-float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, sampler2DArray shadowMapArray, int shadowMapLayer)
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+	);
+float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, vec3 lightPos, float minBias, float maxBias, vec3 Normal, float farPlane)
+{
+	return 0.0;
+}
+
+float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
 {
 	// perspective divide
 	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
@@ -184,7 +201,7 @@ float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, floa
 	return shadow;
 }
 
-float GetShadowFactor(vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, sampler2D shadowMap)
+float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
 {
 	// perspective divide
 	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
@@ -281,7 +298,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	float shadow = 0.0;
 	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
 	{
-		shadow = GetShadowFactor(u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal, DirectionalLightShadowMapArray, lightIndex);
+		shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
@@ -312,7 +329,17 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
 	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
-	return ambient + diffuse + specular;
+	// shadow contribution
+	float minBias = u_SceneData.PointLights[lightIndex].ShadowData.r;
+	float maxBias = u_SceneData.PointLights[lightIndex].ShadowData.g;
+	float farPlane = u_SceneData.PointLights[lightIndex].ShadowData.b;
+
+	float shadow = 0.0;
+	if (bool(u_SceneData.PointLights[lightIndex].ShadowData.w))
+	{
+		shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, Normal, farPlane);
+	}
+	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
 vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
@@ -358,7 +385,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	float shadow = 0.0;
 	if (bool(u_SceneData.SpotLights[lightIndex].ShadowData.r))
 	{
-		shadow = GetShadowFactor(u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, Normal, SpotLightShadowMapArray, lightIndex);
+		shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, Normal);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
