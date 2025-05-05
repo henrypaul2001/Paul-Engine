@@ -181,13 +181,16 @@ namespace PaulEngine
 				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
 				ComponentPointLight& light = entity.GetComponent<ComponentPointLight>();
 
+				float nearClip = light.ShadowMapNearClip;
+				float farClip = light.ShadowMapFarClip;
+
+				*(static_cast<float*>(dynamic_cast<UBOShaderParameterTypeStorage*>(m_ShadowMapCubeMaterial->GetParameter("Data").get())->UBO()->GetLayoutStorage()[0].Data->GetData())) = farClip;
+
 				if (light.CastShadows)
 				{
 					glm::mat4 transformMatrix = transform.GetTransform();
 					glm::vec3 position = transform.Position();
 
-					float nearClip = light.ShadowMapNearClip;
-					float farClip = light.ShadowMapFarClip;
 					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 					cam.SetPerspective(90.0f, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
 
@@ -215,7 +218,7 @@ namespace PaulEngine
 							auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 							for (auto entityID : view) {
 								auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-								Renderer::DrawDefaultCubeImmediate(m_ShadowmapMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+								Renderer::DrawDefaultCubeImmediate(m_ShadowMapCubeMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
 							}
 						}
 
@@ -223,7 +226,7 @@ namespace PaulEngine
 					}
 				}
 			}
-			});
+		});
 
 		RenderPass scene2DPass = RenderPass({}, m_MainFramebuffer, [this](RenderPassContext& passContext, Ref<Scene> sceneContext, Ref<Camera> activeCamera) {
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
@@ -1016,6 +1019,9 @@ namespace PaulEngine
 
 		m_ShadowmapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapTest.glsl", true);
 		m_ShadowmapMaterial = CreateRef<Material>(m_ShadowmapShaderHandle);
+
+		m_ShadowmapCubeShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapCubeTest.glsl", true);
+		m_ShadowMapCubeMaterial = CreateRef<Material>(m_ShadowmapCubeShaderHandle);
 
 		m_Renderer = CreateEditorRenderer();
 	}
