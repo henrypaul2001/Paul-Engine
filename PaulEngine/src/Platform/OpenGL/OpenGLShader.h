@@ -9,6 +9,7 @@ namespace PaulEngine {
     class OpenGLShader : public Shader
     {
 	public:
+		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc);
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		OpenGLShader(const std::string& filepath);
 		virtual ~OpenGLShader();
@@ -45,7 +46,6 @@ namespace PaulEngine {
 	private:
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-		//void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 		void CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
 		void CompileOrGetOpenGLBinaries();

@@ -18,6 +18,7 @@ namespace PaulEngine {
 		{
 			if (type == "vertex") { return GL_VERTEX_SHADER; }
 			if (type == "fragment" || type == "pixel") { return GL_FRAGMENT_SHADER; }
+			if (type == "geometry") { return GL_GEOMETRY_SHADER; }
 			PE_CORE_ASSERT(false, "Unknown shader type");
 			return 0;
 		}
@@ -28,6 +29,7 @@ namespace PaulEngine {
 			{
 				case GL_VERTEX_SHADER: return shaderc_glsl_vertex_shader;
 				case GL_FRAGMENT_SHADER: return shaderc_glsl_fragment_shader;
+				case GL_GEOMETRY_SHADER: return shaderc_glsl_geometry_shader;
 			}
 			PE_CORE_ASSERT(false, "Unknown shader stage");
 			return (shaderc_shader_kind)0;
@@ -39,6 +41,7 @@ namespace PaulEngine {
 			{
 				case GL_VERTEX_SHADER: return "GL_VERTEX_SHADER";
 				case GL_FRAGMENT_SHADER: return "GL_FRAGMENT_SHADER";
+				case GL_GEOMETRY_SHADER: return "GL_GEOMETRY_SHADER";
 			}
 			PE_CORE_ASSERT(false, "Unknown shader stage");
 			return "";
@@ -65,6 +68,7 @@ namespace PaulEngine {
 			{
 				case GL_VERTEX_SHADER: return ".cached_opengl.vert";
 				case GL_FRAGMENT_SHADER: return ".cached_opengl.frag";
+				case GL_GEOMETRY_SHADER: return ".cached_opengl.geom";
 			}
 			PE_CORE_ASSERT(false, "Unknown shader stage");
 			return "";
@@ -76,6 +80,7 @@ namespace PaulEngine {
 			{
 				case GL_VERTEX_SHADER: return ".cached_vulkan.vert";
 				case GL_FRAGMENT_SHADER: return ".cached_vulkan.frag";
+				case GL_GEOMETRY_SHADER: return ".cached_vulkan.geom";
 			}
 			PE_CORE_ASSERT(false, "Unknown shader stage");
 			return "";
@@ -181,6 +186,20 @@ namespace PaulEngine {
 				}
 			}
 		}
+	}
+
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc) : m_Name(name), m_Filepath("null"), m_RendererID(0)
+	{
+		PE_PROFILE_FUNCTION();
+
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = vertexSrc;
+		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+		sources[GL_GEOMETRY_SHADER] = geometrySrc;
+
+		CompileOrGetVulkanBinaries(sources);
+		CompileOrGetOpenGLBinaries();
+		CreateProgram();
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name), m_Filepath("null"), m_RendererID(0)
@@ -457,47 +476,6 @@ namespace PaulEngine {
 				spirv_cross::SPIRType memberType = compiler.get_type(memberTypeID);
 
 				OpenGLShaderUtils::AddSpirTypeToUBOSpecRecursive(compiler, memberType, memberName, uboSpec);
-
-				//if (memberType.basetype == spirv_cross::SPIRType::BaseType::Struct)
-				//{
-				//	int arrayDimensions = memberType.array.size();
-				//
-				//	if (arrayDimensions > 0)
-				//	{
-				//		for (int dimension = 0; dimension < arrayDimensions; dimension++)
-				//		{
-				//			for (int x = 0; x < memberType.array[dimension]; x++)
-				//			{
-				//				int childCount = memberType.member_types.size();
-				//
-				//				for (int child = 0; child < childCount; child++)
-				//				{
-				//					spirv_cross::TypeID childTypeID = memberType.member_types[child];
-				//					spirv_cross::SPIRType childType = compiler.get_type(childTypeID);
-				//					std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
-				//					const std::string childName = indexedName + "." + compiler.get_member_name(memberType.self, child);
-				//
-				//					OpenGLShaderUtils::AddSPIRTypeToUBOSpec(childType, childName, uboSpec);
-				//				}
-				//			}
-				//		}
-				//	}
-				//	else
-				//	{
-				//		int childCount = memberType.member_types.size();
-				//		for (int child = 0; child < childCount; child++) {
-				//			spirv_cross::TypeID childTypeID = memberType.member_types[child];
-				//			spirv_cross::SPIRType childType = compiler.get_type(childTypeID);
-				//			const std::string childName = memberName + "." + compiler.get_member_name(memberType.self, child);
-				//
-				//			OpenGLShaderUtils::AddSPIRTypeToUBOSpec(childType, childName, uboSpec);
-				//		}
-				//	}
-				//}
-				//else
-				//{
-				//	OpenGLShaderUtils::AddSPIRTypeToUBOSpec(memberType, memberName, uboSpec);
-				//}
 			}
 			m_ReflectionData.push_back(uboSpec);
 		}
@@ -545,79 +523,6 @@ namespace PaulEngine {
 			}
 		}
 	}
-
-	//void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
-	//{
-	//	PE_PROFILE_FUNCTION();
-	//	GLuint program = glCreateProgram();
-	//
-	//	const int maxShaders = 2;
-	//	PE_CORE_ASSERT(shaderSources.size() <= maxShaders, "Maximum of two shaders supported");
-	//	GLenum glShaderIDs[2];
-	//
-	//	int index = 0;
-	//	for (auto& kv : shaderSources) {
-	//		GLenum type = kv.first;
-	//		const std::string& sourceString = kv.second;
-	//
-	//		GLuint shader = glCreateShader(type);
-	//
-	//		const GLchar* source = (const GLchar*)sourceString.c_str();
-	//		glShaderSource(shader, 1, &source, 0);
-	//
-	//		glCompileShader(shader);
-	//
-	//		GLint isCompiled = 0;
-	//		glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-	//		if (isCompiled == GL_FALSE)
-	//		{
-	//			GLint maxLength = 0;
-	//			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
-	//
-	//			std::vector<GLchar> infoLog(maxLength);
-	//			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
-	//
-	//			glDeleteShader(shader);
-	//
-	//			PE_CORE_ERROR("Shader compilation failed: {0}", infoLog.data());
-	//			break;
-	//		}
-	//		glAttachShader(program, shader);
-	//		glShaderIDs[index++] = shader;
-	//	}
-	//	m_RendererID = program;
-	//
-	//	// Link our program
-	//	glLinkProgram(program);
-	//
-	//	// Note the different functions here: glGetProgram* instead of glGetShader*.
-	//	GLint isLinked = 0;
-	//	glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
-	//	if (isLinked == GL_FALSE)
-	//	{
-	//		GLint maxLength = 0;
-	//		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-	//
-	//		// The maxLength includes the NULL character
-	//		std::vector<GLchar> infoLog(maxLength);
-	//		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
-	//
-	//		// We don't need the program anymore.
-	//		glDeleteProgram(program);
-	//		// Don't leak shaders either.
-	//		for (auto id : glShaderIDs) {
-	//			glDeleteShader(id);
-	//		}
-	//
-	//		// Use the infoLog as you see fit.
-	//		PE_CORE_ERROR("Shader linking failed: {0}", infoLog.data());
-	//		return;
-	//	}
-	//
-	//	for (auto id : glShaderIDs) {
-	//		glDetachShader(m_RendererID, id);
-	//	}
-	//}
 
 	void OpenGLShader::Bind() const
 	{
