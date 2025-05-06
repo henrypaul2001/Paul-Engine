@@ -24,7 +24,7 @@ layout(triangle_strip, max_vertices = 18) out;
 
 layout(std140, binding = 3) uniform CubeData
 {
-	mat4 ShadowMatrices[6];
+	mat4 ViewProjections[6];
 	int CubemapIndex;
 	float FarPlane;
 } u_CubeData;
@@ -39,7 +39,7 @@ void main()
 		for (int i = 0; i < 3; i++)
 		{
 			FragPos = gl_in[i].gl_Position.xyz;
-			gl_Position = u_CubeData.ShadowMatrices[face] * vec4(FragPos, 1.0);
+			gl_Position = u_CubeData.ViewProjections[face] * vec4(FragPos, 1.0);
 			EmitVertex();
 		}
 		EndPrimitive();
@@ -57,7 +57,7 @@ layout(std140, binding = 0) uniform Camera
 
 layout(std140, binding = 3) uniform CubeData
 {
-	mat4 ShadowMatrices[6];
+	mat4 ViewProjections[6];
 	int CubemapIndex;
 	float FarPlane;
 } u_CubeData;

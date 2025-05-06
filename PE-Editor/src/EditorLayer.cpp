@@ -23,7 +23,7 @@ namespace PaulEngine
 {
 	struct CubemapCaptureBuffer
 	{
-		glm::mat4 LightTransforms[6];
+		glm::mat4 ViewProjections[6];
 		int CubemapIndex;
 		float FarPlane;
 	};
@@ -205,12 +205,12 @@ namespace PaulEngine
 
 					CubemapCaptureBuffer cubemapBuffer;
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
-					cubemapBuffer.LightTransforms[0] = lightProjection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // right
-					cubemapBuffer.LightTransforms[1] = lightProjection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // left
-					cubemapBuffer.LightTransforms[2] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   // up
-					cubemapBuffer.LightTransforms[3] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // down
-					cubemapBuffer.LightTransforms[4] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // back
-					cubemapBuffer.LightTransforms[5] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // front
+					cubemapBuffer.ViewProjections[0] = lightProjection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // right
+					cubemapBuffer.ViewProjections[1] = lightProjection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // left
+					cubemapBuffer.ViewProjections[2] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   // up
+					cubemapBuffer.ViewProjections[3] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // down
+					cubemapBuffer.ViewProjections[4] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // back
+					cubemapBuffer.ViewProjections[5] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // front
 
 					cubemapBuffer.CubemapIndex = i;
 					cubemapBuffer.FarPlane = farClip;
@@ -1025,11 +1025,11 @@ namespace PaulEngine
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		m_ShadowmapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapTest.glsl", true);
+		m_ShadowmapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
 		m_ShadowmapMaterial = CreateRef<Material>(m_ShadowmapShaderHandle);
 
 		m_CubemapDataUBO = UniformBuffer::Create(sizeof(CubemapCaptureBuffer), 3);
-		m_ShadowmapCubeShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapCubeTest.glsl", true);
+		m_ShadowmapCubeShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
 		m_ShadowMapCubeMaterial = CreateRef<Material>(m_ShadowmapCubeShaderHandle);
 
 		m_Renderer = CreateEditorRenderer();
