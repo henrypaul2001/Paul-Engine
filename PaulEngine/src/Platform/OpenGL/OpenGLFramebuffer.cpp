@@ -217,6 +217,11 @@ namespace PaulEngine
 	void OpenGLFramebufferTextureCubemapArrayAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
 	{
 		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
-		glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_CubemapArray->GetRendererID(), 0, (int)m_TargetIndex * 6 + (int)m_TargetFace);
+		if (BindAsLayered) {
+			glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_CubemapArray->GetRendererID(), 0, (int)m_TargetIndex * 6 + (int)m_TargetFace);
+		}
+		else {
+			glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_CubemapArray->GetRendererID(), 0);
+		}
 	}
 }

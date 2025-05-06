@@ -142,6 +142,7 @@ namespace PaulEngine
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
+		bool BindAsLayered = true;
 		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
 		void SetTargetIndex(uint8_t newTarget) { m_TargetIndex = std::min(newTarget, uint8_t(m_CubemapArray->GetNumLayers() - 1)); }
 
