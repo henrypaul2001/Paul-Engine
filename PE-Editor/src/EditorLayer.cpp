@@ -21,6 +21,13 @@
 
 namespace PaulEngine
 {
+	struct CubemapCaptureBuffer
+	{
+		glm::mat4 LightTransforms[6];
+		int CubemapIndex;
+		float FarPlane;
+	};
+
 	FrameRenderer EditorLayer::CreateEditorRenderer()
 	{
 		std::vector<RenderPass> renderPasses;
@@ -175,55 +182,56 @@ namespace PaulEngine
 				activeLights = std::min(Renderer::MAX_ACTIVE_POINT_LIGHTS, ++activeLights);
 			}
 
+			FramebufferTextureCubemapArrayAttachment* cubemapArrayAttachment = dynamic_cast<FramebufferTextureCubemapArrayAttachment*>(depthAttachment.get());
+			cubemapArrayAttachment->SetTargetIndex(0);
+			cubemapArrayAttachment->SetTargetFace((CubemapFace)0);
+			cubemapArrayAttachment->BindAsLayered = false;
+			passContext.TargetFramebuffer->SetDepthAttachment(depthAttachment);
+			RenderCommand::Clear();
+
 			// Capture shadow maps for previously gathered light sources
 			for (int i = 0; i < activeLights; i++) {
 				Entity entity = pointLights[i];
 				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
 				ComponentPointLight& light = entity.GetComponent<ComponentPointLight>();
 
-				float nearClip = light.ShadowMapNearClip;
-				float farClip = light.ShadowMapFarClip;
-
-				*(static_cast<float*>(dynamic_cast<UBOShaderParameterTypeStorage*>(m_ShadowMapCubeMaterial->GetParameter("Data").get())->UBO()->GetLayoutStorage()[0].Data->GetData())) = farClip;
-
 				if (light.CastShadows)
 				{
+					float nearClip = light.ShadowMapNearClip;
+					float farClip = light.ShadowMapFarClip;
+
 					glm::mat4 transformMatrix = transform.GetTransform();
 					glm::vec3 position = transform.Position();
 
+					CubemapCaptureBuffer cubemapBuffer;
+					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
+					cubemapBuffer.LightTransforms[0] = lightProjection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // right
+					cubemapBuffer.LightTransforms[1] = lightProjection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // left
+					cubemapBuffer.LightTransforms[2] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   // up
+					cubemapBuffer.LightTransforms[3] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // down
+					cubemapBuffer.LightTransforms[4] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // back
+					cubemapBuffer.LightTransforms[5] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // front
+
+					cubemapBuffer.CubemapIndex = i;
+					cubemapBuffer.FarPlane = farClip;
+
+					m_CubemapDataUBO->SetData(&cubemapBuffer, sizeof(cubemapBuffer), 0);
+					m_CubemapDataUBO->Bind(3);
+
 					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 					cam.SetPerspective(90.0f, (float)m_ShadowWidth / (float)m_ShadowHeight, nearClip, farClip);
+					Renderer::BeginScene(cam, transformMatrix);
 
-					glm::mat4 cameraTransforms[6] = {
-						glm::inverse(glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // right
-						glm::inverse(glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // left
-						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f))), // up
-						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f))), // down
-						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // back
-						glm::inverse(glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))), // front
-					};
-
-					for (int face = 0; face < 6; face++)
 					{
-						FramebufferTextureCubemapArrayAttachment* cubemapArrayAttachment = dynamic_cast<FramebufferTextureCubemapArrayAttachment*>(depthAttachment.get());
-						cubemapArrayAttachment->SetTargetIndex(i);
-						cubemapArrayAttachment->SetTargetFace((CubemapFace)face);
-						passContext.TargetFramebuffer->SetDepthAttachment(depthAttachment);
-						RenderCommand::Clear();
-
-						Renderer::BeginScene(cam, cameraTransforms[face]);
-
-						{
-							PE_PROFILE_SCOPE("Submit Mesh");
-							auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
-							for (auto entityID : view) {
-								auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-								Renderer::DrawDefaultCubeImmediate(m_ShadowMapCubeMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
-							}
+						PE_PROFILE_SCOPE("Submit Mesh");
+						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+						for (auto entityID : view) {
+							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+							Renderer::DrawDefaultCubeImmediate(m_ShadowMapCubeMaterial, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
 						}
-
-						Renderer::EndScene();
 					}
+
+					Renderer::EndScene();
 				}
 			}
 		});
@@ -353,7 +361,7 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
 						for (auto entityID : view) {
 							auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
-							glm::vec4 position = transform.GetTransform()[3];
+							glm::vec4 position = glm::vec4(transform.Position(), 1.0f);
 							Renderer::PointLight lightSource;
 							lightSource.Position = position;
 							lightSource.Position.w = light.Radius;
@@ -1020,6 +1028,7 @@ namespace PaulEngine
 		m_ShadowmapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapTest.glsl", true);
 		m_ShadowmapMaterial = CreateRef<Material>(m_ShadowmapShaderHandle);
 
+		m_CubemapDataUBO = UniformBuffer::Create(sizeof(CubemapCaptureBuffer), 3);
 		m_ShadowmapCubeShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/ShadowmapCubeTest.glsl", true);
 		m_ShadowMapCubeMaterial = CreateRef<Material>(m_ShadowmapCubeShaderHandle);
 

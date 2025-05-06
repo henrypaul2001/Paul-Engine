@@ -74,6 +74,8 @@ namespace PaulEngine {
 		AssetHandle m_ShadowmapShaderHandle;
 		AssetHandle m_ShadowmapCubeShaderHandle;
 		Ref<Material> m_ShadowmapMaterial;
+
+		Ref<UniformBuffer> m_CubemapDataUBO;
 		Ref<Material> m_ShadowMapCubeMaterial;
 
 		AssetHandle m_ActiveSceneHandle = 0;

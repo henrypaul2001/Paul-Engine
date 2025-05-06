@@ -22,6 +22,7 @@ namespace PaulEngine
 			if (parameter->Name == "DirectionalLightShadowMapArray") { continue; }
 			if (parameter->Name == "SpotLightShadowMapArray") { continue; }
 			if (parameter->Name == "PointLightShadowMapArray") { continue; }
+			if (parameter->Name == "CubeData") { continue; }
 
 			switch (parameter->Type())
 			{

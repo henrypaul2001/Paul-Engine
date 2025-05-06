@@ -1,5 +1,22 @@
 Scene: Untitled
 Entities:
+  - Entity: 3800346603458594850
+    TagComponent:
+      Tag: PointLight
+    TransformComponent:
+      Position: [-4.588225, -6.341523, 6.786102]
+      Rotation: [0, 0, 0]
+      Scale: [0.25, 0.25, 0.25]
+    PointLightComponent:
+      Radius: 20
+      Diffuse: [0, 12, 0]
+      Specular: [0, 12, 0]
+      Ambient: [0, 0.1, 0]
+      CastShadows: true
+      ShadowMinBias: 0.001
+      ShadowMaxBias: 0.05
+      ShadowMapNearClip: 0.001
+      ShadowMapFarClip: 200
   - Entity: 15695830373297290846
     TagComponent:
       Tag: ShadedCube
@@ -94,11 +111,11 @@ Entities:
     TagComponent:
       Tag: PointLight
     TransformComponent:
-      Position: [-18.056751, -14.968628, 6.6478233]
+      Position: [-23.26358, -17.528942, 8.213587]
       Rotation: [0, 0, 0]
       Scale: [0.25, 0.25, 0.25]
     PointLightComponent:
-      Radius: 22
+      Radius: 20
       Diffuse: [12, 0, 0]
       Specular: [12, 0, 0]
       Ambient: [0.1, 0, 0]
@@ -106,7 +123,7 @@ Entities:
       ShadowMinBias: 0.001
       ShadowMaxBias: 0.05
       ShadowMapNearClip: 0.001
-      ShadowMapFarClip: 100
+      ShadowMapFarClip: 200
   - Entity: 9807174053992465922
     TagComponent:
       Tag: Directional Light
