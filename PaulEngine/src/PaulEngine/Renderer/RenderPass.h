@@ -1,8 +1,6 @@
 #pragma once
-#include "PaulEngine/Renderer/Camera.h"
+#include "PaulEngine/Renderer/RenderComponent.h"
 #include "PaulEngine/Scene/Scene.h"
-#include "PaulEngine/Renderer/Framebuffer.h"
-#include "PaulEngine/Renderer/Texture.h"
 
 #include <functional>
 namespace PaulEngine
@@ -36,5 +34,23 @@ namespace PaulEngine
 		RenderPassContext m_Context;
 
 		friend class FrameRenderer;
+	};
+
+	class RenderPassNew
+	{
+	public:
+		using OnRenderFunc = std::function<void(Ref<Framebuffer>, std::vector<IRenderComponent*>)>;
+
+		RenderPassNew(std::vector<RenderComponentType> inputTypes) {}
+
+		void OnRender(Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {}
+
+		const std::vector<RenderComponentType>& GetInputTypes() const { return m_InputTypes; }
+
+		friend class FrameRendererNew;
+	private:
+		OnRenderFunc m_RenderFunc;
+	
+		std::vector<RenderComponentType> m_InputTypes;
 	};
 }

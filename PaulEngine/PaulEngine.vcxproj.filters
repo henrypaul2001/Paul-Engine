@@ -1546,6 +1546,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\RenderComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">

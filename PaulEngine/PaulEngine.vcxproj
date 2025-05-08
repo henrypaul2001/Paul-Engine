@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\RenderComponent.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
