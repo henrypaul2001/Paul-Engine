@@ -39,16 +39,23 @@ namespace PaulEngine
 	class RenderPassNew
 	{
 	public:
-		using OnRenderFunc = std::function<void(Ref<Framebuffer>, std::vector<IRenderComponent*>)>;
+		struct RenderPassContext
+		{
+			Ref<Scene> ActiveScene;
+			Ref<Camera> ActiveCamera;
+		};
+		using OnRenderFunc = std::function<void(RenderPassContext, Ref<Framebuffer>, std::vector<IRenderComponent*>)>; // { scene, camera }, target framebuffer, inputs
 
 		RenderPassNew(std::vector<RenderComponentType> inputTypes) {}
 
-		void OnRender(Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {}
+		void OnRender(RenderPassContext context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) { m_RenderFunc(context, targetFramebuffer, inputs); }
 
 		const std::vector<RenderComponentType>& GetInputTypes() const { return m_InputTypes; }
+		const UUID& GetRenderID() const { return m_RenderPassID; }
 
 		friend class FrameRendererNew;
 	private:
+		UUID m_RenderPassID;
 		OnRenderFunc m_RenderFunc;
 	
 		std::vector<RenderComponentType> m_InputTypes;
