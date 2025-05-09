@@ -260,14 +260,32 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 	}
 
-	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform)
+	void Renderer::BeginScene(const Camera& camera, const glm::mat4& worldTransform)
 	{
 		PE_PROFILE_FUNCTION();
 
 		EndScene();
 
-		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
-		s_RenderData.CameraBuffer.ViewPos = transform[3];
+		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
+		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
+
+		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
+		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
+		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+	}
+
+	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform)
+	{
+		PE_PROFILE_FUNCTION();
+
+		EndScene();
+
+		s_RenderData.CameraBuffer.ViewProjection = projection * glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;

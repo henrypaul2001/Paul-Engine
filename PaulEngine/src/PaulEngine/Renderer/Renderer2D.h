@@ -16,7 +16,8 @@ namespace PaulEngine {
 
 		static void BeginScene(const OrthographicCamera& camera, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = { DepthFunc::LESS, true, true });
 		static void BeginScene(const EditorCamera& camera, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = {DepthFunc::LESS, true, true });
-		static void BeginScene(const Camera& camera, const glm::mat4& transform, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = { DepthFunc::LESS, true, true });
+		static void BeginScene(const Camera& camera, const glm::mat4& worldTransform, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = { DepthFunc::LESS, true, true });
+		static void BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, FaceCulling cullState = FaceCulling::BACK, DepthState depthState = { DepthFunc::LESS, true, true });
 		static void EndScene();
 		static void Flush();
 

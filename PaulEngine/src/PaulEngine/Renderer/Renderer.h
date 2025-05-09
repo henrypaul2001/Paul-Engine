@@ -46,7 +46,8 @@ namespace PaulEngine {
 		static void Init();
 
 		static void BeginScene(const EditorCamera& camera);
-		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const Camera& camera, const glm::mat4& worldTransform);
+		static void BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform);
 		static void EndScene();
 		static void Flush();
 

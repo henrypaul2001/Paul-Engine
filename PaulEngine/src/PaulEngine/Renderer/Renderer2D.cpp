@@ -256,12 +256,28 @@ namespace PaulEngine {
 		StartNewBatch();
 	}
 
-	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform, FaceCulling cullState, DepthState depthState)
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& worldTransform, FaceCulling cullState, DepthState depthState)
 	{
 		PE_PROFILE_FUNCTION();
 
-		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
-		s_RenderData.CameraBuffer.ViewPos = transform[3];
+		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
+		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
+
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+
+		StartNewBatch();
+	}
+
+	void Renderer2D::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, FaceCulling cullState, DepthState depthState)
+	{
+		PE_PROFILE_FUNCTION();
+
+		s_RenderData.CameraBuffer.ViewProjection = projection * glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
