@@ -33,8 +33,7 @@ namespace PaulEngine {
 
 		void OnDuplicatedEntity();
 
-		FrameRenderer CreateEditorRenderer();
-		FrameRenderer CreateRuntimeRenderer();
+		void CreateRenderer(FrameRenderer& out_Framerenderer);
 
 		void OnDebugOverlayDraw();
 
@@ -67,16 +66,6 @@ namespace PaulEngine {
 		int m_ShadowWidth = 1280;
 		int m_ShadowHeight = 1280;
 		Ref<Framebuffer> m_MainFramebuffer;
-
-		Ref<Framebuffer> m_DirLightShadowsFramebuffer;
-		Ref<Framebuffer> m_SpotLightShadowsFramebuffer;
-		Ref<Framebuffer> m_PointLightShadowsFramebuffer;
-		AssetHandle m_ShadowmapShaderHandle;
-		AssetHandle m_ShadowmapCubeShaderHandle;
-		Ref<Material> m_ShadowmapMaterial;
-
-		Ref<UniformBuffer> m_CubemapDataUBO;
-		Ref<Material> m_ShadowMapCubeMaterial;
 
 		AssetHandle m_ActiveSceneHandle = 0;
 		Ref<Scene> m_ActiveScene;
