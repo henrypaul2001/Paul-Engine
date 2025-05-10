@@ -1,6 +1,8 @@
 #include "PaulEngine/Renderer/Camera.h"
 #include "PaulEngine/Renderer/Framebuffer.h"
 #include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Renderer/Material.h"
+#include "PaulEngine/Renderer/UniformBuffer.h"
 
 namespace PaulEngine
 {
@@ -33,6 +35,7 @@ namespace PaulEngine
 
 	struct IRenderComponent
 	{
+		virtual ~IRenderComponent() {}
 		virtual RenderComponentType GetType() const = 0;
 	};
 

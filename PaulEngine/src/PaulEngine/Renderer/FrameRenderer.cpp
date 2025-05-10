@@ -3,33 +3,11 @@
 
 namespace PaulEngine
 {
-	void FrameRenderer::RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera)
+	void FrameRenderer::RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera, glm::mat4 cameraWorldTransform)
 	{
+		PE_PROFILE_FUNCTION();
 		Ref<Framebuffer> currentTarget = nullptr;
 		for (RenderPass& p : m_OrderedRenderPasses) {
-
-			// First check if next render pass uses the same framebuffer as previous pass to avoid state changes
-			if (currentTarget.get() && currentTarget.get() != p.m_Context.TargetFramebuffer.get()) {
-				if (p.m_Context.TargetFramebuffer) {
-					p.m_Context.TargetFramebuffer->Bind();
-				}
-				else if (currentTarget) {
-					currentTarget->Unbind();
-				}
-			}
-			else if (p.m_Context.TargetFramebuffer.get()) {
-				p.m_Context.TargetFramebuffer->Bind();
-			}
-			currentTarget = p.m_Context.TargetFramebuffer;
-
-			p.OnRender(sceneContext, activeCamera);
-		}
-	}
-
-	void FrameRendererNew::RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera)
-	{
-		Ref<Framebuffer> currentTarget = nullptr;
-		for (RenderPassNew& p : m_OrderedRenderPasses) {
 
 			// First check if next render pass uses the same framebuffer as previous pass to avoid state changes
 			const UUID& renderID = p.GetRenderID();
@@ -49,12 +27,13 @@ namespace PaulEngine
 
 			std::vector<IRenderComponent*> renderPassInputs = m_InputMap.at(renderID);
 
-			p.OnRender({ sceneContext, activeCamera }, targetFramebuffer, renderPassInputs);
+			p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, renderPassInputs);
 		}
 	}
 
-	bool FrameRendererNew::AddRenderPass(RenderPassNew renderPass, Ref<Framebuffer> targetFramebuffer, std::vector<const char*> inputBindings)
+	bool FrameRenderer::AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer, std::vector<const char*> inputBindings)
 	{
+		PE_PROFILE_FUNCTION();
 		const UUID& renderID = renderPass.GetRenderID();
 		auto it = m_FramebufferMap.find(renderID);
 		if (it != m_FramebufferMap.end())
