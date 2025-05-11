@@ -80,6 +80,7 @@ namespace PaulEngine {
 		{
 			glm::mat4 ViewProjection;
 			glm::vec3 ViewPos;
+			float Gamma = 2.2f;
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;

@@ -9,6 +9,7 @@ layout(std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
 	vec3 ViewPos;
+	float Gamma;
 } u_CameraBuffer;
 
 layout(location = 0) out vec4 v_Colour;

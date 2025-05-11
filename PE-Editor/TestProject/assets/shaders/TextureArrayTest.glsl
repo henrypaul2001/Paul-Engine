@@ -10,6 +10,7 @@ layout(std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
 	vec3 ViewPos;
+	float Gamma;
 } u_CameraBuffer;
 
 layout(std140, binding = 1) uniform MeshSubmission
@@ -37,6 +38,13 @@ layout(location = 1) out int entityID;
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in vec2 v_TexCoords;
 
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 ViewProjection;
+	vec3 ViewPos;
+	float Gamma;
+} u_CameraBuffer;
+
 layout(std140, binding = 3) uniform MaterialValues
 {
 	vec4 Colour;
@@ -51,7 +59,7 @@ void main()
 {
 	int index = u_MaterialValues.TexIndex;
 	index = clamp(index, 0, 5);
-	colour = texture(TestArray, vec3(v_TexCoords, index));
+	colour = vec4(pow(texture(TestArray, vec3(v_TexCoords, index)).rgb, vec3(u_CameraBuffer.Gamma)), 1.0);
 	colour *= u_MaterialValues.Colour;
 	colour.xyz *= 1.0 - u_MaterialValues.Metalness + (0.2 * u_MaterialValues.Roughness);
 

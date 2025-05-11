@@ -6,10 +6,11 @@ layout (location = 1) in vec4 a_Colour;
 layout (location = 2) in vec2 a_TexCoords;
 layout (location = 3) in int a_EntityID;
 
-layout (std140, binding = 0) uniform Camera
+layout(std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
 	vec3 ViewPos;
+	float Gamma;
 } u_CameraBuffer;
 
 layout (location = 0) out vec4 v_Colour;
