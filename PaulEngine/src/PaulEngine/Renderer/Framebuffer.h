@@ -200,6 +200,9 @@ namespace PaulEngine
 		virtual void Resize(const uint32_t width, const uint32_t height) = 0;
 		virtual int ReadPixel(FramebufferAttachmentPoint attachPoint, int x, int y) = 0; // If there are no colour buffers and you want to read the depth buffer, glReadBuffer() must be GL_NONE with the data type set to GL_DEPTH_COMPONENT
 
+		virtual void SetDrawBuffers(std::vector<FramebufferAttachmentPoint> colourBuffers) = 0;
+		virtual void SetDrawBuffers() = 0;
+
 		static Ref<Framebuffer> Create(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments = {}, Ref<FramebufferAttachment> depthAttachment = nullptr);
 
 		virtual bool operator ==(const Framebuffer* other) const = 0;

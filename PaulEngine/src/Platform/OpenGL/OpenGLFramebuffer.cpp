@@ -99,6 +99,14 @@ namespace PaulEngine
 
 		m_ColourAttachmentMap[colourAttachment->GetAttachPoint()] = colourAttachment;
 		colourAttachment->BindToFramebuffer(this);
+
+		std::vector<FramebufferAttachmentPoint> attachments;
+		for (auto attach : m_ColourAttachmentMap)
+		{
+			attachments.push_back(attach.first);
+		}
+		SetDrawBuffers(attachments);
+
 		return true;
 	}
 
@@ -172,6 +180,28 @@ namespace PaulEngine
 			}
 		}
 		return -1;
+	}
+
+	void OpenGLFramebuffer::SetDrawBuffers(std::vector<FramebufferAttachmentPoint> colourBuffers)
+	{
+		if (colourBuffers.size() > 0) {
+			std::vector<GLenum> gl_DrawBuffers;
+			for (auto attach : colourBuffers) {
+				gl_DrawBuffers.push_back(OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attach));
+			}
+			glDrawBuffers(gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
+		}
+	}
+
+	void OpenGLFramebuffer::SetDrawBuffers()
+	{
+		if (m_ColourAttachmentMap.size() > 0) {
+			std::vector<GLenum> gl_DrawBuffers;
+			for (auto attach : m_ColourAttachmentMap) {
+				gl_DrawBuffers.push_back(OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attach.first));
+			}
+			glDrawBuffers(gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
+		}
 	}
 
 	bool OpenGLFramebuffer::operator==(const Framebuffer* other) const
