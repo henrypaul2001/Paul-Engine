@@ -57,6 +57,7 @@ namespace PaulEngine
 			out << YAML::Key << "FarClip" << YAML::Value << camera.GetFarClip();
 			out << YAML::Key << "OrthoSize" << YAML::Value << camera.GetOrthoSize();
 			out << YAML::Key << "AspectRatio" << YAML::Value << camera.GetAspectRatio();
+			out << YAML::Key << "Gamma" << YAML::Value << camera.Gamma;
 			out << YAML::EndMap;
 
 			out << YAML::Key << "FixedAspect" << YAML::Value << cameraComponent.FixedAspectRatio;
@@ -291,6 +292,7 @@ namespace PaulEngine
 					camera.m_FarClip = cameraProperties["FarClip"].as<float>();
 					camera.m_OrthographicSize = cameraProperties["OrthoSize"].as<float>();
 					camera.m_AspectRatio = cameraProperties["AspectRatio"].as<float>();
+					camera.Gamma = cameraProperties["Gamma"].as<float>();
 
 					if (projectionType == SCENE_CAMERA_PERSPECTIVE) {
 						camera.SetPerspective(camera.m_PerspectiveVFOV, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);

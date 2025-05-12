@@ -11,6 +11,8 @@ namespace PaulEngine
 	class EditorCamera : public Camera
 	{
 	public:
+		float Gamma = 2.2f;
+
 		EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
@@ -22,7 +24,9 @@ namespace PaulEngine
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
-		virtual const glm::mat4& GetProjection() const { return m_Projection; }
+		virtual const glm::mat4& GetProjection() const override { return m_Projection; }
+		virtual float GetGamma() const override { return Gamma; }
+
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
 

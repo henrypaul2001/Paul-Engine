@@ -387,11 +387,11 @@ namespace PaulEngine
 
 			targetFramebuffer->SetDrawBuffers();
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
-			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			RenderCommand::SetClearColour(glm::vec4(0.01f, 0.01f, 0.01f, 1.0f));
 			RenderCommand::Clear();
 
 			if (activeCamera && sceneContext) {
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform);
+				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma());
 				{
 					PE_PROFILE_SCOPE("Draw Quads");
 					auto group = sceneContext->Group<ComponentTransform>(entt::get<Component2DSprite>);
@@ -467,7 +467,7 @@ namespace PaulEngine
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
 			if (activeCamera && sceneContext) {
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform);
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma());
 
 				{
 					PE_PROFILE_SCOPE("Submit Mesh");
@@ -605,7 +605,7 @@ namespace PaulEngine
 
 			if (activeCamera && sceneContext)
 			{
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
+				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), FaceCulling::NONE, {DepthFunc::ALWAYS, true, true});
 
 				if (showCollidersInput->Data)
 				{
@@ -768,7 +768,7 @@ namespace PaulEngine
 			RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 			RenderCommand::Clear();
 
-			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform);
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma());
 			dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get())->GetTexture()->Bind();
 			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, -1);
 			Renderer::EndScene();

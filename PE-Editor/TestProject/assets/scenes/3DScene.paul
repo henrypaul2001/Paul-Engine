@@ -205,6 +205,7 @@ Entities:
         FarClip: 1000
         OrthoSize: 10
         AspectRatio: 2.0783784
+        Gamma: 2.2
       FixedAspect: false
   - Entity: 3058056560338427120
     TagComponent:
