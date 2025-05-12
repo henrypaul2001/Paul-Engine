@@ -28,6 +28,9 @@ namespace PaulEngine {
 		RG8,
 		RGB8,
 		RGBA8,
+		RGB16F,
+		RGBA16F,
+		RGB32F,
 		RGBA32F
 	};
 
