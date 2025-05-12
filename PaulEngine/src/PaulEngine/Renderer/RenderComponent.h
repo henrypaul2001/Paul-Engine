@@ -14,6 +14,7 @@ namespace PaulEngine
 		Camera,
 		Material,
 		UBO,
+		FramebufferAttachment,
 		PrimitiveType
 	};
 
@@ -27,6 +28,7 @@ namespace PaulEngine
 			case RenderComponentType::Camera: return "Camera";
 			case RenderComponentType::Material: return "Material";
 			case RenderComponentType::UBO: return "UBO";
+			case RenderComponentType::FramebufferAttachment: return "FramebufferAttachment";
 			case RenderComponentType::PrimitiveType: return "PrimitiveType";
 		}
 		PE_CORE_ERROR("Unddefined RenderComponentType translation");
@@ -78,6 +80,14 @@ namespace PaulEngine
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::UBO; }
 		Ref<UniformBuffer> UBO;
+	};
+
+	struct RenderComponentFBOAttachment : public IRenderComponent
+	{
+		RenderComponentFBOAttachment(Ref<FramebufferAttachment> attachment) : Attachment(attachment) {}
+
+		virtual RenderComponentType GetType() const override { return RenderComponentType::FramebufferAttachment; }
+		Ref<FramebufferAttachment> Attachment;
 	};
 
 	template<typename T>

@@ -19,11 +19,6 @@ layout(std140, binding = 1) uniform MeshSubmission
 	int EntityID;
 } u_MeshSubmission;
 
-struct ViewData
-{
-	vec3 ViewPos;
-};
-
 struct VertexData
 {
 	vec3 WorldFragPos;
@@ -34,8 +29,7 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out flat ViewData v_ViewData;
-layout(location = 3) out VertexData v_VertexData;
+layout(location = 1) out VertexData v_VertexData;
 
 void main()
 {
@@ -51,8 +45,6 @@ void main()
 	vec3 B = cross(N, T);
 	v_VertexData.TBN = mat3(T, B, N);
 
-	v_ViewData.ViewPos = u_CameraBuffer.ViewPos;
-
 	v_EntityID = u_MeshSubmission.EntityID;
 
 	gl_Position = u_CameraBuffer.ViewProjection * vec4(v_VertexData.WorldFragPos, 1.0);
@@ -66,11 +58,6 @@ layout(location = 1) out int entityID;
 const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
-
-struct ViewData
-{
-	vec3 ViewPos;
-};
 
 struct VertexData
 {
@@ -118,8 +105,7 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in flat ViewData v_ViewData;
-layout(location = 3) in VertexData v_VertexData;
+layout(location = 1) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
 {
@@ -173,13 +159,12 @@ float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, v
 {
 	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
 	float currentDepth = length(fragToLight);
-	currentDepth = currentDepth / farPlane;
 
 	float shadow = 0.0;
 	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
 	int samples = 20;
 
-	float viewDistance = length(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	float viewDistance = length(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
 
 	for (int i = 0; i < samples; i++)
@@ -424,7 +409,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	ViewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
 
 	ScaledTexCoords = v_VertexData.TexCoords;

@@ -155,6 +155,10 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/DefaultLit.pmat
     Persistent: true
     Type: AssetType::Material
+  - Handle: 11816000857853238022
+    Filepath: ..\..\assets\shaders/MipChainUpsample.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 17945211788953022010
     Filepath: textures\cobble_floor\diffuse.png
     Persistent: false
@@ -177,5 +181,17 @@ AssetRegistry:
     Type: AssetType::Material
   - Handle: 8064715025807366947
     Filepath: ..\..\assets\shaders/DepthShaderCube.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 8396352129150275675
+    Filepath: ..\..\assets\shaders/MipChainDownsample.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 10189580744591152586
+    Filepath: ..\..\assets\shaders/MipChainBloomCombine.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 14083497431225232913
+    Filepath: ..\..\assets\shaders/GammaCorrection.glsl
     Persistent: true
     Type: AssetType::Shader

@@ -144,6 +144,10 @@ namespace PaulEngine {
 				{ {  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
 				{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } }
 			};
+			vertices[0].Position *= 2.0f;
+			vertices[1].Position *= 2.0f;
+			vertices[2].Position *= 2.0f;
+			vertices[3].Position *= 2.0f;
 			s_RenderData.QuadVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 4);
 
 			uint32_t quadIndices[6] = {
