@@ -889,15 +889,18 @@ namespace PaulEngine
 		m_Camera = CreateRef<EditorCamera>(EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f));
 
 		// load test shader
-		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
-		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
-
-		AssetHandle downsampleTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
-		AssetHandle upsampleTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
-		AssetHandle combineTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
+		//Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		//std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+		//
+		//AssetHandle downsampleTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
+		//AssetHandle upsampleTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
+		//AssetHandle combineTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
 
 		m_Renderer = FrameRenderer();
-		CreateRenderer(m_Renderer);
+
+		if (m_ProjectSelected) {
+			CreateRenderer(m_Renderer);
+		}
 	}
 
 	void EditorLayer::OnDetach()
@@ -1750,6 +1753,12 @@ namespace PaulEngine
 		}
 		ImGui::PopStyleVar();
 		ImGui::End();
+
+		if (m_ProjectSelected)
+		{
+			m_Renderer = FrameRenderer();
+			CreateRenderer(m_Renderer);
+		}
 	}
 
 	bool EditorLayer::CanPickEntities()
