@@ -1090,6 +1090,11 @@ namespace PaulEngine
 			}
 			ImGui::Text("Hovered entity: %s", hoveredEntityName.c_str());
 
+			ImGui::SeparatorText("Editor Camera:");
+			ImGui::DragFloat("Gamma", &m_Camera->Gamma, 0.01f, 0.0f, 100.0f);
+			ImGui::DragFloat("Exposure", &m_Camera->Exposure, 0.01f, 0.0f, 100.0f);
+			ImGui::Spacing();
+
 			const Renderer::Statistics& stats = Renderer::GetStats();
 			ImGui::SeparatorText("Renderer3D Stats:");
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
