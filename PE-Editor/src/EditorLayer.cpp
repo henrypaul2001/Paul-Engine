@@ -38,7 +38,7 @@ namespace PaulEngine
 		screenSpec.Width = 1280;
 		screenSpec.Height = 720;
 		screenSpec.GenerateMips = false;
-		screenSpec.Format = ImageFormat::RGBA8;
+		screenSpec.Format = ImageFormat::RGBA16F;
 		screenSpec.MinFilter = ImageMinFilter::NEAREST;
 		screenSpec.MagFilter = ImageMagFilter::NEAREST;
 		screenSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
@@ -127,12 +127,12 @@ namespace PaulEngine
 		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
 		Ref<Material> shadowmapCubeMaterial = CreateRef<Material>(shadowmapCubeShaderHandle);
 
-		AssetHandle gammaCorrectionShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/GammaCorrection.glsl", true);
-		Ref<Material> gammaCorrectionMaterial = CreateRef<Material>(gammaCorrectionShaderHandle);
+		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
+		Ref<Material> gammaTonemapMaterial = CreateRef<Material>(gammaTonemapShaderHandle);
 
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaCorrectionMaterial", gammaCorrectionMaterial);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentUBO>("CubemapDataUBO", cubemapDataUBO);
 
 		// Render pass functions
@@ -391,7 +391,7 @@ namespace PaulEngine
 			RenderCommand::Clear();
 
 			if (activeCamera && sceneContext) {
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma());
+				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 				{
 					PE_PROFILE_SCOPE("Draw Quads");
 					auto group = sceneContext->Group<ComponentTransform>(entt::get<Component2DSprite>);
@@ -467,7 +467,7 @@ namespace PaulEngine
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
 			if (activeCamera && sceneContext) {
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma());
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
 				{
 					PE_PROFILE_SCOPE("Submit Mesh");
@@ -605,7 +605,7 @@ namespace PaulEngine
 
 			if (activeCamera && sceneContext)
 			{
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), FaceCulling::NONE, {DepthFunc::ALWAYS, true, true});
+				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure(), FaceCulling::NONE, {DepthFunc::ALWAYS, true, true});
 
 				if (showCollidersInput->Data)
 				{
@@ -742,7 +742,7 @@ namespace PaulEngine
 		};
 
 		// { primitive<glm::ivec2>, Attachment, Material, Attachment }
-		RenderPass::OnRenderFunc gammaCorrectionPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		RenderPass::OnRenderFunc gammaTonemapPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 2D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
@@ -768,7 +768,7 @@ namespace PaulEngine
 			RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 			RenderCommand::Clear();
 
-			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma());
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 			dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get())->GetTexture()->Bind();
 			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, -1);
 			Renderer::EndScene();
@@ -788,7 +788,7 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "ScreenAttachment" });
 		
 		// Post process
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, gammaCorrectionPass), m_MainFramebuffer, { "ViewportResolution", "AlternateScreenAttachment", "GammaCorrectionMaterial", "ScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "AlternateScreenAttachment", "GammaTonemapMaterial", "ScreenAttachment" });
 	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}

@@ -10,6 +10,7 @@ layout(std140, binding = 0) uniform Camera
 	mat4 ViewProjection;
 	vec3 ViewPos;
 	float Gamma;
+	float Exposure;
 } u_CameraBuffer;
 
 layout(std140, binding = 1) uniform MeshSubmission
@@ -17,11 +18,6 @@ layout(std140, binding = 1) uniform MeshSubmission
 	mat4 Transform;
 	int EntityID;
 } u_MeshSubmission;
-
-struct ViewData
-{
-	vec3 ViewPos;
-};
 
 struct VertexData
 {
@@ -33,8 +29,7 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out flat ViewData v_ViewData;
-layout(location = 3) out VertexData v_VertexData;
+layout(location = 1) out VertexData v_VertexData;
 
 void main()
 {
@@ -49,8 +44,6 @@ void main()
 	T = normalize(T - dot(T, N) * N);
 	vec3 B = cross(N, T);
 	v_VertexData.TBN = mat3(T, B, N);
-
-	v_ViewData.ViewPos = u_CameraBuffer.ViewPos;
 
 	v_EntityID = u_MeshSubmission.EntityID;
 

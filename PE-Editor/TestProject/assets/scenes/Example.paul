@@ -27,6 +27,7 @@ Entities:
         OrthoSize: 10
         AspectRatio: 2.0644295
         Gamma: 2.2
+        Exposure: 1.0
       FixedAspect: false
   - Entity: 12526598711108418683
     TagComponent:

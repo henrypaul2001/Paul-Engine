@@ -12,6 +12,7 @@ namespace PaulEngine
 	{
 	public:
 		float Gamma = 2.2f;
+		float Exposure = 1.0f;
 
 		SceneCamera(SceneCameraType type = SCENE_CAMERA_PERSPECTIVE);
 		virtual ~SceneCamera();
@@ -27,6 +28,7 @@ namespace PaulEngine
 
 		virtual const glm::mat4& GetProjection() const override { return m_Projection; }
 		virtual float GetGamma() const override { return Gamma; }
+		virtual float GetExposure() const override { return Exposure; }
 
 		inline float GetOrthoSize() const { return m_OrthographicSize; }
 		inline float GetNearClip() const { return m_NearClip; }

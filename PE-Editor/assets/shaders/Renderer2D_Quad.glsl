@@ -13,6 +13,7 @@ layout(std140, binding = 0) uniform Camera
 	mat4 ViewProjection;
 	vec3 ViewPos;
 	float Gamma;
+	float Exposure;
 } u_CameraBuffer;
 
 struct VertexOutput {

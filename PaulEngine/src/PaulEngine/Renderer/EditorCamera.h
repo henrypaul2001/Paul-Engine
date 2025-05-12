@@ -12,6 +12,7 @@ namespace PaulEngine
 	{
 	public:
 		float Gamma = 2.2f;
+		float Exposure = 1.0f;
 
 		EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
@@ -26,6 +27,7 @@ namespace PaulEngine
 
 		virtual const glm::mat4& GetProjection() const override { return m_Projection; }
 		virtual float GetGamma() const override { return Gamma; }
+		virtual float GetExposure() const override { return Exposure; }
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }

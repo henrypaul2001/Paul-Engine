@@ -6,11 +6,6 @@ const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
 
-struct ViewData
-{
-	vec3 ViewPos;
-};
-
 struct VertexData
 {
 	vec3 WorldFragPos;
@@ -57,14 +52,14 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in flat ViewData v_ViewData;
-layout(location = 3) in VertexData v_VertexData;
+layout(location = 1) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
 {
 	mat4 ViewProjection;
 	vec3 ViewPos;
 	float Gamma;
+	float Exposure;
 } u_CameraBuffer;
 
 layout(std140, binding = 2) uniform SceneData
@@ -102,12 +97,12 @@ vec3 ViewDir;
 // array of offset direction for sampling
 vec3 gridSamplingDisk[20] = vec3[]
 (
-   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
-   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-);
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+	);
 float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, vec3 lightPos, float minBias, float maxBias, vec3 Normal, float farPlane)
 {
 	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
@@ -118,7 +113,7 @@ float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, v
 	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
 	int samples = 20;
 
-	float viewDistance = length(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	float viewDistance = length(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
 
 	for (int i = 0; i < samples; i++)
@@ -363,7 +358,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	ViewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
 
 	ScaledTexCoords = v_VertexData.TexCoords;

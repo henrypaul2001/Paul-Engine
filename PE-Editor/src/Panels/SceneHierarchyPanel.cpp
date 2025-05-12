@@ -376,7 +376,8 @@ namespace PaulEngine
 			float farClip = component.Camera.GetFarClip();
 			float aspectRatio = component.Camera.GetAspectRatio();
 
-			ImGui::DragFloat("Gamma", &component.Camera.Gamma, 0.1f, 0.0f, 100.0f);
+			ImGui::DragFloat("Gamma", &component.Camera.Gamma, 0.01f, 0.0f, 100.0f);
+			ImGui::DragFloat("Exposure", &component.Camera.Exposure, 0.01f, 0.0f, 100.0f);
 
 			if (component.Camera.IsPerspective()) {
 				if (ImGui::DragFloat("FOV", &vfov, 0.5f)) { propertyChanged = true; }

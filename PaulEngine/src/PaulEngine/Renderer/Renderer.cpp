@@ -81,6 +81,7 @@ namespace PaulEngine {
 			glm::mat4 ViewProjection;
 			glm::vec3 ViewPos;
 			float Gamma = 2.2f;
+			float Exposure = 1.0f;
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
@@ -256,6 +257,7 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		s_RenderData.CameraBuffer.ViewPos = camera.GetPosition();
 		s_RenderData.CameraBuffer.Gamma = camera.Gamma;
+		s_RenderData.CameraBuffer.Exposure = camera.Exposure;
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
@@ -275,6 +277,7 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(worldTransform);
 		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
 		s_RenderData.CameraBuffer.Gamma = camera.GetGamma();
+		s_RenderData.CameraBuffer.Exposure = camera.GetExposure();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
@@ -285,7 +288,7 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 	}
 
-	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, float gamma)
+	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, float gamma, float exposure)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -294,6 +297,7 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.ViewProjection = projection * glm::inverse(worldTransform);
 		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
 		s_RenderData.CameraBuffer.Gamma = gamma;
+		s_RenderData.CameraBuffer.Exposure = exposure;
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer3DData::CameraBuffer));
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;

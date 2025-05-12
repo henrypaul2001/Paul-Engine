@@ -194,9 +194,9 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Position: [-6.9166474, 5.9852176, 11.731807]
-      Rotation: [-0.25458896, -0.35610697, 0]
-      Scale: [1, 0.9999999, 1]
+      Position: [-21.746805, -2.2775216, 42.720413]
+      Rotation: [-0.25458887, -0.35610718, 1.1923968e-08]
+      Scale: [0.9999997, 0.99999946, 0.99999964]
     CameraComponent:
       Camera:
         ProjectionType: 1
@@ -206,6 +206,7 @@ Entities:
         OrthoSize: 10
         AspectRatio: 2.0783784
         Gamma: 2.2
+        Exposure: 1
       FixedAspect: false
   - Entity: 3058056560338427120
     TagComponent:

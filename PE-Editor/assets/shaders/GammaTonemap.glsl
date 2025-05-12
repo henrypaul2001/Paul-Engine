@@ -25,12 +25,20 @@ layout(std140, binding = 0) uniform Camera
 	mat4 ViewProjection;
 	vec3 ViewPos;
 	float Gamma;
+	float Exposure;
 } u_CameraBuffer;
 
 layout(binding = 0) uniform sampler2D SourceTexture;
 
 void main()
 {
-	vec3 colour = texture(SourceTexture, v_TexCoords).rgb;
-	f_Result = vec4(pow(colour, vec3(1.0 / u_CameraBuffer.Gamma)), 1.0);
+	vec3 hdrColour = texture(SourceTexture, v_TexCoords).rgb;
+
+	// exposure tone mapping
+	vec3 mapped = vec3(1.0) - exp(-hdrColour * u_CameraBuffer.Exposure);
+	
+	// gamma correction
+	mapped = pow(mapped, vec3(1.0 / u_CameraBuffer.Gamma));
+
+	f_Result = vec4(mapped, 1.0);
 }

@@ -141,21 +141,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Window\CreateTextureArrayWindow.h" />
-    <ClInclude Include="src\Window\CreateMaterialWindow.h" />
-    <ClInclude Include="src\Window\CreateAtlasWindow.h" />
     <ClInclude Include="src\EditorLayer.h" />
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\Window\CreateAtlasWindow.h" />
+    <ClInclude Include="src\Window\CreateMaterialWindow.h" />
+    <ClInclude Include="src\Window\CreateTextureArrayWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Window\CreateTextureArrayWindow.cpp" />
-    <ClCompile Include="src\Window\CreateMaterialWindow.cpp" />
-    <ClCompile Include="src\Window\CreateAtlasWindow.cpp" />
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\Panels\ContentBrowserPanel.cpp" />
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\Window\CreateAtlasWindow.cpp" />
+    <ClCompile Include="src\Window\CreateMaterialWindow.cpp" />
+    <ClCompile Include="src\Window\CreateTextureArrayWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PaulEngine\PaulEngine.vcxproj">
