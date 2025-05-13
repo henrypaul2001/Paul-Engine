@@ -94,6 +94,51 @@ namespace PaulEngine
 
 		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", m_EntityOutlineColour);
 
+		// Bloom mip chain
+		// ---------------
+		struct BloomMipChain
+		{
+			void Init(const glm::ivec2 viewportSize, const uint8_t chainLength = 6)
+			{
+				TextureSpecification mipSpec;
+				mipSpec.Format = ImageFormat::R11FG11FB10F;
+				mipSpec.MinFilter = ImageMinFilter::LINEAR;
+				mipSpec.MagFilter = ImageMagFilter::LINEAR;
+				mipSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
+				mipSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
+				mipSpec.GenerateMips = false;
+
+				m_Chain.clear();
+				m_Chain.reserve(chainLength);
+				glm::vec2 mipSize = viewportSize;
+				for (uint8_t i = 0; i < chainLength; i++)
+				{
+					mipSize *= 0.5f;
+					mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
+
+					mipSpec.Width = (uint32_t)mipSize.x;
+					mipSpec.Height = (uint32_t)mipSize.y;
+
+					Ref<Texture2D> texture = Texture2D::Create(mipSpec);
+					m_Chain.push_back(texture);
+				}
+			}
+
+			size_t Size() const { return m_Chain.size(); }
+
+			Ref<Texture2D> GetMipLevel(uint8_t mip) { 
+				PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
+				return m_Chain[mip];
+			}
+
+		private:
+			std::vector<Ref<Texture2D>> m_Chain;
+		};
+		BloomMipChain bloomMipChain;
+		bloomMipChain.Init(m_ViewportSize, 6);
+
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", bloomMipChain);
+
 		// Framebuffers
 		// ------------
 		FramebufferSpecification spec;
@@ -110,10 +155,17 @@ namespace PaulEngine
 		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, pointLightShadowArray);
 		Ref<Framebuffer> pointLightShadowsFramebuffer = Framebuffer::Create(spec, {}, pointLightShadowDepthAttach);
 
+		FramebufferSpecification bloomSpec;
+		bloomSpec.Width = m_ViewportSize.x;
+		bloomSpec.Height = m_ViewportSize.y;
+		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0));
+		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
+
 		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", m_MainFramebuffer);
 		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", dirLightShadowsFramebuffer);
 		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", spotLightShadowsFramebuffer);
 		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", pointLightShadowsFramebuffer);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", bloomFBO);
 
 		// Materials
 		// ---------
@@ -130,10 +182,22 @@ namespace PaulEngine
 		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
 		Ref<Material> gammaTonemapMaterial = CreateRef<Material>(gammaTonemapShaderHandle);
 
+		AssetHandle bloomDownsampleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
+		Ref<Material> mipchainDownsampleMaterial = CreateRef<Material>(bloomDownsampleShaderHandle);
+
+		AssetHandle bloomUpsampleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
+		Ref<Material> mipchainUpsampleMaterial = CreateRef<Material>(bloomUpsampleShaderHandle);
+
+		AssetHandle bloomCombineShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
+		Ref<Material> bloomCombineMaterial = CreateRef<Material>(bloomCombineShaderHandle);
+
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentUBO>("CubemapDataUBO", cubemapDataUBO);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", mipchainDownsampleMaterial);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial);
 
 		// OnEvent
 		// -------
@@ -145,6 +209,8 @@ namespace PaulEngine
 				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
 				self->GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 				self->GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Init(viewportSize, 6);
+				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
 				return false;
 			});
 		};
@@ -217,7 +283,7 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, false, (int)entityID);
 						}
 					}
 
@@ -594,6 +660,65 @@ namespace PaulEngine
 			}
 			};
 
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Attachment }
+		RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+		{
+			PE_PROFILE_SCOPE("Bloom Downsample Pass");
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Downsample mip chain input required");
+			PE_CORE_ASSERT(inputs[2], "Downsample material input required");
+			PE_CORE_ASSERT(inputs[3], "Source attachment input required");
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
+			RenderComponentMaterial* downsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+			RenderComponentFBOAttachment* sourceAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[3]);
+			FramebufferTexture2DAttachment* textureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get());
+
+			glm::vec2 srcResolution = viewportResInput->Data;
+			const float threshold = 1.0f;
+			const float softThreshold = 0.5f;
+			int FirstIteration = 1;
+			const float gamma = activeCamera->GetGamma();
+
+			Ref<Material> downsampleMaterial = downsampleMaterialInput->Material;
+			UniformBufferStorage* uboStorage = downsampleMaterial->GetParameter<UBOShaderParameterTypeStorage>("DownsampleData")->UBO().get();
+			uboStorage->SetLocalData("SourceResolution", srcResolution);
+			uboStorage->SetLocalData("Threshold", threshold);
+			uboStorage->SetLocalData("SoftThreshold", softThreshold);
+			uboStorage->SetLocalData<int>("FirstIteration", FirstIteration);
+			uboStorage->SetLocalData("Gamma", gamma);
+
+			// Progressively downsample through mip chain
+			BloomMipChain& mipChain = mipChainInput->Data;
+			Texture* previousTexture = textureAttachment->GetTexture().get();
+			for (int i = 0; i < mipChain.Size(); i++)
+			{
+				Ref<Texture2D> mip = mipChain.GetMipLevel(i);
+				if (i > 0)
+				{
+					uboStorage->SetLocalData<int>("FirstIteration", 0);
+				}
+
+				const TextureSpecification& mipSpec = mip->GetSpecification();
+				RenderCommand::SetViewport({ 0, 0 }, { mipSpec.Width, mipSpec.Height });
+
+				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, mip);
+				targetFramebuffer->AddColourAttachment(attachment);
+				RenderCommand::Clear();
+
+				previousTexture->Bind();
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+				Renderer::DrawDefaultQuadImmediate(downsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, false, -1);
+				Renderer::EndScene();
+
+				// Set resolution for next iteration to the currently written mip
+				uboStorage->SetLocalData("SourceResolution", glm::vec2(mipSpec.Width, mipSpec.Height));
+				previousTexture = mip.get();
+			}
+		};
+
 		// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Attachment }
 		RenderPass::OnRenderFunc debugOverlayPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Debug overlay render pass");
@@ -777,7 +902,7 @@ namespace PaulEngine
 			{
 				targetFramebuffer->AddColourAttachment(screenTextureInput->Attachment);
 			}
-
+			
 			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
 			RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -800,6 +925,11 @@ namespace PaulEngine
 		// Main render
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenAttachment" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::FramebufferAttachment }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenAttachment" });
+		
+		// Bloom
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenAttachment" });
+
+		// Editor overlay
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "ScreenAttachment" });
 		
 		// Post process
@@ -1490,10 +1620,6 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 
-		if (m_SceneState != SceneState::Play) {
-			m_Camera->OnEvent(e);
-		}
-
 		EventDispatcher dispatcher = EventDispatcher(e);
 		dispatcher.DispatchEvent<MainViewportResizeEvent>(PE_BIND_EVENT_FN(EditorLayer::OnViewportResize));
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
@@ -1609,9 +1735,6 @@ namespace PaulEngine
 	bool EditorLayer::OnViewportResize(MainViewportResizeEvent& e)
 	{
 		m_MainFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_Renderer.GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = m_ViewportSize;
-		m_Renderer.GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_Renderer.GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_Camera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
