@@ -51,17 +51,17 @@ namespace PaulEngine {
 		static void EndScene();
 		static void Flush();
 
-		static void SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
-		static void SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
-		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
+		static void SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID = -1);
+		static void SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID = -1);
+		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID = -1);
 
 		static void SubmitDirectionalLightSource(const DirectionalLight& light);
 		static void SubmitPointLightSource(const PointLight& light);
 		static void SubmitSpotLightSource(const SpotLight& light);
 
-		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
-		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
-		static void DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, int entityID = -1);
+		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID = -1);
+		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID = -1);
+		static void DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID = -1);
 
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 

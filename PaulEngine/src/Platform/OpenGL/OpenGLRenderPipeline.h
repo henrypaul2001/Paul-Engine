@@ -6,7 +6,7 @@ namespace PaulEngine
 	class OpenGLRenderPipeline : public RenderPipeline
 	{
 	public:
-		OpenGLRenderPipeline(FaceCulling cullState, DepthState depthState, AssetHandle material) : RenderPipeline(cullState, depthState, material) {}
+		OpenGLRenderPipeline(FaceCulling cullState, DepthState depthState, bool blend, AssetHandle material) : RenderPipeline(cullState, depthState, blend, material) {}
 
 		virtual void Bind() const override;
 	};

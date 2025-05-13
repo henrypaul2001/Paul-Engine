@@ -290,7 +290,7 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, false, (int)entityID);
 						}
 					}
 
@@ -373,7 +373,7 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, false, (int)entityID);
 						}
 					}
 
@@ -489,7 +489,7 @@ namespace PaulEngine
 					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 					for (auto entityID : view) {
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, (int)entityID);
+						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, true, (int)entityID);
 					}
 				}
 
@@ -785,7 +785,7 @@ namespace PaulEngine
 
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 			dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get())->GetTexture()->Bind();
-			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, -1);
+			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, false, -1);
 			Renderer::EndScene();
 		};
 

@@ -64,6 +64,15 @@ namespace PaulEngine
 
 		OpenGLFaceCulling(m_CullState);
 
+		if (m_Blend)
+		{
+			glEnable(GL_BLEND);
+		}
+		else
+		{
+			glDisable(GL_BLEND);
+		}
+
 		if (AssetManager::IsAssetHandleValid(m_MaterialHandle)) {
 			AssetManager::GetAsset<Material>(m_MaterialHandle)->Bind();
 		}

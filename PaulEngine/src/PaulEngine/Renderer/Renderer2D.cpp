@@ -226,22 +226,22 @@ namespace PaulEngine {
 		//delete s_RenderData;
 	}
 
-	void Renderer2D::BeginScene(const OrthographicCamera& camera, FaceCulling cullState, DepthState depthState)
+	void Renderer2D::BeginScene(const OrthographicCamera& camera, FaceCulling cullState, DepthState depthState, bool blend)
 	{
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
-		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
-		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
-		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
-		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.TextMaterialHandle);
 
 		StartNewBatch();
 	}
 
-	void Renderer2D::BeginScene(const EditorCamera& camera, FaceCulling cullState, DepthState depthState)
+	void Renderer2D::BeginScene(const EditorCamera& camera, FaceCulling cullState, DepthState depthState, bool blend)
 	{
 		PE_PROFILE_FUNCTION();
 		glm::mat4 viewProjection = camera.GetViewProjection();
@@ -252,15 +252,15 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.Exposure = camera.Exposure;
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
-		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
-		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
-		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
-		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.TextMaterialHandle);
 
 		StartNewBatch();
 	}
 
-	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& worldTransform, FaceCulling cullState, DepthState depthState)
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& worldTransform, FaceCulling cullState, DepthState depthState, bool blend)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -270,15 +270,15 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.Exposure = camera.GetExposure();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
-		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
-		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
-		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
-		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.TextMaterialHandle);
 
 		StartNewBatch();
 	}
 
-	void Renderer2D::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, float gamma, float exposure, FaceCulling cullState, DepthState depthState)
+	void Renderer2D::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, float gamma, float exposure, FaceCulling cullState, DepthState depthState, bool blend)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -288,10 +288,10 @@ namespace PaulEngine {
 		s_RenderData.CameraBuffer.Exposure = exposure;
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
-		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.QuadMaterialHandle);
-		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.CircleMaterialHandle);
-		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.LineMaterialHandle);
-		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, s_RenderData.TextMaterialHandle);
+		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(cullState, depthState, blend, s_RenderData.TextMaterialHandle);
 
 		StartNewBatch();
 	}
@@ -763,10 +763,10 @@ namespace PaulEngine {
 		s_RenderData.LineMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Line2DMaterial.pmat", true);
 		s_RenderData.TextMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Text2DMaterial.pmat", true);
 
-		s_RenderData.QuadPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.QuadMaterialHandle);
-		s_RenderData.CirclePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.CircleMaterialHandle);
-		s_RenderData.LinePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.LineMaterialHandle);
-		s_RenderData.TextPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, s_RenderData.TextMaterialHandle);
+		s_RenderData.QuadPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, true, s_RenderData.QuadMaterialHandle);
+		s_RenderData.CirclePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, true, s_RenderData.CircleMaterialHandle);
+		s_RenderData.LinePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, true, s_RenderData.LineMaterialHandle);
+		s_RenderData.TextPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, true, s_RenderData.TextMaterialHandle);
 	}
 
 	Ref<Texture2D> Renderer2D::GetWhiteTexture()

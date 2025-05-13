@@ -53,9 +53,9 @@ namespace PaulEngine
 	class RenderPipeline
 	{
 	public:
-		static Ref<RenderPipeline> Create(FaceCulling cullState, DepthState depthState, AssetHandle material);
+		static Ref<RenderPipeline> Create(FaceCulling cullState, DepthState depthState, bool blend, AssetHandle material);
 
-		RenderPipeline(FaceCulling cullState, DepthState depthState, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_MaterialHandle(material) {}
+		RenderPipeline(FaceCulling cullState, DepthState depthState, bool blend, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_Blend(blend), m_MaterialHandle(material) {}
 
 		virtual void Bind() const = 0;
 
@@ -70,5 +70,6 @@ namespace PaulEngine
 		const AssetHandle m_MaterialHandle;
 		const FaceCulling m_CullState = FaceCulling::BACK;
 		const DepthState m_DepthState;
+		const bool m_Blend;
 	};
 }

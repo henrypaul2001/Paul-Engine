@@ -6,13 +6,13 @@
 
 namespace PaulEngine
 {
-	Ref<RenderPipeline> RenderPipeline::Create(FaceCulling cullState, DepthState depthState, AssetHandle material)
+	Ref<RenderPipeline> RenderPipeline::Create(FaceCulling cullState, DepthState depthState, bool blend, AssetHandle material)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLRenderPipeline>(cullState, depthState, material);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLRenderPipeline>(cullState, depthState, blend, material);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
