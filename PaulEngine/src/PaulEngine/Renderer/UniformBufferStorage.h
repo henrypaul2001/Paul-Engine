@@ -27,7 +27,10 @@ namespace PaulEngine
 
 		virtual ShaderDataType GetType() override { return m_Type; }
 		virtual void* GetData() override { return (void*)m_Data; }
-		virtual void SetData(void* data) override { m_Data = (T*)data; }
+		virtual void SetData(void* data) override { 
+			if (m_Data) { delete m_Data; }
+			m_Data = (T*)data;
+		}
 		virtual size_t Size() override { return ShaderDataTypeSize(m_Type); }
 
 	private:
