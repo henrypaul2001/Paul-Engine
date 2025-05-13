@@ -917,13 +917,7 @@ namespace PaulEngine
 		// Resize
 		const FramebufferSpecification& spec = m_MainFramebuffer->GetSpecification();
 		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
-			m_MainFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_Renderer.GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = m_ViewportSize;
-			m_Renderer.GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_Renderer.GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_Camera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+			OnEvent(MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y));
 		}
 
 		Renderer2D::ResetStats();
@@ -1486,10 +1480,17 @@ namespace PaulEngine
 		}
 
 		EventDispatcher dispatcher = EventDispatcher(e);
+		dispatcher.DispatchEvent<MainViewportResizeEvent>(PE_BIND_EVENT_FN(EditorLayer::OnViewportResize));
 		dispatcher.DispatchEvent<KeyReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnKeyUp));
 		dispatcher.DispatchEvent<MouseButtonReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnMouseUp));
 		dispatcher.DispatchEvent<WindowDropEvent>(PE_BIND_EVENT_FN(EditorLayer::OnWindowDrop));
 		dispatcher.DispatchEvent<SceneChangedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnSceneChanged));
+
+		if (m_SceneState != SceneState::Play) {
+			m_Camera->OnEvent(e);
+		}
+
+		m_Renderer.OnEvent(e);
 	}
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
@@ -1588,6 +1589,18 @@ namespace PaulEngine
 	{
 		PE_CORE_INFO(e);
 		return true;
+	}
+
+	bool EditorLayer::OnViewportResize(MainViewportResizeEvent& e)
+	{
+		m_MainFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_Renderer.GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = m_ViewportSize;
+		m_Renderer.GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_Renderer.GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_Camera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+		return false;
 	}
 
 	void EditorLayer::NewScene()

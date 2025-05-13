@@ -7,7 +7,7 @@ namespace PaulEngine {
 		AppTick, AppUpdate, AppRender, FrameStart, FrameEnd,
 		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		SceneShouldChange, SceneChanged
+		SceneShouldChange, SceneChanged, MainViewportResize
 	};
 
 	enum EventCategory {

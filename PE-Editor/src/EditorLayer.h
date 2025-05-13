@@ -41,6 +41,7 @@ namespace PaulEngine {
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
 		bool OnWindowDrop(WindowDropEvent& e);
 		bool OnSceneChanged(SceneChangedEvent& e);
+		bool OnViewportResize(MainViewportResizeEvent& e);
 
 		void NewScene();
 		void OpenScene();

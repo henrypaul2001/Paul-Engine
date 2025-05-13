@@ -42,4 +42,23 @@ namespace PaulEngine
 	private:
 		AssetHandle m_SceneHandle;
 	};
+
+	class MainViewportResizeEvent : public Event {
+	public:
+		MainViewportResizeEvent(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {}
+
+		uint32_t GetWidth() const { return m_Width; }
+		uint32_t GetHeight() const { return m_Height; }
+
+		std::string ToString() const override {
+			std::stringstream ss;
+			ss << "MainViewportResizeEvent: " << m_Width << " x " << m_Height;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(MainViewportResize)
+		EVENT_CLASS_CATEGORY(EventCategoryScene)
+	private:
+		uint32_t m_Width, m_Height;
+	};
 }
