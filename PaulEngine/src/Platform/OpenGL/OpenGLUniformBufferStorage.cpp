@@ -22,17 +22,25 @@ namespace PaulEngine
 		return m_Binding;
 	}
 
-	void OpenGLUniformBufferStorage::SetLocalData(const std::string& name, void* data)
+	Ref<ShaderDataTypeStorageBase> OpenGLUniformBufferStorage::GetLocalData(const std::string& name)
 	{
-		PE_PROFILE_FUNCTION();
 		for (const LayoutElement& e : m_LayoutStorage) {
 			if (e.Name == name) {
-				e.Data->SetData(data);
-				return;
+				return e.Data;
 			}
 		}
 		PE_CORE_ERROR("Name '{0}' not found in uniform buffer data layout", name);
-		return;
+		return nullptr;
+	}
+
+	void OpenGLUniformBufferStorage::SetLocalData(const std::string& name, void* data)
+	{
+		PE_PROFILE_FUNCTION();
+		ShaderDataTypeStorageBase* base = GetLocalData(name).get();
+		if (base)
+		{
+			base->SetData(data);
+		}
 	}
 
 	void OpenGLUniformBufferStorage::AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data)

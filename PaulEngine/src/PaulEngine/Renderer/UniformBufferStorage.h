@@ -34,6 +34,7 @@ namespace PaulEngine
 		virtual size_t Size() override { return ShaderDataTypeSize(m_Type); }
 
 	private:
+		friend class UniformBufferStorage;
 		ShaderDataType m_Type;
 		T* m_Data;
 	};
@@ -44,6 +45,26 @@ namespace PaulEngine
 		virtual ~UniformBufferStorage() {}
 
 		virtual uint32_t GetBinding() const = 0;
+
+		template <typename T>
+		void SetLocalData(const std::string& name, T data)
+		{
+			ShaderDataTypeStorageBase* baseData = GetLocalData(name).get();
+			if (baseData)
+			{
+				ShaderDataTypeStorage<T>* casted = dynamic_cast<ShaderDataTypeStorage<T>*>(baseData);
+				if (casted)
+				{
+					*casted->m_Data = data;
+				}
+				else
+				{
+					PE_CORE_ERROR("Error downcasting shader data type storage with name '{0}'", name);
+				}
+			}
+		}
+
+		virtual Ref<ShaderDataTypeStorageBase> GetLocalData(const std::string& name) = 0;
 		virtual void SetLocalData(const std::string& name, void* data) = 0;
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) = 0;
 		virtual void UploadStorage() = 0;

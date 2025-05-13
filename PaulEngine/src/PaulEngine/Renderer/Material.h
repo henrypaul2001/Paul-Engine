@@ -17,7 +17,24 @@ namespace PaulEngine
 
 		void AddParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
 		void SetParameter(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
+
 		Ref<ShaderParamaterTypeStorageBase> GetParameter(const std::string& name);
+
+		template <typename T>
+		T* GetParameter(const std::string& name)
+		{
+			ShaderParamaterTypeStorageBase* baseParam = GetParameter(name).get();
+			if (baseParam)
+			{
+				T* castedParam = dynamic_cast<T*>(baseParam);
+				if (!castedParam)
+				{
+					PE_CORE_ERROR("Error downcasting material parameter with name '{0}'", name);
+				}
+				return castedParam;
+			}
+			return nullptr;
+		}
 
 		void ClearParameters() { m_ShaderParameters.clear(); }
 
