@@ -135,6 +135,21 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentUBO>("CubemapDataUBO", cubemapDataUBO);
 
+		// OnEvent
+		// -------
+		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+		{
+			EventDispatcher dispatcher = EventDispatcher(e);
+			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+				self->GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				return false;
+			});
+		};
+		out_Framerenderer.SetEventFunc(eventFunc);
+
 		// Render pass functions
 		// ---------------------
 

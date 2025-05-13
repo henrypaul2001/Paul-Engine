@@ -15,7 +15,7 @@ namespace PaulEngine
 			glm::mat4 CameraWorldTransform;
 		};
 		using OnRenderFunc = std::function<void(RenderPassContext, Ref<Framebuffer>, std::vector<IRenderComponent*>)>; // { scene, camera }, target framebuffer, inputs
-
+		
 		RenderPass(std::vector<RenderComponentType> inputTypes, OnRenderFunc renderFunc) : m_InputTypes(inputTypes), m_RenderFunc(renderFunc) {}
 
 		void OnRender(RenderPassContext context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) { m_RenderFunc(context, targetFramebuffer, inputs); }

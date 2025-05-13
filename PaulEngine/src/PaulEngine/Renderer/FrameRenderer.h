@@ -6,9 +6,11 @@ namespace PaulEngine
 	class FrameRenderer
 	{
 	public:
-		FrameRenderer() {}
+		using OnEventFunc = std::function<void(Event&, FrameRenderer*)>;
+		FrameRenderer(OnEventFunc eventFunc = [](Event& e, FrameRenderer* self) {}) : m_OnEvent(eventFunc) {}
 
 		void RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera, glm::mat4 cameraWorldTransform);
+		void OnEvent(Event& e) { m_OnEvent(e, this); }
 
 		template <typename T, typename... Args>
 		bool AddRenderResource(const char* uniqueName, Args&&... args)
@@ -24,6 +26,8 @@ namespace PaulEngine
 		}
 
 		bool AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer = nullptr, std::vector<const char*> inputBindings = {});
+
+		void SetEventFunc(OnEventFunc func) { m_OnEvent = func; }
 
 		template <typename T>
 		T* GetRenderResource(const char* resourceName)
@@ -54,5 +58,7 @@ namespace PaulEngine
 		std::unordered_map<const char*, Scope<IRenderComponent>> m_RenderResources;
 		std::unordered_map<UUID, Ref<Framebuffer>> m_FramebufferMap;
 		std::unordered_map<UUID, std::vector<IRenderComponent*>> m_InputMap;
+
+		OnEventFunc m_OnEvent;
 	};
 }
