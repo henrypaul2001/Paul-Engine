@@ -727,6 +727,53 @@ namespace PaulEngine
 			}
 		};
 
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material }
+		RenderPass::OnRenderFunc bloomUpsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Bloom Upsample Pass");
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Upsample mip chain input required");
+			PE_CORE_ASSERT(inputs[2], "Upsample material input required");
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
+			RenderComponentMaterial* upsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+
+			glm::vec2 resolution = viewportResInput->Data;
+			float FilterRadius = 0.005f;
+			float AspectRatio = resolution.x / resolution.y;
+
+			Ref<Material> upsampleMaterial = upsampleMaterialInput->Material;
+			UniformBufferStorage* uboStorage = upsampleMaterial->GetParameter<UBOShaderParameterTypeStorage>("UpsampleData")->UBO().get();
+			uboStorage->SetLocalData("FilterRadius", FilterRadius);
+			uboStorage->SetLocalData("AspectRatio", AspectRatio);
+
+			BlendState blend;
+			blend.Enabled = true;
+			blend.SrcFactor = BlendFunc::ONE;
+			blend.DstFactor = BlendFunc::ONE;
+			blend.Equation = BlendEquation::ADD;
+
+			// Progressively upsample through mip chain
+			BloomMipChain& mipChain = mipChainInput->Data;
+			for (int i = mipChain.Size() - 1; i > 0; i--)
+			{
+				Ref<Texture2D> mip = mipChain.GetMipLevel(i);
+				Ref<Texture2D> nextMip = mipChain.GetMipLevel(i - 1);
+
+				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, nextMip);
+				targetFramebuffer->AddColourAttachment(attachment);
+
+				const TextureSpecification& nexMipSpec = nextMip->GetSpecification();
+				RenderCommand::SetViewport({ 0, 0 }, { nexMipSpec.Width, nexMipSpec.Height });
+
+				mip->Bind();
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+				Renderer::DrawDefaultQuadImmediate(upsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+				Renderer::EndScene();
+			}
+		};
+
 		// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Attachment }
 		RenderPass::OnRenderFunc debugOverlayPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Debug overlay render pass");
@@ -938,6 +985,7 @@ namespace PaulEngine
 		
 		// Bloom
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
 
 		// Editor overlay
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "ScreenAttachment" });
