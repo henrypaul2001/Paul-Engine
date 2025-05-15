@@ -774,6 +774,55 @@ namespace PaulEngine
 			}
 		};
 
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Attachment, Attachment, Texture }
+		RenderPass::OnRenderFunc bloomCombinePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+		{
+			PE_PROFILE_SCOPE("Bloom Combine Pass");
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Bloom mip chain input required");
+			PE_CORE_ASSERT(inputs[2], "Combine material input required");
+			PE_CORE_ASSERT(inputs[3], "Source attachment input required");
+			PE_CORE_ASSERT(inputs[4], "Target attachment input required");
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
+			RenderComponentMaterial* combineMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+			RenderComponentFBOAttachment* sourceAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[3]);
+			RenderComponentFBOAttachment* targetAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[4]);
+			FramebufferTexture2DAttachment* textureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get());
+			FramebufferTexture2DAttachment* targetTextureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetAttachmentInput->Attachment.get());
+			
+			FramebufferTexture2DAttachment* currentAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
+			if (currentAttachment->GetTexture() != targetTextureAttachment->GetTexture())
+			{
+				targetFramebuffer->AddColourAttachment(targetAttachmentInput->Attachment);
+			}
+			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+
+			float BloomStrength = 0.04f;
+			float DirtMaskStrength = 1.0f;
+			int UseDirtMask = 0;
+
+			Ref<Material> combineMaterial = combineMaterialInput->Material;
+			UniformBufferStorage* uboStorage = combineMaterial->GetParameter<UBOShaderParameterTypeStorage>("BloomCombineData")->UBO().get();
+			uboStorage->SetLocalData("BloomStrength", BloomStrength);
+			uboStorage->SetLocalData("DirtMaskStrength", DirtMaskStrength);
+			uboStorage->SetLocalData("UseDirtMask", UseDirtMask);
+
+			textureAttachment->GetTexture()->Bind(0);
+			mipChainInput->Data.GetMipLevel(0)->Bind(1);
+			if (UseDirtMask)
+			{
+				// bind dirt mask texture to slot 2
+			}
+			
+			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+			Renderer::DrawDefaultQuadImmediate(combineMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
+			Renderer::EndScene();
+		};
+
 		// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Attachment }
 		RenderPass::OnRenderFunc debugOverlayPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Debug overlay render pass");
@@ -986,12 +1035,13 @@ namespace PaulEngine
 		// Bloom
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenAttachment" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::FramebufferAttachment, RenderComponentType::FramebufferAttachment }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "ScreenAttachment", "AlternateScreenAttachment" });
 
 		// Editor overlay
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "ScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenAttachment" });
 		
 		// Post process
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "AlternateScreenAttachment", "GammaTonemapMaterial", "ScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenAttachment", "GammaTonemapMaterial", "AlternateScreenAttachment" });
 	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}

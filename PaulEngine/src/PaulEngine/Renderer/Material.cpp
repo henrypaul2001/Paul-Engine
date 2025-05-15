@@ -24,6 +24,9 @@ namespace PaulEngine
 			if (parameter->Name == "PointLightShadowMapArray") { continue; }
 			if (parameter->Name == "CubeData") { continue; }
 			if (parameter->Name == "SourceTexture") { continue; }
+			if (parameter->Name == "ColourTexture") { continue; }
+			if (parameter->Name == "BloomTexture") { continue; }
+			if (parameter->Name == "DirtMaskTexture") { continue; }
 
 			switch (parameter->Type())
 			{
