@@ -348,17 +348,17 @@ namespace PaulEngine {
 		s_RenderData.PipelineKeyMap.clear();
 	}
 
-	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID)
+	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		SubmitMesh(s_RenderData.CubeVertexArray, materialHandle, transform, depthState, cullState, entityID);
+		SubmitMesh(s_RenderData.CubeVertexArray, materialHandle, transform, depthState, cullState, blendState, entityID);
 	}
 
-	void Renderer::SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID)
+	void Renderer::SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		SubmitMesh(s_RenderData.QuadVertexArray, materialHandle, transform, depthState, cullState, entityID);
+		SubmitMesh(s_RenderData.QuadVertexArray, materialHandle, transform, depthState, cullState, blendState, entityID);
 	}
 
-	void Renderer::SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID)
+	void Renderer::SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -371,7 +371,7 @@ namespace PaulEngine {
 		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate vertex array
 
 		// Check for duplicate pipeline state
-		std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState);
+		std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
 
 		if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
 		{
@@ -381,7 +381,7 @@ namespace PaulEngine {
 		else
 		{
 			// Unique pipeline state
-			s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blend, draw.MaterialHandle);
+			s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
 			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
 			s_RenderData.Stats.PipelineCount++;
 		}
@@ -410,17 +410,17 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = std::min(MAX_ACTIVE_SPOT_LIGHTS, ++s_RenderData.SceneDataBuffer.ActiveSpotLights);
 	}
 
-	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID)
+	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		DrawMeshImmediate(s_RenderData.CubeVertexArray, material, transform, depthState, cullState, blend, entityID);
+		DrawMeshImmediate(s_RenderData.CubeVertexArray, material, transform, depthState, cullState, blendState, entityID);
 	}
 
-	void Renderer::DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID)
+	void Renderer::DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		DrawMeshImmediate(s_RenderData.QuadVertexArray, material, transform, depthState, cullState, blend, entityID);
+		DrawMeshImmediate(s_RenderData.QuadVertexArray, material, transform, depthState, cullState, blendState, entityID);
 	}
 
-	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, bool blend, int entityID)
+	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -428,7 +428,7 @@ namespace PaulEngine {
 		s_RenderData.MeshDataUniformBuffer->Bind(1);
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 
-		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, blend, 0);
+		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, blendState, 0);
 		pipeline->Bind();
 		material->Bind();
 
@@ -466,12 +466,14 @@ namespace PaulEngine {
 		s_RenderData.DefaultLitMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/DefaultLit.pmat", true);
 	}
 
-	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState)
+	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)
 	{
 		PE_PROFILE_FUNCTION();
 		std::string materialString = std::to_string((uint64_t)material);
 		std::string depthString = std::to_string((int)depthState.Func) + std::to_string((int)depthState.Test) + std::to_string((int)depthState.Write);
 		std::string cullString = std::to_string((int)cullState);
+		std::string blendString = std::to_string((int)blendState.Enabled) + std::to_string((int)blendState.SrcFactor) + std::to_string((int)blendState.DstFactor) + std::to_string((int)blendState.Equation) + 
+			std::to_string((float)blendState.ConstantColour.r) + std::to_string((float)blendState.ConstantColour.g) + std::to_string((float)blendState.ConstantColour.b) + std::to_string((float)blendState.ConstantColour.a);
 
 		return materialString + depthString + cullString;
 	}

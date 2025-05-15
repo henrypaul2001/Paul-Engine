@@ -283,7 +283,9 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, false, (int)entityID);
+							BlendState blend;
+							blend.Enabled = false;
+							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -356,7 +358,9 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, false, (int)entityID);
+							BlendState blend;
+							blend.Enabled = false;
+							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -439,7 +443,9 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, false, (int)entityID);
+							BlendState blend;
+							blend.Enabled = false;
+							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -555,7 +561,7 @@ namespace PaulEngine
 					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 					for (auto entityID : view) {
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, true, (int)entityID);
+						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
 					}
 				}
 
@@ -710,7 +716,9 @@ namespace PaulEngine
 
 				previousTexture->Bind();
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-				Renderer::DrawDefaultQuadImmediate(downsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, false, -1);
+				BlendState blend;
+				blend.Enabled = false;
+				Renderer::DrawDefaultQuadImmediate(downsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 				Renderer::EndScene();
 
 				// Set resolution for next iteration to the currently written mip
@@ -745,7 +753,7 @@ namespace PaulEngine
 
 			if (activeCamera && sceneContext)
 			{
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure(), FaceCulling::NONE, {DepthFunc::ALWAYS, true, true});
+				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure(), FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
 
 				if (showCollidersInput->Data)
 				{
@@ -910,7 +918,9 @@ namespace PaulEngine
 
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 			dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get())->GetTexture()->Bind();
-			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, false, -1);
+			BlendState blend;
+			blend.Enabled = false;
+			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 			Renderer::EndScene();
 		};
 

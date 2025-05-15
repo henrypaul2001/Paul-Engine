@@ -50,12 +50,48 @@ namespace PaulEngine
 		bool Write = true;
 	};
 
+	enum class BlendFunc
+	{
+		ZERO = 0,
+		ONE,
+		SRC_COLOUR,
+		ONE_MINUS_SRC_COLOUR,
+		DST_COLOUR,
+		ONE_MINUS_DST_COLOUR,
+		SRC_ALPHA,
+		ONE_MINUS_SRC_ALPHA,
+		DST_ALPHA,
+		ONE_MINUS_DST_ALPHA,
+		CONSTANT_COLOUR,
+		ONE_MINUS_CONSTANT_COLOUR,
+		CONSTANT_ALPHA,
+		ONE_MINUS_CONSTANT_ALPHA
+	};
+
+	enum class BlendEquation
+	{
+		ADD = 0,
+		SUBTRACT,
+		REVERSE_SUBTRACT,
+		MIN,
+		MAX
+	};
+
+	struct BlendState
+	{
+		bool Enabled = true;
+		BlendFunc SrcFactor = BlendFunc::SRC_ALPHA;
+		BlendFunc DstFactor = BlendFunc::ONE_MINUS_SRC_ALPHA;
+		BlendEquation Equation = BlendEquation::ADD;
+		glm::vec4 ConstantColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	};
+
 	class RenderPipeline
 	{
 	public:
-		static Ref<RenderPipeline> Create(FaceCulling cullState, DepthState depthState, bool blend, AssetHandle material);
+		static Ref<RenderPipeline> Create(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material);
 
-		RenderPipeline(FaceCulling cullState, DepthState depthState, bool blend, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_Blend(blend), m_MaterialHandle(material) {}
+		RenderPipeline(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_BlendState(blendState), m_MaterialHandle(material) {}
 
 		virtual void Bind() const = 0;
 
@@ -70,6 +106,6 @@ namespace PaulEngine
 		const AssetHandle m_MaterialHandle;
 		const FaceCulling m_CullState = FaceCulling::BACK;
 		const DepthState m_DepthState;
-		const bool m_Blend;
+		const BlendState m_BlendState;
 	};
 }

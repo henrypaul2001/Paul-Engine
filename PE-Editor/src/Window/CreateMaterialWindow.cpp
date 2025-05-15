@@ -193,7 +193,7 @@ namespace PaulEngine
 					Renderer::PointLight pointLight;
 					pointLight.Position = glm::vec4(0.0f, 0.0f, 0.0f, 25.0f);
 					Renderer::SubmitPointLightSource(pointLight);
-					Renderer::DrawDefaultCubeImmediate(m_Material, s_CubeTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, true);
+					Renderer::DrawDefaultCubeImmediate(m_Material, s_CubeTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
 					Renderer::EndScene();
 					m_Framebuffer->Unbind();
 
