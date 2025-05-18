@@ -14,20 +14,9 @@ namespace PaulEngine
 
 		for (auto& parameter : shaderAsset->GetReflectionData())
 		{
-			// Temporary way of determining which parameters are material asset parameters
-			if (parameter->Name == "Camera") { continue; }
-			if (parameter->Name == "u_Textures") { continue; }
-			if (parameter->Name == "MeshSubmission") { continue; }
-			if (parameter->Name == "SceneData") { continue; }
-			if (parameter->Name == "DirectionalLightShadowMapArray") { continue; }
-			if (parameter->Name == "SpotLightShadowMapArray") { continue; }
-			if (parameter->Name == "PointLightShadowMapArray") { continue; }
-			if (parameter->Name == "CubeData") { continue; }
-			if (parameter->Name == "SourceTexture") { continue; }
-			if (parameter->Name == "ColourTexture") { continue; }
-			if (parameter->Name == "BloomTexture") { continue; }
-			if (parameter->Name == "DirtMaskTexture") { continue; }
+			if (parameter->Name.substr(0, 4) != "Mat_") { continue; }
 
+			std::string strippedName = parameter->Name.substr(4, parameter->Name.size() - 4);
 			switch (parameter->Type())
 			{
 				case ShaderParameterType::None:
@@ -115,21 +104,21 @@ namespace PaulEngine
 							}
 						}
 					}
-					AddParameterType(parameter->Name, uboStorage);
+					AddParameterType(strippedName, uboStorage);
 					break;
 				}
 				case ShaderParameterType::Sampler2D:
 				{
 					Sampler2DShaderParameterTypeSpecification* samplerParam = dynamic_cast<Sampler2DShaderParameterTypeSpecification*>(parameter.get());
 					Ref<Sampler2DShaderParameterTypeStorage> samplerStorage = CreateRef<Sampler2DShaderParameterTypeStorage>(0, samplerParam->Binding);
-					AddParameterType(parameter->Name, samplerStorage);
+					AddParameterType(strippedName, samplerStorage);
 					break;
 				}
 				case ShaderParameterType::Sampler2DArray:
 				{
 					Sampler2DArrayShaderParameterTypeSpecification* samplerArrayParam = dynamic_cast<Sampler2DArrayShaderParameterTypeSpecification*>(parameter.get());
 					Ref<Sampler2DArrayShaderParameterTypeStorage> samplerArrayStorage = CreateRef<Sampler2DArrayShaderParameterTypeStorage>(0, samplerArrayParam->Binding);
-					AddParameterType(parameter->Name, samplerArrayStorage);
+					AddParameterType(strippedName, samplerArrayStorage);
 					break;
 				}
 			}

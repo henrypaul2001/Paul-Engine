@@ -126,7 +126,7 @@ layout(std140, binding = 2) uniform SceneData
 	int ActiveSpotLights;
 } u_SceneData;
 
-layout(std140, binding = 3) uniform MaterialValues
+layout(std140, binding = 3) uniform Mat_MaterialValues
 {
 	vec4 Albedo;
 	vec4 Specular;
@@ -137,10 +137,10 @@ layout(std140, binding = 3) uniform MaterialValues
 	int UseDisplacementMap;
 } u_MaterialValues;
 
-layout(binding = 0) uniform sampler2D AlbedoMap;
-layout(binding = 1) uniform sampler2D SpecularMap;
-layout(binding = 2) uniform sampler2D NormalMap;
-layout(binding = 3) uniform sampler2D DisplacementMap;
+layout(binding = 0) uniform sampler2D Mat_AlbedoMap;
+layout(binding = 1) uniform sampler2D Mat_SpecularMap;
+layout(binding = 2) uniform sampler2D Mat_NormalMap;
+layout(binding = 3) uniform sampler2D Mat_DisplacementMap;
 layout(binding = 4) uniform sampler2DArray DirectionalLightShadowMapArray;
 layout(binding = 5) uniform sampler2DArray SpotLightShadowMapArray;
 layout(binding = 6) uniform samplerCubeArray PointLightShadowMapArray;
@@ -161,6 +161,7 @@ float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, v
 {
 	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
 	float currentDepth = length(fragToLight);
+	currentDepth = currentDepth / farPlane;
 
 	float shadow = 0.0;
 	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
@@ -271,13 +272,13 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 
 	// initial sample
 	vec2 currentTexCoords = texCoords;
-	float currentDepthMapValue = texture(DisplacementMap, currentTexCoords).r;
+	float currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
 
 	while (currentLayerDepth < currentDepthMapValue) {
 		// shift coords along direction of P
 		currentTexCoords -= deltaTexCoords;
 
-		currentDepthMapValue = texture(DisplacementMap, currentTexCoords).r;
+		currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
 
 		currentLayerDepth += layerDepth;
 	}
@@ -286,7 +287,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 
 	// get depth after and before collision for interpolation
 	float afterDepth = currentDepthMapValue - currentLayerDepth;
-	float beforeDepth = texture(DisplacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+	float beforeDepth = texture(Mat_DisplacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
 
 	// interpolate
 	float weight = afterDepth / (afterDepth - beforeDepth);
@@ -426,13 +427,13 @@ void main()
 
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
-	vec3 AlbedoSample = pow(texture(AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
-	vec3 SpecularSample = vec3(texture(SpecularMap, ScaledTexCoords).r);
+	vec3 AlbedoSample = pow(texture(Mat_AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	vec3 SpecularSample = vec3(texture(Mat_SpecularMap, ScaledTexCoords).r);
 
 	vec3 Normal = normalize(v_VertexData.Normal);
 	if (u_MaterialValues.UseNormalMap != 0)
 	{
-		Normal = texture(NormalMap, ScaledTexCoords).rgb;
+		Normal = texture(Mat_NormalMap, ScaledTexCoords).rgb;
 		Normal = normalize(Normal * 2.0 - 1.0);
 		Normal = normalize(v_VertexData.TBN * Normal);
 	}

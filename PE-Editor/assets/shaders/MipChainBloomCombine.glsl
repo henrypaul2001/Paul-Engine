@@ -21,7 +21,7 @@ layout(location = 0) out vec4 f_Result;
 
 layout(location = 1) in vec2 v_TexCoords;
 
-layout(std140, binding = 3) uniform BloomCombineData
+layout(std140, binding = 3) uniform Mat_BloomCombineData
 {
 	float BloomStrength;
 	float DirtMaskStrength;

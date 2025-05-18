@@ -47,7 +47,7 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
-layout(std140, binding = 3) uniform MaterialValues
+layout(std140, binding = 3) uniform Mat_MaterialValues
 {
 	vec4 Colour;
 	float Roughness;
@@ -55,13 +55,13 @@ layout(std140, binding = 3) uniform MaterialValues
 	int TexIndex;
 } u_MaterialValues;
 
-layout(binding = 0) uniform sampler2DArray TestArray;
+layout(binding = 0) uniform sampler2DArray Mat_TestArray;
 
 void main()
 {
 	int index = u_MaterialValues.TexIndex;
 	index = clamp(index, 0, 5);
-	colour = vec4(pow(texture(TestArray, vec3(v_TexCoords, index)).rgb, vec3(u_CameraBuffer.Gamma)), 1.0);
+	colour = vec4(pow(texture(Mat_TestArray, vec3(v_TexCoords, index)).rgb, vec3(u_CameraBuffer.Gamma)), 1.0);
 	colour *= u_MaterialValues.Colour;
 	colour.xyz *= 1.0 - u_MaterialValues.Metalness + (0.2 * u_MaterialValues.Roughness);
 

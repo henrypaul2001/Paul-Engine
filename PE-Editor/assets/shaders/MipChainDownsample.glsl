@@ -22,7 +22,7 @@ layout(location = 0) out vec3 f_Downsample;
 
 layout(location = 1) in vec2 v_TexCoords;
 
-layout(std140, binding = 3) uniform DownsampleData
+layout(std140, binding = 3) uniform Mat_DownsampleData
 {
 	vec2 SourceResolution;
 	float Threshold;

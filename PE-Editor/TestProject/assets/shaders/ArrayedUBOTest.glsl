@@ -33,7 +33,7 @@ struct StructTest
 	ChildStruct Child[4];
 };
 
-layout(std140, binding = 2) uniform ArrayedUBOTest
+layout(std140, binding = 2) uniform Mat_ArrayedUBOTest
 {
 	vec4 TestVec4;
 	StructTest StructArray[8];

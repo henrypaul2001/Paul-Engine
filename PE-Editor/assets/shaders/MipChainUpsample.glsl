@@ -21,7 +21,7 @@ layout(location = 0) out vec3 f_Upsample;
 
 layout(location = 1) in vec2 v_TexCoords;
 
-layout(std140, binding = 3) uniform UpsampleData
+layout(std140, binding = 3) uniform Mat_UpsampleData
 {
 	float FilterRadius;
 	float AspectRatio;
