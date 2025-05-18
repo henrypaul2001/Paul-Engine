@@ -8,10 +8,17 @@ namespace PaulEngine
 	{
 	public:
 		virtual ~ShaderDataTypeStorageBase() {}
-		virtual ShaderDataType GetType() = 0;
-		virtual void* GetData() = 0;
-		virtual void SetData(void* data) = 0;
+		virtual ShaderDataType GetType() const = 0;
+		virtual const void* GetData() const = 0;
 		virtual size_t Size() = 0;
+		virtual bool IsDirty() const = 0;
+		virtual void SetDirtyFlag(bool dirty) = 0;
+
+		template <typename T>
+		const T* GetData()
+		{
+			return static_cast<const T*>(GetData());
+		}
 	};
 
 	template <typename T>
@@ -25,18 +32,17 @@ namespace PaulEngine
 			}
 		}
 
-		virtual ShaderDataType GetType() override { return m_Type; }
-		virtual void* GetData() override { return (void*)m_Data; }
-		virtual void SetData(void* data) override { 
-			if (m_Data) { delete m_Data; }
-			m_Data = (T*)data;
-		}
+		virtual ShaderDataType GetType() const override { return m_Type; }
+		virtual const void* GetData() const override { return (void*)m_Data; }
 		virtual size_t Size() override { return ShaderDataTypeSize(m_Type); }
+		virtual bool IsDirty() const override { return m_Dirty; }
+		virtual void SetDirtyFlag(bool dirty) override { m_Dirty = dirty; }
 
 	private:
 		friend class UniformBufferStorage;
 		ShaderDataType m_Type;
 		T* m_Data;
+		bool m_Dirty;
 	};
 
 	class UniformBufferStorage
@@ -56,6 +62,7 @@ namespace PaulEngine
 				if (casted)
 				{
 					*casted->m_Data = data;
+					casted->SetDirtyFlag(true);
 				}
 				else
 				{
@@ -64,8 +71,22 @@ namespace PaulEngine
 			}
 		}
 
+		template <typename T>
+		ShaderDataTypeStorage<T>* GetLocalData(const std::string& name)
+		{
+			ShaderDataTypeStorageBase* baseData = GetLocalData(name).get();
+			if (baseData)
+			{
+				ShaderDataTypeStorage<T>* casted = dynamic_cast<ShaderDataTypeStorage<T>*>(baseData);
+				if (!casted)
+				{
+					PE_CORE_ERROR("Error downcasting shader data type storage with name '{0}'", name);
+				}
+				return casted;
+			}
+		}
+
 		virtual Ref<ShaderDataTypeStorageBase> GetLocalData(const std::string& name) = 0;
-		virtual void SetLocalData(const std::string& name, void* data) = 0;
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) = 0;
 		virtual void UploadStorage() = 0;
 		virtual void Bind(uint32_t binding) = 0;

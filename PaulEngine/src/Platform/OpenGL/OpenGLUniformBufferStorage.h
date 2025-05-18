@@ -13,7 +13,6 @@ namespace PaulEngine
 		virtual uint32_t GetBinding() const override;
 
 		virtual Ref<ShaderDataTypeStorageBase> GetLocalData(const std::string& name) override;
-		virtual void SetLocalData(const std::string& name, void* data) override;
 		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) override;
 		virtual void UploadStorage() override;
 

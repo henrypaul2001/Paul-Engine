@@ -33,16 +33,6 @@ namespace PaulEngine
 		return nullptr;
 	}
 
-	void OpenGLUniformBufferStorage::SetLocalData(const std::string& name, void* data)
-	{
-		PE_PROFILE_FUNCTION();
-		ShaderDataTypeStorageBase* base = GetLocalData(name).get();
-		if (base)
-		{
-			base->SetData(data);
-		}
-	}
-
 	void OpenGLUniformBufferStorage::AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data)
 	{
 		PE_PROFILE_FUNCTION();
@@ -61,7 +51,10 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 		size_t offset = 0;
 		for (const LayoutElement& e : m_LayoutStorage) {
-			glNamedBufferSubData(m_RendererID, offset, e.Data->Size(), e.Data->GetData());
+			if (e.Data->IsDirty()) {
+				glNamedBufferSubData(m_RendererID, offset, e.Data->Size(), e.Data->GetData());
+				e.Data->SetDirtyFlag(false);
+			}
 			offset += e.Data->Size();
 		}
 	}

@@ -237,7 +237,8 @@ namespace PaulEngine
 
 	void CreateMaterialWindow::DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo)
 	{
-		auto& layout = ubo.UBO()->GetLayoutStorage();
+		Ref<UniformBufferStorage> uboStorage = ubo.UBO();
+		auto& layout = uboStorage->GetLayoutStorage();
 
 		if (layout.size() > 0)
 		{
@@ -247,32 +248,47 @@ namespace PaulEngine
 			switch (value->GetType()) {
 				case ShaderDataType::Float4:
 				{
-					glm::vec4* data = static_cast<glm::vec4*>(value->GetData());
-					ImGui::ColorEdit4(name.c_str(), &(*data)[0]);
+					glm::vec4 data = *value->GetData<glm::vec4>();
+					if (ImGui::ColorEdit4(name.c_str(), &data[0]))
+					{
+						uboStorage->SetLocalData(name, data);
+					}
 					break;
 				}
 				case ShaderDataType::Float3:
 				{
-					glm::vec3* data = static_cast<glm::vec3*>(value->GetData());
-					ImGui::ColorEdit3(name.c_str(), &(*data)[0]);
+					glm::vec3 data = *value->GetData<glm::vec3>();
+					if (ImGui::ColorEdit3(name.c_str(), &data[0]))
+					{
+						uboStorage->SetLocalData(name, data);
+					}
 					break;
 				}
 				case ShaderDataType::Float2:
 				{
-					glm::vec2* data = static_cast<glm::vec2*>(value->GetData());
-					ImGui::DragFloat2(name.c_str(), &(*data)[0]);
+					glm::vec2 data = *value->GetData<glm::vec2>();
+					if (ImGui::DragFloat2(name.c_str(), &data[0]))
+					{
+						uboStorage->SetLocalData(name, data);
+					}
 					break;
 				}
 				case ShaderDataType::Float:
 				{
-					float* data = static_cast<float*>(value->GetData());
-					ImGui::DragFloat(name.c_str(), &(*data), 0.1f);
+					float data = *value->GetData<float>();
+					if (ImGui::DragFloat(name.c_str(), &data))
+					{
+						uboStorage->SetLocalData(name, data);
+					}
 					break;
 				}
 				case ShaderDataType::Int:
 				{
-					int* data = static_cast<int*>(value->GetData());
-					ImGui::DragInt(name.c_str(), &(*data), 1.0f);
+					int data = *value->GetData<int>();
+					if (ImGui::DragInt(name.c_str(), &data))
+					{
+						uboStorage->SetLocalData(name, data);
+					}
 					break;
 				}
 			}
