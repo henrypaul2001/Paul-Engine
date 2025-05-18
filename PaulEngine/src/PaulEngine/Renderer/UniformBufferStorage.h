@@ -103,4 +103,40 @@ namespace PaulEngine
 
 		static Ref<UniformBufferStorage> Create(size_t size, uint32_t binding);
 	};
+
+
+	class UniformBufferStorageNew
+	{
+	public:
+
+		struct BufferElement
+		{
+			BufferElement(std::string name = "null", ShaderDataType type = ShaderDataType::None) : Name(name), Type(type) {
+				Size = ShaderDataTypeSize(type);
+			}
+			std::string Name = "null";
+			uint32_t Size = 0;
+			uint32_t Offset = 0;
+			ShaderDataType Type = ShaderDataType::None;
+		};
+
+		UniformBufferStorageNew(std::vector<BufferElement> layout)
+		{
+			uint32_t offset = 0;
+			for (BufferElement& e : layout)
+			{
+				e.Offset = offset;
+				offset += e.Size;
+				m_Layout[e.Name] = e;
+			}
+		}
+		virtual ~UniformBufferStorageNew();
+
+		size_t Size() const { return m_Size; }
+
+	private:
+		std::unordered_map<std::string, BufferElement> m_Layout;
+		std::vector<uint8_t> m_Buffer;
+		size_t m_Size;
+	};
 }
