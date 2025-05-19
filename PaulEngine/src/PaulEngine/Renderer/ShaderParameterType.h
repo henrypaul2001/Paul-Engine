@@ -10,7 +10,8 @@ namespace PaulEngine
 		None = 0,
 		UBO,
 		Sampler2D,
-		Sampler2DArray
+		Sampler2DArray,
+		SamplerCube
 	};
 
 	class ShaderParamaterTypeStorageBase
@@ -73,6 +74,25 @@ namespace PaulEngine
 		uint32_t m_Binding;
 	};
 
+	class SamplerCubeShaderParameterTypeStorage : public ShaderParamaterTypeStorageBase
+	{
+	public:
+		SamplerCubeShaderParameterTypeStorage(AssetHandle textureHandle, uint32_t binding) : m_TextureHandle(textureHandle), m_Binding(binding) {}
+		~SamplerCubeShaderParameterTypeStorage() {}
+
+		virtual ShaderParameterType GetType() override { return ShaderParameterType::SamplerCube; }
+		virtual void Bind() override;
+
+		AssetHandle GetTextureHandle() const { return m_TextureHandle; }
+		uint32_t GetBinding() const { return m_Binding; }
+
+	private:
+		friend class EditorLayer;
+		friend class CreateMaterialWindow;
+		AssetHandle m_TextureHandle;
+		uint32_t m_Binding;
+	};
+
 	struct ShaderParameterTypeSpecifcationBase
 	{
 		std::string Name = "";
@@ -98,5 +118,11 @@ namespace PaulEngine
 	{
 		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2DArray; }
+	};
+
+	struct SamplerCubeShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	{
+		uint32_t Binding = 0;
+		virtual ShaderParameterType Type() const override { return ShaderParameterType::SamplerCube; }
 	};
 }

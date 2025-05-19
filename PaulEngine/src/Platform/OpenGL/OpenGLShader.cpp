@@ -492,28 +492,39 @@ namespace PaulEngine {
 
 			spv::Dim dimensions = samplerType.image.dim;
 			bool array = samplerType.image.arrayed;
+			
+			if (dimensions == spv::Dim::Dim2D)
+			{
+				if (array) {
+					Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
+					arraySpec->Binding = binding;
+					arraySpec->Name = resource.name;
 
-			if (dimensions != spv::Dim::Dim2D) {
+					m_ReflectionData.push_back(arraySpec);
+
+					PE_CORE_TRACE("    Type = Sampler2DArray");
+				}
+				else {
+					Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
+					imageSpec->Binding = binding;
+					imageSpec->Name = resource.name;
+
+					m_ReflectionData.push_back(imageSpec);
+
+					PE_CORE_TRACE("    Type = Sampler2D");
+				}
+			}
+			else if (dimensions == spv::Dim::DimCube)
+			{
+				Ref<SamplerCubeShaderParameterTypeSpecification> cubeSpec = CreateRef<SamplerCubeShaderParameterTypeSpecification>();
+				cubeSpec->Binding = binding;
+				cubeSpec->Name = resource.name;
+				m_ReflectionData.push_back(cubeSpec);
+				PE_CORE_TRACE("    Type = SamplerCube");
+			}
+			else
+			{
 				PE_CORE_WARN("Unsupported sampler dimensions");
-			}
-
-			if (array) {
-				Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
-				arraySpec->Binding = binding;
-				arraySpec->Name = resource.name;
-
-				m_ReflectionData.push_back(arraySpec);
-
-				PE_CORE_TRACE("    Type = Sampler2DArray");
-			}
-			else {
-				Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
-				imageSpec->Binding = binding;
-				imageSpec->Name = resource.name;
-
-				m_ReflectionData.push_back(imageSpec);
-
-				PE_CORE_TRACE("    Type = Sampler2D");
 			}
 
 			const spirv_cross::SPIRType& spirType = compiler.get_type(resource.type_id);

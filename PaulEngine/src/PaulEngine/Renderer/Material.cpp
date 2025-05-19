@@ -44,6 +44,11 @@ namespace PaulEngine
 					AddParameterType(strippedName, samplerArrayStorage);
 					break;
 				}
+				case ShaderParameterType::SamplerCube:
+				{
+					PE_CORE_WARN("SamplerCube material parameter not yet supported");
+					break;
+				}
 			}
 		}
 	}
