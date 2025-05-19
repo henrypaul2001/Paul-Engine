@@ -24,7 +24,7 @@ namespace PaulEngine
 	class UBOShaderParameterTypeStorage : public ShaderParamaterTypeStorageBase
 	{
 	public:
-		UBOShaderParameterTypeStorage(size_t size, uint32_t binding) { m_UBO = UniformBufferStorage::Create(size, binding); }
+		UBOShaderParameterTypeStorage(std::vector<UniformBufferStorage::BufferElement> layout, uint32_t binding) { m_UBO = UniformBufferStorage::Create(layout, binding); }
 		~UBOShaderParameterTypeStorage() {}
 
 		virtual ShaderParameterType GetType() override { return ShaderParameterType::UBO; }
@@ -83,11 +83,7 @@ namespace PaulEngine
 	{
 		uint32_t Size = 0;
 		uint32_t Binding = 0;
-		struct LayoutElement {
-			ShaderDataType Type;
-			std::string Name;
-		};
-		std::vector<LayoutElement> BufferLayout;
+		std::vector<UniformBufferStorage::BufferElement> BufferLayout;
 
 		 virtual ShaderParameterType Type() const override { return ShaderParameterType::UBO; }
 	};

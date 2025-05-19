@@ -238,17 +238,20 @@ namespace PaulEngine
 	void CreateMaterialWindow::DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo)
 	{
 		Ref<UniformBufferStorage> uboStorage = ubo.UBO();
-		auto& layout = uboStorage->GetLayoutStorage();
+		auto& layout = uboStorage->GetMembers();
 
 		if (layout.size() > 0)
 		{
 			ImGui::Text(param_name.c_str());
 		}
-		for (auto& [name, value] : layout) {
-			switch (value->GetType()) {
+		for (const UniformBufferStorage::BufferElement& e : layout) {
+			const std::string& name = e.Name;
+			const ShaderDataType type = e.Type;
+			switch (type) {
 				case ShaderDataType::Float4:
 				{
-					glm::vec4 data = *value->GetData<glm::vec4>();
+					glm::vec4 data = glm::vec4(0.0f);
+					ubo.UBO()->ReadLocalDataAs(name, &data);
 					if (ImGui::ColorEdit4(name.c_str(), &data[0]))
 					{
 						uboStorage->SetLocalData(name, data);
@@ -257,7 +260,8 @@ namespace PaulEngine
 				}
 				case ShaderDataType::Float3:
 				{
-					glm::vec3 data = *value->GetData<glm::vec3>();
+					glm::vec3 data = glm::vec3(0.0f);
+					ubo.UBO()->ReadLocalDataAs(name, &data);
 					if (ImGui::ColorEdit3(name.c_str(), &data[0]))
 					{
 						uboStorage->SetLocalData(name, data);
@@ -266,7 +270,8 @@ namespace PaulEngine
 				}
 				case ShaderDataType::Float2:
 				{
-					glm::vec2 data = *value->GetData<glm::vec2>();
+					glm::vec2 data = glm::vec2(0.0f);
+					ubo.UBO()->ReadLocalDataAs(name, &data);
 					if (ImGui::DragFloat2(name.c_str(), &data[0]))
 					{
 						uboStorage->SetLocalData(name, data);
@@ -275,7 +280,8 @@ namespace PaulEngine
 				}
 				case ShaderDataType::Float:
 				{
-					float data = *value->GetData<float>();
+					float data = 0.0f;
+					ubo.UBO()->ReadLocalDataAs(name, &data);
 					if (ImGui::DragFloat(name.c_str(), &data))
 					{
 						uboStorage->SetLocalData(name, data);
@@ -284,7 +290,8 @@ namespace PaulEngine
 				}
 				case ShaderDataType::Int:
 				{
-					int data = *value->GetData<int>();
+					int data = 0;
+					ubo.UBO()->ReadLocalDataAs(name, &data);
 					if (ImGui::DragInt(name.c_str(), &data))
 					{
 						uboStorage->SetLocalData(name, data);

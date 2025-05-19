@@ -161,7 +161,7 @@ namespace PaulEngine {
 
 							std::string indexedName = memberName + "[" + std::to_string(dimension) + "]" + "[" + std::to_string(x) + "]";
 							PE_CORE_TRACE("       - {0}: {1} ({2})", 0, indexedName.c_str(), shaderDataTypeString.c_str());
-							uboSpec->BufferLayout.push_back({ dataType, indexedName });
+							uboSpec->BufferLayout.emplace_back(indexedName, dataType);
 						}
 					}
 				}
@@ -182,7 +182,7 @@ namespace PaulEngine {
 					std::string shaderDataTypeString = ShaderDataTypeToString(dataType);
 
 					PE_CORE_TRACE("       - {0}: {1} ({2})", 0, memberName.c_str(), shaderDataTypeString.c_str());
-					uboSpec->BufferLayout.push_back({ dataType, memberName });
+					uboSpec->BufferLayout.emplace_back(memberName, dataType);
 				}
 			}
 		}

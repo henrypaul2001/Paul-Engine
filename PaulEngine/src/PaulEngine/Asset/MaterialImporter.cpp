@@ -22,10 +22,12 @@ namespace PaulEngine
 			out << YAML::Key << "Layout" << YAML::Value;
 
 			out << YAML::BeginSeq;
-			for (auto& [name, data] : ubo->GetLayoutStorage()) {
+			const std::vector<UniformBufferStorage::BufferElement>& layout = ubo->GetMembers();
+			for (const UniformBufferStorage::BufferElement& e : layout) {
 				out << YAML::BeginMap;
 
-				ShaderDataType type = data->GetType();
+				ShaderDataType type = e.Type;
+				const std::string& name = e.Name;
 				out << YAML::Key << "Type" << YAML::Value << ShaderDataTypeToString(type);
 				out << YAML::Key << "Name" << YAML::Value << name;
 				out << YAML::Key << "Value" << YAML::Value;
@@ -36,38 +38,82 @@ namespace PaulEngine
 						out << "NULL";
 						break;
 					case ShaderDataType::Float:
-						out << *(float*)data->GetData();
+					{
+						float data = 0.0f;
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Float2:
-						out << *(glm::vec2*)data->GetData();
+					{
+						glm::vec2 data = glm::vec2(0.0f);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Float3:
-						out << *(glm::vec3*)data->GetData();
+					{
+						glm::vec3 data = glm::vec3(0.0f);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Float4:
-						out << *(glm::vec4*)data->GetData();
+					{
+						glm::vec4 data = glm::vec4(0.0f);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Mat3:
-						out << *(glm::mat3*)data->GetData();
+					{
+						glm::mat3 data = glm::mat3(0.0f);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Mat4:
-						out << *(glm::mat4*)data->GetData();
+					{
+						glm::mat4 data = glm::mat4(0.0f);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Int:
-						out << *(int*)data->GetData();
+					{
+						int data = 0;
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Int2:
-						out << *(glm::ivec2*)data->GetData();
+					{
+						glm::ivec2 data = glm::ivec2(0);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Int3:
-						out << *(glm::ivec3*)data->GetData();
+					{
+						glm::ivec3 data = glm::ivec3(0);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Int4:
-						out << *(glm::ivec4*)data->GetData();
+					{
+						glm::ivec4 data = glm::ivec4(0);
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 					case ShaderDataType::Bool:
-						out << *(bool*)data->GetData();
+					{
+						bool data = 0;
+						ubo->ReadLocalDataAs(name, &data);
+						out << data;
 						break;
+					}
 				}
 
 				out << YAML::EndMap;
@@ -79,16 +125,20 @@ namespace PaulEngine
 		static Ref<UBOShaderParameterTypeStorage> ReadUniformBufferStorageObject(YAML::Node& valueNode)
 		{
 			uint32_t binding = valueNode["Binding"].as<uint64_t>();
-			size_t size = 0;
 
-			std::vector<UniformBufferStorage::LayoutElement> layout;
+			std::vector<UniformBufferStorage::BufferElement> layout;
 
 			YAML::Node layoutNode = valueNode["Layout"];
 			for (YAML::Node layoutEntry : layoutNode) {
 				ShaderDataType type = StringToShaderDataType(layoutEntry["Type"].as<std::string>());
 				std::string name = layoutEntry["Name"].as<std::string>();
-				size += ShaderDataTypeSize(type);
+				layout.emplace_back(name, type);
+			}
+			Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(layout, binding);
 
+			for (YAML::Node layoutEntry : layoutNode) {
+				std::string name = layoutEntry["Name"].as<std::string>();
+				ShaderDataType type = StringToShaderDataType(layoutEntry["Type"].as<std::string>());
 				switch (type)
 				{
 					case ShaderDataType::None:
@@ -96,80 +146,75 @@ namespace PaulEngine
 						break;
 					case ShaderDataType::Float:
 					{
-						float* data = new float(layoutEntry["Value"].as<float>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<float>>(type, data) });
+						float data = layoutEntry["Value"].as<float>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Float2:
 					{
-						glm::vec2* data = new glm::vec2(layoutEntry["Value"].as<glm::vec2>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::vec2>>(type, data) });
+						glm::vec2 data = layoutEntry["Value"].as<glm::vec2>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Float3:
 					{
-						glm::vec3* data = new glm::vec3(layoutEntry["Value"].as<glm::vec3>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::vec3>>(type, data) });
+						glm::vec3 data = layoutEntry["Value"].as<glm::vec3>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Float4:
 					{
-						glm::vec4* data = new glm::vec4(layoutEntry["Value"].as<glm::vec4>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::vec4>>(type, data) });
+						glm::vec4 data = layoutEntry["Value"].as<glm::vec4>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Mat3:
 					{
-						glm::mat3* data = new glm::mat3(layoutEntry["Value"].as<glm::mat3>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::mat3>>(type, data) });
+						glm::mat3 data = layoutEntry["Value"].as<glm::mat3>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Mat4:
 					{
-						glm::mat4* data = new glm::mat4(layoutEntry["Value"].as<glm::mat4>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::mat4>>(type, data) });
+						glm::mat4 data = layoutEntry["Value"].as<glm::mat4>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Int:
 					{
-						int* data = new int(layoutEntry["Value"].as<int>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<int>>(type, data) });
+						int data = layoutEntry["Value"].as<int>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Int2:
 					{
-						glm::ivec2* data = new glm::ivec2(layoutEntry["Value"].as<glm::ivec2>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::ivec2>>(type, data) });
+						glm::ivec2 data = layoutEntry["Value"].as<glm::ivec2>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Int3:
 					{
-						glm::ivec3* data = new glm::ivec3(layoutEntry["Value"].as<glm::ivec3>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::ivec3>>(type, data) });
+						glm::ivec3 data = layoutEntry["Value"].as<glm::ivec3>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Int4:
 					{
-						glm::ivec4* data = new glm::ivec4(layoutEntry["Value"].as<glm::ivec4>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<glm::ivec4>>(type, data) });
+						glm::ivec4 data = layoutEntry["Value"].as<glm::ivec4>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 					case ShaderDataType::Bool:
 					{
-						bool* data = new bool(layoutEntry["Value"].as<bool>());
-						layout.push_back({ name, CreateRef<ShaderDataTypeStorage<bool>>(type, data) });
+						bool data = layoutEntry["Value"].as<bool>();
+						ubo->UBO()->SetLocalData(name, data);
 						break;
 					}
 				}
 			}
-
-			Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(size, binding);
-			for (auto& [name, data] : layout) {
-				ubo->UBO()->AddDataType(name, data);
-			}
 			return ubo;
 		}
-	
+
 		static void WriteSampler2DObject(YAML::Emitter& out, Sampler2DShaderParameterTypeStorage* sampler2DStorageParameter)
 		{
 			out << YAML::BeginMap;

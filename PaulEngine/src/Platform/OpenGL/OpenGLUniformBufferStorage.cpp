@@ -5,10 +5,11 @@
 
 namespace PaulEngine
 {
-	OpenGLUniformBufferStorage::OpenGLUniformBufferStorage(size_t size, uint32_t binding, unsigned int usage) : m_Binding(binding)
+	OpenGLUniformBufferStorage::OpenGLUniformBufferStorage(std::vector<BufferElement> layout, uint32_t binding, unsigned int usage) : m_Binding(binding), m_RendererID(0), m_Usage(usage)
 	{
+		InitLayout(layout);
 		glCreateBuffers(1, &m_RendererID);
-		glNamedBufferData(m_RendererID, size, nullptr, (GLenum)usage);
+		glNamedBufferData(m_RendererID, Size(), nullptr, (GLenum)m_Usage);
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
 	}
 
@@ -17,51 +18,29 @@ namespace PaulEngine
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	uint32_t OpenGLUniformBufferStorage::GetBinding() const
-	{
-		return m_Binding;
-	}
-
-	Ref<ShaderDataTypeStorageBase> OpenGLUniformBufferStorage::GetLocalData(const std::string& name)
-	{
-		for (const LayoutElement& e : m_LayoutStorage) {
-			if (e.Name == name) {
-				return e.Data;
-			}
-		}
-		PE_CORE_ERROR("Name '{0}' not found in uniform buffer data layout", name);
-		return nullptr;
-	}
-
-	void OpenGLUniformBufferStorage::AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data)
-	{
-		PE_PROFILE_FUNCTION();
-		for (const LayoutElement& e : m_LayoutStorage) {
-			if (e.Name == name) {
-				PE_CORE_ASSERT(false, "Cannot add duplicate names to layout storage");
-				return;
-			}
-		}
-
-		m_LayoutStorage.push_back({ name, data });
-	}
-
 	void OpenGLUniformBufferStorage::UploadStorage()
 	{
-		PE_PROFILE_FUNCTION();
-		size_t offset = 0;
-		for (const LayoutElement& e : m_LayoutStorage) {
-			if (e.Data->IsDirty()) {
-				glNamedBufferSubData(m_RendererID, offset, e.Data->Size(), e.Data->GetData());
-				e.Data->SetDirtyFlag(false);
-			}
-			offset += e.Data->Size();
+		if (m_IsDirty)
+		{
+			UploadStorageForced();
 		}
+	}
+
+	void OpenGLUniformBufferStorage::UploadStorageForced()
+	{
+		PE_PROFILE_FUNCTION();
+		glNamedBufferData(m_RendererID, Size(), &m_Buffer[0], (GLenum)m_Usage);
+		m_IsDirty = false;
 	}
 
 	void OpenGLUniformBufferStorage::Bind(uint32_t binding)
 	{
 		m_Binding = binding;
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
+	}
+
+	void OpenGLUniformBufferStorage::Bind()
+	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, m_Binding, m_RendererID);
 	}
 }

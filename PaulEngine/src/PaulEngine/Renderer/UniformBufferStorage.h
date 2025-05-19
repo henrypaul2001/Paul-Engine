@@ -4,111 +4,9 @@
 
 namespace PaulEngine
 {
-	class ShaderDataTypeStorageBase
-	{
-	public:
-		virtual ~ShaderDataTypeStorageBase() {}
-		virtual ShaderDataType GetType() const = 0;
-		virtual const void* GetData() const = 0;
-		virtual size_t Size() = 0;
-		virtual bool IsDirty() const = 0;
-		virtual void SetDirtyFlag(bool dirty) = 0;
-
-		template <typename T>
-		const T* GetData()
-		{
-			return static_cast<const T*>(GetData());
-		}
-	};
-
-	template <typename T>
-	class ShaderDataTypeStorage : public ShaderDataTypeStorageBase
-	{
-	public:
-		ShaderDataTypeStorage(ShaderDataType type, T* data) : m_Type(type), m_Data(data) {}
-		~ShaderDataTypeStorage() {
-			if (m_Data) {
-				delete m_Data;
-			}
-		}
-
-		virtual ShaderDataType GetType() const override { return m_Type; }
-		virtual const void* GetData() const override { return (void*)m_Data; }
-		virtual size_t Size() override { return ShaderDataTypeSize(m_Type); }
-		virtual bool IsDirty() const override { return m_Dirty; }
-		virtual void SetDirtyFlag(bool dirty) override { m_Dirty = dirty; }
-
-	private:
-		friend class UniformBufferStorage;
-		ShaderDataType m_Type;
-		T* m_Data;
-		bool m_Dirty;
-	};
-
 	class UniformBufferStorage
 	{
 	public:
-		virtual ~UniformBufferStorage() {}
-
-		virtual uint32_t GetBinding() const = 0;
-
-		template <typename T>
-		void SetLocalData(const std::string& name, T data)
-		{
-			ShaderDataTypeStorageBase* baseData = GetLocalData(name).get();
-			if (baseData)
-			{
-				ShaderDataTypeStorage<T>* casted = dynamic_cast<ShaderDataTypeStorage<T>*>(baseData);
-				if (casted)
-				{
-					*casted->m_Data = data;
-					casted->SetDirtyFlag(true);
-				}
-				else
-				{
-					PE_CORE_ERROR("Error downcasting shader data type storage with name '{0}'", name);
-				}
-			}
-		}
-
-		template <typename T>
-		ShaderDataTypeStorage<T>* GetLocalData(const std::string& name)
-		{
-			ShaderDataTypeStorageBase* baseData = GetLocalData(name).get();
-			if (baseData)
-			{
-				ShaderDataTypeStorage<T>* casted = dynamic_cast<ShaderDataTypeStorage<T>*>(baseData);
-				if (!casted)
-				{
-					PE_CORE_ERROR("Error downcasting shader data type storage with name '{0}'", name);
-				}
-				return casted;
-			}
-		}
-
-		virtual Ref<ShaderDataTypeStorageBase> GetLocalData(const std::string& name) = 0;
-		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) = 0;
-		virtual void UploadStorage() = 0;
-		virtual void Bind(uint32_t binding) = 0;
-		virtual void Bind() = 0;
-
-		struct LayoutElement
-		{
-			std::string Name;
-			Ref<ShaderDataTypeStorageBase> Data;
-		};
-
-		virtual std::vector<LayoutElement>& GetLayoutStorage() = 0;
-		virtual const std::vector<LayoutElement>& GetLayoutStorage() const = 0;
-
-		static Ref<UniformBufferStorage> Create(size_t size, uint32_t binding);
-	};
-
-
-	class UniformBufferStorageNew
-	{
-	public:
-
 		struct BufferElement
 		{
 			BufferElement(std::string name = "null", ShaderDataType type = ShaderDataType::None) : Name(name), Type(type) {
@@ -120,7 +18,80 @@ namespace PaulEngine
 			ShaderDataType Type = ShaderDataType::None;
 		};
 
-		UniformBufferStorageNew(std::vector<BufferElement> layout)
+		virtual ~UniformBufferStorage() {}
+
+		size_t Size() const { return m_Buffer.size(); };
+
+		virtual void UploadStorage() = 0;
+		virtual void UploadStorageForced() = 0;
+		virtual void Bind(uint32_t binding) = 0;
+		virtual void Bind() = 0;
+
+		template <typename T>
+		bool SetLocalData(const std::string& name, T data)
+		{
+			// Find member
+			auto it = m_Layout.find(name);
+			if (it == m_Layout.end())
+			{
+				PE_CORE_ERROR("Error writing to member with name '{0}': Member does not exist", name);
+				return false;
+			}
+
+			const BufferElement& e = m_Layout.at(name);
+
+			// Check for error in member offset and size
+			if (e.Offset + e.Size > m_Buffer.size())
+			{
+				PE_CORE_ERROR("Error writing to member with name '{0}': Buffer overrun", name);
+				return false;
+			}
+
+			// Validate template type size
+			if (sizeof(T) != e.Size)
+			{
+				PE_CORE_ERROR("Error writing to member with name '{0}': Template type size does not match member size", name);
+				return false;
+			}
+
+			uint8_t* begin = &m_Buffer[e.Offset];
+			memcpy(begin, &data, e.Size);
+			m_IsDirty = true;
+			return true;
+		}
+
+		template <typename T>
+		bool ReadLocalDataAs(const std::string& name, T* out_data)
+		{
+			// Find member
+			auto it = m_Layout.find(name);
+			if (it == m_Layout.end())
+			{
+				PE_CORE_ERROR("Error reading member with name '{0}': Member does not exist", name);
+				return false;
+			}
+
+			const BufferElement& e = m_Layout.at(name);
+
+			// Validate template type size
+			if (sizeof(T) != e.Size)
+			{
+				PE_CORE_ERROR("Error reading member with name '{0}': Template type size does not match member size", name);
+				return false;
+			}
+
+			uint8_t* begin = &m_Buffer[e.Offset];
+			memcpy(out_data, begin, e.Size);
+			return true;
+		}
+
+		const std::vector<BufferElement>& GetMembers() const { return m_OrderedMembers; }
+		virtual uint32_t GetBinding() const = 0;
+
+		static Ref<UniformBufferStorage> Create(std::vector<BufferElement> layout, uint32_t binding);
+	
+	protected:
+		void InitLayout(std::vector<BufferElement>& layout)
 		{
 			uint32_t offset = 0;
 			for (BufferElement& e : layout)
@@ -128,15 +99,14 @@ namespace PaulEngine
 				e.Offset = offset;
 				offset += e.Size;
 				m_Layout[e.Name] = e;
+				m_OrderedMembers.push_back(e);
 			}
+			m_Buffer = std::vector<uint8_t>(offset);
 		}
-		virtual ~UniformBufferStorageNew();
 
-		size_t Size() const { return m_Size; }
-
-	private:
+		std::vector<BufferElement> m_OrderedMembers;
 		std::unordered_map<std::string, BufferElement> m_Layout;
 		std::vector<uint8_t> m_Buffer;
-		size_t m_Size;
+		bool m_IsDirty;
 	};
 }

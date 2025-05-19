@@ -7,25 +7,18 @@ namespace PaulEngine
 	{
 	public:
 		// default usage = GL_DYNAMIC_DRAW
-		OpenGLUniformBufferStorage(size_t size, uint32_t binding, unsigned int usage = 0x88E8);
+		OpenGLUniformBufferStorage(std::vector<BufferElement> layout, uint32_t binding, unsigned int usage = 0x88E8);
 		~OpenGLUniformBufferStorage();
 
-		virtual uint32_t GetBinding() const override;
-
-		virtual Ref<ShaderDataTypeStorageBase> GetLocalData(const std::string& name) override;
-		virtual void AddDataType(const std::string& name, Ref<ShaderDataTypeStorageBase> data) override;
 		virtual void UploadStorage() override;
-
-		virtual void Bind(uint32_t binding) override;
-		virtual void Bind() override { Bind(m_Binding); }
-
-		virtual std::vector<LayoutElement>& GetLayoutStorage() override { return m_LayoutStorage; }
-		virtual const std::vector<LayoutElement>& GetLayoutStorage() const override { return m_LayoutStorage; }
+		virtual void UploadStorageForced() override;
+		virtual void Bind(uint32_t binding = 0) override;
+		virtual void Bind() override;
+		virtual uint32_t GetBinding() const override { return m_Binding; }
 
 	private:
+		unsigned int m_Usage;
 		uint32_t m_Binding;
 		uint32_t m_RendererID;
-
-		std::vector<LayoutElement> m_LayoutStorage;
 	};
 }

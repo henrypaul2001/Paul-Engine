@@ -161,7 +161,6 @@ float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, v
 {
 	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
 	float currentDepth = length(fragToLight);
-	currentDepth = currentDepth / farPlane;
 
 	float shadow = 0.0;
 	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
