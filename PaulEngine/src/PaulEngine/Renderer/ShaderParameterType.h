@@ -93,13 +93,13 @@ namespace PaulEngine
 		uint32_t m_Binding;
 	};
 
-	struct ShaderParameterTypeSpecifcationBase
+	struct ShaderParameterTypeSpecificationBase
 	{
 		std::string Name = "";
 		virtual ShaderParameterType Type() const = 0;
 	};
 
-	struct UBOShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	struct UBOShaderParameterTypeSpecification : public ShaderParameterTypeSpecificationBase
 	{
 		uint32_t Size = 0;
 		uint32_t Binding = 0;
@@ -108,19 +108,19 @@ namespace PaulEngine
 		 virtual ShaderParameterType Type() const override { return ShaderParameterType::UBO; }
 	};
 
-	struct Sampler2DShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	struct Sampler2DShaderParameterTypeSpecification : public ShaderParameterTypeSpecificationBase
 	{
 		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2D; }
 	};
 	
-	struct Sampler2DArrayShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	struct Sampler2DArrayShaderParameterTypeSpecification : public ShaderParameterTypeSpecificationBase
 	{
 		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::Sampler2DArray; }
 	};
 
-	struct SamplerCubeShaderParameterTypeSpecification : public ShaderParameterTypeSpecifcationBase
+	struct SamplerCubeShaderParameterTypeSpecification : public ShaderParameterTypeSpecificationBase
 	{
 		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::SamplerCube; }

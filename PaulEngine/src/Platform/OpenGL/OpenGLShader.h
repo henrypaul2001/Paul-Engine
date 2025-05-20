@@ -30,7 +30,7 @@ namespace PaulEngine {
 		virtual void SetUniformMat3(const std::string& name, const glm::mat3& matrix) override;
 		virtual void SetUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 
-		virtual const std::vector<Ref<ShaderParameterTypeSpecifcationBase>>& GetReflectionData() const override { return m_ReflectionData; }
+		virtual const std::vector<Ref<ShaderParameterTypeSpecificationBase>>& GetReflectionData() const override { return m_ReflectionData; }
 
 		void UploadUniformInt(const std::string& name, const int value);
 		void UploadUniformIntArray(const std::string& name, const int* values, uint32_t count);
@@ -56,7 +56,7 @@ namespace PaulEngine {
 		std::string m_Filepath;
 		std::string m_Name;
 
-		std::vector<Ref<ShaderParameterTypeSpecifcationBase>> m_ReflectionData;
+		std::vector<Ref<ShaderParameterTypeSpecificationBase>> m_ReflectionData;
 
 		std::unordered_map<GLenum, std::vector<uint32_t>> m_VulkanSPIRV;
 		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRV;

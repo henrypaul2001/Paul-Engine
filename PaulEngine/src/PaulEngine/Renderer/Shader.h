@@ -26,7 +26,7 @@ namespace PaulEngine {
 
 		virtual const std::string& GetName() const = 0;
 
-		virtual const std::vector<Ref<ShaderParameterTypeSpecifcationBase>>& GetReflectionData() const = 0;
+		virtual const std::vector<Ref<ShaderParameterTypeSpecificationBase>>& GetReflectionData() const = 0;
 
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Ref<Shader> Create(const std::string& filepath);
