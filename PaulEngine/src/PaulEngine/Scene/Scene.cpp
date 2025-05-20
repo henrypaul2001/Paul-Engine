@@ -24,6 +24,11 @@ namespace PaulEngine
 		}
 	}
 
+	Ref<Scene> Scene::Create()
+	{
+		return CreateRef<Scene>();
+	}
+
 	Scene::Scene() : m_ViewportWidth(0), m_ViewportHeight(0) {
 		m_PhysicsWorld = new b2WorldId();
 	}

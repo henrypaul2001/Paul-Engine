@@ -102,7 +102,7 @@ namespace PaulEngine
 					bool isSelected = m_DropDownShader == i;
 					if (ImGui::Selectable(shaderNames[i], isSelected)) {
 						m_DropDownShader = i;
-						m_ShaderHandle = assetManager->ImportAsset(nameToFilepath[shaderNames[i]], true);
+						m_ShaderHandle = assetManager->ImportAssetFromFile(nameToFilepath[shaderNames[i]], true);
 						m_Material = CreateRef<Material>(m_ShaderHandle);
 					}
 
@@ -219,7 +219,7 @@ namespace PaulEngine
 						std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
 
 						MaterialImporter::SaveMaterial(m_Material, relativeSavePath);
-						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
+						Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
 					
 						m_ShowWindow = false;
 						m_Material = nullptr;

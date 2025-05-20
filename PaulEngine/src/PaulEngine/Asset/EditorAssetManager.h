@@ -7,45 +7,42 @@
 namespace PaulEngine
 {
 	using AssetRegistry = std::unordered_map<AssetHandle, AssetMetadata>;
-	using AssetFileRegistry = std::unordered_map<std::filesystem::path, AssetHandle>;
+	using AssetSourceRegistry = std::unordered_map<std::filesystem::path, AssetHandle>;
 	class EditorAssetManager : public AssetManagerBase
 	{
 	public:
 		virtual Ref<Asset> GetAsset(AssetHandle handle) override;
-
-		virtual bool IsAssetRegistered(AssetHandle handle) const override;
-		virtual bool IsAssetLoaded(AssetHandle handle) const override;
-
 		virtual AssetType GetAssetType(AssetHandle handle) const override;
+		virtual const AssetMetadata& GetMetadata(AssetHandle handle) const override;
 
 		bool IsAssetTempLoaded(AssetHandle handle) const;
 		bool IsAssetPersistentLoaded(AssetHandle handle) const;
 
-		void ReleaseTempAssets();
+		virtual bool IsAssetRegistered(AssetHandle handle) const override;
+		bool IsSourceFileRegistered(const std::filesystem::path& filepath) const;
+		virtual bool IsAssetLoaded(AssetHandle handle) const override;
+		virtual bool IsAssetProcedural(AssetHandle handle) const override;
 
-		AssetHandle ImportAsset(const std::filesystem::path& filepath, const bool persistent = false);
-		bool IsAssetRegistered(const std::filesystem::path& filepath) {
-			return (m_AssetFileRegistry.find(filepath) != m_AssetFileRegistry.end());
-		}
+		virtual void UnloadAsset(AssetHandle& handle) override;
+		virtual void ReleaseTempAssets() override;
+		virtual void RegisterAsset(AssetHandle handle, AssetMetadata metadata) override;
 
-		const AssetMetadata& GetMetadata(AssetHandle handle) const;
-		const std::filesystem::path& GetFilepath(AssetHandle handle) const;
-
-		const AssetRegistry& GetAssetRegistry() const { return m_AssetRegistry; }
-
-		void RegisterAsset(AssetHandle handle, AssetMetadata metadata);
-		void AddToLoadedAssets(Ref<Asset> asset, bool persistent = false);
-		void UnloadAsset(AssetHandle& handle);
-
-		const AssetMap& GetTempAssetMap() const { return m_LoadedAssets; }
-		const AssetMap& GetPersistentAssetMap() const { return m_LoadedPersistentAssets; }
+		AssetHandle ImportAssetFromFile(const std::filesystem::path& filepath, const bool persistent);
 
 		void SerializeAssetRegistry();
 		bool DeserializeAssetRegistry();
+
+		const AssetMap& GetTempAssetMap() const { return m_TempAssets; }
+		const AssetMap& GetPersistentAssetMap() const { return m_PersistentAssets; }
+		const AssetRegistry& GetAssetRegistry() const { return m_AssetRegistry; }
+
+	protected:
+		virtual void AddToLoadedAssets(Ref<Asset> asset, bool persistent = false) override;
+
 	private:
 		AssetRegistry m_AssetRegistry;
-		AssetFileRegistry m_AssetFileRegistry;
-		AssetMap m_LoadedAssets;
-		AssetMap m_LoadedPersistentAssets;
+		AssetSourceRegistry m_SourceFileRegistry;
+		AssetMap m_TempAssets;
+		AssetMap m_PersistentAssets;
 	};
 }

@@ -29,14 +29,43 @@ namespace PaulEngine
 		return s_AssetExtensionMap.at(extension);
 	}
 
-	bool EditorAssetManager::IsAssetRegistered(AssetHandle handle) const
+	Ref<Asset> EditorAssetManager::GetAsset(AssetHandle handle)
 	{
-		return handle != 0 && m_AssetRegistry.find(handle) != m_AssetRegistry.end();
-	}
+		if (!IsAssetRegistered(handle)) {
+			return nullptr;
+		}
 
-	bool EditorAssetManager::IsAssetLoaded(AssetHandle handle) const
-	{
-		return (IsAssetPersistentLoaded(handle) || IsAssetTempLoaded(handle));
+		Ref<Asset> asset;
+		if (IsAssetTempLoaded(handle)) {
+			asset = m_TempAssets.at(handle);
+		}
+		else if (IsAssetPersistentLoaded(handle)) {
+			asset = m_PersistentAssets.at(handle);
+		}
+		else {
+			const AssetMetadata& metadata = GetMetadata(handle);
+			if (metadata.FilePath.empty()) {
+				// Procedural asset
+				// For now this will return an empty asset
+				// Design consideration would be to have this path return 
+				// a newly created asset with the requested type as a fallback 
+				// when that original asset no longer exists (such as this case)
+				PE_CORE_WARN("Procedural asset with handle '{0}' no longer exists", (uint64_t)handle);
+				return asset;
+			}
+
+			// Load filepath asset from source
+			asset = AssetImporter::ImportAsset(handle, metadata);
+			if (asset)
+			{
+				asset->Handle = handle;
+				AddToLoadedAssets(asset, metadata.Persistent);
+				return asset;
+			}
+
+			PE_CORE_ERROR("Asset import failed at path '{0}'", metadata.FilePath.string().c_str());
+		}
+		return asset;
 	}
 
 	AssetType EditorAssetManager::GetAssetType(AssetHandle handle) const
@@ -47,25 +76,87 @@ namespace PaulEngine
 		return m_AssetRegistry.at(handle).Type;
 	}
 
+	const AssetMetadata& EditorAssetManager::GetMetadata(AssetHandle handle) const
+	{
+		static AssetMetadata s_NullMetadata;
+		auto it = m_AssetRegistry.find(handle);
+		if (it == m_AssetRegistry.end()) {
+			return s_NullMetadata;
+		}
+		return it->second;
+	}
+
 	bool EditorAssetManager::IsAssetTempLoaded(AssetHandle handle) const
 	{
-		return m_LoadedAssets.find(handle) != m_LoadedAssets.end();
+		return (m_TempAssets.find(handle) != m_TempAssets.end());
 	}
 
 	bool EditorAssetManager::IsAssetPersistentLoaded(AssetHandle handle) const
 	{
-		return m_LoadedPersistentAssets.find(handle) != m_LoadedPersistentAssets.end();
+		return (m_PersistentAssets.find(handle) != m_PersistentAssets.end());
+	}
+
+	bool EditorAssetManager::IsAssetRegistered(AssetHandle handle) const
+	{
+		return (m_AssetRegistry.find(handle) != m_AssetRegistry.end());
+	}
+
+	bool EditorAssetManager::IsSourceFileRegistered(const std::filesystem::path& filepath) const
+	{
+		return (m_SourceFileRegistry.find(filepath) != m_SourceFileRegistry.end());
+	}
+
+	bool EditorAssetManager::IsAssetLoaded(AssetHandle handle) const
+	{
+		return (IsAssetTempLoaded(handle) || IsAssetPersistentLoaded(handle));
+	}
+
+	bool EditorAssetManager::IsAssetProcedural(AssetHandle handle) const
+	{
+		const AssetMetadata& metadata = GetMetadata(handle);
+		if (metadata.Type != AssetType::None) {
+			return (metadata.FilePath.empty());
+		}
+		return false;
+	}
+
+	void EditorAssetManager::UnloadAsset(AssetHandle& handle)
+	{
+		if (IsAssetTempLoaded(handle)) {
+			if (m_TempAssets.erase(handle) == 0) {
+				PE_CORE_WARN("Attempted to unload temp asset not currently loaded with handle '{0}'", (uint64_t)handle);
+			}
+		}
+		else if (IsAssetPersistentLoaded(handle)) {
+			if (m_PersistentAssets.erase(handle) == 0) {
+				PE_CORE_WARN("Attempted to unload persistent asset not currently loaded with handle '{0}'", (uint64_t)handle);
+			}
+		}
+		else {
+			PE_CORE_WARN("Attempted to unload asset not currently loaded with handle '{0}'", (uint64_t)handle);
+		}
+		handle = 0;
 	}
 
 	void EditorAssetManager::ReleaseTempAssets()
 	{
-		m_LoadedAssets.clear();
+		m_TempAssets.clear();
 	}
 
-	AssetHandle EditorAssetManager::ImportAsset(const std::filesystem::path& filepath, const bool persistent)
+	void EditorAssetManager::RegisterAsset(AssetHandle handle, AssetMetadata metadata)
 	{
-		if (IsAssetRegistered(filepath)) {
-			return m_AssetFileRegistry.at(filepath);
+		if (handle != 0) {
+			m_AssetRegistry[handle] = metadata;
+			if (!metadata.FilePath.empty()) {
+				m_SourceFileRegistry[metadata.FilePath] = handle;
+			}
+		}
+	}
+
+	AssetHandle EditorAssetManager::ImportAssetFromFile(const std::filesystem::path& filepath, const bool persistent)
+	{
+		if (IsSourceFileRegistered(filepath)) {
+			return m_SourceFileRegistry.at(filepath);
 		}
 
 		AssetHandle handle;
@@ -89,81 +180,6 @@ namespace PaulEngine
 		return handle;
 	}
 
-	Ref<Asset> EditorAssetManager::GetAsset(AssetHandle handle)
-	{
-		if (!IsAssetRegistered(handle)) {
-			return nullptr;
-		}
-
-		Ref<Asset> asset;
-		if (IsAssetTempLoaded(handle)) {
-			asset = m_LoadedAssets.at(handle);
-		}
-		else if (IsAssetPersistentLoaded(handle)) {
-			asset = m_LoadedPersistentAssets.at(handle);
-		}
-		else {
-			// Load asset if not already loaded
-			const AssetMetadata& metadata = GetMetadata(handle);
-			asset = AssetImporter::ImportAsset(handle, metadata);
-			if (!asset) {
-				PE_CORE_ERROR("Asset import failed at path '{0}'", metadata.FilePath.string().c_str());
-			}
-			AddToLoadedAssets(asset, metadata.Persistent);
-		}
-
-		return asset;
-	}
-
-	const AssetMetadata& EditorAssetManager::GetMetadata(AssetHandle handle) const
-	{
-		static AssetMetadata s_NullMetadata;
-		auto it = m_AssetRegistry.find(handle);
-		if (it == m_AssetRegistry.end()) {
-			return s_NullMetadata;
-		}
-		return it->second;
-	}
-
-	const std::filesystem::path& EditorAssetManager::GetFilepath(AssetHandle handle) const
-	{
-		return GetMetadata(handle).FilePath;
-	}
-
-	void EditorAssetManager::RegisterAsset(AssetHandle handle, AssetMetadata metadata)
-	{
-		m_AssetRegistry[handle] = metadata;
-		m_AssetFileRegistry[metadata.FilePath] = handle;
-	}
-
-	void EditorAssetManager::AddToLoadedAssets(Ref<Asset> asset, bool persistent)
-	{
-		if (persistent) {
-			m_LoadedPersistentAssets[asset->Handle] = asset;
-		}
-		else {
-			m_LoadedAssets[asset->Handle] = asset;
-		}
-	}
-
-	void EditorAssetManager::UnloadAsset(AssetHandle& handle)
-	{
-		if (IsAssetTempLoaded(handle)) {
-			if (m_LoadedAssets.erase(handle) == 0) {
-				PE_CORE_WARN("Attempted to unload temp asset not currently loaded with handle '{0}'", (uint64_t)handle);
-			}
-		}
-		else if (IsAssetPersistentLoaded(handle)) {
-			if (m_LoadedPersistentAssets.erase(handle) == 0) {
-				PE_CORE_WARN("Attempted to unload persistent asset not currently loaded with handle '{0}'", (uint64_t)handle);
-			}
-		}
-		else {
-			PE_CORE_WARN("Attempted to unload asset not currently loaded with handle '{0}'", (uint64_t)handle);
-		}
-		handle = 0;
-	}
-
 	void EditorAssetManager::SerializeAssetRegistry()
 	{
 		const std::filesystem::path& path = Project::GetAssetRegistryPath();
@@ -175,16 +191,19 @@ namespace PaulEngine
 
 			out << YAML::BeginSeq;
 			for (const auto& [handle, metadata] : m_AssetRegistry) {
-				out << YAML::BeginMap;
-				out << YAML::Key << "Handle" << YAML::Value << handle;
+				if (!IsAssetProcedural(handle))
+				{
+					out << YAML::BeginMap;
+					out << YAML::Key << "Handle" << YAML::Value << handle;
 
-				std::string filepathString = metadata.FilePath.string();
-				out << YAML::Key << "Filepath" << YAML::Value << filepathString;
+					std::string filepathString = metadata.FilePath.string();
+					out << YAML::Key << "Filepath" << YAML::Value << filepathString;
 
-				out << YAML::Key << "Persistent" << YAML::Value << metadata.Persistent;
+					out << YAML::Key << "Persistent" << YAML::Value << metadata.Persistent;
 
-				out << YAML::Value << "Type" << YAML::Value << AssetTypeToString(metadata.Type);
-				out << YAML::EndMap;
+					out << YAML::Value << "Type" << YAML::Value << AssetTypeToString(metadata.Type);
+					out << YAML::EndMap;
+				}
 			}
 			out << YAML::EndSeq;
 			out << YAML::EndMap;
@@ -227,9 +246,19 @@ namespace PaulEngine
 			metadata.FilePath = node["Filepath"].as<std::string>();
 			metadata.Persistent = node["Persistent"].as<bool>();
 			metadata.Type = AssetTypeFromString(node["Type"].as<std::string>());
-			m_AssetFileRegistry[metadata.FilePath] = handle;
+			m_SourceFileRegistry[metadata.FilePath] = handle;
 		}
 
 		return true;
+	}
+
+	void EditorAssetManager::AddToLoadedAssets(Ref<Asset> asset, bool persistent)
+	{
+		if (persistent) {
+			m_PersistentAssets[asset->Handle] = asset;
+		}
+		else {
+			m_TempAssets[asset->Handle] = asset;
+		}
 	}
 }

@@ -744,10 +744,10 @@ namespace PaulEngine {
 	{
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
-		s_RenderData.QuadShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Quad.glsl", true);
-		s_RenderData.CircleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Circle.glsl", true);
-		s_RenderData.LineShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Line.glsl", true);
-		s_RenderData.TextShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Text.glsl", true);
+		s_RenderData.QuadShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Quad.glsl", true);
+		s_RenderData.CircleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Circle.glsl", true);
+		s_RenderData.LineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Line.glsl", true);
+		s_RenderData.TextShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer2D_Text.glsl", true);
 
 		int samplers[s_RenderData.MaxTextureSlots];
 		for (int i = 0; i < s_RenderData.MaxTextureSlots; i++) {
@@ -758,10 +758,10 @@ namespace PaulEngine {
 		quadShader->Bind();
 		quadShader->SetUniformIntArray("u_Textures", samplers, s_RenderData.MaxTextureSlots);
 
-		s_RenderData.QuadMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Quad2DMaterial.pmat", true);
-		s_RenderData.CircleMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Circle2DMaterial.pmat", true);
-		s_RenderData.LineMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Line2DMaterial.pmat", true);
-		s_RenderData.TextMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/Text2DMaterial.pmat", true);
+		s_RenderData.QuadMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/Quad2DMaterial.pmat", true);
+		s_RenderData.CircleMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/Circle2DMaterial.pmat", true);
+		s_RenderData.LineMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/Line2DMaterial.pmat", true);
+		s_RenderData.TextMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/Text2DMaterial.pmat", true);
 
 		s_RenderData.QuadPipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, BlendState(), s_RenderData.QuadMaterialHandle);
 		s_RenderData.CirclePipeline = RenderPipeline::Create(FaceCulling::BACK, { DepthFunc::LESS, true, true }, BlendState(), s_RenderData.CircleMaterialHandle);

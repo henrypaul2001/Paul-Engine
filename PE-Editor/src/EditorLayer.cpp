@@ -172,23 +172,23 @@ namespace PaulEngine
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		AssetHandle shadowmapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
+		AssetHandle shadowmapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
 		Ref<Material> shadowmapMaterial = CreateRef<Material>(shadowmapShaderHandle);
 
 		Ref<UniformBuffer> cubemapDataUBO = UniformBuffer::Create(sizeof(CubemapCaptureBuffer), 3);
-		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
+		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
 		Ref<Material> shadowmapCubeMaterial = CreateRef<Material>(shadowmapCubeShaderHandle);
 
-		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
+		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
 		Ref<Material> gammaTonemapMaterial = CreateRef<Material>(gammaTonemapShaderHandle);
 
-		AssetHandle bloomDownsampleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
+		AssetHandle bloomDownsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
 		Ref<Material> mipchainDownsampleMaterial = CreateRef<Material>(bloomDownsampleShaderHandle);
 
-		AssetHandle bloomUpsampleShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
+		AssetHandle bloomUpsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
 		Ref<Material> mipchainUpsampleMaterial = CreateRef<Material>(bloomUpsampleShaderHandle);
 
-		AssetHandle bloomCombineShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
+		AssetHandle bloomCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
 		Ref<Material> bloomCombineMaterial = CreateRef<Material>(bloomCombineShaderHandle);
 
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial);
@@ -1142,8 +1142,9 @@ namespace PaulEngine
 		m_Camera = CreateRef<EditorCamera>(EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f));
 
 		// load test shader
-		//Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
-		//std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+		AssetHandle skyboxTest = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
 		//
 		//AssetHandle downsampleTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
 		//AssetHandle upsampleTest = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
@@ -1473,8 +1474,8 @@ namespace PaulEngine
 			m_MaterialCreateWindow.OnImGuiRender();
 			m_AtlasCreateWindow.OnImGuiRender();
 
-			DrawMaterialEdit(AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAsset("materials/TestMaterial.pmat", true)));
-			DrawMaterialEdit(AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAsset("materials/TextureArrayMaterial.pmat", false)));
+			DrawMaterialEdit(AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile("materials/TestMaterial.pmat", true)));
+			DrawMaterialEdit(AssetManager::GetAsset<Material>(Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile("materials/TextureArrayMaterial.pmat", false)));
 
 			OnUIDrawToolbar();
 		}
@@ -1852,6 +1853,7 @@ namespace PaulEngine
 	void EditorLayer::NewScene()
 	{
 		OnSceneStop();
+		m_EditorScene = AssetManager::CreateAsset<Scene>(false);
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -1881,6 +1883,11 @@ namespace PaulEngine
 		}
 		if (m_SceneState != SceneState::Edit) { OnSceneStop(); }
 
+		if (m_ActiveSceneHandle != 0) {
+			//Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
+			assetManager->ReleaseTempAssets();
+		}
+
 		Ref<Scene> readOnlyScene = AssetManager::GetAsset<Scene>(handle);
 		Ref<Scene> newScene = Scene::Copy(readOnlyScene);
 
@@ -1888,16 +1895,10 @@ namespace PaulEngine
 		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
-		if (m_ActiveSceneHandle != 0) {
-			//Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
-			assetManager->ReleaseTempAssets();
-		}
-
 		m_ActiveScene = m_EditorScene;
 		m_ActiveSceneHandle = handle;
 
-		m_CurrentFilepath = assetManager->GetFilepath(handle);
-		if (!assetManager->IsAssetLoaded(handle)) { assetManager->AddToLoadedAssets(m_ActiveScene, assetManager->GetMetadata(handle).Persistent); }
+		m_CurrentFilepath = assetManager->GetMetadata(handle).FilePath;
 
 		Application::Get().OnEvent(SceneChangedEvent(m_ActiveSceneHandle));
 	}
@@ -1913,6 +1914,9 @@ namespace PaulEngine
 		}
 		if (!path.empty()) {
 			SceneImporter::SaveScene(m_ActiveScene, path);
+			AssetMetadata metadata = AssetManager::GetMetadata(m_ActiveSceneHandle);
+			metadata.FilePath = path;
+			Project::GetActive()->GetEditorAssetManager()->RegisterAsset(m_ActiveSceneHandle, metadata);
 			m_CurrentFilepath = path;
 		}
 	}
@@ -1931,18 +1935,12 @@ namespace PaulEngine
 		spec.AssetRegistryPath = "asset_registry.pregistry";
 		spec.ProjectDirectory = filepath;
 		
-		NewScene();
-		spec.StartScene = m_ActiveSceneHandle;
 		Project::New(spec);
 
+		NewScene();
+		Project::GetActive()->SetStartScene(m_ActiveSceneHandle);
+
 		SaveSceneAs("Scenes/UntitledScene.paul");
-
-		AssetMetadata sceneData;
-		sceneData.FilePath = m_CurrentFilepath;
-		sceneData.Persistent = false;
-		sceneData.Type = AssetType::Scene;
-
-		Project::GetActive()->GetEditorAssetManager()->RegisterAsset(m_ActiveSceneHandle, sceneData);
 
 		Project::SaveActive(filepath);
 

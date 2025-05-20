@@ -7,11 +7,12 @@
 #include "PaulEngine/Renderer/Texture.h"
 
 #include "PaulEngine/Renderer/MSDFData.h"
+#include "PaulEngine/Asset/AssetManager.h"
 
 namespace PaulEngine
 {
 	template<typename T, typename S, int N, msdf_atlas::GeneratorFunction<S, N> GenFunc>
-	static Ref<Texture2D> CreateAndCacheAtlas(const std::string& fontName, float fontSize, const std::vector<msdf_atlas::GlyphGeometry>& glyphs, const msdf_atlas::FontGeometry& fontGeometry, uint32_t width, uint32_t height) {
+	static Ref<Texture2D> CreateAndCacheAtlas(const std::string& fontName, float fontSize, const std::vector<msdf_atlas::GlyphGeometry>& glyphs, const msdf_atlas::FontGeometry& fontGeometry, uint32_t width, uint32_t height, bool persistent = false) {
 		msdf_atlas::GeneratorAttributes attributes;
 		attributes.config.overlapSupport = true;
 		attributes.scanlinePass = true;
@@ -29,7 +30,7 @@ namespace PaulEngine
 		spec.Format = ImageFormat::RGB8;
 		spec.GenerateMips = false;
 
-		Ref<Texture2D> texture = Texture2D::Create(spec);
+		Ref<Texture2D> texture = AssetManager::CreateAsset<Texture2D>(persistent, spec);
 		texture->SetData(Buffer((void*)bitmap.pixels, bitmap.width * bitmap.height * 3));
 		return texture;
 	}
@@ -112,8 +113,7 @@ namespace PaulEngine
 			}
 		}
 
-		fontAsset->m_AtlasTexture = CreateAndCacheAtlas<uint8_t, float, 3, msdf_atlas::msdfGenerator>("Test", (float)emSize, fontAsset->m_Data->Glyphs, fontAsset->m_Data->FontGeometry, width, height);
-		Project::GetActive()->GetEditorAssetManager()->AddToLoadedAssets(fontAsset->m_AtlasTexture, persistentTextureAtlas);
+		fontAsset->m_AtlasTexture = CreateAndCacheAtlas<uint8_t, float, 3, msdf_atlas::msdfGenerator>("Test", (float)emSize, fontAsset->m_Data->Glyphs, fontAsset->m_Data->FontGeometry, width, height, persistentTextureAtlas);
 
 		msdfgen::destroyFont(font);
 		msdfgen::deinitializeFreetype(ft);

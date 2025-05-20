@@ -86,7 +86,7 @@ namespace PaulEngine
 
 		// Import engine assets
 		std::filesystem::path fontRelativeToAssets = std::filesystem::path("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf").lexically_relative(Project::GetAssetDirectory());
-		Font::s_DefaultFont = Project::GetActive()->GetEditorAssetManager()->ImportAsset(fontRelativeToAssets, true);
+		Font::s_DefaultFont = Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(fontRelativeToAssets, true);
 
 		Renderer::ImportShaders();
 		Renderer2D::ImportShaders();

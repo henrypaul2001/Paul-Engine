@@ -161,14 +161,14 @@ namespace PaulEngine
 
 			if (ImGui::BeginPopupContextItem()) {
 				auto relativePath = std::filesystem::relative(p.path(), Project::GetAssetDirectory());
-				if (!Project::GetActive()->GetEditorAssetManager()->IsAssetRegistered(relativePath)) {
+				if (!Project::GetActive()->GetEditorAssetManager()->IsSourceFileRegistered(relativePath)) {
 					if (ImGui::MenuItem("Import temporary"))
 					{
-						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativePath, false);
+						Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(relativePath, false);
 						RefreshAssetTree();
 					}
 					if (ImGui::MenuItem("Import persistent")) {
-						Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativePath, true);
+						Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(relativePath, true);
 						RefreshAssetTree();
 					}
 				}
@@ -182,7 +182,7 @@ namespace PaulEngine
 				}
 			}
 
-			if (Project::GetActive()->GetEditorAssetManager()->IsAssetRegistered(std::filesystem::relative(p.path(), Project::GetAssetDirectory()))) {
+			if (Project::GetActive()->GetEditorAssetManager()->IsSourceFileRegistered(std::filesystem::relative(p.path(), Project::GetAssetDirectory()))) {
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 				ImGui::TextWrapped(filename.string().c_str());
 				ImGui::PopStyleColor();

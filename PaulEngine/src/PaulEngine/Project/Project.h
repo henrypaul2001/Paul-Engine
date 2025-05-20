@@ -51,6 +51,8 @@ namespace PaulEngine
 
 		static void ImportEngineAssets();
 
+		void SetStartScene(AssetHandle startSceneHandle) { m_Spec.StartScene = startSceneHandle; }
+
 	private:
 		ProjectSpecification m_Spec;
 		std::filesystem::path m_ProjectDirectory;

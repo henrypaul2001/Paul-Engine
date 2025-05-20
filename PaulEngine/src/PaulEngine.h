@@ -23,6 +23,7 @@
 #include "PaulEngine/Scene/Components.h"
 
 #include "PaulEngine/Project/Project.h"
+#include "PaulEngine/Asset/AssetManager.h"
 
 // Render
 #include "PaulEngine/Renderer/FrameRenderer.h"

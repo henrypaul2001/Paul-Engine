@@ -462,8 +462,8 @@ namespace PaulEngine {
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		s_RenderData.DefaultLitShaderHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl", true);
-		s_RenderData.DefaultLitMaterialHandle = assetManager->ImportAsset(engineAssetsRelativeToProjectAssets / "materials/DefaultLit.pmat", true);
+		s_RenderData.DefaultLitShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl", true);
+		s_RenderData.DefaultLitMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLit.pmat", true);
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)

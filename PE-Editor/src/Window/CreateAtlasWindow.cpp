@@ -355,7 +355,7 @@ namespace PaulEngine
 						std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
 
 						TextureImporter::SaveTextureAtlas2D(textureAtlas, relativeSavePath);
-						AssetHandle handle = Project::GetActive()->GetEditorAssetManager()->ImportAsset(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
+						AssetHandle handle = Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(relativeSavePath.lexically_relative(Project::GetAssetDirectory()), false);
 
 						m_ShowWindow = false;
 						m_SubTextureInputList.clear();

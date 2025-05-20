@@ -124,6 +124,37 @@ bool RuntimeMainLayer::OpenProject(const std::filesystem::path& filepath)
 	return false;
 }
 
+/*
+
+PE_CORE_ASSERT(handle, "Invalid scene handle");
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		AssetType type = assetManager->GetAssetType(handle);
+		if (type != AssetType::Scene) {
+			PE_CORE_ERROR("Invalid asset type '{0}', '{1}' required", AssetTypeToString(type), AssetTypeToString(AssetType::Scene));
+			return;
+		}
+		if (m_SceneState != SceneState::Edit) { OnSceneStop(); }
+
+		if (m_ActiveSceneHandle != 0) {
+			//Project::GetActive()->GetEditorAssetManager()->UnloadAsset(m_ActiveSceneHandle);
+			assetManager->ReleaseTempAssets();
+		}
+
+		Ref<Scene> readOnlyScene = AssetManager::GetAsset<Scene>(handle);
+		Ref<Scene> newScene = Scene::Copy(readOnlyScene);
+
+		m_EditorScene = newScene;
+		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+		m_ActiveScene = m_EditorScene;
+		m_ActiveSceneHandle = handle;
+
+		m_CurrentFilepath = assetManager->GetMetadata(handle).FilePath;
+
+		Application::Get().OnEvent(SceneChangedEvent(m_ActiveSceneHandle));
+*/
+
 bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 {
 	PE_CORE_ASSERT(handle, "Invalid scene handle");
@@ -132,6 +163,11 @@ bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 	if (type != PaulEngine::AssetType::Scene) {
 		PE_CORE_ERROR("Invalid asset type '{0}', '{1}' required", PaulEngine::AssetTypeToString(type), PaulEngine::AssetTypeToString(PaulEngine::AssetType::Scene));
 		return false;
+	}
+
+	if (PaulEngine::AssetManager::IsAssetHandleValid(handle))
+	{
+		assetManager->ReleaseTempAssets();
 	}
 
 	PaulEngine::Ref<PaulEngine::Scene> loadedScene = PaulEngine::AssetManager::GetAsset<PaulEngine::Scene>(handle);
@@ -147,7 +183,6 @@ bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 			m_ActiveScene->OnRuntimeStop();
 		}
 		m_ActiveScene = loadedScene;
-		assetManager->ReleaseTempAssets();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_ActiveScene->OnRuntimeStart();
 	}
@@ -158,8 +193,6 @@ bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 
 	glm::highp_u32vec2 viewportSize = glm::highp_u32vec2(PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight());
 	m_ActiveScene->OnViewportResize(viewportSize.x, viewportSize.y);
-
-	if (!assetManager->IsAssetLoaded(handle)) { assetManager->AddToLoadedAssets(m_ActiveScene, assetManager->GetMetadata(handle).Persistent); }
 
 	PaulEngine::Application::Get().OnEvent(PaulEngine::SceneChangedEvent(m_ActiveScene->Handle));
 
