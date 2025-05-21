@@ -104,7 +104,8 @@ bool RuntimeMainLayer::OnKeyUp(PaulEngine::KeyReleasedEvent& e)
 	if (e.GetKeyCode() == PE_KEY_N) {
 		if (PaulEngine::Input::IsKeyPressed(PE_KEY_LEFT_SHIFT)) {
 			//PaulEngine::Application::Get().OnEvent(PaulEngine::SceneShouldChangeEvent(11922114141701769481));
-			PaulEngine::Application::Get().OnEvent(PaulEngine::SceneShouldChangeEvent(2510263345310005911));
+			PaulEngine::SceneChangedEvent sceneChanedEvent = PaulEngine::SceneChangedEvent(2510263345310005911);
+			PaulEngine::Application::Get().OnEvent(sceneChanedEvent);
 			//PaulEngine::Application::Get().OnEvent(PaulEngine::SceneShouldChangeEvent(0));
 		}
 	}
@@ -194,7 +195,8 @@ bool RuntimeMainLayer::OpenScene(PaulEngine::AssetHandle handle)
 	glm::highp_u32vec2 viewportSize = glm::highp_u32vec2(PaulEngine::Application::Get().GetWindow().GetWidth(), PaulEngine::Application::Get().GetWindow().GetHeight());
 	m_ActiveScene->OnViewportResize(viewportSize.x, viewportSize.y);
 
-	PaulEngine::Application::Get().OnEvent(PaulEngine::SceneChangedEvent(m_ActiveScene->Handle));
+	PaulEngine::SceneChangedEvent sceneChanedEvent = PaulEngine::SceneChangedEvent(m_ActiveScene->Handle);
+	PaulEngine::Application::Get().OnEvent(sceneChanedEvent);
 
 	return true;
 }

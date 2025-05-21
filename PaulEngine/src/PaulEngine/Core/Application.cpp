@@ -57,7 +57,8 @@ namespace PaulEngine {
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
-			OnEvent(FrameStartEvent());
+			FrameStartEvent startEvent;
+			OnEvent(startEvent);
 
 			if (!m_Minimized) {
 				// Update layers
@@ -75,13 +76,15 @@ namespace PaulEngine {
 
 			m_Window->OnUpdate();
 
-			OnEvent(FrameEndEvent());
+			FrameEndEvent endEvent;
+			OnEvent(endEvent);
 		}
 	}
 
 	void Application::Close()
 	{
-		OnEvent(WindowCloseEvent());
+		WindowCloseEvent e;
+		OnEvent(e);
 	}
 
 	void Application::PushLayer(Layer* layer)

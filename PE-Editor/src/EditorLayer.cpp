@@ -1171,7 +1171,8 @@ namespace PaulEngine
 		// Resize
 		const FramebufferSpecification& spec = m_MainFramebuffer->GetSpecification();
 		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
-			OnEvent(MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y));
+			MainViewportResizeEvent e = MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y);
+			OnEvent(e);
 		}
 
 		Renderer2D::ResetStats();
@@ -1900,7 +1901,8 @@ namespace PaulEngine
 
 		m_CurrentFilepath = assetManager->GetMetadata(handle).FilePath;
 
-		Application::Get().OnEvent(SceneChangedEvent(m_ActiveSceneHandle));
+		SceneChangedEvent sceneChanedEvent = SceneChangedEvent(m_ActiveSceneHandle);
+		Application::Get().OnEvent(sceneChanedEvent);
 	}
 
 	void EditorLayer::SaveSceneAs(const std::filesystem::path& filepath)

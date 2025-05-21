@@ -48,12 +48,12 @@ namespace PaulEngine
 
 		template <typename... Owned, typename... Get>
 		auto View(entt::get_t<Get...> get) {
-			return m_Registry.view<Components...>(get);
+			return m_Registry.view<Owned...>(get);
 		}
 
 		template <typename... Owned, typename... Get, typename... Exclude>
 		auto View(entt::get_t<Get...> get, entt::exclude_t<Exclude...> exclude) {
-			return m_Registry.view<Components...>(get, exclude);
+			return m_Registry.view<Owned...>(get, exclude);
 		}
 
 		template <typename... Components>
