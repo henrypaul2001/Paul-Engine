@@ -45,8 +45,8 @@ namespace PaulEngine
 		screenSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
 		screenSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		Ref<Texture2D> screenTexture = Texture2D::Create(screenSpec);
-		Ref<Texture2D> alternateScreenTexture = Texture2D::Create(screenSpec);
+		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
+		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", screenTexture);
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture);
 
@@ -71,9 +71,9 @@ namespace PaulEngine
 		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		depthSpec.Format = ImageFormat::Depth32;
 
-		Ref<Texture2DArray> dirLightShadowArray = Texture2DArray::Create(depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
-		Ref<Texture2DArray> spotLightShadowArray = Texture2DArray::Create(depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
-		Ref<TextureCubemapArray> pointLightShadowArray = TextureCubemapArray::Create(depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
+		Ref<Texture2DArray> dirLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
+		Ref<Texture2DArray> spotLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
+		Ref<TextureCubemapArray> pointLightShadowArray = AssetManager::CreateAsset<TextureCubemapArray>(true, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
 
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirLightShadowMap", dirLightShadowArray);
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", spotLightShadowArray);
@@ -119,8 +119,19 @@ namespace PaulEngine
 					mipSpec.Width = (uint32_t)mipSize.x;
 					mipSpec.Height = (uint32_t)mipSize.y;
 
-					Ref<Texture2D> texture = Texture2D::Create(mipSpec);
+					Ref<Texture2D> texture = AssetManager::CreateAsset<Texture2D>(true, mipSpec);
 					m_Chain.push_back(texture);
+				}
+			}
+
+			void Resize(const glm::ivec2 viewportSize)
+			{
+				glm::vec2 mipSize = viewportSize;
+				for (uint8_t i = 0; i < m_Chain.size(); i++)
+				{
+					mipSize *= 0.5f;
+					mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
+					m_Chain[i]->Resize(mipSize.x, mipSize.y);
 				}
 			}
 
@@ -173,23 +184,23 @@ namespace PaulEngine
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
 		AssetHandle shadowmapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
-		Ref<Material> shadowmapMaterial = CreateRef<Material>(shadowmapShaderHandle);
+		Ref<Material> shadowmapMaterial = AssetManager::CreateAsset<Material>(true, shadowmapShaderHandle);
 
 		Ref<UniformBuffer> cubemapDataUBO = UniformBuffer::Create(sizeof(CubemapCaptureBuffer), 3);
 		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
-		Ref<Material> shadowmapCubeMaterial = CreateRef<Material>(shadowmapCubeShaderHandle);
+		Ref<Material> shadowmapCubeMaterial = AssetManager::CreateAsset<Material>(true, shadowmapCubeShaderHandle);
 
 		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
-		Ref<Material> gammaTonemapMaterial = CreateRef<Material>(gammaTonemapShaderHandle);
+		Ref<Material> gammaTonemapMaterial = AssetManager::CreateAsset<Material>(true, gammaTonemapShaderHandle);
 
 		AssetHandle bloomDownsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
-		Ref<Material> mipchainDownsampleMaterial = CreateRef<Material>(bloomDownsampleShaderHandle);
+		Ref<Material> mipchainDownsampleMaterial = AssetManager::CreateAsset<Material>(true, bloomDownsampleShaderHandle);
 
 		AssetHandle bloomUpsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
-		Ref<Material> mipchainUpsampleMaterial = CreateRef<Material>(bloomUpsampleShaderHandle);
+		Ref<Material> mipchainUpsampleMaterial = AssetManager::CreateAsset<Material>(true, bloomUpsampleShaderHandle);
 
 		AssetHandle bloomCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
-		Ref<Material> bloomCombineMaterial = CreateRef<Material>(bloomCombineShaderHandle);
+		Ref<Material> bloomCombineMaterial = AssetManager::CreateAsset<Material>(true, bloomCombineShaderHandle);
 
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial);
@@ -209,7 +220,7 @@ namespace PaulEngine
 				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
 				self->GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 				self->GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Init(viewportSize, 6);
+				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
 				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
 				return false;
 			});
@@ -280,12 +291,13 @@ namespace PaulEngine
 
 					{
 						PE_PROFILE_SCOPE("Submit Mesh");
+						AssetHandle shadowmapHandle = shadowmapMaterial->Material->Handle;
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitDefaultCube(shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -354,13 +366,14 @@ namespace PaulEngine
 					Renderer::BeginScene(cam, cameraTransform);
 
 					{
+						AssetHandle shadowmapHandle = shadowmapMaterial->Material->Handle;
 						PE_PROFILE_SCOPE("Submit Mesh");
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitDefaultCube(shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -440,12 +453,13 @@ namespace PaulEngine
 
 					{
 						PE_PROFILE_SCOPE("Submit Mesh");
+						AssetHandle shadowapHandle = shadowmapMaterial->Material->Handle;
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::DrawDefaultCubeImmediate(shadowmapMaterial->Material, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitDefaultCube(shadowapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
