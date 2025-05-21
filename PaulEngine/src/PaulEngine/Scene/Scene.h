@@ -15,8 +15,6 @@ namespace PaulEngine
 	class Scene : public Asset
 	{
 	public:
-		static Ref<Scene> Create();
-
 		Scene();
 		~Scene();
 		

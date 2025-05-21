@@ -1,9 +1,16 @@
 #pragma once
 #include "Asset.h"
 #include <unordered_map>
+#include <concepts>
 
 namespace PaulEngine
 {
+	template <typename T, typename... Args>
+	concept HasCreateFunc = requires(Args&&... args)
+	{
+		{ T::Create(std::forward<Args>(args)...) } -> std::convertible_to<Ref<Asset>>;
+	};
+
 	using AssetMap = std::unordered_map<AssetHandle, Ref<Asset>>;
 
 	// Interface API for different asset managers such as runtime assets vs editor assets
@@ -23,7 +30,18 @@ namespace PaulEngine
 		template <typename T, typename... Args>
 		Ref<T> CreateAsset(bool persistent, Args&&... args)
 		{
-			Ref<Asset> asset = T::Create(std::forward<Args>(args)...);
+			Ref<Asset> asset;
+
+			// If T implements the static Create() function found in classes like Texture2D, call that. Otherwise, call the constructor
+			if constexpr (HasCreateFunc<T, Args&&...>)
+			{
+				asset = T::Create(std::forward<Args>(args)...);
+			}
+			else
+			{
+				asset = CreateRef<T>(std::forward<Args>(args)...);
+			}
+
 			AddToLoadedAssets(asset, persistent);
 			AssetMetadata metadata;
 			metadata.Type = asset->GetType();
