@@ -149,44 +149,21 @@ namespace PaulEngine
 
 	void FramebufferTexture2DAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		TextureSpecification textureSpec = m_Texture->GetSpecification();
-		if (textureSpec.Width != width || textureSpec.Height != height) {
-			textureSpec.Width = width;
-			textureSpec.Height = height;
-			m_Texture = Texture2D::Create(textureSpec);
-		}
+		m_Texture->Resize(width, height);
 	}
 
 	void FramebufferTexture2DArrayAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		TextureSpecification textureSpec = m_TextureArray->GetSpecification();
-		if (textureSpec.Width != width || textureSpec.Height != height) {
-			textureSpec.Width = width;
-			textureSpec.Height = height;
-			uint8_t numLayers = m_TextureArray->GetNumLayers();
-			m_TextureArray = Texture2DArray::Create(textureSpec, std::vector<Buffer>(numLayers));
-		}
+		m_TextureArray->Resize(width, height);
 	}
 
 	void FramebufferTextureCubemapAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		TextureSpecification textureSpec = m_Cubemap->GetSpecification();
-		if (textureSpec.Width != width || textureSpec.Height != height) {
-			textureSpec.Width = width;
-			textureSpec.Height = height;
-			m_Cubemap = TextureCubemap::Create(textureSpec, std::vector<Buffer>(6));
-		}
+		m_Cubemap->Resize(width, height);
 	}
 
 	void FramebufferTextureCubemapArrayAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		TextureSpecification textureSpec = m_CubemapArray->GetSpecification();
-		if (textureSpec.Width != width || textureSpec.Height != height) {
-			textureSpec.Width = width;
-			textureSpec.Height = height;
-			uint8_t numLayers = m_CubemapArray->GetNumLayers();
-			auto faceBuffers = std::vector<Buffer>(6);
-			m_CubemapArray = TextureCubemapArray::Create(textureSpec, std::vector<std::vector<Buffer>>(numLayers, faceBuffers));
-		}
+		m_CubemapArray->Resize(width, height);
 	}
 }

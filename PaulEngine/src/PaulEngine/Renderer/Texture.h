@@ -112,6 +112,8 @@ namespace PaulEngine {
 		virtual void Clear(int value) = 0;
 		virtual void Clear(float value) = 0;
 
+		virtual void Resize(uint32_t width, uint32_t height) = 0;
+
 		virtual void Bind(const uint32_t slot = 0) const = 0;
 
 		virtual bool operator==(const Texture& other) const = 0;

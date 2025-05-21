@@ -6,22 +6,7 @@ namespace PaulEngine {
 	OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& specification, Buffer data) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
 	{
 		PE_PROFILE_FUNCTION();
-		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
-		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
-
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
-
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_S));
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
-
-		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
-
-		if (data) { SetData(data); }
+		Generate(specification, data);
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
@@ -49,6 +34,18 @@ namespace PaulEngine {
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
 	}
 
+	void OpenGLTexture2D::Resize(uint32_t width, uint32_t height)
+	{
+		TextureSpecification spec = m_Spec;
+		if (spec.Width != width || spec.Height != height)
+		{
+			spec.Width = width;
+			spec.Height = height;
+			glDeleteTextures(1, &m_RendererID);
+			Generate(spec);
+		}
+	}
+
 	void OpenGLTexture2D::Bind(const uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
@@ -68,21 +65,17 @@ namespace PaulEngine {
 	{
 		glBindTextureUnit(slot, id);
 	}
-#pragma endregion
 
-#pragma region Texture2DArray
-	OpenGLTexture2DArray::OpenGLTexture2DArray(const TextureSpecification& specification, std::vector<Buffer> layers) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	void OpenGLTexture2D::Generate(const TextureSpecification& specification, Buffer data)
 	{
-		PE_PROFILE_FUNCTION();
-		PE_CORE_ASSERT(layers.size() > 1, "Texture array needs at least 1 buffer as input. (Buffer can be empty)");
-
-		m_NumLayers = layers.size();
+		m_Width = specification.Width;
+		m_Height = specification.Height;
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
 
-		glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_RendererID);
-		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, layers.size());
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
@@ -93,11 +86,15 @@ namespace PaulEngine {
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
 
-		for (int i = 0; i < m_NumLayers; i++) {
-			if (layers[i]) {
-				SetData(layers[i], i);
-			}
-		}
+		if (data) { SetData(data); }
+	}
+#pragma endregion
+
+#pragma region Texture2DArray
+	OpenGLTexture2DArray::OpenGLTexture2DArray(const TextureSpecification& specification, std::vector<Buffer> layers) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	{
+		PE_PROFILE_FUNCTION();
+		Generate(specification, layers);
 	}
 
 	OpenGLTexture2DArray::~OpenGLTexture2DArray()
@@ -131,23 +128,37 @@ namespace PaulEngine {
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
 	}
 
+	void OpenGLTexture2DArray::Resize(uint32_t width, uint32_t height)
+	{
+		TextureSpecification spec = m_Spec;
+		if (spec.Width != width || spec.Height != height)
+		{
+			spec.Width = width;
+			spec.Height = height;
+			glDeleteTextures(1, &m_RendererID);
+			Generate(spec);
+		}
+	}
+
 	void OpenGLTexture2DArray::Bind(const uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}
-#pragma endregion
 
-#pragma region TextureCubemap
-	OpenGLTextureCubemap::OpenGLTextureCubemap(const TextureSpecification& specification, std::vector<Buffer> faceData) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	void OpenGLTexture2DArray::Generate(const TextureSpecification& specification, std::vector<Buffer> layers)
 	{
-		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(layers.size() > 1, "Texture array needs at least 1 buffer as input. (Buffer can be empty)");
+
+		m_Width = specification.Width;
+		m_Height = specification.Height;
+
+		m_NumLayers = layers.size();
+
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
 
-		faceData.resize(6, Buffer());
-
-		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+		glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_RendererID);
+		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, layers.size());
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
@@ -158,12 +169,20 @@ namespace PaulEngine {
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
 
-		for (uint8_t i = 0; i < 6; i++) {
-			if (faceData[i])
-			{
-				SetData(faceData[i], (CubemapFace)i);
+		for (int i = 0; i < m_NumLayers; i++) {
+			if (layers[i]) {
+				SetData(layers[i], i);
 			}
 		}
+	}
+
+#pragma endregion
+
+#pragma region TextureCubemap
+	OpenGLTextureCubemap::OpenGLTextureCubemap(const TextureSpecification& specification, std::vector<Buffer> faceData) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	{
+		PE_PROFILE_FUNCTION();
+		Generate(specification, faceData);
 	}
 
 	OpenGLTextureCubemap::~OpenGLTextureCubemap()
@@ -198,25 +217,35 @@ namespace PaulEngine {
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
 	}
 
+	void OpenGLTextureCubemap::Resize(uint32_t width, uint32_t height)
+	{
+		TextureSpecification spec = m_Spec;
+		if (spec.Width != width || spec.Height != height)
+		{
+			spec.Width = width;
+			spec.Height = height;
+			glDeleteTextures(1, &m_RendererID);
+			Generate(spec);
+		}
+	}
+
 	void OpenGLTextureCubemap::Bind(const uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}
-#pragma endregion
 
-#pragma region TextureCubemapArray
-	OpenGLTextureCubemapArray::OpenGLTextureCubemapArray(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	void OpenGLTextureCubemap::Generate(const TextureSpecification& specification, std::vector<Buffer> faceData)
 	{
-		PE_PROFILE_FUNCTION();
-		PE_CORE_ASSERT(faceDataLayers.size() > 0, "Must provide an initial size for cubemap array");
+		m_Width = specification.Width;
+		m_Height = specification.Height;
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
 
-		m_NumLayers = faceDataLayers.size();
+		faceData.resize(6, Buffer());
 
-		glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_RendererID);
-		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, faceDataLayers.size() * 6);
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
@@ -227,16 +256,20 @@ namespace PaulEngine {
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
 
-		for (uint8_t layer = 0; layer < faceDataLayers.size(); layer++)
-		{
-			faceDataLayers[layer].resize(6, Buffer());
-			for (uint8_t face = 0; face < 6; face++) {
-				if (faceDataLayers[layer][face])
-				{
-					SetData(faceDataLayers[layer][face], layer, (CubemapFace)face);
-				}
+		for (uint8_t i = 0; i < 6; i++) {
+			if (faceData[i])
+			{
+				SetData(faceData[i], (CubemapFace)i);
 			}
 		}
+	}
+#pragma endregion
+
+#pragma region TextureCubemapArray
+	OpenGLTextureCubemapArray::OpenGLTextureCubemapArray(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	{
+		PE_PROFILE_FUNCTION();
+		Generate(specification, faceDataLayers);
 	}
 
 	OpenGLTextureCubemapArray::~OpenGLTextureCubemapArray()
@@ -270,9 +303,57 @@ namespace PaulEngine {
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
 	}
 
+	void OpenGLTextureCubemapArray::Resize(uint32_t width, uint32_t height)
+	{
+		TextureSpecification spec = m_Spec;
+		if (spec.Width != width || spec.Height != height)
+		{
+			spec.Width = width;
+			spec.Height = height;
+			glDeleteTextures(1, &m_RendererID);
+			Generate(spec);
+		}
+	}
+
 	void OpenGLTextureCubemapArray::Bind(const uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
+	}
+
+	void OpenGLTextureCubemapArray::Generate(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers)
+	{
+		PE_CORE_ASSERT(faceDataLayers.size() > 0, "Must provide an initial size for cubemap array");
+
+		m_Width = specification.Width;
+		m_Height = specification.Height;
+
+		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
+		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+
+		m_NumLayers = faceDataLayers.size();
+
+		glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_RendererID);
+		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, faceDataLayers.size() * 6);
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_S));
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
+
+		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+
+		for (uint8_t layer = 0; layer < faceDataLayers.size(); layer++)
+		{
+			faceDataLayers[layer].resize(6, Buffer());
+			for (uint8_t face = 0; face < 6; face++) {
+				if (faceDataLayers[layer][face])
+				{
+					SetData(faceDataLayers[layer][face], layer, (CubemapFace)face);
+				}
+			}
+		}
 	}
 
 #pragma endregion

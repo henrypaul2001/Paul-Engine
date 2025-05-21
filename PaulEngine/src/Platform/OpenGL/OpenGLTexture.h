@@ -110,6 +110,8 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void Resize(uint32_t width, uint32_t height) override;
+
 		virtual void Bind(const uint32_t slot = 0) const override;
 	
 		static GLenum TextureTarget(bool multisampled);
@@ -121,6 +123,8 @@ namespace PaulEngine {
 		}
 
 	private:
+		void Generate(const TextureSpecification& specification, Buffer data = Buffer());
+
 		TextureSpecification m_Spec;
 
 		uint32_t m_Width, m_Height;
@@ -150,6 +154,8 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void Resize(uint32_t width, uint32_t height) override;
+
 		virtual void Bind(const uint32_t slot = 0) const override;
 
 		virtual bool operator==(const Texture& other) const override {
@@ -157,6 +163,9 @@ namespace PaulEngine {
 		}
 
 	private:
+		void Generate(const TextureSpecification& specification) { Generate(specification, std::vector<Buffer>(m_NumLayers)); }
+		void Generate(const TextureSpecification& specification, std::vector<Buffer> layers);
+
 		TextureSpecification m_Spec;
 
 		uint8_t m_NumLayers;
@@ -186,6 +195,8 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void Resize(uint32_t width, uint32_t height) override;
+
 		virtual void Bind(const uint32_t slot = 0) const override;
 
 		virtual bool operator==(const Texture& other) const override {
@@ -193,6 +204,8 @@ namespace PaulEngine {
 		}
 
 	private:
+		void Generate(const TextureSpecification& specification, std::vector<Buffer> faceData = std::vector<Buffer>(6));
+
 		TextureSpecification m_Spec;
 
 		uint32_t m_Width, m_Height;
@@ -222,6 +235,8 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void Resize(uint32_t width, uint32_t height) override;
+
 		virtual void Bind(const uint32_t slot = 0) const override;
 
 		virtual bool operator==(const Texture& other) const override {
@@ -229,6 +244,9 @@ namespace PaulEngine {
 		}
 
 	private:
+		void Generate(const TextureSpecification& specification) { Generate(specification, std::vector<std::vector<Buffer>>(m_NumLayers, std::vector<Buffer>(6))); }
+		void Generate(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers);
+
 		TextureSpecification m_Spec;
 
 		uint8_t m_NumLayers;
