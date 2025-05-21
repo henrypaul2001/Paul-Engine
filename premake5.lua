@@ -32,7 +32,7 @@ project "PaulEngine"
 	location "PaulEngine"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -147,7 +147,7 @@ project "Runtime"
 	location "Runtime"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -210,7 +210,7 @@ project "PE-Editor"
 	location "PE-Editor"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -237,6 +237,69 @@ project "PE-Editor"
 	{
 		"PaulEngine",
 		"yaml-cpp"
+	}
+
+	defines
+	{
+		"YAML_CPP_STATIC_DEFINE"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		buildoptions "/utf-8"
+
+		defines
+		{
+			"PE_PLATFORM_WINDOWS"
+		}
+
+	filter "configurations:Debug"
+		defines "PE_DEBUG_MODE"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "PE_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "PE_DIST"
+		runtime "Release"
+		optimize "on"
+
+
+project "Sandbox"
+	location "Sandbox"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++20"
+	staticruntime "off"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"PaulEngine/vendor/spdlog/include",
+		"PaulEngine/src",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml}",
+		"%{IncludeDir.imguizmo}"
+	}
+
+	links
+	{
+		"PaulEngine"
 	}
 
 	defines
