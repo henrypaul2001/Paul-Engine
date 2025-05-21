@@ -16,6 +16,7 @@ namespace PaulEngine
             case AssetType::Material: return "AssetType::Material";
             case AssetType::Texture2DArray: return "AssetType::Texture2DArray";
             case AssetType::TextureCubemap: return "AssetType::TextureCubemap";
+            case AssetType::TextureCubemapArray: return "AssetType::TextureCubemapArray";
         }
         return "AssetType::!Unknown!";
     }
@@ -31,6 +32,7 @@ namespace PaulEngine
         if (assetType == "AssetType::Material") { return AssetType::Material; }
         if (assetType == "AssetType::Texture2DArray") { return AssetType::Texture2DArray; }
         if (assetType == "AssetType::TextureCubemap") { return AssetType::TextureCubemap; }
+        if (assetType == "AssetType::TextureCubemapArray") { return AssetType::TextureCubemapArray; }
         return AssetType::None;
     }
 }
