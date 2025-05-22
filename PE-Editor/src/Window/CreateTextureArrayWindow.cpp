@@ -14,7 +14,9 @@
 
 namespace PaulEngine
 {
-	CreateTextureArrayWindow::CreateTextureArrayWindow() : m_ViewportSize(128.0f, 128.0f), m_CurrentConstraint({ 0, 0, 0 })
+	CreateTextureArrayWindow::CreateTextureArrayWindow() : m_ViewportSize(128.0f, 128.0f), m_CurrentConstraint({ 0, 0, 0 }) {}
+
+	void CreateTextureArrayWindow::Init()
 	{
 		PE_PROFILE_FUNCTION();
 		FramebufferSpecification spec;

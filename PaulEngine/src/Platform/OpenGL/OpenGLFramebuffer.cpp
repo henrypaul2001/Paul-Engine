@@ -226,32 +226,36 @@ namespace PaulEngine
 	void OpenGLFramebufferTexture2DAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
 	{
 		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
-		glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_Texture->GetRendererID(), 0);
+		Ref<Texture2D> textureAsset = AssetManager::GetAsset<Texture2D>(m_TextureHandle);
+		glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), textureAsset->GetRendererID(), 0);
 	}
 
 	// Texture2DArray attachment
 	void OpenGLFramebufferTexture2DArrayAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
 	{
 		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
-		glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_TextureArray->GetRendererID(), 0, m_TargetIndex);
+		Ref<Texture2DArray> textureArrayAsset = AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle);
+		glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), textureArrayAsset->GetRendererID(), 0, m_TargetIndex);
 	}
 
 	// TextureCubemap attachment
 	void OpenGLFramebufferTextureCubemapAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
 	{
 		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
-		glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_Cubemap->GetRendererID(), 0, (int)m_TargetFace);
+		Ref<TextureCubemap> cubemapAsset = AssetManager::GetAsset<TextureCubemap>(m_CubemapHandle);
+		glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), 0, (int)m_TargetFace);
 	}
 
 	// TextureCubemapArray attachment
 	void OpenGLFramebufferTextureCubemapArrayAttachment::BindToFramebuffer(const Framebuffer* targetFramebuffer)
 	{
 		const OpenGLFramebuffer* glFramebuffer = dynamic_cast<const OpenGLFramebuffer*>(targetFramebuffer);
+		Ref<TextureCubemapArray> cubemapArrayAsset = AssetManager::GetAsset<TextureCubemapArray>(m_CubemapHandle);
 		if (BindAsLayered) {
-			glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_CubemapArray->GetRendererID(), 0, (int)m_TargetIndex * 6 + (int)m_TargetFace);
+			glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapArrayAsset->GetRendererID(), 0, (int)m_TargetIndex * 6 + (int)m_TargetFace);
 		}
 		else {
-			glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), m_CubemapArray->GetRendererID(), 0);
+			glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapArrayAsset->GetRendererID(), 0);
 		}
 	}
 }

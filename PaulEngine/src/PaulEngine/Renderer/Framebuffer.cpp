@@ -20,13 +20,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTexture2DAttachment> FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture)
+	Ref<FramebufferTexture2DAttachment> FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint attachPoint, AssetHandle textureHandle)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DAttachment>(attachPoint, texture);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DAttachment>(attachPoint, textureHandle);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -34,13 +34,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTexture2DAttachment> FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec)
+	Ref<FramebufferTexture2DAttachment> FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DAttachment>(attachPoint, textureSpec);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DAttachment>(attachPoint, textureSpec, persistentAsset);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -62,13 +62,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTexture2DArrayAttachment> FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2DArray> textureArray)
+	Ref<FramebufferTexture2DArrayAttachment> FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, AssetHandle textureArrayHandle)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DArrayAttachment>(attachPoint, textureArray);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DArrayAttachment>(attachPoint, textureArrayHandle);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -76,13 +76,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTexture2DArrayAttachment> FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers)
+	Ref<FramebufferTexture2DArrayAttachment> FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DArrayAttachment>(attachPoint, textureSpec, layers);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTexture2DArrayAttachment>(attachPoint, textureSpec, layers, persistentAsset);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -90,13 +90,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTextureCubemapAttachment> FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemap> cubemap)
+	Ref<FramebufferTextureCubemapAttachment> FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapAttachment>(attachPoint, cubemap);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapAttachment>(attachPoint, cubemapHandle);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -104,13 +104,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTextureCubemapAttachment> FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData)
+	Ref<FramebufferTextureCubemapAttachment> FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapAttachment>(attachPoint, textureSpec, faceData);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapAttachment>(attachPoint, textureSpec, faceData, persistentAsset);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -118,13 +118,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTextureCubemapArrayAttachment> FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemapArray)
+	Ref<FramebufferTextureCubemapArrayAttachment> FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapArrayHandle)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapArrayAttachment>(attachPoint, cubemapArray);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapArrayAttachment>(attachPoint, cubemapArrayHandle);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -132,13 +132,13 @@ namespace PaulEngine
 		PE_CORE_ASSERT(false, "Unknown RenderAPI");
 		return nullptr;
 	}
-	Ref<FramebufferTextureCubemapArrayAttachment> FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers)
+	Ref<FramebufferTextureCubemapArrayAttachment> FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
 		{
 			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapArrayAttachment>(attachPoint, textureSpec, faceDataLayers);
+			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLFramebufferTextureCubemapArrayAttachment>(attachPoint, textureSpec, faceDataLayers, persistentAsset);
 			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
 			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
 		}
@@ -149,21 +149,21 @@ namespace PaulEngine
 
 	void FramebufferTexture2DAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		m_Texture->Resize(width, height);
+		AssetManager::GetAsset<Texture2D>(m_TextureHandle)->Resize(width, height);
 	}
 
 	void FramebufferTexture2DArrayAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		m_TextureArray->Resize(width, height);
+		AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle)->Resize(width, height);
 	}
 
 	void FramebufferTextureCubemapAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		m_Cubemap->Resize(width, height);
+		AssetManager::GetAsset<TextureCubemap>(m_CubemapHandle)->Resize(width, height);
 	}
 
 	void FramebufferTextureCubemapArrayAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		m_CubemapArray->Resize(width, height);
+		AssetManager::GetAsset<TextureCubemapArray>(m_CubemapHandle)->Resize(width, height);
 	}
 }

@@ -17,6 +17,7 @@ namespace PaulEngine
 		void SetShowWindow(bool showWindow) { m_ShowWindow = showWindow; }
 		bool ShouldShowWindow() const { return m_ShowWindow; }
 
+		void Init();
 	private:
 		bool m_ShowWindow = false;
 

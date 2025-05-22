@@ -19,8 +19,8 @@ namespace PaulEngine
 		void SetShowWindow(bool showWindow) { m_ShowWindow = showWindow; }
 		bool ShouldShowWindow() const { return m_ShowWindow; }
 
-	private:
 		void Init();
+	private:
 
 		void DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo);
 		void DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler);

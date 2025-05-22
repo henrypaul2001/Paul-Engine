@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Core/Core.h"
+#include "PaulEngine/Asset/AssetManager.h"
 #include "Texture.h"
 
 namespace PaulEngine
@@ -57,103 +58,119 @@ namespace PaulEngine
 	class FramebufferTexture2DAttachment : public FramebufferAttachment
 	{
 	public:
-		FramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture) : m_AttachPoint(attachPoint), m_Texture(texture) {}
-		FramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec) : m_AttachPoint(attachPoint), m_Texture(Texture2D::Create(textureSpec)) {}
+		FramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle textureHandle) : m_AttachPoint(attachPoint), m_TextureHandle(textureHandle) {
+			PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(m_TextureHandle), "Invalid texture handle");
+		}
+		FramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, bool persistentAsset = false) : m_AttachPoint(attachPoint), m_TextureHandle(AssetManager::CreateAsset<Texture2D>(persistentAsset, textureSpec)->Handle) {}
 		virtual ~FramebufferTexture2DAttachment() {}
 
 		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
 		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Texture2D; }
 
-		const Ref<Texture2D> GetTexture() { return m_Texture; }
+		AssetHandle GetTextureHandle() const { return m_TextureHandle; }
+		const Ref<Texture2D> GetTexture() const { return AssetManager::GetAsset<Texture2D>(m_TextureHandle); }
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
-		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> textureArray);
-		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec);
+		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle textureHandle);
+		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, bool persistentAsset = false);
 
 	protected:
 		FramebufferAttachmentPoint m_AttachPoint;
-		Ref<Texture2D> m_Texture;
+		AssetHandle m_TextureHandle;
 	};
 
 	class FramebufferTexture2DArrayAttachment : public FramebufferAttachment
 	{
 	public:
-		FramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2DArray> textureArray) : m_AttachPoint(attachPoint), m_TextureArray(textureArray), m_TargetIndex(0) {}
-		FramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers) : m_AttachPoint(attachPoint), m_TextureArray(Texture2DArray::Create(textureSpec, layers)), m_TargetIndex(0) {}
+		FramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle textureArrayHandle) : m_AttachPoint(attachPoint), m_TextureArrayHandle(textureArrayHandle), m_TargetIndex(0) {
+			PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(m_TextureArrayHandle), "Invalid texture handle");
+			m_NumLayers = AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle)->GetNumLayers();
+		}
+		FramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers, bool persistentAsset = false) : m_AttachPoint(attachPoint), m_TextureArrayHandle(AssetManager::CreateAsset<Texture2DArray>(persistentAsset, textureSpec, layers)->Handle), m_TargetIndex(0), m_NumLayers(layers.size()) {}
 		virtual ~FramebufferTexture2DArrayAttachment() {}
 
 		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
 		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::Texture2DArray; }
 
-		const Ref<Texture2DArray> GetTexture() { return m_TextureArray; }
+		AssetHandle GetTextureHandle() const { return m_TextureArrayHandle; }
+		const Ref<Texture2DArray> GetTexture() const { return AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle); }
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
 		void SetTargetIndex(uint8_t newTarget) {
-			m_TargetIndex = std::min(newTarget, uint8_t(m_TextureArray->GetNumLayers() - 1));
+			m_TargetIndex = std::min(newTarget, uint8_t(m_NumLayers - 1));
 		}
 
-		static Ref<FramebufferTexture2DArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<Texture2DArray> texture);
-		static Ref<FramebufferTexture2DArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers);
+		static Ref<FramebufferTexture2DArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle textureArrayHandle);
+		static Ref<FramebufferTexture2DArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers, bool persistentAsset = false);
 
 	protected:
 		FramebufferAttachmentPoint m_AttachPoint;
-		Ref<Texture2DArray> m_TextureArray;
+		AssetHandle m_TextureArrayHandle;
 		uint8_t m_TargetIndex;
+		uint8_t m_NumLayers;
 	};
 
 	class FramebufferTextureCubemapAttachment : public FramebufferAttachment
 	{
 	public:
-		FramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemap> cubemap) : m_AttachPoint(attachPoint), m_Cubemap(cubemap), m_TargetFace(CubemapFace::POSITIVE_X) {}
-		FramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData) : m_AttachPoint(attachPoint), m_Cubemap(TextureCubemap::Create(textureSpec, faceData)), m_TargetFace(CubemapFace::POSITIVE_X) {}
+		FramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle) : m_AttachPoint(attachPoint), m_CubemapHandle(cubemapHandle), m_TargetFace(CubemapFace::POSITIVE_X) {
+			PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(cubemapHandle), "Invalid texture handle");
+		}
+		FramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData, bool persistentAsset = false) : m_AttachPoint(attachPoint), m_CubemapHandle(AssetManager::CreateAsset<TextureCubemap>(persistentAsset, textureSpec, faceData)->Handle), m_TargetFace(CubemapFace::POSITIVE_X) {}
 		virtual ~FramebufferTextureCubemapAttachment() {}
 
 		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
 		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::TextureCubemap; }
 
-		const Ref<TextureCubemap> GetCubemap() { return m_Cubemap; }
+		AssetHandle GetCubemapHandle() const { return m_CubemapHandle; }
+		const Ref<TextureCubemap> GetCubemap() const { return AssetManager::GetAsset<TextureCubemap>(m_CubemapHandle); }
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
 		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
 
-		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemap> cubemap);
-		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData);
+		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle);
+		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData, bool persistentAsset = false);
 
 	protected:
 		FramebufferAttachmentPoint m_AttachPoint;
-		Ref<TextureCubemap> m_Cubemap;
+		AssetHandle m_CubemapHandle;
 		CubemapFace m_TargetFace;
 	};
 
 	class FramebufferTextureCubemapArrayAttachment : public FramebufferAttachment
 	{
 	public:
-		FramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemap) : m_AttachPoint(attachPoint), m_CubemapArray(cubemap), m_TargetFace(CubemapFace::POSITIVE_X), m_TargetIndex(0) {}
-		FramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers) : m_AttachPoint(attachPoint), m_CubemapArray(TextureCubemapArray::Create(textureSpec, faceDataLayers)), m_TargetFace(CubemapFace::POSITIVE_X), m_TargetIndex(0) {}
+		FramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapArrayHandle) : m_AttachPoint(attachPoint), m_CubemapHandle(cubemapArrayHandle), m_TargetFace(CubemapFace::POSITIVE_X), m_TargetIndex(0) {
+			PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(m_CubemapHandle), "Invalid texture handle");
+			m_NumLayers = AssetManager::GetAsset<TextureCubemapArray>(m_CubemapHandle)->GetNumLayers();
+		}
+		FramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers, bool persistentAsset = false) : m_AttachPoint(attachPoint), m_CubemapHandle(AssetManager::CreateAsset<TextureCubemapArray>(persistentAsset, textureSpec, faceDataLayers)->Handle), m_TargetFace(CubemapFace::POSITIVE_X), m_TargetIndex(0), m_NumLayers(faceDataLayers.size()) {}
 		virtual ~FramebufferTextureCubemapArrayAttachment() {}
 
 		virtual FramebufferAttachmentPoint GetAttachPoint() const override { return m_AttachPoint; }
 		virtual FramebufferAttachmentType GetType() const override { return FramebufferAttachmentType::TextureCubemapArray; }
 
-		const Ref<TextureCubemapArray> GetCubemapArray() { return m_CubemapArray; }
+		AssetHandle GetCubemapHandle() const { return m_CubemapHandle; }
+		const Ref<TextureCubemapArray> GetCubemapArray() { return AssetManager::GetAsset<TextureCubemapArray>(m_CubemapHandle); }
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
 		bool BindAsLayered = true;
 		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
-		void SetTargetIndex(uint8_t newTarget) { m_TargetIndex = std::min(newTarget, uint8_t(m_CubemapArray->GetNumLayers() - 1)); }
+		void SetTargetIndex(uint8_t newTarget) { m_TargetIndex = std::min(newTarget, uint8_t(m_NumLayers - 1)); }
 
-		static Ref<FramebufferTextureCubemapArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemapArray);
-		static Ref<FramebufferTextureCubemapArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers);
+		static Ref<FramebufferTextureCubemapArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapArrayHandle);
+		static Ref<FramebufferTextureCubemapArrayAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers, bool persistentAsset = false);
 
 	protected:
 		FramebufferAttachmentPoint m_AttachPoint;
-		Ref<TextureCubemapArray> m_CubemapArray;
+		AssetHandle m_CubemapHandle;
 		CubemapFace m_TargetFace;
 		uint8_t m_TargetIndex;
+		uint8_t m_NumLayers;
 	};
 
 	class FramebufferRenderbufferAttachment : public FramebufferAttachment

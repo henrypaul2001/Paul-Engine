@@ -17,10 +17,7 @@
 
 namespace PaulEngine
 {
-	CreateAtlasWindow::CreateAtlasWindow(AssetHandle baseTexture) : m_BaseTexture(baseTexture), m_ViewportSize(128.0f, 128.0f)
-	{
-		Init();
-	}
+	CreateAtlasWindow::CreateAtlasWindow(AssetHandle baseTexture) : m_BaseTexture(baseTexture), m_ViewportSize(128.0f, 128.0f) {}
 
 	void CreateAtlasWindow::Init()
 	{
@@ -40,13 +37,13 @@ namespace PaulEngine
 		texSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
 		texSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		texSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec);
+		Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec, true);
 
 		texSpec.Format = ImageFormat::RED_INTEGER;
-		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec);
+		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec, true);
 
 		texSpec.Format = ImageFormat::Depth24Stencil8;
-		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec);
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec, true);
 
 		m_Framebuffer = Framebuffer::Create(spec, { colour0Attach, entityIDAttach }, depthAttach);
 

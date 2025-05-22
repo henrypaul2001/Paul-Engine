@@ -5,8 +5,8 @@ namespace PaulEngine
 	class OpenGLFramebufferTexture2DAttachment : public FramebufferTexture2DAttachment
 	{
 	public:
-		OpenGLFramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2D> texture) : FramebufferTexture2DAttachment(attachPoint, texture) {}
-		OpenGLFramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec) : FramebufferTexture2DAttachment(attachPoint, textureSpec) {}
+		OpenGLFramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle textureHandle) : FramebufferTexture2DAttachment(attachPoint, textureHandle) {}
+		OpenGLFramebufferTexture2DAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, bool persistentAsset = false) : FramebufferTexture2DAttachment(attachPoint, textureSpec, persistentAsset) {}
 
 		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
 	};
@@ -14,8 +14,8 @@ namespace PaulEngine
 	class OpenGLFramebufferTexture2DArrayAttachment : public FramebufferTexture2DArrayAttachment
 	{
 	public:
-		OpenGLFramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, Ref<Texture2DArray> textureArray) : FramebufferTexture2DArrayAttachment(attachPoint, textureArray) {}
-		OpenGLFramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers) : FramebufferTexture2DArrayAttachment(attachPoint, textureSpec, layers) {}
+		OpenGLFramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle textureArrayHandle) : FramebufferTexture2DArrayAttachment(attachPoint, textureArrayHandle) {}
+		OpenGLFramebufferTexture2DArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> layers, bool persistentAsset = false) : FramebufferTexture2DArrayAttachment(attachPoint, textureSpec, layers, persistentAsset) {}
 
 		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
 	};
@@ -23,8 +23,8 @@ namespace PaulEngine
 	class OpenGLFramebufferTextureCubemapAttachment : public FramebufferTextureCubemapAttachment
 	{
 	public:
-		OpenGLFramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemap> cubemap) :FramebufferTextureCubemapAttachment(attachPoint, cubemap) {}
-		OpenGLFramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData) : FramebufferTextureCubemapAttachment(attachPoint, textureSpec, faceData) {}
+		OpenGLFramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle) :FramebufferTextureCubemapAttachment(attachPoint, cubemapHandle) {}
+		OpenGLFramebufferTextureCubemapAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<Buffer> faceData, bool persistentAsset = false) : FramebufferTextureCubemapAttachment(attachPoint, textureSpec, faceData, persistentAsset) {}
 	
 		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
 	};
@@ -32,8 +32,8 @@ namespace PaulEngine
 	class OpenGLFramebufferTextureCubemapArrayAttachment : public FramebufferTextureCubemapArrayAttachment
 	{
 	public:
-		OpenGLFramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, Ref<TextureCubemapArray> cubemap) :FramebufferTextureCubemapArrayAttachment(attachPoint, cubemap) {}
-		OpenGLFramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers) : FramebufferTextureCubemapArrayAttachment(attachPoint, textureSpec, faceDataLayers) {}
+		OpenGLFramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle) :FramebufferTextureCubemapArrayAttachment(attachPoint, cubemapHandle) {}
+		OpenGLFramebufferTextureCubemapArrayAttachment(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, std::vector<std::vector<Buffer>> faceDataLayers, bool persistentAsset = false) : FramebufferTextureCubemapArrayAttachment(attachPoint, textureSpec, faceDataLayers, persistentAsset) {}
 
 		virtual void BindToFramebuffer(const Framebuffer* targetFramebuffer) override;
 	};

@@ -53,6 +53,8 @@ namespace PaulEngine {
 		bool OpenProject(const std::filesystem::path& path);
 		void SaveProjectAs();
 
+		void OnProjectSelected();
+
 		void DrawProjectSelectUI();
 
 		bool CanPickEntities();

@@ -9,6 +9,7 @@ namespace PaulEngine
 	class CreateAtlasWindow
 	{
 	public:
+		CreateAtlasWindow() = default;
 		CreateAtlasWindow(AssetHandle baseTexture);
 
 		void SetContext(AssetHandle baseTexture);
@@ -17,8 +18,9 @@ namespace PaulEngine
 
 		void SetShowWindow(bool showWindow) { m_ShowWindow = showWindow; }
 		bool ShouldShowWindow() const { return m_ShowWindow; }
-	private:
+		
 		void Init();
+	private:
 
 		AssetHandle m_BaseTexture;
 	

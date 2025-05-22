@@ -50,8 +50,8 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", screenTexture);
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture);
 
-		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture);
-		Ref<FramebufferTexture2DAttachment> alternateScreenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, alternateScreenTexture);
+		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> alternateScreenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, alternateScreenTexture->Handle);
 
 		out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("ScreenAttachment", screenAttachment);
 		out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment", alternateScreenAttachment);
@@ -157,19 +157,19 @@ namespace PaulEngine
 		spec.Height = m_ShadowHeight;
 		spec.Samples = 1;
 
-		Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, dirLightShadowArray);
+		Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, dirLightShadowArray->Handle);
 		Ref<Framebuffer> dirLightShadowsFramebuffer = Framebuffer::Create(spec, {}, dirLightShadowDepthArrayAttach);
 
-		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, spotLightShadowArray);
+		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, spotLightShadowArray->Handle);
 		Ref<Framebuffer> spotLightShadowsFramebuffer = Framebuffer::Create(spec, {}, spotLightShadowDepthArrayAttach);
 
-		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, pointLightShadowArray);
+		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, pointLightShadowArray->Handle);
 		Ref<Framebuffer> pointLightShadowsFramebuffer = Framebuffer::Create(spec, {}, pointLightShadowDepthAttach);
 
 		FramebufferSpecification bloomSpec;
 		bloomSpec.Width = m_ViewportSize.x;
 		bloomSpec.Height = m_ViewportSize.y;
-		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0));
+		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
 		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
 
 		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", m_MainFramebuffer);
@@ -724,7 +724,7 @@ namespace PaulEngine
 				const TextureSpecification& mipSpec = mip->GetSpecification();
 				RenderCommand::SetViewport({ 0, 0 }, { mipSpec.Width, mipSpec.Height });
 
-				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, mip);
+				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, mip->Handle);
 				targetFramebuffer->AddColourAttachment(attachment);
 				RenderCommand::Clear();
 
@@ -775,7 +775,7 @@ namespace PaulEngine
 				Ref<Texture2D> mip = mipChain.GetMipLevel(i);
 				Ref<Texture2D> nextMip = mipChain.GetMipLevel(i - 1);
 
-				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, nextMip);
+				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, nextMip->Handle);
 				targetFramebuffer->AddColourAttachment(attachment);
 
 				const TextureSpecification& nexMipSpec = nextMip->GetSpecification();
@@ -1066,32 +1066,6 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 
-		FramebufferSpecification spec;
-		spec.Width = 1280;
-		spec.Height = 720;
-		spec.Samples = 1;
-
-		TextureSpecification texSpec;
-		texSpec.Width = 1280;
-		texSpec.Height = 720;
-		texSpec.GenerateMips = false;
-		texSpec.Format = ImageFormat::RGBA8;
-		texSpec.MinFilter = ImageMinFilter::NEAREST;
-		texSpec.MagFilter = ImageMagFilter::NEAREST;
-		texSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
-		texSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
-		texSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
-		texSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		//Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec);
-
-		texSpec.Format = ImageFormat::RED_INTEGER;
-		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec);
-
-		texSpec.Format = ImageFormat::Depth24Stencil8;
-		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec);
-
-		m_MainFramebuffer = Framebuffer::Create(spec, { entityIDAttach }, depthAttach);
-
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
 		m_ActiveSceneHandle = 0;
@@ -1167,7 +1141,7 @@ namespace PaulEngine
 		m_Renderer = FrameRenderer();
 
 		if (m_ProjectSelected) {
-			CreateRenderer(m_Renderer);
+			OnProjectSelected();
 		}
 	}
 
@@ -1191,19 +1165,19 @@ namespace PaulEngine
 
 		Renderer2D::ResetStats();
 		Renderer::ResetStats();
-		m_MainFramebuffer->Bind();
 		RenderCommand::SetViewport({ 0.0f, 0.0f }, glm::ivec2((glm::ivec2)m_ViewportSize));
 		RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::Clear();
 
-		// Clear entity ID attachment to -1
-		FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
-		texAttachment->GetTexture()->Clear(-1);
-
-		auto renderResource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
-		if (renderResource) { renderResource->Data = m_SceneHierarchyPanel.GetSelectedEntity(); }
-
 		if (m_ProjectSelected) {
+			// Clear entity ID attachment to -1
+			FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
+			texAttachment->GetTexture()->Clear(-1);
+
+			auto renderResource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
+			if (renderResource) { renderResource->Data = m_SceneHierarchyPanel.GetSelectedEntity(); }
+
+			m_MainFramebuffer->Bind();
 			switch (m_SceneState)
 			{
 				case SceneState::Edit:
@@ -1245,9 +1219,9 @@ namespace PaulEngine
 			else {
 				m_HoveredEntity = Entity();
 			}
-		}
 
-		m_MainFramebuffer->Unbind();
+			m_MainFramebuffer->Unbind();
+		}
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -2001,6 +1975,43 @@ namespace PaulEngine
 		}
 	}
 
+	void EditorLayer::OnProjectSelected()
+	{
+		FramebufferSpecification spec;
+		spec.Width = 1280;
+		spec.Height = 720;
+		spec.Samples = 1;
+
+		TextureSpecification texSpec;
+		texSpec.Width = 1280;
+		texSpec.Height = 720;
+		texSpec.GenerateMips = false;
+		texSpec.Format = ImageFormat::RGBA8;
+		texSpec.MinFilter = ImageMinFilter::NEAREST;
+		texSpec.MagFilter = ImageMagFilter::NEAREST;
+		texSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		texSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		//Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec);
+
+		texSpec.Format = ImageFormat::RED_INTEGER;
+		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec, true);
+
+		texSpec.Format = ImageFormat::Depth24Stencil8;
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec, true);
+
+		m_MainFramebuffer = Framebuffer::Create(spec, { entityIDAttach }, depthAttach);
+
+		m_MainFramebuffer->AddColourAttachment(entityIDAttach);
+		m_MainFramebuffer->SetDepthAttachment(depthAttach);
+
+		CreateRenderer(m_Renderer);
+		m_AtlasCreateWindow.Init();
+		m_MaterialCreateWindow.Init();
+		m_TextureArrayCreateWindow.Init();
+	}
+
 	void EditorLayer::DrawProjectSelectUI()
 	{
 		static bool open = true;
@@ -2029,8 +2040,7 @@ namespace PaulEngine
 
 		if (m_ProjectSelected)
 		{
-			m_Renderer = FrameRenderer();
-			CreateRenderer(m_Renderer);
+			OnProjectSelected();
 		}
 	}
 

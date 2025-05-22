@@ -18,10 +18,7 @@
 namespace PaulEngine
 {
 	static glm::mat4 s_CubeTransform = glm::mat4(1.0f);
-	CreateMaterialWindow::CreateMaterialWindow(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle), m_ViewportSize(128.0f, 128.0f)
-	{
-		Init();
-	}
+	CreateMaterialWindow::CreateMaterialWindow(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle), m_ViewportSize(128.0f, 128.0f) {}
 
 	void CreateMaterialWindow::Init()
 	{
