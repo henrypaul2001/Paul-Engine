@@ -36,7 +36,7 @@ namespace PaulEngine {
 
 	void OpenGLTexture2D::Resize(uint32_t width, uint32_t height)
 	{
-		TextureSpecification spec = m_Spec;
+		TextureSpecification& spec = m_Spec;
 		if (spec.Width != width || spec.Height != height)
 		{
 			spec.Width = width;
@@ -130,7 +130,7 @@ namespace PaulEngine {
 
 	void OpenGLTexture2DArray::Resize(uint32_t width, uint32_t height)
 	{
-		TextureSpecification spec = m_Spec;
+		TextureSpecification& spec = m_Spec;
 		if (spec.Width != width || spec.Height != height)
 		{
 			spec.Width = width;
@@ -219,7 +219,7 @@ namespace PaulEngine {
 
 	void OpenGLTextureCubemap::Resize(uint32_t width, uint32_t height)
 	{
-		TextureSpecification spec = m_Spec;
+		TextureSpecification& spec = m_Spec;
 		if (spec.Width != width || spec.Height != height)
 		{
 			spec.Width = width;
@@ -305,7 +305,7 @@ namespace PaulEngine {
 
 	void OpenGLTextureCubemapArray::Resize(uint32_t width, uint32_t height)
 	{
-		TextureSpecification spec = m_Spec;
+		TextureSpecification& spec = m_Spec;
 		if (spec.Width != width || spec.Height != height)
 		{
 			spec.Width = width;
