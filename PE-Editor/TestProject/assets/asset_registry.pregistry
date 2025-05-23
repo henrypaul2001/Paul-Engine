@@ -27,14 +27,14 @@ AssetRegistry:
     Filepath: scenes\3DCube.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 2510263345310005911
-    Filepath: scenes\Example.paul
-    Persistent: false
-    Type: AssetType::Scene
   - Handle: 5699979129781682678
     Filepath: materials\CobbleFloor.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 2510263345310005911
+    Filepath: scenes\Example.paul
+    Persistent: false
+    Type: AssetType::Scene
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
@@ -58,6 +58,10 @@ AssetRegistry:
   - Handle: 12706789786119448748
     Filepath: textures\tilemap_packed.png
     Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 1575296387178993679
+    Filepath: ..\..\assets\textures/dirtmask.jpg
+    Persistent: true
     Type: AssetType::Texture2D
   - Handle: 7412640952308102654
     Filepath: atlas\TinyTown.patlas
@@ -131,14 +135,14 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer3D_DefaultLit.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 17478225128134824907
-    Filepath: shaders\ArrayedUBOTest.glsl
-    Persistent: false
-    Type: AssetType::Shader
   - Handle: 5934277060522405221
     Filepath: materials\TestDefault.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 17478225128134824907
+    Filepath: shaders\ArrayedUBOTest.glsl
+    Persistent: false
+    Type: AssetType::Shader
   - Handle: 16657457123502607496
     Filepath: textures\earth_specular.jpg
     Persistent: false

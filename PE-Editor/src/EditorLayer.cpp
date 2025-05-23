@@ -202,6 +202,12 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial->Handle);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial->Handle);
 
+		// Textures
+		// --------
+		AssetHandle dirtMaskTextureHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/dirtmask.jpg", true);
+
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", dirtMaskTextureHandle);
+
 		// OnEvent
 		// -------
 		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
@@ -795,15 +801,17 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Bloom mip chain input required");
 			PE_CORE_ASSERT(inputs[2], "Combine material input required");
-			PE_CORE_ASSERT(inputs[3], "Source texture input required");
-			PE_CORE_ASSERT(inputs[4], "Target texture input required");
+			PE_CORE_ASSERT(inputs[3], "Dirt mask input required");
+			PE_CORE_ASSERT(inputs[4], "Source texture input required");
+			PE_CORE_ASSERT(inputs[5], "Target texture input required");
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
 			RenderComponentMaterial* combineMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
-			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
-			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
+			RenderComponentTexture* dirtMaskTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
+			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
 			
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -818,8 +826,8 @@ namespace PaulEngine
 			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
 
 			float BloomStrength = 0.04f;
-			float DirtMaskStrength = 1.0f;
-			int UseDirtMask = 0;
+			float DirtMaskStrength = 0.5f;
+			int UseDirtMask = 1;
 
 			Ref<Material> combineMaterial = AssetManager::GetAsset<Material>(combineMaterialInput->MaterialHandle);
 			UniformBufferStorage* uboStorage = combineMaterial->GetParameter<UBOShaderParameterTypeStorage>("BloomCombineData")->UBO().get();
@@ -831,7 +839,7 @@ namespace PaulEngine
 			combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("BloomTexture")->TextureHandle = mipChainInput->Data.GetMipHandle(0);
 			if (UseDirtMask)
 			{
-				//combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DirtMaskTexture")->TextureHandle = dirtMaskInput->TextureHandle;
+				combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DirtMaskTexture")->TextureHandle = dirtMaskTextureInput->TextureHandle;
 			}
 			
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
@@ -1062,7 +1070,7 @@ namespace PaulEngine
 		// Bloom
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "ScreenTexture", "AlternateScreenTexture" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture"});
 
 		// Editor overlay
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
