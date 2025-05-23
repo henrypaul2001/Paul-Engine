@@ -22,7 +22,7 @@ void main()
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 18) out;
 
-layout(std140, binding = 3) uniform CubeData
+layout(std140, binding = 3) uniform Mat_CubeData
 {
 	mat4 ViewProjections[6];
 	int CubemapIndex;
@@ -57,7 +57,7 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
-layout(std140, binding = 3) uniform CubeData
+layout(std140, binding = 3) uniform Mat_CubeData
 {
 	mat4 ViewProjections[6];
 	int CubemapIndex;

@@ -28,19 +28,19 @@ layout(std140, binding = 3) uniform Mat_BloomCombineData
 	int UseDirtMask; // (bool)
 } u_BloomCombineData;
 
-layout(binding = 0) uniform sampler2D ColourTexture;
-layout(binding = 1) uniform sampler2D BloomTexture;
-layout(binding = 2) uniform sampler2D DirtMaskTexture;
+layout(binding = 0) uniform sampler2D Mat_ColourTexture;
+layout(binding = 1) uniform sampler2D Mat_BloomTexture;
+layout(binding = 2) uniform sampler2D Mat_DirtMaskTexture;
 
 void main()
 {
-	vec3 colour = texture(ColourTexture, v_TexCoords).rgb;
-	vec3 bloom = texture(BloomTexture, v_TexCoords).rgb;
+	vec3 colour = texture(Mat_ColourTexture, v_TexCoords).rgb;
+	vec3 bloom = texture(Mat_BloomTexture, v_TexCoords).rgb;
 	vec3 dirt = vec3(0.0);
 
 	if (bool(u_BloomCombineData.UseDirtMask))
 	{
-		dirt = texture(DirtMaskTexture, v_TexCoords).rgb * u_BloomCombineData.DirtMaskStrength;
+		dirt = texture(Mat_DirtMaskTexture, v_TexCoords).rgb * u_BloomCombineData.DirtMaskStrength;
 	}
 
 	f_Result = vec4(mix(colour, bloom + (bloom * dirt), vec3(u_BloomCombineData.BloomStrength)), 1.0);

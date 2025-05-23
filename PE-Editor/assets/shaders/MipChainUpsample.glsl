@@ -27,7 +27,7 @@ layout(std140, binding = 3) uniform Mat_UpsampleData
 	float AspectRatio;
 } u_UpsampleData;
 
-layout(binding = 0) uniform sampler2D SourceTexture;
+layout(binding = 0) uniform sampler2D Mat_SourceTexture;
 
 void main()
 {
@@ -40,17 +40,17 @@ void main()
 	// g - h - i
 	// (e is current texel)
 
-	vec3 a = texture(SourceTexture, vec2(v_TexCoords.x - x, v_TexCoords.y + y)).rgb;
-	vec3 b = texture(SourceTexture, vec2(v_TexCoords.x, v_TexCoords.y + y)).rgb;
-	vec3 c = texture(SourceTexture, vec2(v_TexCoords.x + x, v_TexCoords.y + y)).rgb;
+	vec3 a = texture(Mat_SourceTexture, vec2(v_TexCoords.x - x, v_TexCoords.y + y)).rgb;
+	vec3 b = texture(Mat_SourceTexture, vec2(v_TexCoords.x, v_TexCoords.y + y)).rgb;
+	vec3 c = texture(Mat_SourceTexture, vec2(v_TexCoords.x + x, v_TexCoords.y + y)).rgb;
 
-	vec3 d = texture(SourceTexture, vec2(v_TexCoords.x - x, v_TexCoords.y)).rgb;
-	vec3 e = texture(SourceTexture, vec2(v_TexCoords.x, v_TexCoords.y)).rgb;
-	vec3 f = texture(SourceTexture, vec2(v_TexCoords.x + x, v_TexCoords.y)).rgb;
+	vec3 d = texture(Mat_SourceTexture, vec2(v_TexCoords.x - x, v_TexCoords.y)).rgb;
+	vec3 e = texture(Mat_SourceTexture, vec2(v_TexCoords.x, v_TexCoords.y)).rgb;
+	vec3 f = texture(Mat_SourceTexture, vec2(v_TexCoords.x + x, v_TexCoords.y)).rgb;
 
-	vec3 g = texture(SourceTexture, vec2(v_TexCoords.x - x, v_TexCoords.y - y)).rgb;
-	vec3 h = texture(SourceTexture, vec2(v_TexCoords.x, v_TexCoords.y - y)).rgb;
-	vec3 i = texture(SourceTexture, vec2(v_TexCoords.x + x, v_TexCoords.y - y)).rgb;
+	vec3 g = texture(Mat_SourceTexture, vec2(v_TexCoords.x - x, v_TexCoords.y - y)).rgb;
+	vec3 h = texture(Mat_SourceTexture, vec2(v_TexCoords.x, v_TexCoords.y - y)).rgb;
+	vec3 i = texture(Mat_SourceTexture, vec2(v_TexCoords.x + x, v_TexCoords.y - y)).rgb;
 
 	// Apply weighted distribution, by using a 3x3 tent filter:
 	//  1   | 1 2 1 |

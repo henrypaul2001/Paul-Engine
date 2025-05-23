@@ -21,13 +21,6 @@
 
 namespace PaulEngine
 {
-	struct CubemapCaptureBuffer
-	{
-		glm::mat4 ViewProjections[6];
-		int CubemapIndex;
-		float FarPlane;
-	};
-
 	void EditorLayer::CreateRenderer(FrameRenderer& out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();
@@ -51,10 +44,6 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture->Handle);
 
 		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
-		//Ref<FramebufferTexture2DAttachment> alternateScreenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, alternateScreenTexture->Handle);
-		//
-		//out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("ScreenAttachment", screenAttachment);
-		//out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment", alternateScreenAttachment);
 
 		m_MainFramebuffer->AddColourAttachment(screenAttachment);
 
@@ -142,6 +131,11 @@ namespace PaulEngine
 				return AssetManager::GetAsset<Texture2D>(m_Chain[mip]);
 			}
 
+			AssetHandle GetMipHandle(uint8_t mip) {
+				PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
+				return m_Chain[mip];
+			}
+
 		private:
 			std::vector<AssetHandle> m_Chain;
 		};
@@ -186,7 +180,6 @@ namespace PaulEngine
 		AssetHandle shadowmapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
 		Ref<Material> shadowmapMaterial = AssetManager::CreateAsset<Material>(true, shadowmapShaderHandle);
 
-		Ref<UniformBuffer> cubemapDataUBO = UniformBuffer::Create(sizeof(CubemapCaptureBuffer), 3);
 		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
 		Ref<Material> shadowmapCubeMaterial = AssetManager::CreateAsset<Material>(true, shadowmapCubeShaderHandle);
 
@@ -205,7 +198,6 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial->Handle);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial->Handle);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentUBO>("CubemapDataUBO", cubemapDataUBO);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", mipchainDownsampleMaterial->Handle);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial->Handle);
 		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial->Handle);
@@ -382,16 +374,14 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, material, ubo }
+		// { primitive<glm::ivec2>, material }
 		RenderPass::OnRenderFunc pointLightShadowFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Point light shadow map capture pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
-			PE_CORE_ASSERT(inputs[2], "Cubemap data UBO input required");
 			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
 			RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-			RenderComponentUBO* uboInput = dynamic_cast<RenderComponentUBO*>(inputs[2]);
 
 			RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
 
@@ -426,26 +416,26 @@ namespace PaulEngine
 
 				if (light.CastShadows)
 				{
+					AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
+					Ref<Material> shadowmapMaterial = AssetManager::GetAsset<Material>(shadowmapHandle);
+
 					float nearClip = light.ShadowMapNearClip;
 					float farClip = light.ShadowMapFarClip;
 
 					glm::mat4 transformMatrix = transform.GetTransform();
 					glm::vec3 position = transform.Position();
 
-					CubemapCaptureBuffer cubemapBuffer;
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
-					cubemapBuffer.ViewProjections[0] = lightProjection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // right
-					cubemapBuffer.ViewProjections[1] = lightProjection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // left
-					cubemapBuffer.ViewProjections[2] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));   // up
-					cubemapBuffer.ViewProjections[3] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // down
-					cubemapBuffer.ViewProjections[4] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));  // back
-					cubemapBuffer.ViewProjections[5] = lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)); // front
 
-					cubemapBuffer.CubemapIndex = i;
-					cubemapBuffer.FarPlane = farClip;
-
-					uboInput->UBO->SetData(&cubemapBuffer, sizeof(cubemapBuffer), 0);
-					uboInput->UBO->Bind(3);
+					UniformBufferStorage* uboStorage = shadowmapMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
+					uboStorage->SetLocalData("ViewProjections[0][0]", lightProjection* glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					uboStorage->SetLocalData("ViewProjections[0][1]", lightProjection* glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					uboStorage->SetLocalData("ViewProjections[0][2]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+					uboStorage->SetLocalData("ViewProjections[0][3]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+					uboStorage->SetLocalData("ViewProjections[0][4]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					uboStorage->SetLocalData("ViewProjections[0][5]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+					uboStorage->SetLocalData("CubemapIndex", i);
+					uboStorage->SetLocalData("FarPlane", farClip);
 
 					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 					cam.SetPerspective(90.0f, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
@@ -453,13 +443,12 @@ namespace PaulEngine
 
 					{
 						PE_PROFILE_SCOPE("Submit Mesh");
-						AssetHandle shadowapHandle = shadowmapMaterial->MaterialHandle;
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::SubmitDefaultCube(shadowapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitDefaultCube(shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -689,7 +678,7 @@ namespace PaulEngine
 
 				Renderer::EndScene();
 			}
-			};
+		};
 
 		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture }
 		RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
@@ -739,7 +728,7 @@ namespace PaulEngine
 				targetFramebuffer->AddColourAttachment(attachment);
 				RenderCommand::Clear();
 
-				previousTexture->Bind();
+				downsampleMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = previousTexture->Handle;
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 				BlendState blend;
 				blend.Enabled = false;
@@ -792,7 +781,7 @@ namespace PaulEngine
 				const TextureSpecification& nexMipSpec = nextMip->GetSpecification();
 				RenderCommand::SetViewport({ 0, 0 }, { nexMipSpec.Width, nexMipSpec.Height });
 
-				mip->Bind();
+				upsampleMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = mip->Handle;
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 				Renderer::SubmitDefaultQuad(upsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 				Renderer::EndScene();
@@ -838,12 +827,11 @@ namespace PaulEngine
 			uboStorage->SetLocalData("DirtMaskStrength", DirtMaskStrength);
 			uboStorage->SetLocalData("UseDirtMask", UseDirtMask);
 
-			Ref<Texture2D> sourceTexture = AssetManager::GetAsset<Texture2D>(sourceTextureInput->TextureHandle);
-			sourceTexture->Bind(0);
-			mipChainInput->Data.GetMipLevel(0)->Bind(1);
+			combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("ColourTexture")->TextureHandle = sourceTextureInput->TextureHandle;
+			combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("BloomTexture")->TextureHandle = mipChainInput->Data.GetMipHandle(0);
 			if (UseDirtMask)
 			{
-				// bind dirt mask texture to slot 2
+				//combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DirtMaskTexture")->TextureHandle = dirtMaskInput->TextureHandle;
 			}
 			
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
@@ -1049,9 +1037,10 @@ namespace PaulEngine
 			RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 			RenderCommand::Clear();
 
+			Ref<Material> material = AssetManager::GetAsset<Material>(gammaCorrectionMaterialInput->MaterialHandle);
+			material->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = sourceTextureInput->TextureHandle;
+
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-			Ref<Texture2D> sourceTexture = AssetManager::GetAsset<Texture2D>(sourceTextureInput->TextureHandle);
-			sourceTexture->Bind();
 			BlendState blend;
 			blend.Enabled = false;
 			Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
@@ -1064,7 +1053,7 @@ namespace PaulEngine
 		// Shadow mapping
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), spotLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::UBO }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial", "CubemapDataUBO" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial" });
 	
 		// Main render
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture" });
