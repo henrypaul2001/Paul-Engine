@@ -52,10 +52,10 @@ namespace PaulEngine
 
 	struct RenderComponentTexture : public IRenderComponent
 	{
-		RenderComponentTexture(Ref<Texture> texture) : Texture(texture) {}
+		RenderComponentTexture(AssetHandle textureHandle) : TextureHandle(textureHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Texture; }
-		Ref<Texture> Texture;
+		AssetHandle TextureHandle;
 	};
 
 	struct RenderComponentCamera : public IRenderComponent
@@ -68,10 +68,10 @@ namespace PaulEngine
 
 	struct RenderComponentMaterial : public IRenderComponent
 	{
-		RenderComponentMaterial(Ref<Material> material) : Material(material) {}
+		RenderComponentMaterial(AssetHandle materialHandle) : MaterialHandle(materialHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Material; }
-		Ref<Material> Material;
+		AssetHandle MaterialHandle;
 	};
 
 	struct RenderComponentUBO : public IRenderComponent

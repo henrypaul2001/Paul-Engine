@@ -47,14 +47,14 @@ namespace PaulEngine
 		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
 		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", screenTexture);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", screenTexture->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture->Handle);
 
 		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
-		Ref<FramebufferTexture2DAttachment> alternateScreenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, alternateScreenTexture->Handle);
-
-		out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("ScreenAttachment", screenAttachment);
-		out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment", alternateScreenAttachment);
+		//Ref<FramebufferTexture2DAttachment> alternateScreenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, alternateScreenTexture->Handle);
+		//
+		//out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("ScreenAttachment", screenAttachment);
+		//out_Framerenderer.AddRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment", alternateScreenAttachment);
 
 		m_MainFramebuffer->AddColourAttachment(screenAttachment);
 
@@ -75,9 +75,9 @@ namespace PaulEngine
 		Ref<Texture2DArray> spotLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
 		Ref<TextureCubemapArray> pointLightShadowArray = AssetManager::CreateAsset<TextureCubemapArray>(true, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
 
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirLightShadowMap", dirLightShadowArray);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", spotLightShadowArray);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("PointLightShadowMap", pointLightShadowArray);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirLightShadowMap", dirLightShadowArray->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", spotLightShadowArray->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("PointLightShadowMap", pointLightShadowArray->Handle);
 
 		glm::ivec2 shadowRes = { m_ShadowWidth, m_ShadowHeight };
 		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", shadowRes);
@@ -120,7 +120,7 @@ namespace PaulEngine
 					mipSpec.Height = (uint32_t)mipSize.y;
 
 					Ref<Texture2D> texture = AssetManager::CreateAsset<Texture2D>(true, mipSpec);
-					m_Chain.push_back(texture);
+					m_Chain.push_back(texture->Handle);
 				}
 			}
 
@@ -131,7 +131,7 @@ namespace PaulEngine
 				{
 					mipSize *= 0.5f;
 					mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
-					m_Chain[i]->Resize(mipSize.x, mipSize.y);
+					AssetManager::GetAsset<Texture2D>(m_Chain[i])->Resize(mipSize.x, mipSize.y);
 				}
 			}
 
@@ -139,11 +139,11 @@ namespace PaulEngine
 
 			Ref<Texture2D> GetMipLevel(uint8_t mip) { 
 				PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
-				return m_Chain[mip];
+				return AssetManager::GetAsset<Texture2D>(m_Chain[mip]);
 			}
 
 		private:
-			std::vector<Ref<Texture2D>> m_Chain;
+			std::vector<AssetHandle> m_Chain;
 		};
 		BloomMipChain bloomMipChain;
 		bloomMipChain.Init(m_ViewportSize, 6);
@@ -202,13 +202,13 @@ namespace PaulEngine
 		AssetHandle bloomCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
 		Ref<Material> bloomCombineMaterial = AssetManager::CreateAsset<Material>(true, bloomCombineShaderHandle);
 
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial->Handle);
 		out_Framerenderer.AddRenderResource<RenderComponentUBO>("CubemapDataUBO", cubemapDataUBO);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", mipchainDownsampleMaterial);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", mipchainDownsampleMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial->Handle);
 
 		// OnEvent
 		// -------
@@ -218,8 +218,8 @@ namespace PaulEngine
 			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
 				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
 				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
-				self->GetRenderResource<RenderComponentFBOAttachment>("ScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				self->GetRenderResource<RenderComponentFBOAttachment>("AlternateScreenAttachment")->Attachment->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
 				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
 				return false;
@@ -291,7 +291,7 @@ namespace PaulEngine
 
 					{
 						PE_PROFILE_SCOPE("Submit Mesh");
-						AssetHandle shadowmapHandle = shadowmapMaterial->Material->Handle;
+						AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
@@ -366,7 +366,7 @@ namespace PaulEngine
 					Renderer::BeginScene(cam, cameraTransform);
 
 					{
-						AssetHandle shadowmapHandle = shadowmapMaterial->Material->Handle;
+						AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
 						PE_PROFILE_SCOPE("Submit Mesh");
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
@@ -380,7 +380,7 @@ namespace PaulEngine
 					Renderer::EndScene();
 				}
 			}
-			};
+		};
 
 		// { primitive<glm::ivec2>, material, ubo }
 		RenderPass::OnRenderFunc pointLightShadowFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
@@ -453,7 +453,7 @@ namespace PaulEngine
 
 					{
 						PE_PROFILE_SCOPE("Submit Mesh");
-						AssetHandle shadowapHandle = shadowmapMaterial->Material->Handle;
+						AssetHandle shadowapHandle = shadowmapMaterial->MaterialHandle;
 						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 						for (auto entityID : view) {
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
@@ -466,24 +466,28 @@ namespace PaulEngine
 					Renderer::EndScene();
 				}
 			}
-			};
+		};
 
-		// { primitive<glm::ivec2>, Attachment }
+		// { primitive<glm::ivec2>, Texture }
 		RenderPass::OnRenderFunc scene2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 2D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Framebuffer attachment input required");
+			PE_CORE_ASSERT(inputs[1], "Target texture attachment input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
-			RenderComponentFBOAttachment* screenTextureInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[1]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
 
-			FramebufferTexture2DAttachment* currentAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-			FramebufferTexture2DAttachment* targetAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(screenTextureInput->Attachment.get());
-			if (currentAttachment->GetTexture() != targetAttachment->GetTexture())
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
 			{
-				targetFramebuffer->AddColourAttachment(screenTextureInput->Attachment);
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
 			}
 
 			targetFramebuffer->SetDrawBuffers();
@@ -539,7 +543,7 @@ namespace PaulEngine
 			}
 			};
 
-		// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Attachment }
+		// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture }
 		RenderPass::OnRenderFunc scene3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -550,19 +554,23 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[2], "Dir light shadow map input required");
 			PE_CORE_ASSERT(inputs[3], "Spot light shadow map input required");
 			PE_CORE_ASSERT(inputs[4], "Point light shadow map input required");
-			PE_CORE_ASSERT(inputs[5], "Framebuffer attachment input required");
+			PE_CORE_ASSERT(inputs[5], "Target texture attachment input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[1]);
 			RenderComponentTexture* dirLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
 			RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
-			RenderComponentFBOAttachment* screenTextureInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[5]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
 
-			FramebufferTexture2DAttachment* currentAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-			FramebufferTexture2DAttachment* targetAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(screenTextureInput->Attachment.get());
-			if (currentAttachment->GetTexture() != targetAttachment->GetTexture())
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
 			{
-				targetFramebuffer->AddColourAttachment(screenTextureInput->Attachment);
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
 			}
 
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
@@ -664,37 +672,39 @@ namespace PaulEngine
 				}
 
 				if (dirLightShadowInput) {
-					PE_CORE_ASSERT(dirLightShadowInput->Texture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");
-					dirLightShadowInput->Texture->Bind(4);
+					Ref<Texture2DArray> dirLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(dirLightShadowInput->TextureHandle);
+					PE_CORE_ASSERT(dirLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");
+					dirLightShadowTexture->Bind(4);
 				}
 				if (spotLightShadowInput) {
-					PE_CORE_ASSERT(spotLightShadowInput->Texture->GetType() == AssetType::Texture2DArray, "Invalid spot light shadow map type");
-					spotLightShadowInput->Texture->Bind(5);
+					Ref<Texture2DArray> spotLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(spotLightShadowInput->TextureHandle);
+					PE_CORE_ASSERT(spotLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid spot light shadow map type");
+					spotLightShadowTexture->Bind(5);
 				}
 				if (pointLightShadowInput) {
-					PE_CORE_ASSERT(pointLightShadowInput->Texture->GetType() == AssetType::TextureCubemapArray, "Invalid point light shadow map type");
-					pointLightShadowInput->Texture->Bind(6);
+					Ref<TextureCubemapArray> pointLightShadowTexture = AssetManager::GetAsset<TextureCubemapArray>(pointLightShadowInput->TextureHandle);
+					PE_CORE_ASSERT(pointLightShadowTexture->GetType() == AssetType::TextureCubemapArray, "Invalid point light shadow map type");
+					pointLightShadowTexture->Bind(6);
 				}
 
 				Renderer::EndScene();
 			}
 			};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Attachment }
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture }
 		RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Downsample Pass");
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Downsample mip chain input required");
 			PE_CORE_ASSERT(inputs[2], "Downsample material input required");
-			PE_CORE_ASSERT(inputs[3], "Source attachment input required");
+			PE_CORE_ASSERT(inputs[3], "Source texture input required");
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
 			RenderComponentMaterial* downsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
-			RenderComponentFBOAttachment* sourceAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[3]);
-			FramebufferTexture2DAttachment* textureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get());
+			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 
 			glm::vec2 srcResolution = viewportResInput->Data;
 			const float threshold = 1.0f;
@@ -702,7 +712,7 @@ namespace PaulEngine
 			int FirstIteration = 1;
 			const float gamma = activeCamera->GetGamma();
 
-			Ref<Material> downsampleMaterial = downsampleMaterialInput->Material;
+			Ref<Material> downsampleMaterial = AssetManager::GetAsset<Material>(downsampleMaterialInput->MaterialHandle);
 			UniformBufferStorage* uboStorage = downsampleMaterial->GetParameter<UBOShaderParameterTypeStorage>("DownsampleData")->UBO().get();
 			uboStorage->SetLocalData("SourceResolution", srcResolution);
 			uboStorage->SetLocalData("Threshold", threshold);
@@ -712,7 +722,8 @@ namespace PaulEngine
 
 			// Progressively downsample through mip chain
 			BloomMipChain& mipChain = mipChainInput->Data;
-			Texture* previousTexture = textureAttachment->GetTexture().get();
+			Ref<Texture2D> source = AssetManager::GetAsset<Texture2D>(sourceTextureInput->TextureHandle);
+			Texture* previousTexture = source.get();
 			for (int i = 0; i < mipChain.Size(); i++)
 			{
 				Ref<Texture2D> mip = mipChain.GetMipLevel(i);
@@ -732,7 +743,7 @@ namespace PaulEngine
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 				BlendState blend;
 				blend.Enabled = false;
-				Renderer::DrawDefaultQuadImmediate(downsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+				Renderer::SubmitDefaultQuad(downsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 				Renderer::EndScene();
 
 				// Set resolution for next iteration to the currently written mip
@@ -757,7 +768,7 @@ namespace PaulEngine
 			float FilterRadius = 0.005f;
 			float AspectRatio = resolution.x / resolution.y;
 
-			Ref<Material> upsampleMaterial = upsampleMaterialInput->Material;
+			Ref<Material> upsampleMaterial = AssetManager::GetAsset<Material>(upsampleMaterialInput->MaterialHandle);
 			UniformBufferStorage* uboStorage = upsampleMaterial->GetParameter<UBOShaderParameterTypeStorage>("UpsampleData")->UBO().get();
 			uboStorage->SetLocalData("FilterRadius", FilterRadius);
 			uboStorage->SetLocalData("AspectRatio", AspectRatio);
@@ -783,34 +794,37 @@ namespace PaulEngine
 
 				mip->Bind();
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-				Renderer::DrawDefaultQuadImmediate(upsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+				Renderer::SubmitDefaultQuad(upsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 				Renderer::EndScene();
 			}
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Attachment, Attachment, Texture }
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, Texture, Texture }
 		RenderPass::OnRenderFunc bloomCombinePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Combine Pass");
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Bloom mip chain input required");
 			PE_CORE_ASSERT(inputs[2], "Combine material input required");
-			PE_CORE_ASSERT(inputs[3], "Source attachment input required");
-			PE_CORE_ASSERT(inputs[4], "Target attachment input required");
+			PE_CORE_ASSERT(inputs[3], "Source texture input required");
+			PE_CORE_ASSERT(inputs[4], "Target texture input required");
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
 			RenderComponentMaterial* combineMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
-			RenderComponentFBOAttachment* sourceAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[3]);
-			RenderComponentFBOAttachment* targetAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[4]);
-			FramebufferTexture2DAttachment* textureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get());
-			FramebufferTexture2DAttachment* targetTextureAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetAttachmentInput->Attachment.get());
+			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 			
-			FramebufferTexture2DAttachment* currentAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-			if (currentAttachment->GetTexture() != targetTextureAttachment->GetTexture())
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle targetTextureInputHandle = targetTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != targetTextureInputHandle)
 			{
-				targetFramebuffer->AddColourAttachment(targetAttachmentInput->Attachment);
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, targetTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
 			}
 			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
 
@@ -818,13 +832,14 @@ namespace PaulEngine
 			float DirtMaskStrength = 1.0f;
 			int UseDirtMask = 0;
 
-			Ref<Material> combineMaterial = combineMaterialInput->Material;
+			Ref<Material> combineMaterial = AssetManager::GetAsset<Material>(combineMaterialInput->MaterialHandle);
 			UniformBufferStorage* uboStorage = combineMaterial->GetParameter<UBOShaderParameterTypeStorage>("BloomCombineData")->UBO().get();
 			uboStorage->SetLocalData("BloomStrength", BloomStrength);
 			uboStorage->SetLocalData("DirtMaskStrength", DirtMaskStrength);
 			uboStorage->SetLocalData("UseDirtMask", UseDirtMask);
 
-			textureAttachment->GetTexture()->Bind(0);
+			Ref<Texture2D> sourceTexture = AssetManager::GetAsset<Texture2D>(sourceTextureInput->TextureHandle);
+			sourceTexture->Bind(0);
 			mipChainInput->Data.GetMipLevel(0)->Bind(1);
 			if (UseDirtMask)
 			{
@@ -833,11 +848,11 @@ namespace PaulEngine
 			
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-			Renderer::DrawDefaultQuadImmediate(combineMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
+			Renderer::SubmitDefaultQuad(combineMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
 			Renderer::EndScene();
 		};
 
-		// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Attachment }
+		// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Texture }
 		RenderPass::OnRenderFunc debugOverlayPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Debug overlay render pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -847,18 +862,22 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[1], "Selected entity input required");
 			PE_CORE_ASSERT(inputs[2], "Entity outline thickness input required");
 			PE_CORE_ASSERT(inputs[3], "Entity outline colour input required");
-			PE_CORE_ASSERT(inputs[4], "Framebuffer attachment input required");
+			PE_CORE_ASSERT(inputs[4], "Texture input required");
 			RenderComponentPrimitiveType<bool>* showCollidersInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[0]);
 			RenderComponentPrimitiveType<Entity>* selectedEntityInput = dynamic_cast<RenderComponentPrimitiveType<Entity>*>(inputs[1]);
 			RenderComponentPrimitiveType<float>* entityOutlineThicknessInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[2]);
 			RenderComponentPrimitiveType<glm::vec4>* entityOutlineColourInput = dynamic_cast<RenderComponentPrimitiveType<glm::vec4>*>(inputs[3]);
-			RenderComponentFBOAttachment* screenTextureInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[4]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 
-			FramebufferTexture2DAttachment* currentAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-			FramebufferTexture2DAttachment* targetAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(screenTextureInput->Attachment.get());
-			if (currentAttachment->GetTexture() != targetAttachment->GetTexture())
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
 			{
-				targetFramebuffer->AddColourAttachment(screenTextureInput->Attachment);
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
 			}
 
 			if (activeCamera && sceneContext)
@@ -999,26 +1018,30 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, Attachment, Material, Attachment }
+		// { primitive<glm::ivec2>, Texture, Material, Texture }
 		RenderPass::OnRenderFunc gammaTonemapPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 2D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Framebuffer attachment input required");
+			PE_CORE_ASSERT(inputs[1], "Target texture input required");
 			PE_CORE_ASSERT(inputs[2], "Material input required");
-			PE_CORE_ASSERT(inputs[3], "Source attachment input required");
+			PE_CORE_ASSERT(inputs[3], "Source texture input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
-			RenderComponentFBOAttachment* screenTextureInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[1]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
 			RenderComponentMaterial* gammaCorrectionMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
-			RenderComponentFBOAttachment* sourceAttachmentInput = dynamic_cast<RenderComponentFBOAttachment*>(inputs[3]);
+			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 
-			FramebufferTexture2DAttachment* currentAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-			FramebufferTexture2DAttachment* targetAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(screenTextureInput->Attachment.get());
-			if (currentAttachment->GetTexture() != targetAttachment->GetTexture())
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
 			{
-				targetFramebuffer->AddColourAttachment(screenTextureInput->Attachment);
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
 			}
 			
 			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
@@ -1027,10 +1050,11 @@ namespace PaulEngine
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-			dynamic_cast<FramebufferTexture2DAttachment*>(sourceAttachmentInput->Attachment.get())->GetTexture()->Bind();
+			Ref<Texture2D> sourceTexture = AssetManager::GetAsset<Texture2D>(sourceTextureInput->TextureHandle);
+			sourceTexture->Bind();
 			BlendState blend;
 			blend.Enabled = false;
-			Renderer::DrawDefaultQuadImmediate(gammaCorrectionMaterialInput->Material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+			Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 			Renderer::EndScene();
 		};
 
@@ -1043,19 +1067,19 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::UBO }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial", "CubemapDataUBO" });
 	
 		// Main render
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenAttachment" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::FramebufferAttachment }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture" });
 		
 		// Bloom
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::FramebufferAttachment, RenderComponentType::FramebufferAttachment }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "ScreenAttachment", "AlternateScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "ScreenTexture", "AlternateScreenTexture" });
 
 		// Editor overlay
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
 		
 		// Post process
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::FramebufferAttachment, RenderComponentType::Material, RenderComponentType::FramebufferAttachment }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenAttachment", "GammaTonemapMaterial", "AlternateScreenAttachment" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
