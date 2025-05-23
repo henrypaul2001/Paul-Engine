@@ -10,7 +10,7 @@ namespace PaulEngine
 {
 	void Sampler2DShaderParameterTypeStorage::Bind()
 	{
-		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(m_TextureHandle);
+		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(TextureHandle);
 		if (texture)
 		{
 			texture->Bind(m_Binding);
@@ -23,7 +23,7 @@ namespace PaulEngine
 
 	void Sampler2DArrayShaderParameterTypeStorage::Bind()
 	{
-		Ref<Texture2DArray> textureArray = AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle);
+		Ref<Texture2DArray> textureArray = AssetManager::GetAsset<Texture2DArray>(TextureArrayHandle);
 		if (textureArray)
 		{
 			textureArray->Bind(m_Binding);
@@ -36,7 +36,7 @@ namespace PaulEngine
 
 	void SamplerCubeShaderParameterTypeStorage::Bind()
 	{
-		Ref<TextureCubemap> texture = AssetManager::GetAsset<TextureCubemap>(m_TextureHandle);
+		Ref<TextureCubemap> texture = AssetManager::GetAsset<TextureCubemap>(TextureHandle);
 		if (texture)
 		{
 			texture->Bind(m_Binding);

@@ -220,7 +220,7 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			out << YAML::Key << "Binding" << YAML::Value << sampler2DStorageParameter->GetBinding();
-			out << YAML::Key << "TextureHandle" << YAML::Value << sampler2DStorageParameter->GetTextureHandle();
+			out << YAML::Key << "TextureHandle" << YAML::Value << sampler2DStorageParameter->TextureHandle;
 
 			out << YAML::EndMap;
 		}
@@ -237,7 +237,7 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			out << YAML::Key << "Binding" << YAML::Value << sampler2DArrayStorageParameter->GetBinding();
-			out << YAML::Key << "TextureArrayHandle" << YAML::Value << sampler2DArrayStorageParameter->GetTextureArrayHandle();
+			out << YAML::Key << "TextureArrayHandle" << YAML::Value << sampler2DArrayStorageParameter->TextureArrayHandle;
 
 			out << YAML::EndMap;
 		}

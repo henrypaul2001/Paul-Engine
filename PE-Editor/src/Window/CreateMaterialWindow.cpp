@@ -302,7 +302,7 @@ namespace PaulEngine
 	void CreateMaterialWindow::DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler)
 	{
 		ImGui::Text(param_name.c_str());
-		AssetHandle textureHandle = sampler.m_TextureHandle;
+		AssetHandle textureHandle = sampler.TextureHandle;
 
 		std::string label = "None";
 		bool isTextureValid = false;
@@ -328,7 +328,7 @@ namespace PaulEngine
 			{
 				AssetHandle handle = *(AssetHandle*)payload->Data;
 				if (AssetManager::GetAssetType(handle) == AssetType::Texture2D) {
-					sampler.m_TextureHandle = handle;
+					sampler.TextureHandle = handle;
 				}
 				else {
 					PE_CORE_WARN("Invalid asset type. Texture2D needed for sampler2D shader parameter");
@@ -342,7 +342,7 @@ namespace PaulEngine
 			ImVec2 xLabelSize = ImGui::CalcTextSize("X");
 			float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 			if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-				sampler.m_TextureHandle = 0;
+				sampler.TextureHandle = 0;
 			}
 		}
 		ImGui::SameLine();
@@ -357,7 +357,7 @@ namespace PaulEngine
 	{
 		ImGui::Text(param_name.c_str());
 
-		AssetHandle textureHandle = samplerArray.m_TextureArrayHandle;
+		AssetHandle textureHandle = samplerArray.TextureArrayHandle;
 
 		std::string label = "None";
 		bool isTextureValid = false;
@@ -383,7 +383,7 @@ namespace PaulEngine
 			{
 				AssetHandle handle = *(AssetHandle*)payload->Data;
 				if (AssetManager::GetAssetType(handle) == AssetType::Texture2DArray) {
-					samplerArray.m_TextureArrayHandle = handle;
+					samplerArray.TextureArrayHandle = handle;
 				}
 				else {
 					PE_CORE_WARN("Invalid asset type. Texture2DArray needed for sampler2Darray shader parameter");
@@ -397,7 +397,7 @@ namespace PaulEngine
 			ImVec2 xLabelSize = ImGui::CalcTextSize("X");
 			float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 			if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-				samplerArray.m_TextureArrayHandle = 0;
+				samplerArray.TextureArrayHandle = 0;
 			}
 		}
 		ImGui::SameLine();
