@@ -89,7 +89,11 @@ namespace PaulEngine {
 			case ImageFormat::R8: return 1;
 			case ImageFormat::RG8: return 2;
 			case ImageFormat::RGB8: return 3;
+			case ImageFormat::R11FG11FB10F: return 3;
+			case ImageFormat::RGB16F: return 3;
+			case ImageFormat::RGB32F: return 3;
 			case ImageFormat::RGBA8: return 4;
+			case ImageFormat::RGBA16F: return 4;
 			case ImageFormat::RGBA32F: return 4;
 		}
 
