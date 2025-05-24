@@ -16,7 +16,7 @@ namespace PaulEngine
 	Buffer TextureImporter::ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical)
 	{
 		int width, height, channels;
-		stbi_set_flip_vertically_on_load(true);
+		stbi_set_flip_vertically_on_load(flipVertical);
 
 		unsigned char* imageData = nullptr;
 		{
