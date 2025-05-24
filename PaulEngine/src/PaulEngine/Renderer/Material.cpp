@@ -46,7 +46,9 @@ namespace PaulEngine
 				}
 				case ShaderParameterType::SamplerCube:
 				{
-					PE_CORE_WARN("SamplerCube material parameter not yet supported");
+					SamplerCubeShaderParameterTypeSpecification* samplerCubeParam = dynamic_cast<SamplerCubeShaderParameterTypeSpecification*>(parameter.get());
+					Ref<SamplerCubeShaderParameterTypeStorage> samplerCubeStorage = CreateRef<SamplerCubeShaderParameterTypeStorage>(0, samplerCubeParam->Binding);
+					AddParameterType(strippedName, samplerCubeStorage);
 					break;
 				}
 			}

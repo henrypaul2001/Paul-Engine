@@ -248,6 +248,23 @@ namespace PaulEngine
 
 			return CreateRef<Sampler2DArrayShaderParameterTypeStorage>(textureArrayHandle, binding);
 		}
+
+		static void WriteSamplerCubeObject(YAML::Emitter& out, SamplerCubeShaderParameterTypeStorage* samplerCubeStorageParameter)
+		{
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "Binding" << YAML::Value << samplerCubeStorageParameter->GetBinding();
+			out << YAML::Key << "TextureHandle" << YAML::Value << samplerCubeStorageParameter->TextureHandle;
+
+			out << YAML::EndMap;
+		}
+		static Ref<SamplerCubeShaderParameterTypeStorage> ReadSamplerCubeObject(YAML::Node& valueNode)
+		{
+			uint32_t binding = valueNode["Binding"].as<uint64_t>();
+			AssetHandle textureHandle = valueNode["TextureHandle"].as<AssetHandle>();
+
+			return CreateRef<SamplerCubeShaderParameterTypeStorage>(textureHandle, binding);
+		}
 	}
 
 	static std::string ShaderParameterTypeToString(ShaderParameterType type) {
@@ -257,6 +274,7 @@ namespace PaulEngine
 			case ShaderParameterType::UBO: return "UBO";
 			case ShaderParameterType::Sampler2D: return "Sampler2D";
 			case ShaderParameterType::Sampler2DArray: return "Sampler2DArray";
+			case ShaderParameterType::SamplerCube: return "SamplerCube";
 		}
 		PE_CORE_ASSERT(false, "Unknown shader parameter type!");
 		return "";
@@ -267,6 +285,7 @@ namespace PaulEngine
 		else if (input == "UBO") { return ShaderParameterType::UBO; }
 		else if (input == "Sampler2D") { return ShaderParameterType::Sampler2D; }
 		else if (input == "Sampler2DArray") { return ShaderParameterType::Sampler2DArray; }
+		else if (input == "SamplerCube") { return ShaderParameterType::SamplerCube; }
 		PE_CORE_ASSERT(false, "Unknown shader parameter type!");
 		return ShaderParameterType::None;
 	}
@@ -317,7 +336,11 @@ namespace PaulEngine
 				case ShaderParameterType::Sampler2DArray:
 					material.SetParameter(paramName, MaterialImporterUtils::ReadSampler2DArrayObject(value));
 					break;
+				case ShaderParameterType::SamplerCube:
+					material.SetParameter(paramName, MaterialImporterUtils::ReadSamplerCubeObject(value));
+					break;
 				}
+
 			}
 		}
 
@@ -366,6 +389,11 @@ namespace PaulEngine
 				case ShaderParameterType::Sampler2DArray:
 				{
 					MaterialImporterUtils::WriteSampler2DArrayObject(out, dynamic_cast<Sampler2DArrayShaderParameterTypeStorage*>(parameter.get()));
+					break;
+				}
+				case ShaderParameterType::SamplerCube:
+				{
+					MaterialImporterUtils::WriteSamplerCubeObject(out, dynamic_cast<SamplerCubeShaderParameterTypeStorage*>(parameter.get()));
 					break;
 				}
 			}
