@@ -1,4 +1,8 @@
 AssetRegistry:
+  - Handle: 266139391440945140
+    Filepath: textures\awesomeface.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 9629752857170529531
     Filepath: ..\..\assets\shaders/Skybox.glsl
     Persistent: true
@@ -7,18 +11,14 @@ AssetRegistry:
     Filepath: fonts\Bangers-Regular.ttf
     Persistent: false
     Type: AssetType::Font
-  - Handle: 266139391440945140
-    Filepath: textures\awesomeface.png
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 595089826126213518
     Filepath: ..\..\assets\materials/Line2DMaterial.pmat
     Persistent: true
@@ -27,14 +27,14 @@ AssetRegistry:
     Filepath: scenes\3DCube.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 5699979129781682678
-    Filepath: materials\CobbleFloor.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 2510263345310005911
     Filepath: scenes\Example.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 5699979129781682678
+    Filepath: materials\CobbleFloor.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
@@ -43,6 +43,10 @@ AssetRegistry:
     Filepath: scenes\Physics2D.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 172793675780015653
+    Filepath: textures\space_blanket\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 16608139281889772844
     Filepath: atlas\RPGpack.patlas
     Persistent: false
@@ -55,18 +59,26 @@ AssetRegistry:
     Filepath: scenes\AtlasScene.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 13522928005268544728
+    Filepath: materials\CobblePBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 260935277400713732
+    Filepath: materials\PBRTest.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 12706789786119448748
     Filepath: textures\tilemap_packed.png
     Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 1575296387178993679
-    Filepath: ..\..\assets\textures/dirtmask.jpg
-    Persistent: true
     Type: AssetType::Texture2D
   - Handle: 7412640952308102654
     Filepath: atlas\TinyTown.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 1575296387178993679
+    Filepath: ..\..\assets\textures/dirtmask.jpg
+    Persistent: true
+    Type: AssetType::Texture2D
   - Handle: 10162016685960967100
     Filepath: textures\cobble_floor\normal.png
     Persistent: false
@@ -75,6 +87,10 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
     Persistent: true
     Type: AssetType::Shader
+  - Handle: 3634995299478154298
+    Filepath: textures\space_blanket\height.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 803195346929345758
     Filepath: textures\space_blanket\normal.png
     Persistent: false
@@ -91,26 +107,30 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer2D_Text.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 14505388853857111747
-    Filepath: shaders/MaterialTest.glsl
-    Persistent: false
-    Type: AssetType::Shader
   - Handle: 15601380242474439612
     Filepath: textures\cobble_floor\displace.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 14505388853857111747
+    Filepath: shaders/MaterialTest.glsl
+    Persistent: false
+    Type: AssetType::Shader
   - Handle: 1897318988700985028
     Filepath: materials\TestMaterial.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 11885824974798216900
-    Filepath: scenes\3DScene.paul
-    Persistent: false
-    Type: AssetType::Scene
+  - Handle: 12386273623327009079
+    Filepath: ..\..\assets\shaders/Renderer3D_DefaultLitPBR.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 13498097975499482490
     Filepath: textures\earth_albedo.jpg
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 11885824974798216900
+    Filepath: scenes\3DScene.paul
+    Persistent: false
+    Type: AssetType::Scene
   - Handle: 9022188185105073562
     Filepath: ..\..\assets\materials/Quad2DMaterial.pmat
     Persistent: true
@@ -135,42 +155,42 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer3D_DefaultLit.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 5934277060522405221
-    Filepath: materials\TestDefault.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 17478225128134824907
     Filepath: shaders\ArrayedUBOTest.glsl
     Persistent: false
     Type: AssetType::Shader
+  - Handle: 5934277060522405221
+    Filepath: materials\TestDefault.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 16657457123502607496
     Filepath: textures\earth_specular.jpg
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 14877410352446370834
+    Filepath: materials\SpaceBlanket.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 792892647836043778
     Filepath: materials\earth.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 14877410352446370834
-    Filepath: materials\SpaceBlanket.pmat
-    Persistent: false
+  - Handle: 15073402538144088202
+    Filepath: ..\..\assets\materials/DefaultLit.pmat
+    Persistent: true
     Type: AssetType::Material
   - Handle: 10529896942821464162
     Filepath: textures\cobble_floor\specular.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 15073402538144088202
-    Filepath: ..\..\assets\materials/DefaultLit.pmat
-    Persistent: true
-    Type: AssetType::Material
-  - Handle: 11816000857853238022
-    Filepath: ..\..\assets\shaders/MipChainUpsample.glsl
-    Persistent: true
-    Type: AssetType::Shader
   - Handle: 17945211788953022010
     Filepath: textures\cobble_floor\diffuse.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 11816000857853238022
+    Filepath: ..\..\assets\shaders/MipChainUpsample.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 14002643597453130384
     Filepath: ..\..\assets\shaders/DepthShader.glsl
     Persistent: true
@@ -203,3 +223,15 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/GammaTonemap.glsl
     Persistent: true
     Type: AssetType::Shader
+  - Handle: 2104311818284452138
+    Filepath: textures\space_blanket\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 2965463127839537361
+    Filepath: textures\cobble_floor\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 17316303137717305481
+    Filepath: scenes\PBRScene.paul
+    Persistent: false
+    Type: AssetType::Scene

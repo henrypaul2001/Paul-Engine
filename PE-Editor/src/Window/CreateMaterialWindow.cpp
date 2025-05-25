@@ -85,9 +85,11 @@ namespace PaulEngine
 
 			static std::unordered_map<const char*, std::filesystem::path> nameToFilepath;
 			nameToFilepath["DefaultLit"] = engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl";
+			nameToFilepath["DefaultLitPBR"] = engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLitPBR.glsl";
 
 			static const char* shaderNames[] = {
 				"DefaultLit",
+				"DefaultLitPBR"
 			};
 
 			if (m_DropDownShader != -1) {
@@ -95,7 +97,7 @@ namespace PaulEngine
 			}
 			if (ImGui::BeginCombo("##EngineShaderDropDown", label.c_str())) {
 
-				for (int i = 0; i < 1; i++) {
+				for (int i = 0; i < 2; i++) {
 					bool isSelected = m_DropDownShader == i;
 					if (ImGui::Selectable(shaderNames[i], isSelected)) {
 						m_DropDownShader = i;

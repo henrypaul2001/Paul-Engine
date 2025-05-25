@@ -1,0 +1,64 @@
+Scene: Untitled
+Entities:
+  - Entity: 16817889263131600831
+    TagComponent:
+      Tag: Point Light
+    TransformComponent:
+      Position: [-1.6633213, 1.0757453, 4.151152]
+      Rotation: [0, 0, 0]
+      Scale: [0.1, 0.1, 0.1]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 25
+      Diffuse: [5, 0, 0]
+      Specular: [0.5, 0.5, 0.5]
+      Ambient: [0.1, 0.1, 0.1]
+      CastShadows: false
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 50
+  - Entity: 6024276429591692513
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [2.2947966e-06, 3.7978952, 3.3484585]
+      Rotation: [-2.3857338, 2.2789507e-07, 3.1415923]
+      Scale: [0.5000021, 0.49999994, 1.0000002]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [1, 1, 1]
+      Specular: [1, 1, 1]
+      Ambient: [0.1, 0.1, 0.1]
+      CastShadows: true
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapCameraDistance: 20
+      ShadowMapProjectionSize: 20
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 150
+  - Entity: 7150846805327674574
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+    MeshRendererComponent:
+      MaterialHandle: 13522928005268544728
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2

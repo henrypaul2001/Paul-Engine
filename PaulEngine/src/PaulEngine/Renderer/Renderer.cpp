@@ -76,6 +76,8 @@ namespace PaulEngine {
 		AssetHandle DefaultLitShaderHandle;
 		AssetHandle DefaultLitMaterialHandle;
 
+		AssetHandle DefaultLitPBRShaderHandle;
+
 		struct CameraData
 		{
 			glm::mat4 ViewProjection;
@@ -464,6 +466,8 @@ namespace PaulEngine {
 
 		s_RenderData.DefaultLitShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl", true);
 		s_RenderData.DefaultLitMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLit.pmat", true);
+
+		s_RenderData.DefaultLitPBRShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLitPBR.glsl", true);
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)
