@@ -4,12 +4,12 @@ ShaderParams:
   - Name: SpecularMap
     Type: Sampler2D
     Value:
-      Binding: 1
+      Binding: 4
       TextureHandle: 10529896942821464162
   - Name: AlbedoMap
     Type: Sampler2D
     Value:
-      Binding: 0
+      Binding: 3
       TextureHandle: 17945211788953022010
   - Name: MaterialValues
     Type: UBO
@@ -40,10 +40,10 @@ ShaderParams:
   - Name: NormalMap
     Type: Sampler2D
     Value:
-      Binding: 2
+      Binding: 5
       TextureHandle: 10162016685960967100
   - Name: DisplacementMap
     Type: Sampler2D
     Value:
-      Binding: 3
+      Binding: 6
       TextureHandle: 0

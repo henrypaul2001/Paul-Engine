@@ -706,17 +706,17 @@ namespace PaulEngine
 				if (dirLightShadowInput) {
 					Ref<Texture2DArray> dirLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(dirLightShadowInput->TextureHandle);
 					PE_CORE_ASSERT(dirLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");
-					dirLightShadowTexture->Bind(4);
+					dirLightShadowTexture->Bind(0);
 				}
 				if (spotLightShadowInput) {
 					Ref<Texture2DArray> spotLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(spotLightShadowInput->TextureHandle);
 					PE_CORE_ASSERT(spotLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid spot light shadow map type");
-					spotLightShadowTexture->Bind(5);
+					spotLightShadowTexture->Bind(1);
 				}
 				if (pointLightShadowInput) {
 					Ref<TextureCubemapArray> pointLightShadowTexture = AssetManager::GetAsset<TextureCubemapArray>(pointLightShadowInput->TextureHandle);
 					PE_CORE_ASSERT(pointLightShadowTexture->GetType() == AssetType::TextureCubemapArray, "Invalid point light shadow map type");
-					pointLightShadowTexture->Bind(6);
+					pointLightShadowTexture->Bind(2);
 				}
 
 				Renderer::EndScene();

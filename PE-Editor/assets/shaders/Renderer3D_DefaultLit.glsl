@@ -137,13 +137,13 @@ layout(std140, binding = 3) uniform Mat_MaterialValues
 	int UseDisplacementMap;
 } u_MaterialValues;
 
-layout(binding = 0) uniform sampler2D Mat_AlbedoMap;
-layout(binding = 1) uniform sampler2D Mat_SpecularMap;
-layout(binding = 2) uniform sampler2D Mat_NormalMap;
-layout(binding = 3) uniform sampler2D Mat_DisplacementMap;
-layout(binding = 4) uniform sampler2DArray DirectionalLightShadowMapArray;
-layout(binding = 5) uniform sampler2DArray SpotLightShadowMapArray;
-layout(binding = 6) uniform samplerCubeArray PointLightShadowMapArray;
+layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
+layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
+layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
+layout(binding = 3) uniform sampler2D Mat_AlbedoMap;
+layout(binding = 4) uniform sampler2D Mat_SpecularMap;
+layout(binding = 5) uniform sampler2D Mat_NormalMap;
+layout(binding = 6) uniform sampler2D Mat_DisplacementMap;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;

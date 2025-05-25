@@ -5,11 +5,11 @@ ShaderParams:
     Type: Sampler2D
     Value:
       Binding: 1
-      TextureHandle: 0
+      TextureHandle: 4
   - Name: AlbedoMap
     Type: Sampler2D
     Value:
-      Binding: 0
+      Binding: 3
       TextureHandle: 0
   - Name: MaterialValues
     Type: UBO
@@ -40,10 +40,10 @@ ShaderParams:
   - Name: NormalMap
     Type: Sampler2D
     Value:
-      Binding: 2
+      Binding: 5
       TextureHandle: 0
   - Name: DisplacementMap
     Type: Sampler2D
     Value:
-      Binding: 3
+      Binding: 6
       TextureHandle: 0
