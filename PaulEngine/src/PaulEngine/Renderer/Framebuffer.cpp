@@ -149,21 +149,37 @@ namespace PaulEngine
 
 	void FramebufferTexture2DAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		AssetManager::GetAsset<Texture2D>(m_TextureHandle)->Resize(width, height);
+		Ref<Texture2D> textureAsset = AssetManager::GetAsset<Texture2D>(m_TextureHandle);
+		if (textureAsset)
+		{
+			textureAsset->Resize(width, height);
+		}
 	}
 
 	void FramebufferTexture2DArrayAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle)->Resize(width, height);
+		Ref<Texture2DArray> textureAsset = AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle);
+		if (textureAsset)
+		{
+			textureAsset->Resize(width, height);
+		}
 	}
 
 	void FramebufferTextureCubemapAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		AssetManager::GetAsset<TextureCubemap>(m_CubemapHandle)->Resize(width, height);
+		Ref<TextureCubemap> textureAsset = AssetManager::GetAsset<TextureCubemap>(m_CubemapHandle);
+		if (textureAsset)
+		{
+			textureAsset->Resize(width, height);
+		}
 	}
 
 	void FramebufferTextureCubemapArrayAttachment::Resize(const uint32_t width, const uint32_t height)
 	{
-		AssetManager::GetAsset<TextureCubemapArray>(m_CubemapHandle)->Resize(width, height);
+		Ref<TextureCubemapArray> textureAsset = AssetManager::GetAsset<TextureCubemapArray>(m_CubemapHandle);
+		if (textureAsset)
+		{
+			textureAsset->Resize(width, height);
+		}
 	}
 }
