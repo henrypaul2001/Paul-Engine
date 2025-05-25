@@ -323,7 +323,12 @@ namespace PaulEngine
 
 						// Display viewport
 						FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_Framebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-						uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
+						Ref<Texture2D> textureAsset = texAttachment->GetTexture();
+						uint32_t textureID = 0;
+						if (textureAsset)
+						{
+							textureID = textureAsset->GetRendererID();
+						}
 						ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 					}
 				}
