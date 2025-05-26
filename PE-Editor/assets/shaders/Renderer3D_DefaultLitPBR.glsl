@@ -271,22 +271,22 @@ float DistributionGGX(vec3 N, vec3 H, float Roughness)
 	float NdotH = max(dot(N, H), 0.0);
 	float NdotH2 = NdotH * NdotH;
 
-	float nom = a2;
+	float num = a2;
 	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
 	denom = PI * denom * denom;
 
-	return nom / denom;
+	return num / denom;
 }
 
 float GeometrySchlickGGX(float NdotV, float Roughness)
 {
-	float r = (Roughness = 1.0);
+	float r = (Roughness + 1.0);
 	float k = (r * r) / 8.0;
 
-	float nom = NdotV;
+	float num = NdotV;
 	float denom = NdotV * (1.0 - k) + k;
 
-	return nom / denom;
+	return num / denom;
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
@@ -381,17 +381,15 @@ vec3 DirectionalLightReflectance(int lightIndex, vec3 MaterialAlbedo, float Mate
 	float shadowDistance = u_SceneData.DirLights[lightIndex].Ambient.w;
 	float minBias = u_SceneData.DirLights[lightIndex].Diffuse.w;
 	float maxBias = u_SceneData.DirLights[lightIndex].Specular.w;
+	float shadow = 0.0;
 	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
 	{
-		float shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, N);
-		kD *= (1.0 - shadow);
-		specular *= (1.0 - shadow);
-		radiance *= (1.0 - shadow);
+		shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, N);
 	}
 
-	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * radiance * NdotL;
-
-	return Lo;
+	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo * MaterialAO;
+	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
+	return Lo + ambient;
 }
 
 vec3 PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
@@ -412,6 +410,7 @@ vec3 PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMe
 
 	float dist = length(lightPos.xyz - v_VertexData.WorldFragPos);
 	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
+	//float attenuation = 1.0 / (dist * dist);
 
 	vec3 radiance = u_SceneData.PointLights[lightIndex].Diffuse.rgb * attenuation;
 
@@ -437,18 +436,16 @@ vec3 PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMe
 	float minBias = u_SceneData.PointLights[lightIndex].ShadowData.r;
 	float maxBias = u_SceneData.PointLights[lightIndex].ShadowData.g;
 	float farPlane = u_SceneData.PointLights[lightIndex].ShadowData.b;
+	float shadow = 0.0;
 	if (bool(u_SceneData.PointLights[lightIndex].ShadowData.w))
 	{
-		float shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, N, farPlane);
-		kD *= (1.0 - shadow);
-		specular *= (1.0 - shadow);
-		radiance *= (1.0 - shadow);
-		NdotL *= (1.0 - shadow);
+		shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, N, farPlane);
 	}
 
-	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * radiance * NdotL;
+	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO;
+	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
 
-	return Lo;
+	return Lo + ambient;
 }
 
 vec3 SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
@@ -503,21 +500,19 @@ vec3 SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMet
 	specular *= intensity;
 	radiance *= intensity;
 
+
 	// shadow contribution
 	float minBias = u_SceneData.SpotLights[lightIndex].ShadowData.g;
 	float maxBias = u_SceneData.SpotLights[lightIndex].ShadowData.b;
+	float shadow = 0.0;
 	if (bool(u_SceneData.SpotLights[lightIndex].ShadowData.r))
 	{
-		float shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, N);
-		kD *= (1.0 - shadow);
-		specular *= (1.0 - shadow);
-		radiance *= (1.0 - shadow);
-		NdotL *= (1.0 - shadow);
+		shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, N);
 	}
 
-	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * radiance * NdotL;
-
-	return Lo;
+	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO;
+	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
+	return Lo + ambient;
 }
 
 void main()
@@ -554,6 +549,9 @@ void main()
 	float MaterialMetallic = MetallicSample * u_MaterialValues.Metalness;
 	float MaterialRoughness = RoughnessSample * u_MaterialValues.Roughness;
 	float MaterialAO = AOSample * u_MaterialValues.AO;
+
+	MaterialRoughness = clamp(MaterialRoughness, 0.05, 0.8);
+	MaterialMetallic = clamp(MaterialMetallic, 0.0, 0.8);
 
 	vec3 N = Normal;
 	vec3 V = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
