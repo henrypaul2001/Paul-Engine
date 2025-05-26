@@ -18,6 +18,7 @@
 namespace PaulEngine
 {
 	static glm::mat4 s_CubeTransform = glm::mat4(1.0f);
+	static glm::vec3 s_LightColour = glm::vec3(1.0f);
 	CreateMaterialWindow::CreateMaterialWindow(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle), m_ViewportSize(128.0f, 128.0f) {}
 
 	void CreateMaterialWindow::Init()
@@ -174,6 +175,7 @@ namespace PaulEngine
 				ImGui::BeginGroup();
 				ImGui::BeginChild("preview", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
 				ImGui::SeparatorText("Material Preview");
+				ImGui::ColorEdit3("Light Colour", &s_LightColour[0], ImGuiColorEditFlags_DisplayRGB);
 
 				if (isShaderValid) {
 					ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -191,6 +193,9 @@ namespace PaulEngine
 					Renderer::BeginScene(m_Camera, glm::mat4(1.0f));
 					Renderer::PointLight pointLight;
 					pointLight.Position = glm::vec4(0.0f, 0.0f, 0.0f, 25.0f);
+					pointLight.Diffuse = glm::vec4(s_LightColour, 1.0f);
+					pointLight.Specular = glm::vec4(s_LightColour, 1.0f);
+					pointLight.Ambient = glm::vec4(s_LightColour * 0.1f, 1.0f);
 					Renderer::SubmitPointLightSource(pointLight);
 					Renderer::DrawDefaultCubeImmediate(m_Material, s_CubeTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
 					Renderer::EndScene();
