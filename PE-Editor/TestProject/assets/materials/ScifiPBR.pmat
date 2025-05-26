@@ -1,0 +1,62 @@
+MaterialAsset: ScifiPBR
+ShaderHandle: 12386273623327009079
+ShaderParams:
+  - Name: MetallicMap
+    Type: Sampler2D
+    Value:
+      Binding: 5
+      TextureHandle: 6317583192919930694
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 3
+      TextureHandle: 13267415278556381910
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 3
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float
+          Name: Metalness
+          Value: 1
+        - Type: Float
+          Name: Roughness
+          Value: 1
+        - Type: Float
+          Name: AO
+          Value: 1
+        - Type: Float
+          Name: HeightScale
+          Value: 0.03
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
+        - Type: Int
+          Name: UseNormalMap
+          Value: 1
+        - Type: Int
+          Name: UseDisplacementMap
+          Value: 1
+  - Name: DisplacementMap
+    Type: Sampler2D
+    Value:
+      Binding: 8
+      TextureHandle: 2587535130506214191
+  - Name: RoughnessMap
+    Type: Sampler2D
+    Value:
+      Binding: 6
+      TextureHandle: 12322924423154327800
+  - Name: AOMap
+    Type: Sampler2D
+    Value:
+      Binding: 7
+      TextureHandle: 13109589375750965028
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 4
+      TextureHandle: 16753372314544090665

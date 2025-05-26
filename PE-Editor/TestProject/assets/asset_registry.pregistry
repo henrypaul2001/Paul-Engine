@@ -11,14 +11,14 @@ AssetRegistry:
     Filepath: fonts\Bangers-Regular.ttf
     Persistent: false
     Type: AssetType::Font
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 4817566063772792482
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 595089826126213518
     Filepath: ..\..\assets\materials/Line2DMaterial.pmat
     Persistent: true
@@ -35,6 +35,10 @@ AssetRegistry:
     Filepath: materials\CobbleFloor.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 16753372314544090665
+    Filepath: textures\sci-fi_wall\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 14046064469291239366
     Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
@@ -43,32 +47,36 @@ AssetRegistry:
     Filepath: scenes\Physics2D.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 172793675780015653
-    Filepath: textures\space_blanket\ao.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 16608139281889772844
     Filepath: atlas\RPGpack.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 172793675780015653
+    Filepath: textures\space_blanket\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 14095763519938001238
     Filepath: atlas\RPGpack2.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 5404285593151240272
+    Filepath: materials\LeatherPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 6022420030894400195
+    Filepath: textures\brick_wall\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 5273167371312302242
     Filepath: scenes\AtlasScene.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 13522928005268544728
-    Filepath: materials\CobblePBR.pmat
-    Persistent: false
-    Type: AssetType::Material
-  - Handle: 260935277400713732
-    Filepath: materials\PBRTest.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 12706789786119448748
     Filepath: textures\tilemap_packed.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 4417004561359234411
+    Filepath: textures\metal_vent\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 7412640952308102654
@@ -79,20 +87,20 @@ AssetRegistry:
     Filepath: ..\..\assets\textures/dirtmask.jpg
     Persistent: true
     Type: AssetType::Texture2D
-  - Handle: 10162016685960967100
-    Filepath: textures\cobble_floor\normal.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 13960601534352678645
-    Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
-    Persistent: true
-    Type: AssetType::Shader
   - Handle: 3634995299478154298
     Filepath: textures\space_blanket\height.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 803195346929345758
     Filepath: textures\space_blanket\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 13960601534352678645
+    Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 10162016685960967100
+    Filepath: textures\cobble_floor\normal.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 1083992321171041232
@@ -107,46 +115,54 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer2D_Text.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 15601380242474439612
-    Filepath: textures\cobble_floor\displace.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 14505388853857111747
     Filepath: shaders/MaterialTest.glsl
     Persistent: false
     Type: AssetType::Shader
+  - Handle: 15601380242474439612
+    Filepath: textures\cobble_floor\displace.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15199826332006340637
+    Filepath: textures\metal_vent\metal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 1897318988700985028
     Filepath: materials\TestMaterial.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 12386273623327009079
-    Filepath: ..\..\assets\shaders/Renderer3D_DefaultLitPBR.glsl
-    Persistent: true
-    Type: AssetType::Shader
-  - Handle: 13498097975499482490
-    Filepath: textures\earth_albedo.jpg
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 11885824974798216900
     Filepath: scenes\3DScene.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 13498097975499482490
+    Filepath: textures\earth_albedo.jpg
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 12386273623327009079
+    Filepath: ..\..\assets\shaders/Renderer3D_DefaultLitPBR.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 9022188185105073562
     Filepath: ..\..\assets\materials/Quad2DMaterial.pmat
     Persistent: true
     Type: AssetType::Material
+  - Handle: 3192248531719347166
+    Filepath: textures\rusted_iron\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 1984638280190401155
     Filepath: ..\..\assets\materials/Circle2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
+  - Handle: 8694202715835494202
+    Filepath: ..\..\assets\materials/Text2DMaterial.pmat
     Persistent: true
     Type: AssetType::Material
   - Handle: 6036446631686507032
     Filepath: shaders/TextureArrayTest.glsl
     Persistent: false
     Type: AssetType::Shader
-  - Handle: 8694202715835494202
-    Filepath: ..\..\assets\materials/Text2DMaterial.pmat
-    Persistent: true
-    Type: AssetType::Material
   - Handle: 5492584121324616097
     Filepath: materials/TextureArrayMaterial.pmat
     Persistent: false
@@ -155,6 +171,10 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer3D_DefaultLit.glsl
     Persistent: true
     Type: AssetType::Shader
+  - Handle: 13443798543085402618
+    Filepath: textures\rusted_iron\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 17478225128134824907
     Filepath: shaders\ArrayedUBOTest.glsl
     Persistent: false
@@ -167,38 +187,46 @@ AssetRegistry:
     Filepath: textures\earth_specular.jpg
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 14877410352446370834
-    Filepath: materials\SpaceBlanket.pmat
+  - Handle: 11641754153238842936
+    Filepath: materials\PlasticPBR.pmat
     Persistent: false
     Type: AssetType::Material
   - Handle: 792892647836043778
     Filepath: materials\earth.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 15073402538144088202
-    Filepath: ..\..\assets\materials/DefaultLit.pmat
-    Persistent: true
+  - Handle: 14877410352446370834
+    Filepath: materials\SpaceBlanket.pmat
+    Persistent: false
     Type: AssetType::Material
   - Handle: 10529896942821464162
     Filepath: textures\cobble_floor\specular.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 17945211788953022010
-    Filepath: textures\cobble_floor\diffuse.png
-    Persistent: false
-    Type: AssetType::Texture2D
+  - Handle: 15073402538144088202
+    Filepath: ..\..\assets\materials/DefaultLit.pmat
+    Persistent: true
+    Type: AssetType::Material
   - Handle: 11816000857853238022
     Filepath: ..\..\assets\shaders/MipChainUpsample.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 14002643597453130384
-    Filepath: ..\..\assets\shaders/DepthShader.glsl
-    Persistent: true
-    Type: AssetType::Shader
+  - Handle: 17945211788953022010
+    Filepath: textures\cobble_floor\diffuse.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 18407604419576479724
     Filepath: textures\space_blanket\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 13109589375750965028
+    Filepath: textures\sci-fi_wall\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14002643597453130384
+    Filepath: ..\..\assets\shaders/DepthShader.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 15644780486505557580
     Filepath: textures\space_blanket\metallic.png
     Persistent: false
@@ -235,3 +263,211 @@ AssetRegistry:
     Filepath: scenes\PBRScene.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 6846707220170028532
+    Filepath: textures\rusted_iron\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 12446052345689294350
+    Filepath: textures\plastic\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15981315749699214463
+    Filepath: textures\marble_tile\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 10327331717423470595
+    Filepath: materials\RustedIronPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 18267150240899827061
+    Filepath: materials\MarbleTilePBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 6604831647599126162
+    Filepath: textures\gold\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 9321072322867044035
+    Filepath: materials\CobblePBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 4848280801785276419
+    Filepath: textures\rusted_iron\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 11189163735175720657
+    Filepath: textures\rusted_iron\metallic.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 5317045289054481295
+    Filepath: materials\SpaceBlanketPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 5182932685724668185
+    Filepath: textures\brick_wall\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 17490890743464863078
+    Filepath: textures\brick_wall\displacement.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 6975251427835361187
+    Filepath: textures\brick_wall\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 18266325272027338574
+    Filepath: textures\brick_wall\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14926567481809532121
+    Filepath: textures\brick_wall\specular.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 12856186902108215016
+    Filepath: materials\BrickWallPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 8915488753462634989
+    Filepath: textures\gold\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 6704486786259494027
+    Filepath: textures\gold\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 5315122133693836471
+    Filepath: textures\gold\metallic.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 12196545086966012446
+    Filepath: textures\gold\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 7840106116855404345
+    Filepath: materials\GoldPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 1198650131877630237
+    Filepath: textures\leather\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 2353601493574222107
+    Filepath: textures\leather\height.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 5797547736113681714
+    Filepath: textures\leather\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 16570786726627200351
+    Filepath: textures\leather\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 3768930464094628223
+    Filepath: textures\marble_tile\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 9952585698058264345
+    Filepath: textures\marble_tile\height.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 13749762012595078847
+    Filepath: textures\marble_tile\metal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 4838858534030856914
+    Filepath: textures\metal_vent\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 3678118412805230954
+    Filepath: textures\marble_tile\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 2234126318046469328
+    Filepath: textures\marble_tile\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 13518560812662968470
+    Filepath: textures\metal_grid\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15822576708931449106
+    Filepath: textures\metal_grid\AO.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 8232735041408772836
+    Filepath: textures\metal_grid\metal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15565804452399579614
+    Filepath: textures\metal_grid\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 2867233175135387278
+    Filepath: textures\metal_grid\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14953401462234966565
+    Filepath: materials\MetalGridPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 12237783523375073811
+    Filepath: textures\metal_vent\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14162312970359795253
+    Filepath: textures\metal_vent\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15976540339320221577
+    Filepath: textures\metal_vent\height.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 7039009388700113622
+    Filepath: materials\MetalVentPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 17567023037920077665
+    Filepath: textures\plastic\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 16134729670087873108
+    Filepath: textures\plastic\metallic.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 4930401161151728174
+    Filepath: textures\plastic\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 427062276693863001
+    Filepath: textures\plastic\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 13267415278556381910
+    Filepath: textures\sci-fi_wall\albedo.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 2587535130506214191
+    Filepath: textures\sci-fi_wall\displacement.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 6317583192919930694
+    Filepath: textures\sci-fi_wall\metallic.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 12322924423154327800
+    Filepath: textures\sci-fi_wall\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 6052652825163143337
+    Filepath: materials\ScifiPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 400681757883519208
+    Filepath: materials\WhitePBR.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 14213523979022365877
+    Filepath: materials\SiliconColourPBR.pmat
+    Persistent: false
+    Type: AssetType::Material

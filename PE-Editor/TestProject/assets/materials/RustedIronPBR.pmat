@@ -1,0 +1,62 @@
+MaterialAsset: RustedIronPBR
+ShaderHandle: 12386273623327009079
+ShaderParams:
+  - Name: MetallicMap
+    Type: Sampler2D
+    Value:
+      Binding: 5
+      TextureHandle: 11189163735175720657
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 3
+      TextureHandle: 3192248531719347166
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 3
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float
+          Name: Metalness
+          Value: 1
+        - Type: Float
+          Name: Roughness
+          Value: 1
+        - Type: Float
+          Name: AO
+          Value: 1
+        - Type: Float
+          Name: HeightScale
+          Value: 0
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
+        - Type: Int
+          Name: UseNormalMap
+          Value: 1
+        - Type: Int
+          Name: UseDisplacementMap
+          Value: 0
+  - Name: DisplacementMap
+    Type: Sampler2D
+    Value:
+      Binding: 8
+      TextureHandle: 0
+  - Name: RoughnessMap
+    Type: Sampler2D
+    Value:
+      Binding: 6
+      TextureHandle: 6846707220170028532
+  - Name: AOMap
+    Type: Sampler2D
+    Value:
+      Binding: 7
+      TextureHandle: 4848280801785276419
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 4
+      TextureHandle: 13443798543085402618
