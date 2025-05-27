@@ -63,6 +63,8 @@ namespace PaulEngine {
 		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 		static void DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 
+		static bool SetDefaultMaterial(AssetHandle materialHandle);
+
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 
 		struct Statistics

@@ -500,7 +500,6 @@ vec3 SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMet
 	specular *= intensity;
 	radiance *= intensity;
 
-
 	// shadow contribution
 	float minBias = u_SceneData.SpotLights[lightIndex].ShadowData.g;
 	float maxBias = u_SceneData.SpotLights[lightIndex].ShadowData.b;

@@ -9,6 +9,7 @@ namespace PaulEngine
 		std::string Name = "Untitled Project";
 		
 		AssetHandle StartScene = 0;
+		AssetHandle DefaultMaterial = 0;
 		std::filesystem::path AssetDirectory;
 		std::filesystem::path AssetRegistryPath;
 		std::filesystem::path ProjectDirectory;

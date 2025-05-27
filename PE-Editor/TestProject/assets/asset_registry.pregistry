@@ -471,3 +471,11 @@ AssetRegistry:
     Filepath: materials\SiliconColourPBR.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 6395020240290919742
+    Filepath: scenes\BugTest.paul
+    Persistent: false
+    Type: AssetType::Scene
+  - Handle: 5842648138386961006
+    Filepath: ..\..\assets\materials/DefaultLitPBR.pmat
+    Persistent: true
+    Type: AssetType::Material

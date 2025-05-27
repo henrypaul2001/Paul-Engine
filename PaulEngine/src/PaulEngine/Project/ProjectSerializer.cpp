@@ -19,6 +19,7 @@ namespace PaulEngine
 		out << YAML::BeginMap;
 		out << YAML::Key << "Name" << YAML::Value << spec.Name;
 		out << YAML::Key << "StartScene" << YAML::Value << (uint64_t)spec.StartScene;
+		out << YAML::Key << "DefaultMaterial" << YAML::Value << (uint64_t)spec.DefaultMaterial;
 		out << YAML::Key << "AssetDirectory" << YAML::Value << spec.AssetDirectory.string();
 		out << YAML::Key << "AssetRegistryPath" << YAML::Value << spec.AssetRegistryPath.string();
 		out << YAML::EndMap;
@@ -47,6 +48,7 @@ namespace PaulEngine
 
 		spec.Name = projectNode["Name"].as<std::string>();
 		spec.StartScene = projectNode["StartScene"].as<uint64_t>();
+		spec.DefaultMaterial = projectNode["DefaultMaterial"].as<uint64_t>();
 		spec.AssetDirectory = projectNode["AssetDirectory"].as<std::string>();
 		spec.AssetRegistryPath = projectNode["AssetRegistryPath"].as<std::string>();
 

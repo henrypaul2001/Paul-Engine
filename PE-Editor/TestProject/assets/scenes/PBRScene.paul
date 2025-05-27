@@ -1,5 +1,31 @@
 Scene: Untitled
 Entities:
+  - Entity: 7933029862440823284
+    TagComponent:
+      Tag: Spot Light
+    TransformComponent:
+      Position: [3.5322747, 6.2397785, 8.968737]
+      Rotation: [-0.41976404, 0.041773286, -0.018635118]
+      Scale: [0.099999964, 0.10000011, 0.10000006]
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    SpotLightComponent:
+      Range: 20
+      InnerCutoff: 20
+      OuterCutoff: 30
+      Diffuse: [10, 10, 10]
+      Specular: [0, 0, 0]
+      Ambient: [0, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0
+      ShadowMaxBias: 0.01
+      ShadowMapNearClip: 1.31
+      ShadowMapFarClip: 100
   - Entity: 16418724243234588683
     TagComponent:
       Tag: PBR Cube
@@ -196,7 +222,7 @@ Entities:
     TagComponent:
       Tag: Point Light
     TransformComponent:
-      Position: [2.2890935, 0.11932498, -3.2504106]
+      Position: [0.827664, 0.119325034, -3.5037913]
       Rotation: [0, 0, 0]
       Scale: [0.1, 0.1, 0.1]
     MeshRendererComponent:

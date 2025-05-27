@@ -1,0 +1,54 @@
+Scene: Untitled
+Entities:
+  - Entity: 8197433350181279149
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [18.251238, -4.1998863, 0]
+      Rotation: [0, 0, 0]
+      Scale: [25, 1, 25]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9217069567478455850
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [-9.322631, 0.34226108, 0.0046506794]
+      Rotation: [-2.3561945, 1.570308, -3.1415317]
+      Scale: [0.9999638, 0.9999999, 0.99999076]
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [0.5, 0.5, 0.5]
+      Specular: [0.5, 0.5, 0.5]
+      Ambient: [0.1, 0.1, 0.1]
+      CastShadows: true
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapCameraDistance: 20
+      ShadowMapProjectionSize: 20
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 150
+  - Entity: 14014467735545798880
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [0, -5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [25, 1, 25]
+    MeshRendererComponent:
+      MaterialHandle: 7039009388700113622
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2

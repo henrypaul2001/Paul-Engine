@@ -77,6 +77,9 @@ namespace PaulEngine {
 		AssetHandle DefaultLitMaterialHandle;
 
 		AssetHandle DefaultLitPBRShaderHandle;
+		AssetHandle DefaultLitPBRMaterialHandle;
+
+		AssetHandle DefaultMaterial;
 
 		struct CameraData
 		{
@@ -366,7 +369,7 @@ namespace PaulEngine {
 
 		DrawSubmission draw;
 		draw.VertexArray = vertexArray;
-		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultLitMaterialHandle;
+		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultMaterial;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
@@ -446,6 +449,17 @@ namespace PaulEngine {
 		s_RenderData.Stats.DrawCalls++;
 	}
 
+	bool Renderer::SetDefaultMaterial(AssetHandle materialHandle)
+	{
+		if (AssetManager::IsAssetHandleValid(materialHandle))
+		{
+			s_RenderData.DefaultMaterial = materialHandle;
+			return true;
+		}
+		PE_CORE_ERROR("Invalid material handle '{0}'", (uint64_t)materialHandle);
+		return false;
+	}
+
 	void Renderer::ResetStats()
 	{
 		s_RenderData.Stats.DrawCalls = 0;
@@ -468,6 +482,12 @@ namespace PaulEngine {
 		s_RenderData.DefaultLitMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLit.pmat", true);
 
 		s_RenderData.DefaultLitPBRShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLitPBR.glsl", true);
+		s_RenderData.DefaultLitPBRMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitPBR.pmat", true);
+
+		if (!SetDefaultMaterial(Project::GetActive()->GetSpecification().DefaultMaterial))
+		{
+			SetDefaultMaterial(s_RenderData.DefaultLitMaterialHandle);
+		}
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)
