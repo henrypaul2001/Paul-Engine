@@ -1,5 +1,33 @@
 Scene: Untitled
 Entities:
+  - Entity: 1343193191301409956
+    TagComponent:
+      Tag: Child
+    TransformComponent:
+      Position: [-2.266307, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15310629311584878301
+    TagComponent:
+      Tag: Parent
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 3800346603458594850
     TagComponent:
       Tag: PointLight
@@ -204,7 +232,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0783784
+        AspectRatio: 2.074224
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false
@@ -240,7 +268,7 @@ Entities:
     TagComponent:
       Tag: Cube
     TransformComponent:
-      Position: [0.04043591, 0, 0]
+      Position: [-13.454039, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [4.75, 4.75, 4.75]
     MeshRendererComponent:

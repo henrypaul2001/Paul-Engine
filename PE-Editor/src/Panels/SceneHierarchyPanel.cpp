@@ -339,10 +339,10 @@ namespace PaulEngine
 		ImGui::PopStyleVar();
 
 		// Transform
-		DrawComponent<ComponentTransform>("Transform Component", entity, false, [](ComponentTransform& component) {
-			glm::vec3 position = component.Position();
-			glm::vec3 rotationDegrees = glm::degrees(component.Rotation());
-			glm::vec3 scale = component.Scale();
+		DrawComponent<ComponentTransform>("Transform Component", entity, false, [entity](ComponentTransform& component) {
+			glm::vec3 position = component.LocalPosition();
+			glm::vec3 rotationDegrees = glm::degrees(component.LocalRotation());
+			glm::vec3 scale = component.LocalScale();
 			if (DrawVec3Control("Position", position, 0.0f)) { component.SetPosition(position); }
 			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) { component.SetRotation(glm::radians(rotationDegrees)); }
 			if (DrawVec3Control("Scale", scale, 1.0f)) { component.SetScale(scale); }

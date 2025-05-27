@@ -26,43 +26,67 @@ namespace PaulEngine
 
 	struct ComponentTransform {
 	public:
-		const glm::vec3& Position() const	{ return m_Position; }
-		const glm::vec3& Rotation() const	{ return m_Rotation; }
-		const glm::vec3&    Scale()	const	{ return m_Scale; }
+		const glm::vec3& LocalPosition() const	{ return m_Position; }
+		const glm::vec3& LocalRotation() const	{ return m_Rotation; }
+		const glm::vec3&    LocalScale() const	{ return m_Scale; }
 
 		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; m_TransformDirty = true; }
 		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; m_TransformDirty = true; }
 		void SetScale(const glm::vec3& scale) { m_Scale = scale; m_PhysicsDirty = true; m_TransformDirty = true; }
+		void SetParent(Entity parentEntity) { m_Parent = parentEntity; m_PhysicsDirty = true; m_TransformDirty = true; }
 
-		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_Transform(glm::mat4(1.0f)), m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false), m_TransformDirty(true) {}
+		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_LocalTransform(glm::mat4(1.0f)), m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false), m_TransformDirty(true) {}
 
-		glm::mat4 GetTransform() {
-			if (m_TransformDirty) { UpdateTransform(); }
-			return m_Transform;
+		glm::mat4 GetTransform()
+		{
+			glm::mat4 worldTransform = GetLocalTransform();
+			if (m_Parent.IsValid())
+			{
+				worldTransform = m_Parent.GetComponent<ComponentTransform>().GetTransform() * worldTransform;
+			}
+			return worldTransform;
 		}
 
+		glm::mat4 GetLocalTransform()
+		{
+			if (m_TransformDirty) { UpdateLocalTransform(); }
+			return m_LocalTransform;
+		}
+		glm::mat4 GetParentTransform()
+		{
+			if (m_Parent.IsValid())
+			{
+				return m_Parent.GetComponent<ComponentTransform>().GetTransform();
+			}
+			return glm::mat4(1.0f);
+		}
+
+		Entity GetParent() const { return m_Parent; }
+
 	private:
-		void UpdateTransform()
+		void UpdateLocalTransform()
 		{
 			m_TransformDirty = false;
-			m_Transform = glm::mat4(1.0f);
-			m_Transform = glm::translate(m_Transform, m_Position);
+			m_LocalTransform = glm::mat4(1.0f);
+			m_LocalTransform = glm::translate(m_LocalTransform, m_Position);
 
 			glm::mat4 rotation = glm::toMat4(glm::quat(m_Rotation));
 
-			m_Transform *= rotation;
+			m_LocalTransform *= rotation;
 
-			m_Transform = glm::scale(m_Transform, m_Scale);
+			m_LocalTransform = glm::scale(m_LocalTransform, m_Scale);
 		}
 
 		friend class Scene;
 		friend class SceneSerializer;
-		glm::mat4 m_Transform = glm::mat4(1.0f);
+		glm::mat4 m_LocalTransform = glm::mat4(1.0f);
 		glm::vec3 m_Position = glm::vec3(0.0f);
 		glm::vec3 m_Rotation = glm::vec3(0.0f); // Radians
 		glm::vec3 m_Scale = glm::vec3(1.0f);
 		bool m_PhysicsDirty = false;
 		bool m_TransformDirty = true;
+
+		Entity m_Parent = Entity();
 	};
 
 	struct ComponentCamera {

@@ -35,9 +35,9 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentTransform& transformComponent = entity.GetComponent<ComponentTransform>();
-			out << YAML::Key << "Position" << YAML::Value << transformComponent.Position();
-			out << YAML::Key << "Rotation" << YAML::Value << transformComponent.Rotation();
-			out << YAML::Key << "Scale" << YAML::Value << transformComponent.Scale();
+			out << YAML::Key << "Position" << YAML::Value << transformComponent.LocalPosition();
+			out << YAML::Key << "Rotation" << YAML::Value << transformComponent.LocalRotation();
+			out << YAML::Key << "Scale" << YAML::Value << transformComponent.LocalScale();
 
 			out << YAML::EndMap;
 		}

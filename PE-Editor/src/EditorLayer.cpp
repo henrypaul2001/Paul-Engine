@@ -388,7 +388,7 @@ namespace PaulEngine
 					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
 					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
 
-					glm::vec3 position = transform.Position();
+					glm::vec3 position = transform.LocalPosition();
 					glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
 
 					float nearClip = light.ShadowMapNearClip;
@@ -466,7 +466,7 @@ namespace PaulEngine
 					float farClip = light.ShadowMapFarClip;
 
 					glm::mat4 transformMatrix = transform.GetTransform();
-					glm::vec3 position = transform.Position();
+					glm::vec3 position = transform.LocalPosition();
 
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
 
@@ -660,7 +660,7 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
 						for (auto entityID : view) {
 							auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
-							glm::vec4 position = glm::vec4(transform.Position(), 1.0f);
+							glm::vec4 position = glm::vec4(transform.LocalPosition(), 1.0f);
 							Renderer::PointLight lightSource;
 							lightSource.Position = position;
 							lightSource.Position.w = light.Radius;
@@ -683,7 +683,7 @@ namespace PaulEngine
 							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
 							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
 
-							glm::vec3 position = transform.Position();
+							glm::vec3 position = transform.LocalPosition();
 							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
 
 							Renderer::SpotLight lightSource;
@@ -953,10 +953,10 @@ namespace PaulEngine
 					{
 						auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
 
-						glm::vec3 position = glm::vec3(glm::vec2(transform.Position()), 0.01f);
-						glm::vec3 scale = transform.Scale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
+						glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
+						glm::vec3 scale = transform.LocalScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
 						glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-						transformation = glm::rotate(transformation, transform.Rotation().z, glm::vec3(0.0, 0.0, 1.0f));
+						transformation = glm::rotate(transformation, transform.LocalRotation().z, glm::vec3(0.0, 0.0, 1.0f));
 						transformation = glm::scale(transformation, scale);
 
 						Renderer2D::SetLineWidth(0.01f);
@@ -969,8 +969,8 @@ namespace PaulEngine
 					{
 						auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
 
-						glm::vec3 position = glm::vec3(glm::vec2(transform.Position()), 0.01f);
-						glm::vec3 scale = transform.Scale() * (circle.Radius() * 2.0f);
+						glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
+						glm::vec3 scale = transform.LocalScale() * (circle.Radius() * 2.0f);
 						glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
 						transformation = glm::scale(transformation, scale);
 
@@ -986,7 +986,7 @@ namespace PaulEngine
 				{
 					// Entity outline
 					ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-					transformCopy.SetPosition(transformCopy.Position() + glm::vec3(0.0f, 0.0f, 0.01f));
+					transformCopy.SetPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
 					Renderer2D::SetLineWidth(outlineThickness);
 					Renderer2D::DrawRect(transformCopy.GetTransform(), outlineColour);
 
@@ -1000,18 +1000,18 @@ namespace PaulEngine
 						float fade = 0.0f;
 
 						glm::mat4 transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.Position());
+						transform = glm::translate(transform, transformComponent.LocalPosition());
 						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
 
 						transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.Position());
+						transform = glm::translate(transform, transformComponent.LocalPosition());
 						transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
 
 						transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.Position());
+						transform = glm::translate(transform, transformComponent.LocalPosition());
 						transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
@@ -1022,8 +1022,8 @@ namespace PaulEngine
 					{
 						ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
 						ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
-						glm::vec3 position = transformComponent.Position();
-						glm::quat rotationQuat = glm::quat(transformComponent.Rotation());
+						glm::vec3 position = transformComponent.LocalPosition();
+						glm::quat rotationQuat = glm::quat(transformComponent.LocalRotation());
 						float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
 						float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
 						float thickness = 0.005f;
@@ -1522,14 +1522,15 @@ namespace PaulEngine
 					nullptr, snap ? snapValues : nullptr);
 
 				if (ImGuizmo::IsUsing()) {
+					glm::mat4 localTransform = glm::inverse(transformComponent.GetParentTransform()) * entityTransform;
 					glm::vec3 position = glm::vec3();
 					glm::vec3 rotation = glm::vec3();
 					glm::vec3 scale = glm::vec3();
-					Maths::DecomposeTransform(entityTransform, position, rotation, scale);
-					glm::vec3 deltaRotation = rotation - transformComponent.Rotation();
+					Maths::DecomposeTransform(localTransform, position, rotation, scale);
+					glm::vec3 deltaRotation = rotation - transformComponent.LocalRotation();
 
 					transformComponent.SetPosition(position);
-					transformComponent.SetRotation(transformComponent.Rotation() + deltaRotation);
+					transformComponent.SetRotation(transformComponent.LocalRotation() + deltaRotation);
 					transformComponent.SetScale(scale);
 				}
 			}
@@ -1675,10 +1676,10 @@ namespace PaulEngine
 			for (auto entityID : boxView) {
 				auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
 
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()), 0.01f);
-				glm::vec3 scale = transform.Scale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
+				glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
+				glm::vec3 scale = transform.LocalScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
 				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-				transformation = glm::rotate(transformation, transform.Rotation().z, glm::vec3(0.0, 0.0, 1.0f));
+				transformation = glm::rotate(transformation, transform.LocalRotation().z, glm::vec3(0.0, 0.0, 1.0f));
 				transformation = glm::scale(transformation, scale);
 
 				Renderer2D::SetLineWidth(0.01f);
@@ -1690,8 +1691,8 @@ namespace PaulEngine
 			for (auto entityID : circleView) {
 				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
 
-				glm::vec3 position = glm::vec3(glm::vec2(transform.Position()), 0.01f);
-				glm::vec3 scale = transform.Scale() * (circle.Radius() * 2.0f);
+				glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
+				glm::vec3 scale = transform.LocalScale() * (circle.Radius() * 2.0f);
 				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
 				transformation = glm::scale(transformation, scale);
 
@@ -1704,7 +1705,7 @@ namespace PaulEngine
 		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
 			// Entity outline
 			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-			transformCopy.SetPosition(transformCopy.Position() + glm::vec3(0.0f, 0.0f, 0.01f));
+			transformCopy.SetPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
 			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
 			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
 		
@@ -1717,18 +1718,18 @@ namespace PaulEngine
 				float fade = 0.0f;
 
 				glm::mat4 transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, transformComponent.Position());
+				transform = glm::translate(transform, transformComponent.LocalPosition());
 				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
 
 				transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, transformComponent.Position());
+				transform = glm::translate(transform, transformComponent.LocalPosition());
 				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
 
 				transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, transformComponent.Position());
+				transform = glm::translate(transform, transformComponent.LocalPosition());
 				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
@@ -1738,8 +1739,8 @@ namespace PaulEngine
 			if (selectedEntity.HasComponent<ComponentSpotLight>()) {
 				ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
 				ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
-				glm::vec3 position = transformComponent.Position();
-				glm::quat rotationQuat = glm::quat(transformComponent.Rotation());
+				glm::vec3 position = transformComponent.LocalPosition();
+				glm::quat rotationQuat = glm::quat(transformComponent.LocalRotation());
 				float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
 				float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
 				float thickness = 0.005f;
