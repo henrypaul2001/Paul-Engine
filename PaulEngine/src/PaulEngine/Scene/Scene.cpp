@@ -289,6 +289,7 @@ namespace PaulEngine
 					transform.m_Position.x = box2DTransform.p.x;
 					transform.m_Position.y = box2DTransform.p.y;
 					transform.m_Rotation.z = b2Rot_GetAngle(box2DTransform.q);
+					transform.m_TransformDirty = true;
 				}
 			}
 		}

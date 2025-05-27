@@ -30,31 +30,39 @@ namespace PaulEngine
 		const glm::vec3& Rotation() const	{ return m_Rotation; }
 		const glm::vec3&    Scale()	const	{ return m_Scale; }
 
-		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; }
-		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; }
-		void SetScale	 (const glm::vec3& scale)	 { m_Scale = scale; m_PhysicsDirty = true; }
+		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; m_TransformDirty = true; }
+		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; m_TransformDirty = true; }
+		void SetScale(const glm::vec3& scale) { m_Scale = scale; m_PhysicsDirty = true; m_TransformDirty = true; }
 
-		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false) {}
+		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_Transform(glm::mat4(1.0f)), m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false), m_TransformDirty(true) {}
 
-		glm::mat4 GetTransform() const {
-			glm::mat4 transform = glm::mat4(1.0f);
-			transform = glm::translate(transform, m_Position);
-
-			glm::mat4 rotation = glm::toMat4(glm::quat(m_Rotation));
-
-			transform *= rotation;
-
-			transform = glm::scale(transform, m_Scale);
-			return transform;
+		glm::mat4 GetTransform() {
+			if (m_TransformDirty) { UpdateTransform(); }
+			return m_Transform;
 		}
 
 	private:
+		void UpdateTransform()
+		{
+			m_TransformDirty = false;
+			m_Transform = glm::mat4(1.0f);
+			m_Transform = glm::translate(m_Transform, m_Position);
+
+			glm::mat4 rotation = glm::toMat4(glm::quat(m_Rotation));
+
+			m_Transform *= rotation;
+
+			m_Transform = glm::scale(m_Transform, m_Scale);
+		}
+
 		friend class Scene;
 		friend class SceneSerializer;
+		glm::mat4 m_Transform = glm::mat4(1.0f);
 		glm::vec3 m_Position = glm::vec3(0.0f);
 		glm::vec3 m_Rotation = glm::vec3(0.0f); // Radians
 		glm::vec3 m_Scale = glm::vec3(1.0f);
-		bool m_PhysicsDirty;
+		bool m_PhysicsDirty = false;
+		bool m_TransformDirty = true;
 	};
 
 	struct ComponentCamera {
