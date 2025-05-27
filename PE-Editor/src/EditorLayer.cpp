@@ -1235,10 +1235,12 @@ namespace PaulEngine
 		deltaTime = timestep;
 
 		// Resize
-		const FramebufferSpecification& spec = m_MainFramebuffer->GetSpecification();
-		if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
-			MainViewportResizeEvent e = MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y);
-			OnEvent(e);
+		if (m_MainFramebuffer) {
+			const FramebufferSpecification& spec = m_MainFramebuffer->GetSpecification();
+			if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
+				MainViewportResizeEvent e = MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y);
+				OnEvent(e);
+			}
 		}
 
 		Renderer2D::ResetStats();
