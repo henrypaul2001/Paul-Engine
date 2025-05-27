@@ -4,8 +4,8 @@ ShaderParams:
   - Name: SpecularMap
     Type: Sampler2D
     Value:
-      Binding: 1
-      TextureHandle: 4
+      Binding: 4
+      TextureHandle: 0
   - Name: AlbedoMap
     Type: Sampler2D
     Value:
