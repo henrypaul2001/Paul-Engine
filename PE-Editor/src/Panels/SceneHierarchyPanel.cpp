@@ -93,7 +93,13 @@ namespace PaulEngine
 		ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)entity.GetID(), flags, tag.c_str());
-		if (ImGui::IsItemClicked()) {
+
+		if (ImGui::BeginDragDropSource()) {
+			ImGui::SetDragDropPayload("ENTITY_ITEM", &entity, sizeof(Entity));
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
 			m_SelectedEntity = entity;
 		}
 
@@ -346,6 +352,44 @@ namespace PaulEngine
 			if (DrawVec3Control("Position", position, 0.0f)) { component.SetPosition(position); }
 			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) { component.SetRotation(glm::radians(rotationDegrees)); }
 			if (DrawVec3Control("Scale", scale, 1.0f)) { component.SetScale(scale); }
+
+			ImGui::Spacing();
+
+			std::string label = "None";
+			bool isEntityValid = false;
+			Entity parentEntity = component.GetParent();
+			if (parentEntity.IsValid()) {
+				label = parentEntity.GetComponent<ComponentTag>().Tag;
+				isEntityValid = true;
+			}
+
+			ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+			buttonLabelSize.x += 20.0f;
+			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+			ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_ITEM"))
+				{
+					Entity entityPayload = *(Entity*)payload->Data;
+					if (entityPayload != entity) {
+						component.SetParent(entityPayload);
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (isEntityValid) {
+				ImGui::SameLine();
+				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+					component.SetParent(Entity());
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text("Parent");
 		});
 
 		// Camera
