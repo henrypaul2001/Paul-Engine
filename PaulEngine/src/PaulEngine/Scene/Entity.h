@@ -56,7 +56,22 @@ namespace PaulEngine
 		const UUID& UUID();
 
 	private:
+		friend class std::hash<Entity>;
 		entt::entity m_EntityHandle;
 		Scene* m_Scene;
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<PaulEngine::Entity>
+	{
+		size_t operator()(const PaulEngine::Entity& e) const noexcept
+		{
+			size_t h1 = hash<entt::entity>()(e);
+			size_t h2 = hash<PaulEngine::Scene*>()(e.m_Scene);
+			return h1 ^ (h2 << 1);
+		}
 	};
 }
