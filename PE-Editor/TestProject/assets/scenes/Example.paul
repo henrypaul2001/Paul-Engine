@@ -7,6 +7,8 @@ Entities:
       Position: [-0.52407074, -0.011872292, -0.4]
       Rotation: [0, 0, 0]
       Scale: [17.27655, 15.75, 1]
+      Children:
+        []
     CircleComponent:
       Colour: [0.12941177, 0.6392157, 0.9411765, 0.81960785]
       Thickness: 0.96
@@ -18,6 +20,8 @@ Entities:
       Position: [0, 0, -0.5]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     CameraComponent:
       Camera:
         ProjectionType: 0
@@ -25,9 +29,9 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0644295
+        AspectRatio: 2.0263157
         Gamma: 2.2
-        Exposure: 1.0
+        Exposure: 1
       FixedAspect: false
   - Entity: 12526598711108418683
     TagComponent:
@@ -36,6 +40,8 @@ Entities:
       Position: [0.7625714, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [5, 5, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 0, 0, 1]
       TextureHandle: 1732625535741970896
@@ -49,6 +55,8 @@ Entities:
       Position: [0.92358446, 0, 0.2]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0, 1, 0, 1]
       TextureHandle: 266139391440945140
@@ -62,6 +70,8 @@ Entities:
       Position: [5.25, 3.500001, 0.26373935]
       Rotation: [0, 0, 5.9604645e-08]
       Scale: [1, 1, 1]
+      Children:
+        []
     TextRendererComponent:
       TextString: "Hello, World!\nHello, new line!"
       FontHandle: 3231254291038093228

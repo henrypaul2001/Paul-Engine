@@ -7,6 +7,8 @@ Entities:
       Position: [-1, -2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -20,6 +22,8 @@ Entities:
       Position: [1, 0, 0.012320757]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -33,6 +37,8 @@ Entities:
       Position: [-8.97229, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [8.25, 8.25, 8.25]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -46,6 +52,8 @@ Entities:
       Position: [-2, 3, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -59,6 +67,8 @@ Entities:
       Position: [-2, 2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -72,6 +82,8 @@ Entities:
       Position: [-2, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -85,6 +97,8 @@ Entities:
       Position: [-2, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -98,6 +112,8 @@ Entities:
       Position: [-2, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -111,6 +127,8 @@ Entities:
       Position: [-2, -2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -124,6 +142,8 @@ Entities:
       Position: [-1, -1.25, 0.0810585]
       Rotation: [0, 0, 0]
       Scale: [1, 2, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -137,6 +157,8 @@ Entities:
       Position: [0, -2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -150,6 +172,8 @@ Entities:
       Position: [1, -2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -163,6 +187,8 @@ Entities:
       Position: [2, -2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -176,6 +202,8 @@ Entities:
       Position: [3, -2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -189,6 +217,8 @@ Entities:
       Position: [3, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -202,6 +232,8 @@ Entities:
       Position: [-1, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -215,6 +247,8 @@ Entities:
       Position: [0, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -228,6 +262,8 @@ Entities:
       Position: [1, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -241,6 +277,8 @@ Entities:
       Position: [2, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -254,6 +292,8 @@ Entities:
       Position: [3, 3, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -267,6 +307,8 @@ Entities:
       Position: [3, 2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -280,6 +322,8 @@ Entities:
       Position: [3, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -293,6 +337,8 @@ Entities:
       Position: [3, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -306,6 +352,8 @@ Entities:
       Position: [-1, 3, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -319,6 +367,8 @@ Entities:
       Position: [0, 3, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -332,6 +382,8 @@ Entities:
       Position: [1, 3, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -345,6 +397,8 @@ Entities:
       Position: [2, 3, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -358,6 +412,8 @@ Entities:
       Position: [2, 2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -371,6 +427,8 @@ Entities:
       Position: [1, 2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -384,6 +442,8 @@ Entities:
       Position: [-1, 2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -397,6 +457,8 @@ Entities:
       Position: [0, 2, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -410,6 +472,8 @@ Entities:
       Position: [-1, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -423,6 +487,8 @@ Entities:
       Position: [-1, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -436,6 +502,8 @@ Entities:
       Position: [2, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -449,6 +517,8 @@ Entities:
       Position: [2, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -462,6 +532,8 @@ Entities:
       Position: [1, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -475,6 +547,8 @@ Entities:
       Position: [0, 1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -488,6 +562,8 @@ Entities:
       Position: [1, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366
@@ -501,6 +577,8 @@ Entities:
       Position: [0, 0, 5.890293]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     CameraComponent:
       Camera:
         ProjectionType: 1
@@ -508,9 +586,9 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0644295
+        AspectRatio: 2.0263157
         Gamma: 2.2
-        Exposure: 1.0
+        Exposure: 1
       FixedAspect: false
   - Entity: 3852948664864972205
     TagComponent:
@@ -519,6 +597,8 @@ Entities:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 14046064469291239366

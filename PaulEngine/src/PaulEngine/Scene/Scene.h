@@ -25,6 +25,7 @@ namespace PaulEngine
 		Entity CreateEntity(const std::string& name = "Entity");
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "Entity");
 		Entity DuplicateEntity(Entity entity);
+		Entity FindEntityWithUUID(UUID id);
 		void DestroyEntity(Entity entity);
 
 		Entity GetPrimaryCameraEntity();
@@ -79,6 +80,7 @@ namespace PaulEngine
 		void OnPhysics2DStop();
 
 		entt::registry m_Registry;
+		std::unordered_map<UUID, Entity> m_EntityMap;
 
 		uint32_t m_ViewportWidth, m_ViewportHeight;
 

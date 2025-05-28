@@ -7,6 +7,8 @@ Entities:
       Position: [-3.25, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [5, 5, 5]
+      Children:
+        []
     CircleComponent:
       Colour: [0.8905005, 0.12397257, 0.8932384, 1]
       Thickness: 0.05
@@ -26,6 +28,8 @@ Entities:
       Position: [0.13156718, 8.39228, 0]
       Rotation: [0, 0, 0.9363785]
       Scale: [1.9999998, 1.9999998, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0.911032, 0.28206328, 0.28206328, 1]
       TextureHandle: 0
@@ -47,6 +51,8 @@ Entities:
       Position: [0, -2.5, 14.25]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     CameraComponent:
       Camera:
         ProjectionType: 1
@@ -54,9 +60,9 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 3.5833333
+        AspectRatio: 2.0263157
         Gamma: 2.2
-        Exposure: 1.0
+        Exposure: 1
       FixedAspect: false
   - Entity: 5673999714031653611
     TagComponent:
@@ -65,6 +71,8 @@ Entities:
       Position: [27.249989, -17.99, 0]
       Rotation: [0, 0, -1.5712216]
       Scale: [56.237644, 1.9995918, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -86,6 +94,8 @@ Entities:
       Position: [1.6783733, 6.007812, -6.1035156e-05]
       Rotation: [0, 0, -1.5712416]
       Scale: [2, 2, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0.51954466, 0.85409254, 0.2553159, 1]
       TextureHandle: 0
@@ -107,6 +117,8 @@ Entities:
       Position: [-0.9695313, 4.4568057, -5.947691e-05]
       Rotation: [0, 0, -0.00037840754]
       Scale: [2, 2, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0.32400805, 0.44567746, 0.8754448, 1]
       TextureHandle: 0
@@ -128,6 +140,8 @@ Entities:
       Position: [0, -10, 0]
       Rotation: [0, 0, -0.0004252147]
       Scale: [56.249985, 1.9999998, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -149,6 +163,8 @@ Entities:
       Position: [-27.2534, -17.988413, 0]
       Rotation: [0, 0, -1.5712216]
       Scale: [56.241333, 1.999738, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0

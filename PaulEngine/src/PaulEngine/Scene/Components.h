@@ -106,6 +106,24 @@ namespace PaulEngine
 			m_LocalTransform = glm::scale(m_LocalTransform, m_Scale);
 		}
 
+		void RemapEntityRelationships(Scene* scene)
+		{
+			if (scene) {
+				if (m_Parent.IsValid())
+				{
+					m_Parent = scene->FindEntityWithUUID(m_Parent.UUID());
+				}
+
+				std::unordered_set<Entity> newChildren;
+				for (auto it : m_Children)
+				{
+					UUID childID = it.UUID();
+					newChildren.emplace(scene->FindEntityWithUUID(childID));
+				}
+				m_Children = newChildren;
+			}
+		}
+
 		friend class Scene;
 		friend class SceneSerializer;
 		glm::mat4 m_LocalTransform = glm::mat4(1.0f);

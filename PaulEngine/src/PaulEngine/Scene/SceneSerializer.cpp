@@ -17,7 +17,7 @@ namespace PaulEngine
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << entity.UUID(); // Entity ID goes here (UUID)
+		out << YAML::Key << "Entity" << YAML::Value << entity.UUID();
 		
 		// Components
 		if (entity.HasComponent<ComponentTag>()) {
@@ -38,6 +38,19 @@ namespace PaulEngine
 			out << YAML::Key << "Position" << YAML::Value << transformComponent.LocalPosition();
 			out << YAML::Key << "Rotation" << YAML::Value << transformComponent.LocalRotation();
 			out << YAML::Key << "Scale" << YAML::Value << transformComponent.LocalScale();
+			
+			Entity parent = transformComponent.GetParent();
+			if (parent.IsValid())
+			{
+				out << YAML::Key << "Parent" << YAML::Value << parent.UUID();
+			}
+			out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq;
+			const std::unordered_set<Entity>& children = transformComponent.GetChildren();
+			for (Entity it : children)
+			{
+				out << YAML::Value << it.UUID();
+			}
+			out << YAML::EndSeq;
 
 			out << YAML::EndMap;
 		}
@@ -259,164 +272,192 @@ namespace PaulEngine
 
 		YAML::Node entities = data["Entities"];
 		if (entities) {
+			// First, create empty entities
 			for (YAML::Node entity : entities) {
 				uint64_t uuid = entity["Entity"].as<uint64_t>();
-
 				std::string name;
 				YAML::Node tagNode = entity["TagComponent"];
 				if (tagNode) {
 					name = tagNode["Tag"].as<std::string>();
+				}
+				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
+			}
 
+			for (YAML::Node entity : entities) {
+
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
+				std::string name;
+				YAML::Node tagNode = entity["TagComponent"];
+				if (tagNode) {
+					name = tagNode["Tag"].as<std::string>();
 					PE_CORE_TRACE("Deserializing entity with ID = {0}, name = {1}", uuid, name);
 				}
+				Entity deserializedEntity = m_Scene->FindEntityWithUUID(uuid);
+				if (deserializedEntity.IsValid())
+				{
+					YAML::Node transformNode = entity["TransformComponent"];
+					if (transformNode) {
+						ComponentTransform& transform = deserializedEntity.GetComponent<ComponentTransform>();
+						transform.m_Position = transformNode["Position"].as<glm::vec3>();
+						transform.m_Rotation = transformNode["Rotation"].as<glm::vec3>();
+						transform.m_Scale = transformNode["Scale"].as<glm::vec3>();
 
-				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
+						YAML::Node parentNode = transformNode["Parent"];
+						if (parentNode) {
+							ComponentTransform::SetParent(deserializedEntity, m_Scene->FindEntityWithUUID(parentNode.as<uint64_t>()));
+						}
 
-				YAML::Node transformNode = entity["TransformComponent"];
-				if (transformNode) {
-					ComponentTransform& transform = deserializedEntity.GetComponent<ComponentTransform>();
-					transform.m_Position = transformNode["Position"].as<glm::vec3>();
-					transform.m_Rotation = transformNode["Rotation"].as<glm::vec3>();
-					transform.m_Scale = transformNode["Scale"].as<glm::vec3>();
-				}
-
-				YAML::Node cameraNode = entity["CameraComponent"];
-				if (cameraNode) {
-					ComponentCamera& cameraComponent = deserializedEntity.AddComponent<ComponentCamera>();
-					SceneCamera& camera = cameraComponent.Camera;
-					YAML::Node cameraProperties = cameraNode["Camera"];
-					
-					// Get properties
-					SceneCameraType projectionType = (SceneCameraType)cameraProperties["ProjectionType"].as<int>();
-					camera.m_PerspectiveVFOV = cameraProperties["PerspectiveFOV"].as<float>();
-					camera.m_NearClip = cameraProperties["NearClip"].as<float>();
-					camera.m_FarClip = cameraProperties["FarClip"].as<float>();
-					camera.m_OrthographicSize = cameraProperties["OrthoSize"].as<float>();
-					camera.m_AspectRatio = cameraProperties["AspectRatio"].as<float>();
-					camera.Gamma = cameraProperties["Gamma"].as<float>();
-					camera.Exposure = cameraProperties["Exposure"].as<float>();
-
-					if (projectionType == SCENE_CAMERA_PERSPECTIVE) {
-						camera.SetPerspective(camera.m_PerspectiveVFOV, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);
-					}
-					else {
-						camera.SetOrthographic(camera.m_OrthographicSize, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);
+						YAML::Node childrenNode = transformNode["Children"];
+						if (childrenNode) {
+							for (YAML::Node childNode : childrenNode) {
+								Entity child = m_Scene->FindEntityWithUUID(childNode.as<uint64_t>());
+								transform.m_Children.emplace(child);
+							}
+						}
 					}
 
-					cameraComponent.FixedAspectRatio = cameraNode["FixedAspect"].as<bool>();
+					YAML::Node cameraNode = entity["CameraComponent"];
+					if (cameraNode) {
+						ComponentCamera& cameraComponent = deserializedEntity.AddComponent<ComponentCamera>();
+						SceneCamera& camera = cameraComponent.Camera;
+						YAML::Node cameraProperties = cameraNode["Camera"];
+
+						// Get properties
+						SceneCameraType projectionType = (SceneCameraType)cameraProperties["ProjectionType"].as<int>();
+						camera.m_PerspectiveVFOV = cameraProperties["PerspectiveFOV"].as<float>();
+						camera.m_NearClip = cameraProperties["NearClip"].as<float>();
+						camera.m_FarClip = cameraProperties["FarClip"].as<float>();
+						camera.m_OrthographicSize = cameraProperties["OrthoSize"].as<float>();
+						camera.m_AspectRatio = cameraProperties["AspectRatio"].as<float>();
+						camera.Gamma = cameraProperties["Gamma"].as<float>();
+						camera.Exposure = cameraProperties["Exposure"].as<float>();
+
+						if (projectionType == SCENE_CAMERA_PERSPECTIVE) {
+							camera.SetPerspective(camera.m_PerspectiveVFOV, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);
+						}
+						else {
+							camera.SetOrthographic(camera.m_OrthographicSize, camera.m_AspectRatio, camera.m_NearClip, camera.m_FarClip);
+						}
+
+						cameraComponent.FixedAspectRatio = cameraNode["FixedAspect"].as<bool>();
+					}
+
+					YAML::Node spriteNode = entity["SpriteComponent"];
+					if (spriteNode) {
+						Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
+						spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
+
+						spriteComponent.Texture = spriteNode["TextureHandle"].as<AssetHandle>();
+						spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();
+
+						spriteComponent.TextureAtlas = spriteNode["AtlasHandle"].as<AssetHandle>();
+						spriteComponent.SelectedSubTextureName = spriteNode["SelectedSubTextureName"].as<std::string>();
+					}
+
+					YAML::Node circleNode = entity["CircleComponent"];
+					if (circleNode) {
+						Component2DCircle& circleComponent = deserializedEntity.AddComponent<Component2DCircle>();
+						circleComponent.Colour = circleNode["Colour"].as<glm::vec4>();
+						circleComponent.Thickness = circleNode["Thickness"].as<float>();
+						circleComponent.Fade = circleNode["Fade"].as<float>();
+					}
+
+					YAML::Node rb2dNode = entity["Rigid2DComponent"];
+					if (rb2dNode) {
+						ComponentRigidBody2D& rb2dComponent = deserializedEntity.AddComponent<ComponentRigidBody2D>();
+						rb2dComponent.m_Type = (ComponentRigidBody2D::BodyType)rb2dNode["Type"].as<int>();
+						rb2dComponent.m_FixedRotation = rb2dNode["FixedRotation"].as<bool>();
+					}
+
+					YAML::Node box2DNode = entity["BoxCollider2DComponent"];
+					if (box2DNode) {
+						ComponentBoxCollider2D& box2DComponent = deserializedEntity.AddComponent<ComponentBoxCollider2D>();
+						box2DComponent.m_Size = box2DNode["Size"].as<glm::vec2>();
+
+						box2DComponent.m_Density = box2DNode["Density"].as<float>();
+						box2DComponent.m_Friction = box2DNode["Friction"].as<float>();
+						box2DComponent.m_Restitution = box2DNode["Restitution"].as<float>();
+					}
+
+					YAML::Node circle2DNode = entity["CircleCollider2DComponent"];
+					if (circle2DNode) {
+						ComponentCircleCollider2D& circle2DComponent = deserializedEntity.AddComponent<ComponentCircleCollider2D>();
+						circle2DComponent.m_Radius = circle2DNode["Radius"].as<float>();
+
+						circle2DComponent.m_Density = circle2DNode["Density"].as<float>();
+						circle2DComponent.m_Friction = circle2DNode["Friction"].as<float>();
+						circle2DComponent.m_Restitution = circle2DNode["Restitution"].as<float>();
+					}
+
+					YAML::Node textNode = entity["TextRendererComponent"];
+					if (textNode) {
+						ComponentTextRenderer& textComponent = deserializedEntity.AddComponent<ComponentTextRenderer>();
+						textComponent.TextString = textNode["TextString"].as<std::string>();
+						textComponent.Font = textNode["FontHandle"].as<uint64_t>();
+						textComponent.Colour = textNode["Colour"].as<glm::vec4>();
+						textComponent.Kerning = textNode["Kerning"].as<float>();
+						textComponent.LineSpacing = textNode["LineSpacing"].as<float>();
+					}
+
+					YAML::Node meshNode = entity["MeshRendererComponent"];
+					if (meshNode) {
+						ComponentMeshRenderer& meshComponent = deserializedEntity.AddComponent<ComponentMeshRenderer>();
+						meshComponent.MaterialHandle = meshNode["MaterialHandle"].as<AssetHandle>();
+						meshComponent.MeshHandle = meshNode["MeshHandle"].as<AssetHandle>();
+						meshComponent.DepthState.Func = (DepthFunc)meshNode["DepthFunc"].as<int>();
+						meshComponent.DepthState.Test = meshNode["DepthTest"].as<bool>();
+						meshComponent.DepthState.Write = meshNode["DepthWrite"].as<bool>();
+						meshComponent.CullState = (FaceCulling)meshNode["FaceCulling"].as<int>();
+					}
+
+					YAML::Node dirLightNode = entity["DirectionalLightComponent"];
+					if (dirLightNode) {
+						ComponentDirectionalLight& lightComponent = deserializedEntity.AddComponent<ComponentDirectionalLight>();
+						lightComponent.Diffuse = dirLightNode["Diffuse"].as<glm::vec3>();
+						lightComponent.Specular = dirLightNode["Specular"].as<glm::vec3>();
+						lightComponent.Ambient = dirLightNode["Ambient"].as<glm::vec3>();
+						lightComponent.CastShadows = dirLightNode["CastShadows"].as<bool>();
+						lightComponent.ShadowMinBias = dirLightNode["ShadowMinBias"].as<float>();
+						lightComponent.ShadowMaxBias = dirLightNode["ShadowMaxBias"].as<float>();
+						lightComponent.ShadowMapCameraDistance = dirLightNode["ShadowMapCameraDistance"].as<float>();
+						lightComponent.ShadowMapProjectionSize = dirLightNode["ShadowMapProjectionSize"].as<float>();
+						lightComponent.ShadowMapNearClip = dirLightNode["ShadowMapNearClip"].as<float>();
+						lightComponent.ShadowMapFarClip = dirLightNode["ShadowMapFarClip"].as<float>();
+					}
+
+					YAML::Node pointLightNode = entity["PointLightComponent"];
+					if (pointLightNode) {
+						ComponentPointLight& lightComponent = deserializedEntity.AddComponent<ComponentPointLight>();
+						lightComponent.Radius = pointLightNode["Radius"].as<float>();
+						lightComponent.Diffuse = pointLightNode["Diffuse"].as<glm::vec3>();
+						lightComponent.Specular = pointLightNode["Specular"].as<glm::vec3>();
+						lightComponent.Ambient = pointLightNode["Ambient"].as<glm::vec3>();
+						lightComponent.CastShadows = pointLightNode["CastShadows"].as<bool>();
+						lightComponent.ShadowMinBias = pointLightNode["ShadowMinBias"].as<float>();
+						lightComponent.ShadowMaxBias = pointLightNode["ShadowMaxBias"].as<float>();
+						lightComponent.ShadowMapNearClip = pointLightNode["ShadowMapNearClip"].as<float>();
+						lightComponent.ShadowMapFarClip = pointLightNode["ShadowMapFarClip"].as<float>();
+					}
+
+					YAML::Node spotLightNode = entity["SpotLightComponent"];
+					if (spotLightNode) {
+						ComponentSpotLight& lightComponent = deserializedEntity.AddComponent<ComponentSpotLight>();
+						lightComponent.Range = spotLightNode["Range"].as<float>();
+						lightComponent.InnerCutoff = spotLightNode["InnerCutoff"].as<float>();
+						lightComponent.OuterCutoff = spotLightNode["OuterCutoff"].as<float>();
+						lightComponent.Diffuse = spotLightNode["Diffuse"].as<glm::vec3>();
+						lightComponent.Specular = spotLightNode["Specular"].as<glm::vec3>();
+						lightComponent.Ambient = spotLightNode["Ambient"].as<glm::vec3>();
+						lightComponent.CastShadows = spotLightNode["CastShadows"].as<bool>();
+						lightComponent.ShadowMinBias = spotLightNode["ShadowMinBias"].as<float>();
+						lightComponent.ShadowMaxBias = spotLightNode["ShadowMaxBias"].as<float>();
+						lightComponent.ShadowMapNearClip = spotLightNode["ShadowMapNearClip"].as<float>();
+						lightComponent.ShadowMapFarClip = spotLightNode["ShadowMapFarClip"].as<float>();
+					}
 				}
-
-				YAML::Node spriteNode = entity["SpriteComponent"];
-				if (spriteNode) {
-					Component2DSprite& spriteComponent = deserializedEntity.AddComponent<Component2DSprite>();
-					spriteComponent.Colour = spriteNode["Colour"].as<glm::vec4>();
-
-					spriteComponent.Texture = spriteNode["TextureHandle"].as<AssetHandle>();
-					spriteComponent.TextureScale = spriteNode["TextureScale"].as<glm::vec2>();
-
-					spriteComponent.TextureAtlas = spriteNode["AtlasHandle"].as<AssetHandle>();
-					spriteComponent.SelectedSubTextureName = spriteNode["SelectedSubTextureName"].as<std::string>();
-				}
-
-				YAML::Node circleNode = entity["CircleComponent"];
-				if (circleNode) {
-					Component2DCircle& circleComponent = deserializedEntity.AddComponent<Component2DCircle>();
-					circleComponent.Colour = circleNode["Colour"].as<glm::vec4>();
-					circleComponent.Thickness = circleNode["Thickness"].as<float>();
-					circleComponent.Fade = circleNode["Fade"].as<float>();
-				}
-
-				YAML::Node rb2dNode = entity["Rigid2DComponent"];
-				if (rb2dNode) {
-					ComponentRigidBody2D& rb2dComponent = deserializedEntity.AddComponent<ComponentRigidBody2D>();
-					rb2dComponent.m_Type = (ComponentRigidBody2D::BodyType)rb2dNode["Type"].as<int>();
-					rb2dComponent.m_FixedRotation = rb2dNode["FixedRotation"].as<bool>();
-				}
-
-				YAML::Node box2DNode = entity["BoxCollider2DComponent"];
-				if (box2DNode) {
-					ComponentBoxCollider2D& box2DComponent = deserializedEntity.AddComponent<ComponentBoxCollider2D>();
-					box2DComponent.m_Size = box2DNode["Size"].as<glm::vec2>();
-
-					box2DComponent.m_Density = box2DNode["Density"].as<float>();
-					box2DComponent.m_Friction = box2DNode["Friction"].as<float>();
-					box2DComponent.m_Restitution = box2DNode["Restitution"].as<float>();
-				}
-
-				YAML::Node circle2DNode = entity["CircleCollider2DComponent"];
-				if (circle2DNode) {
-					ComponentCircleCollider2D& circle2DComponent = deserializedEntity.AddComponent<ComponentCircleCollider2D>();
-					circle2DComponent.m_Radius = circle2DNode["Radius"].as<float>();
-
-					circle2DComponent.m_Density = circle2DNode["Density"].as<float>();
-					circle2DComponent.m_Friction = circle2DNode["Friction"].as<float>();
-					circle2DComponent.m_Restitution = circle2DNode["Restitution"].as<float>();
-				}
-
-				YAML::Node textNode = entity["TextRendererComponent"];
-				if (textNode) {
-					ComponentTextRenderer& textComponent = deserializedEntity.AddComponent<ComponentTextRenderer>();
-					textComponent.TextString = textNode["TextString"].as<std::string>();
-					textComponent.Font = textNode["FontHandle"].as<uint64_t>();
-					textComponent.Colour = textNode["Colour"].as<glm::vec4>();
-					textComponent.Kerning = textNode["Kerning"].as<float>();
-					textComponent.LineSpacing = textNode["LineSpacing"].as<float>();
-				}
-
-				YAML::Node meshNode = entity["MeshRendererComponent"];
-				if (meshNode) {
-					ComponentMeshRenderer& meshComponent = deserializedEntity.AddComponent<ComponentMeshRenderer>();
-					meshComponent.MaterialHandle = meshNode["MaterialHandle"].as<AssetHandle>();
-					meshComponent.MeshHandle = meshNode["MeshHandle"].as<AssetHandle>();
-					meshComponent.DepthState.Func = (DepthFunc)meshNode["DepthFunc"].as<int>();
-					meshComponent.DepthState.Test = meshNode["DepthTest"].as<bool>();
-					meshComponent.DepthState.Write = meshNode["DepthWrite"].as<bool>();
-					meshComponent.CullState = (FaceCulling)meshNode["FaceCulling"].as<int>();
-				}
-
-				YAML::Node dirLightNode = entity["DirectionalLightComponent"];
-				if (dirLightNode) {
-					ComponentDirectionalLight& lightComponent = deserializedEntity.AddComponent<ComponentDirectionalLight>();
-					lightComponent.Diffuse = dirLightNode["Diffuse"].as<glm::vec3>();
-					lightComponent.Specular = dirLightNode["Specular"].as<glm::vec3>();
-					lightComponent.Ambient = dirLightNode["Ambient"].as<glm::vec3>();
-					lightComponent.CastShadows = dirLightNode["CastShadows"].as<bool>();
-					lightComponent.ShadowMinBias = dirLightNode["ShadowMinBias"].as<float>();
-					lightComponent.ShadowMaxBias = dirLightNode["ShadowMaxBias"].as<float>();
-					lightComponent.ShadowMapCameraDistance = dirLightNode["ShadowMapCameraDistance"].as<float>();
-					lightComponent.ShadowMapProjectionSize = dirLightNode["ShadowMapProjectionSize"].as<float>();
-					lightComponent.ShadowMapNearClip = dirLightNode["ShadowMapNearClip"].as<float>();
-					lightComponent.ShadowMapFarClip = dirLightNode["ShadowMapFarClip"].as<float>();
-				}
-
-				YAML::Node pointLightNode = entity["PointLightComponent"];
-				if (pointLightNode) {
-					ComponentPointLight& lightComponent = deserializedEntity.AddComponent<ComponentPointLight>();
-					lightComponent.Radius = pointLightNode["Radius"].as<float>();
-					lightComponent.Diffuse = pointLightNode["Diffuse"].as<glm::vec3>();
-					lightComponent.Specular = pointLightNode["Specular"].as<glm::vec3>();
-					lightComponent.Ambient = pointLightNode["Ambient"].as<glm::vec3>();
-					lightComponent.CastShadows = pointLightNode["CastShadows"].as<bool>();
-					lightComponent.ShadowMinBias = pointLightNode["ShadowMinBias"].as<float>();
-					lightComponent.ShadowMaxBias = pointLightNode["ShadowMaxBias"].as<float>();
-					lightComponent.ShadowMapNearClip = pointLightNode["ShadowMapNearClip"].as<float>();
-					lightComponent.ShadowMapFarClip = pointLightNode["ShadowMapFarClip"].as<float>();
-				}
-
-				YAML::Node spotLightNode = entity["SpotLightComponent"];
-				if (spotLightNode) {
-					ComponentSpotLight& lightComponent = deserializedEntity.AddComponent<ComponentSpotLight>();
-					lightComponent.Range = spotLightNode["Range"].as<float>();
-					lightComponent.InnerCutoff = spotLightNode["InnerCutoff"].as<float>();
-					lightComponent.OuterCutoff = spotLightNode["OuterCutoff"].as<float>();
-					lightComponent.Diffuse = spotLightNode["Diffuse"].as<glm::vec3>();
-					lightComponent.Specular = spotLightNode["Specular"].as<glm::vec3>();
-					lightComponent.Ambient = spotLightNode["Ambient"].as<glm::vec3>();
-					lightComponent.CastShadows = spotLightNode["CastShadows"].as<bool>();
-					lightComponent.ShadowMinBias = spotLightNode["ShadowMinBias"].as<float>();
-					lightComponent.ShadowMaxBias = spotLightNode["ShadowMaxBias"].as<float>();
-					lightComponent.ShadowMapNearClip = spotLightNode["ShadowMapNearClip"].as<float>();
-					lightComponent.ShadowMapFarClip = spotLightNode["ShadowMapFarClip"].as<float>();
+				else
+				{
+					PE_CORE_ERROR("Invalid entity UUID");
 				}
 			}
 		}

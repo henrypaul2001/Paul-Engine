@@ -7,6 +7,8 @@ Entities:
       Position: [3.5322747, 6.2397785, 8.968737]
       Rotation: [-0.41976404, 0.041773286, -0.018635118]
       Scale: [0.099999964, 0.10000011, 0.10000006]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 1897318988700985028
       MeshHandle: 0
@@ -33,6 +35,8 @@ Entities:
       Position: [0, 18, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 400681757883519208
       MeshHandle: 0
@@ -47,6 +51,8 @@ Entities:
       Position: [12, 12, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 6052652825163143337
       MeshHandle: 0
@@ -61,6 +67,8 @@ Entities:
       Position: [6, 12, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 11641754153238842936
       MeshHandle: 0
@@ -75,6 +83,8 @@ Entities:
       Position: [0, 12, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 7039009388700113622
       MeshHandle: 0
@@ -89,6 +99,8 @@ Entities:
       Position: [0, 6, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 14953401462234966565
       MeshHandle: 0
@@ -103,6 +115,8 @@ Entities:
       Position: [6, 6, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 18267150240899827061
       MeshHandle: 0
@@ -117,6 +131,8 @@ Entities:
       Position: [12, 6, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 5404285593151240272
       MeshHandle: 0
@@ -131,6 +147,8 @@ Entities:
       Position: [12, 2.3364864e-06, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 9321072322867044035
       MeshHandle: 0
@@ -145,6 +163,8 @@ Entities:
       Position: [6, 2.3364864e-06, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 7840106116855404345
       MeshHandle: 0
@@ -159,6 +179,8 @@ Entities:
       Position: [15.22577, 0.0020428544, 12.248129]
       Rotation: [0, 0, 0]
       Scale: [0.1, 0.1, 0.1]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 1897318988700985028
       MeshHandle: 0
@@ -183,6 +205,8 @@ Entities:
       Position: [12, 18, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 5317045289054481295
       MeshHandle: 0
@@ -197,6 +221,8 @@ Entities:
       Position: [6, 18, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 10327331717423470595
       MeshHandle: 0
@@ -211,6 +237,8 @@ Entities:
       Position: [0, -3.940456, 0]
       Rotation: [0, 0, 0]
       Scale: [50, 0.25, 50]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 14213523979022365877
       MeshHandle: 0
@@ -225,6 +253,8 @@ Entities:
       Position: [0.827664, 0.119325034, -3.5037913]
       Rotation: [0, 0, 0]
       Scale: [0.1, 0.1, 0.1]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 1897318988700985028
       MeshHandle: 0
@@ -249,6 +279,8 @@ Entities:
       Position: [2.2947966e-06, 3.7978952, 3.3484585]
       Rotation: [-2.3857338, 2.2789507e-07, 3.1415923]
       Scale: [0.5000021, 0.49999994, 1.0000002]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -273,6 +305,8 @@ Entities:
       Position: [0, 0, -6.986519]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 12856186902108215016
       MeshHandle: 0

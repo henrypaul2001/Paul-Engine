@@ -4,9 +4,12 @@ Entities:
     TagComponent:
       Tag: Child
     TransformComponent:
-      Position: [-2.266307, 0, 0]
+      Position: [-11.673876, 0, -2.5110226]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Parent: 15310629311584878301
+      Children:
+        - 3800346603458594850
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -18,9 +21,11 @@ Entities:
     TagComponent:
       Tag: Parent
     TransformComponent:
-      Position: [0, 0, 0]
+      Position: [41.616962, 1.4106327, -31.921318]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        - 1343193191301409956
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -32,9 +37,12 @@ Entities:
     TagComponent:
       Tag: PointLight
     TransformComponent:
-      Position: [-4.588225, -6.341523, 6.786102]
+      Position: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [0.25, 0.25, 0.25]
+      Parent: 1343193191301409956
+      Children:
+        []
     PointLightComponent:
       Radius: 20
       Diffuse: [0, 12, 0]
@@ -52,6 +60,8 @@ Entities:
       Position: [-17.643621, -18.917206, 13.112599]
       Rotation: [0, 0, 0]
       Scale: [4.750002, 4.7499924, 4.7499986]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -66,6 +76,8 @@ Entities:
       Position: [11.567404, -3.6037874, -29.884789]
       Rotation: [-2.5938792, -0.3091431, 1.1573613]
       Scale: [0.24997017, 0.24997382, 0.24999632]
+      Children:
+        []
     SpotLightComponent:
       Range: 57
       InnerCutoff: 15
@@ -85,6 +97,8 @@ Entities:
       Position: [19.33841, 6.218174, 28.787687]
       Rotation: [-2.8509092, -0.28059608, 3.0931199]
       Scale: [0.99999475, 0.99999976, 0.99998075]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -109,6 +123,8 @@ Entities:
       Position: [12.633057, -16.910284, 14.159346]
       Rotation: [-0.57374465, 0.043460056, 1.3656987]
       Scale: [0.24996494, 0.24997261, 0.24999978]
+      Children:
+        []
     SpotLightComponent:
       Range: 57
       InnerCutoff: 13
@@ -128,6 +144,8 @@ Entities:
       Position: [0, -21.295044, 0]
       Rotation: [0, 0, 0]
       Scale: [250, 0.1, 250]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -142,6 +160,8 @@ Entities:
       Position: [-23.26358, -17.528942, 8.213587]
       Rotation: [0, 0, 0]
       Scale: [0.25, 0.25, 0.25]
+      Children:
+        []
     PointLightComponent:
       Radius: 20
       Diffuse: [12, 0, 0]
@@ -159,6 +179,8 @@ Entities:
       Position: [12.688779, 6.23913, 29.6539]
       Rotation: [-2.736535, 1.083315, -2.9816027]
       Scale: [0.9999967, 0.99999917, 0.999997]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -183,6 +205,8 @@ Entities:
       Position: [7.0225153, -8.822878, 1.2588725]
       Rotation: [1.1056545, 0.16219683, 1.1326752]
       Scale: [7.5937157, 7.593777, 7.593734]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 14877410352446370834
       MeshHandle: 0
@@ -197,6 +221,8 @@ Entities:
       Position: [25.12529, 0.0903988, 4.127961]
       Rotation: [-1.9355324e-08, -0.45854402, 2.7935164e-08]
       Scale: [6.7500014, 6.75, 6.7500014]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 814898203706997051
       MeshHandle: 0
@@ -211,6 +237,8 @@ Entities:
       Position: [22.934334, -18.80556, -1.1578431]
       Rotation: [0, 0, 0]
       Scale: [4.750002, 4.7499924, 4.7499986]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -225,6 +253,8 @@ Entities:
       Position: [-21.746805, -2.2775216, 42.720413]
       Rotation: [-0.25458887, -0.35610718, 1.1923968e-08]
       Scale: [0.9999997, 0.99999946, 0.99999964]
+      Children:
+        []
     CameraComponent:
       Camera:
         ProjectionType: 1
@@ -232,7 +262,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.074224
+        AspectRatio: 2.0263157
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false
@@ -243,6 +273,8 @@ Entities:
       Position: [-5.5, -2.25, -0.75]
       Rotation: [0, 0, 0]
       Scale: [2.375, 2.375, 2.375]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 1897318988700985028
       MeshHandle: 0
@@ -257,6 +289,8 @@ Entities:
       Position: [-5.5, 0, -9]
       Rotation: [0, 0, 0]
       Scale: [2.375, 2.375, 2.375]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 1897318988700985028
       MeshHandle: 0
@@ -271,6 +305,8 @@ Entities:
       Position: [-13.454039, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [4.75, 4.75, 4.75]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 5492584121324616097
       MeshHandle: 0

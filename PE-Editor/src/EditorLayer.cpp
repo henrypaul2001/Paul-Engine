@@ -21,6 +21,7 @@
 
 namespace PaulEngine
 {
+	// TODO: Render pass light source positions are being set in local space. Update this to use world space values
 	void EditorLayer::CreateRenderer(FrameRenderer& out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();

@@ -7,6 +7,8 @@ Entities:
       Position: [18.251238, -4.1998863, 0]
       Rotation: [0, 0, 0]
       Scale: [25, 1, 25]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -21,6 +23,8 @@ Entities:
       Position: [-9.322631, 0.34226108, 0.0046506794]
       Rotation: [-2.3561945, 1.570308, -3.1415317]
       Scale: [0.9999638, 0.9999999, 0.99999076]
+      Children:
+        []
     SpriteComponent:
       Colour: [1, 1, 1, 1]
       TextureHandle: 0
@@ -45,6 +49,8 @@ Entities:
       Position: [0, -5, 0]
       Rotation: [0, 0, 0]
       Scale: [25, 1, 25]
+      Children:
+        []
     MeshRendererComponent:
       MaterialHandle: 7039009388700113622
       MeshHandle: 0

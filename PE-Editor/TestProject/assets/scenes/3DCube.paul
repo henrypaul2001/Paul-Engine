@@ -7,6 +7,8 @@ Entities:
       Position: [0, 0.3, -1.85]
       Rotation: [-1.5707964, 0.7853982, -8.429369e-08]
       Scale: [0.99999994, 1.0000005, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0.8932966, 0.45227394, 0.99288255, 1]
       TextureHandle: 0
@@ -20,6 +22,8 @@ Entities:
       Position: [-0.35, -0.2, -1.5]
       Rotation: [0, -0.7853982, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0.7258225, 0.19180356, 0.8291815, 1]
       TextureHandle: 0
@@ -33,6 +37,8 @@ Entities:
       Position: [0.356, -0.2, -1.5]
       Rotation: [0, 0.7853982, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     SpriteComponent:
       Colour: [0.5636249, 0.14680664, 0.6548042, 1]
       TextureHandle: 0
@@ -46,6 +52,8 @@ Entities:
       Position: [0, 0.7, 0]
       Rotation: [-0.34382987, 0, 0]
       Scale: [1, 1, 1]
+      Children:
+        []
     CameraComponent:
       Camera:
         ProjectionType: 1
@@ -53,7 +61,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0727763
+        AspectRatio: 2.0263157
         Gamma: 2.2
-        Exposure: 1.0
+        Exposure: 1
       FixedAspect: false

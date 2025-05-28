@@ -88,6 +88,12 @@ namespace PaulEngine
 		CopyComponent<ComponentPointLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentSpotLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 
+		auto transformView = dstSceneRegistry.view<ComponentTransform>();
+		for (auto entityID : transformView)
+		{
+			dstSceneRegistry.get<ComponentTransform>(entityID).RemapEntityRelationships(newScene.get());
+		}
+
 		return newScene;
 	}
 
@@ -103,6 +109,7 @@ namespace PaulEngine
 		e.AddComponent<ComponentID>(uuid);
 		e.AddComponent<ComponentTransform>();
 		e.AddComponent<ComponentTag>(name);
+		m_EntityMap[uuid] = e;
 		return e;
 	}
 
@@ -127,8 +134,21 @@ namespace PaulEngine
 		return newEntity;
 	}
 
+	Entity Scene::FindEntityWithUUID(UUID id)
+	{
+		if (m_EntityMap.find(id) != m_EntityMap.end())
+		{
+			return m_EntityMap.at(id);
+		}
+		else
+		{
+			return Entity();
+		}
+	}
+
 	void Scene::DestroyEntity(Entity entity)
 	{
+		m_EntityMap.erase(entity.GetComponent<ComponentID>().ID);
 		m_Registry.destroy(entity);
 	}
 
