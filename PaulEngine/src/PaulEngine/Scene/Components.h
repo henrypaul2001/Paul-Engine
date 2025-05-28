@@ -33,7 +33,6 @@ namespace PaulEngine
 		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; m_TransformDirty = true; }
 		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; m_TransformDirty = true; }
 		void SetScale(const glm::vec3& scale) { m_Scale = scale; m_PhysicsDirty = true; m_TransformDirty = true; }
-		void SetParent(Entity parentEntity) { m_Parent = parentEntity; m_PhysicsDirty = true; m_TransformDirty = true; }
 
 		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_LocalTransform(glm::mat4(1.0f)), m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false), m_TransformDirty(true) {}
 
@@ -62,6 +61,36 @@ namespace PaulEngine
 		}
 
 		Entity GetParent() const { return m_Parent; }
+		
+		size_t NumChildren() const { return m_Children.size(); }
+		const std::unordered_set<Entity>& GetChildren() const { return m_Children; }
+		bool HasChild(Entity child) { return m_Children.contains(child); }
+
+		static void SetParent(Entity child, Entity parent)
+		{
+			PE_CORE_ASSERT(child.IsValid(), "Invalid child entity");
+			ComponentTransform& childTransform = child.GetComponent<ComponentTransform>();
+			if (childTransform.GetParent() == parent) { return; }
+			if (childTransform.HasChild(parent)) { return; }
+
+			Entity previousParent = childTransform.GetParent();
+
+			// Set new parent
+			childTransform.m_Parent = parent;
+			childTransform.m_PhysicsDirty = true; childTransform.m_TransformDirty = true;
+
+			// Update children list in parent
+			if (parent.IsValid())
+			{
+				parent.GetComponent<ComponentTransform>().m_Children.emplace(child);
+			}
+
+			// Remove child from previous parent
+			if (previousParent.IsValid())
+			{
+				previousParent.GetComponent<ComponentTransform>().m_Children.erase(child);
+			}
+		}
 
 	private:
 		void UpdateLocalTransform()
@@ -87,6 +116,7 @@ namespace PaulEngine
 		bool m_TransformDirty = true;
 
 		Entity m_Parent = Entity();
+		std::unordered_set<Entity> m_Children;
 	};
 
 	struct ComponentCamera {

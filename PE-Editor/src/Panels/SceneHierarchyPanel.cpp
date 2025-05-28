@@ -32,9 +32,25 @@ namespace PaulEngine
 
 		m_Context->m_Registry.view<entt::entity>().each([this](auto entityID) {
 			Entity entity = Entity(entityID, m_Context.get());
-
-			DrawEntityNode(entity);
+			// Only draw root entities
+			// DrawEntityNode will recursively draw children
+			if (!entity.GetComponent<ComponentTransform>().GetParent().IsValid())
+			{
+				DrawEntityNode(entity);
+			}
 		});
+
+		ImGui::Dummy(ImGui::GetContentRegionAvail());
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_ITEM"))
+			{
+				Entity entityPayload = *(Entity*)payload->Data;
+				ComponentTransform::SetParent(entityPayload, Entity());
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
 			m_SelectedEntity = Entity();
@@ -92,7 +108,27 @@ namespace PaulEngine
 
 		ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+		ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+		size_t numChildren = transform.NumChildren();
+		bool isLeaf = numChildren == 0;
+		if (isLeaf)
+		{
+			flags |= ImGuiTreeNodeFlags_Leaf;
+		}
+
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)entity.GetID(), flags, tag.c_str());
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_ITEM"))
+			{
+				Entity entityPayload = *(Entity*)payload->Data;
+				if (entityPayload != entity) {
+					ComponentTransform::SetParent(entityPayload, entity);
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		if (ImGui::BeginDragDropSource()) {
 			ImGui::SetDragDropPayload("ENTITY_ITEM", &entity, sizeof(Entity));
@@ -118,7 +154,11 @@ namespace PaulEngine
 		}
 
 		if (opened) {
-			ImGui::Text("Hello");
+			const std::unordered_set<Entity>& children = transform.GetChildren();
+			for (auto& it : children)
+			{
+				DrawEntityNode(it);
+			}
 			ImGui::TreePop();
 		}
 
@@ -374,7 +414,7 @@ namespace PaulEngine
 				{
 					Entity entityPayload = *(Entity*)payload->Data;
 					if (entityPayload != entity) {
-						component.SetParent(entityPayload);
+						ComponentTransform::SetParent(entity, entityPayload);
 					}
 				}
 				ImGui::EndDragDropTarget();
@@ -385,11 +425,12 @@ namespace PaulEngine
 				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
 				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-					component.SetParent(Entity());
+					ComponentTransform::SetParent(entity, Entity());
 				}
 			}
 			ImGui::SameLine();
 			ImGui::Text("Parent");
+			ImGui::Text("Children: %d", component.NumChildren());
 		});
 
 		// Camera
