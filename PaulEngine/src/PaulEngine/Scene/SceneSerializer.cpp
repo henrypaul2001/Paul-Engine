@@ -304,7 +304,7 @@ namespace PaulEngine
 
 						YAML::Node parentNode = transformNode["Parent"];
 						if (parentNode) {
-							ComponentTransform::SetParent(deserializedEntity, m_Scene->FindEntityWithUUID(parentNode.as<uint64_t>()));
+							transform.m_Parent = m_Scene->FindEntityWithUUID(parentNode.as<uint64_t>());
 						}
 
 						YAML::Node childrenNode = transformNode["Children"];
