@@ -113,7 +113,6 @@ namespace PaulEngine
 		return e;
 	}
 
-	// TODO: handle transform parent/child relationship
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
 		const std::string& name = entity.Tag();
@@ -131,6 +130,25 @@ namespace PaulEngine
 		CopyComponentIfExists<ComponentDirectionalLight>(newEntity, entity);
 		CopyComponentIfExists<ComponentPointLight>(newEntity, entity);
 		CopyComponentIfExists<ComponentSpotLight>(newEntity, entity);
+
+		ComponentTransform& newTransform = newEntity.GetComponent<ComponentTransform>();
+		ComponentTransform& originalTransform = entity.GetComponent<ComponentTransform>();
+		
+		// Inform parent of new child
+		Entity parent = newTransform.GetParent();
+		if (parent.IsValid())
+		{
+			parent.GetComponent<ComponentTransform>().m_Children.emplace(newEntity);
+		}
+
+		// Duplicate children
+		std::unordered_set<Entity> children = originalTransform.GetChildren();
+		newTransform.m_Children.clear();
+		for (Entity e : children)
+		{
+			Entity newChild = DuplicateEntity(e);
+			ComponentTransform::SetParent(newChild, newEntity);
+		}
 
 		return newEntity;
 	}
