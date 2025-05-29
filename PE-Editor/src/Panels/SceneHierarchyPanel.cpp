@@ -104,67 +104,70 @@ namespace PaulEngine
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
-		const std::string& tag = entity.GetComponent<ComponentTag>().Tag;
-
-		ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
-		ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
-		size_t numChildren = transform.NumChildren();
-		bool isLeaf = numChildren == 0;
-		if (isLeaf)
+		if (entity.IsValid())
 		{
-			flags |= ImGuiTreeNodeFlags_Leaf;
-		}
+			const std::string& tag = entity.GetComponent<ComponentTag>().Tag;
 
-		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)entity.GetID(), flags, tag.c_str());
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_ITEM"))
+			ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+			flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+			ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+			size_t numChildren = transform.NumChildren();
+			bool isLeaf = numChildren == 0;
+			if (isLeaf)
 			{
-				Entity entityPayload = *(Entity*)payload->Data;
-				if (entityPayload != entity) {
-					ComponentTransform::SetParent(entityPayload, entity);
+				flags |= ImGuiTreeNodeFlags_Leaf;
+			}
+
+			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)entity.GetID(), flags, tag.c_str());
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_ITEM"))
+				{
+					Entity entityPayload = *(Entity*)payload->Data;
+					if (entityPayload != entity) {
+						ComponentTransform::SetParent(entityPayload, entity);
+					}
 				}
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		if (ImGui::BeginDragDropSource()) {
-			ImGui::SetDragDropPayload("ENTITY_ITEM", &entity, sizeof(Entity));
-			ImGui::EndDragDropSource();
-		}
-
-		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-			m_SelectedEntity = entity;
-		}
-
-		bool entityDeleted = false;
-		if (ImGui::BeginPopupContextItem()) {
-			ImGui::Text(tag.c_str());
-			ImGui::Separator();
-			if (ImGui::MenuItem("Duplicate", "LCtrl+D")) {
-				m_Context->DuplicateEntity(m_SelectedEntity);
-			}
-			if (ImGui::MenuItem("Delete")) {
-				entityDeleted = true;
+				ImGui::EndDragDropTarget();
 			}
 
-			ImGui::EndPopup();
-		}
-
-		if (opened) {
-			const std::unordered_set<Entity>& children = transform.GetChildren();
-			for (auto& it : children)
-			{
-				DrawEntityNode(it);
+			if (ImGui::BeginDragDropSource()) {
+				ImGui::SetDragDropPayload("ENTITY_ITEM", &entity, sizeof(Entity));
+				ImGui::EndDragDropSource();
 			}
-			ImGui::TreePop();
-		}
 
-		if (entityDeleted) {
-			SetSelectedEntity(Entity());
-			m_Context->DestroyEntity(entity);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+				m_SelectedEntity = entity;
+			}
+
+			bool entityDeleted = false;
+			if (ImGui::BeginPopupContextItem()) {
+				ImGui::Text(tag.c_str());
+				ImGui::Separator();
+				if (ImGui::MenuItem("Duplicate", "LCtrl+D")) {
+					m_Context->DuplicateEntity(m_SelectedEntity);
+				}
+				if (ImGui::MenuItem("Delete")) {
+					entityDeleted = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			if (opened) {
+				const std::unordered_set<Entity>& children = transform.GetChildren();
+				for (auto& it : children)
+				{
+					DrawEntityNode(it);
+				}
+				ImGui::TreePop();
+			}
+
+			if (entityDeleted) {
+				SetSelectedEntity(Entity());
+				m_Context->DestroyEntity(entity);
+			}
 		}
 	}
 

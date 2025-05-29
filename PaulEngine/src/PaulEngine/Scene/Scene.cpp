@@ -147,11 +147,38 @@ namespace PaulEngine
 		}
 	}
 
-	// TODO: handle transform parent/child relationship
 	void Scene::DestroyEntity(Entity entity)
 	{
+		ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+
+		// Remove entity from parents child list
+		Entity parent = transform.GetParent();
+		if (parent.IsValid())
+		{
+			ComponentTransform& parentTransform = parent.GetComponent<ComponentTransform>();
+			std::unordered_set<Entity> newSet;
+			std::unordered_set<Entity> original = parentTransform.GetChildren();
+			for (Entity e : original)
+			{
+				if (e != entity) { newSet.emplace(e); }
+			}
+			parentTransform.m_Children = newSet;
+		}
+		DestroyChildren(entity);
 		m_EntityMap.erase(entity.GetComponent<ComponentID>().ID);
 		m_Registry.destroy(entity);
+	}
+
+	void Scene::DestroyChildren(Entity rootEntity)
+	{
+		ComponentTransform& transform = rootEntity.GetComponent<ComponentTransform>();
+		std::unordered_set<Entity> children = transform.GetChildren();
+		for (Entity e : children)
+		{
+			DestroyChildren(e);
+			m_EntityMap.erase(e.GetComponent<ComponentID>().ID);
+			m_Registry.destroy(e);
+		}
 	}
 
 	Entity Scene::GetPrimaryCameraEntity()

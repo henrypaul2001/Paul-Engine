@@ -79,6 +79,8 @@ namespace PaulEngine
 		void OnPhysics2DStart();
 		void OnPhysics2DStop();
 
+		void DestroyChildren(Entity rootEntity);
+
 		entt::registry m_Registry;
 		std::unordered_map<UUID, Entity> m_EntityMap;
 
