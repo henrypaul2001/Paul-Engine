@@ -76,4 +76,55 @@ namespace PaulEngine::Maths
 
 		return true;
 	}
+
+	glm::vec3 GetTranslation(const glm::mat4& transform)
+	{
+		return transform[3];
+	}
+
+	glm::vec3 GetRotation(const glm::mat4& transform)
+	{
+		glm::vec3 rotation = glm::vec3(0.0f);
+
+		glm::vec3 Row[3];
+
+		for (glm::length_t i = 0; i < 3; ++i)
+			for (glm::length_t j = 0; j < 3; ++j)
+				Row[i][j] = transform[i][j];
+
+		// Compute X scale factor and normalize first row.
+		Row[0] = glm::detail::scale(Row[0], 1.0f);
+		Row[1] = glm::detail::scale(Row[1], 1.0f);
+		Row[2] = glm::detail::scale(Row[2], 1.0f);
+
+		rotation.y = asin(-Row[0][2]);
+		if (cos(rotation.y) != 0) {
+			rotation.x = atan2(Row[1][2], Row[2][2]);
+			rotation.z = atan2(Row[0][1], Row[0][0]);
+		}
+		else {
+			rotation.x = atan2(-Row[2][0], Row[1][1]);
+			rotation.z = 0;
+		}
+
+		return rotation;
+	}
+
+	glm::vec3 GetScale(const glm::mat4& transform)
+	{
+		glm::vec3 scale = glm::vec3(0.0f);
+
+		glm::vec3 Row[3];
+
+		for (glm::length_t i = 0; i < 3; ++i)
+			for (glm::length_t j = 0; j < 3; ++j)
+				Row[i][j] = transform[i][j];
+
+		// Compute X scale factor and normalize first row.
+		scale.x = length(Row[0]);
+		scale.y = length(Row[1]);
+		scale.z = length(Row[2]);
+
+		return scale;
+	}
 }
