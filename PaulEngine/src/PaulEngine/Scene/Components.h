@@ -1,4 +1,5 @@
 #pragma once
+#include "PaulEngine/Maths/Maths.h"
 #include "PaulEngine/Core/UUID.h"
 #include "PaulEngine/Renderer/Texture.h"
 #include "PaulEngine/Renderer/Font.h"
@@ -26,9 +27,33 @@ namespace PaulEngine
 
 	struct ComponentTransform {
 	public:
-		const glm::vec3& LocalPosition() const	{ return m_Position; }
-		const glm::vec3& LocalRotation() const	{ return m_Rotation; }
-		const glm::vec3&    LocalScale() const	{ return m_Scale; }
+		glm::vec3 LocalPosition() const { return m_Position; }
+		glm::vec3 LocalRotation() const { return m_Rotation; }
+		glm::vec3    LocalScale() const { return m_Scale; }
+
+		glm::vec3 WorldPosition()
+		{
+			glm::mat4 worldTransform = GetTransform();
+			return worldTransform[3];
+		}
+		glm::vec3 WorldRotation()
+		{
+			glm::mat4 worldTransform = GetTransform();
+			glm::vec3 worldPos = glm::vec3(0.0f);
+			glm::vec3 worldRot = glm::vec3(0.0f);
+			glm::vec3 worldScale = glm::vec3(0.0f);
+			Maths::DecomposeTransform(worldTransform, worldPos, worldRot, worldScale);
+			return worldRot;
+		}
+		glm::vec3 WorldScale()
+		{
+			glm::mat4 worldTransform = GetTransform();
+			glm::vec3 worldPos = glm::vec3(0.0f);
+			glm::vec3 worldRot = glm::vec3(0.0f);
+			glm::vec3 worldScale = glm::vec3(0.0f);
+			Maths::DecomposeTransform(worldTransform, worldPos, worldRot, worldScale);
+			return worldScale;
+		}
 
 		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; m_TransformDirty = true; }
 		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; m_TransformDirty = true; }
@@ -66,6 +91,7 @@ namespace PaulEngine
 		const std::unordered_set<Entity>& GetChildren() const { return m_Children; }
 		bool HasChild(Entity child) { return m_Children.contains(child); }
 
+		// TODO: Apply transformation to childs local transform to ensure its world transform stays the same when added as a child to another entity
 		static void SetParent(Entity child, Entity parent)
 		{
 			PE_CORE_ASSERT(child.IsValid(), "Invalid child entity");
