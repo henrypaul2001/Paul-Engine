@@ -5,7 +5,7 @@ Entities:
       Tag: PointLight
     TransformComponent:
       Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [0, -0, 0]
       Scale: [0.25, 0.25, 0.25]
       Parent: 15000692167212427164
       Children:
@@ -24,9 +24,9 @@ Entities:
     TagComponent:
       Tag: Child
     TransformComponent:
-      Position: [0.4437027, 1.4305115e-06, -10.469633]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Position: [-5.8717403, -2.842171e-14, 3.8187914]
+      Rotation: [1.6653345e-15, 1.7881396e-07, -3.9968033e-15]
+      Scale: [0.9999999, 1, 0.9999999]
       Parent: 15310629311584878301
       Children:
         - 16343280587801993133
@@ -58,7 +58,7 @@ Entities:
       Tag: Child
     TransformComponent:
       Position: [-11.673876, 0, -2.5110226]
-      Rotation: [0, 0, 0]
+      Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
       Parent: 15310629311584878301
       Children:
@@ -74,12 +74,12 @@ Entities:
     TagComponent:
       Tag: Parent
     TransformComponent:
-      Position: [15.544524, -8.7092705, -24.813526]
-      Rotation: [-0.21942408, -0.8832134, 0.2809575]
-      Scale: [0.9999999, 0.9999999, 1]
+      Position: [14.553104, 0, -26.636303]
+      Rotation: [1.5106247e-08, 1.2962402, 1.5654834e-08]
+      Scale: [0.99999964, 1, 0.99999964]
       Children:
-        - 15000692167212427164
         - 1343193191301409956
+        - 15000692167212427164
     MeshRendererComponent:
       MaterialHandle: 0
       MeshHandle: 0
@@ -91,8 +91,8 @@ Entities:
     TagComponent:
       Tag: PointLight
     TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Position: [11.673876, 0, 2.5110226]
+      Rotation: [0, -0, 0]
       Scale: [0.25, 0.25, 0.25]
       Parent: 1343193191301409956
       Children:

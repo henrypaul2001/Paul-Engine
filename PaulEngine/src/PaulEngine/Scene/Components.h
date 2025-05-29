@@ -39,25 +39,51 @@ namespace PaulEngine
 		glm::vec3 WorldRotation()
 		{
 			glm::mat4 worldTransform = GetTransform();
-			glm::vec3 worldPos = glm::vec3(0.0f);
-			glm::vec3 worldRot = glm::vec3(0.0f);
-			glm::vec3 worldScale = glm::vec3(0.0f);
-			Maths::DecomposeTransform(worldTransform, worldPos, worldRot, worldScale);
-			return worldRot;
+			return Maths::GetRotation(worldTransform);
 		}
 		glm::vec3 WorldScale()
 		{
 			glm::mat4 worldTransform = GetTransform();
-			glm::vec3 worldPos = glm::vec3(0.0f);
-			glm::vec3 worldRot = glm::vec3(0.0f);
-			glm::vec3 worldScale = glm::vec3(0.0f);
-			Maths::DecomposeTransform(worldTransform, worldPos, worldRot, worldScale);
-			return worldScale;
+			return Maths::GetScale(worldTransform);
 		}
 
-		void SetPosition (const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; m_TransformDirty = true; }
-		void SetRotation (const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; m_TransformDirty = true; }
-		void SetScale(const glm::vec3& scale) { m_Scale = scale; m_PhysicsDirty = true; m_TransformDirty = true; }
+		void SetLocalPosition(const glm::vec3& position) { m_Position = position; m_PhysicsDirty = true; m_TransformDirty = true; }
+		void SetLocalRotation(const glm::vec3& rotation) { m_Rotation = rotation; m_PhysicsDirty = true; m_TransformDirty = true; }
+		void SetLocalScale(const glm::vec3& scale)		 { m_Scale = scale;		  m_PhysicsDirty = true; m_TransformDirty = true; }
+
+		void SetWorldTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+		{
+			glm::mat4 transform = glm::mat4(1.0f);
+			transform = glm::translate(transform, position);
+			glm::mat4 matRotation = glm::toMat4(glm::quat(rotation));
+			transform *= matRotation;
+			transform = glm::scale(transform, scale);
+
+			glm::mat4 parentTransform = GetParentTransform();
+			glm::mat4 localTransform = glm::inverse(parentTransform) * transform;
+
+			glm::vec3 newPosLocal;
+			glm::vec3 newRotLocal;
+			glm::vec3 newScaleLocal;
+			Maths::DecomposeTransform(localTransform, newPosLocal, newRotLocal, newScaleLocal);
+
+			SetLocalPosition(newPosLocal);
+			SetLocalRotation(newRotLocal);
+			SetLocalScale(newScaleLocal);
+		}
+		
+		void SetWorldPosition(const glm::vec3& position)
+		{
+			SetWorldTransform(position, WorldRotation(), WorldScale());
+		}
+		void SetWorldRotation(const glm::vec3& rotation)
+		{
+			SetWorldTransform(WorldPosition(), rotation, WorldScale());
+		}
+		void SetWorldScale(const glm::vec3& scale)
+		{
+			SetWorldTransform(WorldPosition(), WorldRotation(), scale);
+		}
 
 		ComponentTransform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f)) : m_LocalTransform(glm::mat4(1.0f)), m_Position(position), m_Rotation(rotation), m_Scale(scale), m_PhysicsDirty(false), m_TransformDirty(true) {}
 
@@ -91,7 +117,6 @@ namespace PaulEngine
 		const std::unordered_set<Entity>& GetChildren() const { return m_Children; }
 		bool HasChild(Entity child) { return m_Children.contains(child); }
 
-		// TODO: Apply transformation to childs local transform to ensure its world transform stays the same when added as a child to another entity
 		static void SetParent(Entity child, Entity parent)
 		{
 			PE_CORE_ASSERT(child.IsValid(), "Invalid child entity");
@@ -100,6 +125,12 @@ namespace PaulEngine
 			if (childTransform.HasChild(parent)) { return; }
 
 			Entity previousParent = childTransform.GetParent();
+
+			// Get current world vectors
+			glm::vec3 worldPos;
+			glm::vec3 worldRot;
+			glm::vec3 worldScale;
+			Maths::DecomposeTransform(childTransform.GetTransform(), worldPos, worldRot, worldScale);
 
 			// Set new parent
 			childTransform.m_Parent = parent;
@@ -116,6 +147,9 @@ namespace PaulEngine
 			{
 				previousParent.GetComponent<ComponentTransform>().m_Children.erase(child);
 			}
+
+			// Update world position with previous world position
+			childTransform.SetWorldTransform(worldPos, worldRot, worldScale);
 		}
 
 	private:

@@ -986,7 +986,7 @@ namespace PaulEngine
 				{
 					// Entity outline
 					ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-					transformCopy.SetPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
+					transformCopy.SetLocalPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
 					Renderer2D::SetLineWidth(outlineThickness);
 					Renderer2D::DrawRect(transformCopy.GetTransform(), outlineColour);
 
@@ -1529,9 +1529,9 @@ namespace PaulEngine
 					Maths::DecomposeTransform(localTransform, position, rotation, scale);
 					glm::vec3 deltaRotation = rotation - transformComponent.LocalRotation();
 
-					transformComponent.SetPosition(position);
-					transformComponent.SetRotation(transformComponent.LocalRotation() + deltaRotation);
-					transformComponent.SetScale(scale);
+					transformComponent.SetLocalPosition(position);
+					transformComponent.SetLocalRotation(transformComponent.LocalRotation() + deltaRotation);
+					transformComponent.SetLocalScale(scale);
 				}
 			}
 
@@ -1705,7 +1705,7 @@ namespace PaulEngine
 		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
 			// Entity outline
 			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-			transformCopy.SetPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
+			transformCopy.SetLocalPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
 			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
 			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
 		

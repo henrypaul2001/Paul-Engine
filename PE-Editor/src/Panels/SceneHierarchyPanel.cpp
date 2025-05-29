@@ -392,9 +392,9 @@ namespace PaulEngine
 			glm::vec3 position = component.LocalPosition();
 			glm::vec3 rotationDegrees = glm::degrees(component.LocalRotation());
 			glm::vec3 scale = component.LocalScale();
-			if (DrawVec3Control("Position", position, 0.0f)) { component.SetPosition(position); }
-			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) { component.SetRotation(glm::radians(rotationDegrees)); }
-			if (DrawVec3Control("Scale", scale, 1.0f)) { component.SetScale(scale); }
+			if (DrawVec3Control("Position", position, 0.0f)) { component.SetLocalPosition(position); }
+			if (DrawVec3Control("Rotation", rotationDegrees, 0.0f)) { component.SetLocalRotation(glm::radians(rotationDegrees)); }
+			if (DrawVec3Control("Scale", scale, 1.0f)) { component.SetLocalScale(scale); }
 
 			ImGui::Spacing();
 
