@@ -21,7 +21,6 @@
 
 namespace PaulEngine
 {
-	// TODO: Render pass light source positions are being set in local space. Update this to use world space values
 	void EditorLayer::CreateRenderer(FrameRenderer& out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();
@@ -389,7 +388,7 @@ namespace PaulEngine
 					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
 					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
 
-					glm::vec3 position = transform.LocalPosition();
+					glm::vec3 position = transform.WorldPosition();
 					glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
 
 					float nearClip = light.ShadowMapNearClip;
@@ -467,7 +466,7 @@ namespace PaulEngine
 					float farClip = light.ShadowMapFarClip;
 
 					glm::mat4 transformMatrix = transform.GetTransform();
-					glm::vec3 position = transform.LocalPosition();
+					glm::vec3 position = transform.WorldPosition();
 
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
 
@@ -661,7 +660,7 @@ namespace PaulEngine
 						auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
 						for (auto entityID : view) {
 							auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
-							glm::vec4 position = glm::vec4(transform.LocalPosition(), 1.0f);
+							glm::vec4 position = glm::vec4(transform.WorldPosition(), 1.0f);
 							Renderer::PointLight lightSource;
 							lightSource.Position = position;
 							lightSource.Position.w = light.Radius;
@@ -684,7 +683,7 @@ namespace PaulEngine
 							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
 							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
 
-							glm::vec3 position = transform.LocalPosition();
+							glm::vec3 position = transform.WorldPosition();
 							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
 
 							Renderer::SpotLight lightSource;
@@ -954,10 +953,10 @@ namespace PaulEngine
 					{
 						auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
 
-						glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
-						glm::vec3 scale = transform.LocalScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
+						glm::vec3 position = glm::vec3(glm::vec2(transform.WorldPosition()), 0.01f);
+						glm::vec3 scale = transform.WorldScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
 						glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-						transformation = glm::rotate(transformation, transform.LocalRotation().z, glm::vec3(0.0, 0.0, 1.0f));
+						transformation = glm::rotate(transformation, transform.WorldRotation().z, glm::vec3(0.0, 0.0, 1.0f));
 						transformation = glm::scale(transformation, scale);
 
 						Renderer2D::SetLineWidth(0.01f);
@@ -970,8 +969,8 @@ namespace PaulEngine
 					{
 						auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
 
-						glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
-						glm::vec3 scale = transform.LocalScale() * (circle.Radius() * 2.0f);
+						glm::vec3 position = glm::vec3(glm::vec2(transform.WorldPosition()), 0.01f);
+						glm::vec3 scale = transform.WorldScale() * (circle.Radius() * 2.0f);
 						glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
 						transformation = glm::scale(transformation, scale);
 
@@ -1001,18 +1000,18 @@ namespace PaulEngine
 						float fade = 0.0f;
 
 						glm::mat4 transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.LocalPosition());
+						transform = glm::translate(transform, transformComponent.WorldPosition());
 						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
 
 						transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.LocalPosition());
+						transform = glm::translate(transform, transformComponent.WorldPosition());
 						transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
 
 						transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.LocalPosition());
+						transform = glm::translate(transform, transformComponent.WorldPosition());
 						transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
 						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
@@ -1023,8 +1022,8 @@ namespace PaulEngine
 					{
 						ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
 						ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
-						glm::vec3 position = transformComponent.LocalPosition();
-						glm::quat rotationQuat = glm::quat(transformComponent.LocalRotation());
+						glm::vec3 position = transformComponent.WorldPosition();
+						glm::quat rotationQuat = glm::quat(transformComponent.WorldRotation());
 						float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
 						float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
 						float thickness = 0.005f;

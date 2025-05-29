@@ -113,6 +113,7 @@ namespace PaulEngine
 		return e;
 	}
 
+	// TODO: handle transform parent/child relationship
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
 		const std::string& name = entity.Tag();
@@ -146,6 +147,7 @@ namespace PaulEngine
 		}
 	}
 
+	// TODO: handle transform parent/child relationship
 	void Scene::DestroyEntity(Entity entity)
 	{
 		m_EntityMap.erase(entity.GetComponent<ComponentID>().ID);

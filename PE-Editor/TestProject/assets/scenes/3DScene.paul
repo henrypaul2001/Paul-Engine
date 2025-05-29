@@ -1,5 +1,21 @@
 Scene: Untitled
 Entities:
+  - Entity: 3336924966355824624
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [12.910103, -17.162352, 13.331614]
+      Rotation: [-0.34729818, -0.5340328, -6.059062e-08]
+      Scale: [0.49999988, 0.49999973, 0.49999988]
+      Children:
+        - 13732826914999760753
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 1343193191301409956
     TagComponent:
       Tag: Child
@@ -21,9 +37,9 @@ Entities:
     TagComponent:
       Tag: Parent
     TransformComponent:
-      Position: [41.616962, 1.4106327, -31.921318]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Position: [14.276576, -9.643233, -30.468836]
+      Rotation: [-0.21942408, -0.8832134, 0.2809575]
+      Scale: [0.9999999, 0.9999999, 1]
       Children:
         - 1343193191301409956
     MeshRendererComponent:
@@ -120,9 +136,10 @@ Entities:
     TagComponent:
       Tag: SpotLight
     TransformComponent:
-      Position: [12.633057, -16.910284, 14.159346]
-      Rotation: [-0.57374465, 0.043460056, 1.3656987]
-      Scale: [0.24996494, 0.24997261, 0.24999978]
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 3336924966355824624
       Children:
         []
     SpotLightComponent:
