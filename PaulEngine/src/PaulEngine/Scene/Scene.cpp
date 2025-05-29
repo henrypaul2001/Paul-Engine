@@ -156,13 +156,7 @@ namespace PaulEngine
 		if (parent.IsValid())
 		{
 			ComponentTransform& parentTransform = parent.GetComponent<ComponentTransform>();
-			std::unordered_set<Entity> newSet;
-			std::unordered_set<Entity> original = parentTransform.GetChildren();
-			for (Entity e : original)
-			{
-				if (e != entity) { newSet.emplace(e); }
-			}
-			parentTransform.m_Children = newSet;
+			parentTransform.m_Children.erase(entity);
 		}
 		DestroyChildren(entity);
 		m_EntityMap.erase(entity.GetComponent<ComponentID>().ID);
