@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Mesh.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
     <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
@@ -654,6 +655,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Mesh.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetManager.cpp" />

@@ -2,7 +2,7 @@
 #include "ShaderParameterType.h"
 
 #include "PaulEngine/Asset/AssetManager.h"
-#include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
 
 #include "PaulEngine/Renderer/Renderer2D.h"
 
