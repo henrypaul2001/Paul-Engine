@@ -1,18 +1,18 @@
 #include "pepch.h"
 #include "Renderer2D.h"
-#include "VertexArray.h"
-#include "Shader.h"
-#include "UniformBuffer.h"
+#include "Resource/VertexArray.h"
+#include "Asset/Shader.h"
+#include "Resource/UniformBuffer.h"
 
 #include "PaulEngine/Asset/AssetManager.h"
 
 #include "RenderCommand.h"
 #include <glm/ext/matrix_transform.hpp>
 
-#include "MSDFData.h"
-#include "TextureAtlas2D.h"
+#include "Asset/MSDFData.h"
+#include "Asset/TextureAtlas2D.h"
 
-#include "Material.h"
+#include "Asset/Material.h"
 
 #include "PaulEngine/Asset/MaterialImporter.h"
 

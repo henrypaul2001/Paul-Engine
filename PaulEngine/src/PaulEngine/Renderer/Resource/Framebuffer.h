@@ -1,7 +1,7 @@
 #pragma once
 #include "PaulEngine/Core/Core.h"
 #include "PaulEngine/Asset/AssetManager.h"
-#include "Texture.h"
+#include "../Asset/Texture.h"
 
 namespace PaulEngine
 {

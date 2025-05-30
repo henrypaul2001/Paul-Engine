@@ -1,6 +1,6 @@
 #include "pepch.h"
 #include "OpenGLShader.h"
-#include "PaulEngine/Renderer/ShaderParameterType.h"
+#include "PaulEngine/Renderer/Resource/ShaderParameterType.h"
 
 #include <glad/glad.h>
 #include <fstream>

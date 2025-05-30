@@ -5,7 +5,7 @@
 #include "PaulEngine/Core/UUID.h"
 
 #include "PaulEngine/Core/Timestep.h"
-#include <PaulEngine/Renderer/EditorCamera.h>
+#include <PaulEngine/Renderer/Resource/EditorCamera.h>
 
 struct b2WorldId;
 

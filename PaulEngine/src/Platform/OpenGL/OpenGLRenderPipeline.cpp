@@ -1,7 +1,7 @@
 #include "pepch.h"
 #include "OpenGLRenderPipeline.h"
 #include "PaulEngine/Asset/AssetManager.h"
-#include "PaulEngine/Renderer/Material.h"
+#include "PaulEngine/Renderer/Asset/Material.h"
 
 #include <glad/glad.h>
 

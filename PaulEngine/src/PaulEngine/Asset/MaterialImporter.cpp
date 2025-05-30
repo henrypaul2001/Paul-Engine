@@ -1,6 +1,6 @@
 #include "pepch.h"
 #include "MaterialImporter.h"
-#include "PaulEngine/Renderer/Buffer.h"
+#include "PaulEngine/Renderer/Resource/Buffer.h"
 
 #include "PaulEngine/Project/Project.h"
 

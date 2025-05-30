@@ -1,8 +1,8 @@
 #pragma once
 #include "Asset.h"
 
-#include "PaulEngine/Renderer/Texture.h"
-#include "PaulEngine/Renderer/TextureAtlas2D.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
+#include "PaulEngine/Renderer/Asset/TextureAtlas2D.h"
 
 namespace PaulEngine
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "VertexArray.h"
+#include "Resource/VertexArray.h"
 
 namespace PaulEngine {
 	class RenderAPI {

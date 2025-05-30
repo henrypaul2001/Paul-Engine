@@ -1,11 +1,11 @@
 #pragma once
 #include "PaulEngine/Renderer/RenderPipeline.h"
-#include "PaulEngine/Renderer/OrthographicCamera.h"
-#include "PaulEngine/Renderer/Texture.h"
-#include "PaulEngine/Renderer/SubTexture2D.h"
-#include "PaulEngine/Renderer/Camera.h"
-#include "PaulEngine/Renderer/EditorCamera.h"
-#include "PaulEngine/Renderer/Font.h"
+#include "PaulEngine/Renderer/Resource/OrthographicCamera.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
+#include "PaulEngine/Renderer/Asset/SubTexture2D.h"
+#include "PaulEngine/Renderer/Resource/Camera.h"
+#include "PaulEngine/Renderer/Resource/EditorCamera.h"
+#include "PaulEngine/Renderer/Asset/Font.h"
 
 namespace PaulEngine {
 	class Renderer2D

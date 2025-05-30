@@ -4,9 +4,9 @@
 
 #include "PaulEngine/Project/Project.h"
 #include "PaulEngine/Core/Core.h"
-#include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
 
-#include "PaulEngine/Renderer/MSDFData.h"
+#include "PaulEngine/Renderer/Asset/MSDFData.h"
 #include "PaulEngine/Asset/AssetManager.h"
 
 namespace PaulEngine

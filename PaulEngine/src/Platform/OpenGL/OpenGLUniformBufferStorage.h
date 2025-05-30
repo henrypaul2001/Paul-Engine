@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Renderer/UniformBufferStorage.h"
+#include "PaulEngine/Renderer/Resource/UniformBufferStorage.h"
 
 namespace PaulEngine
 {

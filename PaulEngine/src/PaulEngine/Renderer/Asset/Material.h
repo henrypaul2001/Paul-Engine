@@ -2,7 +2,7 @@
 #include "PaulEngine/Asset/Asset.h"
 #include "Shader.h"
 
-#include "ShaderParameterType.h"
+#include "../Resource/ShaderParameterType.h"
 
 namespace PaulEngine
 {

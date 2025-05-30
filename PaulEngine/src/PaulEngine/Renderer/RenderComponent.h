@@ -1,8 +1,8 @@
-#include "PaulEngine/Renderer/Camera.h"
-#include "PaulEngine/Renderer/Framebuffer.h"
-#include "PaulEngine/Renderer/Texture.h"
-#include "PaulEngine/Renderer/Material.h"
-#include "PaulEngine/Renderer/UniformBuffer.h"
+#include "PaulEngine/Renderer/Resource/Camera.h"
+#include "PaulEngine/Renderer/Resource/Framebuffer.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
+#include "PaulEngine/Renderer/Asset/Material.h"
+#include "PaulEngine/Renderer/Resource/UniformBuffer.h"
 
 namespace PaulEngine
 {

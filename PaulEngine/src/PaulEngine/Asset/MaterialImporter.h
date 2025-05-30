@@ -1,7 +1,7 @@
 #pragma once
 #include "Asset.h"
 
-#include "PaulEngine/Renderer/Material.h"
+#include "PaulEngine/Renderer/Asset/Material.h"
 
 namespace PaulEngine
 {

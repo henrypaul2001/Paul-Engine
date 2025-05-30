@@ -1,6 +1,6 @@
 #pragma once
 #include "PaulEngine/Asset/Asset.h"
-#include "PaulEngine/Renderer/ShaderParameterType.h"
+#include "PaulEngine/Renderer/Resource/ShaderParameterType.h"
 
 #include <string>
 #include <glm/glm.hpp>

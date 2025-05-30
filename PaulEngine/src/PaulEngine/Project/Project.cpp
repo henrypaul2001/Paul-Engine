@@ -3,7 +3,7 @@
 #include "ProjectSerializer.h"
 #include "PaulEngine/Renderer/Renderer.h"
 #include "PaulEngine/Renderer/Renderer2D.h"
-#include "PaulEngine/Renderer/Font.h"
+#include "PaulEngine/Renderer/Asset/Font.h"
 #include "PaulEngine/Asset/AssetManager.h"
 
 namespace PaulEngine

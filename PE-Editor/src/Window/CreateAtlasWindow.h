@@ -1,7 +1,7 @@
 #pragma once
 #include <PaulEngine/Asset/Asset.h>
-#include <PaulEngine/Renderer/SubTexture2D.h>
-#include <PaulEngine/Renderer/Framebuffer.h>
+#include <PaulEngine/Renderer/Asset/SubTexture2D.h>
+#include <PaulEngine/Renderer/Resource/Framebuffer.h>
 #include <PaulEngine/Scene/SceneCamera.h>
 
 namespace PaulEngine

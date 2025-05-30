@@ -9,7 +9,7 @@
 #include <PaulEngine/Debug/Instrumentor.h>
 
 #include <filesystem>
-#include <PaulEngine/Renderer/TextureAtlas2D.h>
+#include <PaulEngine/Renderer/Asset/TextureAtlas2D.h>
 
 namespace PaulEngine
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "Asset.h"
-#include "PaulEngine/Renderer/Font.h"
+#include "PaulEngine/Renderer/Asset/Font.h"
 
 namespace PaulEngine
 {

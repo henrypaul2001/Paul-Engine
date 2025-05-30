@@ -1,11 +1,11 @@
 #pragma once
 #include "RenderAPI.h"
-#include "Shader.h"
-#include "Camera.h"
-#include "EditorCamera.h"
+#include "Asset/Shader.h"
+#include "Resource/Camera.h"
+#include "Resource/EditorCamera.h"
 #include "RenderPipeline.h"
 
-#include "Material.h"
+#include "Asset/Material.h"
 
 namespace PaulEngine {
 	class Renderer {

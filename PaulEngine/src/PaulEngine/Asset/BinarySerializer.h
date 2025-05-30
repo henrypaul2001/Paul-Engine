@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
 #include <filesystem>
 
 namespace PaulEngine

@@ -1,7 +1,7 @@
 #include "pepch.h"
 #include "Framebuffer.h"
 
-#include "Renderer.h"
+#include "../Renderer.h"
 #include "Platform/OpenGL/OpenGLFramebuffer.h"
 
 namespace PaulEngine

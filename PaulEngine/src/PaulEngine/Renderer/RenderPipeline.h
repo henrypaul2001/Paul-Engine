@@ -2,7 +2,7 @@
 #include "PaulEngine/Core/Core.h"
 #include "PaulEngine/Asset/Asset.h"
 
-#include "VertexArray.h"
+#include "Resource/VertexArray.h"
 
 #include <glm/glm.hpp>
 namespace PaulEngine

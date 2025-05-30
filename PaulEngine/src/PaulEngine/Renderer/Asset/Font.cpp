@@ -4,7 +4,7 @@
 #include "PaulEngine/Project/Project.h"
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/EditorAssetManager.h"
-#include "PaulEngine/Renderer/MSDFData.h"
+#include "PaulEngine/Renderer/Asset/MSDFData.h"
 
 #include "Texture.h"
 

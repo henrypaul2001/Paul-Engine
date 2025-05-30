@@ -11,13 +11,13 @@
 #include <ImGuizmo.h>
 #include <PaulEngine/Maths/Maths.h>
 
-#include "PaulEngine/Renderer/Font.h"
+#include "PaulEngine/Renderer/Asset/Font.h"
 
 #include "PaulEngine/Asset/SceneImporter.h"
 #include "PaulEngine/Asset/MaterialImporter.h"
 
 #include "PaulEngine/Events/SceneEvent.h"
-#include "PaulEngine/Renderer/Material.h"
+#include "PaulEngine/Renderer/Asset/Material.h"
 
 namespace PaulEngine
 {

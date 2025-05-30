@@ -7,7 +7,7 @@
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/TextureImporter.h"
 
-#include "PaulEngine/Renderer/TextureAtlas2D.h"
+#include "PaulEngine/Renderer/Asset/TextureAtlas2D.h"
 #include "PaulEngine/Utils/PlatformUtils.h"
 
 #include <imgui.h>

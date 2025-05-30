@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Renderer/VertexArray.h"
+#include "PaulEngine/Renderer/Resource/VertexArray.h"
 
 namespace PaulEngine {
 

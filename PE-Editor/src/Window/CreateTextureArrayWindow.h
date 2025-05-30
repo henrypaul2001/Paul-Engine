@@ -1,8 +1,8 @@
 #pragma once
 #include <PaulEngine/Asset/Asset.h>
 #include <PaulEngine/Asset/TextureImporter.h>
-#include <PaulEngine/Renderer/Texture.h>
-#include <PaulEngine/Renderer/Framebuffer.h>
+#include <PaulEngine/Renderer/Asset/Texture.h>
+#include <PaulEngine/Renderer/Resource/Framebuffer.h>
 #include <PaulEngine/Scene/SceneCamera.h>
 
 namespace PaulEngine

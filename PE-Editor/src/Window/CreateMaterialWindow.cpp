@@ -6,7 +6,7 @@
 
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/MaterialImporter.h"
-#include "PaulEngine/Renderer/Material.h"
+#include "PaulEngine/Renderer/Asset/Material.h"
 
 #include "PaulEngine/Utils/PlatformUtils.h"
 

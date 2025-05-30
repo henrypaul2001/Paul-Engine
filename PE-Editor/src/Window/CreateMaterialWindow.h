@@ -1,9 +1,9 @@
 #pragma once
 #include <PaulEngine/Asset/Asset.h>
-#include <PaulEngine/Renderer/Framebuffer.h>
+#include <PaulEngine/Renderer/Resource/Framebuffer.h>
 #include <PaulEngine/Scene/SceneCamera.h>
 
-#include <PaulEngine/Renderer/Material.h>
+#include <PaulEngine/Renderer/Asset/Material.h>
 
 namespace PaulEngine
 {

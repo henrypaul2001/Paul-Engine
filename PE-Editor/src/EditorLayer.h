@@ -2,13 +2,13 @@
 #include <PaulEngine.h>
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
-#include <PaulEngine/Renderer/EditorCamera.h>
+#include <PaulEngine/Renderer/Resource/EditorCamera.h>
 
 #include "Window/CreateAtlasWindow.h"
 #include "Window/CreateMaterialWindow.h"
 #include "Window/CreateTextureArrayWindow.h"
 
-#include "PaulEngine/Renderer/Material.h"
+#include "PaulEngine/Renderer/Asset/Material.h"
 
 #include "PaulEngine/Renderer/FrameRenderer.h"
 

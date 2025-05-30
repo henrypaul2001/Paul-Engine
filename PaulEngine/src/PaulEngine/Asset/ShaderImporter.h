@@ -1,6 +1,6 @@
 #pragma once
 #include "Asset.h"
-#include "PaulEngine/Renderer/Shader.h"
+#include "PaulEngine/Renderer/Asset/Shader.h"
 
 namespace PaulEngine
 {

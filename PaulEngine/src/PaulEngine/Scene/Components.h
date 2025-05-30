@@ -1,8 +1,8 @@
 #pragma once
 #include "PaulEngine/Maths/Maths.h"
 #include "PaulEngine/Core/UUID.h"
-#include "PaulEngine/Renderer/Texture.h"
-#include "PaulEngine/Renderer/Font.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
+#include "PaulEngine/Renderer/Asset/Font.h"
 
 #include <PaulEngine/Scene/SceneCamera.h>
 #include "EntityScript.h"

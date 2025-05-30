@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <map>
 
-#include "PaulEngine/Renderer/Texture.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
 
 namespace PaulEngine
 {

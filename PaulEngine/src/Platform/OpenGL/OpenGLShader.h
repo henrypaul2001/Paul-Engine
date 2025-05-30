@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Renderer/Shader.h"
+#include "PaulEngine/Renderer/Asset/Shader.h"
 #include <glm/glm.hpp>
 #include <unordered_map>
 

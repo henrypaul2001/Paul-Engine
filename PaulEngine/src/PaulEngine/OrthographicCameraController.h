@@ -1,5 +1,5 @@
 #pragma once
-#include "Renderer/OrthographicCamera.h"
+#include "Renderer/Resource/OrthographicCamera.h"
 #include "Core/Timestep.h"
 
 #include "PaulEngine/Events/MouseEvent.h"

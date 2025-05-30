@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Renderer/Camera.h"
+#include "PaulEngine/Renderer/Resource/Camera.h"
 
 namespace PaulEngine
 {

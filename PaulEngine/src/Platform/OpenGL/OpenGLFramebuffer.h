@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Renderer/Framebuffer.h"
+#include "PaulEngine/Renderer/Resource/Framebuffer.h"
 namespace PaulEngine
 {
 	class OpenGLFramebufferTexture2DAttachment : public FramebufferTexture2DAttachment

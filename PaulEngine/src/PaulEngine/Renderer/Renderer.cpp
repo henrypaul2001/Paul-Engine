@@ -3,9 +3,9 @@
 #include "Renderer.h"
 #include "RenderCommand.h"
 #include "Renderer2D.h"
-#include "UniformBuffer.h"
+#include "Resource/UniformBuffer.h"
 #include "PaulEngine/Asset/AssetManager.h"
-#include "Material.h"
+#include "Asset/Material.h"
 
 #include "PaulEngine/Asset/TextureImporter.h"
 
