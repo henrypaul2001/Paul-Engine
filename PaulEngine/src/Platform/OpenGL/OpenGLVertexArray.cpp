@@ -29,7 +29,7 @@ namespace PaulEngine {
 		return 0;
 	}
 
-	OpenGLVertexArray::OpenGLVertexArray() : m_RendererID(0)
+	OpenGLVertexArray::OpenGLVertexArray(DrawPrimitive drawPrimitive) : m_RendererID(0), m_Primitive(drawPrimitive)
 	{
 		glCreateVertexArrays(1, &m_RendererID);
 	}

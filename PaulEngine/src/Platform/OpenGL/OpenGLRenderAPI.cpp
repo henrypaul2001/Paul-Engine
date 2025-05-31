@@ -3,6 +3,31 @@
 
 #include <glad/glad.h>
 namespace PaulEngine {
+
+	static GLenum DrawPrimitiveToGLEnum(const DrawPrimitive primitive)
+	{
+		switch (primitive)
+		{
+			case DrawPrimitive::None: return 0;
+
+			case DrawPrimitive::POINTS: return GL_POINTS;
+
+			case DrawPrimitive::LINES: return GL_LINES;
+			case DrawPrimitive::LINE_LOOP: return GL_LINE_LOOP;
+			case DrawPrimitive::LINE_STRIP: return GL_LINE_STRIP;
+			case DrawPrimitive::LINES_ADJACENCY: return GL_LINES_ADJACENCY;
+			case DrawPrimitive::LINE_STRIP_ADJACENCY: return GL_LINE_STRIP_ADJACENCY;
+
+			case DrawPrimitive::TRIANGLES: return GL_TRIANGLES;
+			case DrawPrimitive::TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
+			case DrawPrimitive::TRIANGLE_FAN: return GL_TRIANGLE_FAN;
+			case DrawPrimitive::TRIANGLES_ADJACENCY: return GL_TRIANGLES_ADJACENCY;
+			case DrawPrimitive::TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
+		}
+		PE_CORE_ERROR("Undefined DrawPrimitive translation");
+		return 0;
+	}
+
 	OpenGLRenderAPI::OpenGLRenderAPI() {}
 	OpenGLRenderAPI::~OpenGLRenderAPI() {}
 
@@ -36,7 +61,7 @@ namespace PaulEngine {
 	void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)
 	{
 		PE_PROFILE_FUNCTION();
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(DrawPrimitiveToGLEnum(vertexArray->GetDrawPrimitive()), indexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	void OpenGLRenderAPI::DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount)
