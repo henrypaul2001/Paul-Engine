@@ -76,11 +76,7 @@ project "PaulEngine"
 		"%{IncludeDir.msdfgen}",
 		"%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.assimp}",
-	}
-
-	libdirs
-	{
-		"%{LibraryDir.assimp}"
+		"%{IncludeDir.zlib}"
 	}
 
 	links
@@ -91,8 +87,7 @@ project "PaulEngine"
 		"ImGui",
 		"opengl32.lib",
 		"yaml-cpp",
-		"msdf-atlas-gen",
-		"assimp-vc143-mt"
+		"msdf-atlas-gen"
 	}
 
 	filter "files:PaulEngine/vendor/imguizmo/**.cpp"
@@ -122,7 +117,9 @@ project "PaulEngine"
 		{
 			"%{Library.ShaderC_Debug}",
 			"%{Library.SPIRV_Cross_Debug}",
-			"%{Library.SPIRV_Cross_GLSL_Debug}"
+			"%{Library.SPIRV_Cross_GLSL_Debug}",
+			"%{Library.assimp_Debug}",
+			"%{Library.zlib_Debug}"
 		}
 
 	filter "configurations:Release"
@@ -134,7 +131,9 @@ project "PaulEngine"
 		{
 			"%{Library.ShaderC_Release}",
 			"%{Library.SPIRV_Cross_Release}",
-			"%{Library.SPIRV_Cross_GLSL_Release}"
+			"%{Library.SPIRV_Cross_GLSL_Release}",
+			"%{Library.assimp_Release}",
+			"%{Library.zlib_Release}"
 		}
 
 	filter "configurations:Dist"
@@ -146,7 +145,9 @@ project "PaulEngine"
 		{
 			"%{Library.ShaderC_Release}",
 			"%{Library.SPIRV_Cross_Release}",
-			"%{Library.SPIRV_Cross_GLSL_Release}"
+			"%{Library.SPIRV_Cross_GLSL_Release}",
+			"%{Library.assimp_Release}",
+			"%{Library.zlib_Release}"
 		}
 
 project "Runtime"

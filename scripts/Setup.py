@@ -35,41 +35,42 @@ def print_cmake_version():
         print("Warning: Unable to verify CMake version.")
 
 def build_assimp():
-    print("\nBuilding assimp with CMake...")
+    print("\nBuilding Assimp with CMake...")
 
-    assimp_dir = os.path.join(os.getcwd(), "PaulEngine/vendor/assimp/assimp")  # Fixed path to match submodule location
+    assimp_dir = os.path.join(os.getcwd(), "PaulEngine/vendor/assimp/assimp")
     build_dir = os.path.join(assimp_dir, "build")
 
     if not os.path.exists(build_dir):
         os.makedirs(build_dir)
 
-    # Configure CMake
+    # Common CMake configuration flags
     cmake_configure_cmd = [
         "cmake",
         "-S", assimp_dir,
         "-B", build_dir,
-        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_BUILD_TYPE=RelWithDebInfo",  # For multi-config generators like Visual Studio, this is fine
+        "-DBUILD_SHARED_LIBS=OFF",
         "-DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=ON",
         "-DASSIMP_BUILD_TESTS=OFF",
         "-DASSIMP_BUILD_SAMPLES=OFF",
-        "-DASSIMP_BUILD_ZLIB=ON",  # Build zlib internally
+        "-DASSIMP_BUILD_ZLIB=ON",
         "-DASSIMP_NO_EXPORT=OFF"
     ]
 
-    print("Running CMake configure:")
+    print("\nRunning CMake configure:")
     print(" ".join(cmake_configure_cmd))
     subprocess.check_call(cmake_configure_cmd)
 
-    # Build Assimp static lib
-    cmake_build_cmd = [
-        "cmake",
-        "--build", build_dir,
-        "--config", "Release",
-        "--target", "assimp"
-    ]
+    for config in ["Debug", "Release"]:
+        cmake_build_cmd = [
+            "cmake",
+            "--build", build_dir,
+            "--config", config,
+            "--target", "assimp"
+        ]
 
-    print("Building assimp library:")
-    subprocess.check_call(cmake_build_cmd)
+        print(f"\nBuilding Assimp library [{config}]...")
+        subprocess.check_call(cmake_build_cmd)
 
 if premakeInstalled:
     check_cmake_installed()
