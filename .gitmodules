@@ -22,3 +22,6 @@
 [submodule "PaulEngine/vendor/msdfgen"]
 	path = PaulEngine/vendor/msdfgen
 	url = https://github.com/TheCherno/msdf-atlas-gen
+[submodule "PaulEngine/vendor/assimp/assimp"]
+	path = PaulEngine/vendor/assimp/assimp
+	url = https://github.com/assimp/assimp.git

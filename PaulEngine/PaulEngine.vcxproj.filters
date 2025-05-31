@@ -31,6 +31,12 @@
     <Filter Include="src\PaulEngine\Renderer">
       <UniqueIdentifier>{2ABF6C9B-96F6-B432-9F00-19560BB7DB2B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Renderer\Asset">
+      <UniqueIdentifier>{39AB4943-A5C3-306D-6E70-C006DA47C506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\PaulEngine\Renderer\Resource">
+      <UniqueIdentifier>{8150F443-6DA1-DF85-9605-CE4782B572EF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\PaulEngine\Scene">
       <UniqueIdentifier>{21F7CBA1-0D86-556B-B6A4-6966A2126611}</UniqueIdentifier>
     </Filter>
@@ -186,34 +192,34 @@
     <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h">
       <Filter>src\PaulEngine\Project</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\Buffer.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\Camera.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\EditorCamera.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Asset\Font.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\MSDFData.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Material.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Mesh.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Shader.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\SubTexture2D.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Texture.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\Framebuffer.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\MSDFData.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Material.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\RenderAPI.h">
@@ -237,29 +243,32 @@
     <ClInclude Include="src\PaulEngine\Renderer\Renderer2D.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Shader.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\Buffer.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\Camera.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\EditorCamera.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\Framebuffer.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderParameterType.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\SubTexture2D.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Texture.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\UniformBuffer.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\UniformBufferStorage.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\VertexArray.h">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Scene\Components.h">
       <Filter>src\PaulEngine\Scene</Filter>
@@ -1581,7 +1590,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1653,25 +1661,28 @@
     <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp">
       <Filter>src\PaulEngine\Project</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\Buffer.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\EditorCamera.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Asset\Font.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\Framebuffer.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Asset\Material.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.cpp">
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Mesh.cpp">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Shader.cpp">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\SubTexture2D.cpp">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Texture.cpp">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.cpp">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp">
@@ -1689,29 +1700,29 @@
     <ClCompile Include="src\PaulEngine\Renderer\Renderer2D.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\Shader.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\Buffer.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\EditorCamera.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\Framebuffer.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderParameterType.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\SubTexture2D.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\Texture.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\UniformBuffer.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\UniformBufferStorage.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArray.cpp">
-      <Filter>src\PaulEngine\Renderer</Filter>
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Entity.cpp">
       <Filter>src\PaulEngine\Scene</Filter>
@@ -1776,6 +1787,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\Mesh.cpp" />
   </ItemGroup>
 </Project>

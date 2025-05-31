@@ -74,7 +74,13 @@ project "PaulEngine"
 		"%{IncludeDir.VulkanSDK}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.msdfgen}",
-		"%{IncludeDir.msdf_atlas_gen}"
+		"%{IncludeDir.msdf_atlas_gen}",
+		"%{IncludeDir.assimp}",
+	}
+
+	libdirs
+	{
+		"%{LibraryDir.assimp}"
 	}
 
 	links
@@ -85,12 +91,12 @@ project "PaulEngine"
 		"ImGui",
 		"opengl32.lib",
 		"yaml-cpp",
-		"msdf-atlas-gen"
+		"msdf-atlas-gen",
+		"assimp-vc143-mt"
 	}
 
 	filter "files:PaulEngine/vendor/imguizmo/**.cpp"
 	flags { "NoPCH"}
-
 
 	filter "system:windows"
 		systemversion "latest"

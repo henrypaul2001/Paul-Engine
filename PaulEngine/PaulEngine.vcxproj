@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;PE_DEBUG_MODE;PE_ENABLE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;vendor\assimp\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -92,7 +92,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.296.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;assimp-vc143-mt.lib;C:\VulkanSDK\1.3.296.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>vendor\assimp\assimp\build\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -101,7 +102,7 @@
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;PE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;vendor\assimp\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -119,7 +120,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.296.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;assimp-vc143-mt.lib;C:\VulkanSDK\1.3.296.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>vendor\assimp\assimp\build\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -128,7 +130,7 @@
       <PrecompiledHeaderFile>pepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;PE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\GLFW\include;vendor\glad\include;vendor\imgui\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml\yaml-cpp\include;vendor\imguizmo;C:\VulkanSDK\1.3.296.0\Include;vendor\box2d\box2d\include;vendor\msdfgen\msdfgen;vendor\msdfgen\msdf-atlas-gen;vendor\assimp\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -146,11 +148,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.296.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;assimp-vc143-mt.lib;C:\VulkanSDK\1.3.296.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.296.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>vendor\assimp\assimp\build\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Mesh.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
     <ClInclude Include="src\PaulEngine\Asset\AssetImporter.h" />
@@ -188,16 +190,16 @@
     <ClInclude Include="src\PaulEngine\OrthographicCameraController.h" />
     <ClInclude Include="src\PaulEngine\Project\Project.h" />
     <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\Buffer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\Camera.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\EditorCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Asset\Font.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\Framebuffer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Asset\MSDFData.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Asset\Material.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Mesh.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Shader.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\SubTexture2D.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\Texture.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderAPI.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\PaulEngine\Renderer\RenderComponent.h" />
@@ -205,11 +207,12 @@
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Renderer2D.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Shader.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\Buffer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\Camera.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\EditorCamera.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\Framebuffer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderParameterType.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\SubTexture2D.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\Texture.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Resource\UniformBuffer.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Resource\UniformBufferStorage.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Resource\VertexArray.h" />
@@ -655,7 +658,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\Mesh.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetManager.cpp" />
@@ -679,23 +681,24 @@
     <ClCompile Include="src\PaulEngine\OrthographicCameraController.cpp" />
     <ClCompile Include="src\PaulEngine\Project\Project.cpp" />
     <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\Buffer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\EditorCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Asset\Font.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\Framebuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Asset\Material.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Mesh.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Shader.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\SubTexture2D.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\Texture.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Renderer2D.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\Shader.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\Buffer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\EditorCamera.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\Framebuffer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderParameterType.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\SubTexture2D.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\Texture.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\UniformBuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\UniformBufferStorage.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArray.cpp" />

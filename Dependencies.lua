@@ -17,9 +17,9 @@ IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 IncludeDir["Box2D"] = "PaulEngine/vendor/box2d/box2d/include"
 IncludeDir["msdfgen"] = "PaulEngine/vendor/msdfgen/msdfgen"
 IncludeDir["msdf_atlas_gen"] = "PaulEngine/vendor/msdfgen/msdf-atlas-gen"
+IncludeDir["assimp"] = "PaulEngine/vendor/assimp/assimp/include"
 
 LibraryDir = {}
-
 LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
 
 Library = {}
@@ -34,3 +34,6 @@ Library["SPIRV_Tools_Debug"] = "%{LibraryDir.VulkanSDK}/SPIRV-Toolsd.lib"
 Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
 Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
 Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
+
+LibraryDir["assimp"] = "PaulEngine/vendor/assimp/assimp/build/lib/Release"
+Library["assimp"] = "%{LibraryDir.assimp}/assimp-vc143-mt.lib"
