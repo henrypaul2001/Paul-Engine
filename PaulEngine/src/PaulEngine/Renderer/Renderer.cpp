@@ -67,11 +67,8 @@ namespace PaulEngine {
 
 	struct Renderer3DData
 	{
-		Ref<VertexArray> QuadVertexArray;
-		Ref<VertexBuffer> QuadVertexBuffer;
-
-		Ref<VertexArray> CubeVertexArray;
-		Ref<VertexBuffer> CubeVertexBuffer;
+		AssetHandle QuadMeshHandle = 0;
+		AssetHandle CubeMeshHandle = 0;
 
 		AssetHandle DefaultLitShaderHandle;
 		AssetHandle DefaultLitMaterialHandle;
@@ -129,116 +126,6 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		RenderCommand::Init();
 		Renderer2D::Init();
-
-		// -- Quad --
-		// ----------
-		{
-			s_RenderData.QuadVertexArray = VertexArray::Create();
-			s_RenderData.QuadVertexBuffer = VertexBuffer::Create(4 * sizeof(QuadVertex));
-			s_RenderData.QuadVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position", false },
-				{ ShaderDataType::Float3, "a_Normal", true },
-				{ ShaderDataType::Float2, "a_TexCoords", true },
-				{ ShaderDataType::Float3, "a_Tangent", true },
-				{ ShaderDataType::Float3, "a_Bitangent", true }
-			});
-			s_RenderData.QuadVertexArray->AddVertexBuffer(s_RenderData.QuadVertexBuffer);
-
-			QuadVertex vertices[4] = {
-				{ {	-0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ {  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ {  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } }
-			};
-			vertices[0].Position *= 2.0f;
-			vertices[1].Position *= 2.0f;
-			vertices[2].Position *= 2.0f;
-			vertices[3].Position *= 2.0f;
-			s_RenderData.QuadVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 4);
-
-			uint32_t quadIndices[6] = {
-				0, 1, 2,
-				2, 3, 0
-			};
-
-			ComputeTangentsIndexed(&vertices[0], &quadIndices[0], 6, 4);
-
-			Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, 6);
-			s_RenderData.QuadVertexArray->SetIndexBuffer(quadIB);
-		}
-
-		// -- Cube --
-		// ----------
-		{
-			s_RenderData.CubeVertexArray = VertexArray::Create();
-			s_RenderData.CubeVertexBuffer = VertexBuffer::Create(24 * sizeof(QuadVertex));
-			s_RenderData.CubeVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position", false },
-				{ ShaderDataType::Float3, "a_Normal", true },
-				{ ShaderDataType::Float2, "a_TexCoords", true },
-				{ ShaderDataType::Float3, "a_Tangent", true },
-				{ ShaderDataType::Float3, "a_Bitangent", true }
-			});
-			s_RenderData.CubeVertexArray->AddVertexBuffer(s_RenderData.CubeVertexBuffer);
-
-			QuadVertex vertices[24] = {
-				{ { -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.5f, 0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				
-				{ { -0.5f, -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f,  -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.5f, 0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				
-				{ { -0.5f,  0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.5f, -0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.5f, -0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.5f,  0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-				
-				{ { 0.5f, -0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f,  0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { 0.5f, -0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-				
-				{ { -0.5f, -0.5f, -0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-				{ { 0.5f,  -0.5f, -0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-				{ { 0.5f,  -0.5f,  0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-				{ { -0.5f, -0.5f,  0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-				
-				{ { 0.5f,  0.5f, -0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-				{ { -0.5f, 0.5f, -0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-				{ { -0.5f, 0.5f,  0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-				{ { 0.5f,  0.5f,  0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }
-			};
-			s_RenderData.CubeVertexBuffer->SetData(&vertices[0], sizeof(QuadVertex) * 24);
-
-			uint32_t cubeIndices[36] = {
-				// front and back
-				0, 3, 2,
-				2, 1, 0,
-				4, 5, 6,
-				6, 7 ,4,
-				
-				// left and right
-				11, 8, 9,
-				9, 10, 11,
-				12, 13, 14,
-				14, 15, 12,
-				
-				// bottom and top
-				16, 17, 18,
-				18, 19, 16,
-				20, 21, 22,
-				22, 23, 20
-			};
-
-			ComputeTangentsIndexed(&vertices[0], &cubeIndices[0], 36, 24);
-
-			Ref<IndexBuffer> cubeIB = IndexBuffer::Create(cubeIndices, 36);
-			s_RenderData.CubeVertexArray->SetIndexBuffer(cubeIB);
-		}
 
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
 		s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
@@ -334,12 +221,21 @@ namespace PaulEngine {
 			pipeline->Bind();
 			const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
 			for (const DrawSubmission& d : drawList) {
-				s_RenderData.MeshDataBuffer.Transform = d.Transform;
-				s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
-				s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+				AssetHandle meshHandle = d.MeshHandle;
+				if (AssetManager::IsAssetHandleValid(meshHandle))
+				{
+					Ref<VertexArray> vertexArray = AssetManager::GetAsset<Mesh>(meshHandle)->GetVertexArray();
+					s_RenderData.MeshDataBuffer.Transform = d.Transform;
+					s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
+					s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
 
-				RenderCommand::DrawIndexed(d.VertexArray, d.VertexArray->GetIndexBuffer()->GetCount());
-				s_RenderData.Stats.DrawCalls++;
+					RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+					s_RenderData.Stats.DrawCalls++;
+				}
+				else
+				{
+					PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
+				}
 			}
 		}
 
@@ -355,25 +251,25 @@ namespace PaulEngine {
 
 	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		SubmitMesh(s_RenderData.CubeVertexArray, materialHandle, transform, depthState, cullState, blendState, entityID);
+		SubmitMesh(s_RenderData.CubeMeshHandle, materialHandle, transform, depthState, cullState, blendState, entityID);
 	}
 
 	void Renderer::SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		SubmitMesh(s_RenderData.QuadVertexArray, materialHandle, transform, depthState, cullState, blendState, entityID);
+		SubmitMesh(s_RenderData.QuadMeshHandle, materialHandle, transform, depthState, cullState, blendState, entityID);
 	}
 
-	void Renderer::SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
+	void Renderer::SubmitMesh(AssetHandle meshHandle, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
 		DrawSubmission draw;
-		draw.VertexArray = vertexArray;
+		draw.MeshHandle = meshHandle;
 		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultMaterial;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
-		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate vertex array
+		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate mesh
 
 		// Check for duplicate pipeline state
 		std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
@@ -417,12 +313,14 @@ namespace PaulEngine {
 
 	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		DrawMeshImmediate(s_RenderData.CubeVertexArray, material, transform, depthState, cullState, blendState, entityID);
+		Ref<Mesh> cubeMesh = AssetManager::GetAsset<Mesh>(s_RenderData.CubeMeshHandle);
+		DrawMeshImmediate(cubeMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
 	}
 
 	void Renderer::DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
-		DrawMeshImmediate(s_RenderData.QuadVertexArray, material, transform, depthState, cullState, blendState, entityID);
+		Ref<Mesh> quadMesh = AssetManager::GetAsset<Mesh>(s_RenderData.QuadMeshHandle);
+		DrawMeshImmediate(quadMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
 	}
 
 	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
@@ -488,6 +386,92 @@ namespace PaulEngine {
 		{
 			SetDefaultMaterial(s_RenderData.DefaultLitMaterialHandle);
 		}
+	}
+
+	void Renderer::CreateAssets()
+	{
+		PE_PROFILE_FUNCTION();
+		ImportShaders();
+
+		// -- Quad --
+		// ----------
+		MeshSpecification spec;
+		spec.CalculateTangents = true;
+		spec.PrimitiveType = DrawPrimitive::TRIANGLES;
+		spec.UsageType = BufferUsage::STATIC_DRAW;
+
+		std::vector<MeshVertex> quadVertices = {
+			{ {	-0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ {  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ {  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } }
+		};
+		quadVertices[0].Position *= 2.0f;
+		quadVertices[1].Position *= 2.0f;
+		quadVertices[2].Position *= 2.0f;
+		quadVertices[3].Position *= 2.0f;
+
+		std::vector<uint32_t> quadIndices = {
+			0, 1, 2,
+			2, 3, 0
+		};
+
+		// -- Cube --
+		// ----------
+		std::vector<MeshVertex> cubeVertices = {
+			{ { -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f,  0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { -0.5f, 0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+
+			{ { -0.5f, -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f,  -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { -0.5f, 0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+
+			{ { -0.5f,  0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { -0.5f, -0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { -0.5f, -0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { -0.5f,  0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+
+			{ { 0.5f, -0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f,  0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f,  0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+			{ { 0.5f, -0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
+
+			{ { -0.5f, -0.5f, -0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+			{ { 0.5f,  -0.5f, -0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+			{ { 0.5f,  -0.5f,  0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+			{ { -0.5f, -0.5f,  0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+
+			{ { 0.5f,  0.5f, -0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ { -0.5f, 0.5f, -0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ { -0.5f, 0.5f,  0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ { 0.5f,  0.5f,  0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }
+		};
+
+		std::vector<uint32_t> cubeIndices = {
+			// front and back
+			0, 3, 2,
+			2, 1, 0,
+			4, 5, 6,
+			6, 7 ,4,
+
+			// left and right
+			11, 8, 9,
+			9, 10, 11,
+			12, 13, 14,
+			14, 15, 12,
+
+			// bottom and top
+			16, 17, 18,
+			18, 19, 16,
+			20, 21, 22,
+			22, 23, 20
+		};
+
+		s_RenderData.QuadMeshHandle = AssetManager::CreateAsset<Mesh>(true, spec, quadVertices, quadIndices)->Handle;
+		s_RenderData.CubeMeshHandle = AssetManager::CreateAsset<Mesh>(true, spec, cubeVertices, cubeIndices)->Handle;
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)

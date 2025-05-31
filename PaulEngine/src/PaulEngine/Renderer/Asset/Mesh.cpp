@@ -5,6 +5,7 @@ namespace PaulEngine
 {
 	void ComputeTangentsIndexed(MeshVertex* vertices, uint32_t* indices, size_t vertexCount, size_t indexCount)
 	{
+		PE_PROFILE_FUNCTION();
 		// Initialize accumulators
 		for (size_t i = 0; i < vertexCount; i++)
 		{
@@ -60,8 +61,8 @@ namespace PaulEngine
 			ComputeTangentsIndexed(&vertices[0], &indices[0], (size_t)m_VertexCount, indices.size());
 		}
 
-		m_VertexArray = VertexArray::Create();
-		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(m_VertexCount * sizeof(MeshVertex));
+		m_VertexArray = VertexArray::Create(m_Spec.PrimitiveType);
+		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(m_VertexCount * sizeof(MeshVertex), m_Spec.UsageType);
 
 		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position", false },
@@ -73,7 +74,7 @@ namespace PaulEngine
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 		vertexBuffer->SetData(&vertices[0], sizeof(MeshVertex) * m_VertexCount);
 		
-		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(&indices[0], indicesCount);
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(&indices[0], indicesCount, m_Spec.UsageType);
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 	}
 }

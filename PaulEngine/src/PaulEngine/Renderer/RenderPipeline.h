@@ -9,7 +9,7 @@ namespace PaulEngine
 {
 	struct DrawSubmission
 	{
-		Ref<VertexArray> VertexArray;
+		AssetHandle MeshHandle;
 		AssetHandle MaterialHandle;
 		glm::mat4 Transform;
 		int EntityID;

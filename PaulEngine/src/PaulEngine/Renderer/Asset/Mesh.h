@@ -30,6 +30,8 @@ namespace PaulEngine
 		//	{ ShaderDataType::Float3, "a_Bitangent", true }
 		//};
 		bool CalculateTangents = false;
+		BufferUsage UsageType = BufferUsage::STATIC_DRAW;
+		DrawPrimitive PrimitiveType = DrawPrimitive::TRIANGLES;
 	};
 
 	// As of now, this will only support a fixed vertex buffer layout that all meshes must follow because of how most of the engine shaders use this layout,
@@ -43,6 +45,8 @@ namespace PaulEngine
 
 		virtual AssetType GetType() const override { return AssetType::Mesh; }
 		
+		Ref<VertexArray> GetVertexArray() { return m_VertexArray; }
+
 		uint32_t NumVertices() const { return m_VertexCount; }
 		uint32_t NumIndices() const { return m_VertexArray->GetIndexBuffer()->GetCount();; }
 	private:

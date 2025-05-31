@@ -6,6 +6,7 @@
 #include "RenderPipeline.h"
 
 #include "Asset/Material.h"
+#include "Asset/Mesh.h"
 
 namespace PaulEngine {
 	class Renderer {
@@ -53,7 +54,7 @@ namespace PaulEngine {
 
 		static void SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 		static void SubmitDefaultQuad(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
-		static void SubmitMesh(Ref<VertexArray> vertexArray, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
+		static void SubmitMesh(AssetHandle meshHandle, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 
 		static void SubmitDirectionalLightSource(const DirectionalLight& light);
 		static void SubmitPointLightSource(const PointLight& light);
@@ -76,9 +77,10 @@ namespace PaulEngine {
 		static void ResetStats();
 		static const Statistics& GetStats();
 
-		static void ImportShaders();
+		static void CreateAssets();
 
 	private:
+		static void ImportShaders();
 		static std::string ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState);
 	};
 }

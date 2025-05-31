@@ -123,6 +123,7 @@ namespace PaulEngine
 
 	void OpenGLRenderPipeline::Bind() const
 	{
+		PE_PROFILE_FUNCTION();
 		OpenGLDepthTest(m_DepthState.Test);
 		glDepthMask(m_DepthState.Write);
 		glDepthFunc(DepthFuncToGLEnum(m_DepthState.Func));
