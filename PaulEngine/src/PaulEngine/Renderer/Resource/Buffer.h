@@ -2,6 +2,23 @@
 
 namespace PaulEngine {
 
+	enum class BufferUsage
+	{
+		None = 0,
+
+		STATIC_DRAW,
+		STATIC_READ,
+		STATIC_COPY,
+
+		DYNAMIC_DRAW,
+		DYNAMIC_READ,
+		DYNAMIC_COPY,
+
+		STREAM_DRAW,
+		STREAM_READ,
+		STREAM_COPY
+	};
+
 	enum class ShaderDataType
 	{
 		None = 0,
@@ -151,8 +168,8 @@ namespace PaulEngine {
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
-		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(uint32_t size, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
+		static Ref<VertexBuffer> Create(float* vertices, uint32_t size, BufferUsage usage = BufferUsage::STATIC_DRAW);
 	};
 
 	class IndexBuffer
@@ -165,6 +182,6 @@ namespace PaulEngine {
 
 		inline virtual uint32_t GetCount() = 0;
 
-		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count, BufferUsage usage = BufferUsage::STATIC_DRAW);
 	};
 }

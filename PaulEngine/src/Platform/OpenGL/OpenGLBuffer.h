@@ -2,12 +2,19 @@
 #include "PaulEngine/Renderer/Resource/Buffer.h"
 #include <cstdint>
 
+typedef unsigned int GLenum;
+
 namespace PaulEngine {
+	namespace OpenGLBufferUtils
+	{
+		constexpr GLenum BufferUsageToGLEnum(const BufferUsage usage);
+	}
+
 	class OpenGLVertexBuffer : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint32_t size);
-		OpenGLVertexBuffer(float* vertices, uint32_t size);
+		OpenGLVertexBuffer(uint32_t size, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
+		OpenGLVertexBuffer(float* vertices, uint32_t size, BufferUsage usage = BufferUsage::STATIC_DRAW);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -21,12 +28,13 @@ namespace PaulEngine {
 	private:
 		uint32_t m_RendererID;
 		BufferLayout m_Layout;
+		BufferUsage m_Usage;
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+		OpenGLIndexBuffer(uint32_t* indices, uint32_t count, BufferUsage usage = BufferUsage::STATIC_DRAW);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual void Bind() const override;
@@ -37,5 +45,6 @@ namespace PaulEngine {
 	private:
 		uint32_t m_RendererID;
 		uint32_t m_Count;
+		BufferUsage m_Usage;
 	};
 }

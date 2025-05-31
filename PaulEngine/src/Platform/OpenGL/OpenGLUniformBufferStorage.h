@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Renderer/Resource/UniformBufferStorage.h"
+#include "PaulEngine/Renderer/Resource/Buffer.h"
 
 namespace PaulEngine
 {
@@ -7,7 +8,7 @@ namespace PaulEngine
 	{
 	public:
 		// default usage = GL_DYNAMIC_DRAW
-		OpenGLUniformBufferStorage(std::vector<BufferElement> layout, uint32_t binding, unsigned int usage = 0x88E8);
+		OpenGLUniformBufferStorage(std::vector<BufferElement> layout, uint32_t binding, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
 		~OpenGLUniformBufferStorage();
 
 		virtual void UploadStorage() override;
@@ -17,8 +18,8 @@ namespace PaulEngine
 		virtual uint32_t GetBinding() const override { return m_Binding; }
 
 	private:
-		unsigned int m_Usage;
 		uint32_t m_Binding;
 		uint32_t m_RendererID;
+		BufferUsage m_Usage;
 	};
 }

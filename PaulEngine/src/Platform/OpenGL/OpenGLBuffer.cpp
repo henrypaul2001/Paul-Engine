@@ -5,23 +5,45 @@
 
 namespace PaulEngine {
 
+	constexpr GLenum OpenGLBufferUtils::BufferUsageToGLEnum(const BufferUsage usage)
+	{
+		switch (usage)
+		{
+			case BufferUsage::None: return 0;
+		
+			case BufferUsage::STATIC_DRAW: return GL_STATIC_DRAW;
+			case BufferUsage::STATIC_READ: return GL_STATIC_READ;
+			case BufferUsage::STATIC_COPY: return GL_STATIC_COPY;
+		
+			case BufferUsage::DYNAMIC_DRAW: return GL_DYNAMIC_DRAW;
+			case BufferUsage::DYNAMIC_READ: return GL_DYNAMIC_READ;
+			case BufferUsage::DYNAMIC_COPY: return GL_DYNAMIC_COPY;
+		
+			case BufferUsage::STREAM_DRAW: return GL_STREAM_DRAW;
+			case BufferUsage::STREAM_READ: return GL_STREAM_READ;
+			case BufferUsage::STREAM_COPY: return GL_STREAM_COPY;
+		}
+		PE_CORE_ERROR("Undefined BufferUsage translation");
+		return 0;
+	}
+
 	// --   VertexBuffer   --
 	// ----------------------
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
 	{
 		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, OpenGLBufferUtils::BufferUsageToGLEnum(usage));
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size) : m_RendererID(0)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
 	{
 		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, OpenGLBufferUtils::BufferUsageToGLEnum(usage));
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()
@@ -49,12 +71,12 @@ namespace PaulEngine {
 	// --   IndexBuffer   --
 	// ---------------------
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count) : m_RendererID(0), m_Count(count)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count, BufferUsage usage) : m_RendererID(0), m_Count(count), m_Usage(usage)
 	{
 		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, OpenGLBufferUtils::BufferUsageToGLEnum(usage));
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()

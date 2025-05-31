@@ -1,15 +1,16 @@
 #include "pepch.h"
 #include "OpenGLUniformBufferStorage.h"
+#include "OpenGLBuffer.h"
 
 #include <glad/glad.h>
 
 namespace PaulEngine
 {
-	OpenGLUniformBufferStorage::OpenGLUniformBufferStorage(std::vector<BufferElement> layout, uint32_t binding, unsigned int usage) : m_Binding(binding), m_RendererID(0), m_Usage(usage)
+	OpenGLUniformBufferStorage::OpenGLUniformBufferStorage(std::vector<BufferElement> layout, uint32_t binding, BufferUsage usage) : m_Binding(binding), m_RendererID(0), m_Usage(usage)
 	{
 		InitLayout(layout);
 		glCreateBuffers(1, &m_RendererID);
-		glNamedBufferData(m_RendererID, Size(), nullptr, (GLenum)m_Usage);
+		glNamedBufferData(m_RendererID, Size(), nullptr, OpenGLBufferUtils::BufferUsageToGLEnum(m_Usage));
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
 	}
 
@@ -29,7 +30,7 @@ namespace PaulEngine
 	void OpenGLUniformBufferStorage::UploadStorageForced()
 	{
 		PE_PROFILE_FUNCTION();
-		glNamedBufferData(m_RendererID, Size(), &m_Buffer[0], (GLenum)m_Usage);
+		glNamedBufferData(m_RendererID, Size(), &m_Buffer[0], OpenGLBufferUtils::BufferUsageToGLEnum(m_Usage));
 		m_IsDirty = false;
 	}
 

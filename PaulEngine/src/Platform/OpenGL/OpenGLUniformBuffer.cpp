@@ -1,14 +1,15 @@
 #include "pepch.h"
 #include "OpenGLUniformBuffer.h"
+#include "OpenGLBuffer.h"
 
 #include <glad/glad.h>
 
 namespace PaulEngine
 {
-	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size, uint32_t binding, unsigned int usage) : m_RendererID(0)
+	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size, uint32_t binding, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
 	{
 		glCreateBuffers(1, &m_RendererID);
-		glNamedBufferData(m_RendererID, size, nullptr, (GLenum)usage);
+		glNamedBufferData(m_RendererID, size, nullptr, OpenGLBufferUtils::BufferUsageToGLEnum(m_Usage));
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
 	}
 
