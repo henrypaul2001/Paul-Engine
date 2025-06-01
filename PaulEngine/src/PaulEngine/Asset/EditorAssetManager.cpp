@@ -20,7 +20,7 @@ namespace PaulEngine
 		{ ".bta", AssetType::Texture2DArray },
 		{ ".obj", AssetType::Model },
 		{ ".fbx", AssetType::Model },
-		{ ".dae", AssetType::Model },
+		//{ ".dae", AssetType::Model },
 		{ ".glTF", AssetType::Model },
 		{ ".pmesh", AssetType::Mesh }
 	};

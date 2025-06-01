@@ -108,6 +108,9 @@
     <ClInclude Include="src\PaulEngine\Asset\MaterialImporter.h">
       <Filter>src\PaulEngine\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Asset\MeshImporter.h">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Asset\RuntimeAssetManager.h">
       <Filter>src\PaulEngine\Asset</Filter>
     </ClInclude>
@@ -1614,6 +1617,9 @@
       <Filter>src\PaulEngine\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Asset\MaterialImporter.cpp">
+      <Filter>src\PaulEngine\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Asset\MeshImporter.cpp">
       <Filter>src\PaulEngine\Asset</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Asset\RuntimeAssetManager.cpp">
