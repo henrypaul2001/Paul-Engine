@@ -19,7 +19,8 @@ namespace PaulEngine
 		Texture2DArray,
 		TextureCubemap,
 		TextureCubemapArray,
-		Mesh
+		Mesh,
+		Model
 	};
 
 	struct AssetMetadata

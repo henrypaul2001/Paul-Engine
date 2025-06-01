@@ -17,7 +17,12 @@ namespace PaulEngine
 		{ ".patlas", AssetType::TextureAtlas2D },
 		{ ".glsl", AssetType::Shader },
 		{ ".pmat", AssetType::Material },
-		{ ".bta", AssetType::Texture2DArray }
+		{ ".bta", AssetType::Texture2DArray },
+		{ ".obj", AssetType::Model },
+		{ ".fbx", AssetType::Model },
+		{ ".dae", AssetType::Model },
+		{ ".glTF", AssetType::Model },
+		{ ".pmesh", AssetType::Mesh }
 	};
 
 	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {

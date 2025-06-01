@@ -6,6 +6,7 @@
 #include "FontImporter.h"
 #include "ShaderImporter.h"
 #include "MaterialImporter.h"
+#include "MeshImporter.h"
 
 #include <unordered_map>
 
@@ -20,7 +21,9 @@ namespace PaulEngine
 		{ AssetType::TextureAtlas2D, TextureImporter::ImportTextureAtlas2D },
 		{ AssetType::Shader, ShaderImporter::ImportShader },
 		{ AssetType::Material, MaterialImporter::ImportMaterial },
-		{ AssetType::Texture2DArray, TextureImporter::ImportTexture2DArray }
+		{ AssetType::Texture2DArray, TextureImporter::ImportTexture2DArray },
+		{ AssetType::Mesh, MeshImporter::ImportMesh },
+		{ AssetType::Model, MeshImporter::ImportModel }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

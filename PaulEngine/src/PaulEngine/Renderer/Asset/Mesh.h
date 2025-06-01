@@ -32,6 +32,7 @@ namespace PaulEngine
 		bool CalculateTangents = false;
 		BufferUsage UsageType = BufferUsage::STATIC_DRAW;
 		DrawPrimitive PrimitiveType = DrawPrimitive::TRIANGLES;
+		std::string Name = "Mesh";
 	};
 
 	// As of now, this will only support a fixed vertex buffer layout that all meshes must follow because of how most of the engine shaders use this layout,
@@ -54,5 +55,20 @@ namespace PaulEngine
 		Ref<VertexArray> m_VertexArray;
 
 		uint32_t m_VertexCount = 0;
+	};
+
+	class Model : public Asset
+	{
+	public:
+		Model() {}
+		virtual AssetType GetType() const override { return AssetType::Model; }
+
+		const size_t NumMeshes() const { return m_Meshes.size(); }
+		Ref<Mesh> GetMesh(uint32_t index) { PE_CORE_ASSERT(index < m_Meshes.size(), "Index out of bounds"); return m_Meshes[index]; }
+
+	private:
+		friend class MeshImporter;
+
+		std::vector<Ref<Mesh>> m_Meshes = {};
 	};
 }
