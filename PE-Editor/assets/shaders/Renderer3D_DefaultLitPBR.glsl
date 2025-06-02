@@ -314,7 +314,7 @@ const float maxLayers = 32.0;
 vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 {
 	// calculate number of depth layers
-	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), tangentViewDir), 0.0));
+	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), tangentViewDir), 0.001));
 	float layerDepth = 1.0 / numLayers;
 
 	float currentLayerDepth = 0.0f;
