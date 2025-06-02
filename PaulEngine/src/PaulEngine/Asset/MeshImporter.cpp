@@ -2,6 +2,7 @@
 #include "MeshImporter.h"
 #include "PaulEngine/Project/Project.h"
 #include "PaulEngine/Asset/AssetManager.h"
+#include "PaulEngine/Renderer/Renderer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -27,9 +28,9 @@ namespace PaulEngine
 
 	struct AssimpResult
 	{
-		bool Success;
-		std::vector<AssimpMeshResult> Meshes;
-		std::vector<AssimpNodeResult> Nodes;
+		bool Success = false;
+		std::vector<AssimpMeshResult> Meshes = {};
+		std::vector<AssimpNodeResult> Nodes = {};
 	};
 
 	static glm::mat4 AssimpMat4ToGLMMat4(const aiMatrix4x4& from)
@@ -43,7 +44,7 @@ namespace PaulEngine
 		return to;
 	}
 
-	static void ReadAssimpNode(aiNode* node, AssimpResult& result, const aiScene* scene)
+	static void ReadAssimpNode(const aiNode* node, AssimpResult& result)
 	{
 		AssimpNodeResult nodeResult;
 		nodeResult.Name = node->mName.C_Str();
@@ -60,11 +61,11 @@ namespace PaulEngine
 		unsigned int numChildren = node->mNumChildren;
 		for (unsigned int i = 0; i < numChildren; i++)
 		{
-			ReadAssimpNode(node->mChildren[i], result, scene);
+			ReadAssimpNode(node->mChildren[i], result);
 		}
 	}
 
-	static AssimpMeshResult ReadAssimpMesh(aiMesh* mesh)
+	static AssimpMeshResult ReadAssimpMesh(const aiMesh* mesh)
 	{
 		PE_PROFILE_FUNCTION();
 		MeshSpecification spec;
@@ -139,7 +140,7 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 		AssimpResult result;
-
+		
 		Assimp::Importer importer;
 		bool success = importer.ValidateFlags(aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace |
@@ -162,7 +163,7 @@ namespace PaulEngine
 		}
 
 		// Read node tree
-		ReadAssimpNode(scene->mRootNode, result, scene);
+		ReadAssimpNode(scene->mRootNode, result);
 
 		// Read meshes
 		unsigned int numMeshes = scene->mNumMeshes;

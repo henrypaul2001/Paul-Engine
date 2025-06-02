@@ -66,6 +66,9 @@ namespace PaulEngine {
 
 		static bool SetDefaultMaterial(AssetHandle materialHandle);
 
+		static AssetHandle DefaultLitShader();
+		static AssetHandle DefaultLitPBRShader();
+
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 
 		struct Statistics

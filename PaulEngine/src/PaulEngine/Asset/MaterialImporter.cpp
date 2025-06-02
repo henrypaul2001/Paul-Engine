@@ -1,12 +1,16 @@
 #include "pepch.h"
 #include "MaterialImporter.h"
 #include "PaulEngine/Renderer/Resource/Buffer.h"
-
 #include "PaulEngine/Project/Project.h"
+#include "PaulEngine/Renderer/Renderer.h"
+#include "PaulEngine/Renderer/Asset/Texture.h"
 
 #include <yaml-cpp/yaml.h>
-
 #include "PaulEngine/Utils/YamlConversions.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 namespace PaulEngine
 {
@@ -267,6 +271,170 @@ namespace PaulEngine
 		}
 	}
 
+	struct AssimpMaterialResult
+	{
+		std::string Name;
+
+	};
+
+	struct AssimpTextureResult
+	{
+		bool TextureFound = false;
+		std::filesystem::path RelativePath;
+		TextureSpecification Spec;
+		glm::vec2 TextureScaling = glm::vec2(1.0f);
+	};
+
+	static AssimpTextureResult ReadAssimpTexture(const aiMaterial* material, const aiTextureType type)
+	{
+		PE_PROFILE_FUNCTION();
+
+		AssimpTextureResult result;
+		result.TextureFound = false;
+
+		unsigned int textureCount = material->GetTextureCount(type);
+		if (textureCount > 0)
+		{
+			aiString filestring;
+			aiTextureMapping mapping;
+			unsigned int uvIndex;
+			ai_real blend;
+			aiTextureOp op;
+			aiTextureMapMode mapmode[3];
+			if (material->GetTexture(type, 0, &filestring, &mapping, &uvIndex, &blend, &op, &mapmode[0]) == aiReturn_SUCCESS)
+			{
+				result.RelativePath = filestring.C_Str();
+				result.TextureFound = true;
+
+				aiUVTransform transform;
+				if (material->Get(AI_MATKEY_UVTRANSFORM(type, 0), transform) == aiReturn_SUCCESS)
+				{
+					result.TextureScaling = glm::vec2(transform.mScaling.x, transform.mScaling.y);
+				}
+
+				TextureSpecification spec;
+				ImageWrap wrap[3] = { ImageWrap::REPEAT, ImageWrap::REPEAT, ImageWrap::REPEAT };
+				for (int i = 0; i < 3; i++)
+				{
+					switch (mapmode[i])
+					{
+					case aiTextureMapMode_Wrap:
+						// A texture coordinate u|v is translated to u%1|v%1
+						wrap[i] = ImageWrap::REPEAT;
+						break;
+					case aiTextureMapMode_Clamp:
+						// Texture coordinates outside [0...1] are clamped to the nearest valid value.
+						wrap[i] = ImageWrap::CLAMP_TO_EDGE;
+						break;
+					case aiTextureMapMode_Decal:
+						// If the texture coordinates for a pixel are outside[0...1] the texture is not applied to that pixel
+						wrap[i] = ImageWrap::CLAMP_TO_BORDER;
+						break;
+					case aiTextureMapMode_Mirror:
+						// A texture coordinate u|v becomes u%1|v%1 if (u-(u%1))%2 is zero and 1 - (u % 1) | 1 - (v % 1) otherwise
+						wrap[i] = ImageWrap::MIRRORED_REPEAT;
+						break;
+					}
+				}
+				spec.Wrap_S = wrap[0];
+				spec.Wrap_T = wrap[1];
+				spec.Wrap_R = wrap[2];
+
+				result.Spec = spec;
+			}
+		}
+
+		return result;
+	}
+
+	static Ref<Material> BuildAssimpMaterial(const aiMaterial* material)
+	{
+		PE_PROFILE_FUNCTION();
+		const AssetHandle shaderHandle = Renderer::DefaultLitShader();
+
+		return nullptr;
+	}
+
+	static Ref<Material> BuildAssimpMaterialAsPBR(const aiMaterial* material)
+	{
+		PE_PROFILE_FUNCTION();
+		const AssetHandle shaderHandle = Renderer::DefaultLitPBRShader();
+		Ref<Material> engineMaterial = CreateRef<Material>(shaderHandle);
+
+		aiColor3D baseColour;
+		float opacity;
+		if (material->Get(AI_MATKEY_COLOR_DIFFUSE, baseColour) != aiReturn_SUCCESS)
+		{
+			baseColour = aiColor3D(1.0f, 1.0f, 1.0f);
+		}
+		if (material->Get(AI_MATKEY_OPACITY, opacity) != aiReturn_SUCCESS)
+		{
+			opacity = 1.0f;
+		}
+		glm::vec4 Albedo = glm::vec4(baseColour.r, baseColour.g, baseColour.b, opacity);
+
+		float Metalness;
+		if (material->Get(AI_MATKEY_METALLIC_FACTOR, Metalness) != aiReturn_SUCCESS)
+		{
+			Metalness = 0.0f;
+		}
+
+		float Roughness;
+		if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, Roughness) != aiReturn_SUCCESS)
+		{
+			Roughness = 0.5f;
+		}
+
+		aiColor3D ambientColour;
+		if (material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColour) != aiReturn_SUCCESS)
+		{
+			ambientColour = aiColor3D(1.0f, 1.0f, 1.0f);
+		}
+		float AO = (0.299f * ambientColour.r) + (0.587f * ambientColour.g) + (0.114 * ambientColour.b);
+
+		// AI_MATKEY_BUMP_SCALING
+		float HeightScale = 1.0f;
+
+		// Process textures to find this value
+		glm::vec2 TextureScale = glm::vec2(1.0f);
+
+		int UseNormalMap = 0;
+		int UseDisplacementMap = 0;
+
+		AssimpTextureResult albedoResult = ReadAssimpTexture(material, aiTextureType_DIFFUSE);
+		AssimpTextureResult normalResult = ReadAssimpTexture(material, aiTextureType_NORMALS);
+		AssimpTextureResult metallicResult = ReadAssimpTexture(material, aiTextureType_METALNESS);
+		AssimpTextureResult roughnessResult = ReadAssimpTexture(material, aiTextureType_DIFFUSE_ROUGHNESS);
+		AssimpTextureResult aoResult = ReadAssimpTexture(material, aiTextureType_AMBIENT_OCCLUSION);
+		AssimpTextureResult displacementResult = ReadAssimpTexture(material, aiTextureType_DISPLACEMENT);
+
+		// Import textures from files
+		AssetHandle AlbedoMap = 0;
+		AssetHandle NormalMap = 0;
+		AssetHandle MetallicMap = 0;
+		AssetHandle RoughnessMap = 0;
+		AssetHandle AOMap = 0;
+		AssetHandle DisplacementMap = 0;
+
+		return nullptr;
+	}
+
+	static AssimpMaterialResult ReadAssimpMaterial(const aiMaterial* material)
+	{
+		PE_PROFILE_FUNCTION();
+		AssimpMaterialResult result;
+		result.Name = material->GetName().C_Str();
+
+		// Get shading model
+		aiShadingMode assimpShading;
+		material->Get(AI_MATKEY_SHADING_MODEL, assimpShading);
+
+		const bool shouldUsePBRShader = (assimpShading == aiShadingMode_PBR_BRDF || assimpShading == aiShadingMode_CookTorrance);
+		Ref<Material> constructedMaterial = (shouldUsePBRShader) ? BuildAssimpMaterialAsPBR(material) : BuildAssimpMaterial(material);
+
+		return result;
+	}
+
 	static std::string ShaderParameterTypeToString(ShaderParameterType type) {
 		switch (type)
 		{
@@ -408,5 +576,31 @@ namespace PaulEngine
 		std::filesystem::create_directories(filepath.parent_path(), error);
 		std::ofstream fout = std::ofstream(filepath);
 		fout << out.c_str();
+	}
+
+	void MaterialImporter::BuildMaterialsFromModelFile(const std::filesystem::path& filepath)
+	{
+		PE_PROFILE_FUNCTION();
+		std::vector<AssimpMaterialResult> materials;
+
+		Assimp::Importer importer;
+		bool success = importer.ValidateFlags(aiProcess_RemoveRedundantMaterials);
+
+		const aiScene* scene = importer.ReadFile(filepath.string(), aiProcess_RemoveRedundantMaterials);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			PE_CORE_ERROR("Error loading model file at path: '{0}'", filepath.string());
+			PE_CORE_ERROR("    - {0}", importer.GetErrorString());
+			return;
+		}
+
+		// Read materials
+		unsigned int numMaterials = scene->mNumMaterials;
+		materials.reserve(numMaterials);
+		for (unsigned int i = 0; i < numMaterials; i++)
+		{
+			materials.push_back(ReadAssimpMaterial(scene->mMaterials[i]));
+		}
 	}
 }

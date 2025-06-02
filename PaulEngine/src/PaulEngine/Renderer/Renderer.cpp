@@ -358,6 +358,16 @@ namespace PaulEngine {
 		return false;
 	}
 
+	AssetHandle Renderer::DefaultLitShader()
+	{
+		return s_RenderData.DefaultLitShaderHandle;
+	}
+
+	AssetHandle Renderer::DefaultLitPBRShader()
+	{
+		return s_RenderData.DefaultLitPBRShaderHandle;
+	}
+
 	void Renderer::ResetStats()
 	{
 		s_RenderData.Stats.DrawCalls = 0;
