@@ -702,7 +702,54 @@ namespace PaulEngine
 
 		// Mesh Component
 		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [](ComponentMeshRenderer& component) {
+			//  Mesh
+			// ------
+			std::string meshLabel = "None";
+			bool isMeshValid = false;
+			if (component.MeshHandle != 0) {
+				if (AssetManager::IsAssetHandleValid(component.MeshHandle) && AssetManager::GetAssetType(component.MeshHandle) == AssetType::Mesh) {
+					const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(component.MeshHandle);
+					meshLabel = metadata.FilePath.filename().stem().string();
+					isMeshValid = true;
+				}
+				else {
+					meshLabel = "Invalid";
+				}
+			}
 
+			ImVec2 buttonLabelSize = ImGui::CalcTextSize(meshLabel.c_str());
+			buttonLabelSize.x += 20.0f;
+			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+			ImGui::Button(meshLabel.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					AssetHandle handle = *(AssetHandle*)payload->Data;
+					if (AssetManager::GetAssetType(handle) == AssetType::Mesh) {
+						component.MeshHandle = handle;
+					}
+					else {
+						PE_CORE_WARN("Invalid asset type. Mesh needed for mesh component");
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (isMeshValid) {
+				ImGui::SameLine();
+				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+					component.MeshHandle = 0;
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text("Mesh");
+
+			// Material
+			// --------
 			std::string label = "None";
 			bool isMaterialValid = false;
 			if (component.MaterialHandle != 0) {
@@ -716,9 +763,9 @@ namespace PaulEngine
 				}
 			}
 
-			ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+			buttonLabelSize = ImGui::CalcTextSize(label.c_str());
 			buttonLabelSize.x += 20.0f;
-			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+			buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
 
 			ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
 			if (ImGui::BeginDragDropTarget())

@@ -332,7 +332,7 @@ namespace PaulEngine
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::SubmitDefaultCube(shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -408,7 +408,7 @@ namespace PaulEngine
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::SubmitDefaultCube(shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -491,7 +491,7 @@ namespace PaulEngine
 							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
 							BlendState blend;
 							blend.Enabled = false;
-							Renderer::SubmitDefaultCube(shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 						}
 					}
 
@@ -615,7 +615,7 @@ namespace PaulEngine
 					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 					for (auto entityID : view) {
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Renderer::SubmitDefaultCube(mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
+						Renderer::SubmitMesh(mesh.MeshHandle, mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
 					}
 				}
 

@@ -264,7 +264,7 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		DrawSubmission draw;
-		draw.MeshHandle = meshHandle;
+		draw.MeshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.CubeMeshHandle;;
 		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultMaterial;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
