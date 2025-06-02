@@ -47,6 +47,7 @@ namespace PaulEngine
 		virtual AssetType GetType() const override { return AssetType::Mesh; }
 		
 		Ref<VertexArray> GetVertexArray() { return m_VertexArray; }
+		const MeshSpecification& GetSpec() const { return m_Spec; }
 
 		uint32_t NumVertices() const { return m_VertexCount; }
 		uint32_t NumIndices() const { return m_VertexArray->GetIndexBuffer()->GetCount();; }

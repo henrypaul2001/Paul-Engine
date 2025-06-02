@@ -1,14 +1,14 @@
 #include "pepch.h"
 #include "MeshImporter.h"
 #include "PaulEngine/Project/Project.h"
+#include "PaulEngine/Asset/AssetManager.h"
 
-#pragma pack(push, 8) // MSVC default
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#pragma pack(pop)
 
 #include <glm/ext/matrix_float4x4.hpp>
+#include <yaml-cpp/yaml.h>
 
 namespace PaulEngine
 {
@@ -188,15 +188,40 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 		Ref<Model> model = LoadModel(Project::GetAssetDirectory() / metadata.FilePath);
-		model->Handle = handle;
+
+		if (model) {
+			model->Handle = handle;
+
+			// Create .pmesh asset files
+			size_t numMeshes = model->NumMeshes();
+			for (uint32_t i = 0; i < numMeshes; i++)
+			{
+				CreateMeshFile(Project::GetAssetDirectory() / metadata.FilePath, model->GetMesh(i), i, model->Handle, metadata.Persistent);
+			}
+		}
+
 		return model;
 	}
 
 	Ref<Mesh> MeshImporter::LoadMesh(const std::filesystem::path& filepath)
 	{
 		PE_PROFILE_FUNCTION();
-		PE_CORE_ASSERT(false, "Not yet implemented");
-		return Ref<Mesh>();
+		PE_CORE_ASSERT(filepath.extension() == ".pmesh", "Invalid file extension");
+
+		std::ifstream stream = std::ifstream(filepath);
+		std::stringstream ss;
+		ss << stream.rdbuf();
+
+		YAML::Node data = YAML::Load(ss.str());
+		if (!data["Mesh"]) { return nullptr; }
+
+		AssetHandle modelHandle = data["SourceModel"].as<uint64_t>();
+		uint32_t meshIndex = data["Index"].as<uint32_t>();
+
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(modelHandle), "Base model handle in mesh file is invalid");
+		Ref<Model> baseModel = AssetManager::GetAsset<Model>(modelHandle);
+		
+		return baseModel->GetMesh(meshIndex);
 	}
 
 	Ref<Model> MeshImporter::LoadModel(const std::filesystem::path& filepath)
@@ -215,12 +240,28 @@ namespace PaulEngine
 		{
 			resultModel->m_Meshes.push_back(result.Meshes[i].LoadedMesh);
 		}
-		
-		// Create .pmesh asset files
-
 
 		PE_CORE_INFO("Model load success from path: '{0}'", filepath.string());
 		PE_CORE_INFO("    - Total meshes: {0}", numMeshes);
 		return resultModel;
+	}
+
+	void MeshImporter::CreateMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent)
+	{
+		PE_PROFILE_FUNCTION();
+		const MeshSpecification& spec = loadedMesh->GetSpec();
+
+		YAML::Emitter out;
+		out << YAML::BeginMap;
+		out << YAML::Key << "Mesh" << YAML::Value << spec.Name;
+		out << YAML::Key << "SourceModel" << YAML::Value << (uint64_t)modelHandle;
+		out << YAML::Key << "Index" << YAML::Value << meshIndex;
+		out << YAML::EndMap;
+
+		std::filesystem::path savePath = baseModelFilepath.parent_path() / (spec.Name + ".pmesh");
+		std::error_code error;
+		std::filesystem::create_directories(savePath.parent_path(), error);
+		std::ofstream fout = std::ofstream(savePath);
+		fout << out.c_str();
 	}
 }
