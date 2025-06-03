@@ -1,5 +1,6 @@
 #include "pepch.h"
 #include "MeshImporter.h"
+#include "MaterialImporter.h"
 #include "PaulEngine/Project/Project.h"
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Renderer/Renderer.h"
@@ -193,11 +194,20 @@ namespace PaulEngine
 		if (model) {
 			model->Handle = handle;
 
-			// Create .pmesh asset files
-			size_t numMeshes = model->NumMeshes();
-			for (uint32_t i = 0; i < numMeshes; i++)
+			// If the asset handle is not already valid (registered), then this is the first time the asset
+			// is being registered, therefore mesh and material files need to be created.
+			// If this asset has been registered, then the associated mesh and material files have already been imported
+			if (!AssetManager::IsAssetHandleValid(handle))
 			{
-				CreateMeshFile(Project::GetAssetDirectory() / metadata.FilePath, model->GetMesh(i), i, model->Handle, metadata.Persistent);
+				// Create .pmesh asset files
+				size_t numMeshes = model->NumMeshes();
+				for (uint32_t i = 0; i < numMeshes; i++)
+				{
+					CreateMeshFile(Project::GetAssetDirectory() / metadata.FilePath, model->GetMesh(i), i, model->Handle, metadata.Persistent);
+				}
+
+				// Create .pmat asset files
+				MaterialImporter::ImportMaterialsFromModelFile(Project::GetAssetDirectory() / metadata.FilePath, metadata.Persistent);
 			}
 		}
 
