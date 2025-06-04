@@ -1,0 +1,49 @@
+MaterialAsset: brass_goblets_02
+ShaderHandle: 11556801733716284571
+ShaderParams:
+  - Name: SpecularMap
+    Type: Sampler2D
+    Value:
+      Binding: 4
+      TextureHandle: 8273095072359099506
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 3
+      TextureHandle: 14993614439143920078
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 3
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [0.8, 0.8, 0.8, 1]
+        - Type: Float4
+          Name: Specular
+          Value: [0.5, 0.5, 0.5, 1]
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
+        - Type: Float
+          Name: Shininess
+          Value: 250
+        - Type: Float
+          Name: HeightScale
+          Value: 0.1
+        - Type: Int
+          Name: UseNormalMap
+          Value: 0
+        - Type: Int
+          Name: UseDisplacementMap
+          Value: 0
+  - Name: DisplacementMap
+    Type: Sampler2D
+    Value:
+      Binding: 6
+      TextureHandle: 0
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 5
+      TextureHandle: 0

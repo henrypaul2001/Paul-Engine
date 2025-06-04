@@ -1,5 +1,21 @@
 Scene: Untitled
 Entities:
+  - Entity: 7179493832125523235
+    TagComponent:
+      Tag: Backpack
+    TransformComponent:
+      Position: [-25.43464, -7.3266478, -6.669718]
+      Rotation: [2.4097903e-07, 0.015838929, 1.8895447e-07]
+      Scale: [2.7500002, 2.75, 2.7500002]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 14063630215201597231
+      MeshHandle: 3589674474780742308
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 17066202043217918327
     TagComponent:
       Tag: Goblet3
@@ -11,8 +27,8 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 400681757883519208
-      MeshHandle: 10924701370439947050
+      MaterialHandle: 13469102663694383096
+      MeshHandle: 18407867296515643988
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -28,8 +44,8 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 400681757883519208
-      MeshHandle: 4224414228205924247
+      MaterialHandle: 11695994591043113526
+      MeshHandle: 10454494930458830813
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -45,8 +61,8 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 400681757883519208
-      MeshHandle: 9128555302233443873
+      MaterialHandle: 16052108815205950580
+      MeshHandle: 7895532164318775244
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
