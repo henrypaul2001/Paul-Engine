@@ -1,7 +1,7 @@
 project 'assimp'
 	kind 'StaticLib'
 	warnings 'Off'
-	optimize 'Speed'
+	--optimize 'Speed'
 	staticruntime 'off'
 	cppdialect 'C++17'
 
@@ -10,6 +10,7 @@ project 'assimp'
 
 	files {
 		-- Dependencies
+		'_config_headers/**',
 		'assimp/contrib/unzip/**',
 		'assimp/contrib/irrXML/**',
 		'assimp/contrib/zlib/*',
@@ -19,14 +20,17 @@ project 'assimp'
 		'assimp/code/Material/**',
 		'assimp/code/CApi/**',
 		'assimp/code/Geometry/**',
-		-- 'assimp/ParsingUtils.h',
-		-- 'assimp/StringUtils.h',
+		'assimp/include/assimp/Hash.h',
+		'assimp/include/assimp/ParsingUtils.h',
+		'assimp/include/assimp/StringUtils.h',
 		-- 'assimp/ZipArchiveIOSystem.h',
 		-- 'assimp/commonMetaData.h',
-		-- 'assimp/fast_atof.h',
+		'assimp/include/assimp/fast_atof.h',
+		'assimp/include/assimp/material.h',
 		-- 'assimp/light.h',
-		-- 'assimp/DefaultLogger.hpp>',
-		-- 'assimp/IOSystem.hpp>',
+		'assimp/include/assimp/types.hpp',
+		'assimp/include/assimp/DefaultLogger.hpp',
+		-- 'assimp/IOSystem.hpp',
 		-- Importers
 		'assimp/code/AssetLib/IQM/**',
 		'assimp/code/AssetLib/Assbin/**',
