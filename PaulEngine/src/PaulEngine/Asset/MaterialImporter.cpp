@@ -286,6 +286,7 @@ namespace PaulEngine
 		glm::vec2 TextureScaling = glm::vec2(1.0f);
 	};
 
+	// TODO: Update texture importer so that a lot of these retrieved values can actually be used
 	static AssimpTextureResult ReadAssimpTexture(const aiMaterial* material, const aiTextureType type)
 	{
 		PE_PROFILE_FUNCTION();

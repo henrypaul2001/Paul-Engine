@@ -71,6 +71,10 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 		MeshSpecification spec;
 		spec.Name = mesh->mName.C_Str();
+		if (spec.Name.empty())
+		{
+			spec.Name = "Unnamed Mesh";
+		}
 		spec.CalculateTangents = false;
 		spec.UsageType = BufferUsage::STATIC_DRAW;
 
@@ -143,17 +147,24 @@ namespace PaulEngine
 		AssimpResult result;
 		
 		Assimp::Importer importer;
-		bool success = importer.ValidateFlags(aiProcess_GenNormals |
+		bool success = importer.ValidateFlags(
+			aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace |
 			aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType);
+			aiProcess_OptimizeMeshes |
+			aiProcess_OptimizeGraph |
+			aiProcess_GenUVCoords
+		);
 		const aiScene* scene = importer.ReadFile(filepath.string(),
 			aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace |
 			aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType);
+			aiProcess_OptimizeMeshes |
+			aiProcess_OptimizeGraph |
+			aiProcess_GenUVCoords
+		);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
