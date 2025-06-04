@@ -704,6 +704,7 @@ namespace PaulEngine
 		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [](ComponentMeshRenderer& component) {
 			//  Mesh
 			// ------
+			ImGui::PushID(0);
 			std::string meshLabel = "None";
 			bool isMeshValid = false;
 			if (component.MeshHandle != 0) {
@@ -747,9 +748,11 @@ namespace PaulEngine
 			}
 			ImGui::SameLine();
 			ImGui::Text("Mesh");
+			ImGui::PopID();
 
 			// Material
 			// --------
+			ImGui::PushID(1);
 			std::string label = "None";
 			bool isMaterialValid = false;
 			if (component.MaterialHandle != 0) {
@@ -793,6 +796,7 @@ namespace PaulEngine
 			}
 			ImGui::SameLine();
 			ImGui::Text("Material");
+			ImGui::PopID();
 
 			ImGui::Spacing();
 			ImGui::Text("Depth State");
