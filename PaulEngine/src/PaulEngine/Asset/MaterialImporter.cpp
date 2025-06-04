@@ -1,4 +1,5 @@
 #include "pepch.h"
+#include "PaulEngine/Asset/AssetManager.h"
 #include "MaterialImporter.h"
 #include "PaulEngine/Renderer/Resource/Buffer.h"
 #include "PaulEngine/Project/Project.h"
@@ -274,7 +275,7 @@ namespace PaulEngine
 	struct AssimpMaterialResult
 	{
 		std::string Name;
-
+		Ref<Material> LoadedMaterial;
 	};
 
 	struct AssimpTextureResult
@@ -347,22 +348,102 @@ namespace PaulEngine
 		return result;
 	}
 
-	static Ref<Material> BuildAssimpMaterial(const aiMaterial* material)
+	static Ref<Material> BuildAssimpMaterial(const aiMaterial* material, const std::filesystem::path& sourcePath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
 		const AssetHandle shaderHandle = Renderer::DefaultLitShader();
+		Ref<Material> engineMaterial = CreateRef<Material>(shaderHandle);
 
-		return nullptr;
+		// Read material properties
+		// ------------------------
+		aiColor4D baseColour = aiColor4D(1.0, 1.0, 1.0, 1.0);
+		float opacity = 1.0f;
+		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &baseColour) != aiReturn_SUCCESS)
+		{
+			baseColour = aiColor4D(1.0, 1.0, 1.0, 1.0);
+		}
+		if (material->Get(AI_MATKEY_OPACITY, opacity) != aiReturn_SUCCESS)
+		{
+			opacity = 1.0f;
+		}
+		glm::vec4 Albedo = glm::vec4(baseColour.r, baseColour.g, baseColour.b, opacity);
+
+		aiColor4D specularColour = baseColour;
+		if (material->Get(AI_MATKEY_COLOR_SPECULAR, specularColour) != aiReturn_SUCCESS)
+		{
+			specularColour = baseColour;
+		}
+		glm::vec4 Specular = glm::vec4(specularColour.r, specularColour.g, specularColour.b, 1.0f);
+
+		float Shininess = 64.0f;
+		if (material->Get(AI_MATKEY_SHININESS, Shininess) != aiReturn_SUCCESS)
+		{
+			Shininess = 64.0f;
+		}
+		
+		// Not sure if this is correct but its the only value I could find in assimp that might relate to height scaling
+		float HeightScale = 0.1f;
+		if (material->Get(AI_MATKEY_BUMPSCALING, HeightScale) != aiReturn_SUCCESS)
+		{
+			HeightScale = 0.1f;
+		}
+
+		AssimpTextureResult albedoResult = ReadAssimpTexture(material, aiTextureType_DIFFUSE);
+		AssimpTextureResult specularResult = ReadAssimpTexture(material, aiTextureType_SPECULAR);
+		AssimpTextureResult normalResult = ReadAssimpTexture(material, aiTextureType_NORMALS);
+		AssimpTextureResult displacementResult = ReadAssimpTexture(material, aiTextureType_DISPLACEMENT);
+
+		// Import textures from files
+		AssetHandle AlbedoMap = 0;
+		AssetHandle SpecularMap = 0;
+		AssetHandle NormalMap = 0;
+		AssetHandle DisplacementMap = 0;
+
+		EditorAssetManager* assetManager = Project::GetActive()->GetEditorAssetManager().get();
+		const std::filesystem::path assetsPath = Project::GetAssetDirectory();
+		const std::filesystem::path dirPath = sourcePath.parent_path().lexically_relative(assetsPath);
+
+		if (albedoResult.TextureFound) { AlbedoMap = assetManager->ImportAssetFromFile(dirPath / albedoResult.RelativePath, persistent); }
+		if (specularResult.TextureFound) { SpecularMap = assetManager->ImportAssetFromFile(dirPath / specularResult.RelativePath, persistent); }
+		if (normalResult.TextureFound) { NormalMap = assetManager->ImportAssetFromFile(dirPath / normalResult.RelativePath, persistent); }
+		if (displacementResult.TextureFound) { DisplacementMap = assetManager->ImportAssetFromFile(dirPath / displacementResult.RelativePath, persistent); }
+
+		int UseNormalMap = (AssetManager::IsAssetHandleValid(NormalMap)) ? 1 : 0;
+		int UseDisplacementMap = (AssetManager::IsAssetHandleValid(DisplacementMap)) ? 1 : 0;
+
+		// Default material doesn't offer per-texture scaling, so the diffuse texture scaling will be used across all material textures
+		glm::vec2 TextureScale = albedoResult.TextureScaling;
+
+		// Apply material parameters
+		// -------------------------
+		UBOShaderParameterTypeStorage* matValuesUBO = engineMaterial->GetParameter<UBOShaderParameterTypeStorage>("MaterialValues");
+		Ref<UniformBufferStorage> uboStorage = matValuesUBO->UBO();
+		uboStorage->SetLocalData("Albedo", Albedo);
+		uboStorage->SetLocalData("Specular", Specular);
+		uboStorage->SetLocalData("TextureScale", TextureScale);
+		uboStorage->SetLocalData("Shininess", Shininess);
+		uboStorage->SetLocalData("HeightScale", HeightScale);
+		uboStorage->SetLocalData("UseNormalMap", UseNormalMap);
+		uboStorage->SetLocalData("UseDisplacementMap", UseDisplacementMap);
+
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("AlbedoMap")->TextureHandle = AlbedoMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SpecularMap")->TextureHandle = SpecularMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("NormalMap")->TextureHandle = NormalMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DisplacementMap")->TextureHandle = DisplacementMap;
+		
+		return engineMaterial;
 	}
 
-	static Ref<Material> BuildAssimpMaterialAsPBR(const aiMaterial* material)
+	static Ref<Material> BuildAssimpMaterialAsPBR(const aiMaterial* material, const std::filesystem::path& sourcePath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
 		const AssetHandle shaderHandle = Renderer::DefaultLitPBRShader();
 		Ref<Material> engineMaterial = CreateRef<Material>(shaderHandle);
 
-		aiColor3D baseColour;
-		float opacity;
+		// Read material properties
+		// ------------------------
+		aiColor3D baseColour = aiColor3D(1.0f, 1.0f, 1.0f);
+		float opacity = 1.0f;
 		if (material->Get(AI_MATKEY_COLOR_DIFFUSE, baseColour) != aiReturn_SUCCESS)
 		{
 			baseColour = aiColor3D(1.0f, 1.0f, 1.0f);
@@ -373,33 +454,31 @@ namespace PaulEngine
 		}
 		glm::vec4 Albedo = glm::vec4(baseColour.r, baseColour.g, baseColour.b, opacity);
 
-		float Metalness;
+		float Metalness = 0.0f;
 		if (material->Get(AI_MATKEY_METALLIC_FACTOR, Metalness) != aiReturn_SUCCESS)
 		{
 			Metalness = 0.0f;
 		}
 
-		float Roughness;
+		float Roughness = 0.5f;
 		if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, Roughness) != aiReturn_SUCCESS)
 		{
 			Roughness = 0.5f;
 		}
 
-		aiColor3D ambientColour;
+		aiColor3D ambientColour = aiColor3D(1.0f, 1.0f, 1.0f);
 		if (material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColour) != aiReturn_SUCCESS)
 		{
 			ambientColour = aiColor3D(1.0f, 1.0f, 1.0f);
 		}
-		float AO = (0.299f * ambientColour.r) + (0.587f * ambientColour.g) + (0.114 * ambientColour.b);
+		float AO = (0.299f * ambientColour.r) + (0.587f * ambientColour.g) + (0.114 * ambientColour.b); // grayscale value
 
-		// AI_MATKEY_BUMP_SCALING
-		float HeightScale = 1.0f;
-
-		// Process textures to find this value
-		glm::vec2 TextureScale = glm::vec2(1.0f);
-
-		int UseNormalMap = 0;
-		int UseDisplacementMap = 0;
+		// Not sure if this is correct but its the only value I could find in assimp that might relate to height scaling
+		float HeightScale = 0.1f;
+		if (material->Get(AI_MATKEY_BUMPSCALING, HeightScale) != aiReturn_SUCCESS)
+		{
+			HeightScale = 0.1f;
+		}
 
 		AssimpTextureResult albedoResult = ReadAssimpTexture(material, aiTextureType_DIFFUSE);
 		AssimpTextureResult normalResult = ReadAssimpTexture(material, aiTextureType_NORMALS);
@@ -416,10 +495,47 @@ namespace PaulEngine
 		AssetHandle AOMap = 0;
 		AssetHandle DisplacementMap = 0;
 
-		return nullptr;
+		EditorAssetManager* assetManager = Project::GetActive()->GetEditorAssetManager().get();
+		const std::filesystem::path assetsPath = Project::GetAssetDirectory();
+		const std::filesystem::path dirPath = sourcePath.parent_path().lexically_relative(assetsPath);
+
+		if (albedoResult.TextureFound) { AlbedoMap = assetManager->ImportAssetFromFile(dirPath / albedoResult.RelativePath, persistent); }
+		if (normalResult.TextureFound) { NormalMap = assetManager->ImportAssetFromFile(dirPath / normalResult.RelativePath, persistent); }
+		if (metallicResult.TextureFound) { MetallicMap = assetManager->ImportAssetFromFile(dirPath / metallicResult.RelativePath, persistent); }
+		if (roughnessResult.TextureFound) { RoughnessMap = assetManager->ImportAssetFromFile(dirPath / roughnessResult.RelativePath, persistent); }
+		if (aoResult.TextureFound) { AOMap = assetManager->ImportAssetFromFile(dirPath / aoResult.RelativePath, persistent); }
+		if (displacementResult.TextureFound) { DisplacementMap = assetManager->ImportAssetFromFile(dirPath / displacementResult.RelativePath, persistent); }
+
+		int UseNormalMap = (AssetManager::IsAssetHandleValid(NormalMap)) ? 1 : 0;
+		int UseDisplacementMap = (AssetManager::IsAssetHandleValid(DisplacementMap)) ? 1 : 0;
+
+		// Default material doesn't offer per-texture scaling, so the diffuse texture scaling will be used across all material textures
+		glm::vec2 TextureScale = albedoResult.TextureScaling;
+
+		// Apply material parameters
+		// -------------------------
+		UBOShaderParameterTypeStorage* matValuesUBO = engineMaterial->GetParameter<UBOShaderParameterTypeStorage>("MaterialValues");
+		Ref<UniformBufferStorage> uboStorage = matValuesUBO->UBO();
+		uboStorage->SetLocalData("Albedo", Albedo);
+		uboStorage->SetLocalData("Metalness", Metalness);
+		uboStorage->SetLocalData("Roughness", Roughness);
+		uboStorage->SetLocalData("AO", AO);
+		uboStorage->SetLocalData("HeightScale", HeightScale);
+		uboStorage->SetLocalData("TextureScale", TextureScale);
+		uboStorage->SetLocalData("UseNormalMap", UseNormalMap);
+		uboStorage->SetLocalData("UseDisplacementMap", UseDisplacementMap);
+
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("AlbedoMap")->TextureHandle = AlbedoMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("NormalMap")->TextureHandle = NormalMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("MetallicMap")->TextureHandle = MetallicMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("RoughnessMap")->TextureHandle = RoughnessMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("AOMap")->TextureHandle = AOMap;
+		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DisplacementMap")->TextureHandle = DisplacementMap;
+
+		return engineMaterial;
 	}
 
-	static AssimpMaterialResult ReadAssimpMaterial(const aiMaterial* material)
+	static AssimpMaterialResult ReadAssimpMaterial(const aiMaterial* material, const std::filesystem::path& sourcePath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
 		AssimpMaterialResult result;
@@ -427,10 +543,13 @@ namespace PaulEngine
 
 		// Get shading model
 		aiShadingMode assimpShading;
-		material->Get(AI_MATKEY_SHADING_MODEL, assimpShading);
+		if (material->Get(AI_MATKEY_SHADING_MODEL, assimpShading) != aiReturn_SUCCESS)
+		{
+			assimpShading = aiShadingMode_Blinn;
+		}
 
 		const bool shouldUsePBRShader = (assimpShading == aiShadingMode_PBR_BRDF || assimpShading == aiShadingMode_CookTorrance);
-		Ref<Material> constructedMaterial = (shouldUsePBRShader) ? BuildAssimpMaterialAsPBR(material) : BuildAssimpMaterial(material);
+		result.LoadedMaterial = (shouldUsePBRShader) ? BuildAssimpMaterialAsPBR(material, sourcePath, persistent) : BuildAssimpMaterial(material, sourcePath, persistent);
 
 		return result;
 	}
@@ -578,11 +697,9 @@ namespace PaulEngine
 		fout << out.c_str();
 	}
 
-	void MaterialImporter::BuildMaterialsFromModelFile(const std::filesystem::path& filepath)
+	void MaterialImporter::ImportMaterialsFromModelFile(const std::filesystem::path& filepath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
-		std::vector<AssimpMaterialResult> materials;
-
 		Assimp::Importer importer;
 		bool success = importer.ValidateFlags(aiProcess_RemoveRedundantMaterials);
 
@@ -595,12 +712,18 @@ namespace PaulEngine
 			return;
 		}
 
-		// Read materials
+		// Read and import materials
+		EditorAssetManager* editorAssetManager = Project::GetActive()->GetEditorAssetManager().get();
 		unsigned int numMaterials = scene->mNumMaterials;
-		materials.reserve(numMaterials);
+		const std::filesystem::path dirPath = filepath.parent_path();
+		const std::filesystem::path relativeModelDir = dirPath.lexically_relative(Project::GetAssetDirectory());
 		for (unsigned int i = 0; i < numMaterials; i++)
 		{
-			materials.push_back(ReadAssimpMaterial(scene->mMaterials[i]));
+			aiMaterial* material = scene->mMaterials[i];
+			AssimpMaterialResult result = ReadAssimpMaterial(material, filepath, persistent);
+			std::filesystem::path matPath = dirPath / (result.Name + ".pmat");
+			SaveMaterial(result.LoadedMaterial, matPath);
+			editorAssetManager->ImportAssetFromFile(matPath.lexically_relative(Project::GetAssetDirectory()), persistent);
 		}
 	}
 }
