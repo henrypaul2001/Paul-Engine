@@ -1,5 +1,50 @@
 Scene: Untitled
 Entities:
+  - Entity: 15587568103214570294
+    TagComponent:
+      Tag: White
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10793174350885269162
+      MeshHandle: 8792508252640201977
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1666562649862981147
+    TagComponent:
+      Tag: Board
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 2579910625645866224
+      MeshHandle: 16537309399010277641
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9453818697799763200
+    TagComponent:
+      Tag: Chess Set
+    TransformComponent:
+      Position: [2.387475, -21.442705, 50.77749]
+      Rotation: [0, 0, 0]
+      Scale: [57, 57, 57]
+      Children:
+        - 1666562649862981147
+        - 15587568103214570294
+        - 6899768035202035639
   - Entity: 7179493832125523235
     TagComponent:
       Tag: Backpack
@@ -119,9 +164,9 @@ Entities:
     TagComponent:
       Tag: Cube
     TransformComponent:
-      Position: [12.910103, -17.162352, 13.331614]
-      Rotation: [-0.34729818, -0.5340328, -6.059062e-08]
-      Scale: [0.49999988, 0.49999973, 0.49999988]
+      Position: [4.023657, -15.763853, 27.860245]
+      Rotation: [0, 1.3636215, 0]
+      Scale: [0.49998337, 0.49999982, 0.49998337]
       Children:
         - 13732826914999760753
     MeshRendererComponent:
@@ -205,9 +250,9 @@ Entities:
     TagComponent:
       Tag: SpotLight
     TransformComponent:
-      Position: [11.567404, -3.6037874, -29.884789]
-      Rotation: [-2.5938792, -0.3091431, 1.1573613]
-      Scale: [0.24997017, 0.24997382, 0.24999632]
+      Position: [27.837526, -11.597586, 40.51806]
+      Rotation: [1.9609478, -0.026385836, 2.02215]
+      Scale: [0.24997157, 0.24997413, 0.25000045]
       Children:
         []
     SpotLightComponent:
@@ -222,32 +267,23 @@ Entities:
       ShadowMaxBias: 0
       ShadowMapNearClip: 0.1
       ShadowMapFarClip: 57
-  - Entity: 17589300977564867329
+  - Entity: 6899768035202035639
     TagComponent:
-      Tag: Directional Light
+      Tag: Black
     TransformComponent:
-      Position: [19.33841, 6.218174, 28.787687]
-      Rotation: [-2.8509092, -0.28059608, 3.0931199]
-      Scale: [0.99999475, 0.99999976, 0.99998075]
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
       Children:
         []
-    SpriteComponent:
-      Colour: [1, 1, 1, 1]
-      TextureHandle: 0
-      TextureScale: [1, 1]
-      AtlasHandle: 0
-      SelectedSubTextureName: ""
-    DirectionalLightComponent:
-      Diffuse: [0.6725979, 0.6325883, 0.5265891]
-      Specular: [0.4519573, 0.4519573, 0.4519573]
-      Ambient: [0.1, 0.1, 0.1]
-      CastShadows: true
-      ShadowMinBias: 0.001
-      ShadowMaxBias: 0
-      ShadowMapCameraDistance: 33.7
-      ShadowMapProjectionSize: 61
-      ShadowMapNearClip: 0.0001
-      ShadowMapFarClip: 500
+    MeshRendererComponent:
+      MaterialHandle: 6971163420541293727
+      MeshHandle: 16003520967328098137
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 13732826914999760753
     TagComponent:
       Tag: SpotLight
@@ -310,8 +346,8 @@ Entities:
       Tag: Directional Light
     TransformComponent:
       Position: [12.688779, 6.23913, 29.6539]
-      Rotation: [-2.736535, 1.083315, -2.9816027]
-      Scale: [0.9999967, 0.99999917, 0.999997]
+      Rotation: [0.6047694, -0.08028055, -0.05965181]
+      Scale: [0.99999976, 1, 1]
       Children:
         []
     SpriteComponent:
@@ -323,7 +359,7 @@ Entities:
     DirectionalLightComponent:
       Diffuse: [0.6725979, 0.6325883, 0.5265891]
       Specular: [0.4519573, 0.4519573, 0.4519573]
-      Ambient: [0.1, 0.1, 0.1]
+      Ambient: [0.173, 0.133, 0.127]
       CastShadows: true
       ShadowMinBias: 0.001
       ShadowMaxBias: 0
