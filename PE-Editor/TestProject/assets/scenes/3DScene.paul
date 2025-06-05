@@ -27,8 +27,8 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 13469102663694383096
-      MeshHandle: 18407867296515643988
+      MaterialHandle: 1806695913120150997
+      MeshHandle: 14399674261966082871
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -44,8 +44,8 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 11695994591043113526
-      MeshHandle: 10454494930458830813
+      MaterialHandle: 11313172414528067216
+      MeshHandle: 6193741158968780692
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -61,8 +61,8 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 16052108815205950580
-      MeshHandle: 7895532164318775244
+      MaterialHandle: 3306902041363265718
+      MeshHandle: 13638607904211820917
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -71,7 +71,7 @@ Entities:
     TagComponent:
       Tag: Goblets
     TransformComponent:
-      Position: [-6.742226, -21.61271, -17.13415]
+      Position: [-19.201084, -21.612722, 24.30753]
       Rotation: [-3.4400657e-07, -0.442133, 1.6882399e-07]
       Scale: [45.93749, 45.9375, 45.93749]
       Children:

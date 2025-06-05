@@ -485,7 +485,7 @@ namespace PaulEngine
 		AssimpTextureResult normalResult = ReadAssimpTexture(material, aiTextureType_NORMALS);
 		AssimpTextureResult metallicResult = ReadAssimpTexture(material, aiTextureType_METALNESS);
 		AssimpTextureResult roughnessResult = ReadAssimpTexture(material, aiTextureType_DIFFUSE_ROUGHNESS);
-		AssimpTextureResult aoResult = ReadAssimpTexture(material, aiTextureType_AMBIENT_OCCLUSION);
+		AssimpTextureResult aoResult = ReadAssimpTexture(material, aiTextureType_AMBIENT);
 		AssimpTextureResult displacementResult = ReadAssimpTexture(material, aiTextureType_DISPLACEMENT);
 
 		// Import textures from files
@@ -542,14 +542,18 @@ namespace PaulEngine
 		AssimpMaterialResult result;
 		result.Name = material->GetName().C_Str();
 
+		// assimp->code/AssetLib/Obj/ObjFileImporter/line 598 defines the translations from MTL illum values to assimp lighting models
+		// The assimp MTL importer only supports MTL illum values from 0 - 2 and does not provide any PBR lighting models, only "noshading, gouraud, and phong"
+		// Therefore, because of the limitations of MTL files, aiShadingMode_Gouraud will be used to define a PBR lighting model
+
 		// Get shading model
 		aiShadingMode assimpShading;
-		if (material->Get(AI_MATKEY_SHADING_MODEL, assimpShading) != aiReturn_SUCCESS)
+		if (aiGetMaterialInteger(material, AI_MATKEY_SHADING_MODEL, (int*)&assimpShading) != aiReturn_SUCCESS)
 		{
 			assimpShading = aiShadingMode_Blinn;
 		}
 
-		const bool shouldUsePBRShader = (assimpShading == aiShadingMode_PBR_BRDF || assimpShading == aiShadingMode_CookTorrance);
+		const bool shouldUsePBRShader = (assimpShading == aiShadingMode_PBR_BRDF || assimpShading == aiShadingMode_CookTorrance || assimpShading == aiShadingMode_Gouraud);
 		result.LoadedMaterial = (shouldUsePBRShader) ? BuildAssimpMaterialAsPBR(material, sourcePath, persistent) : BuildAssimpMaterial(material, sourcePath, persistent);
 
 		return result;

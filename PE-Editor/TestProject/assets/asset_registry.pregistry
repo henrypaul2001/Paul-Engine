@@ -159,10 +159,18 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/Text2DMaterial.pmat
     Persistent: true
     Type: AssetType::Material
+  - Handle: 7570877820242268825
+    Filepath: models\brass_goblet\brass_goblet_03_ao_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 6036446631686507032
     Filepath: shaders/TextureArrayTest.glsl
     Persistent: false
     Type: AssetType::Shader
+  - Handle: 14399674261966082871
+    Filepath: models\brass_goblet\brass_goblet_03.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 5492584121324616097
     Filepath: materials/TextureArrayMaterial.pmat
     Persistent: false
@@ -187,10 +195,6 @@ AssetRegistry:
     Filepath: textures\earth_specular.jpg
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 7895532164318775244
-    Filepath: models\brass_goblet\brass_goblet_01_brass_goblet_01_brass_goblets_01.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 11641754153238842936
     Filepath: materials\PlasticPBR.pmat
     Persistent: false
@@ -275,12 +279,12 @@ AssetRegistry:
     Filepath: textures\plastic\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 15981315749699214463
-    Filepath: textures\marble_tile\ao.png
+  - Handle: 3615800417060294755
+    Filepath: models\brass_goblet\brass_goblet_03_nor_gl_4k.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 13335515595053575074
-    Filepath: models\brass_goblet\brass_goblet_03_diff_4k.png
+  - Handle: 15981315749699214463
+    Filepath: textures\marble_tile\ao.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 10327331717423470595
@@ -377,6 +381,10 @@ AssetRegistry:
     Type: AssetType::Texture2D
   - Handle: 9952585698058264345
     Filepath: textures\marble_tile\height.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14984273337789089626
+    Filepath: models\brass_goblet\brass_goblet_01_diff_4k.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 13749762012595078847
@@ -487,50 +495,6 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/DefaultLitPBR.pmat
     Persistent: true
     Type: AssetType::Material
-  - Handle: 13863644642469269505
-    Filepath: models\brass_goblet\brass_goblet_01_diff_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 4571110475074510984
-    Filepath: models\brass_goblet\brass_goblet_01_rough_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 18407867296515643988
-    Filepath: models\brass_goblet\brass_goblet_03_brass_goblet_03_brass_goblets_03.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 16052108815205950580
-    Filepath: models\brass_goblet\brass_goblets_01.pmat
-    Persistent: false
-    Type: AssetType::Material
-  - Handle: 14993614439143920078
-    Filepath: models\brass_goblet\brass_goblet_02_diff_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 8273095072359099506
-    Filepath: models\brass_goblet\brass_goblet_02_rough_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 11695994591043113526
-    Filepath: models\brass_goblet\brass_goblets_02.pmat
-    Persistent: false
-    Type: AssetType::Material
-  - Handle: 5648513029559564813
-    Filepath: models\brass_goblet\brass_goblet_03_rough_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 13469102663694383096
-    Filepath: models\brass_goblet\brass_goblets_03.pmat
-    Persistent: false
-    Type: AssetType::Material
-  - Handle: 11357828788278167413
-    Filepath: models\brass_goblet\brass_goblet.obj
-    Persistent: false
-    Type: AssetType::Model
-  - Handle: 10454494930458830813
-    Filepath: models\brass_goblet\brass_goblet_02_brass_goblet_02_brass_goblets_02.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 8078672988410135019
     Filepath: models\backpack\diffuse.jpg
     Persistent: false
@@ -539,6 +503,10 @@ AssetRegistry:
     Filepath: models\backpack\specular.jpg
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 3306902041363265718
+    Filepath: models\brass_goblet\brass_goblets_01.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 14063630215201597231
     Filepath: models\backpack\Scene_-_Root.pmat
     Persistent: false
@@ -549,5 +517,73 @@ AssetRegistry:
     Type: AssetType::Model
   - Handle: 3589674474780742308
     Filepath: models\backpack\Unnamed Mesh.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 703316679934911198
+    Filepath: models\brass_goblet\brass_goblet_01_nor_gl_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15711638597139481475
+    Filepath: models\brass_goblet\brass_goblet_03_metal_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 16700076993657970786
+    Filepath: models\brass_goblet\brass_goblet_01_metal_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 4399506647958718525
+    Filepath: models\brass_goblet\brass_goblet_01_rough_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 2281972359072298101
+    Filepath: models\brass_goblet\brass_goblet_01_ao_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 13413610767763243168
+    Filepath: models\brass_goblet\brass_goblet_02_diff_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14681937902600656917
+    Filepath: models\brass_goblet\brass_goblet_02_nor_gl_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 1512784233864985589
+    Filepath: models\brass_goblet\brass_goblet_02_metal_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 10584136625014929725
+    Filepath: models\brass_goblet\brass_goblet_02_rough_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14511978237479406520
+    Filepath: models\brass_goblet\brass_goblet_02_ao_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 11313172414528067216
+    Filepath: models\brass_goblet\brass_goblets_02.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 11311204853751712509
+    Filepath: models\brass_goblet\brass_goblet_03_diff_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 4183300728553746011
+    Filepath: models\brass_goblet\brass_goblet_03_rough_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 1806695913120150997
+    Filepath: models\brass_goblet\brass_goblets_03.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 3928621991277211788
+    Filepath: models\brass_goblet\brass_goblets.obj
+    Persistent: false
+    Type: AssetType::Model
+  - Handle: 13638607904211820917
+    Filepath: models\brass_goblet\brass_goblet_01.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 6193741158968780692
+    Filepath: models\brass_goblet\brass_goblet_02.pmesh
     Persistent: false
     Type: AssetType::Mesh
