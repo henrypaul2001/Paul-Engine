@@ -75,6 +75,8 @@ namespace PaulEngine
 		{
 			spec.Name = "Unnamed Mesh";
 		}
+		spec.Name.resize(25);
+		spec.Name.resize(std::strlen(spec.Name.c_str()));
 		spec.CalculateTangents = false;
 		spec.UsageType = BufferUsage::STATIC_DRAW;
 
