@@ -1,16 +1,16 @@
 MaterialAsset: Scene_-_Root
-ShaderHandle: 11556801733716284571
+ShaderHandle: 12386273623327009079
 ShaderParams:
-  - Name: SpecularMap
+  - Name: MetallicMap
     Type: Sampler2D
     Value:
-      Binding: 4
-      TextureHandle: 13633749362487700695
+      Binding: 5
+      TextureHandle: 0
   - Name: AlbedoMap
     Type: Sampler2D
     Value:
       Binding: 3
-      TextureHandle: 8078672988410135019
+      TextureHandle: 3948132675145542076
   - Name: MaterialValues
     Type: UBO
     Value:
@@ -19,31 +19,44 @@ ShaderParams:
         - Type: Float4
           Name: Albedo
           Value: [0.8, 0.8, 0.8, 1]
-        - Type: Float4
-          Name: Specular
-          Value: [0.5, 0.5, 0.5, 1]
-        - Type: Float2
-          Name: TextureScale
-          Value: [1, 1]
         - Type: Float
-          Name: Shininess
-          Value: 225
+          Name: Metalness
+          Value: 0
+        - Type: Float
+          Name: Roughness
+          Value: 1
+        - Type: Float
+          Name: AO
+          Value: 1
         - Type: Float
           Name: HeightScale
           Value: 0.1
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
         - Type: Int
           Name: UseNormalMap
-          Value: 0
+          Value: 1
         - Type: Int
           Name: UseDisplacementMap
           Value: 0
   - Name: DisplacementMap
     Type: Sampler2D
     Value:
-      Binding: 6
+      Binding: 8
       TextureHandle: 0
+  - Name: RoughnessMap
+    Type: Sampler2D
+    Value:
+      Binding: 6
+      TextureHandle: 10184002779935635505
+  - Name: AOMap
+    Type: Sampler2D
+    Value:
+      Binding: 7
+      TextureHandle: 11537213114192204608
   - Name: NormalMap
     Type: Sampler2D
     Value:
-      Binding: 5
-      TextureHandle: 0
+      Binding: 4
+      TextureHandle: 9581267853128888185
