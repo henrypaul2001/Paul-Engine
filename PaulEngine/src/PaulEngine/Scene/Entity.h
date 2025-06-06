@@ -44,7 +44,7 @@ namespace PaulEngine
 		}
 		operator bool() { return IsValid(); }
 
-		Entity CopyToScene(Ref<Scene> dstScene)
+		Entity CopyToScene(Scene* dstScene)
 		{
 			return m_Scene->CopyEntityToScene(Entity(m_EntityHandle, m_Scene), dstScene);
 		}

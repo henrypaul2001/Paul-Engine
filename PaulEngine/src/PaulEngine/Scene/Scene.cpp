@@ -4,6 +4,8 @@
 #include "PaulEngine/Renderer/Renderer2D.h"
 #include "PaulEngine/Scene/Entity.h"
 #include "Components.h"
+#include "PaulEngine/Scene/Prefab.h"
+#include "PaulEngine/Asset/AssetManager.h"
 
 #include <box2d/box2d.h>
 
@@ -81,6 +83,7 @@ namespace PaulEngine
 		}
 
 		// Copy components
+		CopyComponent<ComponentPrefabSource>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentTransform>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<Component2DSprite>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<Component2DCircle>(dstSceneRegistry, srcSceneRegistry, entityMap);
@@ -120,9 +123,19 @@ namespace PaulEngine
 
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
+		if (entity.HasComponent<ComponentPrefabSource>())
+		{
+			// TODO: This causes a stack overflow as it enters a feedback loop of instantiating the same prefab over and over again. Fix that
+			//Entity prefabInstance = AssetManager::GetAsset<Prefab>(entity.GetComponent<ComponentPrefabSource>().PrefabHandle)->Instantiate(this);
+			// TODO: Copy transform position, rotation, scale to new prefab instance. Ignore everything else
+			//CopyComponentIfExists<ComponentTransform>(newEntity, srcEntity);
+			//return prefabInstance;
+		}
+
 		const std::string& name = entity.Tag();
 		Entity newEntity = CreateEntity(name);
 
+		CopyComponentIfExists<ComponentPrefabSource>(newEntity, entity);
 		CopyComponentIfExists<ComponentTransform>(newEntity, entity);
 		CopyComponentIfExists<Component2DSprite>(newEntity, entity);
 		CopyComponentIfExists<Component2DCircle>(newEntity, entity);
@@ -158,12 +171,23 @@ namespace PaulEngine
 		return newEntity;
 	}
 
-	Entity Scene::CopyEntityToScene(Entity srcEntity, Ref<Scene> dstScene)
+	Entity Scene::CopyEntityToScene(Entity srcEntity, Scene* dstScene)
 	{
 		PE_CORE_ASSERT(srcEntity.IsValid(), "Invalid entity");
+
+		if (srcEntity.HasComponent<ComponentPrefabSource>())
+		{
+			// TODO: This causes a stack overflow as it enters a feedback loop of instantiating the same prefab over and over again. Fix that
+			//Entity prefabInstance = AssetManager::GetAsset<Prefab>(srcEntity.GetComponent<ComponentPrefabSource>().PrefabHandle)->Instantiate(dstScene);
+			// TODO: Copy transform position, rotation, scale to new prefab instance. Ignore everything else
+			//CopyComponentIfExists<ComponentTransform>(newEntity, srcEntity);
+			//return prefabInstance;
+		}
+
 		const std::string& name = srcEntity.Tag();
 		Entity newEntity = dstScene->CreateEntityWithUUID(srcEntity.UUID(), name);
 
+		CopyComponentIfExists<ComponentPrefabSource>(newEntity, srcEntity);
 		CopyComponentIfExists<ComponentTransform>(newEntity, srcEntity);
 		CopyComponentIfExists<Component2DSprite>(newEntity, srcEntity);
 		CopyComponentIfExists<Component2DCircle>(newEntity, srcEntity);
@@ -248,6 +272,21 @@ namespace PaulEngine
 			return Entity(entityID, this);
 		}
 		return Entity();
+	}
+
+	std::vector<Entity> Scene::GetRootEntities()
+	{
+		std::vector<Entity> rootEntities;
+		auto view = m_Registry.view<ComponentTransform>();
+		for (auto entityID : view)
+		{
+			const auto& transform = view.get<ComponentTransform>(entityID);
+			if (!transform.GetParent().IsValid())
+			{
+				rootEntities.push_back(Entity(entityID, this));
+			}
+		}
+		return rootEntities;
 	}
 
 	void Scene::OnRuntimeStart()

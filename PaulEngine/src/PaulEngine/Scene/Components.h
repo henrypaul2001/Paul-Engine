@@ -25,6 +25,11 @@ namespace PaulEngine
 		ComponentTag(const std::string& tag = std::string()) : Tag(tag) {}
 	};
 
+	struct ComponentPrefabSource
+	{
+		AssetHandle PrefabHandle = 0;
+	};
+
 	struct ComponentTransform {
 	public:
 		glm::vec3 LocalPosition() const { return m_Position; }

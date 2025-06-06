@@ -11,17 +11,18 @@ namespace PaulEngine
 	class Prefab : public Asset
 	{
 	public:
-		Prefab(Entity srcEntity);
-		void Instantiate(Ref<Scene> targetScene);
+		Prefab();
+		Entity Instantiate(Scene* targetScene);
+
+		static Prefab CreateFromEntity(Entity srcEntity);
 
 		virtual AssetType GetType() const override { return AssetType::Prefab; }
-
 		const Ref<Scene> GetPrefabScene() const { return m_PrefabScene; }
 
 	private:
 		friend class EditorLayer;
+		friend class SceneImporter;
 		Ref<Scene> m_PrefabScene;
-		Entity m_RootEntity;
 	};
 
 	// TODO: Live prefab updates

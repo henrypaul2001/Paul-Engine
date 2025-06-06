@@ -23,7 +23,8 @@ namespace PaulEngine
 		{ AssetType::Material, MaterialImporter::ImportMaterial },
 		{ AssetType::Texture2DArray, TextureImporter::ImportTexture2DArray },
 		{ AssetType::Mesh, MeshImporter::ImportMesh },
-		{ AssetType::Model, MeshImporter::ImportModel }
+		{ AssetType::Model, MeshImporter::ImportModel },
+		{ AssetType::Prefab, SceneImporter::ImportPrefab }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

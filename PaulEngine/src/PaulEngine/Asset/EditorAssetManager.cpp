@@ -22,7 +22,8 @@ namespace PaulEngine
 		{ ".fbx", AssetType::Model },
 		//{ ".dae", AssetType::Model },
 		{ ".glTF", AssetType::Model },
-		{ ".pmesh", AssetType::Mesh }
+		{ ".pmesh", AssetType::Mesh },
+		{ ".pfab", AssetType::Prefab }
 	};
 
 	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {

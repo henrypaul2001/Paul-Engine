@@ -14,8 +14,21 @@ namespace PaulEngine
 {
 	SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : m_Scene(scene) {}
 
-	static void SerializeEntity(YAML::Emitter& out, Entity entity)
+	static void SerializeEntity(YAML::Emitter& out, Entity entity, bool ignorePrefabChildren)
 	{
+		if (ignorePrefabChildren)
+		{
+			// Check for parent prefab entity
+			Entity parent = entity.GetComponent<ComponentTransform>().GetParent();
+			while (parent.IsValid())
+			{
+				if (parent.HasComponent<ComponentPrefabSource>())
+				{
+					return;
+				}
+				parent = parent.GetComponent<ComponentTransform>().GetParent();
+			}
+		}
 		out << YAML::BeginMap;
 		out << YAML::Key << "Entity" << YAML::Value << entity.UUID();
 		
@@ -26,6 +39,16 @@ namespace PaulEngine
 
 			ComponentTag& tagComponent = entity.GetComponent<ComponentTag>();
 			out << YAML::Key << "Tag" << YAML::Value << tagComponent.Tag;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<ComponentPrefabSource>()) {
+			out << YAML::Key << "PrefabComponent";
+			out << YAML::BeginMap;
+
+			ComponentPrefabSource& prefabComponent = entity.GetComponent<ComponentPrefabSource>();
+			out << YAML::Key << "Handle" << YAML::Value << prefabComponent.PrefabHandle;
 
 			out << YAML::EndMap;
 		}
@@ -232,7 +255,7 @@ namespace PaulEngine
 		out << YAML::EndMap;
 	}
 
-	void SceneSerializer::SerializeYAML(const std::filesystem::path& filepath)
+	void SceneSerializer::SerializeYAML(const std::filesystem::path& filepath, bool ignorePrefabChildren)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -242,7 +265,7 @@ namespace PaulEngine
 			Entity entity = Entity(entityID, m_Scene.get());
 			if (!entity) { return; }
 
-			SerializeEntity(out, entity);
+			SerializeEntity(out, entity, ignorePrefabChildren);
 		});
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
@@ -297,6 +320,12 @@ namespace PaulEngine
 				Entity deserializedEntity = m_Scene->FindEntityWithUUID(uuid);
 				if (deserializedEntity.IsValid())
 				{
+					YAML::Node prefabNode = entity["PrefabComponent"];
+					if (prefabNode) {
+						ComponentPrefabSource& prefab = deserializedEntity.AddComponent<ComponentPrefabSource>();
+						prefab.PrefabHandle = prefabNode["Handle"].as<uint64_t>();
+					}
+
 					YAML::Node transformNode = entity["TransformComponent"];
 					if (transformNode) {
 						ComponentTransform& transform = deserializedEntity.GetComponent<ComponentTransform>();

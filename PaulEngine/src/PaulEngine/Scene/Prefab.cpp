@@ -4,21 +4,33 @@
 
 namespace PaulEngine
 {
-	Prefab::Prefab(Entity srcEntity) : m_PrefabScene(CreateRef<Scene>())
-	{
-		std::string prefabName = srcEntity.Tag();
-		m_PrefabScene->m_Name = prefabName;
-		m_RootEntity = m_PrefabScene->CreateEntity(prefabName + "_Root");
-		// Add hidden prefab component
+	Prefab::Prefab() : m_PrefabScene(CreateRef<Scene>()) {}
 
-		Entity copiedEntity = srcEntity.CopyToScene(m_PrefabScene);
-		ComponentTransform::SetParent(copiedEntity, m_RootEntity);
-	}
-
-	void Prefab::Instantiate(Ref<Scene> targetScene)
+	Entity Prefab::Instantiate(Scene* targetScene)
 	{
 		if (targetScene) {
-			targetScene->Append(m_PrefabScene);
+			Ref<Scene> copy = Scene::Copy(m_PrefabScene);
+			std::vector<Entity> roots = copy->GetRootEntities();
+			const std::string prefabName = copy->GetName();
+			Entity prefabRoot = copy->CreateEntity(prefabName + "_Root");
+			ComponentPrefabSource& prefabComponent = prefabRoot.AddComponent<ComponentPrefabSource>();
+			prefabComponent.PrefabHandle = Handle;
+			for (Entity e : roots)
+			{
+				ComponentTransform::SetParent(e, prefabRoot);
+			}
+			return prefabRoot.CopyToScene(targetScene);
 		}
+		return Entity();
+	}
+
+	Prefab Prefab::CreateFromEntity(Entity srcEntity)
+	{
+		Prefab prefab;
+		std::string prefabName = srcEntity.Tag();
+		prefab.m_PrefabScene->m_Name = prefabName;
+		Entity copiedEntity = srcEntity.CopyToScene(prefab.m_PrefabScene.get());
+		ComponentTransform::SetParent(copiedEntity, Entity());
+		return prefab;
 	}
 }

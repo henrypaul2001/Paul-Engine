@@ -8,7 +8,7 @@ namespace PaulEngine
 	public:
 		SceneSerializer(const Ref<Scene>& scene);
 
-		void SerializeYAML(const std::filesystem::path& filepath);
+		void SerializeYAML(const std::filesystem::path& filepath, bool ignorePrefabChildren);
 		void SerializeBinary(const std::filesystem::path& filepath);
 
 		bool DeserializeYAML(const std::filesystem::path& filepath);

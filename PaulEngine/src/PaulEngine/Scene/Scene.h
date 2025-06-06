@@ -24,15 +24,18 @@ namespace PaulEngine
 		void Append(Ref<Scene> source);
 
 		virtual AssetType GetType() const { return AssetType::Scene; }
+		const std::string& GetName() const { return m_Name; }
 
 		Entity CreateEntity(const std::string& name = "Entity");
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "Entity");
 		Entity DuplicateEntity(Entity entity);
-		Entity CopyEntityToScene(Entity srcEntity, Ref<Scene> dstScene);
+		Entity CopyEntityToScene(Entity srcEntity, Scene* dstScene);
 		Entity FindEntityWithUUID(UUID id);
 		void DestroyEntity(Entity entity);
 
 		Entity GetPrimaryCameraEntity();
+
+		std::vector<Entity> GetRootEntities();
 
 		void OnRuntimeStart();
 		void OnRuntimeStop();

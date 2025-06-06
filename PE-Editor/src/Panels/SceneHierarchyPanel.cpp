@@ -156,12 +156,10 @@ namespace PaulEngine
 					entityDeleted = true;
 				}
 				if (ImGui::MenuItem("Save As Prefab...")) {
-					FileDialogs::SaveFile(".prefab");
-
 					std::string path = FileDialogs::SaveFile("Paul Engine Prefab (*.pfab)\0*.pfab\0");
 					if (!path.empty()) {
-						Prefab prefab = Prefab(m_SelectedEntity);
-						SceneImporter::SaveScene(prefab.GetPrefabScene(), path);
+						Prefab prefab = Prefab::CreateFromEntity(m_SelectedEntity);
+						SceneImporter::SavePrefab(prefab, path);
 					}
 				}
 

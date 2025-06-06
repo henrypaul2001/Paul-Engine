@@ -1480,7 +1480,17 @@ namespace PaulEngine
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
 				if (payload) {
 					AssetHandle handle = *(AssetHandle*)payload->Data;
-					OpenScene(handle);
+					AssetMetadata metadata = AssetManager::GetMetadata(handle);
+					switch (metadata.Type)
+					{
+					case AssetType::Scene:
+						OpenScene(handle);
+						break;
+					case AssetType::Prefab:
+						Ref<Prefab> prefabAsset = AssetManager::GetAsset<Prefab>(handle);
+						prefabAsset->Instantiate(m_ActiveScene.get());
+						break;
+					}
 				}
 				ImGui::EndDragDropTarget();
 			}
