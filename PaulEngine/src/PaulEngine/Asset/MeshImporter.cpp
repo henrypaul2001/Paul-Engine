@@ -156,7 +156,8 @@ namespace PaulEngine
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_OptimizeMeshes |
 			aiProcess_OptimizeGraph |
-			aiProcess_GenUVCoords
+			aiProcess_GenUVCoords |
+			aiProcess_FixInfacingNormals
 		);
 		const aiScene* scene = importer.ReadFile(filepath.string(),
 			aiProcess_GenNormals |
@@ -165,7 +166,8 @@ namespace PaulEngine
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_OptimizeMeshes |
 			aiProcess_OptimizeGraph |
-			aiProcess_GenUVCoords
+			aiProcess_GenUVCoords |
+			aiProcess_FixInfacingNormals
 		);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
