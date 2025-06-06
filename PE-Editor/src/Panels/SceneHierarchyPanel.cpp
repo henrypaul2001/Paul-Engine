@@ -9,6 +9,10 @@
 #include <PaulEngine/Debug/Instrumentor.h>
 
 #include <filesystem>
+#include "PaulEngine/Utils/PlatformUtils.h"
+#include "PaulEngine/Asset/SceneImporter.h"
+#include "PaulEngine/Scene/Prefab.h"
+
 #include <PaulEngine/Renderer/Asset/TextureAtlas2D.h>
 
 namespace PaulEngine
@@ -150,6 +154,15 @@ namespace PaulEngine
 				}
 				if (ImGui::MenuItem("Delete")) {
 					entityDeleted = true;
+				}
+				if (ImGui::MenuItem("Save As Prefab...")) {
+					FileDialogs::SaveFile(".prefab");
+
+					std::string path = FileDialogs::SaveFile("Paul Engine Prefab (*.pfab)\0*.pfab\0");
+					if (!path.empty()) {
+						Prefab prefab = Prefab(m_SelectedEntity);
+						SceneImporter::SaveScene(prefab.GetPrefabScene(), path);
+					}
 				}
 
 				ImGui::EndPopup();

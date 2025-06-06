@@ -21,6 +21,7 @@
 #include "PaulEngine/Scene/Entity.h"
 #include "PaulEngine/Scene/EntityScript.h"
 #include "PaulEngine/Scene/Components.h"
+#include "PaulEngine/Scene/Prefab.h"
 
 #include "PaulEngine/Project/Project.h"
 #include "PaulEngine/Asset/AssetManager.h"

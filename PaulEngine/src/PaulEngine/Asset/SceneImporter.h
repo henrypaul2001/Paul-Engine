@@ -1,6 +1,7 @@
 #pragma once
 #include "Asset.h"
 #include "PaulEngine/Scene/Scene.h"
+#include "PaulEngine/Scene/Prefab.h"
 
 namespace PaulEngine
 {

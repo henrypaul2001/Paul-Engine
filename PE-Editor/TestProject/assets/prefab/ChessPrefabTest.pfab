@@ -1,0 +1,97 @@
+Scene: Chess Set
+Entities:
+  - Entity: 6581284435723094683
+    TagComponent:
+      Tag: SpotLight
+    TransformComponent:
+      Position: [0.4709744, 0.1914341, -0.41386783]
+      Rotation: [2.2187662, -0.026385704, 2.0221496]
+      Scale: [0.004385431, 0.004385513, 0.004385948]
+      Parent: 9453818697799763200
+      Children:
+        []
+    SpotLightComponent:
+      Range: 57
+      InnerCutoff: 15
+      OuterCutoff: 21
+      Diffuse: [9, 2.25, 0.3]
+      Specular: [1, 7, 10]
+      Ambient: [0, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0.0001
+      ShadowMaxBias: 0
+      ShadowMapNearClip: 0.1
+      ShadowMapFarClip: 57
+  - Entity: 6899768035202035639
+    TagComponent:
+      Tag: Black
+    TransformComponent:
+      Position: [0, 0, -5.9604645e-08]
+      Rotation: [-8.881784e-16, -2.9802322e-08, 4.440892e-16]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 6971163420541293727
+      MeshHandle: 16003520967328098137
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15587568103214570294
+    TagComponent:
+      Tag: White
+    TransformComponent:
+      Position: [0, 0, -5.9604645e-08]
+      Rotation: [-8.881784e-16, -2.9802322e-08, 4.440892e-16]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10793174350885269162
+      MeshHandle: 8792508252640201977
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1666562649862981147
+    TagComponent:
+      Tag: Board
+    TransformComponent:
+      Position: [0, 0, -5.9604645e-08]
+      Rotation: [-8.881784e-16, -2.9802322e-08, 4.440892e-16]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 2579910625645866224
+      MeshHandle: 16537309399010277641
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9453818697799763200
+    TagComponent:
+      Tag: Chess Set
+    TransformComponent:
+      Position: [5.569648, -21.442768, 54.166946]
+      Rotation: [1.0366374e-08, 0.50758743, 2.1496492e-08]
+      Scale: [57.000042, 57, 57.000042]
+      Parent: 9443797718753415154
+      Children:
+        - 1666562649862981147
+        - 15587568103214570294
+        - 6899768035202035639
+        - 6581284435723094683
+  - Entity: 9443797718753415154
+    TagComponent:
+      Tag: Chess Set_Root
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 9453818697799763200

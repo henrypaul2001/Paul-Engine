@@ -236,7 +236,7 @@ namespace PaulEngine
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
-		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+		out << YAML::Key << "Scene" << YAML::Value << m_Scene->m_Name;
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 		m_Scene->m_Registry.view<entt::entity>().each([&](auto entityID) {
 			Entity entity = Entity(entityID, m_Scene.get());
@@ -269,6 +269,8 @@ namespace PaulEngine
 
 		std::string sceneName = data["Scene"].as<std::string>();
 		PE_CORE_TRACE("Deserializing scene '{0}'", sceneName);
+
+		m_Scene->m_Name = sceneName;
 
 		YAML::Node entities = data["Entities"];
 		if (entities) {

@@ -19,6 +19,7 @@ namespace PaulEngine
             case AssetType::TextureCubemapArray: return "AssetType::TextureCubemapArray";
             case AssetType::Mesh: return "AssetType::Mesh";
             case AssetType::Model: return "AssetType::Model";
+            case AssetType::Prefab: return "AssetType::Prefab";
         }
         return "AssetType::!Unknown!";
     }
@@ -37,6 +38,7 @@ namespace PaulEngine
         if (assetType == "AssetType::TextureCubemapArray") { return AssetType::TextureCubemapArray; }
         if (assetType == "AssetType::Mesh") { return AssetType::Mesh; }
         if (assetType == "AssetType::Model") { return AssetType::Model; }
+        if (assetType == "AssetType::Prefab") { return AssetType::Prefab; }
         return AssetType::None;
     }
 }
