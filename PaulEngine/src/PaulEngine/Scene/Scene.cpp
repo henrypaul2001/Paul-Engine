@@ -61,15 +61,22 @@ namespace PaulEngine
 		newScene->m_ViewportWidth = other->m_ViewportWidth;
 		newScene->m_ViewportHeight = other->m_ViewportHeight;
 
-		entt::registry& srcSceneRegistry = other->m_Registry;
-		entt::registry& dstSceneRegistry = newScene->m_Registry;
+		newScene->Append(other);
+
+		return newScene;
+	}
+
+	void Scene::Append(Ref<Scene> source)
+	{
+		entt::registry& srcSceneRegistry = source->m_Registry;
+		entt::registry& dstSceneRegistry = m_Registry;
 		std::unordered_map<UUID, entt::entity> entityMap;
 
 		auto idView = srcSceneRegistry.view<ComponentID>();
 		for (auto entityID : idView) {
 			UUID srcUUID = srcSceneRegistry.get<ComponentID>(entityID).ID;
 			const std::string& tag = srcSceneRegistry.get<ComponentTag>(entityID).Tag;
-			Entity newEntity = newScene->CreateEntityWithUUID(srcUUID, tag);
+			Entity newEntity = CreateEntityWithUUID(srcUUID, tag);
 			entityMap[srcUUID] = (entt::entity)newEntity;
 		}
 
@@ -91,10 +98,8 @@ namespace PaulEngine
 		auto transformView = dstSceneRegistry.view<ComponentTransform>();
 		for (auto entityID : transformView)
 		{
-			dstSceneRegistry.get<ComponentTransform>(entityID).RemapEntityRelationships(newScene.get());
+			dstSceneRegistry.get<ComponentTransform>(entityID).RemapEntityRelationships(this);
 		}
-
-		return newScene;
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -147,6 +152,47 @@ namespace PaulEngine
 		for (Entity e : children)
 		{
 			Entity newChild = DuplicateEntity(e);
+			ComponentTransform::SetParent(newChild, newEntity);
+		}
+
+		return newEntity;
+	}
+
+	Entity Scene::CopyEntityToScene(Entity srcEntity, Ref<Scene> dstScene)
+	{
+		PE_CORE_ASSERT(srcEntity.IsValid(), "Invalid entity");
+		const std::string& name = srcEntity.Tag();
+		Entity newEntity = dstScene->CreateEntityWithUUID(srcEntity.UUID(), name);
+
+		CopyComponentIfExists<ComponentTransform>(newEntity, srcEntity);
+		CopyComponentIfExists<Component2DSprite>(newEntity, srcEntity);
+		CopyComponentIfExists<Component2DCircle>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentCamera>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentNativeScript>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentRigidBody2D>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentBoxCollider2D>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentCircleCollider2D>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentMeshRenderer>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentDirectionalLight>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentPointLight>(newEntity, srcEntity);
+		CopyComponentIfExists<ComponentSpotLight>(newEntity, srcEntity);
+
+		ComponentTransform& newTransform = newEntity.GetComponent<ComponentTransform>();
+		ComponentTransform& originalTransform = srcEntity.GetComponent<ComponentTransform>();
+
+		// Inform parent of new child
+		Entity parent = newTransform.GetParent();
+		if (parent.IsValid())
+		{
+			parent.GetComponent<ComponentTransform>().m_Children.emplace(newEntity);
+		}
+
+		// Duplicate children
+		std::unordered_set<Entity> children = originalTransform.GetChildren();
+		newTransform.m_Children.clear();
+		for (Entity e : children)
+		{
+			Entity newChild = CopyEntityToScene(e, dstScene);
 			ComponentTransform::SetParent(newChild, newEntity);
 		}
 

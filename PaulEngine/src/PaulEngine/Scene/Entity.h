@@ -44,6 +44,11 @@ namespace PaulEngine
 		}
 		operator bool() { return IsValid(); }
 
+		Entity CopyToScene(Ref<Scene> dstScene)
+		{
+			return m_Scene->CopyEntityToScene(Entity(m_EntityHandle, m_Scene), dstScene);
+		}
+
 		operator entt::entity() const { return m_EntityHandle; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 

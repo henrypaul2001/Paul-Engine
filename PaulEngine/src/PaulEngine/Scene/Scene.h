@@ -20,11 +20,15 @@ namespace PaulEngine
 		
 		static Ref<Scene> Copy(Ref<Scene> other);
 
+		// Copies every entity and component from source scene
+		void Append(Ref<Scene> source);
+
 		virtual AssetType GetType() const { return AssetType::Scene; }
 
 		Entity CreateEntity(const std::string& name = "Entity");
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "Entity");
 		Entity DuplicateEntity(Entity entity);
+		Entity CopyEntityToScene(Entity srcEntity, Ref<Scene> dstScene);
 		Entity FindEntityWithUUID(UUID id);
 		void DestroyEntity(Entity entity);
 
@@ -74,12 +78,15 @@ namespace PaulEngine
 		friend class Entity;
 		friend class SceneHierarchyPanel;
 		friend class SceneSerializer;
+		friend class Prefab;
 
 		void OnPhysics2DStep(Timestep timestep);
 		void OnPhysics2DStart();
 		void OnPhysics2DStop();
 
 		void DestroyChildren(Entity rootEntity);
+
+		std::string m_Name = "Untitled";
 
 		entt::registry m_Registry;
 		std::unordered_map<UUID, Entity> m_EntityMap;
