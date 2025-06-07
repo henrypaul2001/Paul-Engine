@@ -12,7 +12,9 @@ namespace PaulEngine
 	{
 	public:
 		Prefab();
+		
 		Entity Instantiate(Scene* targetScene);
+		void RefreshInstance(Entity instance);
 
 		static Prefab CreateFromEntity(Entity srcEntity);
 

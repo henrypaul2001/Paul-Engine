@@ -1,20 +1,5 @@
 Scene: Untitled
 Entities:
-  - Entity: 5026724753129728360
-    TagComponent:
-      Tag: Top
-    TransformComponent:
-      Position: [0, 0.3, -1.85]
-      Rotation: [-1.5707964, 0.7853982, -8.429369e-08]
-      Scale: [0.99999994, 1.0000005, 1]
-      Children:
-        []
-    SpriteComponent:
-      Colour: [0.8932966, 0.45227394, 0.99288255, 1]
-      TextureHandle: 0
-      TextureScale: [1, 1]
-      AtlasHandle: 0
-      SelectedSubTextureName: ""
   - Entity: 4743409944484939423
     TagComponent:
       Tag: Left
@@ -26,6 +11,21 @@ Entities:
         []
     SpriteComponent:
       Colour: [0.7258225, 0.19180356, 0.8291815, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+  - Entity: 5026724753129728360
+    TagComponent:
+      Tag: Top
+    TransformComponent:
+      Position: [0, 0.3, -1.85]
+      Rotation: [-1.5707964, 0.7853982, -8.429369e-08]
+      Scale: [0.99999994, 1.0000005, 1]
+      Children:
+        []
+    SpriteComponent:
+      Colour: [0.8932966, 0.45227394, 0.99288255, 1]
       TextureHandle: 0
       TextureScale: [1, 1]
       AtlasHandle: 0
@@ -61,7 +61,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0263157
+        AspectRatio: 2.025641
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false

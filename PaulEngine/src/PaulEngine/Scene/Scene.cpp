@@ -58,6 +58,7 @@ namespace PaulEngine
 
 	Ref<Scene> Scene::Copy(Ref<Scene> other)
 	{
+		PE_PROFILE_FUNCTION();
 		Ref<Scene> newScene = CreateRef<Scene>();
 
 		newScene->m_ViewportWidth = other->m_ViewportWidth;
@@ -70,6 +71,7 @@ namespace PaulEngine
 
 	void Scene::Append(Ref<Scene> source)
 	{
+		PE_PROFILE_FUNCTION();
 		entt::registry& srcSceneRegistry = source->m_Registry;
 		entt::registry& dstSceneRegistry = m_Registry;
 		std::unordered_map<UUID, entt::entity> entityMap;
@@ -123,15 +125,7 @@ namespace PaulEngine
 
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
-		if (entity.HasComponent<ComponentPrefabSource>())
-		{
-			// TODO: This causes a stack overflow as it enters a feedback loop of instantiating the same prefab over and over again. Fix that
-			//Entity prefabInstance = AssetManager::GetAsset<Prefab>(entity.GetComponent<ComponentPrefabSource>().PrefabHandle)->Instantiate(this);
-			// TODO: Copy transform position, rotation, scale to new prefab instance. Ignore everything else
-			//CopyComponentIfExists<ComponentTransform>(newEntity, srcEntity);
-			//return prefabInstance;
-		}
-
+		PE_PROFILE_FUNCTION();
 		const std::string& name = entity.Tag();
 		Entity newEntity = CreateEntity(name);
 
@@ -174,16 +168,6 @@ namespace PaulEngine
 	Entity Scene::CopyEntityToScene(Entity srcEntity, Scene* dstScene)
 	{
 		PE_CORE_ASSERT(srcEntity.IsValid(), "Invalid entity");
-
-		if (srcEntity.HasComponent<ComponentPrefabSource>())
-		{
-			// TODO: This causes a stack overflow as it enters a feedback loop of instantiating the same prefab over and over again. Fix that
-			//Entity prefabInstance = AssetManager::GetAsset<Prefab>(srcEntity.GetComponent<ComponentPrefabSource>().PrefabHandle)->Instantiate(dstScene);
-			// TODO: Copy transform position, rotation, scale to new prefab instance. Ignore everything else
-			//CopyComponentIfExists<ComponentTransform>(newEntity, srcEntity);
-			//return prefabInstance;
-		}
-
 		const std::string& name = srcEntity.Tag();
 		Entity newEntity = dstScene->CreateEntityWithUUID(srcEntity.UUID(), name);
 

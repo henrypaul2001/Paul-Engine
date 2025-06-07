@@ -61,6 +61,7 @@ namespace PaulEngine
 		const UUID& UUID();
 
 	private:
+		friend class Prefab;
 		friend class ComponentTransform;
 		friend class std::hash<Entity>;
 		entt::entity m_EntityHandle;
