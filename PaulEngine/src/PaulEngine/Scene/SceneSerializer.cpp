@@ -32,6 +32,8 @@ namespace PaulEngine
 		out << YAML::BeginMap;
 		out << YAML::Key << "Entity" << YAML::Value << entity.UUID();
 		
+		bool isPrefabRoot = false;
+
 		// Components
 		if (entity.HasComponent<ComponentTag>()) {
 			out << YAML::Key << "TagComponent";
@@ -44,12 +46,13 @@ namespace PaulEngine
 		}
 
 		if (entity.HasComponent<ComponentPrefabSource>()) {
+			isPrefabRoot = true;
 			out << YAML::Key << "PrefabComponent";
 			out << YAML::BeginMap;
 
 			ComponentPrefabSource& prefabComponent = entity.GetComponent<ComponentPrefabSource>();
 			out << YAML::Key << "Handle" << YAML::Value << prefabComponent.PrefabHandle;
-
+				
 			out << YAML::EndMap;
 		}
 
@@ -68,10 +71,13 @@ namespace PaulEngine
 				out << YAML::Key << "Parent" << YAML::Value << parent.UUID();
 			}
 			out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq;
-			const std::unordered_set<Entity>& children = transformComponent.GetChildren();
-			for (Entity it : children)
+			if (!isPrefabRoot && ignorePrefabChildren)
 			{
-				out << YAML::Value << it.UUID();
+				const std::unordered_set<Entity>& children = transformComponent.GetChildren();
+				for (Entity it : children)
+				{
+					out << YAML::Value << it.UUID();
+				}
 			}
 			out << YAML::EndSeq;
 
