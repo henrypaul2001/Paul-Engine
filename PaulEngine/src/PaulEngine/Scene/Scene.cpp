@@ -264,6 +264,7 @@ namespace PaulEngine
 			m_EntityMap.erase(e.GetComponent<ComponentID>().ID);
 			m_Registry.destroy(e);
 		}
+		transform.m_Children.clear();
 	}
 
 	Entity Scene::GetPrimaryCameraEntity()
