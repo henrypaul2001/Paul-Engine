@@ -122,7 +122,7 @@ namespace PaulEngine
 		const std::unordered_set<Entity>& GetChildren() const { return m_Children; }
 		bool HasChild(Entity child) { return m_Children.contains(child); }
 
-		static void SetParent(Entity child, Entity parent)
+		static void SetParent(Entity child, Entity parent, bool preserveWorldSpace = true)
 		{
 			PE_CORE_ASSERT(child.IsValid(), "Invalid child entity");
 			ComponentTransform& childTransform = child.GetComponent<ComponentTransform>();
@@ -135,7 +135,9 @@ namespace PaulEngine
 			glm::vec3 worldPos;
 			glm::vec3 worldRot;
 			glm::vec3 worldScale;
-			Maths::DecomposeTransform(childTransform.GetTransform(), worldPos, worldRot, worldScale);
+			if (preserveWorldSpace) {
+				Maths::DecomposeTransform(childTransform.GetTransform(), worldPos, worldRot, worldScale);
+			}
 
 			// Set new parent
 			childTransform.m_Parent = parent;
@@ -154,7 +156,9 @@ namespace PaulEngine
 			}
 
 			// Update world position with previous world position
-			childTransform.SetWorldTransform(worldPos, worldRot, worldScale);
+			if (preserveWorldSpace) {
+				childTransform.SetWorldTransform(worldPos, worldRot, worldScale);
+			}
 		}
 
 	private:

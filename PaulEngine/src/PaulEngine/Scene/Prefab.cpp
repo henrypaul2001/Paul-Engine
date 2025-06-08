@@ -65,7 +65,7 @@ namespace PaulEngine
 		for (Entity e : rootEntities)
 		{
 			Entity remappedEntity = targetScene->FindEntityWithUUID(e.UUID());
-			ComponentTransform::SetParent(remappedEntity, instance);
+			ComponentTransform::SetParent(remappedEntity, instance, false);
 		}
 	}
 
@@ -76,7 +76,7 @@ namespace PaulEngine
 		std::string prefabName = srcEntity.Tag();
 		prefab.m_PrefabScene->m_Name = prefabName;
 		Entity copiedEntity = srcEntity.CopyToScene(prefab.m_PrefabScene.get());
-		ComponentTransform::SetParent(copiedEntity, Entity());
+		ComponentTransform::SetParent(copiedEntity, Entity(), false);
 
 		// Nested prefabs
 		// Find any root prefab entities in the new scene graph
