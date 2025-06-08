@@ -1,145 +1,16 @@
 Scene: Untitled
 Entities:
-  - Entity: 8273101907269214653
+  - Entity: 13636997579008088214
     TagComponent:
-      Tag: Goblet2
+      Tag: Goblets_Root
+    PrefabComponent:
+      Handle: 13400673164059175356
     TransformComponent:
-      Position: [0, 0, -2.5510788e-05]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 2681077379860100841
+      Position: [-13.448732, -21.512154, 29.497028]
+      Rotation: [0, -0.9752008, 0]
+      Scale: [4.999999, 5, 4.999999]
       Children:
         []
-    MeshRendererComponent:
-      MaterialHandle: 11313172414528067216
-      MeshHandle: 6193741158968780692
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
-  - Entity: 12108901270791727950
-    TagComponent:
-      Tag: Goblet1
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 2681077379860100841
-      Children:
-        []
-    MeshRendererComponent:
-      MaterialHandle: 3306902041363265718
-      MeshHandle: 13638607904211820917
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
-  - Entity: 2681077379860100841
-    TagComponent:
-      Tag: Goblets
-    TransformComponent:
-      Position: [-19.201084, -21.612722, 24.30753]
-      Rotation: [-3.4400657e-07, -0.442133, 1.6882399e-07]
-      Scale: [45.93749, 45.9375, 45.93749]
-      Children:
-        - 12108901270791727950
-        - 8273101907269214653
-        - 17066202043217918327
-  - Entity: 9453818697799763200
-    TagComponent:
-      Tag: Chess Set
-    TransformComponent:
-      Position: [5.569648, -21.442768, 54.166946]
-      Rotation: [1.0366374e-08, 0.50758743, 2.1496492e-08]
-      Scale: [57.000042, 57, 57.000042]
-      Children:
-        - 1666562649862981147
-        - 15587568103214570294
-        - 6899768035202035639
-        - 6581284435723094683
-  - Entity: 7179493832125523235
-    TagComponent:
-      Tag: Backpack
-    TransformComponent:
-      Position: [-25.43464, -7.3266478, -6.669718]
-      Rotation: [2.4097903e-07, 0.015838929, 1.8895447e-07]
-      Scale: [2.7500002, 2.75, 2.7500002]
-      Children:
-        []
-    MeshRendererComponent:
-      MaterialHandle: 1116532356358435608
-      MeshHandle: 16143578655014167159
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
-  - Entity: 3336924966355824624
-    TagComponent:
-      Tag: Cube
-    TransformComponent:
-      Position: [4.023657, -15.763853, 27.860245]
-      Rotation: [0, 1.3636215, 0]
-      Scale: [0.49998337, 0.49999982, 0.49998337]
-      Children:
-        - 13732826914999760753
-    MeshRendererComponent:
-      MaterialHandle: 0
-      MeshHandle: 0
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
-  - Entity: 1666562649862981147
-    TagComponent:
-      Tag: Board
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 9453818697799763200
-      Children:
-        []
-    MeshRendererComponent:
-      MaterialHandle: 2579910625645866224
-      MeshHandle: 16537309399010277641
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
-  - Entity: 17066202043217918327
-    TagComponent:
-      Tag: Goblet3
-    TransformComponent:
-      Position: [0, 0, -2.5510788e-05]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-      Parent: 2681077379860100841
-      Children:
-        []
-    MeshRendererComponent:
-      MaterialHandle: 1806695913120150997
-      MeshHandle: 14399674261966082871
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
-  - Entity: 15587568103214570294
-    TagComponent:
-      Tag: White
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, -0, 0]
-      Scale: [1, 1, 1]
-      Parent: 9453818697799763200
-      Children:
-        []
-    MeshRendererComponent:
-      MaterialHandle: 10793174350885269162
-      MeshHandle: 8792508252640201977
-      DepthFunc: 1
-      DepthTest: true
-      DepthWrite: true
-      FaceCulling: 2
   - Entity: 15695830373297290846
     TagComponent:
       Tag: ShadedCube
@@ -342,7 +213,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.025641
+        AspectRatio: 2.0323887
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false
@@ -390,6 +261,84 @@ Entities:
     MeshRendererComponent:
       MaterialHandle: 5492584121324616097
       MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1666562649862981147
+    TagComponent:
+      Tag: Board
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 2579910625645866224
+      MeshHandle: 16537309399010277641
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3336924966355824624
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Position: [4.023657, -15.763853, 27.860245]
+      Rotation: [0, 1.3636215, 0]
+      Scale: [0.49998337, 0.49999982, 0.49998337]
+      Children:
+        - 13732826914999760753
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 7179493832125523235
+    TagComponent:
+      Tag: Backpack
+    TransformComponent:
+      Position: [-25.43464, -7.3266478, -6.669718]
+      Rotation: [2.4097903e-07, 0.015838929, 1.8895447e-07]
+      Scale: [2.7500002, 2.75, 2.7500002]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 1116532356358435608
+      MeshHandle: 16143578655014167159
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9453818697799763200
+    TagComponent:
+      Tag: Chess Set
+    TransformComponent:
+      Position: [5.569648, -21.442768, 54.166946]
+      Rotation: [1.0366374e-08, 0.50758743, 2.1496492e-08]
+      Scale: [57.000042, 57, 57.000042]
+      Children:
+        - 1666562649862981147
+        - 15587568103214570294
+        - 6899768035202035639
+        - 6581284435723094683
+  - Entity: 15587568103214570294
+    TagComponent:
+      Tag: White
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9453818697799763200
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10793174350885269162
+      MeshHandle: 8792508252640201977
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true

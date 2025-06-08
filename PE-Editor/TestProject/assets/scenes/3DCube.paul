@@ -61,7 +61,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.025641
+        AspectRatio: 2.0323887
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false

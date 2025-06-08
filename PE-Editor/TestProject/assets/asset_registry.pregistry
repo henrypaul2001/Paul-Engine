@@ -599,6 +599,10 @@ AssetRegistry:
     Filepath: models\backpack\normal.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 13400673164059175356
+    Filepath: prefab\GobletsPrefab.pfab
+    Persistent: false
+    Type: AssetType::Prefab
   - Handle: 10184002779935635505
     Filepath: models\backpack\roughness.jpg
     Persistent: false

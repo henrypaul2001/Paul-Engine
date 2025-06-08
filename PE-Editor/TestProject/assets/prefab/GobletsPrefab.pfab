@@ -1,0 +1,64 @@
+Scene: Goblets
+Entities:
+  - Entity: 8273101907269214653
+    TagComponent:
+      Tag: Goblet2
+    TransformComponent:
+      Position: [0, 0, -2.5510788e-05]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 2681077379860100841
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 11313172414528067216
+      MeshHandle: 6193741158968780692
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 12108901270791727950
+    TagComponent:
+      Tag: Goblet1
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 2681077379860100841
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 3306902041363265718
+      MeshHandle: 13638607904211820917
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17066202043217918327
+    TagComponent:
+      Tag: Goblet3
+    TransformComponent:
+      Position: [0, 0, -2.5510788e-05]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 2681077379860100841
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 1806695913120150997
+      MeshHandle: 14399674261966082871
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2681077379860100841
+    TagComponent:
+      Tag: Goblets
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 1.6882399e-07]
+      Scale: [10, 10, 10]
+      Children:
+        - 17066202043217918327
+        - 12108901270791727950
+        - 8273101907269214653
