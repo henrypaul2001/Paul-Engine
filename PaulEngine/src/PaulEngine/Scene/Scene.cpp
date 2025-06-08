@@ -107,6 +107,25 @@ namespace PaulEngine
 		}
 	}
 
+	void Scene::RegenerateUUIDs()
+	{
+		PE_PROFILE_FUNCTION();
+		auto view = m_Registry.view<ComponentID>();
+		for (auto entityID : view)
+		{
+			ComponentID& idComponent = view.get<ComponentID>(entityID);
+			
+			// Remove original ID mapping from entity ID map
+			m_EntityMap.erase(idComponent.ID);
+
+			// Regenerate ID
+			idComponent.ID = UUID();
+
+			// Remap
+			m_EntityMap[idComponent.ID] = Entity(entityID, this);
+		}
+	}
+
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		return CreateEntityWithUUID(UUID(), name);

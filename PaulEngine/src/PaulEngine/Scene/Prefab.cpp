@@ -39,6 +39,7 @@ namespace PaulEngine
 		targetScene->DestroyChildren(instance);
 
 		Ref<Scene> copy = Scene::Copy(m_PrefabScene);
+		copy->RegenerateUUIDs(); // Regenerate IDs to avoid errors with multiple instances of the same prefab sharing the same UUIDs
 
 		// Refresh nested prefabs
 		auto view = copy->View<ComponentPrefabSource>();
@@ -57,11 +58,6 @@ namespace PaulEngine
 				}
 			}
 		}
-
-		// TODO: THIS IS WRONG
-		// Appending (or copying) a scene will also copy the UUIDs of the original entities, which is intended for those functions.
-		// However, not applicable here, as once you have more than one instance of a prefab, you now have two sets of entities with the same UUIDs
-		// Update this to apply new UUIDs to entities
 
 		// Copy prefab scene into target scene and remap parent/child relationships from copy scene to target scene
 		targetScene->Append(copy);

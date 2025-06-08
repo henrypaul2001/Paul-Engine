@@ -22,6 +22,7 @@ namespace PaulEngine
 
 		// Copies every entity and component from source scene
 		void Append(Ref<Scene> source);
+		void RegenerateUUIDs();
 
 		virtual AssetType GetType() const { return AssetType::Scene; }
 		const std::string& GetName() const { return m_Name; }
