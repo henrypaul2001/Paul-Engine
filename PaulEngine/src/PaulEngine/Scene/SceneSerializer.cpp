@@ -71,7 +71,7 @@ namespace PaulEngine
 				out << YAML::Key << "Parent" << YAML::Value << parent.UUID();
 			}
 			out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq;
-			if (!isPrefabRoot && ignorePrefabChildren)
+			if ((ignorePrefabChildren && !isPrefabRoot) || !ignorePrefabChildren)
 			{
 				const std::unordered_set<Entity>& children = transformComponent.GetChildren();
 				for (Entity it : children)
