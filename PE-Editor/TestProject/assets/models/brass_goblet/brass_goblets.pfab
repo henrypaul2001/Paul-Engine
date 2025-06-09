@@ -1,0 +1,64 @@
+Scene: brass_goblets.obj
+Entities:
+  - Entity: 11072979286739156240
+    TagComponent:
+      Tag: brass_goblet_03
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8482566937723157731
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 2517003279346773415
+      MeshHandle: 14399674261966082871
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1407499759708757420
+    TagComponent:
+      Tag: brass_goblet_02
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8482566937723157731
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 3531521463653405301
+      MeshHandle: 12836424549491576160
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4456198236584908607
+    TagComponent:
+      Tag: brass_goblet_01
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8482566937723157731
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 11290211471786617983
+      MeshHandle: 15704454384253009745
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8482566937723157731
+    TagComponent:
+      Tag: brass_goblets.obj
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 4456198236584908607
+        - 1407499759708757420
+        - 11072979286739156240

@@ -1,0 +1,1432 @@
+Scene: backpack.obj
+Entities:
+  - Entity: 12156501905560438261
+    TagComponent:
+      Tag: Cube.055__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 17946482330658187604
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13643461342572691121
+    TagComponent:
+      Tag: Sphere.027__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 5394755238917025942
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16996670438499106996
+    TagComponent:
+      Tag: Sphere.026__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 4930861306935266327
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17670167985694872821
+    TagComponent:
+      Tag: Sphere.025__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2662037068925084478
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15406178343529185095
+    TagComponent:
+      Tag: Sphere.024__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 13867130310361860561
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6922452799627506387
+    TagComponent:
+      Tag: Sphere.023__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 3336835704423737096
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5492162840362654237
+    TagComponent:
+      Tag: Sphere.022__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 8201065377165652556
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1241519034069983820
+    TagComponent:
+      Tag: Cube.054__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 7893975008358403846
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17558509470055828781
+    TagComponent:
+      Tag: Cube.053__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 946063390628492775
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15044790746872491046
+    TagComponent:
+      Tag: Cube.052__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 15546457061128476089
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3918056258695144755
+    TagComponent:
+      Tag: Sphere.021__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 12843910186535905109
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2771376008441197095
+    TagComponent:
+      Tag: Sphere.020__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 14209510856493804724
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3904562843030232822
+    TagComponent:
+      Tag: Sphere.019__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 6329604331139842102
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1883713882408080859
+    TagComponent:
+      Tag: Sphere.018__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 8643905710822514972
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9355708796010315791
+    TagComponent:
+      Tag: Cube.051__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 18062150629750899195
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6594200579420926442
+    TagComponent:
+      Tag: Sphere.017__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 4227366890588072619
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4650442175630764033
+    TagComponent:
+      Tag: Sphere.016__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 6153780509430614881
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6869322176367379211
+    TagComponent:
+      Tag: Sphere.015__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2654670345678086385
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1973808328516983576
+    TagComponent:
+      Tag: Sphere.014__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 14962449398488603083
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6986533932439833548
+    TagComponent:
+      Tag: Cube.050__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 1399705667285737100
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16579378241011046155
+    TagComponent:
+      Tag: Cylinder.056__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 16759178281031404100
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6198586314699476576
+    TagComponent:
+      Tag: Cylinder.055__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2231897757777514412
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10574932401540723566
+    TagComponent:
+      Tag: Cube.049__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 18316664849764680701
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 12194362157158945389
+    TagComponent:
+      Tag: BezierCurve.003__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 8127193466744749083
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3544744774787848509
+    TagComponent:
+      Tag: Cylinder.054__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 1793136599762746835
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8585478956314727660
+    TagComponent:
+      Tag: Cylinder.053__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 1672969476123673346
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 14505692640203966036
+    TagComponent:
+      Tag: Cylinder.052__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2299433365292209098
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16536649426703757040
+    TagComponent:
+      Tag: Cylinder.051__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 12024555344610307751
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 14808946414848818711
+    TagComponent:
+      Tag: Cube.048__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2761275047675996365
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2726549720087784664
+    TagComponent:
+      Tag: Cylinder.050__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 13674839101882037297
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 18410773953169037842
+    TagComponent:
+      Tag: Cube.047__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 15131504012028112476
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6306321507694436311
+    TagComponent:
+      Tag: Cube.046__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 284120262771757018
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16977726012645424117
+    TagComponent:
+      Tag: Plane.015__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 10784042675384314672
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8573180857505120185
+    TagComponent:
+      Tag: Cube.045__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 14293351339636958654
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4229101755896225442
+    TagComponent:
+      Tag: Cube.044__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2530492397419771217
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3255455249505794412
+    TagComponent:
+      Tag: Cube.043__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 3386206113856211669
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9712695751467478632
+    TagComponent:
+      Tag: Cube.042__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 6875632510800087314
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6704609901927822113
+    TagComponent:
+      Tag: Cube.041__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 854605620471938998
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2527000016052172793
+    TagComponent:
+      Tag: Cube.040__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 920206054195951213
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13970937643824598173
+    TagComponent:
+      Tag: Cylinder.049__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 11962704056230961926
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 682390999709946501
+    TagComponent:
+      Tag: Cylinder.048__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 9079947068224265274
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2148077250344575843
+    TagComponent:
+      Tag: Cylinder.047__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 14043908153933558210
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 12958046891497676401
+    TagComponent:
+      Tag: Cylinder.046__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 11442855101586206871
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13007536692858586436
+    TagComponent:
+      Tag: Cylinder.045__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 6449909487477395546
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15377491826511306317
+    TagComponent:
+      Tag: Cylinder.044__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 11252410981118468342
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16974099997347314886
+    TagComponent:
+      Tag: Cylinder.043__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 1611687875542148858
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10321810907738727236
+    TagComponent:
+      Tag: Cylinder.042__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 17514715438864312202
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1009241679483627874
+    TagComponent:
+      Tag: Cylinder.041__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 14574082905282051377
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4567604163366064957
+    TagComponent:
+      Tag: Cylinder.040__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 123007877598155132
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 7077384794833093390
+    TagComponent:
+      Tag: Cylinder.039__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 9854613612304634965
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1537588419821182013
+    TagComponent:
+      Tag: Cylinder.038__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 140346952343820752
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 358984349812392907
+    TagComponent:
+      Tag: Cylinder.037__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 9012994994865286518
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10980753192076300756
+    TagComponent:
+      Tag: Cylinder.036__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 8467930323905434794
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16881893198268404641
+    TagComponent:
+      Tag: Cube.039__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 10357348791166030836
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8181101400659413079
+    TagComponent:
+      Tag: Cube.038__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 10580002841422866052
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5350980396884108109
+    TagComponent:
+      Tag: Cylinder.035__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 14784430403455580975
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3126966199699787377
+    TagComponent:
+      Tag: Cylinder.034__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 3882277336061557897
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3050852137045572500
+    TagComponent:
+      Tag: Cube.037__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 9837771790978485832
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6843275545311823638
+    TagComponent:
+      Tag: Cylinder.033__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 7267925404211171022
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1498012115175615492
+    TagComponent:
+      Tag: Cube.036__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 5303961630435638932
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10925937861275104990
+    TagComponent:
+      Tag: Cube.035__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 16734632922621700102
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6327632253049041768
+    TagComponent:
+      Tag: Cube.034__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 15809709458635577650
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3198674848760408740
+    TagComponent:
+      Tag: Cube.033__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 17823649522910951674
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13598503802707799426
+    TagComponent:
+      Tag: Cylinder.032__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 12624618747111179535
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 7434229200388701074
+    TagComponent:
+      Tag: Cube.032__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 12571260564905094005
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 14091429226845261303
+    TagComponent:
+      Tag: Cylinder.031__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 15024158533870833270
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13733471640504163602
+    TagComponent:
+      Tag: Cube.031__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 5264818078541131057
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1315791300604504711
+    TagComponent:
+      Tag: Plane.014__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 17413176415656886031
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3866561250927505825
+    TagComponent:
+      Tag: Cylinder.030__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 13123453798335720754
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10506325862416503359
+    TagComponent:
+      Tag: Plane.013__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 8875943540767945680
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15038571212546562973
+    TagComponent:
+      Tag: Plane.012__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 12204148292327107109
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15372657855293582682
+    TagComponent:
+      Tag: Cube.030__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 9805386958591699138
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17067078400670199251
+    TagComponent:
+      Tag: Cylinder.029__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 10104599119867525813
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8012214543753196577
+    TagComponent:
+      Tag: Plane.011__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 16895473387867612229
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8302163799960276587
+    TagComponent:
+      Tag: Plane.010__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 9241784528101293875
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13820893993688849701
+    TagComponent:
+      Tag: Plane.009__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 7737340485814965714
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4203084174627021754
+    TagComponent:
+      Tag: Cube.029__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 6852513775409331953
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 6636712422379043029
+    TagComponent:
+      Tag: Plane.008__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 2353645898924961375
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2706621984091541131
+    TagComponent:
+      Tag: Cube.028__0
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 8332501035086543338
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5223565863651398862
+      MeshHandle: 10733627982836465425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8332501035086543338
+    TagComponent:
+      Tag: backpack.obj
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 2706621984091541131
+        - 6636712422379043029
+        - 4203084174627021754
+        - 13820893993688849701
+        - 8302163799960276587
+        - 8012214543753196577
+        - 17067078400670199251
+        - 15372657855293582682
+        - 15038571212546562973
+        - 10506325862416503359
+        - 3866561250927505825
+        - 1315791300604504711
+        - 13733471640504163602
+        - 14091429226845261303
+        - 7434229200388701074
+        - 13598503802707799426
+        - 3198674848760408740
+        - 6327632253049041768
+        - 10925937861275104990
+        - 1498012115175615492
+        - 6843275545311823638
+        - 3050852137045572500
+        - 3126966199699787377
+        - 5350980396884108109
+        - 8181101400659413079
+        - 16881893198268404641
+        - 10980753192076300756
+        - 358984349812392907
+        - 1537588419821182013
+        - 7077384794833093390
+        - 4567604163366064957
+        - 1009241679483627874
+        - 10321810907738727236
+        - 16974099997347314886
+        - 15377491826511306317
+        - 13007536692858586436
+        - 12958046891497676401
+        - 2148077250344575843
+        - 682390999709946501
+        - 13970937643824598173
+        - 2527000016052172793
+        - 6704609901927822113
+        - 9712695751467478632
+        - 3255455249505794412
+        - 4229101755896225442
+        - 8573180857505120185
+        - 16977726012645424117
+        - 6306321507694436311
+        - 18410773953169037842
+        - 2726549720087784664
+        - 14808946414848818711
+        - 16536649426703757040
+        - 14505692640203966036
+        - 8585478956314727660
+        - 3544744774787848509
+        - 12194362157158945389
+        - 10574932401540723566
+        - 6198586314699476576
+        - 16579378241011046155
+        - 6986533932439833548
+        - 1973808328516983576
+        - 6869322176367379211
+        - 4650442175630764033
+        - 6594200579420926442
+        - 9355708796010315791
+        - 1883713882408080859
+        - 3904562843030232822
+        - 2771376008441197095
+        - 3918056258695144755
+        - 15044790746872491046
+        - 17558509470055828781
+        - 1241519034069983820
+        - 5492162840362654237
+        - 6922452799627506387
+        - 15406178343529185095
+        - 17670167985694872821
+        - 16996670438499106996
+        - 13643461342572691121
+        - 12156501905560438261

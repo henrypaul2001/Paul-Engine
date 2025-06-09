@@ -10,7 +10,7 @@ ShaderParams:
     Type: Sampler2D
     Value:
       Binding: 3
-      TextureHandle: 3948132675145542076
+      TextureHandle: 9084138298475910330
   - Name: MaterialValues
     Type: UBO
     Value:
@@ -49,14 +49,14 @@ ShaderParams:
     Type: Sampler2D
     Value:
       Binding: 6
-      TextureHandle: 10184002779935635505
+      TextureHandle: 4426297247163809040
   - Name: AOMap
     Type: Sampler2D
     Value:
       Binding: 7
-      TextureHandle: 11537213114192204608
+      TextureHandle: 789558499645090401
   - Name: NormalMap
     Type: Sampler2D
     Value:
       Binding: 4
-      TextureHandle: 9581267853128888185
+      TextureHandle: 16910301065232175008
