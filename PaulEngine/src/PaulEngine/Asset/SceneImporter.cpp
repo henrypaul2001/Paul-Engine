@@ -39,7 +39,9 @@ namespace PaulEngine
 		for (auto entityID : view) {
 			ComponentPrefabSource& prefab = view.get<ComponentPrefabSource>(entityID);
 			Ref<Prefab> prefabAsset = AssetManager::GetAsset<Prefab>(prefab.PrefabHandle);
-			prefabAsset->RefreshInstance(Entity(entityID, scene.get()));
+			if (prefabAsset) {
+				prefabAsset->RefreshInstance(Entity(entityID, scene.get()));
+			}
 		}
 
 		return scene;

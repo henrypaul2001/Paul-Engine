@@ -54,7 +54,9 @@ namespace PaulEngine
 				if (AssetManager::IsAssetHandleValid(nestedPrefabSource.PrefabHandle))
 				{
 					Ref<Prefab> nestedPrefabAsset = AssetManager::GetAsset<Prefab>(nestedPrefabSource.PrefabHandle);
-					nestedPrefabAsset->RefreshInstance(nestedPrefabRoot);
+					if (nestedPrefabAsset) {
+						nestedPrefabAsset->RefreshInstance(nestedPrefabRoot);
+					}
 				}
 			}
 		}
