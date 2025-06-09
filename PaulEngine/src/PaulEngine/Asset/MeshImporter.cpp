@@ -5,6 +5,12 @@
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Renderer/Renderer.h"
 
+#include "PaulEngine/Scene/Scene.h"
+#include "PaulEngine/Scene/Components.h"
+#include "PaulEngine/Scene/Entity.h"
+#include "PaulEngine/Scene/Prefab.h"
+#include "PaulEngine/Asset/SceneImporter.h"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -20,17 +26,25 @@ namespace PaulEngine
 		unsigned int MaterialIndex;
 	};
 
-	struct AssimpNodeResult
-	{
-		std::string Name;
-		glm::mat4 Transform;
-		std::vector<unsigned int> MeshIndices; // indexed to aiScene mesh list
-	};
-
-	struct AssimpResult
+	struct AssimpModelResult
 	{
 		bool Success = false;
 		std::vector<AssimpMeshResult> Meshes = {};
+		//std::vector<AssimpNodeResult> Nodes = {};
+	};
+
+	struct AssimpNodeResult
+	{
+		std::string Name;
+		glm::mat4 Transform = glm::mat4(1.0f);
+		std::vector<unsigned int> MeshIndices; // indexed to aiScene mesh list
+		std::vector<unsigned int> MaterialIndices; // element 0 in this list represents the material index of mesh 0 in MeshIndices
+
+		std::vector<unsigned int> ChildrenIndices; // indexed to AssimpNodeTreeResult Nodes list
+	};
+
+	struct AssimpNodeTreeResult
+	{
 		std::vector<AssimpNodeResult> Nodes = {};
 	};
 
@@ -45,7 +59,7 @@ namespace PaulEngine
 		return to;
 	}
 
-	static void ReadAssimpNode(const aiNode* node, AssimpResult& result)
+	static unsigned int ReadAssimpNode(const aiScene* scene, const aiNode* node, AssimpNodeTreeResult& result)
 	{
 		AssimpNodeResult nodeResult;
 		nodeResult.Name = node->mName.C_Str();
@@ -56,14 +70,56 @@ namespace PaulEngine
 		for (unsigned int i = 0; i < numMeshes; i++)
 		{
 			nodeResult.MeshIndices.push_back(node->mMeshes[i]);
+			
+			const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			nodeResult.MaterialIndices.push_back(mesh->mMaterialIndex);
 		}
-		result.Nodes.push_back(nodeResult);
 
 		unsigned int numChildren = node->mNumChildren;
 		for (unsigned int i = 0; i < numChildren; i++)
 		{
-			ReadAssimpNode(node->mChildren[i], result);
+			unsigned int childIndex = ReadAssimpNode(scene, node->mChildren[i], result);
+			nodeResult.ChildrenIndices.push_back(childIndex);
 		}
+
+		result.Nodes.push_back(nodeResult);
+		return result.Nodes.size() - 1;
+	}
+
+	static Entity CreateEntityFromNode(Ref<Scene>& scene, const AssimpNodeTreeResult& nodeTree, const unsigned int nodeIndex, const std::vector<AssetHandle>& meshHandles, const std::vector<AssetHandle>& materialHandles)
+	{
+		const AssimpNodeResult& node = nodeTree.Nodes[nodeIndex];
+
+		Entity newEntity = scene->CreateEntity(node.Name);
+
+		glm::vec3 pos;
+		glm::vec3 rot;
+		glm::vec3 scale;
+		Maths::DecomposeTransform(node.Transform, pos, rot, scale);
+		ComponentTransform& transform = newEntity.GetComponent<ComponentTransform>();
+		transform.SetLocalPosition(pos);
+		transform.SetLocalRotation(rot);
+		transform.SetLocalScale(scale);
+
+		if (!node.MeshIndices.empty())
+		{
+			ComponentMeshRenderer& meshComponent = newEntity.AddComponent<ComponentMeshRenderer>();
+			meshComponent.MeshHandle = meshHandles[node.MeshIndices[0]];
+			
+			if (!node.MaterialIndices.empty())
+			{
+				meshComponent.MaterialHandle = materialHandles[node.MaterialIndices[0]];
+			}
+		}
+
+		unsigned int numChildren = node.ChildrenIndices.size();
+		for (int i = 0; i < numChildren; i++)
+		{
+			Entity childEntity = CreateEntityFromNode(scene, nodeTree, node.ChildrenIndices[i], meshHandles, materialHandles);
+			ComponentTransform::SetParent(childEntity, newEntity, false);
+		}
+
+		return newEntity;
 	}
 
 	static AssimpMeshResult ReadAssimpMesh(const aiMesh* mesh)
@@ -143,21 +199,18 @@ namespace PaulEngine
 		return result;
 	}
 
-	static AssimpResult ParseModelFile(const std::filesystem::path& filepath)
+	const aiScene* GetAssimpScene(Assimp::Importer& importer, const std::filesystem::path& filepath)
 	{
 		PE_PROFILE_FUNCTION();
-		AssimpResult result;
-		
-		Assimp::Importer importer;
 		bool success = importer.ValidateFlags(
 			aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace |
 			aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_OptimizeMeshes |
-			aiProcess_OptimizeGraph |
 			aiProcess_GenUVCoords |
-			aiProcess_FixInfacingNormals
+			aiProcess_FixInfacingNormals |
+			aiProcess_RemoveRedundantMaterials
 		);
 		const aiScene* scene = importer.ReadFile(filepath.string(),
 			aiProcess_GenNormals |
@@ -165,10 +218,21 @@ namespace PaulEngine
 			aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_OptimizeMeshes |
-			aiProcess_OptimizeGraph |
 			aiProcess_GenUVCoords |
-			aiProcess_FixInfacingNormals
+			aiProcess_FixInfacingNormals |
+			aiProcess_RemoveRedundantMaterials
 		);
+
+		return scene;
+	}
+
+	static AssimpModelResult ParseModelFile(const std::filesystem::path& filepath)
+	{
+		PE_PROFILE_FUNCTION();
+		AssimpModelResult result;
+		
+		Assimp::Importer importer;
+		const aiScene* scene = GetAssimpScene(importer, filepath);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -177,9 +241,6 @@ namespace PaulEngine
 			result.Success = false;
 			return result;
 		}
-
-		// Read node tree
-		ReadAssimpNode(scene->mRootNode, result);
 
 		// Read meshes
 		unsigned int numMeshes = scene->mNumMeshes;
@@ -208,22 +269,6 @@ namespace PaulEngine
 
 		if (model) {
 			model->Handle = handle;
-
-			// If the asset handle is not already valid (registered), then this is the first time the asset
-			// is being registered, therefore mesh and material files need to be created.
-			// If this asset has been registered, then the associated mesh and material files have already been imported
-			if (!AssetManager::IsAssetHandleValid(handle))
-			{
-				// Create .pmesh asset files
-				size_t numMeshes = model->NumMeshes();
-				for (uint32_t i = 0; i < numMeshes; i++)
-				{
-					CreateMeshFile(Project::GetAssetDirectory() / metadata.FilePath, model->GetMesh(i), i, model->Handle, metadata.Persistent);
-				}
-
-				// Create .pmat asset files
-				MaterialImporter::ImportMaterialsFromModelFile(Project::GetAssetDirectory() / metadata.FilePath, metadata.Persistent);
-			}
 		}
 
 		return model;
@@ -253,7 +298,7 @@ namespace PaulEngine
 	Ref<Model> MeshImporter::LoadModel(const std::filesystem::path& filepath)
 	{
 		PE_PROFILE_FUNCTION();
-		AssimpResult result = ParseModelFile(filepath);
+		AssimpModelResult result = ParseModelFile(filepath);
 
 		if (!result.Success)
 		{
@@ -272,7 +317,57 @@ namespace PaulEngine
 		return resultModel;
 	}
 
-	void MeshImporter::CreateMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent)
+	void MeshImporter::CreatePrefabFromImportedModel(AssetHandle modelHandle)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(modelHandle), "Invalid asset handle");
+
+		Ref<Model> model = AssetManager::GetAsset<Model>(modelHandle);
+		const AssetMetadata& metadata = AssetManager::GetMetadata(modelHandle);
+
+		std::filesystem::path assetDir = Project::GetAssetDirectory();
+
+		// Import assimp scene again, required for reading node tree and material data
+		Assimp::Importer importer;
+		const aiScene* scene = GetAssimpScene(importer, assetDir / metadata.FilePath);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			PE_CORE_ERROR("Error loading model file at path: '{0}'", (assetDir / metadata.FilePath).string());
+			PE_CORE_ERROR("    - {0}", importer.GetErrorString());
+			return;
+		}
+
+		// Read node tree
+		AssimpNodeTreeResult result;
+		unsigned int rootNodeIndex = ReadAssimpNode(scene, scene->mRootNode, result);
+
+		// Create .pmesh asset files
+		size_t numMeshes = model->NumMeshes();
+		std::vector<AssetHandle> meshHandles;
+		for (uint32_t i = 0; i < numMeshes; i++)
+		{
+			meshHandles.push_back(CreateAndImportMeshFile(assetDir / metadata.FilePath, model->GetMesh(i), i, model->Handle, metadata.Persistent));
+		}
+
+		// Create .pmat asset files
+		std::vector<AssetHandle> importedMaterials;
+		MaterialImporter::ImportMaterialsFromModelFile(scene, Project::GetAssetDirectory() / metadata.FilePath, metadata.Persistent, importedMaterials);
+
+		// Create prefab asset
+		// -------------------
+
+		// Create scene
+		Ref<Scene> engineScene = CreateRef<Scene>();
+		Entity rootEntity = CreateEntityFromNode(engineScene, result, rootNodeIndex, meshHandles, importedMaterials);
+		Prefab newPrefab = Prefab::CreateFromEntity(rootEntity);
+
+		std::filesystem::path savePath = metadata.FilePath.parent_path() / (metadata.FilePath.stem().string() + ".pfab");
+		SceneImporter::SavePrefab(newPrefab, savePath);
+		Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(savePath, metadata.Persistent);
+	}
+
+	std::filesystem::path MeshImporter::CreateMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
 		const MeshSpecification& spec = loadedMesh->GetSpec();
@@ -289,5 +384,13 @@ namespace PaulEngine
 		std::filesystem::create_directories(savePath.parent_path(), error);
 		std::ofstream fout = std::ofstream(savePath);
 		fout << out.c_str();
+
+		return savePath;
+	}
+
+	AssetHandle MeshImporter::CreateAndImportMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent)
+	{
+		std::filesystem::path savePath = CreateMeshFile(baseModelFilepath, loadedMesh, meshIndex, modelHandle, persistent).lexically_relative(Project::GetAssetDirectory());
+		return Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(savePath, persistent);
 	}
 }

@@ -15,8 +15,10 @@ namespace PaulEngine
 		static Ref<Mesh> LoadMesh(const std::filesystem::path& filepath);
 		static Ref<Model> LoadModel(const std::filesystem::path& filepath);
 
+		static void CreatePrefabFromImportedModel(AssetHandle modelHandle);
 	private:
-		static void CreateMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent);
+		static std::filesystem::path CreateMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent);
+		static AssetHandle CreateAndImportMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent);
 	};
 }
 

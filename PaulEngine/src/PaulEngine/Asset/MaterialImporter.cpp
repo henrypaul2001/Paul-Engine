@@ -704,7 +704,14 @@ namespace PaulEngine
 
 	void MaterialImporter::ImportMaterialsFromModelFile(const std::filesystem::path& filepath, bool persistent)
 	{
+		std::vector<AssetHandle> out;
+		ImportMaterialsFromModelFile(filepath, persistent, out);
+	}
+
+	void MaterialImporter::ImportMaterialsFromModelFile(const std::filesystem::path& filepath, bool persistent, std::vector<AssetHandle>& out_results)
+	{
 		PE_PROFILE_FUNCTION();
+		out_results.clear();
 		Assimp::Importer importer;
 		bool success = importer.ValidateFlags(aiProcess_RemoveRedundantMaterials);
 
@@ -717,6 +724,11 @@ namespace PaulEngine
 			return;
 		}
 
+		ImportMaterialsFromModelFile(scene, filepath, persistent, out_results);
+	}
+
+	void MaterialImporter::ImportMaterialsFromModelFile(const aiScene* scene, const std::filesystem::path& filepath, bool persistent, std::vector<AssetHandle>& out_results)
+	{
 		// Read and import materials
 		EditorAssetManager* editorAssetManager = Project::GetActive()->GetEditorAssetManager().get();
 		unsigned int numMaterials = scene->mNumMaterials;
@@ -728,7 +740,8 @@ namespace PaulEngine
 			AssimpMaterialResult result = ReadAssimpMaterial(material, filepath, persistent);
 			std::filesystem::path matPath = dirPath / (result.Name + ".pmat");
 			SaveMaterial(result.LoadedMaterial, matPath);
-			editorAssetManager->ImportAssetFromFile(matPath.lexically_relative(Project::GetAssetDirectory()), persistent);
+			AssetHandle imported = editorAssetManager->ImportAssetFromFile(matPath.lexically_relative(Project::GetAssetDirectory()), persistent);
+			out_results.push_back(imported);
 		}
 	}
 }

@@ -15,6 +15,7 @@
 
 #include "PaulEngine/Asset/SceneImporter.h"
 #include "PaulEngine/Asset/MaterialImporter.h"
+#include "PaulEngine/Asset/MeshImporter.h"
 
 #include "PaulEngine/Events/SceneEvent.h"
 #include "PaulEngine/Renderer/Asset/Material.h"
@@ -1934,6 +1935,12 @@ namespace PaulEngine
 	bool EditorLayer::OnAssetImport(AssetImportedEvent& e)
 	{
 		PE_CORE_INFO(e);
+
+		if (e.IsNewlyRegistered() && AssetManager::GetAssetType(e.GetAssetHandle()) == AssetType::Model)
+		{
+			MeshImporter::CreatePrefabFromImportedModel(e.GetAssetHandle());
+		}
+
 		return false;
 	}
 

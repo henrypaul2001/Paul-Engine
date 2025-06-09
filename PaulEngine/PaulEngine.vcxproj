@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Events\AssetEvent.h" />
     <ClInclude Include="src\PaulEngine\Scene\Prefab.h" />
     <ClInclude Include="src\PaulEngine.h" />
     <ClInclude Include="src\PaulEngine\Asset\Asset.h" />
