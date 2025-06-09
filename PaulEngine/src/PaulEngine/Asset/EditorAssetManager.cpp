@@ -2,6 +2,9 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include "PaulEngine/Core/Application.h"
+#include "PaulEngine/Events/AssetEvent.h"
+
 #include "PaulEngine/Project/Project.h"
 #include "AssetImporter.h"
 #include "EditorAssetManager.h"
@@ -66,6 +69,10 @@ namespace PaulEngine
 			{
 				asset->Handle = handle;
 				AddToLoadedAssets(asset, metadata.Persistent);
+
+				AssetImportedEvent e = AssetImportedEvent(handle, false);
+				Application::Get().OnEvent(e);
+
 				return asset;
 			}
 
@@ -181,6 +188,9 @@ namespace PaulEngine
 			AddToLoadedAssets(asset, persistent);
 			RegisterAsset(handle, metadata);
 			SerializeAssetRegistry();
+
+			AssetImportedEvent e = AssetImportedEvent(handle, true);
+			Application::Get().OnEvent(e);
 		}
 
 		return handle;

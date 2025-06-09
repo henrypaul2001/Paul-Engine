@@ -1815,6 +1815,7 @@ namespace PaulEngine
 		dispatcher.DispatchEvent<MouseButtonReleasedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnMouseUp));
 		dispatcher.DispatchEvent<WindowDropEvent>(PE_BIND_EVENT_FN(EditorLayer::OnWindowDrop));
 		dispatcher.DispatchEvent<SceneChangedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnSceneChanged));
+		dispatcher.DispatchEvent<AssetImportedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnAssetImport));
 
 		if (m_SceneState != SceneState::Play) {
 			m_Camera->OnEvent(e);
@@ -1927,6 +1928,12 @@ namespace PaulEngine
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_Camera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+		return false;
+	}
+
+	bool EditorLayer::OnAssetImport(AssetImportedEvent& e)
+	{
+		PE_CORE_INFO(e);
 		return false;
 	}
 

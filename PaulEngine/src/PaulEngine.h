@@ -52,3 +52,4 @@
 #include "PaulEngine/Events/KeyEvent.h"
 #include "PaulEngine/Events/MouseEvent.h"
 #include "PaulEngine/Events/SceneEvent.h"
+#include "PaulEngine/Events/AssetEvent.h"
