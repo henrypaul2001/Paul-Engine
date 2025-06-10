@@ -711,6 +711,76 @@ namespace PaulEngine
 			ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.025f);
 		});
 
+		/*
+		
+		std::string label = "None";
+			bool isShaderValid = false;
+			if (m_ShaderHandle != 0)
+			{
+				if (AssetManager::IsAssetHandleValid(m_ShaderHandle) && AssetManager::GetAssetType(m_ShaderHandle) == AssetType::Shader)
+				{
+					const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(m_ShaderHandle);
+					label = metadata.FilePath.filename().string();
+					isShaderValid = true;
+				}
+				else { label = "Invalid"; }
+			}
+
+			// Engine shader drop down
+			Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+			std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+			static std::unordered_map<const char*, std::filesystem::path> nameToFilepath;
+			nameToFilepath["DefaultLit"] = engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLit.glsl";
+			nameToFilepath["DefaultLitPBR"] = engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLitPBR.glsl";
+
+			static const char* shaderNames[] = {
+				"DefaultLit",
+				"DefaultLitPBR"
+			};
+
+			if (m_DropDownShader != -1) {
+				label = shaderNames[m_DropDownShader];
+			}
+			if (ImGui::BeginCombo("##EngineShaderDropDown", label.c_str())) {
+
+				for (int i = 0; i < 2; i++) {
+					bool isSelected = m_DropDownShader == i;
+					if (ImGui::Selectable(shaderNames[i], isSelected)) {
+						m_DropDownShader = i;
+						m_ShaderHandle = assetManager->ImportAssetFromFile(nameToFilepath[shaderNames[i]], true);
+						m_Material = CreateRef<Material>(m_ShaderHandle);
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+			
+			// Custom shader drag/drop target
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					AssetHandle handle = *(AssetHandle*)payload->Data;
+					if (AssetManager::GetAssetType(handle) == AssetType::Shader) {
+						m_ShaderHandle = handle;
+						m_DropDownShader = -1;
+						m_Material = CreateRef<Material>(m_ShaderHandle);
+					}
+					else {
+						PE_CORE_WARN("Invalid asset type. Shader needed for material creation");
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+			ImGui::SameLine();
+			ImGui::Text("Material shader");
+		*/
+
 		// Mesh Component
 		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [](ComponentMeshRenderer& component) {
 			//  Mesh
@@ -729,11 +799,58 @@ namespace PaulEngine
 				}
 			}
 
-			ImVec2 buttonLabelSize = ImGui::CalcTextSize(meshLabel.c_str());
-			buttonLabelSize.x += 20.0f;
-			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+			// Engine shader drop down
+			Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+			std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-			ImGui::Button(meshLabel.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+			static std::unordered_map<const char*, std::pair<std::filesystem::path, int>> nameToFilepath;
+			nameToFilepath["DefaultQuad"] = std::make_pair(engineAssetsRelativeToProjectAssets / "models/DefaultQuad.pmesh", 0);
+			nameToFilepath["DefaultCube"] = std::make_pair(engineAssetsRelativeToProjectAssets / "models/DefaultCube.pmesh", 1);
+			nameToFilepath["DefaultSphere"] = std::make_pair(engineAssetsRelativeToProjectAssets / "models/DefaultSphere.pmesh", 2);
+			nameToFilepath["DefaultCylinder"] = std::make_pair(engineAssetsRelativeToProjectAssets / "models/DefaultCylinder.pmesh", 3);
+			nameToFilepath["DefaultCone"] = std::make_pair(engineAssetsRelativeToProjectAssets / "models/DefaultCone.pmesh", 4);
+			nameToFilepath["DefaultTorus"] = std::make_pair(engineAssetsRelativeToProjectAssets / "models/DefaultTorus.pmesh", 5);
+
+			static const char* meshNames[] = {
+				"DefaultQuad",
+				"DefaultCube",
+				"DefaultSphere",
+				"DefaultCylinder",
+				"DefaultCone",
+				"DefaultTorus"
+			};
+
+			static int dropDownMesh = -1;
+			if (nameToFilepath.find(meshLabel.c_str()) != nameToFilepath.end())
+			{
+				dropDownMesh = nameToFilepath[meshLabel.c_str()].second;
+			}
+			else
+			{
+				dropDownMesh = -1;
+			}
+
+			if (dropDownMesh != -1) {
+				meshLabel = meshNames[dropDownMesh];
+			}
+			if (ImGui::BeginCombo("##EngineMeshDropDown", meshLabel.c_str())) {
+
+				for (int i = 0; i < 6; i++) {
+					bool isSelected = dropDownMesh == i;
+					if (ImGui::Selectable(meshNames[i], isSelected)) {
+						dropDownMesh = i;
+						component.MeshHandle = assetManager->ImportAssetFromFile(nameToFilepath[meshNames[i]].first, true);;
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+
+			// Custom mesh drag/drop target
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
@@ -741,21 +858,13 @@ namespace PaulEngine
 					AssetHandle handle = *(AssetHandle*)payload->Data;
 					if (AssetManager::GetAssetType(handle) == AssetType::Mesh) {
 						component.MeshHandle = handle;
+						dropDownMesh = -1;
 					}
 					else {
 						PE_CORE_WARN("Invalid asset type. Mesh needed for mesh component");
 					}
 				}
 				ImGui::EndDragDropTarget();
-			}
-
-			if (isMeshValid) {
-				ImGui::SameLine();
-				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
-				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
-				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-					component.MeshHandle = 0;
-				}
 			}
 			ImGui::SameLine();
 			ImGui::Text("Mesh");
@@ -777,9 +886,9 @@ namespace PaulEngine
 				}
 			}
 
-			buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+			ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
 			buttonLabelSize.x += 20.0f;
-			buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+			float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
 
 			ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
 			if (ImGui::BeginDragDropTarget())
