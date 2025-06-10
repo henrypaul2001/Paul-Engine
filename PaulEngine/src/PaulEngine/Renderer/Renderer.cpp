@@ -263,12 +263,17 @@ namespace PaulEngine {
 		SubmitMesh(s_RenderData.QuadMeshHandle, materialHandle, transform, depthState, cullState, blendState, entityID);
 	}
 
+	void Renderer::SubmitDefaultSphere(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
+	{
+		SubmitMesh(s_RenderData.SphereMeshHandle, materialHandle, transform, depthState, cullState, blendState, entityID);
+	}
+
 	void Renderer::SubmitMesh(AssetHandle meshHandle, AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
 		DrawSubmission draw;
-		draw.MeshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.CubeMeshHandle;;
+		draw.MeshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.SphereMeshHandle;;
 		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultMaterial;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
@@ -325,6 +330,12 @@ namespace PaulEngine {
 	{
 		Ref<Mesh> quadMesh = AssetManager::GetAsset<Mesh>(s_RenderData.QuadMeshHandle);
 		DrawMeshImmediate(quadMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
+	}
+
+	void Renderer::DrawDefaultSphereImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
+	{
+		Ref<Mesh> sphereMesh = AssetManager::GetAsset<Mesh>(s_RenderData.SphereMeshHandle);
+		DrawMeshImmediate(sphereMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
 	}
 
 	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
