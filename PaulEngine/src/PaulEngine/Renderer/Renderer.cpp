@@ -69,6 +69,10 @@ namespace PaulEngine {
 	{
 		AssetHandle QuadMeshHandle = 0;
 		AssetHandle CubeMeshHandle = 0;
+		AssetHandle SphereMeshHandle = 0;
+		AssetHandle CylinderMeshHandle = 0;
+		AssetHandle ConeMeshHandle = 0;
+		AssetHandle TorusMeshHandle = 0;
 
 		AssetHandle DefaultLitShaderHandle;
 		AssetHandle DefaultLitMaterialHandle;
@@ -403,85 +407,15 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		ImportShaders();
 
-		// -- Quad --
-		// ----------
-		MeshSpecification spec;
-		spec.CalculateTangents = true;
-		spec.PrimitiveType = DrawPrimitive::TRIANGLES;
-		spec.UsageType = BufferUsage::STATIC_DRAW;
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		std::vector<MeshVertex> quadVertices = {
-			{ {	-0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ {  0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ {  0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } }
-		};
-		quadVertices[0].Position *= 2.0f;
-		quadVertices[1].Position *= 2.0f;
-		quadVertices[2].Position *= 2.0f;
-		quadVertices[3].Position *= 2.0f;
-
-		std::vector<uint32_t> quadIndices = {
-			0, 1, 2,
-			2, 3, 0
-		};
-
-		// -- Cube --
-		// ----------
-		std::vector<MeshVertex> cubeVertices = {
-			{ { -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f,  -0.5f, -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f,  0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { -0.5f, 0.5f,  -0.5f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-
-			{ { -0.5f, -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f,  -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { -0.5f, 0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-
-			{ { -0.5f,  0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { -0.5f, -0.5f, -0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { -0.5f, -0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { -0.5f,  0.5f,  0.5f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
-
-			{ { 0.5f, -0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f,  0.5f, -0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f,  0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.5f, -0.5f,  0.5f  }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f } },
-
-			{ { -0.5f, -0.5f, -0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-			{ { 0.5f,  -0.5f, -0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-			{ { 0.5f,  -0.5f,  0.5f, }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-			{ { -0.5f, -0.5f,  0.5f,}, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-
-			{ { 0.5f,  0.5f, -0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-			{ { -0.5f, 0.5f, -0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-			{ { -0.5f, 0.5f,  0.5f,}, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-			{ { 0.5f,  0.5f,  0.5f, }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }
-		};
-
-		std::vector<uint32_t> cubeIndices = {
-			// front and back
-			0, 3, 2,
-			2, 1, 0,
-			4, 5, 6,
-			6, 7 ,4,
-
-			// left and right
-			11, 8, 9,
-			9, 10, 11,
-			12, 13, 14,
-			14, 15, 12,
-
-			// bottom and top
-			16, 17, 18,
-			18, 19, 16,
-			20, 21, 22,
-			22, 23, 20
-		};
-
-		s_RenderData.QuadMeshHandle = AssetManager::CreateAsset<Mesh>(true, spec, quadVertices, quadIndices)->Handle;
-		s_RenderData.CubeMeshHandle = AssetManager::CreateAsset<Mesh>(true, spec, cubeVertices, cubeIndices)->Handle;
+		s_RenderData.QuadMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultQuad.pmesh", false);
+		s_RenderData.CubeMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultCube.pmesh", false);
+		s_RenderData.SphereMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultSphere.pmesh", false);
+		s_RenderData.CylinderMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultCylinder.pmesh", false);
+		s_RenderData.ConeMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultCone.pmesh", false);
+		s_RenderData.TorusMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultTorus.pmesh", false);
 	}
 
 	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)

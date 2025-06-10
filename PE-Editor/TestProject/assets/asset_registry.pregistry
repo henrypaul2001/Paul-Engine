@@ -19,18 +19,22 @@ AssetRegistry:
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
+  - Handle: 13198465970358116389
+    Filepath: ..\..\assets\models\DefaultTorus.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 1732625535741970896
     Filepath: textures\Checkerboard.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 595089826126213518
-    Filepath: ..\..\assets\materials/Line2DMaterial.pmat
-    Persistent: true
-    Type: AssetType::Material
   - Handle: 4566192558940935376
     Filepath: scenes\3DCube.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 595089826126213518
+    Filepath: ..\..\assets\materials/Line2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
   - Handle: 10323641907013583963
     Filepath: models\brass_goblet\brass_goblet_03_diff_4k.png
     Persistent: false
@@ -67,6 +71,10 @@ AssetRegistry:
     Filepath: atlas\RPGpack2.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
+  - Handle: 5829777204823558219
+    Filepath: ..\..\assets\models\DefaultCube.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 4930861306935266327
     Filepath: models\backpack\Sphere.026__0.pmesh
     Persistent: false
@@ -247,14 +255,14 @@ AssetRegistry:
     Filepath: textures\earth_specular.jpg
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 10580002841422866052
-    Filepath: models\backpack\Cube.038__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 11641754153238842936
     Filepath: materials\PlasticPBR.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 10580002841422866052
+    Filepath: models\backpack\Cube.038__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 792892647836043778
     Filepath: materials\earth.pmat
     Persistent: false
@@ -335,6 +343,10 @@ AssetRegistry:
     Filepath: textures\cobble_floor\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 8650834104021182698
+    Filepath: ..\..\assets\models/DefaultSphere.fbx
+    Persistent: false
+    Type: AssetType::Model
   - Handle: 17316303137717305481
     Filepath: scenes\PBRScene.paul
     Persistent: false
@@ -599,6 +611,10 @@ AssetRegistry:
     Filepath: models\cart\CoffeeCart_01_mugs_diff_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 9078471446494432490
+    Filepath: ..\..\assets\models/DefaultTorus.fbx
+    Persistent: false
+    Type: AssetType::Model
   - Handle: 12322924423154327800
     Filepath: textures\sci-fi_wall\roughness.png
     Persistent: false
@@ -983,6 +999,10 @@ AssetRegistry:
     Filepath: models\chess_set\chess_set_board.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 9335728676067499470
+    Filepath: ..\..\assets\models\Cube.003.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 6546421811425728299
     Filepath: models\chess_set\chess_set_pieces_black_nor_gl_4k.png
     Persistent: false
@@ -1195,3 +1215,35 @@ AssetRegistry:
     Filepath: models\backpack\Scene_-_Root.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 9310112983179986952
+    Filepath: ..\..\assets\models/DefaultQuad.fbx
+    Persistent: false
+    Type: AssetType::Model
+  - Handle: 6931656594350507425
+    Filepath: ..\..\assets\models\DefaultQuad.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 5624059503726002331
+    Filepath: ..\..\assets\models/DefaultCube.fbx
+    Persistent: false
+    Type: AssetType::Model
+  - Handle: 7317449495732839601
+    Filepath: ..\..\assets\models/DefaultCylinder.fbx
+    Persistent: false
+    Type: AssetType::Model
+  - Handle: 147580161799251885
+    Filepath: ..\..\assets\models\DefaultCylinder.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 11963977708043930726
+    Filepath: ..\..\assets\models/DefaultCone.fbx
+    Persistent: false
+    Type: AssetType::Model
+  - Handle: 9093818122123693406
+    Filepath: ..\..\assets\models\DefaultSphere.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 9532340775357960451
+    Filepath: ..\..\assets\models/DefaultCone.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
