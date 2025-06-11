@@ -21,10 +21,14 @@ namespace PaulEngine
 
 		void Init();
 	private:
-
+		void DrawMeshIcons();
 		void DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo);
 		void DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler);
 		void DrawSampler2DArrayEdit(const std::string& param_name, Sampler2DArrayShaderParameterTypeStorage& samplerArray);
+
+		Ref<Texture2D> m_IconSphere;
+		Ref<Texture2D> m_IconCube;
+		bool m_SphereSelected = true;
 
 		AssetHandle m_ShaderHandle;
 		Ref<Material> m_Material;

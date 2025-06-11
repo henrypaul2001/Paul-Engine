@@ -6,6 +6,7 @@
 
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Asset/MaterialImporter.h"
+#include "PaulEngine/Asset/TextureImporter.h"
 #include "PaulEngine/Renderer/Asset/Material.h"
 
 #include "PaulEngine/Utils/PlatformUtils.h"
@@ -17,12 +18,18 @@
 
 namespace PaulEngine
 {
-	static glm::mat4 s_CubeTransform = glm::mat4(1.0f);
+	static glm::mat4 s_MeshTransform = glm::mat4(1.0f);
 	static glm::vec3 s_LightColour = glm::vec3(1.0f);
+	static ImVec4 s_IconTintColourSelected = ImVec4(37.0f / 255.0f, 122.0f / 255.0f, 253.0f / 255.0f, 1.0f);
+	static ImVec4 s_IconTintColour = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	static float s_LightIntensity = 1.0f;
 	CreateMaterialWindow::CreateMaterialWindow(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle), m_ViewportSize(128.0f, 128.0f) {}
 
 	void CreateMaterialWindow::Init()
 	{
+		m_IconSphere = TextureImporter::LoadTexture2D("Resources/Icons/mingcute--shadow-fill.png");
+		m_IconCube = TextureImporter::LoadTexture2D("Resources/Icons/mingcute--box-3-fill.png");
+
 		FramebufferSpecification spec;
 		spec.Width = 1280;
 		spec.Height = 720;
@@ -32,7 +39,7 @@ namespace PaulEngine
 		texSpec.Width = 1280;
 		texSpec.Height = 720;
 		texSpec.GenerateMips = false;
-		texSpec.Format = ImageFormat::RGBA8;
+		texSpec.Format = ImageFormat::RGBA16F;
 		texSpec.MinFilter = ImageMinFilter::NEAREST;
 		texSpec.MagFilter = ImageMagFilter::NEAREST;
 		texSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
@@ -51,9 +58,9 @@ namespace PaulEngine
 
 		m_Camera = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 
-		s_CubeTransform = glm::mat4(1.0f);
-		s_CubeTransform = glm::translate(s_CubeTransform, glm::vec3(0.0f, 0.0f, -1.5f));
-		s_CubeTransform = glm::rotate(s_CubeTransform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		s_MeshTransform = glm::mat4(1.0f);
+		s_MeshTransform = glm::translate(s_MeshTransform, glm::vec3(0.0f, 0.0f, -1.5f));
+		s_MeshTransform = glm::rotate(s_MeshTransform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	void CreateMaterialWindow::SetContext(AssetHandle shaderHandle)
@@ -133,6 +140,9 @@ namespace PaulEngine
 			}
 			ImGui::SameLine();
 			ImGui::Text("Material shader");
+			
+			ImGui::SameLine();
+			DrawMeshIcons();
 
 			// Left
 			{
@@ -176,6 +186,7 @@ namespace PaulEngine
 				ImGui::BeginChild("preview", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
 				ImGui::SeparatorText("Material Preview");
 				ImGui::ColorEdit3("Light Colour", &s_LightColour[0], ImGuiColorEditFlags_DisplayRGB);
+				ImGui::DragFloat("Light Intensity", &s_LightIntensity);
 
 				if (isShaderValid) {
 					ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -193,11 +204,19 @@ namespace PaulEngine
 					Renderer::BeginScene(m_Camera, glm::mat4(1.0f));
 					Renderer::PointLight pointLight;
 					pointLight.Position = glm::vec4(0.0f, 0.0f, 0.0f, 25.0f);
-					pointLight.Diffuse = glm::vec4(s_LightColour, 1.0f);
-					pointLight.Specular = glm::vec4(s_LightColour, 1.0f);
-					pointLight.Ambient = glm::vec4(s_LightColour * 0.1f, 1.0f);
+					pointLight.Diffuse = glm::vec4(s_LightColour * s_LightIntensity, 1.0f);
+					pointLight.Specular = glm::vec4(s_LightColour * s_LightIntensity, 1.0f);
+					pointLight.Ambient = glm::vec4((s_LightColour * s_LightIntensity) * 0.1f, 1.0f);
 					Renderer::SubmitPointLightSource(pointLight);
-					Renderer::DrawDefaultCubeImmediate(m_Material, s_CubeTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
+
+					if (m_SphereSelected)
+					{
+						Renderer::DrawDefaultSphereImmediate(m_Material, s_MeshTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
+					}
+					else
+					{
+						Renderer::DrawDefaultCubeImmediate(m_Material, s_MeshTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
+					}
 					Renderer::EndScene();
 					m_Framebuffer->Unbind();
 
@@ -244,6 +263,33 @@ namespace PaulEngine
 		}
 	}
 
+	void CreateMaterialWindow::DrawMeshIcons()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colours = ImGui::GetStyle().Colors;
+		auto& hovered = colours[ImGuiCol_ButtonHovered];
+		auto& active = colours[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(hovered.x, hovered.y, hovered.z, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(active.x, active.y, active.z, 0.5f));
+
+		float size = ImGui::GetFrameHeight() * 1.2f;
+		if (ImGui::ImageButton("##sphere_icon", m_IconSphere->GetRendererID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), m_SphereSelected ? s_IconTintColourSelected : s_IconTintColour)) {
+			m_SphereSelected = true;
+		}
+		ImGui::SetItemTooltip("Sphere preview");
+
+		ImGui::SameLine();
+
+		if (ImGui::ImageButton("##cube_icon", m_IconCube->GetRendererID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), !m_SphereSelected ? s_IconTintColourSelected : s_IconTintColour)) {
+			m_SphereSelected = false;
+		}
+		ImGui::SetItemTooltip("Cube preview");
+
+		ImGui::PopStyleVar(1);
+		ImGui::PopStyleColor(3);
+	}
+
 	void CreateMaterialWindow::DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo)
 	{
 		Ref<UniformBufferStorage> uboStorage = ubo.UBO();
@@ -281,7 +327,7 @@ namespace PaulEngine
 				{
 					glm::vec2 data = glm::vec2(0.0f);
 					ubo.UBO()->ReadLocalDataAs(name, &data);
-					if (ImGui::DragFloat2(name.c_str(), &data[0]))
+					if (ImGui::DragFloat2(name.c_str(), &data[0], 0.1f))
 					{
 						uboStorage->SetLocalData(name, data);
 					}
@@ -291,7 +337,7 @@ namespace PaulEngine
 				{
 					float data = 0.0f;
 					ubo.UBO()->ReadLocalDataAs(name, &data);
-					if (ImGui::DragFloat(name.c_str(), &data))
+					if (ImGui::DragFloat(name.c_str(), &data, 0.01f))
 					{
 						uboStorage->SetLocalData(name, data);
 					}
