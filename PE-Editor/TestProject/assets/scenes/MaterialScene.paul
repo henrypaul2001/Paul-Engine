@@ -1,0 +1,90 @@
+Scene: Untitled
+Entities:
+  - Entity: 15009490967198371611
+    TagComponent:
+      Tag: Point Light
+    TransformComponent:
+      Position: [-15.758512, -2.1061363, -3.4521537]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 0
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 230
+      Diffuse: [10, 10, 10]
+      Specular: [1, 1, 1]
+      Ambient: [0, 0, 0]
+      CastShadows: false
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 50
+  - Entity: 16507306741990998305
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [0, -2.2169347, -4.167002]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17588892634905631451
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2998299704600265760
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [0, 20.012499, 8.872426]
+      Rotation: [1.9881016, 0, 0]
+      Scale: [5, 5, 0.9999974]
+      Children:
+        []
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [1, 1, 1]
+      Specular: [1, 1, 1]
+      Ambient: [0.04270464, 0.04270464, 0.04270464]
+      CastShadows: false
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapCameraDistance: 20
+      ShadowMapProjectionSize: 20
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 150
+  - Entity: 14690695302072988681
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [-0.013916016, 0, 6.271136]
+      Rotation: [0, 0, 0]
+      Scale: [0.99999994, 1, 0.99999994]
+      Children:
+        []
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 2.0323887
+        Gamma: 2.2
+        Exposure: 1
+      FixedAspect: false

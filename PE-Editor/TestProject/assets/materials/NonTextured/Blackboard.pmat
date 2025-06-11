@@ -1,0 +1,62 @@
+MaterialAsset: Blackboard
+ShaderHandle: 12386273623327009079
+ShaderParams:
+  - Name: MetallicMap
+    Type: Sampler2D
+    Value:
+      Binding: 5
+      TextureHandle: 0
+  - Name: AlbedoMap
+    Type: Sampler2D
+    Value:
+      Binding: 3
+      TextureHandle: 0
+  - Name: MaterialValues
+    Type: UBO
+    Value:
+      Binding: 3
+      Layout:
+        - Type: Float4
+          Name: Albedo
+          Value: [0.21960784, 0.21960784, 0.21960784, 1]
+        - Type: Float
+          Name: Metalness
+          Value: 0
+        - Type: Float
+          Name: Roughness
+          Value: 1
+        - Type: Float
+          Name: AO
+          Value: 1
+        - Type: Float
+          Name: HeightScale
+          Value: 0
+        - Type: Float2
+          Name: TextureScale
+          Value: [1, 1]
+        - Type: Int
+          Name: UseNormalMap
+          Value: 0
+        - Type: Int
+          Name: UseDisplacementMap
+          Value: 0
+  - Name: DisplacementMap
+    Type: Sampler2D
+    Value:
+      Binding: 8
+      TextureHandle: 0
+  - Name: RoughnessMap
+    Type: Sampler2D
+    Value:
+      Binding: 6
+      TextureHandle: 0
+  - Name: AOMap
+    Type: Sampler2D
+    Value:
+      Binding: 7
+      TextureHandle: 0
+  - Name: NormalMap
+    Type: Sampler2D
+    Value:
+      Binding: 4
+      TextureHandle: 0
