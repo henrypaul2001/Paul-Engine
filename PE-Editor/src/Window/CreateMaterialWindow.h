@@ -3,6 +3,10 @@
 #include <PaulEngine/Renderer/Resource/Framebuffer.h>
 #include <PaulEngine/Scene/SceneCamera.h>
 
+#include <PaulEngine/Renderer/FrameRenderer.h>
+#include <PaulEngine/Renderer/RenderPass.h>
+#include <PaulEngine/Events/SceneEvent.h>
+
 #include <PaulEngine/Renderer/Asset/Material.h>
 
 namespace PaulEngine
@@ -21,6 +25,7 @@ namespace PaulEngine
 
 		void Init();
 	private:
+		void CreateRenderer(FrameRenderer& out_Framerenderer);
 		void DrawMeshIcons();
 		void DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo);
 		void DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler);
@@ -36,9 +41,10 @@ namespace PaulEngine
 		bool m_ShowWindow = false;
 
 		Ref<Framebuffer> m_Framebuffer;
+		FrameRenderer m_Renderer;
 
 		glm::vec2 m_ViewportSize;
-		SceneCamera m_Camera;
+		Ref<SceneCamera> m_Camera;
 
 		int m_DropDownShader = -1;
 	};
