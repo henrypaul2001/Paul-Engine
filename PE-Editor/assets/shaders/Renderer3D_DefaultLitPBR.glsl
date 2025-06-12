@@ -138,6 +138,9 @@ layout(std140, binding = 3) uniform Mat_MaterialValues
 
 	int UseNormalMap;
 	int UseDisplacementMap;
+
+	vec3 EmissionColour;
+	float EmissionStrength;
 } u_MaterialValues;
 
 layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
@@ -150,6 +153,7 @@ layout(binding = 5) uniform sampler2D Mat_MetallicMap;
 layout(binding = 6) uniform sampler2D Mat_RoughnessMap;
 layout(binding = 7) uniform sampler2D Mat_AOMap;
 layout(binding = 8) uniform sampler2D Mat_DisplacementMap;
+layout(binding = 9) uniform sampler2D Mat_EmissionMap;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -532,6 +536,7 @@ void main()
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
 	vec3 AlbedoSample = pow(texture(Mat_AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	vec3 EmissionSample = pow(texture(Mat_EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
 	float MetallicSample = texture(Mat_MetallicMap, ScaledTexCoords).r;
 	float RoughnessSample = texture(Mat_RoughnessMap, ScaledTexCoords).r;
 	float AOSample = texture(Mat_AOMap, ScaledTexCoords).r;
@@ -545,6 +550,7 @@ void main()
 	}
 
 	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
+	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
 	float MaterialMetallic = MetallicSample * u_MaterialValues.Metalness;
 	float MaterialRoughness = RoughnessSample * u_MaterialValues.Roughness;
 	float MaterialAO = AOSample * u_MaterialValues.AO;
@@ -584,6 +590,9 @@ void main()
 	}
 
 	colour = vec4(Lo, u_MaterialValues.Albedo.a);
+
+	// Emission
+	colour.rgb += MaterialEmission;
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }

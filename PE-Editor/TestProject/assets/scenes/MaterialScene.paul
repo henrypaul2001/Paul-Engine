@@ -4,20 +4,20 @@ Entities:
     TagComponent:
       Tag: Point Light
     TransformComponent:
-      Position: [-15.758512, -2.1061363, -3.4521537]
+      Position: [1.1003119, -8.526084, -12.428715]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [0.5, 0.5, 0.5]
       Children:
         []
     MeshRendererComponent:
       MaterialHandle: 0
-      MeshHandle: 5829777204823558219
+      MeshHandle: 0
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
       FaceCulling: 2
     PointLightComponent:
-      Radius: 230
+      Radius: 385
       Diffuse: [10, 10, 10]
       Specular: [1, 1, 1]
       Ambient: [0, 0, 0]
@@ -36,38 +36,28 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 17588892634905631451
+      MaterialHandle: 10120199264963984380
       MeshHandle: 9093818122123693406
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
       FaceCulling: 2
-  - Entity: 2998299704600265760
+  - Entity: 15742571511144153572
     TagComponent:
-      Tag: Directional Light
+      Tag: Floor
     TransformComponent:
-      Position: [0, 20.012499, 8.872426]
-      Rotation: [1.9881016, 0, 0]
-      Scale: [5, 5, 0.9999974]
+      Position: [0.0077490807, -10.090346, -24.143944]
+      Rotation: [-1.5707963, 0, 0]
+      Scale: [25, 24.999998, 2.5000002]
       Children:
         []
-    SpriteComponent:
-      Colour: [1, 1, 1, 1]
-      TextureHandle: 0
-      TextureScale: [1, 1]
-      AtlasHandle: 0
-      SelectedSubTextureName: ""
-    DirectionalLightComponent:
-      Diffuse: [1, 1, 1]
-      Specular: [1, 1, 1]
-      Ambient: [0.04270464, 0.04270464, 0.04270464]
-      CastShadows: false
-      ShadowMinBias: 0.005
-      ShadowMaxBias: 0.05
-      ShadowMapCameraDistance: 20
-      ShadowMapProjectionSize: 20
-      ShadowMapNearClip: 0.01
-      ShadowMapFarClip: 150
+    MeshRendererComponent:
+      MaterialHandle: 6164613825605045297
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 14690695302072988681
     TagComponent:
       Tag: Camera

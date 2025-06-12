@@ -40,6 +40,17 @@ ShaderParams:
         - Type: Int
           Name: UseDisplacementMap
           Value: 0
+        - Type: Float3
+          Name: EmissionColour
+          Value: [1, 1, 1]
+        - Type: Float
+          Name: EmissionStrength
+          Value: 0
+  - Name: EmissionMap
+    Type: Sampler2D
+    Value:
+      Binding: 9
+      TextureHandle: 0
   - Name: DisplacementMap
     Type: Sampler2D
     Value:

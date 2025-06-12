@@ -47,6 +47,10 @@ AssetRegistry:
     Filepath: materials\CobbleFloor.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 17264184542206757291
+    Filepath: scenes\MaterialScene.paul
+    Persistent: false
+    Type: AssetType::Scene
   - Handle: 16753372314544090665
     Filepath: textures\sci-fi_wall\normal.png
     Persistent: false
