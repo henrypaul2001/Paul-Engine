@@ -130,9 +130,14 @@ layout(std140, binding = 3) uniform Mat_MaterialValues
 {
 	vec4 Albedo;
 	vec4 Specular;
+
 	vec2 TextureScale;
 	float Shininess;
 	float HeightScale;
+
+	vec3 EmissionColour;
+	float EmissionStrength;
+
 	int UseNormalMap;
 	int UseDisplacementMap;
 } u_MaterialValues;
@@ -144,6 +149,7 @@ layout(binding = 3) uniform sampler2D Mat_AlbedoMap;
 layout(binding = 4) uniform sampler2D Mat_SpecularMap;
 layout(binding = 5) uniform sampler2D Mat_NormalMap;
 layout(binding = 6) uniform sampler2D Mat_DisplacementMap;
+layout(binding = 7) uniform sampler2D Mat_EmissionMap;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -427,6 +433,7 @@ void main()
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
 	vec3 AlbedoSample = pow(texture(Mat_AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	vec3 EmissionSample = pow(texture(Mat_EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
 	vec3 SpecularSample = vec3(texture(Mat_SpecularMap, ScaledTexCoords).r);
 
 	vec3 Normal = normalize(v_VertexData.Normal);
@@ -438,6 +445,7 @@ void main()
 	}
 
 	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
+	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
 	vec3 Result = vec3(0.0);
@@ -461,6 +469,9 @@ void main()
 	}
 
 	colour = vec4(Result, u_MaterialValues.Albedo.a);
+
+	// Emission
+	colour.rgb += MaterialEmission;
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }

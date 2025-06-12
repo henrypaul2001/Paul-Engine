@@ -31,12 +31,23 @@ ShaderParams:
         - Type: Float
           Name: HeightScale
           Value: -0.1
+        - Type: Float3
+          Name: EmissionColour
+          Value: [1, 1, 1]
+        - Type: Float
+          Name: EmissionStrength
+          Value: 0
         - Type: Int
           Name: UseNormalMap
           Value: 1
         - Type: Int
           Name: UseDisplacementMap
           Value: 1
+  - Name: EmissionMap
+    Type: Sampler2D
+    Value:
+      Binding: 7
+      TextureHandle: 0
   - Name: DisplacementMap
     Type: Sampler2D
     Value:
