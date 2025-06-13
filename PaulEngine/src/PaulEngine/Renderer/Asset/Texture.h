@@ -35,6 +35,35 @@ namespace PaulEngine {
 		RGBA32F
 	};
 
+	static const std::unordered_map<ImageFormat, int> s_FormatChannels = {
+		{ ImageFormat::None,			0 },
+		{ ImageFormat::Depth16,			1 },
+		{ ImageFormat::Depth24,			1 },
+		{ ImageFormat::Depth32,			1 },
+		{ ImageFormat::Depth24Stencil8, 2 },
+		{ ImageFormat::RED_INTEGER,		1 },
+		{ ImageFormat::R8,				1 },
+		{ ImageFormat::RG8,				2 },
+		{ ImageFormat::RGB8,			3 },
+		{ ImageFormat::RGBA8,			4 },
+		{ ImageFormat::R11FG11FB10F,	3 },
+		{ ImageFormat::RGB16F,			3 },
+		{ ImageFormat::RGBA16F,			4 },
+		{ ImageFormat::RGB32F,			3 },
+		{ ImageFormat::RGBA32F,			4 }
+	};
+
+	// Verifies channel count against requested image format.
+	// numChannels value set to real channel count of image format
+	static bool ValidateChannels(ImageFormat format, int& numChannels)
+	{
+		auto it = s_FormatChannels.find(format);
+		PE_CORE_ASSERT(it != s_FormatChannels.end(), "Undefined channel translation");
+		bool result = (it->second == numChannels);
+		numChannels = it->second;
+		return result;
+	}
+
 	enum class ImageMinFilter
 	{
 		None = 0,
@@ -77,28 +106,11 @@ namespace PaulEngine {
 		bool GenerateMips = true;
 	};
 
-	static uint32_t NumChannels(ImageFormat format)
+	static int NumChannels(ImageFormat format)
 	{
-		switch (format)
-		{
-			case ImageFormat::Depth16: return 1;
-			case ImageFormat::Depth24: return 1;
-			case ImageFormat::Depth32: return 1;
-			case ImageFormat::Depth24Stencil8: return 2;
-			case ImageFormat::RED_INTEGER: return 1;
-			case ImageFormat::R8: return 1;
-			case ImageFormat::RG8: return 2;
-			case ImageFormat::RGB8: return 3;
-			case ImageFormat::R11FG11FB10F: return 3;
-			case ImageFormat::RGB16F: return 3;
-			case ImageFormat::RGB32F: return 3;
-			case ImageFormat::RGBA8: return 4;
-			case ImageFormat::RGBA16F: return 4;
-			case ImageFormat::RGBA32F: return 4;
-		}
-
-		PE_CORE_ASSERT(false, "Undefined data format translation");
-		return 0;
+		auto it = s_FormatChannels.find(format);
+		PE_CORE_ASSERT(it != s_FormatChannels.end(), "Undefined channel translation");
+		return (it->second);
 	}
 
 	class Texture : public Asset

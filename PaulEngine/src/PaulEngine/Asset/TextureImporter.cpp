@@ -188,6 +188,48 @@ namespace PaulEngine
 		return texture;
 	}
 
+	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& filepath, TextureSpecification spec)
+	{
+		PE_PROFILE_FUNCTION();
+
+		ImageFileReadResult result;
+		Buffer data = ReadImageFile(filepath, result);
+
+		spec.Width = result.Width;
+		spec.Height = result.Height;
+
+		int channels = result.Channels;
+		bool validateChannels = ValidateChannels(spec.Format, result.Channels);
+
+		if (!validateChannels)
+		{
+			PE_CORE_WARN("ImageFormat mismatch in LoadTexture2D. Overriding image format");
+			PE_CORE_WARN("    - Channels found in image: {0}", result.Channels);
+			PE_CORE_WARN("    - Channels found in  spec: {0}", channels);
+
+			switch (result.Channels)
+			{
+			case 4:
+				spec.Format = ImageFormat::RGBA8;
+				break;
+			case 3:
+				spec.Format = ImageFormat::RGB8;
+				break;
+			case 2:
+				spec.Format = ImageFormat::RG8;
+				break;
+			case 1:
+				spec.Format = ImageFormat::R8;
+				break;
+			}
+		}
+
+		Ref<Texture2D> texture = Texture2D::Create(spec, data);
+		data.Release();
+
+		return texture;
+	}
+
 	Ref<Texture2D> TextureImporter::LoadTexture2D(const Buffer dataBuffer, TextureSpecification spec)
 	{
 		PE_PROFILE_FUNCTION();
