@@ -21,7 +21,8 @@ namespace PaulEngine
 		TextureCubemapArray,
 		Mesh,
 		Model,
-		Prefab
+		Prefab,
+		EnvironmentMap
 	};
 
 	struct AssetMetadata

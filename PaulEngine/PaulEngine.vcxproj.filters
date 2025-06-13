@@ -1595,6 +1595,7 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Scene\Prefab.h" />
     <ClInclude Include="src\PaulEngine\Events\AssetEvent.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1796,5 +1797,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Prefab.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.cpp" />
   </ItemGroup>
 </Project>
