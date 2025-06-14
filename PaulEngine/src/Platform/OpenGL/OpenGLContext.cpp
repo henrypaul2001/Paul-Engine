@@ -6,7 +6,7 @@
 namespace PaulEngine {
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam) {
 		// ignore warning codes or insignificant errors
-		if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+		if (id == 131169 || id == 131185 || id == 131218 || id == 131204  || id == 131140) return;
 
 		PE_CORE_ERROR("OpenGL Error:");
 		PE_CORE_ERROR("Debug message ({0}): {1}", id, message);
@@ -50,13 +50,13 @@ namespace PaulEngine {
 		switch (severity)
 		{
 			case GL_DEBUG_SEVERITY_HIGH:
-				PE_CORE_ERROR("Type: High"); break;
+				PE_CORE_ERROR("Severity: High"); break;
 			case GL_DEBUG_SEVERITY_MEDIUM:
-				PE_CORE_ERROR("Type: Medium"); break;
+				PE_CORE_ERROR("Severity: Medium"); break;
 			case GL_DEBUG_SEVERITY_LOW:
-				PE_CORE_ERROR("Type: Low"); break;
+				PE_CORE_ERROR("Severity: Low"); break;
 			case GL_DEBUG_SEVERITY_NOTIFICATION:
-				PE_CORE_ERROR("Type: Notification"); break;
+				PE_CORE_ERROR("Severity: Notification"); break;
 		}
 	}
 
