@@ -129,6 +129,7 @@ namespace PaulEngine
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
+		bool BindAsLayered = true;
 		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
 
 		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle);

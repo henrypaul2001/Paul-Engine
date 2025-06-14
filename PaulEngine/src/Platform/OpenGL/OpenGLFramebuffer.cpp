@@ -251,7 +251,12 @@ namespace PaulEngine
 		Ref<TextureCubemap> cubemapAsset = AssetManager::GetAsset<TextureCubemap>(m_CubemapHandle);
 		if (cubemapAsset)
 		{
-			glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), 0, (int)m_TargetFace);
+			if (BindAsLayered) {
+				glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), 0, (int)m_TargetFace);
+			}
+			else {
+				glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), 0);
+			}
 		}
 	}
 
