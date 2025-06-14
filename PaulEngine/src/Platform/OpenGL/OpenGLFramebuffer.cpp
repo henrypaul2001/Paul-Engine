@@ -189,7 +189,7 @@ namespace PaulEngine
 			for (auto attach : colourBuffers) {
 				gl_DrawBuffers.push_back(OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attach));
 			}
-			glDrawBuffers(gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
+			glNamedFramebufferDrawBuffers(m_RendererID, gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
 		}
 	}
 
@@ -200,7 +200,7 @@ namespace PaulEngine
 			for (auto attach : m_ColourAttachmentMap) {
 				gl_DrawBuffers.push_back(OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(attach.first));
 			}
-			glDrawBuffers(gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
+			glNamedFramebufferDrawBuffers(m_RendererID, gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
 		}
 	}
 
