@@ -1,6 +1,7 @@
 #pragma once
 #include "PaulEngine/Asset/Asset.h"
 #include "PaulEngine/Renderer/Asset/Texture.h"
+#include "PaulEngine/Renderer/Resource/Framebuffer.h"
 
 #include <filesystem>
 
@@ -11,7 +12,7 @@ namespace PaulEngine
 	public:
 		// Generates an environment map: basecubemap, irradiance cubemap and prefiltered cubemap from a .hdr equirectangular source file
 		// No caching yet
-		EnvironmentMap(const std::filesystem::path& hdrPath);
+		EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset = false);
 
 		virtual AssetType GetType() const override { return AssetType::EnvironmentMap; }
 
@@ -19,13 +20,19 @@ namespace PaulEngine
 		const Ref<TextureCubemap> GetIrradianceMap() const { return m_IrradianceCubemap; }
 		const Ref<TextureCubemap> GetPrefilteredMap() const { return m_PrefilteredCubemap; }
 
-		static void ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, Ref<TextureCubemap> targetCubemap);
-		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, Ref<TextureCubemap> targetCubemap);
-		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, Ref<TextureCubemap> targetCubemap);
+		static void ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle);
+		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
+		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 	private:
+		static void InitCubeCaptureFBO();
+
 		Ref<TextureCubemap> m_BaseCubemap;
 		Ref<TextureCubemap> m_IrradianceCubemap;
 		Ref<TextureCubemap> m_PrefilteredCubemap;
+
+		static AssetHandle s_CubeCaptureShaderHandle;
+		static AssetHandle s_CubeCaptureMaterialHandle;
+		static Ref<Framebuffer> s_CubeCaptureFBO;
 	};
 }
 
