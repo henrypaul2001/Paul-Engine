@@ -110,6 +110,7 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void GenerateMipmaps() override;
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
@@ -154,6 +155,7 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void GenerateMipmaps() override;
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
@@ -195,6 +197,7 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void GenerateMipmaps() override;
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
@@ -235,6 +238,7 @@ namespace PaulEngine {
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
+		virtual void GenerateMipmaps() override;
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;

@@ -22,18 +22,23 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2D::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2D::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		GenerateMipmaps();
+	}
+
+	void OpenGLTexture2D::GenerateMipmaps()
+	{
 		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
@@ -128,18 +133,23 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2DArray::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2DArray::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		GenerateMipmaps();
+	}
+
+	void OpenGLTexture2DArray::GenerateMipmaps()
+	{
 		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
@@ -229,18 +239,23 @@ namespace PaulEngine {
 		// cubemaps are represented internally as a 2D texture array, so access a specific face using a z-offset
 		// cubemap arrays are represented as a 2D texture array with numLayers = 6 (faces) * cubemapArraySize. So z-offset for the "face" of cubemap index "i" would be: i * 6 + face;
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemap::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemap::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		GenerateMipmaps();
+	}
+
+	void OpenGLTextureCubemap::GenerateMipmaps()
+	{
 		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
@@ -327,18 +342,23 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemapArray::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
-		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
+		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemapArray::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		GenerateMipmaps();
+	}
+
+	void OpenGLTextureCubemapArray::GenerateMipmaps()
+	{
 		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
