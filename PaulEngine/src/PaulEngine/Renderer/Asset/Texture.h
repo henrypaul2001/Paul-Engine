@@ -97,7 +97,7 @@ namespace PaulEngine {
 		uint32_t Width = 1;
 		uint32_t Height = 1;
 		ImageFormat Format = ImageFormat::RGBA8;
-		ImageMinFilter MinFilter = ImageMinFilter::LINEAR;
+		ImageMinFilter MinFilter = ImageMinFilter::LINEAR_MIPMAP_LINEAR;
 		ImageMagFilter MagFilter = ImageMagFilter::LINEAR;
 		ImageWrap Wrap_S = ImageWrap::REPEAT;
 		ImageWrap Wrap_T = ImageWrap::REPEAT;

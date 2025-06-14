@@ -22,16 +22,19 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTexture2D::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTexture2D::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTexture2D::Resize(uint32_t width, uint32_t height)
@@ -68,6 +71,7 @@ namespace PaulEngine {
 
 	void OpenGLTexture2D::Generate(const TextureSpecification& specification, Buffer data)
 	{
+		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
 
@@ -75,7 +79,15 @@ namespace PaulEngine {
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+
+		// Calculate mipmap levels
+		uint8_t levels = 1;
+		if (m_Spec.GenerateMips)
+		{
+			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+		}
+
+		glTextureStorage2D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
@@ -116,16 +128,19 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTexture2DArray::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTexture2DArray::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTexture2DArray::Resize(uint32_t width, uint32_t height)
@@ -149,6 +164,7 @@ namespace PaulEngine {
 	{
 		PE_CORE_ASSERT(layers.size() > 1, "Texture array needs at least 1 buffer as input. (Buffer can be empty)");
 
+		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
 
@@ -158,7 +174,15 @@ namespace PaulEngine {
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
 
 		glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_RendererID);
-		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, layers.size());
+
+		// Calculate mipmap levels
+		uint8_t levels = 1;
+		if (m_Spec.GenerateMips)
+		{
+			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+		}
+
+		glTextureStorage3D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height, layers.size());
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
@@ -205,16 +229,19 @@ namespace PaulEngine {
 		// cubemaps are represented internally as a 2D texture array, so access a specific face using a z-offset
 		// cubemap arrays are represented as a 2D texture array with numLayers = 6 (faces) * cubemapArraySize. So z-offset for the "face" of cubemap index "i" would be: i * 6 + face;
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTextureCubemap::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTextureCubemap::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTextureCubemap::Resize(uint32_t width, uint32_t height)
@@ -236,6 +263,7 @@ namespace PaulEngine {
 
 	void OpenGLTextureCubemap::Generate(const TextureSpecification& specification, std::vector<Buffer> faceData)
 	{
+		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
 
@@ -245,7 +273,15 @@ namespace PaulEngine {
 		faceData.resize(6, Buffer());
 
 		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+
+		// Calculate mipmap levels
+		uint8_t levels = 1;
+		if (m_Spec.GenerateMips)
+		{
+			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+		}
+
+		glTextureStorage2D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
@@ -291,16 +327,19 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTextureCubemapArray::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTextureCubemapArray::Clear(float value)
 	{
 		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		if (m_Spec.GenerateMips) { glGenerateTextureMipmap(m_RendererID); }
 	}
 
 	void OpenGLTextureCubemapArray::Resize(uint32_t width, uint32_t height)
@@ -324,6 +363,7 @@ namespace PaulEngine {
 	{
 		PE_CORE_ASSERT(faceDataLayers.size() > 0, "Must provide an initial size for cubemap array");
 
+		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
 
@@ -333,7 +373,15 @@ namespace PaulEngine {
 		m_NumLayers = faceDataLayers.size();
 
 		glCreateTextures(GL_TEXTURE_CUBE_MAP_ARRAY, 1, &m_RendererID);
-		glTextureStorage3D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height, faceDataLayers.size() * 6);
+
+		// Calculate mipmap levels
+		uint8_t levels = 1;
+		if (m_Spec.GenerateMips)
+		{
+			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+		}
+
+		glTextureStorage3D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height, faceDataLayers.size() * 6);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OpenGLTextureUtils::MagFilterToGLMagFilter(m_Spec.MagFilter));
