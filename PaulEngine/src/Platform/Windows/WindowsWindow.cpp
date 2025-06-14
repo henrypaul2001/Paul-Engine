@@ -40,9 +40,15 @@ namespace PaulEngine {
 			s_GLFWInitialised = true;
 		}
 
+#ifdef PE_DEBUG_MODE
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true); // TODO: OPENGL SPECIFIC CODE!
+#else
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, false); // TODO: OPENGL SPECIFIC CODE!
+#endif
+
 		m_Window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-		m_Context = new OpenGLContext(m_Window);
+		m_Context = new OpenGLContext(m_Window); // TODO: OPENGL SPECIFIC CODE!
 		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
