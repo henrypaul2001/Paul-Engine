@@ -438,6 +438,6 @@ namespace PaulEngine {
 		std::string blendString = std::to_string((int)blendState.Enabled) + std::to_string((int)blendState.SrcFactor) + std::to_string((int)blendState.DstFactor) + std::to_string((int)blendState.Equation) + 
 			std::to_string((float)blendState.ConstantColour.r) + std::to_string((float)blendState.ConstantColour.g) + std::to_string((float)blendState.ConstantColour.b) + std::to_string((float)blendState.ConstantColour.a);
 
-		return materialString + depthString + cullString;
+		return materialString + depthString + cullString + blendString;
 	}
 }
