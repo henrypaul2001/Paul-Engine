@@ -17,6 +17,7 @@ namespace PaulEngine {
 		virtual void SetViewport(const glm::ivec2& position, const glm::ivec2& size) = 0;
 		virtual void SetClearColour(const glm::vec4& colour) = 0;
 		virtual void Clear() = 0;
+		virtual void ClearDepth() = 0;
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) = 0;

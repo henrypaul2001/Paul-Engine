@@ -20,6 +20,10 @@ namespace  PaulEngine {
 			s_RenderAPI->Clear();
 		}
 
+		inline static void ClearDepth() {
+			s_RenderAPI->ClearDepth();
+		}
+
 		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray) {
 			vertexArray->Bind();
 			s_RenderAPI->DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
