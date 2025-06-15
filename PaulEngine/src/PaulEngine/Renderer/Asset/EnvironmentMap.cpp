@@ -12,12 +12,17 @@
 #include <glm/ext/matrix_transform.hpp>
 
 constexpr uint32_t CUBE_MAP_RESOLUTION = 512u;
+constexpr uint32_t IRRADIANCE_MAP_RESOLUTION = 32u;
 
 namespace PaulEngine
 {
 	Ref<Framebuffer> EnvironmentMap::s_CubeCaptureFBO = nullptr;
-	AssetHandle EnvironmentMap::s_CubeCaptureShaderHandle = 0;
-	AssetHandle EnvironmentMap::s_CubeCaptureMaterialHandle = 0;
+
+	AssetHandle EnvironmentMap::s_ConvertToCubemapShaderHandle = 0;
+	AssetHandle EnvironmentMap::s_ConvertToCubemapMaterialHandle = 0;
+
+	AssetHandle EnvironmentMap::s_ConvolutionShaderHandle = 0;
+	AssetHandle EnvironmentMap::s_ConvolutionMaterialHandle = 0;
 
 	EnvironmentMap::EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset)
 	{
@@ -66,19 +71,23 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 		if (s_CubeCaptureFBO == nullptr) { InitCubeCaptureFBO(); }
 
-		// Attach base cubemap to framebuffer draw attachment
+		// Attach target cubemap to framebuffer draw attachment
 		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
 		Ref<FramebufferTextureCubemapAttachment> drawAttachment = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Colour0, targetCubemapHandle);
 		drawAttachment->BindAsLayered = false;
 		s_CubeCaptureFBO->AddColourAttachment(drawAttachment);
 		s_CubeCaptureFBO->Bind();
+
+		// Resize depth buffer
+		s_CubeCaptureFBO->Resize(CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION);
+
 		RenderCommand::Clear();
 		RenderCommand::SetViewport({ 0, 0 }, { CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION });
 
 		// Setup cubemap capture view projections
-		Ref<Material> cubeCaptureMaterial = AssetManager::GetAsset<Material>(s_CubeCaptureMaterialHandle);
-		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-		glm::mat4 viewProjections[] = {
+		Ref<Material> cubeCaptureMaterial = AssetManager::GetAsset<Material>(s_ConvertToCubemapMaterialHandle);
+		const glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		const glm::mat4 viewProjections[] = {
 			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
@@ -112,7 +121,55 @@ namespace PaulEngine
 	void EnvironmentMap::ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle)
 	{
 		PE_PROFILE_FUNCTION();
+		if (s_CubeCaptureFBO == nullptr) { InitCubeCaptureFBO(); }
 
+		// Attach target cubemap to framebuffer draw attachment
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
+		Ref<FramebufferTextureCubemapAttachment> drawAttachment = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Colour0, targetCubemapHandle);
+		drawAttachment->BindAsLayered = false;
+		s_CubeCaptureFBO->AddColourAttachment(drawAttachment);
+		s_CubeCaptureFBO->Bind();
+
+		// Resize depth buffer
+		s_CubeCaptureFBO->Resize(IRRADIANCE_MAP_RESOLUTION, IRRADIANCE_MAP_RESOLUTION);
+
+		RenderCommand::Clear();
+		RenderCommand::SetViewport({ 0, 0 }, { IRRADIANCE_MAP_RESOLUTION, IRRADIANCE_MAP_RESOLUTION });
+
+		// TODO: would it be worth just hardcoding these matrices into the shader asset? They never change.
+		// Setup cubemap capture view projections
+		Ref<Material> convolutionMaterial = AssetManager::GetAsset<Material>(s_ConvolutionMaterialHandle);
+		const glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		const glm::mat4 viewProjections[] = {
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+		};
+
+		UniformBufferStorage* uboStorage = convolutionMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
+		uboStorage->SetLocalData("ViewProjections[0][0]", viewProjections[0]);
+		uboStorage->SetLocalData("ViewProjections[0][1]", viewProjections[1]);
+		uboStorage->SetLocalData("ViewProjections[0][2]", viewProjections[2]);
+		uboStorage->SetLocalData("ViewProjections[0][3]", viewProjections[3]);
+		uboStorage->SetLocalData("ViewProjections[0][4]", viewProjections[4]);
+		uboStorage->SetLocalData("ViewProjections[0][5]", viewProjections[5]);
+		uboStorage->SetLocalData("CubemapIndex", 0);
+
+
+		// Render
+		SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
+		cam.SetPerspective(90.0f, 1.0f, 0.1f, 10.0f);
+
+		Renderer::BeginScene(cam, glm::mat4(1.0f));
+		environmentMap->Bind(0);
+		glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
+		Renderer::DrawDefaultCubeImmediate(convolutionMaterial, transform, DepthState(), FaceCulling::NONE, BlendState(), -1);
+		Renderer::EndScene();
+
+		AssetManager::GetAsset<TextureCubemap>(targetCubemapHandle)->GenerateMipmaps();
 	}
 
 	void EnvironmentMap::PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle)
@@ -153,7 +210,10 @@ namespace PaulEngine
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		s_CubeCaptureShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/EquirectangularToCubemap.glsl", false);
-		s_CubeCaptureMaterialHandle = AssetManager::CreateAsset<Material>(false, s_CubeCaptureShaderHandle)->Handle;
+		s_ConvertToCubemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/EquirectangularToCubemap.glsl", false);
+		s_ConvertToCubemapMaterialHandle = AssetManager::CreateAsset<Material>(false, s_ConvertToCubemapShaderHandle)->Handle;
+	
+		s_ConvolutionShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/CubemapConvolution.glsl", false);
+		s_ConvolutionMaterialHandle = AssetManager::CreateAsset<Material>(false, s_ConvolutionShaderHandle)->Handle;
 	}
 }

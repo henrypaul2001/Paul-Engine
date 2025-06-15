@@ -64,21 +64,37 @@ layout(std140, binding = 3) uniform Mat_CubeData
 } u_CubeData;
 
 layout(location = 0) in vec3 g_FragPos;
+layout(binding = 0) uniform samplerCube InputCubemap;
 
-const vec2 invAtan = vec2(0.1591, 0.3183);
-vec2 SampleSphericalMap(vec3 v)
-{
-	vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-	uv *= invAtan;
-	uv += 0.5;
-	return uv;
-}
-
-layout(binding = 0) uniform sampler2D EquirectangularMap;
+const float PI = 3.14159265359;
 
 void main()
 {
-	vec2 uv = SampleSphericalMap(normalize(g_FragPos));
-	vec3 colour = texture(EquirectangularMap, uv).rgb;
-	FragColour = vec4(colour, 1.0);
+	vec3 N = normalize(g_FragPos);
+	vec3 irradiance = vec3(0.0);
+
+	// tangent space calculation from origin point
+	vec3 up		= vec3(0.0, 1.0, 0.0);
+	vec3 right	= normalize(cross(up, N));
+	up			= normalize(cross(N, right));
+
+	float sampleDelta = 0.005;
+	float nrSamples = 0.0;
+	for (float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
+	{
+		for (float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
+		{
+			// spherical to cartesian (tangent space)
+			vec3 tangentSample = vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+
+			// to world space
+			vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
+
+			irradiance += texture(InputCubemap, sampleVec).rgb * cos(theta) * sin(theta);
+			nrSamples++;
+		}
+	}
+
+	irradiance = PI * irradiance * (1.0 / nrSamples);
+	FragColour = vec4(irradiance, 1.0);
 }

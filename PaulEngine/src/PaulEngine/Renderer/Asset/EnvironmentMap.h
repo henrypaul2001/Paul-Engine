@@ -30,9 +30,11 @@ namespace PaulEngine
 		Ref<TextureCubemap> m_IrradianceCubemap;
 		Ref<TextureCubemap> m_PrefilteredCubemap;
 
-		static AssetHandle s_CubeCaptureShaderHandle;
-		static AssetHandle s_CubeCaptureMaterialHandle;
 		static Ref<Framebuffer> s_CubeCaptureFBO;
+		static AssetHandle s_ConvertToCubemapShaderHandle;
+		static AssetHandle s_ConvertToCubemapMaterialHandle;
+		static AssetHandle s_ConvolutionShaderHandle;
+		static AssetHandle s_ConvolutionMaterialHandle;
 	};
 }
 

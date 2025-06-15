@@ -133,7 +133,6 @@ namespace PaulEngine {
 
 		virtual void Bind(const uint32_t slot = 0) const = 0;
 
-
 		virtual bool operator==(const Texture& other) const = 0;
 	};
 
