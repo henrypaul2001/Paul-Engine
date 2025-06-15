@@ -72,6 +72,8 @@ namespace PaulEngine
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
+		uint8_t TargetMipLevel = 0;
+
 		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle textureHandle);
 		static Ref<FramebufferTexture2DAttachment> Create(FramebufferAttachmentPoint attachPoint, TextureSpecification textureSpec, bool persistentAsset = false);
 
@@ -98,6 +100,7 @@ namespace PaulEngine
 
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
+		uint8_t TargetMipLevel = 0;
 		void SetTargetIndex(uint8_t newTarget) {
 			m_TargetIndex = std::min(newTarget, uint8_t(m_NumLayers - 1));
 		}
@@ -130,6 +133,7 @@ namespace PaulEngine
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
 		bool BindAsLayered = true;
+		uint8_t TargetMipLevel = 0;
 		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
 
 		static Ref<FramebufferTextureCubemapAttachment> Create(FramebufferAttachmentPoint attachPoint, AssetHandle cubemapHandle);
@@ -160,6 +164,7 @@ namespace PaulEngine
 		virtual void Resize(const uint32_t width, const uint32_t height) override;
 
 		bool BindAsLayered = true;
+		uint8_t TargetMipLevel = 0;
 		void SetTargetFace(CubemapFace targetFace) { m_TargetFace = targetFace; }
 		void SetTargetIndex(uint8_t newTarget) { m_TargetIndex = std::min(newTarget, uint8_t(m_NumLayers - 1)); }
 

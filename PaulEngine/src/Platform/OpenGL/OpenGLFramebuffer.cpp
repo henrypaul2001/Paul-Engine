@@ -229,7 +229,7 @@ namespace PaulEngine
 		Ref<Texture2D> textureAsset = AssetManager::GetAsset<Texture2D>(m_TextureHandle);
 		if (textureAsset)
 		{
-			glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), textureAsset->GetRendererID(), 0);
+			glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), textureAsset->GetRendererID(), TargetMipLevel);
 		}
 	}
 
@@ -240,7 +240,7 @@ namespace PaulEngine
 		Ref<Texture2DArray> textureArrayAsset = AssetManager::GetAsset<Texture2DArray>(m_TextureArrayHandle);
 		if (textureArrayAsset)
 		{
-			glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), textureArrayAsset->GetRendererID(), 0, m_TargetIndex);
+			glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), textureArrayAsset->GetRendererID(), TargetMipLevel, m_TargetIndex);
 		}
 	}
 
@@ -252,10 +252,10 @@ namespace PaulEngine
 		if (cubemapAsset)
 		{
 			if (BindAsLayered) {
-				glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), 0, (int)m_TargetFace);
+				glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), TargetMipLevel, (int)m_TargetFace);
 			}
 			else {
-				glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), 0);
+				glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapAsset->GetRendererID(), TargetMipLevel);
 			}
 		}
 	}
@@ -268,10 +268,10 @@ namespace PaulEngine
 		if (cubemapArrayAsset)
 		{
 			if (BindAsLayered) {
-				glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapArrayAsset->GetRendererID(), 0, (int)m_TargetIndex * 6 + (int)m_TargetFace);
+				glNamedFramebufferTextureLayer(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapArrayAsset->GetRendererID(), TargetMipLevel, (int)m_TargetIndex * 6 + (int)m_TargetFace);
 			}
 			else {
-				glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapArrayAsset->GetRendererID(), 0);
+				glNamedFramebufferTexture(glFramebuffer->GetRendererID(), OpenGLFramebufferUtils::FramebufferAttachPointToGLenum(m_AttachPoint), cubemapArrayAsset->GetRendererID(), TargetMipLevel);
 			}
 		}
 	}
