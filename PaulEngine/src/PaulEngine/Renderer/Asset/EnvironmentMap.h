@@ -20,6 +20,8 @@ namespace PaulEngine
 		const Ref<TextureCubemap> GetIrradianceMap() const { return m_IrradianceCubemap; }
 		const Ref<TextureCubemap> GetPrefilteredMap() const { return m_PrefilteredCubemap; }
 
+		static AssetHandle GetBRDFLutHandle() { return s_BRDFLutTextureHandle; }
+
 		static void ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle);
 		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);

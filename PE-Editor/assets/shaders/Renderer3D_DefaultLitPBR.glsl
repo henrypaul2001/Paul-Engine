@@ -155,6 +155,11 @@ layout(binding = 7) uniform sampler2D Mat_AOMap;
 layout(binding = 8) uniform sampler2D Mat_DisplacementMap;
 layout(binding = 9) uniform sampler2D Mat_EmissionMap;
 
+// Global IBL
+layout(binding = 10) uniform samplerCube IrradianceMap;
+layout(binding = 11) uniform samplerCube PrefilterMap;
+layout(binding = 12) uniform sampler2D BRDFLut;
+
 vec2 ScaledTexCoords;
 vec3 ViewDir;
 
@@ -518,6 +523,28 @@ vec3 SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMet
 	return Lo + ambient;
 }
 
+// IBL Functions
+// -------------
+vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap, vec3 MaterialAlbedo, float MaterialMetalness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
+{
+	float NdotV = max(dot(N, V), 0.0);
+	vec3 F = FresnelSchlick(NdotV, F0, MaterialRoughness);
+
+	vec3 kS = F;
+	vec3 kD = 1.0 - kS;
+	kD *= 1.0 - MaterialMetalness;
+
+	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 diffuse = irradiance * MaterialAlbedo;
+
+	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
+	vec3 prefilteredColour = textureLod(prefilterMap, R, MaterialRoughness * MAX_REFLECTION_LOD).rgb;
+	vec2 brdf = texture(BRDFLut, vec2(NdotV, MaterialRoughness)).rg;
+	vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
+
+	return (kD * diffuse + specular) * MaterialAO;
+}
+
 void main()
 {
 	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
@@ -593,6 +620,9 @@ void main()
 
 	// Emission
 	colour.rgb += MaterialEmission;
+
+	// Global IBL
+	colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }
