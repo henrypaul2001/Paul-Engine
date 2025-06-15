@@ -24,7 +24,8 @@ namespace PaulEngine
 		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 	private:
-		static void InitCubeCaptureFBO();
+		static void InitEnvMapProcessing();
+		static void GenerateBRDFLut();
 
 		Ref<TextureCubemap> m_BaseCubemap;
 		Ref<TextureCubemap> m_IrradianceCubemap;
@@ -37,6 +38,9 @@ namespace PaulEngine
 		static AssetHandle s_ConvolutionMaterialHandle;
 		static AssetHandle s_PrefilterShaderHandle;
 		static AssetHandle s_PrefilterMaterialHandle;
+		static AssetHandle s_BRDFLutShaderHandle;
+		static AssetHandle s_BRDFLutMaterialHandle;
+		static AssetHandle s_BRDFLutTextureHandle;
 	};
 }
 

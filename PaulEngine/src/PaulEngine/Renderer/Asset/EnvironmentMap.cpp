@@ -27,6 +27,10 @@ namespace PaulEngine
 	AssetHandle EnvironmentMap::s_PrefilterShaderHandle = 0;
 	AssetHandle EnvironmentMap::s_PrefilterMaterialHandle = 0;
 
+	AssetHandle EnvironmentMap::s_BRDFLutShaderHandle = 0;
+	AssetHandle EnvironmentMap::s_BRDFLutMaterialHandle = 0;
+	AssetHandle EnvironmentMap::s_BRDFLutTextureHandle = 0;
+
 	EnvironmentMap::EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
@@ -67,12 +71,14 @@ namespace PaulEngine
 		ConvoluteEnvironmentMap(m_BaseCubemap, m_IrradianceCubemap->Handle);
 
 		PrefilterEnvironmentMap(m_BaseCubemap, m_PrefilteredCubemap->Handle);
+
+		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
 	}
 
 	void EnvironmentMap::ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle)
 	{
 		PE_PROFILE_FUNCTION();
-		if (s_CubeCaptureFBO == nullptr) { InitCubeCaptureFBO(); }
+		if (s_CubeCaptureFBO == nullptr) { InitEnvMapProcessing(); }
 
 		// Attach target cubemap to framebuffer draw attachment
 		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
@@ -125,7 +131,7 @@ namespace PaulEngine
 	void EnvironmentMap::ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle)
 	{
 		PE_PROFILE_FUNCTION();
-		if (s_CubeCaptureFBO == nullptr) { InitCubeCaptureFBO(); }
+		if (s_CubeCaptureFBO == nullptr) { InitEnvMapProcessing(); }
 
 		// Attach target cubemap to framebuffer draw attachment
 		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
@@ -177,7 +183,7 @@ namespace PaulEngine
 	void EnvironmentMap::PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle)
 	{
 		PE_PROFILE_FUNCTION();
-		if (s_CubeCaptureFBO == nullptr) { InitCubeCaptureFBO(); }
+		if (s_CubeCaptureFBO == nullptr) { InitEnvMapProcessing(); }
 
 		// Attach target cubemap to framebuffer draw attachment
 		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
@@ -253,7 +259,7 @@ namespace PaulEngine
 		s_CubeCaptureFBO->Unbind();
 	}
 
-	void EnvironmentMap::InitCubeCaptureFBO()
+	void EnvironmentMap::InitEnvMapProcessing()
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -293,5 +299,63 @@ namespace PaulEngine
 
 		s_PrefilterShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/CubemapPrefilter.glsl", false);
 		s_PrefilterMaterialHandle = AssetManager::CreateAsset<Material>(false, s_PrefilterShaderHandle)->Handle;
+	}
+
+	void EnvironmentMap::GenerateBRDFLut()
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		s_BRDFLutShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/BRDFLut.glsl", false);
+		s_BRDFLutMaterialHandle = AssetManager::CreateAsset<Material>(false, s_BRDFLutShaderHandle)->Handle;
+
+		TextureSpecification brdfSpec;
+		brdfSpec.Format = ImageFormat::RG16F;
+		brdfSpec.Width = CUBE_MAP_RESOLUTION;
+		brdfSpec.Height = CUBE_MAP_RESOLUTION;
+		brdfSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
+		brdfSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
+		brdfSpec.MinFilter = ImageMinFilter::LINEAR;
+		brdfSpec.MagFilter = ImageMagFilter::LINEAR;
+		brdfSpec.GenerateMips = false;
+		s_BRDFLutTextureHandle = AssetManager::CreateAsset<Texture2D>(true, brdfSpec)->Handle;
+
+		TextureSpecification depthSpec;
+		depthSpec.Format = ImageFormat::Depth32;
+		depthSpec.GenerateMips = false;
+		depthSpec.MinFilter = ImageMinFilter::NEAREST;
+		depthSpec.MagFilter = ImageMagFilter::NEAREST;
+		depthSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
+		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
+		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_EDGE;
+		depthSpec.Width = CUBE_MAP_RESOLUTION;
+		depthSpec.Height = CUBE_MAP_RESOLUTION;
+		depthSpec.Border = glm::vec4(1.0f);
+		Ref<Texture2D> depthTexture = AssetManager::CreateAsset<Texture2D>(false, depthSpec);
+
+		FramebufferSpecification spec;
+		spec.Samples = 1;
+		spec.Width = CUBE_MAP_RESOLUTION;
+		spec.Height = CUBE_MAP_RESOLUTION;
+
+		Ref<FramebufferTexture2DAttachment> brdfAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, s_BRDFLutTextureHandle);
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Depth, depthTexture->Handle);
+
+		Ref<Framebuffer> tempFBO = Framebuffer::Create(spec, { brdfAttach }, depthAttach);
+
+		tempFBO->Bind();
+		RenderCommand::SetViewport({ 0, 0 }, { CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION });
+		RenderCommand::Clear();
+
+		Ref<Material> brdfLutMaterial = AssetManager::GetAsset<Material>(s_BRDFLutMaterialHandle);
+
+		Renderer::BeginScene(SceneCamera(), glm::mat4(1.0f));
+		BlendState blend;
+		blend.Enabled = false;
+		Renderer::DrawDefaultQuadImmediate(brdfLutMaterial, glm::mat4(1.0f), DepthState(), FaceCulling::NONE, blend, -1);
+		Renderer::EndScene();
+
+		tempFBO->Unbind();
 	}
 }
