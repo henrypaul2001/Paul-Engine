@@ -35,6 +35,8 @@ namespace PaulEngine
 		static AssetHandle s_ConvertToCubemapMaterialHandle;
 		static AssetHandle s_ConvolutionShaderHandle;
 		static AssetHandle s_ConvolutionMaterialHandle;
+		static AssetHandle s_PrefilterShaderHandle;
+		static AssetHandle s_PrefilterMaterialHandle;
 	};
 }
 

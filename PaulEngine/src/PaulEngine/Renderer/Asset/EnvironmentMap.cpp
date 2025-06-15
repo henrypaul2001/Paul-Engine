@@ -24,6 +24,9 @@ namespace PaulEngine
 	AssetHandle EnvironmentMap::s_ConvolutionShaderHandle = 0;
 	AssetHandle EnvironmentMap::s_ConvolutionMaterialHandle = 0;
 
+	AssetHandle EnvironmentMap::s_PrefilterShaderHandle = 0;
+	AssetHandle EnvironmentMap::s_PrefilterMaterialHandle = 0;
+
 	EnvironmentMap::EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
@@ -116,6 +119,7 @@ namespace PaulEngine
 		Renderer::EndScene();
 
 		AssetManager::GetAsset<TextureCubemap>(targetCubemapHandle)->GenerateMipmaps();
+		s_CubeCaptureFBO->Unbind();
 	}
 
 	void EnvironmentMap::ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle)
@@ -158,7 +162,6 @@ namespace PaulEngine
 		uboStorage->SetLocalData("ViewProjections[0][5]", viewProjections[5]);
 		uboStorage->SetLocalData("CubemapIndex", 0);
 
-
 		// Render
 		SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
 		cam.SetPerspective(90.0f, 1.0f, 0.1f, 10.0f);
@@ -168,14 +171,86 @@ namespace PaulEngine
 		glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
 		Renderer::DrawDefaultCubeImmediate(convolutionMaterial, transform, DepthState(), FaceCulling::NONE, BlendState(), -1);
 		Renderer::EndScene();
-
-		AssetManager::GetAsset<TextureCubemap>(targetCubemapHandle)->GenerateMipmaps();
+		s_CubeCaptureFBO->Unbind();
 	}
 
 	void EnvironmentMap::PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle)
 	{
 		PE_PROFILE_FUNCTION();
+		if (s_CubeCaptureFBO == nullptr) { InitCubeCaptureFBO(); }
 
+		// Attach target cubemap to framebuffer draw attachment
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
+		Ref<FramebufferTextureCubemapAttachment> drawAttachment = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Colour0, targetCubemapHandle);
+		drawAttachment->BindAsLayered = false;
+		s_CubeCaptureFBO->AddColourAttachment(drawAttachment);
+		s_CubeCaptureFBO->Bind();
+
+		// Resize depth buffer
+		s_CubeCaptureFBO->Resize(CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION);
+
+		RenderCommand::Clear();
+		RenderCommand::SetViewport({ 0, 0 }, { CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION });
+
+		// Setup cubemap capture view projections
+		Ref<Material> prefilterMaterial = AssetManager::GetAsset<Material>(s_PrefilterMaterialHandle);
+		const glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		const glm::mat4 viewProjections[] = {
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+			captureProjection * glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+		};
+
+		UniformBufferStorage* uboStorage = prefilterMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
+		uboStorage->SetLocalData("ViewProjections[0][0]", viewProjections[0]);
+		uboStorage->SetLocalData("ViewProjections[0][1]", viewProjections[1]);
+		uboStorage->SetLocalData("ViewProjections[0][2]", viewProjections[2]);
+		uboStorage->SetLocalData("ViewProjections[0][3]", viewProjections[3]);
+		uboStorage->SetLocalData("ViewProjections[0][4]", viewProjections[4]);
+		uboStorage->SetLocalData("ViewProjections[0][5]", viewProjections[5]);
+		uboStorage->SetLocalData("CubemapIndex", 0);
+
+		UniformBufferStorage* prefilterParams = prefilterMaterial->GetParameter<UBOShaderParameterTypeStorage>("PrefilterParams")->UBO().get();
+		prefilterParams->SetLocalData("FaceWidth", CUBE_MAP_RESOLUTION);
+		prefilterParams->SetLocalData("FaceHeight", CUBE_MAP_RESOLUTION);
+
+		// Render
+		SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
+		cam.SetPerspective(90.0f, 1.0f, 0.1f, 10.0f);
+
+		const uint8_t maxMipLevels = 7;
+		for (uint8_t mip = 0; mip < maxMipLevels; mip++)
+		{
+			const uint32_t mipWidth = CUBE_MAP_RESOLUTION * std::pow(0.5f, mip);
+			const uint32_t mipHeight = mipWidth;
+
+			Ref<FramebufferAttachment> colourAttach = s_CubeCaptureFBO->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			dynamic_cast<FramebufferTextureCubemapAttachment*>(colourAttach.get())->TargetMipLevel = mip;
+			
+			// Re-bind attachment
+			colourAttach->BindToFramebuffer(s_CubeCaptureFBO.get());
+			s_CubeCaptureFBO->Bind();
+
+			// Resize depth buffer
+			s_CubeCaptureFBO->GetDepthAttachment()->Resize(mipWidth, mipHeight);
+			RenderCommand::ClearDepth();
+
+			RenderCommand::SetViewport({ 0, 0 }, { mipWidth, mipHeight });
+
+			float roughness = (float)mip / (float)(maxMipLevels - 1);
+
+			prefilterParams->SetLocalData("Roughness", roughness);
+
+			Renderer::BeginScene(cam, glm::mat4(1.0f));
+			environmentMap->Bind(0);
+			glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
+			Renderer::DrawDefaultCubeImmediate(prefilterMaterial, transform, DepthState(), FaceCulling::NONE, BlendState(), -1);
+			Renderer::EndScene();
+		}
+		s_CubeCaptureFBO->Unbind();
 	}
 
 	void EnvironmentMap::InitCubeCaptureFBO()
@@ -215,5 +290,8 @@ namespace PaulEngine
 	
 		s_ConvolutionShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/CubemapConvolution.glsl", false);
 		s_ConvolutionMaterialHandle = AssetManager::CreateAsset<Material>(false, s_ConvolutionShaderHandle)->Handle;
+
+		s_PrefilterShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/CubemapPrefilter.glsl", false);
+		s_PrefilterMaterialHandle = AssetManager::CreateAsset<Material>(false, s_PrefilterShaderHandle)->Handle;
 	}
 }
