@@ -29,8 +29,10 @@ namespace PaulEngine {
 		RGB8,
 		RGBA8,
 		R11FG11FB10F,
+		RG16F,
 		RGB16F,
 		RGBA16F,
+		RG32F,
 		RGB32F,
 		RGBA32F
 	};
@@ -47,8 +49,10 @@ namespace PaulEngine {
 		{ ImageFormat::RGB8,			3 },
 		{ ImageFormat::RGBA8,			4 },
 		{ ImageFormat::R11FG11FB10F,	3 },
+		{ ImageFormat::RG16F,			2 },
 		{ ImageFormat::RGB16F,			3 },
 		{ ImageFormat::RGBA16F,			4 },
+		{ ImageFormat::RG32F,			2 },
 		{ ImageFormat::RGB32F,			3 },
 		{ ImageFormat::RGBA32F,			4 }
 	};

@@ -17,8 +17,10 @@ namespace PaulEngine {
 				case ImageFormat::RGB8: return GL_RGB;
 				case ImageFormat::RGBA8: return GL_RGBA;
 				case ImageFormat::R11FG11FB10F: return GL_RGB;
+				case ImageFormat::RG16F: return GL_RG;
 				case ImageFormat::RGB16F: return GL_RGB;
 				case ImageFormat::RGBA16F: return GL_RGBA;
+				case ImageFormat::RG32F: return GL_RG;
 				case ImageFormat::RGB32F: return GL_RGB;
 				case ImageFormat::RGBA32F: return GL_RGBA;
 			}
@@ -39,8 +41,10 @@ namespace PaulEngine {
 				case ImageFormat::RGB8: return GL_RGB8;
 				case ImageFormat::RGBA8: return GL_RGBA8;
 				case ImageFormat::R11FG11FB10F: return GL_R11F_G11F_B10F;
+				case ImageFormat::RG16F: return GL_RG16F;
 				case ImageFormat::RGB16F: return GL_RGB16F;
 				case ImageFormat::RGBA16F: return GL_RGBA16F;
+				case ImageFormat::RG32F: return GL_RG32F;
 				case ImageFormat::RGB32F: return GL_RGB32F;
 				case ImageFormat::RGBA32F: return GL_RGBA32F;
 			}
