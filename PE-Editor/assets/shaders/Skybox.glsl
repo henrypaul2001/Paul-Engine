@@ -27,7 +27,15 @@ layout(location = 0) in vec3 v_TexCoords;
 
 layout(binding = 0) uniform samplerCube Mat_Skybox;
 
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 ViewProjection;
+	vec3 ViewPos;
+	float Gamma;
+	float Exposure;
+} u_CameraBuffer;
+
 void main()
 {
-	f_Colour = texture(Mat_Skybox, v_TexCoords);
+	f_Colour = pow(texture(Mat_Skybox, v_TexCoords), vec4(vec3(u_CameraBuffer.Gamma), 1.0));
 }
