@@ -245,8 +245,8 @@ namespace PaulEngine
 		Ref<TextureCubemap> skyboxCubemap = AssetManager::CreateAsset<TextureCubemap>(true, skyboxSpec, faceData);
 		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
 
-		EnvironmentMap map = EnvironmentMap(Project::GetAssetDirectory() / "kloofendal_43d_clear_puresky_8k.hdr", true);
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<EnvironmentMap>>("TestEnvironmentMap", map);
+		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
+		out_Framerenderer.AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", envMapHandle);
 
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", dirtMaskTextureHandle);
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SkyboxTexture", skyboxCubemap->Handle);
@@ -581,7 +581,7 @@ namespace PaulEngine
 			}
 			};
 
-		// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture, primitive<EnvironmentMap> }
+		// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture, EnvironmentMap }
 		RenderPass::OnRenderFunc scene3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -600,7 +600,7 @@ namespace PaulEngine
 			RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
-			RenderComponentPrimitiveType<EnvironmentMap>* envMapInput = dynamic_cast<RenderComponentPrimitiveType<EnvironmentMap>*>(inputs[6]);
+			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
 
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -729,9 +729,9 @@ namespace PaulEngine
 
 				if (envMapInput)
 				{
-					EnvironmentMap envMap = envMapInput->Data;
-					AssetManager::GetAsset<TextureCubemap>(envMap.GetIrradianceMapHandle())->Bind(10);
-					AssetManager::GetAsset<TextureCubemap>(envMap.GetPrefilteredMapHandle())->Bind(11);
+					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+					AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
+					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
 					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
 				}
 
@@ -739,7 +739,7 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, Material }
+		// { primitive<glm::ivec2>, Material, EnvironmentMap }
 		RenderPass::OnRenderFunc skyboxPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 				PE_PROFILE_SCOPE("Skybox Render Pass");
@@ -750,6 +750,14 @@ namespace PaulEngine
 				PE_CORE_ASSERT(inputs[1], "Skybox material input required");
 				RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 				RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+				RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
+
+				if (envMapInput)
+				{
+					// Apply environment map to skybox
+					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+					AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle)->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+				}
 
 				// Remove translation from view matrix
 				glm::mat4 cameraTransform = cameraWorldTransform;
@@ -762,7 +770,7 @@ namespace PaulEngine
 				DepthState depthState;
 				depthState.Func = DepthFunc::LEQUAL;
 				FaceCulling cullState = FaceCulling::FRONT;
-
+				
 				Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
 				Renderer::EndScene();
 		};
@@ -1146,8 +1154,8 @@ namespace PaulEngine
 	
 		// Main render
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "TestEnvironmentMap" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, skyboxPass), m_MainFramebuffer, { "ViewportResolution", "SkyboxMaterial" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_MainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });

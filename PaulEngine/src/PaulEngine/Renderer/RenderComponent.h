@@ -15,7 +15,8 @@ namespace PaulEngine
 		Material,
 		UBO,
 		FramebufferAttachment,
-		PrimitiveType
+		PrimitiveType,
+		EnvironmentMap
 	};
 
 	static std::string RenderComponentTypeString(RenderComponentType type)
@@ -97,5 +98,13 @@ namespace PaulEngine
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::PrimitiveType; }
 		T Data;
+	};
+
+	struct RenderComponentEnvironmentMap : public IRenderComponent
+	{
+		RenderComponentEnvironmentMap(AssetHandle envHandle) : EnvironmentHandle(envHandle) {}
+
+		virtual RenderComponentType GetType() const override { return RenderComponentType::EnvironmentMap; }
+		AssetHandle EnvironmentHandle;
 	};
 }
