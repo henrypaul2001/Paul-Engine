@@ -1,5 +1,37 @@
 Scene: Untitled
 Entities:
+  - Entity: 4188331416352367825
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [30, -2.5, -5]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10526363084022780176
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3016780603630042007
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [30, -2.5, 5]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 11998940865093372851
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 1090068066031589992
     TagComponent:
       Tag: Sphere

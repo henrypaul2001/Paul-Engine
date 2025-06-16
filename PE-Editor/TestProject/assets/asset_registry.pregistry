@@ -699,6 +699,10 @@ AssetRegistry:
     Filepath: models\cart\CoffeeCart_01_props_Top_C.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 10526363084022780176
+    Filepath: materials\NonTextured\Mirror.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 10104599119867525813
     Filepath: models\backpack\Cylinder.029__0.pmesh
     Persistent: false
@@ -927,6 +931,10 @@ AssetRegistry:
     Filepath: models\chess_set\piece_queen_white_Cylinde.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 11998940865093372851
+    Filepath: materials\BlinnMirrorTest.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 11858364923124140839
     Filepath: models\chess_set\piece_king_white_Cylinder.pmesh
     Persistent: false

@@ -151,6 +151,10 @@ layout(binding = 5) uniform sampler2D Mat_NormalMap;
 layout(binding = 6) uniform sampler2D Mat_DisplacementMap;
 layout(binding = 7) uniform sampler2D Mat_EmissionMap;
 
+// Global IBL
+layout(binding = 10) uniform samplerCube IrradianceMap;
+layout(binding = 11) uniform samplerCube PrefilterMap;
+
 vec2 ScaledTexCoords;
 vec3 ViewDir;
 
@@ -415,6 +419,25 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
+// IBL Functions
+// -------------
+vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 N, vec3 V, vec3 R)
+{
+	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
+
+	// Shininess to mip level
+	float gloss = MaterialShininess / 256.0;
+	float mipLevel = (1.0 - gloss) * MAX_REFLECTION_LOD;
+
+	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 diffuse = irradiance * MaterialAlbedo;
+
+	vec3 prefilteredColour = textureLod(prefilterMap, R, mipLevel).rgb;
+	vec3 specular = prefilteredColour * MaterialSpecular;
+
+	return diffuse + specular;
+}
+
 void main()
 {
 	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
@@ -472,6 +495,9 @@ void main()
 
 	// Emission
 	colour.rgb += MaterialEmission;
+
+	// Global IBL
+	colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, u_MaterialValues.Shininess, Normal, ViewDir, reflect(-ViewDir, Normal));
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }
