@@ -582,8 +582,8 @@ void main()
 	float MaterialRoughness = RoughnessSample * u_MaterialValues.Roughness;
 	float MaterialAO = AOSample * u_MaterialValues.AO;
 
-	MaterialRoughness = clamp(MaterialRoughness, 0.05, 0.8);
-	MaterialMetallic = clamp(MaterialMetallic, 0.0, 0.8);
+	MaterialRoughness = clamp(MaterialRoughness, 0.0, 1.0);
+	MaterialMetallic = clamp(MaterialMetallic, 0.0, 1.0);
 
 	vec3 N = Normal;
 	vec3 V = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
