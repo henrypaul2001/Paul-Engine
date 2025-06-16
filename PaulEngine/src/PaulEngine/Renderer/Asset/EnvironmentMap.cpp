@@ -55,22 +55,23 @@ namespace PaulEngine
 		spec.MagFilter = ImageMagFilter::LINEAR;
 		spec.GenerateMips = true;
 		
-		m_BaseCubemap = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec);
+		Ref<TextureCubemap> baseCubemap = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec);
+		m_BaseCubemapHandle = baseCubemap->Handle;
 
 		spec.MinFilter = ImageMinFilter::LINEAR_MIPMAP_LINEAR;
-		m_PrefilteredCubemap = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec);
+		m_PrefilteredCubemapHandle = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec)->Handle;
 
 		spec.Width = 32;
 		spec.Height = 32;
 		spec.GenerateMips = false;
-		m_IrradianceCubemap = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec);
+		m_IrradianceCubemapHandle = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec)->Handle;
 
 		// Convert loaded equirectangular hdr texture to a cubemap texture
-		ConvertEquirectangularToCubemap(hdrTexture, m_BaseCubemap->Handle);
+		ConvertEquirectangularToCubemap(hdrTexture, m_BaseCubemapHandle);
 
-		ConvoluteEnvironmentMap(m_BaseCubemap, m_IrradianceCubemap->Handle);
+		ConvoluteEnvironmentMap(baseCubemap, m_IrradianceCubemapHandle);
 
-		PrefilterEnvironmentMap(m_BaseCubemap, m_PrefilteredCubemap->Handle);
+		PrefilterEnvironmentMap(baseCubemap, m_PrefilteredCubemapHandle);
 
 		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
 	}

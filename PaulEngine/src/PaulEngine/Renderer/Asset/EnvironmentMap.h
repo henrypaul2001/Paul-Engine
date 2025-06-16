@@ -16,9 +16,9 @@ namespace PaulEngine
 
 		virtual AssetType GetType() const override { return AssetType::EnvironmentMap; }
 
-		const Ref<TextureCubemap> GetUnfiltered() const { return m_BaseCubemap; }
-		const Ref<TextureCubemap> GetIrradianceMap() const { return m_IrradianceCubemap; }
-		const Ref<TextureCubemap> GetPrefilteredMap() const { return m_PrefilteredCubemap; }
+		const AssetHandle GetUnfilteredHandle() const { return m_BaseCubemapHandle; }
+		const AssetHandle GetIrradianceMapHandle() const { return m_IrradianceCubemapHandle; }
+		const AssetHandle GetPrefilteredMapHandle() const { return m_PrefilteredCubemapHandle; }
 
 		static AssetHandle GetBRDFLutHandle() { return s_BRDFLutTextureHandle; }
 
@@ -29,9 +29,9 @@ namespace PaulEngine
 		static void InitEnvMapProcessing();
 		static void GenerateBRDFLut();
 
-		Ref<TextureCubemap> m_BaseCubemap;
-		Ref<TextureCubemap> m_IrradianceCubemap;
-		Ref<TextureCubemap> m_PrefilteredCubemap;
+		AssetHandle m_BaseCubemapHandle;
+		AssetHandle m_IrradianceCubemapHandle;
+		AssetHandle m_PrefilteredCubemapHandle;
 
 		static Ref<Framebuffer> s_CubeCaptureFBO;
 		static AssetHandle s_ConvertToCubemapShaderHandle;

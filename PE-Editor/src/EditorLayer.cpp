@@ -245,7 +245,7 @@ namespace PaulEngine
 		Ref<TextureCubemap> skyboxCubemap = AssetManager::CreateAsset<TextureCubemap>(true, skyboxSpec, faceData);
 		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
 
-		EnvironmentMap map = EnvironmentMap(Project::GetAssetDirectory() / "voortrekker_interior_8k.hdr");
+		EnvironmentMap map = EnvironmentMap(Project::GetAssetDirectory() / "kloofendal_43d_clear_puresky_8k.hdr", true);
 		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<EnvironmentMap>>("TestEnvironmentMap", map);
 
 		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", dirtMaskTextureHandle);
@@ -730,8 +730,8 @@ namespace PaulEngine
 				if (envMapInput)
 				{
 					EnvironmentMap envMap = envMapInput->Data;
-					envMap.GetIrradianceMap()->Bind(10);
-					envMap.GetPrefilteredMap()->Bind(11);
+					AssetManager::GetAsset<TextureCubemap>(envMap.GetIrradianceMapHandle())->Bind(10);
+					AssetManager::GetAsset<TextureCubemap>(envMap.GetPrefilteredMapHandle())->Bind(11);
 					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
 				}
 
