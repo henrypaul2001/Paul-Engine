@@ -1,12 +1,140 @@
 Scene: Untitled
 Entities:
+  - Entity: 1090068066031589992
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [-10, -2.5, -25]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 18205238908339428259
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 11298813435721621468
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [0, -2.5, -25]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 8375927990298478291
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10802699103684185488
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [10, -2.5, -25]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 9558929483918735411
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3998753170208488150
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [10, -2.5, -15]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10136200187864505630
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2255575001148027489
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [0, -2.5, -15]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 14213523979022365877
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 8308477290970635386
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [-10, -2.5, -15]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 9717579908415249994
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 18227592881660625711
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [-10, -2.5, -5]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 4566950916869207811
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2816692540055265711
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [10, -2.5, -5]
+      Rotation: [0, 0, 0]
+      Scale: [5, 5, 5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 15604103736719438516
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
   - Entity: 10175793779786627682
     TagComponent:
       Tag: Directional Light
     TransformComponent:
       Position: [0, 85.340836, 57.459766]
-      Rotation: [2.6544476, 0.4154014, -0.21061215]
-      Scale: [20.000002, 20.000101, 1.0000001]
+      Rotation: [3.127221, 0.4154017, -0.21061319]
+      Scale: [20.000011, 20.000355, 1.000025]
       Children:
         []
     SpriteComponent:
@@ -19,7 +147,7 @@ Entities:
       Diffuse: [10, 10, 10]
       Specular: [10, 10, 10]
       Ambient: [0, 0, 0]
-      CastShadows: true
+      CastShadows: false
       ShadowMinBias: 0.005
       ShadowMaxBias: 0.05
       ShadowMapCameraDistance: 20
@@ -31,8 +159,8 @@ Entities:
       Tag: Earth
     TransformComponent:
       Position: [-90.12531, 17.870466, -8.690052]
-      Rotation: [1.8940552, -0.6037134, -3.1196976]
-      Scale: [25.000357, 25.00005, 25.000156]
+      Rotation: [2.3355248, -1.4539802, 2.4580142]
+      Scale: [25.000654, 25.000027, 25.000223]
       Children:
         []
     MeshRendererComponent:
@@ -82,7 +210,7 @@ Entities:
     TagComponent:
       Tag: Sphere
     TransformComponent:
-      Position: [0, -2.2169347, -4.167002]
+      Position: [0, -2.5, -5]
       Rotation: [0, 0, 0]
       Scale: [5, 5, 5]
       Children:
@@ -98,7 +226,7 @@ Entities:
     TagComponent:
       Tag: Point Light
     TransformComponent:
-      Position: [2.5681102, 0.31486225, -18.400032]
+      Position: [-6.9372997, 3.6465611, -15.885485]
       Rotation: [0, 0, 0]
       Scale: [0.5, 0.5, 0.5]
       Children:
@@ -111,11 +239,11 @@ Entities:
       DepthWrite: true
       FaceCulling: 2
     PointLightComponent:
-      Radius: 385
+      Radius: 56
       Diffuse: [10, 10, 10]
       Specular: [1, 1, 1]
       Ambient: [0, 0, 0]
-      CastShadows: false
+      CastShadows: true
       ShadowMinBias: 0.005
       ShadowMaxBias: 0.05
       ShadowMapNearClip: 0.01
