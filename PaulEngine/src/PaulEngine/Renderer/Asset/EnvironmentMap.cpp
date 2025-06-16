@@ -293,13 +293,13 @@ namespace PaulEngine
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
 		s_ConvertToCubemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/EquirectangularToCubemap.glsl", false);
-		s_ConvertToCubemapMaterialHandle = AssetManager::CreateAsset<Material>(false, s_ConvertToCubemapShaderHandle)->Handle;
+		s_ConvertToCubemapMaterialHandle = AssetManager::CreateAsset<Material>(true, s_ConvertToCubemapShaderHandle)->Handle;
 	
 		s_ConvolutionShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/CubemapConvolution.glsl", false);
-		s_ConvolutionMaterialHandle = AssetManager::CreateAsset<Material>(false, s_ConvolutionShaderHandle)->Handle;
+		s_ConvolutionMaterialHandle = AssetManager::CreateAsset<Material>(true, s_ConvolutionShaderHandle)->Handle;
 
 		s_PrefilterShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/CubemapPrefilter.glsl", false);
-		s_PrefilterMaterialHandle = AssetManager::CreateAsset<Material>(false, s_PrefilterShaderHandle)->Handle;
+		s_PrefilterMaterialHandle = AssetManager::CreateAsset<Material>(true, s_PrefilterShaderHandle)->Handle;
 	}
 
 	void EnvironmentMap::GenerateBRDFLut()
