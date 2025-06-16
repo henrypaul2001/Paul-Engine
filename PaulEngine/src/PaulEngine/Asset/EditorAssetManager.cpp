@@ -26,7 +26,8 @@ namespace PaulEngine
 		//{ ".dae", AssetType::Model },
 		{ ".glTF", AssetType::Model },
 		{ ".pmesh", AssetType::Mesh },
-		{ ".pfab", AssetType::Prefab }
+		{ ".pfab", AssetType::Prefab },
+		{ ".hdr", AssetType::EnvironmentMap }
 	};
 
 	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {

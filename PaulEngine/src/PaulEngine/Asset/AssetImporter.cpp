@@ -24,7 +24,8 @@ namespace PaulEngine
 		{ AssetType::Texture2DArray, TextureImporter::ImportTexture2DArray },
 		{ AssetType::Mesh, MeshImporter::ImportMesh },
 		{ AssetType::Model, MeshImporter::ImportModel },
-		{ AssetType::Prefab, SceneImporter::ImportPrefab }
+		{ AssetType::Prefab, SceneImporter::ImportPrefab },
+		{ AssetType::EnvironmentMap, TextureImporter::ImportEnvironmentMap }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

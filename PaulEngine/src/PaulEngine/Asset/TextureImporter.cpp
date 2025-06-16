@@ -318,4 +318,17 @@ namespace PaulEngine
 		std::ofstream fout = std::ofstream(filepath);
 		fout << out.c_str();
 	}
+
+	Ref<EnvironmentMap> TextureImporter::ImportEnvironmentMap(AssetHandle handle, const AssetMetadata& metadata)
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<EnvironmentMap> envMap = LoadEnvironmentMap(Project::GetAssetDirectory() / metadata.FilePath, metadata.Persistent);
+		envMap->Handle = handle;
+		return envMap;
+	}
+
+	Ref<EnvironmentMap> TextureImporter::LoadEnvironmentMap(const std::filesystem::path& filepath, bool persistentAsset)
+	{
+		return CreateRef<EnvironmentMap>(filepath, persistentAsset);
+	}
 }
