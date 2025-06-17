@@ -25,6 +25,7 @@ namespace PaulEngine
 		EnvironmentMap
 	};
 
+
 	struct AssetMetadata
 	{
 		AssetType Type = AssetType::None;
@@ -44,5 +45,7 @@ namespace PaulEngine
 		virtual ~Asset() {}
 
 		virtual AssetType GetType() const = 0;
+		
+		static constexpr bool IsTextureType(AssetType type) { return (type == AssetType::Texture2D || type == AssetType::Texture2DArray || type == AssetType::TextureCubemap || type == AssetType::TextureCubemapArray); }
 	};
 }
