@@ -1798,5 +1798,6 @@
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Prefab.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\RenderComponent.cpp" />
   </ItemGroup>
 </Project>

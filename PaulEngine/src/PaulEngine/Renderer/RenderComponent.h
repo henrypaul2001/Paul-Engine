@@ -40,6 +40,7 @@ namespace PaulEngine
 	{
 		virtual ~IRenderComponent() {}
 		virtual RenderComponentType GetType() const = 0;
+		virtual void OnImGuiRender() = 0;
 	};
 
 	struct RenderComponentFramebuffer : public IRenderComponent
@@ -48,6 +49,8 @@ namespace PaulEngine
 		RenderComponentFramebuffer(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments = {}, Ref<FramebufferAttachment> depthAttachment = nullptr) : Framebuffer(Framebuffer::Create(spec, colourAttachments, depthAttachment)) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Framebuffer; }
+		virtual void OnImGuiRender() override;
+
 		Ref<Framebuffer> Framebuffer;
 	};
 
@@ -56,6 +59,8 @@ namespace PaulEngine
 		RenderComponentTexture(AssetHandle textureHandle) : TextureHandle(textureHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Texture; }
+		virtual void OnImGuiRender() override;
+
 		AssetHandle TextureHandle;
 	};
 
@@ -64,6 +69,8 @@ namespace PaulEngine
 		RenderComponentCamera(Ref<Camera> camera) : Camera(camera) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Camera; }
+		virtual void OnImGuiRender() override;
+
 		Ref<Camera> Camera;
 	};
 
@@ -72,6 +79,8 @@ namespace PaulEngine
 		RenderComponentMaterial(AssetHandle materialHandle) : MaterialHandle(materialHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Material; }
+		virtual void OnImGuiRender() override;
+
 		AssetHandle MaterialHandle;
 	};
 
@@ -80,6 +89,8 @@ namespace PaulEngine
 		RenderComponentUBO(Ref<UniformBuffer> ubo) : UBO(ubo) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::UBO; }
+		virtual void OnImGuiRender() override;
+
 		Ref<UniformBuffer> UBO;
 	};
 
@@ -88,6 +99,8 @@ namespace PaulEngine
 		RenderComponentFBOAttachment(Ref<FramebufferAttachment> attachment) : Attachment(attachment) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::FramebufferAttachment; }
+		virtual void OnImGuiRender() override;
+
 		Ref<FramebufferAttachment> Attachment;
 	};
 
@@ -97,6 +110,8 @@ namespace PaulEngine
 		RenderComponentPrimitiveType(T data) : Data(data) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::PrimitiveType; }
+		virtual void OnImGuiRender() override;
+
 		T Data;
 	};
 
@@ -105,6 +120,19 @@ namespace PaulEngine
 		RenderComponentEnvironmentMap(AssetHandle envHandle) : EnvironmentHandle(envHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::EnvironmentMap; }
+		virtual void OnImGuiRender() override;
+
 		AssetHandle EnvironmentHandle;
 	};
+
+	namespace RenderComponentImGuiUtils
+	{
+		void DrawNotYetImplemented();
+	}
+
+	template<typename T>
+	inline void RenderComponentPrimitiveType<T>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawNotYetImplemented();
+	}
 }

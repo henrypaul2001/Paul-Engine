@@ -2,6 +2,7 @@
 #include <PaulEngine.h>
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
+#include "Panels/FrameRendererPanel.h"
 #include <PaulEngine/Renderer/Resource/EditorCamera.h>
 
 #include "Window/CreateAtlasWindow.h"
@@ -33,7 +34,7 @@ namespace PaulEngine {
 
 		void OnDuplicatedEntity();
 
-		void CreateRenderer(FrameRenderer& out_Framerenderer);
+		void CreateRenderer(FrameRenderer* out_Framerenderer);
 
 		void OnDebugOverlayDraw();
 
@@ -64,7 +65,7 @@ namespace PaulEngine {
 
 		std::filesystem::path m_CurrentFilepath;
 
-		FrameRenderer m_Renderer;
+		Ref<FrameRenderer> m_Renderer;
 
 		ShaderLibrary m_ShaderLibrary;
 		int m_ShadowWidth = 1280;
@@ -89,6 +90,7 @@ namespace PaulEngine {
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
+		FrameRendererPanel m_FrameRendererPanel;
 
 		// Windows
 		CreateAtlasWindow m_AtlasCreateWindow;

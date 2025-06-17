@@ -24,7 +24,7 @@
 
 namespace PaulEngine
 {
-	void EditorLayer::CreateRenderer(FrameRenderer& out_Framerenderer)
+	void EditorLayer::CreateRenderer(FrameRenderer* out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -43,8 +43,8 @@ namespace PaulEngine
 		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
 		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
 
 		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
 
@@ -67,24 +67,24 @@ namespace PaulEngine
 		Ref<Texture2DArray> spotLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
 		Ref<TextureCubemapArray> pointLightShadowArray = AssetManager::CreateAsset<TextureCubemapArray>(true, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
 
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirLightShadowMap", false, dirLightShadowArray->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", false, spotLightShadowArray->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("PointLightShadowMap", false, pointLightShadowArray->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirLightShadowMap", false, dirLightShadowArray->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", false, spotLightShadowArray->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("PointLightShadowMap", false, pointLightShadowArray->Handle);
 
 		glm::ivec2 shadowRes = { m_ShadowWidth, m_ShadowHeight };
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", true, shadowRes);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", true, shadowRes);
 
 		//  Data
 		// ------
 		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
-		
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, m_ShowColliders);
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
-
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
-
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", true, m_EntityOutlineColour);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
+						 
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, m_ShowColliders);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
+						 
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
+						 
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", true, m_EntityOutlineColour);
 
 		// Bloom mip chain
 		// ---------------
@@ -145,7 +145,7 @@ namespace PaulEngine
 		BloomMipChain bloomMipChain;
 		bloomMipChain.Init(m_ViewportSize, 6);
 
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", false, bloomMipChain);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", false, bloomMipChain);
 
 		// Framebuffers
 		// ------------
@@ -169,11 +169,11 @@ namespace PaulEngine
 		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
 		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
 
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, m_MainFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", false, spotLightShadowsFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", false, pointLightShadowsFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", false, bloomFBO);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, m_MainFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", false, spotLightShadowsFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", false, pointLightShadowsFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", false, bloomFBO);
 
 		// Materials
 		// ---------
@@ -201,13 +201,13 @@ namespace PaulEngine
 		AssetHandle skyboxShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
 		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
 
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", false, shadowmapMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", false, shadowmapCubeMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", false, mipchainDownsampleMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", false, mipchainUpsampleMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", false, bloomCombineMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", false, shadowmapMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", false, shadowmapCubeMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", false, mipchainDownsampleMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", false, mipchainUpsampleMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", false, bloomCombineMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
 
 		// Textures
 		// --------
@@ -246,10 +246,10 @@ namespace PaulEngine
 		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
 
 		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
-		out_Framerenderer.AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
+		out_Framerenderer->AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
 
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
 
 		// OnEvent
 		// -------
@@ -266,7 +266,7 @@ namespace PaulEngine
 				return false;
 			});
 		};
-		out_Framerenderer.SetEventFunc(eventFunc);
+		out_Framerenderer->SetEventFunc(eventFunc);
 
 		// Render pass functions
 		// ---------------------
@@ -1148,25 +1148,25 @@ namespace PaulEngine
 		// -----------------
 
 		// Shadow mapping
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), spotLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), spotLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial" });
 	
 		// Main render
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_MainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_MainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture"});
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture"});
 
 		// Editor overlay
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
 		
 		// Post process
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
@@ -1176,6 +1176,7 @@ namespace PaulEngine
 	void EditorLayer::OnAttach()
 	{
 		PE_PROFILE_FUNCTION();
+		m_Renderer = CreateRef<FrameRenderer>();
 
 		m_EditorScene = CreateRef<Scene>();
 		m_ActiveScene = m_EditorScene;
@@ -1240,8 +1241,6 @@ namespace PaulEngine
 
 		m_Camera = CreateRef<EditorCamera>(EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f));
 
-		m_Renderer = FrameRenderer();
-
 		if (m_ProjectSelected) {
 			OnProjectSelected();
 		}
@@ -1278,7 +1277,7 @@ namespace PaulEngine
 			FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
 			texAttachment->GetTexture()->Clear(-1);
 
-			auto renderResource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
+			auto renderResource = m_Renderer->GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
 			if (renderResource) { renderResource->Data = m_SceneHierarchyPanel.GetSelectedEntity(); }
 
 			m_MainFramebuffer->Bind();
@@ -1286,12 +1285,12 @@ namespace PaulEngine
 			{
 				case SceneState::Edit:
 					m_Camera->OnUpdate(timestep, ImGuizmo::IsOver());
-					m_Renderer.RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
+					m_Renderer->RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
 					break;
 				case SceneState::Simulate:
 					m_Camera->OnUpdate(timestep, ImGuizmo::IsOver());
 					m_ActiveScene->OnUpdateSimulation(timestep, *m_Camera.get());
-					m_Renderer.RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
+					m_Renderer->RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
 					break;
 				case SceneState::Play:
 					m_ActiveScene->OnUpdateRuntime(timestep);
@@ -1300,9 +1299,9 @@ namespace PaulEngine
 					if (cameraEntity) {
 						Ref<SceneCamera> camera = CreateRef<SceneCamera>(cameraEntity.GetComponent<ComponentCamera>().Camera);
 						glm::mat4 transform = cameraEntity.GetComponent<ComponentTransform>().GetTransform();
-						m_Renderer.RenderFrame(m_ActiveScene, camera, transform);
+						m_Renderer->RenderFrame(m_ActiveScene, camera, transform);
 					}
-					else { m_Renderer.RenderFrame(m_ActiveScene, CreateRef<SceneCamera>(SCENE_CAMERA_PERSPECTIVE), glm::mat4(1.0f)); }
+					else { m_Renderer->RenderFrame(m_ActiveScene, CreateRef<SceneCamera>(SCENE_CAMERA_PERSPECTIVE), glm::mat4(1.0f)); }
 
 					break;
 			}
@@ -1400,10 +1399,11 @@ namespace PaulEngine
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Edit")) {
-					if (ImGui::Checkbox("Show colliders", &m_ShowColliders)) {
-						auto resource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders");
-						if (resource) { resource->Data = m_ShowColliders; }
-					}
+					//if (ImGui::Checkbox("Show colliders", &m_ShowColliders)) {
+					//	auto resource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders");
+					//	if (resource) { resource->Data = m_ShowColliders; }
+					//}
+					ImGui::Text("Go away");
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Asset")) {
@@ -1574,6 +1574,7 @@ namespace PaulEngine
 
 			m_SceneHierarchyPanel.OnImGuiRender();
 			m_ContentBrowserPanel->ImGuiRender();
+			m_FrameRendererPanel.OnImGuiRender();
 			m_TextureArrayCreateWindow.OnImGuiRender();
 			m_MaterialCreateWindow.OnImGuiRender();
 			m_AtlasCreateWindow.OnImGuiRender();
@@ -1845,7 +1846,7 @@ namespace PaulEngine
 			m_Camera->OnEvent(e);
 		}
 
-		m_Renderer.OnEvent(e);
+		m_Renderer->OnEvent(e);
 	}
 
 	bool EditorLayer::OnKeyUp(KeyReleasedEvent& e)
@@ -2134,7 +2135,8 @@ namespace PaulEngine
 		m_MainFramebuffer->AddColourAttachment(entityIDAttach);
 		m_MainFramebuffer->SetDepthAttachment(depthAttach);
 
-		CreateRenderer(m_Renderer);
+		CreateRenderer(m_Renderer.get());
+		m_FrameRendererPanel.SetContext(m_Renderer);
 		m_AtlasCreateWindow.Init();
 		m_MaterialCreateWindow.Init();
 		m_TextureArrayCreateWindow.Init();

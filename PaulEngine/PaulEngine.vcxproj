@@ -660,6 +660,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\RenderComponent.cpp" />
     <ClCompile Include="src\PaulEngine\Scene\Prefab.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp" />
     <ClCompile Include="src\PaulEngine\Asset\AssetImporter.cpp" />
