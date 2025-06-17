@@ -44,8 +44,8 @@ namespace PaulEngine
 		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
 		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", screenTexture->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
 
 		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
 
@@ -54,13 +54,13 @@ namespace PaulEngine
 		//  Data
 		// ------
 		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", viewportRes);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
 
 		Ref<Material> material = m_Material;
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<Ref<Material>>>("PreviewMaterial", material);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<Ref<Material>>>("PreviewMaterial", false, material);
 
 		bool sphereSelected = m_SphereSelected;
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<bool>>("SphereSelected", sphereSelected);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<bool>>("SphereSelected", false, sphereSelected);
 
 		// Bloom mip chain
 		// ---------------
@@ -121,7 +121,7 @@ namespace PaulEngine
 		BloomMipChain bloomMipChain;
 		bloomMipChain.Init(m_ViewportSize, 6);
 
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", bloomMipChain);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", false, bloomMipChain);
 
 		// Framebuffers
 		// ------------
@@ -131,8 +131,8 @@ namespace PaulEngine
 		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
 		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
 
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", m_Framebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", bloomFBO);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, m_Framebuffer);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", false, bloomFBO);
 
 		// Materials
 		// ---------
@@ -154,11 +154,11 @@ namespace PaulEngine
 		AssetHandle skyboxShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
 		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
 
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", mipchainDownsampleMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", skyboxMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", false, mipchainDownsampleMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", false, mipchainUpsampleMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", false, bloomCombineMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
 
 		// Textures
 		// --------
@@ -196,8 +196,11 @@ namespace PaulEngine
 		Ref<TextureCubemap> skyboxCubemap = AssetManager::CreateAsset<TextureCubemap>(true, skyboxSpec, faceData);
 		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
 
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", dirtMaskTextureHandle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SkyboxTexture", skyboxCubemap->Handle);
+		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
+		out_Framerenderer.AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
+
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
 
 		// OnEvent
 		// -------
@@ -267,32 +270,41 @@ namespace PaulEngine
 			Renderer::EndScene();
 		};
 
-		// { primitive<glm::ivec2>, Material }
+		// { primitive<glm::ivec2>, Material, EnvironmentMap }
 		RenderPass::OnRenderFunc skyboxPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+		{
+			PE_PROFILE_SCOPE("Skybox Render Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Skybox material input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
+
+			if (envMapInput)
 			{
-				PE_PROFILE_SCOPE("Skybox Render Pass");
-				Ref<Camera> activeCamera = context.ActiveCamera;
-				const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-				PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-				PE_CORE_ASSERT(inputs[1], "Skybox material input required");
-				RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
-				RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+				// Apply environment map to skybox
+				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+				AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle)->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+			}
 
-				// Remove translation from view matrix
-				glm::mat4 cameraTransform = cameraWorldTransform;
-				cameraTransform = glm::mat4(glm::mat3(cameraTransform));
+			// Remove translation from view matrix
+			glm::mat4 cameraTransform = cameraWorldTransform;
+			cameraTransform = glm::mat4(glm::mat3(cameraTransform));
 
-				RenderCommand::SetViewport({ 0, 0 }, { viewportResInput->Data.x, viewportResInput->Data.y });
-				targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+			RenderCommand::SetViewport({ 0, 0 }, { viewportResInput->Data.x, viewportResInput->Data.y });
+			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
-				DepthState depthState;
-				depthState.Func = DepthFunc::LEQUAL;
-				FaceCulling cullState = FaceCulling::FRONT;
+			DepthState depthState;
+			depthState.Func = DepthFunc::LEQUAL;
+			FaceCulling cullState = FaceCulling::FRONT;
 
-				Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
-				Renderer::EndScene();
-			};
+			Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
+			Renderer::EndScene();
+		};
 
 		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture }
 		RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
@@ -501,7 +513,7 @@ namespace PaulEngine
 
 		// Main render
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, scene3DPass), m_Framebuffer, { "ViewportResolution", "ScreenTexture", "PreviewMaterial", "SphereSelected" });
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, skyboxPass), m_Framebuffer, { "ViewportResolution", "SkyboxMaterial" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_Framebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });

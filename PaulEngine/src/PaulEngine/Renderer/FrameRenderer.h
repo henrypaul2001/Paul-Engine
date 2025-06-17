@@ -13,7 +13,7 @@ namespace PaulEngine
 		void OnEvent(Event& e) { m_OnEvent(e, this); }
 
 		template <typename T, typename... Args>
-		bool AddRenderResource(const char* uniqueName, Args&&... args)
+		bool AddRenderResource(const char* uniqueName, bool serialized, Args&&... args)
 		{
 			auto it = m_RenderResources.find(uniqueName);
 			if (it != m_RenderResources.end())
@@ -22,6 +22,7 @@ namespace PaulEngine
 				return false;
 			}
 			m_RenderResources[uniqueName] = CreateScope<T>(std::forward<Args>(args)...);
+			if (serialized) { m_SerializedComponentNames.push_back(uniqueName); }
 			return true;
 		}
 
@@ -53,8 +54,10 @@ namespace PaulEngine
 			return nullptr;
 		}
 
+		const std::vector<const char*>& GetSerializedComponentNames() const { return m_SerializedComponentNames; }
 	private:
 		std::vector<RenderPass> m_OrderedRenderPasses;
+		std::vector<const char*> m_SerializedComponentNames;
 		std::unordered_map<const char*, Scope<IRenderComponent>> m_RenderResources;
 		std::unordered_map<UUID, Ref<Framebuffer>> m_FramebufferMap;
 		std::unordered_map<UUID, std::vector<IRenderComponent*>> m_InputMap;

@@ -43,8 +43,8 @@ namespace PaulEngine
 		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
 		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", screenTexture->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", alternateScreenTexture->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
 
 		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
 
@@ -67,24 +67,24 @@ namespace PaulEngine
 		Ref<Texture2DArray> spotLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
 		Ref<TextureCubemapArray> pointLightShadowArray = AssetManager::CreateAsset<TextureCubemapArray>(true, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
 
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirLightShadowMap", dirLightShadowArray->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", spotLightShadowArray->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("PointLightShadowMap", pointLightShadowArray->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirLightShadowMap", false, dirLightShadowArray->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", false, spotLightShadowArray->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("PointLightShadowMap", false, pointLightShadowArray->Handle);
 
 		glm::ivec2 shadowRes = { m_ShadowWidth, m_ShadowHeight };
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", shadowRes);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", true, shadowRes);
 
 		//  Data
 		// ------
 		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", viewportRes);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
 		
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", m_ShowColliders);
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", Entity());
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, m_ShowColliders);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
 
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", m_EntityOutlineThickness);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
 
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", m_EntityOutlineColour);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", true, m_EntityOutlineColour);
 
 		// Bloom mip chain
 		// ---------------
@@ -145,7 +145,7 @@ namespace PaulEngine
 		BloomMipChain bloomMipChain;
 		bloomMipChain.Init(m_ViewportSize, 6);
 
-		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", bloomMipChain);
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", false, bloomMipChain);
 
 		// Framebuffers
 		// ------------
@@ -169,11 +169,11 @@ namespace PaulEngine
 		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
 		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
 
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", m_MainFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", dirLightShadowsFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", spotLightShadowsFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", pointLightShadowsFramebuffer);
-		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", bloomFBO);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, m_MainFramebuffer);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", false, spotLightShadowsFramebuffer);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", false, pointLightShadowsFramebuffer);
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", false, bloomFBO);
 
 		// Materials
 		// ---------
@@ -201,13 +201,13 @@ namespace PaulEngine
 		AssetHandle skyboxShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
 		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
 
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", shadowmapMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", shadowmapCubeMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", gammaTonemapMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", mipchainDownsampleMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", mipchainUpsampleMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", bloomCombineMaterial->Handle);
-		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", skyboxMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", false, shadowmapMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", false, shadowmapCubeMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", false, mipchainDownsampleMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", false, mipchainUpsampleMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", false, bloomCombineMaterial->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
 
 		// Textures
 		// --------
@@ -246,10 +246,10 @@ namespace PaulEngine
 		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
 
 		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
-		out_Framerenderer.AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", envMapHandle);
+		out_Framerenderer.AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
 
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", dirtMaskTextureHandle);
-		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SkyboxTexture", skyboxCubemap->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
 
 		// OnEvent
 		// -------
