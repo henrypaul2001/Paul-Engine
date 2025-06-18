@@ -128,11 +128,89 @@ namespace PaulEngine
 	namespace RenderComponentImGuiUtils
 	{
 		void DrawNotYetImplemented();
+
+		void DrawEditFloat (float* f, const float speed = 0.1f);
+		void DrawEditFloat2(float* f, const float speed = 0.1f);
+		void DrawEditFloat3(float* f, const float speed = 0.1f);
+		void DrawEditFloat4(float* f, const float speed = 0.1f);
+
+		void DrawEditInt (int* i, const float speed = 1.0f);
+		void DrawEditInt2(int* i, const float speed = 1.0f);
+		void DrawEditInt3(int* i, const float speed = 1.0f);
+		void DrawEditInt4(int* i, const float speed = 1.0f);
+
+		void DrawEditUInt(unsigned int* i, const float speed = 1.0f);
+		void DrawEditUInt2(unsigned int* i, const float speed = 1.0f);
+		void DrawEditUInt3(unsigned int* i, const float speed = 1.0f);
+		void DrawEditUInt4(unsigned int* i, const float speed = 1.0f);
+
+		void DrawCheckbox(bool* b);
 	}
 
 	template<typename T>
 	inline void RenderComponentPrimitiveType<T>::OnImGuiRender()
 	{
 		RenderComponentImGuiUtils::DrawNotYetImplemented();
+	}
+
+	//  Float
+	// -------
+	inline void RenderComponentPrimitiveType<float>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditFloat(&Data, 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::vec2>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditFloat2(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::vec3>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditFloat3(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::vec4>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditFloat4(&Data[0], 0.1f);
+	}
+
+	//  Integer
+	// ---------
+	inline void RenderComponentPrimitiveType<int>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditInt(&Data, 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::ivec2>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditInt2(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::ivec3>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditInt3(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::ivec4>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditInt4(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<unsigned int>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditUInt(&Data, 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::uvec2>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditUInt2(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::uvec3>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditUInt3(&Data[0], 0.1f);
+	}
+	inline void RenderComponentPrimitiveType<glm::uvec4>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawEditUInt4(&Data[0], 0.1f);
+	}
+
+	//  Bool
+	// ------
+	inline void RenderComponentPrimitiveType<bool>::OnImGuiRender()
+	{
+		RenderComponentImGuiUtils::DrawCheckbox(&Data);
 	}
 }

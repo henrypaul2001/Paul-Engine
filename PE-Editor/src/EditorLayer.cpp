@@ -79,7 +79,7 @@ namespace PaulEngine
 		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
 		
-		bool showColliders = false;
+		bool showColliders = true;
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, showColliders);
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
 						 
