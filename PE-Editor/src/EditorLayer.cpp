@@ -71,8 +71,9 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", false, spotLightShadowArray->Handle);
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("PointLightShadowMap", false, pointLightShadowArray->Handle);
 
+		// In the future, this should be serialized. But many of the existing resources such as shadow framebuffers and textures aren't suited for this value to change during runtime
 		glm::ivec2 shadowRes = { m_ShadowWidth, m_ShadowHeight };
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", true, shadowRes);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", false, shadowRes);
 
 		//  Data
 		// ------
@@ -86,6 +87,20 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
 						 
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", true, m_EntityOutlineColour);
+
+		float bloomThreshold = 1.0f;
+		float bloomSoftThreshold = 0.5f;
+		float filterRadius = 0.005f;
+
+		float bloomStrength = 0.04f;
+		float dirtMaskStrength = 0.5f;
+		bool useDirtMask = true;
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomThreshold", true, bloomThreshold);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomSoftThreshold", true, bloomSoftThreshold);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomFilterRadius", true, filterRadius);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomStrength", true, bloomStrength);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomDirtMaskStrength", true, dirtMaskStrength);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("UseDirtMask", true, useDirtMask);
 
 		// Bloom mip chain
 		// ---------------
@@ -776,7 +791,7 @@ namespace PaulEngine
 				Renderer::EndScene();
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture }
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, primitive<float>, primitive<float> }
 		RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Downsample Pass");
@@ -784,16 +799,20 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[1], "Downsample mip chain input required");
 			PE_CORE_ASSERT(inputs[2], "Downsample material input required");
 			PE_CORE_ASSERT(inputs[3], "Source texture input required");
+			PE_CORE_ASSERT(inputs[4], "Threshold input required");
+			PE_CORE_ASSERT(inputs[5], "Soft Threshold input required");
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
 			RenderComponentMaterial* downsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
 			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+			RenderComponentPrimitiveType<float>* thresholdInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[4]);
+			RenderComponentPrimitiveType<float>* softThresholdInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[5]);
 
 			glm::vec2 srcResolution = viewportResInput->Data;
-			const float threshold = 1.0f;
-			const float softThreshold = 0.5f;
+			const float threshold = thresholdInput->Data;
+			const float softThreshold = softThresholdInput->Data;
 			int FirstIteration = 1;
 			const float gamma = activeCamera->GetGamma();
 
@@ -837,20 +856,22 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material }
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, primitive<float> }
 		RenderPass::OnRenderFunc bloomUpsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Bloom Upsample Pass");
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Upsample mip chain input required");
 			PE_CORE_ASSERT(inputs[2], "Upsample material input required");
+			PE_CORE_ASSERT(inputs[3], "Filter radius input required");
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
 			RenderComponentMaterial* upsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+			RenderComponentPrimitiveType<float>* filterRadiusInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
 
 			glm::vec2 resolution = viewportResInput->Data;
-			float FilterRadius = 0.005f;
+			float FilterRadius = filterRadiusInput->Data;
 			float AspectRatio = resolution.x / resolution.y;
 
 			Ref<Material> upsampleMaterial = AssetManager::GetAsset<Material>(upsampleMaterialInput->MaterialHandle);
@@ -884,7 +905,7 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, Texture, Texture }
+		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, Texture, Texture, primitive<float>, primitive<float>, primitive<bool> }
 		RenderPass::OnRenderFunc bloomCombinePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Combine Pass");
@@ -894,6 +915,9 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[3], "Dirt mask input required");
 			PE_CORE_ASSERT(inputs[4], "Source texture input required");
 			PE_CORE_ASSERT(inputs[5], "Target texture input required");
+			PE_CORE_ASSERT(inputs[6], "Bloom strength input required");
+			PE_CORE_ASSERT(inputs[7], "Dirt mask strength input required");
+			PE_CORE_ASSERT(inputs[8], "UseDirtMask input required");
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
@@ -902,6 +926,9 @@ namespace PaulEngine
 			RenderComponentTexture* dirtMaskTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
+			RenderComponentPrimitiveType<float>* bloomStrengthInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[6]);
+			RenderComponentPrimitiveType<float>* dirtStrengthInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[7]);
+			RenderComponentPrimitiveType<bool>* useDirtMaskInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[8]);
 			
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -915,9 +942,9 @@ namespace PaulEngine
 			}
 			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
 
-			float BloomStrength = 0.04f;
-			float DirtMaskStrength = 0.5f;
-			int UseDirtMask = 1;
+			float BloomStrength = bloomStrengthInput->Data;
+			float DirtMaskStrength = dirtStrengthInput->Data;
+			int UseDirtMask = (int)useDirtMaskInput->Data;
 
 			Ref<Material> combineMaterial = AssetManager::GetAsset<Material>(combineMaterialInput->MaterialHandle);
 			UniformBufferStorage* uboStorage = combineMaterial->GetParameter<UBOShaderParameterTypeStorage>("BloomCombineData")->UBO().get();
@@ -1159,9 +1186,9 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_MainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture"});
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" });
 
 		// Editor overlay
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
