@@ -73,8 +73,9 @@ namespace PaulEngine {
 		glDrawArrays(GL_LINES, 0, vertexCount);
 	}
 
-	void OpenGLRenderAPI::SetLineWidth(const float thickness)
+	void OpenGLRenderAPI::SetLineWidth(float thickness)
 	{
+		thickness = std::max(0.01f, thickness);
 		glLineWidth(thickness);
 	}
 }
