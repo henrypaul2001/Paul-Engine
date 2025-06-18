@@ -78,8 +78,9 @@ namespace PaulEngine
 		// ------
 		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
-						 
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, m_ShowColliders);
+		
+		bool showColliders = false;
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, showColliders);
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
 						 
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
@@ -1399,10 +1400,6 @@ namespace PaulEngine
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Edit")) {
-					//if (ImGui::Checkbox("Show colliders", &m_ShowColliders)) {
-					//	auto resource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders");
-					//	if (resource) { resource->Data = m_ShowColliders; }
-					//}
 					ImGui::Text("Go away");
 					ImGui::EndMenu();
 				}
@@ -1691,143 +1688,6 @@ namespace PaulEngine
 				m_SceneHierarchyPanel.SetSelectedEntity(newEntity);
 			}
 		}
-	}
-
-	void EditorLayer::OnDebugOverlayDraw()
-	{
-		PE_PROFILE_FUNCTION();
-		if (m_SceneState == SceneState::Play) {
-			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-			if (!cameraEntity) { return; }
-			Renderer2D::BeginScene(cameraEntity.GetComponent<ComponentCamera>().Camera, cameraEntity.GetComponent<ComponentTransform>().GetTransform(), FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
-		}
-		else {
-			Renderer2D::BeginScene(*m_Camera.get(), FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
-		}
-
-		if (m_ShowColliders) {
-			// Box colliders
-			auto boxView = m_ActiveScene->View<ComponentTransform, ComponentBoxCollider2D>();
-			for (auto entityID : boxView) {
-				auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
-
-				glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
-				glm::vec3 scale = transform.LocalScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
-				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-				transformation = glm::rotate(transformation, transform.LocalRotation().z, glm::vec3(0.0, 0.0, 1.0f));
-				transformation = glm::scale(transformation, scale);
-
-				Renderer2D::SetLineWidth(0.01f);
-				Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
-			}
-			
-			// Circle colliders
-			auto circleView = m_ActiveScene->View<ComponentTransform, ComponentCircleCollider2D>();
-			for (auto entityID : circleView) {
-				auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
-
-				glm::vec3 position = glm::vec3(glm::vec2(transform.LocalPosition()), 0.01f);
-				glm::vec3 scale = transform.LocalScale() * (circle.Radius() * 2.0f);
-				glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-				transformation = glm::scale(transformation, scale);
-
-				Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
-			}
-		}
-		Renderer2D::Flush();
-
-		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-		if (selectedEntity.BelongsToScene(m_ActiveScene) && selectedEntity) {
-			// Entity outline
-			ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-			transformCopy.SetLocalPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
-			Renderer2D::SetLineWidth(m_EntityOutlineThickness);
-			Renderer2D::DrawRect(transformCopy.GetTransform(), m_EntityOutlineColour);
-		
-			// Point light radius
-			if (selectedEntity.HasComponent<ComponentPointLight>()) {
-				ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
-				ComponentPointLight& pointLight = selectedEntity.GetComponent<ComponentPointLight>();
-				float radius = pointLight.Radius;
-				float thickness = 0.005f;
-				float fade = 0.0f;
-
-				glm::mat4 transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, transformComponent.LocalPosition());
-				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
-				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
-
-				transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, transformComponent.LocalPosition());
-				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
-				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
-
-				transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, transformComponent.LocalPosition());
-				transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
-				Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
-			}
-
-			// Spot light
-			if (selectedEntity.HasComponent<ComponentSpotLight>()) {
-				ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
-				ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
-				glm::vec3 position = transformComponent.LocalPosition();
-				glm::quat rotationQuat = glm::quat(transformComponent.LocalRotation());
-				float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
-				float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
-				float thickness = 0.005f;
-				float fade = 0.0f;
-
-				glm::mat4 transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, position);
-				glm::mat4 rotation = glm::toMat4(rotationQuat);
-				transform *= rotation;
-				transform = glm::translate(transform, glm::vec3(0.0, 0.0f, -spotLight.Range));
-
-				glm::vec3 forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
-				glm::vec3 right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
-				glm::vec3 up = glm::cross(forward, right);
-
-				Renderer2D::SetLineWidth(thickness);
-
-				// Outer cone
-				glm::mat4 outerCircleTransform = glm::scale(transform, glm::vec3(outerRadius, outerRadius, 1.0f));
-				Renderer2D::DrawCircle(outerCircleTransform, glm::vec4(1.0f), thickness, fade);
-
-				glm::vec3 line = forward * spotLight.Range + right * outerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				line = forward * spotLight.Range - right * outerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				line = forward * spotLight.Range + up * outerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				line = forward * spotLight.Range - up * outerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				// Inner cone
-				glm::mat4 innerCircleTransform = glm::scale(transform, glm::vec3(innerRadius, innerRadius, 1.0f));
-				Renderer2D::DrawCircle(innerCircleTransform, glm::vec4(1.0f), thickness, fade);
-
-				line = forward * spotLight.Range + right * innerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				line = forward * spotLight.Range - right * innerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				line = forward * spotLight.Range + up * innerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-				line = forward * spotLight.Range - up * innerRadius * 0.5f;
-				Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-			}
-		}
-
-		Renderer2D::EndScene();
 	}
 
 	void EditorLayer::OnEvent(Event& e)

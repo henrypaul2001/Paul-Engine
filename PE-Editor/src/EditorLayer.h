@@ -36,8 +36,6 @@ namespace PaulEngine {
 
 		void CreateRenderer(FrameRenderer* out_Framerenderer);
 
-		void OnDebugOverlayDraw();
-
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
 		bool OnWindowDrop(WindowDropEvent& e);
@@ -83,7 +81,6 @@ namespace PaulEngine {
 		glm::vec2 m_ViewportSize;
 
 		bool m_ViewportFocus = false, m_ViewportHovered = false;
-		bool m_ShowColliders = true;
 
 		Ref<EditorCamera> m_Camera;
 
