@@ -145,6 +145,75 @@ namespace YAML
 	};
 
 	template<>
+	struct convert<glm::uvec2>
+	{
+		static Node encode(const glm::uvec2& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::uvec2& rhs) {
+			if (!node.IsSequence() || node.size() != 2) {
+				return false;
+			}
+
+			rhs.x = node[0].as<unsigned int>();
+			rhs.y = node[1].as<unsigned int>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::uvec3>
+	{
+		static Node encode(const glm::uvec3& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::uvec3& rhs) {
+			if (!node.IsSequence() || node.size() != 3) {
+				return false;
+			}
+
+			rhs.x = node[0].as<unsigned int>();
+			rhs.y = node[1].as<unsigned int>();
+			rhs.z = node[2].as<unsigned int>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::uvec4>
+	{
+		static Node encode(const glm::uvec4& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::uvec4& rhs) {
+			if (!node.IsSequence() || node.size() != 4) {
+				return false;
+			}
+
+			rhs.x = node[0].as<unsigned int>();
+			rhs.y = node[1].as<unsigned int>();
+			rhs.z = node[2].as<unsigned int>();
+			rhs.w = node[3].as<unsigned int>();
+			return true;
+		}
+	};
+
+	template<>
 	struct convert<glm::mat3>
 	{
 		static Node encode(const glm::mat3& rhs) {
@@ -268,6 +337,9 @@ namespace PaulEngine
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::ivec2& v);
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::ivec3& v);
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::ivec4& v);
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::uvec2& v);
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::uvec3& v);
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::uvec4& v);
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::mat3& m);
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::mat4& m);
 }
