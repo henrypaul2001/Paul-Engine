@@ -1,3 +1,4 @@
+#pragma once
 #include "PaulEngine/Renderer/Resource/Camera.h"
 #include "PaulEngine/Renderer/Resource/Framebuffer.h"
 #include "PaulEngine/Renderer/Asset/Texture.h"
@@ -31,8 +32,9 @@ namespace PaulEngine
 			case RenderComponentType::UBO: return "UBO";
 			case RenderComponentType::FramebufferAttachment: return "FramebufferAttachment";
 			case RenderComponentType::PrimitiveType: return "PrimitiveType";
+			case RenderComponentType::EnvironmentMap: return "EnvironmentMap";
 		}
-		PE_CORE_ERROR("Unddefined RenderComponentType translation");
+		PE_CORE_ERROR("Undefined RenderComponentType translation");
 		return "Undefined";
 	}
 
@@ -104,13 +106,20 @@ namespace PaulEngine
 		Ref<FramebufferAttachment> Attachment;
 	};
 
+	struct IRenderComponentPrimitiveType : public IRenderComponent
+	{
+		virtual const std::type_info& GetPrimitiveTypeInfo() const = 0;
+	};
+
 	template<typename T>
-	struct RenderComponentPrimitiveType : public IRenderComponent
+	struct RenderComponentPrimitiveType : public IRenderComponentPrimitiveType
 	{
 		RenderComponentPrimitiveType(T data) : Data(data) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::PrimitiveType; }
 		virtual void OnImGuiRender() override;
+
+		virtual const std::type_info& GetPrimitiveTypeInfo() const override { return typeid(T); }
 
 		T Data;
 	};

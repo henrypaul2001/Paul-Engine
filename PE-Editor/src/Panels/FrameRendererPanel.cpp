@@ -1,5 +1,6 @@
 #include "FrameRendererPanel.h"
 #include "PaulEngine/Debug/Instrumentor.h"
+#include "PaulEngine/Utils/PlatformUtils.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -25,6 +26,18 @@ namespace PaulEngine
 
 		ImGui::SetNextWindowSizeConstraints(ImVec2(380, 0), ImVec2(FLT_MAX, FLT_MAX), 0, nullptr);
 		ImGui::Begin("Frame Renderer");
+
+		if (ImGui::Button("Save As...")) {
+			std::string path = FileDialogs::SaveFile("Render Resource Config (*.rrc)\0*.rrc\0");
+			if (!path.empty()) {
+				std::filesystem::path absoluteProjectPath = std::filesystem::absolute(Project::GetProjectDirectory());
+				std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
+
+				m_Context->SaveResourceConfig(relativeSavePath);
+			}
+		}
+
+		ImGui::Separator();
 
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 		for (const char* name : serializedFields)

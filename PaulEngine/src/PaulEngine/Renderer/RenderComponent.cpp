@@ -1,6 +1,7 @@
 #include "pepch.h"
 #include "RenderComponent.h"
 
+#include <yaml-cpp/yaml.h>
 #include <imgui.h>
 
 namespace PaulEngine
