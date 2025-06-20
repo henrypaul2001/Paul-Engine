@@ -80,19 +80,6 @@ namespace PaulEngine
 
 	void FrameRenderer::LoadResourceConfig(const std::filesystem::path& path)
 	{
-		PE_PROFILE_FUNCTION();
-		//std::ifstream stream = std::ifstream(filepath);
-		//std::stringstream ss;
-		//ss << stream.rdbuf();
-		//
-		//YAML::Node data = YAML::Load(ss.str());
-		//if (!data["Scene"]) { return false; }
-		//
-		//std::string sceneName = data["Scene"].as<std::string>();
-		//PE_CORE_TRACE("Deserializing scene '{0}'", sceneName);
-		//
-		//m_Scene->m_Name = sceneName;
-		//
-		//return true;
+		FrameRendererSerializer::DeserializeRenderer(*this, path);
 	}
 }

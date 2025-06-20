@@ -27,7 +27,7 @@ namespace PaulEngine
 			return true;
 		}
 
-		bool AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer = nullptr, std::vector<const char*> inputBindings = {});
+		bool AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer = nullptr, std::vector<std::string> inputBindings = {});
 
 		void SetEventFunc(OnEventFunc func) { m_OnEvent = func; }
 
@@ -44,7 +44,7 @@ namespace PaulEngine
 			return nullptr;
 		}
 
-		IRenderComponent* GetRenderResource(const char* resourceName)
+		IRenderComponent* GetRenderResource(const std::string& resourceName)
 		{
 			auto it = m_RenderResources.find(resourceName);
 			if (it != m_RenderResources.end())

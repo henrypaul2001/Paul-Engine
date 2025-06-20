@@ -36,6 +36,16 @@ namespace PaulEngine
 				m_Context->SaveResourceConfig(relativeSavePath);
 			}
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Load...")) {
+			std::string path = FileDialogs::OpenFile("Render Resource Config (*.rrc)\0*.rrc\0");
+			if (!path.empty()) {
+				std::filesystem::path absoluteProjectPath = std::filesystem::absolute(Project::GetProjectDirectory());
+				std::filesystem::path relativeSavePath = std::filesystem::path(path).lexically_relative(absoluteProjectPath.parent_path());
+
+				m_Context->LoadResourceConfig(relativeSavePath);
+			}
+		}
 
 		ImGui::Separator();
 

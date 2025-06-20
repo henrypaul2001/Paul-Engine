@@ -38,6 +38,22 @@ namespace PaulEngine
 		return "Undefined";
 	}
 
+	static RenderComponentType StringToRenderComponentType(const std::string& string)
+	{
+		if (string == "None") { return RenderComponentType::None; }
+		if (string == "Framebuffer") { return RenderComponentType::Framebuffer; }
+		if (string == "Texture") { return RenderComponentType::Texture; }
+		if (string == "Camera") { return RenderComponentType::Camera; }
+		if (string == "Material") { return RenderComponentType::Material; }
+		if (string == "UBO") { return RenderComponentType::UBO; }
+		if (string == "FramebufferAttachment") { return RenderComponentType::FramebufferAttachment; }
+		if (string == "PrimitiveType") { return RenderComponentType::PrimitiveType; }
+		if (string == "EnvironmentMap") { return RenderComponentType::EnvironmentMap; }
+
+		PE_CORE_ERROR("Undefined RenderComponentType string translation: '{0}'", string.c_str());
+		return RenderComponentType::None;
+	}
+
 	struct IRenderComponent
 	{
 		virtual ~IRenderComponent() {}
