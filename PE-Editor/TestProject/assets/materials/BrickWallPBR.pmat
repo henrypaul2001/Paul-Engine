@@ -30,7 +30,7 @@ ShaderParams:
           Value: 1
         - Type: Float
           Name: HeightScale
-          Value: 0.05
+          Value: -0.05
         - Type: Float2
           Name: TextureScale
           Value: [1, 1]

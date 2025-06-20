@@ -105,7 +105,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 814898203706997051
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true

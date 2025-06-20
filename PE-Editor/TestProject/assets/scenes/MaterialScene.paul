@@ -196,7 +196,7 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 2780559183691361487
+      MaterialHandle: 5032318912053311656
       MeshHandle: 14979669302599605913
       DepthFunc: 1
       DepthTest: true

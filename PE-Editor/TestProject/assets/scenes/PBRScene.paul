@@ -39,7 +39,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 400681757883519208
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -55,7 +55,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 6052652825163143337
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -71,7 +71,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 11641754153238842936
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -87,7 +87,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 7039009388700113622
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -103,7 +103,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 14953401462234966565
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -119,7 +119,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 18267150240899827061
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -135,7 +135,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 5404285593151240272
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -151,7 +151,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 9321072322867044035
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -167,7 +167,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 7840106116855404345
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -209,7 +209,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 5317045289054481295
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -225,7 +225,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 10327331717423470595
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
@@ -309,7 +309,7 @@ Entities:
         []
     MeshRendererComponent:
       MaterialHandle: 12856186902108215016
-      MeshHandle: 0
+      MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
       DepthWrite: true
