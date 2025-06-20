@@ -323,7 +323,7 @@ const float maxLayers = 32.0;
 vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 {
 	// calculate number of depth layers
-	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), tangentViewDir), 0.001));
+	float numLayers = mix(maxLayers, minLayers, dot(vec3(0.0, 0.0, 1.0), tangentViewDir));
 	float layerDepth = 1.0 / numLayers;
 
 	float currentLayerDepth = 0.0f;
@@ -336,13 +336,15 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 	vec2 currentTexCoords = texCoords;
 	float currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
 
-	while (currentLayerDepth < currentDepthMapValue) {
+	float i = 0.0;
+	while (currentLayerDepth < currentDepthMapValue && i < 32.0) {
 		// shift coords along direction of P
 		currentTexCoords -= deltaTexCoords;
 
 		currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
 
 		currentLayerDepth += layerDepth;
+		i += 1.0;
 	}
 
 	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;

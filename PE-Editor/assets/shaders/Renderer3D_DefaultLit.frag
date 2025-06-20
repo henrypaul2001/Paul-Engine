@@ -76,9 +76,14 @@ layout(std140, binding = 3) uniform Mat_MaterialValues
 {
 	vec4 Albedo;
 	vec4 Specular;
+
 	vec2 TextureScale;
 	float Shininess;
 	float HeightScale;
+	
+	vec3 EmissionColour;
+	float EmissionStrength;
+
 	int UseNormalMap;
 	int UseDisplacementMap;
 } u_MaterialValues;
@@ -90,6 +95,11 @@ layout(binding = 3) uniform sampler2D Mat_AlbedoMap;
 layout(binding = 4) uniform sampler2D Mat_SpecularMap;
 layout(binding = 5) uniform sampler2D Mat_NormalMap;
 layout(binding = 6) uniform sampler2D Mat_DisplacementMap;
+layout(binding = 7) uniform sampler2D Mat_EmissionMap;
+
+// Global IBL
+layout(binding = 10) uniform samplerCube IrradianceMap;
+layout(binding = 11) uniform samplerCube PrefilterMap;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -206,7 +216,7 @@ const float maxLayers = 32.0;
 vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 {
 	// calculate number of depth layers
-	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), tangentViewDir), 0.0));
+	float numLayers = mix(maxLayers, minLayers, dot(vec3(0.0, 0.0, 1.0), tangentViewDir));
 	float layerDepth = 1.0 / numLayers;
 
 	float currentLayerDepth = 0.0f;
@@ -219,13 +229,15 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 	vec2 currentTexCoords = texCoords;
 	float currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
 
-	while (currentLayerDepth < currentDepthMapValue) {
+	float i = 0.0;
+	while (currentLayerDepth < currentDepthMapValue && i < 32.0) {
 		// shift coords along direction of P
 		currentTexCoords -= deltaTexCoords;
 
 		currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
 
 		currentLayerDepth += layerDepth;
+		i += 1.0;
 	}
 
 	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
@@ -355,6 +367,25 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
+// IBL Functions
+// -------------
+vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 N, vec3 V, vec3 R)
+{
+	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
+
+	// Shininess to mip level
+	float gloss = MaterialShininess / 256.0;
+	float mipLevel = (1.0 - gloss) * MAX_REFLECTION_LOD;
+
+	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 diffuse = irradiance * MaterialAlbedo;
+
+	vec3 prefilteredColour = textureLod(prefilterMap, R, mipLevel).rgb;
+	vec3 specular = prefilteredColour * MaterialSpecular;
+
+	return diffuse + specular;
+}
+
 void main()
 {
 	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
@@ -373,6 +404,7 @@ void main()
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
 	vec3 AlbedoSample = pow(texture(Mat_AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	vec3 EmissionSample = pow(texture(Mat_EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
 	vec3 SpecularSample = vec3(texture(Mat_SpecularMap, ScaledTexCoords).r);
 
 	vec3 Normal = normalize(v_VertexData.Normal);
@@ -384,6 +416,7 @@ void main()
 	}
 
 	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
+	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
 	vec3 Result = vec3(0.0);
@@ -407,6 +440,12 @@ void main()
 	}
 
 	colour = vec4(Result, u_MaterialValues.Albedo.a);
+
+	// Emission
+	colour.rgb += MaterialEmission;
+
+	// Global IBL
+	colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, u_MaterialValues.Shininess, Normal, ViewDir, reflect(-ViewDir, Normal));
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }
