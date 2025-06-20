@@ -33,7 +33,7 @@ namespace PaulEngine
 		}
 	}
 
-	bool FrameRenderer::AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer, std::vector<const char*> inputBindings)
+	bool FrameRenderer::AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer, std::vector<std::string> inputBindings)
 	{
 		PE_PROFILE_FUNCTION();
 		const UUID& renderID = renderPass.GetRenderID();
@@ -48,7 +48,7 @@ namespace PaulEngine
 		inputs.reserve(inputBindings.size());
 		for (int i = 0; i < inputBindings.size(); i++)
 		{
-			const char* inputName = inputBindings[i];
+			const std::string& inputName = inputBindings[i];
 			if (m_RenderResources.find(inputName) == m_RenderResources.end())
 			{
 				PE_CORE_ERROR("Unknown render resource '{0}'", inputName);

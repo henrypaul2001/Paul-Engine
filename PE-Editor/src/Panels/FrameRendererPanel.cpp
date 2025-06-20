@@ -22,7 +22,7 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 
-		const std::vector<const char*>& serializedFields = m_Context->GetSerializedComponentNames();
+		const std::vector<std::string>& serializedFields = m_Context->GetSerializedComponentNames();
 
 		ImGui::SetNextWindowSizeConstraints(ImVec2(380, 0), ImVec2(FLT_MAX, FLT_MAX), 0, nullptr);
 		ImGui::Begin("Frame Renderer");
@@ -40,7 +40,7 @@ namespace PaulEngine
 		ImGui::Separator();
 
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
-		for (const char* name : serializedFields)
+		for (const std::string& name : serializedFields)
 		{
 			IRenderComponent* iComponent = m_Context->GetRenderResource(name);
 			if (iComponent)
@@ -51,7 +51,7 @@ namespace PaulEngine
 				float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 				ImGui::Separator();
 				
-				bool open = ImGui::TreeNodeEx(name, treeNodeFlags);
+				bool open = ImGui::TreeNodeEx(name.c_str(), treeNodeFlags);
 				ImGui::PopStyleVar();
 
 				if (open) {

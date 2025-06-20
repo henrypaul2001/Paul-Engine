@@ -14,7 +14,7 @@ namespace PaulEngine
 		void OnEvent(Event& e) { m_OnEvent(e, this); }
 
 		template <typename T, typename... Args>
-		bool AddRenderResource(const char* uniqueName, bool serialized, Args&&... args)
+		bool AddRenderResource(const std::string& uniqueName, bool serialized, Args&&... args)
 		{
 			auto it = m_RenderResources.find(uniqueName);
 			if (it != m_RenderResources.end())
@@ -32,7 +32,7 @@ namespace PaulEngine
 		void SetEventFunc(OnEventFunc func) { m_OnEvent = func; }
 
 		template <typename T>
-		T* GetRenderResource(const char* resourceName)
+		T* GetRenderResource(const std::string& resourceName)
 		{
 			IRenderComponent* component = GetRenderResource(resourceName);
 			if (component)
@@ -55,14 +55,14 @@ namespace PaulEngine
 			return nullptr;
 		}
 
-		const std::vector<const char*>& GetSerializedComponentNames() const { return m_SerializedComponentNames; }
+		const std::vector<std::string>& GetSerializedComponentNames() const { return m_SerializedComponentNames; }
 
 		void SaveResourceConfig(const std::filesystem::path& path);
 		void LoadResourceConfig(const std::filesystem::path& path);
 	private:
 		std::vector<RenderPass> m_OrderedRenderPasses;
-		std::vector<const char*> m_SerializedComponentNames;
-		std::unordered_map<const char*, Scope<IRenderComponent>> m_RenderResources;
+		std::vector<std::string> m_SerializedComponentNames;
+		std::unordered_map<std::string, Scope<IRenderComponent>> m_RenderResources;
 		std::unordered_map<UUID, Ref<Framebuffer>> m_FramebufferMap;
 		std::unordered_map<UUID, std::vector<IRenderComponent*>> m_InputMap;
 

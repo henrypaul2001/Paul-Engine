@@ -116,12 +116,12 @@ namespace PaulEngine
 		out << YAML::Key << "FrameRendererConfig" << YAML::Value << path.stem().string();
 		out << YAML::Key << "SerializedResources" << YAML::Value << YAML::BeginSeq;
 
-		for (const char* resourceName : renderer.m_SerializedComponentNames)
+		for (std::string resourceName : renderer.m_SerializedComponentNames)
 		{
 			const IRenderComponent* component = renderer.m_RenderResources.at(resourceName).get();
 			if (component)
 			{
-				SerializeRenderComponent(component, resourceName, out);
+				SerializeRenderComponent(component, resourceName.c_str(), out);
 			}
 		}
 
