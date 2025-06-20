@@ -113,7 +113,7 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 		YAML::Emitter out;
 		out << YAML::BeginMap;
-		out << YAML::Key << "FrameRendererConfig" << YAML::Value << path.stem().c_str();
+		out << YAML::Key << "FrameRendererConfig" << YAML::Value << path.stem().string();
 		out << YAML::Key << "SerializedResources" << YAML::Value << YAML::BeginSeq;
 
 		for (const char* resourceName : renderer.m_SerializedComponentNames)
