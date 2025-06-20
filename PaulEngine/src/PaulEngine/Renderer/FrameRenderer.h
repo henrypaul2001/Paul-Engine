@@ -6,6 +6,7 @@ namespace PaulEngine
 	class FrameRenderer
 	{
 	public:
+		friend class FrameRendererSerializer;
 		using OnEventFunc = std::function<void(Event&, FrameRenderer*)>;
 		FrameRenderer(OnEventFunc eventFunc = [](Event& e, FrameRenderer* self) {}) : m_OnEvent(eventFunc) {}
 
@@ -57,7 +58,7 @@ namespace PaulEngine
 		const std::vector<const char*>& GetSerializedComponentNames() const { return m_SerializedComponentNames; }
 
 		void SaveResourceConfig(const std::filesystem::path& path);
-		void ReadResourceConfig(const std::filesystem::path& path);
+		void LoadResourceConfig(const std::filesystem::path& path);
 	private:
 		std::vector<RenderPass> m_OrderedRenderPasses;
 		std::vector<const char*> m_SerializedComponentNames;
