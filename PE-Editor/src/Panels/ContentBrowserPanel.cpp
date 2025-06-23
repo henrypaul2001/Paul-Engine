@@ -14,6 +14,7 @@ namespace PaulEngine
 
 		m_DirectoryIcon = TextureImporter::LoadTexture2D("Resources/Icons/ContentBrowser/mingcute--folder-2-fill-light.png");
 		m_FileIcon = TextureImporter::LoadTexture2D("Resources/Icons/ContentBrowser/mingcute--file-line-light.png");
+		m_RefreshIcon = TextureImporter::LoadTexture2D("Resources/Icons/ContentBrowser/mingcute--refresh-3-line.png");
 
 		RefreshAssetTree();
 
@@ -28,6 +29,28 @@ namespace PaulEngine
 		if (ImGui::Button(label)) {
 			m_Mode = (m_Mode == BrowserMode::AssetTree) ? BrowserMode::FileSystem : BrowserMode::AssetTree;
 		}
+
+		if (m_Mode == BrowserMode::AssetTree)
+		{
+			ImGui::SameLine();
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+			auto& colours = ImGui::GetStyle().Colors;
+			auto& hovered = colours[ImGuiCol_ButtonHovered];
+			auto& active = colours[ImGuiCol_ButtonActive];
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(hovered.x, hovered.y, hovered.z, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(active.x, active.y, active.z, 0.5f));
+
+			float size = ImGui::GetFrameHeight() * 1.0f;
+			if (ImGui::ImageButton("refresh_icon", m_RefreshIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0.0f, 0.0f, 0.0f, 0.0f))) {
+				RefreshAssetTree();
+			}
+			ImGui::SetItemTooltip("Refresh");
+
+			ImGui::PopStyleVar(1);
+			ImGui::PopStyleColor(3);
+		}
+
 
 		if (m_CurrentDirectory != m_BaseDirectory) {
 			ImGui::SameLine();
