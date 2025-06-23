@@ -107,7 +107,7 @@ namespace PaulEngine
 
 		if (node) {
 			for (const auto& [item, treeNodeIndex] : node->Children) {
-				bool isDirectory = std::filesystem::is_directory(Project::GetAssetDirectory() / item);
+				bool isDirectory = std::filesystem::is_directory(m_CurrentDirectory / item);
 				std::string itemString = item.string();
 				if (itemString != "..") {
 
