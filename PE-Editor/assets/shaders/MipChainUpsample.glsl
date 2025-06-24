@@ -1,6 +1,7 @@
 // This shader upsamples a HDR texture, taken from the Call of Duty: Advanced Warfare method presented at ACM Siggraph 2014
 // Intended to be used to progressively upsample a source texture at each mip level
 
+#context forward
 #type vertex
 #version 450 core
 layout(location = 0) in vec3 a_Position;

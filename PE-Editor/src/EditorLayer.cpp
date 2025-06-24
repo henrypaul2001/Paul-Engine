@@ -24,7 +24,7 @@
 
 namespace PaulEngine
 {
-	void EditorLayer::CreateRenderer(FrameRenderer* out_Framerenderer)
+	void EditorLayer::CreateForwardRenderer(FrameRenderer* out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -2022,7 +2022,7 @@ namespace PaulEngine
 		m_MainFramebuffer->AddColourAttachment(entityIDAttach);
 		m_MainFramebuffer->SetDepthAttachment(depthAttach);
 
-		CreateRenderer(m_Renderer.get());
+		CreateForwardRenderer(m_Renderer.get());
 		m_FrameRendererPanel.SetContext(m_Renderer);
 		m_AtlasCreateWindow.Init();
 		m_MaterialCreateWindow.Init();

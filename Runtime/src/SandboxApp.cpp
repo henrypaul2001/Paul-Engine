@@ -129,8 +129,8 @@ public:
 		)";
 
 		// Shader
-		m_ShaderLibrary.Add(PaulEngine::Shader::Create("TestShader", vertexSrc, fragmentSrc));
-		m_ShaderLibrary.Add(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc));
+		m_ShaderLibrary.Add(PaulEngine::Shader::Create("TestShader", vertexSrc, fragmentSrc, PaulEngine::RenderPipelineContext::Forward));
+		m_ShaderLibrary.Add(PaulEngine::Shader::Create("FlatColourShader", flatColourVertexSrc, flatColourFragmentSrc, PaulEngine::RenderPipelineContext::Forward));
 		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 		
 		m_Texture = PaulEngine::TextureImporter::LoadTexture2D("assets/textures/Checkerboard.png");

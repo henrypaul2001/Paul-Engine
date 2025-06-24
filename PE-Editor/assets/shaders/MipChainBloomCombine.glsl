@@ -1,6 +1,7 @@
 // This shader is intended to be used to combine the results of the bloom mip chain downsample/upsample passes with an hdr colour buffer
 // Also includes option for lens dirt mask
 
+#context forward
 #type vertex
 #version 450 core
 layout(location = 0) in vec3 a_Position;

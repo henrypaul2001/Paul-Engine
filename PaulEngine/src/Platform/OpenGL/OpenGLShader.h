@@ -9,13 +9,15 @@ namespace PaulEngine {
     class OpenGLShader : public Shader
     {
 	public:
-		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc);
-		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc, RenderPipelineContext shaderContext);
+		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, RenderPipelineContext shaderContext);
 		OpenGLShader(const std::string& filepath);
 		virtual ~OpenGLShader();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		virtual RenderPipelineContext GetRenderPipelineContext() const { return m_ShaderContext; }
 
 		virtual const std::string& GetName() const override { return m_Name; }
 
@@ -55,6 +57,7 @@ namespace PaulEngine {
 		uint32_t m_RendererID;
 		std::string m_Filepath;
 		std::string m_Name;
+		RenderPipelineContext m_ShaderContext;
 
 		std::vector<Ref<ShaderParameterTypeSpecificationBase>> m_ReflectionData;
 

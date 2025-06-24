@@ -4,7 +4,15 @@
 
 #include <string>
 #include <glm/glm.hpp>
+
 namespace PaulEngine {
+	enum class RenderPipelineContext
+	{
+		Undefined = 0,
+		Forward,
+		Deferred
+	};
+
 	class Shader : public Asset
 	{
 	public:
@@ -12,6 +20,8 @@ namespace PaulEngine {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+
+		virtual RenderPipelineContext GetRenderPipelineContext() const = 0;
 
 		virtual void SetUniformInt(const std::string& name, const int value) = 0;
 		virtual void SetUniformIntArray(const std::string& name, const int* values, uint32_t count) = 0;
@@ -28,7 +38,7 @@ namespace PaulEngine {
 
 		virtual const std::vector<Ref<ShaderParameterTypeSpecificationBase>>& GetReflectionData() const = 0;
 
-		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, RenderPipelineContext shaderContext);
 		static Ref<Shader> Create(const std::string& filepath);
 
 		virtual AssetType GetType() const override { return AssetType::Shader; }

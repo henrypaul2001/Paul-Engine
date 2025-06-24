@@ -2,6 +2,7 @@
 // Was designed around eliminating pulsating artifacts and temporal stability issues found with other methods
 // Intended to be used to progressively downsample a source texture at each mip level
 
+#context forward
 #type vertex
 #version 450 core
 layout(location = 0) in vec3 a_Position;

@@ -34,7 +34,7 @@ namespace PaulEngine {
 
 		void OnDuplicatedEntity();
 
-		void CreateRenderer(FrameRenderer* out_Framerenderer);
+		void CreateForwardRenderer(FrameRenderer* out_Framerenderer);
 
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);

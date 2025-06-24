@@ -14,6 +14,14 @@ namespace PaulEngine {
 
 	namespace OpenGLShaderUtils
 	{
+		static RenderPipelineContext ShaderContextFromString(const std::string contextString)
+		{
+			if (contextString == "forward" || contextString == "f") { return RenderPipelineContext::Forward; }
+			if (contextString == "deferred" || contextString == "d") { return RenderPipelineContext::Deferred; }
+			PE_CORE_ERROR("Undefined shader context '{0}'", contextString);
+			return RenderPipelineContext::Undefined;
+		}
+
 		static GLenum ShaderTypeFromString(const std::string& type)
 		{
 			if (type == "vertex") { return GL_VERTEX_SHADER; }
@@ -188,9 +196,10 @@ namespace PaulEngine {
 		}
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc) : m_Name(name), m_Filepath("null"), m_RendererID(0)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc, RenderPipelineContext shaderContext) : m_Name(name), m_Filepath("null"), m_RendererID(0), m_ShaderContext(shaderContext)
 	{
 		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(m_ShaderContext != RenderPipelineContext::Undefined, "Undefined shader context");
 
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -202,9 +211,10 @@ namespace PaulEngine {
 		CreateProgram();
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name), m_Filepath("null"), m_RendererID(0)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, RenderPipelineContext shaderContext) : m_Name(name), m_Filepath("null"), m_RendererID(0), m_ShaderContext(shaderContext)
 	{
 		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(m_ShaderContext != RenderPipelineContext::Undefined, "Undefined shader context");
 
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -215,7 +225,7 @@ namespace PaulEngine {
 		CreateProgram();
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& filepath) : m_Filepath(filepath), m_RendererID(0)
+	OpenGLShader::OpenGLShader(const std::string& filepath) : m_Filepath(filepath), m_RendererID(0), m_ShaderContext(RenderPipelineContext::Undefined)
 	{
 		PE_PROFILE_FUNCTION();
 		
@@ -234,6 +244,8 @@ namespace PaulEngine {
 		size_t lastDot = filepath.rfind('.');
 		size_t count = (lastDot == std::string::npos) ? filepath.size() - lastSlash : lastDot - lastSlash;
 		m_Name = filepath.substr(lastSlash, count);
+
+		PE_CORE_ASSERT(m_ShaderContext != RenderPipelineContext::Undefined, "Undefined shader context");
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -267,6 +279,19 @@ namespace PaulEngine {
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
 		PE_PROFILE_FUNCTION();
+
+		// Find context type
+		const char* contextToken = "#context";
+		size_t contextTokenLength = strlen(contextToken);
+		size_t contextPos = source.find(contextToken, 0);
+		PE_CORE_ASSERT(contextPos != std::string::npos, "Shader context required");
+		size_t contextEol = source.find_first_of("\r\n", contextPos);
+		PE_CORE_ASSERT(contextEol != std::string::npos, "Syntax error");
+		size_t contextBegin = contextPos + contextTokenLength + 1;
+		std::string contextType = source.substr(contextBegin, contextEol - contextBegin);
+		m_ShaderContext = OpenGLShaderUtils::ShaderContextFromString(contextType);
+
+		// Extract shader sources
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		const char* typeToken = "#type";
