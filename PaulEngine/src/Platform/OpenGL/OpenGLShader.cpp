@@ -14,14 +14,6 @@ namespace PaulEngine {
 
 	namespace OpenGLShaderUtils
 	{
-		static RenderPipelineContext ShaderContextFromString(const std::string contextString)
-		{
-			if (contextString == "forward" || contextString == "f") { return RenderPipelineContext::Forward; }
-			if (contextString == "deferred" || contextString == "d") { return RenderPipelineContext::Deferred; }
-			PE_CORE_ERROR("Undefined shader context '{0}'", contextString);
-			return RenderPipelineContext::Undefined;
-		}
-
 		static GLenum ShaderTypeFromString(const std::string& type)
 		{
 			if (type == "vertex") { return GL_VERTEX_SHADER; }
@@ -289,7 +281,7 @@ namespace PaulEngine {
 		PE_CORE_ASSERT(contextEol != std::string::npos, "Syntax error");
 		size_t contextBegin = contextPos + contextTokenLength + 1;
 		std::string contextType = source.substr(contextBegin, contextEol - contextBegin);
-		m_ShaderContext = OpenGLShaderUtils::ShaderContextFromString(contextType);
+		m_ShaderContext = RenderPipelineContextFromString(contextType);
 
 		// Extract shader sources
 		std::unordered_map<GLenum, std::string> shaderSources;

@@ -1,6 +1,7 @@
 #pragma once
 #include "PaulEngine/Asset/RuntimeAssetManager.h"
 #include "PaulEngine/Asset/EditorAssetManager.h"
+#include "PaulEngine/Renderer/Asset/Shader.h"
 
 namespace PaulEngine
 {
@@ -10,6 +11,7 @@ namespace PaulEngine
 		
 		AssetHandle StartScene = 0;
 		AssetHandle DefaultMaterial = 0;
+		RenderPipelineContext RenderContext = RenderPipelineContext::Forward;
 		std::filesystem::path AssetDirectory;
 		std::filesystem::path AssetRegistryPath;
 		std::filesystem::path ProjectDirectory;

@@ -1197,6 +1197,27 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
+	void EditorLayer::CreateDeferredRenderer(FrameRenderer* out_Framerenderer)
+	{
+		PE_PROFILE_FUNCTION();
+
+		PE_CORE_ASSERT(false, "Not yet implemented");
+
+		// Shaders are now defined with a render context of either forward or deferred
+		
+		// The problem is, any material using a default shader stores the asset handle
+		// Which means that a material using the default forward shader can't be used in a deferred render pass.
+		
+		// Ideally, this wouldn't matter since its just the default shader, and the only thing the user has unqiuely setup are 
+		// the material values
+
+		// Instead, materials that use a default shader shouldn't store the asset handle of the shader, but either a 0 or a 1 for pbr vs non pbr
+		// Then, when retrieving the shader, the corresponding deferred vs forward default shader will be retrieved depending on how the project is
+		// set up
+
+
+	}
+
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
 
 	EditorLayer::~EditorLayer() {}
@@ -2022,7 +2043,20 @@ namespace PaulEngine
 		m_MainFramebuffer->AddColourAttachment(entityIDAttach);
 		m_MainFramebuffer->SetDepthAttachment(depthAttach);
 
-		CreateForwardRenderer(m_Renderer.get());
+		RenderPipelineContext renderContext = Project::GetActive()->GetSpecification().RenderContext;
+		switch (renderContext)
+		{
+		case RenderPipelineContext::Undefined:
+			PE_CORE_ASSERT(false, "Undefined render context");
+			return;
+		case RenderPipelineContext::Forward:
+			CreateForwardRenderer(m_Renderer.get());
+			break;
+		case RenderPipelineContext::Deferred:
+			CreateDeferredRenderer(m_Renderer.get());
+			break;
+		}
+
 		m_FrameRendererPanel.SetContext(m_Renderer);
 		m_AtlasCreateWindow.Init();
 		m_MaterialCreateWindow.Init();

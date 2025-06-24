@@ -1,4 +1,5 @@
 #pragma once
+#include "PaulEngine/Core/Log.h"
 #include "PaulEngine/Asset/Asset.h"
 #include "PaulEngine/Renderer/Resource/ShaderParameterType.h"
 
@@ -12,6 +13,26 @@ namespace PaulEngine {
 		Forward,
 		Deferred
 	};
+
+	static RenderPipelineContext RenderPipelineContextFromString(const std::string& contextString)
+	{
+		if (contextString == "forward" || contextString == "f") { return RenderPipelineContext::Forward; }
+		if (contextString == "deferred" || contextString == "d") { return RenderPipelineContext::Deferred; }
+		PE_CORE_ERROR("Undefined render context '{0}'", contextString);
+		return RenderPipelineContext::Undefined;
+	}
+	static std::string RenderPipelineContextToString(RenderPipelineContext context)
+	{
+		switch (context)
+		{
+		case RenderPipelineContext::Undefined:
+			return "undefined";
+		case RenderPipelineContext::Forward:
+			return "forward";
+		case RenderPipelineContext::Deferred:
+			return "deferred";
+		}
+	}
 
 	class Shader : public Asset
 	{
