@@ -2068,7 +2068,13 @@ namespace PaulEngine
 	void EditorLayer::DrawProjectSelectUI()
 	{
 		static bool open = true;
-		ImGui::SetNextWindowSizeConstraints(ImVec2(598.0f, 254.0f), ImVec2(1000.0f, 1000.0f));
+		Window& window = Application::Get().GetWindow();
+		glm::ivec2 windowPos = { window.GetPosX(), window.GetPosY() };
+
+		float minXSize = 598.0f;
+		float minYSize = 254.0f;
+		ImGui::SetNextWindowPos({(windowPos.x + m_ViewportSize.x / 2) - minXSize / 2.0f, (windowPos.y + m_ViewportSize.y / 2) - minYSize / 2.0f });
+		ImGui::SetNextWindowSizeConstraints(ImVec2(minXSize, minYSize), ImVec2(1000.0f, 1000.0f));
 		ImGui::Begin("##Paul Engine", &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 		ImGui::Text("Welcome to Paul Engine.");
 
