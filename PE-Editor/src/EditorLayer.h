@@ -69,7 +69,7 @@ namespace PaulEngine {
 		ShaderLibrary m_ShaderLibrary;
 		int m_ShadowWidth = 1280;
 		int m_ShadowHeight = 1280;
-		Ref<Framebuffer> m_MainFramebuffer;
+		RenderComponentFramebuffer* m_FramebufferComponent = nullptr;
 
 		AssetHandle m_ActiveSceneHandle = 0;
 		Ref<Scene> m_ActiveScene;

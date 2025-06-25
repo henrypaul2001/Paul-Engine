@@ -30,6 +30,13 @@ namespace PaulEngine
 
 		// Create resources
 		// ----------------
+
+		// Main framebuffer
+		FramebufferSpecification spec;
+		spec.Width = 1280;
+		spec.Height = 720;
+		spec.Samples = 1;
+
 		TextureSpecification screenSpec;
 		screenSpec.Width = 1280;
 		screenSpec.Height = 720;
@@ -48,7 +55,13 @@ namespace PaulEngine
 
 		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
 
-		m_MainFramebuffer->AddColourAttachment(screenAttachment);
+		screenSpec.Format = ImageFormat::RED_INTEGER;
+		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, screenSpec, true);
+
+		screenSpec.Format = ImageFormat::Depth24Stencil8;
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, screenSpec, true);
+
+		Ref<Framebuffer> mainFramebuffer = Framebuffer::Create(spec, { screenAttachment, entityIDAttach }, depthAttach);
 
 		// Shadow maps
 		// -----------
@@ -165,19 +178,19 @@ namespace PaulEngine
 
 		// Framebuffers
 		// ------------
-		FramebufferSpecification spec;
-		spec.Width = m_ShadowWidth;
-		spec.Height = m_ShadowHeight;
-		spec.Samples = 1;
+		FramebufferSpecification shadowFBOSpec;
+		shadowFBOSpec.Width = m_ShadowWidth;
+		shadowFBOSpec.Height = m_ShadowHeight;
+		shadowFBOSpec.Samples = 1;
 
 		Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, dirLightShadowArray->Handle);
-		Ref<Framebuffer> dirLightShadowsFramebuffer = Framebuffer::Create(spec, {}, dirLightShadowDepthArrayAttach);
+		Ref<Framebuffer> dirLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, dirLightShadowDepthArrayAttach);
 
 		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, spotLightShadowArray->Handle);
-		Ref<Framebuffer> spotLightShadowsFramebuffer = Framebuffer::Create(spec, {}, spotLightShadowDepthArrayAttach);
+		Ref<Framebuffer> spotLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, spotLightShadowDepthArrayAttach);
 
 		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, pointLightShadowArray->Handle);
-		Ref<Framebuffer> pointLightShadowsFramebuffer = Framebuffer::Create(spec, {}, pointLightShadowDepthAttach);
+		Ref<Framebuffer> pointLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, pointLightShadowDepthAttach);
 
 		FramebufferSpecification bloomSpec;
 		bloomSpec.Width = m_ViewportSize.x;
@@ -185,7 +198,7 @@ namespace PaulEngine
 		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
 		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
 
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, m_MainFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, mainFramebuffer);
 		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
 		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", false, spotLightShadowsFramebuffer);
 		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", false, pointLightShadowsFramebuffer);
@@ -275,6 +288,7 @@ namespace PaulEngine
 			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
 				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
 				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
@@ -1181,20 +1195,20 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial" });
 	
 		// Main render
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, scene3DPass), m_MainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_MainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, scene3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomCombinePass), m_MainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomCombinePass), mainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" });
 
 		// Editor overlay
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), m_MainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
 		
 		// Post process
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_MainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
 	void EditorLayer::CreateDeferredRenderer(FrameRenderer* out_Framerenderer)
@@ -1307,12 +1321,16 @@ namespace PaulEngine
 		deltaTime = timestep;
 
 		// Resize
-		if (m_MainFramebuffer) {
-			const FramebufferSpecification& spec = m_MainFramebuffer->GetSpecification();
+		if (m_FramebufferComponent) {
+			Ref<Framebuffer> mainFramebuffer = m_FramebufferComponent->Framebuffer;
+			if (mainFramebuffer)
+			{
+				const FramebufferSpecification& spec = mainFramebuffer->GetSpecification();
 			if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
 				MainViewportResizeEvent e = MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y);
 				OnEvent(e);
 			}
+		}
 		}
 
 		Renderer2D::ResetStats();
@@ -1322,14 +1340,19 @@ namespace PaulEngine
 		RenderCommand::Clear();
 
 		if (m_ProjectSelected) {
+			if (m_FramebufferComponent)
+			{
+				Ref<Framebuffer> mainFramebuffer = m_FramebufferComponent->Framebuffer;
+				if (mainFramebuffer)
+				{
 			// Clear entity ID attachment to -1
-			FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
+					FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(mainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
 			texAttachment->GetTexture()->Clear(-1);
 
 			auto renderResource = m_Renderer->GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
 			if (renderResource) { renderResource->Data = m_SceneHierarchyPanel.GetSelectedEntity(); }
 
-			m_MainFramebuffer->Bind();
+					mainFramebuffer->Bind();
 			switch (m_SceneState)
 			{
 				case SceneState::Edit:
@@ -1366,13 +1389,15 @@ namespace PaulEngine
 
 			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 			{
-				m_HoveredEntity = Entity((entt::entity)m_MainFramebuffer->ReadPixel(FramebufferAttachmentPoint::Colour1, mouseX, mouseY), m_ActiveScene.get());
+						m_HoveredEntity = Entity((entt::entity)mainFramebuffer->ReadPixel(FramebufferAttachmentPoint::Colour1, mouseX, mouseY), m_ActiveScene.get());
 			}
 			else {
 				m_HoveredEntity = Entity();
 			}
 
-			m_MainFramebuffer->Unbind();
+					mainFramebuffer->Unbind();
+		}
+	}
 		}
 	}
 
@@ -1541,9 +1566,16 @@ namespace PaulEngine
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			m_ViewportSize = glm::vec2(viewportPanelSize.x, viewportPanelSize.y);
 
-			FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(m_MainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
+			if (m_FramebufferComponent)
+			{
+				Ref<Framebuffer> mainFrambuffer = m_FramebufferComponent->Framebuffer;
+				if (mainFrambuffer)
+				{
+					FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(mainFrambuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
 			uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
 			ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+				}
+			}
 
 			if (ImGui::BeginDragDropTarget()) {
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -1857,8 +1889,6 @@ namespace PaulEngine
 
 	bool EditorLayer::OnViewportResize(MainViewportResizeEvent& e)
 	{
-		m_MainFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_Camera->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		return false;
@@ -2014,35 +2044,6 @@ namespace PaulEngine
 
 	void EditorLayer::OnProjectSelected()
 	{
-		FramebufferSpecification spec;
-		spec.Width = 1280;
-		spec.Height = 720;
-		spec.Samples = 1;
-
-		TextureSpecification texSpec;
-		texSpec.Width = 1280;
-		texSpec.Height = 720;
-		texSpec.GenerateMips = false;
-		texSpec.Format = ImageFormat::RGBA8;
-		texSpec.MinFilter = ImageMinFilter::NEAREST;
-		texSpec.MagFilter = ImageMagFilter::NEAREST;
-		texSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
-		texSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
-		texSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
-		texSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		//Ref<FramebufferTexture2DAttachment> colour0Attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, texSpec);
-
-		texSpec.Format = ImageFormat::RED_INTEGER;
-		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, texSpec, true);
-
-		texSpec.Format = ImageFormat::Depth24Stencil8;
-		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, texSpec, true);
-
-		m_MainFramebuffer = Framebuffer::Create(spec, { entityIDAttach }, depthAttach);
-
-		m_MainFramebuffer->AddColourAttachment(entityIDAttach);
-		m_MainFramebuffer->SetDepthAttachment(depthAttach);
-
 		RenderPipelineContext renderContext = Project::GetActive()->GetSpecification().RenderContext;
 		switch (renderContext)
 		{
@@ -2057,6 +2058,7 @@ namespace PaulEngine
 			break;
 		}
 
+		m_FramebufferComponent = m_Renderer->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer");
 		m_FrameRendererPanel.SetContext(m_Renderer);
 		m_AtlasCreateWindow.Init();
 		m_MaterialCreateWindow.Init();
