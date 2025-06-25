@@ -130,6 +130,7 @@ void main()
 	// Write to gBuffer
 	gWorldPosition = v_VertexData.WorldFragPos;
 	gWorldNormal = Normal;
+	gAlbedo = MaterialAlbedo;
 	gSpecular = vec4(MaterialSpecular, u_MaterialValues.Shininess);
 	gARM = vec3(0.0, 0.0, 0.0);
 	gEmission = MaterialEmission;

@@ -24,789 +24,567 @@
 
 namespace PaulEngine
 {
-	void EditorLayer::CreateForwardRenderer(FrameRenderer* out_Framerenderer)
+	struct BloomMipChain
 	{
-		PE_PROFILE_FUNCTION();
-
-		// Create resources
-		// ----------------
-
-		// Main framebuffer
-		FramebufferSpecification spec;
-		spec.Width = 1280;
-		spec.Height = 720;
-		spec.Samples = 1;
-
-		TextureSpecification screenSpec;
-		screenSpec.Width = 1280;
-		screenSpec.Height = 720;
-		screenSpec.GenerateMips = false;
-		screenSpec.Format = ImageFormat::RGBA16F;
-		screenSpec.MinFilter = ImageMinFilter::NEAREST;
-		screenSpec.MagFilter = ImageMagFilter::NEAREST;
-		screenSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
-		screenSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
-		screenSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
-		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
-		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
-
-		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
-
-		screenSpec.Format = ImageFormat::RED_INTEGER;
-		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, screenSpec, true);
-
-		screenSpec.Format = ImageFormat::Depth24Stencil8;
-		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, screenSpec, true);
-
-		Ref<Framebuffer> mainFramebuffer = Framebuffer::Create(spec, { screenAttachment, entityIDAttach }, depthAttach);
-
-		// Shadow maps
-		// -----------
-		TextureSpecification depthSpec;
-		depthSpec.Border = glm::vec4(1.0f);
-		depthSpec.Width = m_ShadowWidth;
-		depthSpec.Height = m_ShadowHeight;
-		depthSpec.MinFilter = ImageMinFilter::NEAREST;
-		depthSpec.MagFilter = ImageMagFilter::NEAREST;
-		depthSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
-		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
-		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
-		depthSpec.Format = ImageFormat::Depth32;
-
-		Ref<Texture2DArray> dirLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
-		Ref<Texture2DArray> spotLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
-		Ref<TextureCubemapArray> pointLightShadowArray = AssetManager::CreateAsset<TextureCubemapArray>(true, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
-
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirLightShadowMap", false, dirLightShadowArray->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", false, spotLightShadowArray->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("PointLightShadowMap", false, pointLightShadowArray->Handle);
-
-		// In the future, this should be serialized. But many of the existing resources such as shadow framebuffers and textures aren't suited for this value to change during runtime
-		glm::ivec2 shadowRes = { m_ShadowWidth, m_ShadowHeight };
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", false, shadowRes);
-
-		//  Data
-		// ------
-		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
-		
-		bool showColliders = true;
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, showColliders);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
-						 
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
-						 
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", true, m_EntityOutlineColour);
-
-		float bloomThreshold = 1.0f;
-		float bloomSoftThreshold = 0.5f;
-		float filterRadius = 0.005f;
-
-		float bloomStrength = 0.04f;
-		float dirtMaskStrength = 0.5f;
-		bool useDirtMask = true;
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomThreshold", true, bloomThreshold);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomSoftThreshold", true, bloomSoftThreshold);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomFilterRadius", true, filterRadius);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomStrength", true, bloomStrength);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomDirtMaskStrength", true, dirtMaskStrength);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("UseDirtMask", true, useDirtMask);
-
-		// Bloom mip chain
-		// ---------------
-		struct BloomMipChain
+		void Init(const glm::ivec2 viewportSize, const uint8_t chainLength = 6)
 		{
-			void Init(const glm::ivec2 viewportSize, const uint8_t chainLength = 6)
+			TextureSpecification mipSpec;
+			mipSpec.Format = ImageFormat::R11FG11FB10F;
+			mipSpec.MinFilter = ImageMinFilter::LINEAR;
+			mipSpec.MagFilter = ImageMagFilter::LINEAR;
+			mipSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
+			mipSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
+			mipSpec.GenerateMips = false;
+
+			m_Chain.clear();
+			m_Chain.reserve(chainLength);
+			glm::vec2 mipSize = viewportSize;
+			for (uint8_t i = 0; i < chainLength; i++)
 			{
-				TextureSpecification mipSpec;
-				mipSpec.Format = ImageFormat::R11FG11FB10F;
-				mipSpec.MinFilter = ImageMinFilter::LINEAR;
-				mipSpec.MagFilter = ImageMagFilter::LINEAR;
-				mipSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
-				mipSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
-				mipSpec.GenerateMips = false;
+				mipSize *= 0.5f;
+				mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
 
-				m_Chain.clear();
-				m_Chain.reserve(chainLength);
-				glm::vec2 mipSize = viewportSize;
-				for (uint8_t i = 0; i < chainLength; i++)
-				{
-					mipSize *= 0.5f;
-					mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
+				mipSpec.Width = (uint32_t)mipSize.x;
+				mipSpec.Height = (uint32_t)mipSize.y;
 
-					mipSpec.Width = (uint32_t)mipSize.x;
-					mipSpec.Height = (uint32_t)mipSize.y;
-
-					Ref<Texture2D> texture = AssetManager::CreateAsset<Texture2D>(true, mipSpec);
-					m_Chain.push_back(texture->Handle);
-				}
+				Ref<Texture2D> texture = AssetManager::CreateAsset<Texture2D>(true, mipSpec);
+				m_Chain.push_back(texture->Handle);
 			}
-
-			void Resize(const glm::ivec2 viewportSize)
-			{
-				glm::vec2 mipSize = viewportSize;
-				for (uint8_t i = 0; i < m_Chain.size(); i++)
-				{
-					mipSize *= 0.5f;
-					mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
-					AssetManager::GetAsset<Texture2D>(m_Chain[i])->Resize(mipSize.x, mipSize.y);
-				}
-			}
-
-			size_t Size() const { return m_Chain.size(); }
-
-			Ref<Texture2D> GetMipLevel(uint8_t mip) { 
-				PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
-				return AssetManager::GetAsset<Texture2D>(m_Chain[mip]);
-			}
-
-			AssetHandle GetMipHandle(uint8_t mip) {
-				PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
-				return m_Chain[mip];
-			}
-
-		private:
-			std::vector<AssetHandle> m_Chain;
-		};
-		BloomMipChain bloomMipChain;
-		bloomMipChain.Init(m_ViewportSize, 6);
-
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", false, bloomMipChain);
-
-		// Framebuffers
-		// ------------
-		FramebufferSpecification shadowFBOSpec;
-		shadowFBOSpec.Width = m_ShadowWidth;
-		shadowFBOSpec.Height = m_ShadowHeight;
-		shadowFBOSpec.Samples = 1;
-
-		Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, dirLightShadowArray->Handle);
-		Ref<Framebuffer> dirLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, dirLightShadowDepthArrayAttach);
-
-		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, spotLightShadowArray->Handle);
-		Ref<Framebuffer> spotLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, spotLightShadowDepthArrayAttach);
-
-		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, pointLightShadowArray->Handle);
-		Ref<Framebuffer> pointLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, pointLightShadowDepthAttach);
-
-		FramebufferSpecification bloomSpec;
-		bloomSpec.Width = m_ViewportSize.x;
-		bloomSpec.Height = m_ViewportSize.y;
-		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
-		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
-
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, mainFramebuffer);
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", false, spotLightShadowsFramebuffer);
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", false, pointLightShadowsFramebuffer);
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", false, bloomFBO);
-
-		// Materials
-		// ---------
-		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
-		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
-
-		AssetHandle shadowmapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
-		Ref<Material> shadowmapMaterial = AssetManager::CreateAsset<Material>(true, shadowmapShaderHandle);
-
-		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
-		Ref<Material> shadowmapCubeMaterial = AssetManager::CreateAsset<Material>(true, shadowmapCubeShaderHandle);
-
-		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
-		Ref<Material> gammaTonemapMaterial = AssetManager::CreateAsset<Material>(true, gammaTonemapShaderHandle);
-
-		AssetHandle bloomDownsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
-		Ref<Material> mipchainDownsampleMaterial = AssetManager::CreateAsset<Material>(true, bloomDownsampleShaderHandle);
-
-		AssetHandle bloomUpsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
-		Ref<Material> mipchainUpsampleMaterial = AssetManager::CreateAsset<Material>(true, bloomUpsampleShaderHandle);
-
-		AssetHandle bloomCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
-		Ref<Material> bloomCombineMaterial = AssetManager::CreateAsset<Material>(true, bloomCombineShaderHandle);
-
-		AssetHandle skyboxShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
-		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
-
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", false, shadowmapMaterial->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", false, shadowmapCubeMaterial->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", false, mipchainDownsampleMaterial->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", false, mipchainUpsampleMaterial->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", false, bloomCombineMaterial->Handle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
-
-		// Textures
-		// --------
-		AssetHandle dirtMaskTextureHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/dirtmask.jpg", true);
-
-		// Create skybox cubemap texture from individual faces
-		// TODO: cubemap asset as a single file (probably another custom file format similar to binary texture array file)
-
-		std::vector<std::filesystem::path> facePaths = { 
-			"assets/textures/cubemap/default_skybox/right.png", 
-			"assets/textures/cubemap/default_skybox/left.png",
-			"assets/textures/cubemap/default_skybox/top.png",
-			"assets/textures/cubemap/default_skybox/bottom.png",
-			"assets/textures/cubemap/default_skybox/front.png",
-			"assets/textures/cubemap/default_skybox/back.png"
-		};
-
-		std::vector<Buffer> faceData;
-		faceData.reserve(6);
-		for (int i = 0; i < 6; i++)
-		{
-			TextureImporter::ImageFileReadResult result;
-			faceData.push_back(TextureImporter::ReadImageFile(facePaths[i], result, false));
 		}
 
-		TextureSpecification skyboxSpec;
-		skyboxSpec.Format = ImageFormat::RGB8;
-		skyboxSpec.MinFilter = ImageMinFilter::LINEAR;
-		skyboxSpec.MagFilter = ImageMagFilter::LINEAR;
-		skyboxSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
-		skyboxSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
-		skyboxSpec.Wrap_R = ImageWrap::CLAMP_TO_EDGE;
-		skyboxSpec.Width = 2048;
-		skyboxSpec.Height = 2048;
-		Ref<TextureCubemap> skyboxCubemap = AssetManager::CreateAsset<TextureCubemap>(true, skyboxSpec, faceData);
-		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
-
-		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
-		out_Framerenderer->AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
-
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
-
-		// OnEvent
-		// -------
-		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+		void Resize(const glm::ivec2 viewportSize)
 		{
-			EventDispatcher dispatcher = EventDispatcher(e);
-			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
-				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
-				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
-				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
-				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
-				return false;
-			});
-		};
-		out_Framerenderer->SetEventFunc(eventFunc);
-
-		// Render pass functions
-		// ---------------------
-
-		// { primitive<glm::ivec2>, material }
-		RenderPass::OnRenderFunc dirLightShadowPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Directional light shadow map capture pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
-			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
-			RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-
-			RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
-
-			Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
-			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
-			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
-
-			std::vector<Entity> dirLights = std::vector<Entity>(Renderer::MAX_ACTIVE_DIR_LIGHTS);
-			int dirLightsHead = 0;
-			int activeLights = 0;
-			auto view = sceneContext->View<ComponentDirectionalLight>();
-
-			// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
-			for (auto entityID : view) {
-				dirLights[dirLightsHead] = Entity(entityID, sceneContext.get());
-				dirLightsHead = ++dirLightsHead % Renderer::MAX_ACTIVE_DIR_LIGHTS;
-				activeLights = std::min(Renderer::MAX_ACTIVE_DIR_LIGHTS, ++activeLights);
+			glm::vec2 mipSize = viewportSize;
+			for (uint8_t i = 0; i < m_Chain.size(); i++)
+			{
+				mipSize *= 0.5f;
+				mipSize = glm::max(mipSize, glm::vec2(1.0f, 1.0f));
+				AssetManager::GetAsset<Texture2D>(m_Chain[i])->Resize(mipSize.x, mipSize.y);
 			}
+		}
 
-			// Capture shadow maps for previously gathered light sources
-			for (int i = 0; i < activeLights; i++) {
-				Entity entity = dirLights[i];
-				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
-				ComponentDirectionalLight& light = entity.GetComponent<ComponentDirectionalLight>();
+		size_t Size() const { return m_Chain.size(); }
 
-				if (light.CastShadows)
+		Ref<Texture2D> GetMipLevel(uint8_t mip) {
+			PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
+			return AssetManager::GetAsset<Texture2D>(m_Chain[mip]);
+		}
+
+		AssetHandle GetMipHandle(uint8_t mip) {
+			PE_CORE_ASSERT(mip < m_Chain.size(), "Index out of bounds. Index: {0}, Size: {1}", mip, m_Chain.size());
+			return m_Chain[mip];
+		}
+
+	private:
+		std::vector<AssetHandle> m_Chain;
+	};
+	
+	// { primitive<glm::ivec2>, material }
+	RenderPass::OnRenderFunc dirLightShadowPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Directional light shadow map capture pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
+		RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
+		RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+
+		RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
+
+		Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
+		PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
+		PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
+
+		std::vector<Entity> dirLights = std::vector<Entity>(Renderer::MAX_ACTIVE_DIR_LIGHTS);
+		int dirLightsHead = 0;
+		int activeLights = 0;
+		auto view = sceneContext->View<ComponentDirectionalLight>();
+
+		// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
+		for (auto entityID : view) {
+			dirLights[dirLightsHead] = Entity(entityID, sceneContext.get());
+			dirLightsHead = ++dirLightsHead % Renderer::MAX_ACTIVE_DIR_LIGHTS;
+			activeLights = std::min(Renderer::MAX_ACTIVE_DIR_LIGHTS, ++activeLights);
+		}
+
+		// Capture shadow maps for previously gathered light sources
+		for (int i = 0; i < activeLights; i++) {
+			Entity entity = dirLights[i];
+			ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+			ComponentDirectionalLight& light = entity.GetComponent<ComponentDirectionalLight>();
+
+			if (light.CastShadows)
+			{
+				FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
+				depthArrayAttachment->SetTargetIndex(i);
+				targetFramebuffer->SetDepthAttachment(depthAttachment);
+				RenderCommand::Clear();
+
+				glm::mat4 transformMatrix = transform.GetTransform();
+				glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+				rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+				rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+				rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+				glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f));
+
+				float shadowSize = light.ShadowMapProjectionSize;
+				float nearClip = light.ShadowMapNearClip;
+				float farClip = light.ShadowMapFarClip;
+
+				glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+				SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
+				cam.SetOrthographic(shadowSize, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
+
+				Renderer::BeginScene(cam, cameraTransform);
+
 				{
-					FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
-					depthArrayAttachment->SetTargetIndex(i);
-					targetFramebuffer->SetDepthAttachment(depthAttachment);
-					RenderCommand::Clear();
-
-					glm::mat4 transformMatrix = transform.GetTransform();
-					glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
-
-					rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
-					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
-					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
-
-					glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f));
-
-					float shadowSize = light.ShadowMapProjectionSize;
-					float nearClip = light.ShadowMapNearClip;
-					float farClip = light.ShadowMapFarClip;
-
-					glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-					SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
-					cam.SetOrthographic(shadowSize, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
-
-					Renderer::BeginScene(cam, cameraTransform);
-
-					{
-						PE_PROFILE_SCOPE("Submit Mesh");
-						AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
-						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
-						for (auto entityID : view) {
-							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							BlendState blend;
-							blend.Enabled = false;
-							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
-						}
+					PE_PROFILE_SCOPE("Submit Mesh");
+					AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
+					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+					for (auto entityID : view) {
+						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+						BlendState blend;
+						blend.Enabled = false;
+						Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 					}
-
-					Renderer::EndScene();
 				}
+
+				Renderer::EndScene();
 			}
-			};
-
-		// { primitive<glm::ivec2>, material }
-		RenderPass::OnRenderFunc spotLightShadowPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Spot light shadow map capture pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
-			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
-			RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-
-			RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
-
-			Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
-			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
-			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
-
-			std::vector<Entity> spotLights = std::vector<Entity>(Renderer::MAX_ACTIVE_SPOT_LIGHTS);
-			int spotLightsHead = 0;
-			int activeLights = 0;
-			auto view = sceneContext->View<ComponentSpotLight>();
-
-			// Get spot light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
-			for (auto entityID : view) {
-				spotLights[spotLightsHead] = Entity(entityID, sceneContext.get());
-				spotLightsHead = ++spotLightsHead % Renderer::MAX_ACTIVE_SPOT_LIGHTS;
-				activeLights = std::min(Renderer::MAX_ACTIVE_SPOT_LIGHTS, ++activeLights);
-			}
-
-			// Capture shadow maps for previously gathered light sources
-			for (int i = 0; i < activeLights; i++) {
-				Entity entity = spotLights[i];
-				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
-				ComponentSpotLight& light = entity.GetComponent<ComponentSpotLight>();
-
-				if (light.CastShadows)
-				{
-					FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
-					depthArrayAttachment->SetTargetIndex(i);
-					targetFramebuffer->SetDepthAttachment(depthAttachment);
-					RenderCommand::Clear();
-
-					glm::mat4 transformMatrix = transform.GetTransform();
-					glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
-
-					rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
-					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
-					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
-
-					glm::vec3 position = transform.WorldPosition();
-					glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
-
-					float nearClip = light.ShadowMapNearClip;
-					float farClip = light.ShadowMapFarClip;
-
-					glm::mat4 cameraTransform = glm::inverse(glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f)));
-					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
-					cam.SetPerspective(90.0f, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
-
-					Renderer::BeginScene(cam, cameraTransform);
-
-					{
-						AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
-						PE_PROFILE_SCOPE("Submit Mesh");
-						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
-						for (auto entityID : view) {
-							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							BlendState blend;
-							blend.Enabled = false;
-							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
-						}
-					}
-
-					Renderer::EndScene();
-				}
-			}
+		}
 		};
 
-		// { primitive<glm::ivec2>, material }
-		RenderPass::OnRenderFunc pointLightShadowFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Point light shadow map capture pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
-			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
-			RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+	// { primitive<glm::ivec2>, material }
+	RenderPass::OnRenderFunc spotLightShadowPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Spot light shadow map capture pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
+		RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+		RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 
-			RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
+		RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
 
-			Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
-			PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
-			PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::TextureCubemapArray, "Shadow map framebuffer depth attachment must be cubemap array");
+		Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
+		PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
+		PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Shadow map framebuffer depth attachment must be texture array");
 
-			std::vector<Entity> pointLights = std::vector<Entity>(Renderer::MAX_ACTIVE_POINT_LIGHTS);
-			int pointLightsHead = 0;
-			int activeLights = 0;
-			auto view = sceneContext->View<ComponentPointLight>();
+		std::vector<Entity> spotLights = std::vector<Entity>(Renderer::MAX_ACTIVE_SPOT_LIGHTS);
+		int spotLightsHead = 0;
+		int activeLights = 0;
+		auto view = sceneContext->View<ComponentSpotLight>();
 
-			// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
-			for (auto entityID : view) {
-				pointLights[pointLightsHead] = Entity(entityID, sceneContext.get());
-				pointLightsHead = ++pointLightsHead % Renderer::MAX_ACTIVE_POINT_LIGHTS;
-				activeLights = std::min(Renderer::MAX_ACTIVE_POINT_LIGHTS, ++activeLights);
-			}
+		// Get spot light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
+		for (auto entityID : view) {
+			spotLights[spotLightsHead] = Entity(entityID, sceneContext.get());
+			spotLightsHead = ++spotLightsHead % Renderer::MAX_ACTIVE_SPOT_LIGHTS;
+			activeLights = std::min(Renderer::MAX_ACTIVE_SPOT_LIGHTS, ++activeLights);
+		}
 
-			FramebufferTextureCubemapArrayAttachment* cubemapArrayAttachment = dynamic_cast<FramebufferTextureCubemapArrayAttachment*>(depthAttachment.get());
-			cubemapArrayAttachment->SetTargetIndex(0);
-			cubemapArrayAttachment->SetTargetFace((CubemapFace)0);
-			cubemapArrayAttachment->BindAsLayered = false;
-			targetFramebuffer->SetDepthAttachment(depthAttachment);
-			RenderCommand::Clear();
+		// Capture shadow maps for previously gathered light sources
+		for (int i = 0; i < activeLights; i++) {
+			Entity entity = spotLights[i];
+			ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+			ComponentSpotLight& light = entity.GetComponent<ComponentSpotLight>();
 
-			// Capture shadow maps for previously gathered light sources
-			for (int i = 0; i < activeLights; i++) {
-				Entity entity = pointLights[i];
-				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
-				ComponentPointLight& light = entity.GetComponent<ComponentPointLight>();
+			if (light.CastShadows)
+			{
+				FramebufferTexture2DArrayAttachment* depthArrayAttachment = dynamic_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
+				depthArrayAttachment->SetTargetIndex(i);
+				targetFramebuffer->SetDepthAttachment(depthAttachment);
+				RenderCommand::Clear();
 
-				if (light.CastShadows)
+				glm::mat4 transformMatrix = transform.GetTransform();
+				glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+				rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+				rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+				rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+				glm::vec3 position = transform.WorldPosition();
+				glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f));
+
+				float nearClip = light.ShadowMapNearClip;
+				float farClip = light.ShadowMapFarClip;
+
+				glm::mat4 cameraTransform = glm::inverse(glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f)));
+				SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
+				cam.SetPerspective(90.0f, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
+
+				Renderer::BeginScene(cam, cameraTransform);
+
 				{
 					AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
-					Ref<Material> shadowmapMaterial = AssetManager::GetAsset<Material>(shadowmapHandle);
+					PE_PROFILE_SCOPE("Submit Mesh");
+					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+					for (auto entityID : view) {
+						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+						BlendState blend;
+						blend.Enabled = false;
+						Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+					}
+				}
 
-					float nearClip = light.ShadowMapNearClip;
-					float farClip = light.ShadowMapFarClip;
+				Renderer::EndScene();
+			}
+		}
+		};
 
-					glm::mat4 transformMatrix = transform.GetTransform();
-					glm::vec3 position = transform.WorldPosition();
+	// { primitive<glm::ivec2>, material }
+	RenderPass::OnRenderFunc pointLightShadowFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Point light shadow map capture pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		PE_CORE_ASSERT(inputs[0], "Shadow resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Shadow map material input required");
+		RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
+		RenderComponentMaterial* shadowmapMaterial = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 
-					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
+		RenderCommand::SetViewport({ 0, 0 }, shadowResInput->Data);
 
-					UniformBufferStorage* uboStorage = shadowmapMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
+		Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
+		PE_CORE_ASSERT(depthAttachment, "Shadow map framebuffer missing depth attachment");
+		PE_CORE_ASSERT(depthAttachment->GetType() == FramebufferAttachmentType::TextureCubemapArray, "Shadow map framebuffer depth attachment must be cubemap array");
+
+		std::vector<Entity> pointLights = std::vector<Entity>(Renderer::MAX_ACTIVE_POINT_LIGHTS);
+		int pointLightsHead = 0;
+		int activeLights = 0;
+		auto view = sceneContext->View<ComponentPointLight>();
+
+		// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
+		for (auto entityID : view) {
+			pointLights[pointLightsHead] = Entity(entityID, sceneContext.get());
+			pointLightsHead = ++pointLightsHead % Renderer::MAX_ACTIVE_POINT_LIGHTS;
+			activeLights = std::min(Renderer::MAX_ACTIVE_POINT_LIGHTS, ++activeLights);
+		}
+
+		FramebufferTextureCubemapArrayAttachment* cubemapArrayAttachment = dynamic_cast<FramebufferTextureCubemapArrayAttachment*>(depthAttachment.get());
+		cubemapArrayAttachment->SetTargetIndex(0);
+		cubemapArrayAttachment->SetTargetFace((CubemapFace)0);
+		cubemapArrayAttachment->BindAsLayered = false;
+		targetFramebuffer->SetDepthAttachment(depthAttachment);
+		RenderCommand::Clear();
+
+		// Capture shadow maps for previously gathered light sources
+		for (int i = 0; i < activeLights; i++) {
+			Entity entity = pointLights[i];
+			ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+			ComponentPointLight& light = entity.GetComponent<ComponentPointLight>();
+
+			if (light.CastShadows)
+			{
+				AssetHandle shadowmapHandle = shadowmapMaterial->MaterialHandle;
+				Ref<Material> shadowmapMaterial = AssetManager::GetAsset<Material>(shadowmapHandle);
+
+				float nearClip = light.ShadowMapNearClip;
+				float farClip = light.ShadowMapFarClip;
+
+				glm::mat4 transformMatrix = transform.GetTransform();
+				glm::vec3 position = transform.WorldPosition();
+
+				glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
+
+				UniformBufferStorage* uboStorage = shadowmapMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
 				uboStorage->SetLocalData("ViewProjections[0][0]", lightProjection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 				uboStorage->SetLocalData("ViewProjections[0][1]", lightProjection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 				uboStorage->SetLocalData("ViewProjections[0][2]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 				uboStorage->SetLocalData("ViewProjections[0][3]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
 				uboStorage->SetLocalData("ViewProjections[0][4]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 				uboStorage->SetLocalData("ViewProjections[0][5]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-					uboStorage->SetLocalData("CubemapIndex", i);
-					uboStorage->SetLocalData("FarPlane", farClip);
+				uboStorage->SetLocalData("CubemapIndex", i);
+				uboStorage->SetLocalData("FarPlane", farClip);
 
-					SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
-					cam.SetPerspective(90.0f, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
-					Renderer::BeginScene(cam, transformMatrix);
-
-					{
-						PE_PROFILE_SCOPE("Submit Mesh");
-						auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
-						for (auto entityID : view) {
-							auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-							BlendState blend;
-							blend.Enabled = false;
-							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
-						}
-					}
-
-					Renderer::EndScene();
-				}
-			}
-		};
-
-		// { primitive<glm::ivec2>, Texture }
-	RenderPass::OnRenderFunc forward2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Scene 2D Render Pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			Ref<Camera> activeCamera = context.ActiveCamera;
-			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Target texture attachment input required");
-			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
-			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
-
-			// Ping - pong framebuffer attachment
-			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
-			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
-			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
-			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
-			if (currentTargetTexture != screenTextureInputHandle)
-			{
-				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
-				targetFramebuffer->AddColourAttachment(attach);
-			}
-
-			targetFramebuffer->SetDrawBuffers();
-			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
-			RenderCommand::SetClearColour(glm::vec4(0.01f, 0.01f, 0.01f, 1.0f));
-			RenderCommand::Clear();
-
-			if (activeCamera && sceneContext) {
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-				{
-					PE_PROFILE_SCOPE("Draw Quads");
-					auto group = sceneContext->Group<ComponentTransform>(entt::get<Component2DSprite>);
-					for (auto entityID : group) {
-						auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
-						if (sprite.TextureAtlas) {
-							Renderer2D::DrawQuad(transform.GetTransform(), sprite.TextureAtlas, sprite.SelectedSubTextureName, sprite.Colour, (int)entityID);
-						}
-						else if (sprite.Texture) {
-							Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
-						}
-						else {
-							Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entityID);
-						}
-					}
-				}
-
-				{
-					PE_PROFILE_SCOPE("Draw Circles");
-					auto view = sceneContext->View<ComponentTransform, Component2DCircle>();
-					for (auto entityID : view) {
-						auto [transform, circle] = view.get<ComponentTransform, Component2DCircle>(entityID);
-
-						Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
-					}
-				}
-
-				{
-					PE_PROFILE_SCOPE("Draw Text");
-					auto view = sceneContext->View<ComponentTransform, ComponentTextRenderer>();
-					for (auto entityID : view) {
-						auto [transform, text] = view.get<ComponentTransform, ComponentTextRenderer>(entityID);
-
-						Renderer2D::TextParams params;
-						params.Colour = text.Colour;
-						params.Kerning = text.Kerning;
-						params.LineSpacing = text.LineSpacing;
-
-						Renderer2D::DrawString(text.TextString, text.Font, transform.GetTransform(), params, (int)entityID);
-					}
-				}
-
-				Renderer2D::EndScene();
-			}
-			};
-
-		// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture, EnvironmentMap }
-	RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Scene 3D Render Pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			Ref<Camera> activeCamera = context.ActiveCamera;
-			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Shadow resolution input required");
-			PE_CORE_ASSERT(inputs[2], "Dir light shadow map input required");
-			PE_CORE_ASSERT(inputs[3], "Spot light shadow map input required");
-			PE_CORE_ASSERT(inputs[4], "Point light shadow map input required");
-			PE_CORE_ASSERT(inputs[5], "Target texture attachment input required");
-			PE_CORE_ASSERT(inputs[6], "Environment map input required");
-			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
-			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[1]);
-			RenderComponentTexture* dirLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
-			RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
-			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
-			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
-			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
-
-			// Ping - pong framebuffer attachment
-			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
-			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
-			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
-			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
-			if (currentTargetTexture != screenTextureInputHandle)
-			{
-				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
-				targetFramebuffer->AddColourAttachment(attach);
-			}
-
-			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
-
-			if (activeCamera && sceneContext) {
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+				SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
+				cam.SetPerspective(90.0f, (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
+				Renderer::BeginScene(cam, transformMatrix);
 
 				{
 					PE_PROFILE_SCOPE("Submit Mesh");
 					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 					for (auto entityID : view) {
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Renderer::SubmitMesh(mesh.MeshHandle, mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
+						BlendState blend;
+						blend.Enabled = false;
+						Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 					}
-				}
-
-				{
-					PE_PROFILE_SCOPE("Submit lights");
-					{
-						PE_PROFILE_SCOPE("Directional lights");
-						auto view = sceneContext->View<ComponentTransform, ComponentDirectionalLight>();
-						for (auto entityID : view) {
-							auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
-							glm::mat4 transformMatrix = transform.GetTransform();
-							glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
-
-							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
-							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
-							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
-
-							Renderer::DirectionalLight lightSource;
-							lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), (float)light.CastShadows);
-							lightSource.Diffuse = glm::vec4(light.Diffuse, light.ShadowMinBias);
-							lightSource.Specular = glm::vec4(light.Specular, light.ShadowMaxBias);
-							lightSource.Ambient = glm::vec4(light.Ambient, light.ShadowMapCameraDistance);
-
-							float shadowSize = light.ShadowMapProjectionSize;
-
-							glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-							float aspectRatio = (float)shadowResInput->Data.x / (float)shadowResInput->Data.y;
-							float orthoLeft = -shadowSize * aspectRatio * 0.5f;
-							float orthoRight = shadowSize * aspectRatio * 0.5f;
-							float orthoBottom = -shadowSize * 0.5f;
-							float orthoTop = shadowSize * 0.5f;
-
-							glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, light.ShadowMapNearClip, light.ShadowMapFarClip);
-							lightSource.LightMatrix = lightProjection * lightView;
-
-							Renderer::SubmitDirectionalLightSource(lightSource);
-						}
-					}
-
-					{
-						PE_PROFILE_SCOPE("Point lights");
-						auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
-						for (auto entityID : view) {
-							auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
-							glm::vec4 position = glm::vec4(transform.WorldPosition(), 1.0f);
-							Renderer::PointLight lightSource;
-							lightSource.Position = position;
-							lightSource.Position.w = light.Radius;
-							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
-							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
-							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
-							lightSource.ShadowData = glm::vec4(light.ShadowMinBias, light.ShadowMaxBias, light.ShadowMapFarClip, (float)light.CastShadows);
-							Renderer::SubmitPointLightSource(lightSource);
-						}
-					}
-
-					{
-						PE_PROFILE_SCOPE("Spot lights");
-						auto view = sceneContext->View<ComponentTransform, ComponentSpotLight>();
-						for (auto entityID : view) {
-							auto [transform, light] = view.get<ComponentTransform, ComponentSpotLight>(entityID);
-							glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
-
-							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
-							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
-							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
-
-							glm::vec3 position = transform.WorldPosition();
-							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
-
-							Renderer::SpotLight lightSource;
-							lightSource.Position = glm::vec4(position, light.Range);
-							lightSource.Direction = glm::vec4(direction, glm::cos(glm::radians(light.InnerCutoff)));
-							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
-							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
-							lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
-							lightSource.ShadowData = glm::vec4((bool)light.CastShadows, light.ShadowMinBias, light.ShadowMaxBias, 1.0f);
-
-							glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
-							glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, light.ShadowMapNearClip, light.ShadowMapFarClip);
-							lightSource.LightMatrix = projection * lightView;
-
-							Renderer::SubmitSpotLightSource(lightSource);
-						}
-					}
-				}
-
-				if (dirLightShadowInput) {
-					Ref<Texture2DArray> dirLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(dirLightShadowInput->TextureHandle);
-					PE_CORE_ASSERT(dirLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");
-					dirLightShadowTexture->Bind(0);
-				}
-				if (spotLightShadowInput) {
-					Ref<Texture2DArray> spotLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(spotLightShadowInput->TextureHandle);
-					PE_CORE_ASSERT(spotLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid spot light shadow map type");
-					spotLightShadowTexture->Bind(1);
-				}
-				if (pointLightShadowInput) {
-					Ref<TextureCubemapArray> pointLightShadowTexture = AssetManager::GetAsset<TextureCubemapArray>(pointLightShadowInput->TextureHandle);
-					PE_CORE_ASSERT(pointLightShadowTexture->GetType() == AssetType::TextureCubemapArray, "Invalid point light shadow map type");
-					pointLightShadowTexture->Bind(2);
-				}
-
-				if (envMapInput)
-				{
-					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-					AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
-					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
-					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
 				}
 
 				Renderer::EndScene();
 			}
+		}
 		};
 
-		// { primitive<glm::ivec2>, Material, EnvironmentMap }
-		RenderPass::OnRenderFunc skyboxPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
-		{
-				PE_PROFILE_SCOPE("Skybox Render Pass");
-				Ref<Scene>& sceneContext = context.ActiveScene;
-				Ref<Camera> activeCamera = context.ActiveCamera;
-				const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-				PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-				PE_CORE_ASSERT(inputs[1], "Skybox material input required");
-				RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
-				RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-				RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
+	// { primitive<glm::ivec2>, Texture }
+	RenderPass::OnRenderFunc forward2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Scene 2D Render Pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		Ref<Camera> activeCamera = context.ActiveCamera;
+		const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+		PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Target texture attachment input required");
+		RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
+		RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
 
-				if (envMapInput)
+		// Ping - pong framebuffer attachment
+		Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+		PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+		AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+		AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+		if (currentTargetTexture != screenTextureInputHandle)
+		{
+			Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+			targetFramebuffer->AddColourAttachment(attach);
+		}
+
+		targetFramebuffer->SetDrawBuffers();
+		RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
+		RenderCommand::SetClearColour(glm::vec4(0.01f, 0.01f, 0.01f, 1.0f));
+		RenderCommand::Clear();
+
+		if (activeCamera && sceneContext) {
+			Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+			{
+				PE_PROFILE_SCOPE("Draw Quads");
+				auto group = sceneContext->Group<ComponentTransform>(entt::get<Component2DSprite>);
+				for (auto entityID : group) {
+					auto [transform, sprite] = group.get<ComponentTransform, Component2DSprite>(entityID);
+					if (sprite.TextureAtlas) {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.TextureAtlas, sprite.SelectedSubTextureName, sprite.Colour, (int)entityID);
+					}
+					else if (sprite.Texture) {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.TextureScale, sprite.Colour, (int)entityID);
+					}
+					else {
+						Renderer2D::DrawQuad(transform.GetTransform(), sprite.Colour, (int)entityID);
+					}
+				}
+			}
+
+			{
+				PE_PROFILE_SCOPE("Draw Circles");
+				auto view = sceneContext->View<ComponentTransform, Component2DCircle>();
+				for (auto entityID : view) {
+					auto [transform, circle] = view.get<ComponentTransform, Component2DCircle>(entityID);
+
+					Renderer2D::DrawCircle(transform.GetTransform(), circle.Colour, circle.Thickness, circle.Fade, (int)entityID);
+				}
+			}
+
+			{
+				PE_PROFILE_SCOPE("Draw Text");
+				auto view = sceneContext->View<ComponentTransform, ComponentTextRenderer>();
+				for (auto entityID : view) {
+					auto [transform, text] = view.get<ComponentTransform, ComponentTextRenderer>(entityID);
+
+					Renderer2D::TextParams params;
+					params.Colour = text.Colour;
+					params.Kerning = text.Kerning;
+					params.LineSpacing = text.LineSpacing;
+
+					Renderer2D::DrawString(text.TextString, text.Font, transform.GetTransform(), params, (int)entityID);
+				}
+			}
+
+			Renderer2D::EndScene();
+		}
+		};
+
+	// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture, EnvironmentMap }
+	RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Scene 3D Render Pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		Ref<Camera> activeCamera = context.ActiveCamera;
+		const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+		PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Shadow resolution input required");
+		PE_CORE_ASSERT(inputs[2], "Dir light shadow map input required");
+		PE_CORE_ASSERT(inputs[3], "Spot light shadow map input required");
+		PE_CORE_ASSERT(inputs[4], "Point light shadow map input required");
+		PE_CORE_ASSERT(inputs[5], "Target texture attachment input required");
+		PE_CORE_ASSERT(inputs[6], "Environment map input required");
+		RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+		RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[1]);
+		RenderComponentTexture* dirLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
+		RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+		RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
+		RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
+		RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
+
+		// Ping - pong framebuffer attachment
+		Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+		PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+		AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+		AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+		if (currentTargetTexture != screenTextureInputHandle)
+		{
+			Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+			targetFramebuffer->AddColourAttachment(attach);
+		}
+
+		RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+		if (activeCamera && sceneContext) {
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+			{
+				PE_PROFILE_SCOPE("Submit Mesh");
+				auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+				for (auto entityID : view) {
+					auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+					Renderer::SubmitMesh(mesh.MeshHandle, mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
+				}
+			}
+
+			{
+				PE_PROFILE_SCOPE("Submit lights");
 				{
-					// Apply environment map to skybox
-					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-					AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle)->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+					PE_PROFILE_SCOPE("Directional lights");
+					auto view = sceneContext->View<ComponentTransform, ComponentDirectionalLight>();
+					for (auto entityID : view) {
+						auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
+						glm::mat4 transformMatrix = transform.GetTransform();
+						glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+						rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+						rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+						rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+						Renderer::DirectionalLight lightSource;
+						lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), (float)light.CastShadows);
+						lightSource.Diffuse = glm::vec4(light.Diffuse, light.ShadowMinBias);
+						lightSource.Specular = glm::vec4(light.Specular, light.ShadowMaxBias);
+						lightSource.Ambient = glm::vec4(light.Ambient, light.ShadowMapCameraDistance);
+
+						float shadowSize = light.ShadowMapProjectionSize;
+
+						glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+						float aspectRatio = (float)shadowResInput->Data.x / (float)shadowResInput->Data.y;
+						float orthoLeft = -shadowSize * aspectRatio * 0.5f;
+						float orthoRight = shadowSize * aspectRatio * 0.5f;
+						float orthoBottom = -shadowSize * 0.5f;
+						float orthoTop = shadowSize * 0.5f;
+
+						glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, light.ShadowMapNearClip, light.ShadowMapFarClip);
+						lightSource.LightMatrix = lightProjection * lightView;
+
+						Renderer::SubmitDirectionalLightSource(lightSource);
+					}
 				}
 
-				// Remove translation from view matrix
-				glm::mat4 cameraTransform = cameraWorldTransform;
-				cameraTransform = glm::mat4(glm::mat3(cameraTransform));
+				{
+					PE_PROFILE_SCOPE("Point lights");
+					auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
+					for (auto entityID : view) {
+						auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
+						glm::vec4 position = glm::vec4(transform.WorldPosition(), 1.0f);
+						Renderer::PointLight lightSource;
+						lightSource.Position = position;
+						lightSource.Position.w = light.Radius;
+						lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+						lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+						lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+						lightSource.ShadowData = glm::vec4(light.ShadowMinBias, light.ShadowMaxBias, light.ShadowMapFarClip, (float)light.CastShadows);
+						Renderer::SubmitPointLightSource(lightSource);
+					}
+				}
 
-				RenderCommand::SetViewport({ 0, 0 }, { viewportResInput->Data.x, viewportResInput->Data.y });
-				targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+				{
+					PE_PROFILE_SCOPE("Spot lights");
+					auto view = sceneContext->View<ComponentTransform, ComponentSpotLight>();
+					for (auto entityID : view) {
+						auto [transform, light] = view.get<ComponentTransform, ComponentSpotLight>(entityID);
+						glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
 
-				DepthState depthState;
-				depthState.Func = DepthFunc::LEQUAL;
-				FaceCulling cullState = FaceCulling::FRONT;
-				
-				Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
-				Renderer::EndScene();
+						rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+						rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+						rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+						glm::vec3 position = transform.WorldPosition();
+						glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
+
+						Renderer::SpotLight lightSource;
+						lightSource.Position = glm::vec4(position, light.Range);
+						lightSource.Direction = glm::vec4(direction, glm::cos(glm::radians(light.InnerCutoff)));
+						lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+						lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+						lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+						lightSource.ShadowData = glm::vec4((bool)light.CastShadows, light.ShadowMinBias, light.ShadowMaxBias, 1.0f);
+
+						glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
+						glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, light.ShadowMapNearClip, light.ShadowMapFarClip);
+						lightSource.LightMatrix = projection * lightView;
+
+						Renderer::SubmitSpotLightSource(lightSource);
+					}
+				}
+			}
+
+			if (dirLightShadowInput) {
+				Ref<Texture2DArray> dirLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(dirLightShadowInput->TextureHandle);
+				PE_CORE_ASSERT(dirLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");
+				dirLightShadowTexture->Bind(0);
+			}
+			if (spotLightShadowInput) {
+				Ref<Texture2DArray> spotLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(spotLightShadowInput->TextureHandle);
+				PE_CORE_ASSERT(spotLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid spot light shadow map type");
+				spotLightShadowTexture->Bind(1);
+			}
+			if (pointLightShadowInput) {
+				Ref<TextureCubemapArray> pointLightShadowTexture = AssetManager::GetAsset<TextureCubemapArray>(pointLightShadowInput->TextureHandle);
+				PE_CORE_ASSERT(pointLightShadowTexture->GetType() == AssetType::TextureCubemapArray, "Invalid point light shadow map type");
+				pointLightShadowTexture->Bind(2);
+			}
+
+			if (envMapInput)
+			{
+				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+				AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
+				AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
+				AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+			}
+
+			Renderer::EndScene();
+		}
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, primitive<float>, primitive<float> }
-		RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+	// { primitive<glm::ivec2>, Material, EnvironmentMap }
+	RenderPass::OnRenderFunc skyboxPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+		{
+			PE_PROFILE_SCOPE("Skybox Render Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Skybox material input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
+
+			if (envMapInput)
+			{
+				// Apply environment map to skybox
+				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+				AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle)->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+			}
+
+			// Remove translation from view matrix
+			glm::mat4 cameraTransform = cameraWorldTransform;
+			cameraTransform = glm::mat4(glm::mat3(cameraTransform));
+
+			RenderCommand::SetViewport({ 0, 0 }, { viewportResInput->Data.x, viewportResInput->Data.y });
+			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+			DepthState depthState;
+			depthState.Func = DepthFunc::LEQUAL;
+			FaceCulling cullState = FaceCulling::FRONT;
+
+			Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
+			Renderer::EndScene();
+		};
+
+	// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, primitive<float>, primitive<float> }
+	RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Downsample Pass");
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
@@ -870,57 +648,57 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, primitive<float> }
-		RenderPass::OnRenderFunc bloomUpsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Bloom Upsample Pass");
-			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Upsample mip chain input required");
-			PE_CORE_ASSERT(inputs[2], "Upsample material input required");
-			PE_CORE_ASSERT(inputs[3], "Filter radius input required");
-			Ref<Camera> activeCamera = context.ActiveCamera;
-			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
-			RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
-			RenderComponentMaterial* upsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
-			RenderComponentPrimitiveType<float>* filterRadiusInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
+	// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, primitive<float> }
+	RenderPass::OnRenderFunc bloomUpsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Bloom Upsample Pass");
+		PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Upsample mip chain input required");
+		PE_CORE_ASSERT(inputs[2], "Upsample material input required");
+		PE_CORE_ASSERT(inputs[3], "Filter radius input required");
+		Ref<Camera> activeCamera = context.ActiveCamera;
+		const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+		RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+		RenderComponentPrimitiveType<BloomMipChain>* mipChainInput = dynamic_cast<RenderComponentPrimitiveType<BloomMipChain>*>(inputs[1]);
+		RenderComponentMaterial* upsampleMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+		RenderComponentPrimitiveType<float>* filterRadiusInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
 
-			glm::vec2 resolution = viewportResInput->Data;
-			float FilterRadius = filterRadiusInput->Data;
-			float AspectRatio = resolution.x / resolution.y;
+		glm::vec2 resolution = viewportResInput->Data;
+		float FilterRadius = filterRadiusInput->Data;
+		float AspectRatio = resolution.x / resolution.y;
 
-			Ref<Material> upsampleMaterial = AssetManager::GetAsset<Material>(upsampleMaterialInput->MaterialHandle);
-			UniformBufferStorage* uboStorage = upsampleMaterial->GetParameter<UBOShaderParameterTypeStorage>("UpsampleData")->UBO().get();
-			uboStorage->SetLocalData("FilterRadius", FilterRadius);
-			uboStorage->SetLocalData("AspectRatio", AspectRatio);
+		Ref<Material> upsampleMaterial = AssetManager::GetAsset<Material>(upsampleMaterialInput->MaterialHandle);
+		UniformBufferStorage* uboStorage = upsampleMaterial->GetParameter<UBOShaderParameterTypeStorage>("UpsampleData")->UBO().get();
+		uboStorage->SetLocalData("FilterRadius", FilterRadius);
+		uboStorage->SetLocalData("AspectRatio", AspectRatio);
 
-			BlendState blend;
-			blend.Enabled = true;
-			blend.SrcFactor = BlendFunc::ONE;
-			blend.DstFactor = BlendFunc::ONE;
-			blend.Equation = BlendEquation::ADD;
+		BlendState blend;
+		blend.Enabled = true;
+		blend.SrcFactor = BlendFunc::ONE;
+		blend.DstFactor = BlendFunc::ONE;
+		blend.Equation = BlendEquation::ADD;
 
-			// Progressively upsample through mip chain
-			BloomMipChain& mipChain = mipChainInput->Data;
-			for (int i = mipChain.Size() - 1; i > 0; i--)
-			{
-				Ref<Texture2D> mip = mipChain.GetMipLevel(i);
-				Ref<Texture2D> nextMip = mipChain.GetMipLevel(i - 1);
+		// Progressively upsample through mip chain
+		BloomMipChain& mipChain = mipChainInput->Data;
+		for (int i = mipChain.Size() - 1; i > 0; i--)
+		{
+			Ref<Texture2D> mip = mipChain.GetMipLevel(i);
+			Ref<Texture2D> nextMip = mipChain.GetMipLevel(i - 1);
 
-				Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, nextMip->Handle);
-				targetFramebuffer->AddColourAttachment(attachment);
+			Ref<FramebufferTexture2DAttachment> attachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, nextMip->Handle);
+			targetFramebuffer->AddColourAttachment(attachment);
 
-				const TextureSpecification& nexMipSpec = nextMip->GetSpecification();
-				RenderCommand::SetViewport({ 0, 0 }, { nexMipSpec.Width, nexMipSpec.Height });
+			const TextureSpecification& nexMipSpec = nextMip->GetSpecification();
+			RenderCommand::SetViewport({ 0, 0 }, { nexMipSpec.Width, nexMipSpec.Height });
 
-				upsampleMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = mip->Handle;
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-				Renderer::SubmitDefaultQuad(upsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
-				Renderer::EndScene();
-			}
+			upsampleMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = mip->Handle;
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+			Renderer::SubmitDefaultQuad(upsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+			Renderer::EndScene();
+		}
 		};
 
-		// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, Texture, Texture, primitive<float>, primitive<float>, primitive<bool> }
-		RenderPass::OnRenderFunc bloomCombinePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+	// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, Texture, Texture, primitive<float>, primitive<float>, primitive<bool> }
+	RenderPass::OnRenderFunc bloomCombinePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Combine Pass");
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
@@ -943,7 +721,7 @@ namespace PaulEngine
 			RenderComponentPrimitiveType<float>* bloomStrengthInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[6]);
 			RenderComponentPrimitiveType<float>* dirtStrengthInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[7]);
 			RenderComponentPrimitiveType<bool>* useDirtMaskInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[8]);
-			
+
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
 			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
@@ -972,233 +750,218 @@ namespace PaulEngine
 			{
 				combineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DirtMaskTexture")->TextureHandle = dirtMaskTextureInput->TextureHandle;
 			}
-			
+
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 			Renderer::SubmitDefaultQuad(combineMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
 			Renderer::EndScene();
 		};
 
-		// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Texture }
-		RenderPass::OnRenderFunc debugOverlayPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Debug overlay render pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			Ref<Camera> activeCamera = context.ActiveCamera;
-			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-			PE_CORE_ASSERT(inputs[0], "Show colliders flag input required");
-			PE_CORE_ASSERT(inputs[1], "Selected entity input required");
-			PE_CORE_ASSERT(inputs[2], "Entity outline thickness input required");
-			PE_CORE_ASSERT(inputs[3], "Entity outline colour input required");
-			PE_CORE_ASSERT(inputs[4], "Texture input required");
-			RenderComponentPrimitiveType<bool>* showCollidersInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[0]);
-			RenderComponentPrimitiveType<Entity>* selectedEntityInput = dynamic_cast<RenderComponentPrimitiveType<Entity>*>(inputs[1]);
-			RenderComponentPrimitiveType<float>* entityOutlineThicknessInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[2]);
-			RenderComponentPrimitiveType<glm::vec4>* entityOutlineColourInput = dynamic_cast<RenderComponentPrimitiveType<glm::vec4>*>(inputs[3]);
-			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
+	// { primitive<bool>, primitive<Entity>, primitive<float>, primitive<glm::vec4>, Texture }
+	RenderPass::OnRenderFunc debugOverlayPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Debug overlay render pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		Ref<Camera> activeCamera = context.ActiveCamera;
+		const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+		PE_CORE_ASSERT(inputs[0], "Show colliders flag input required");
+		PE_CORE_ASSERT(inputs[1], "Selected entity input required");
+		PE_CORE_ASSERT(inputs[2], "Entity outline thickness input required");
+		PE_CORE_ASSERT(inputs[3], "Entity outline colour input required");
+		PE_CORE_ASSERT(inputs[4], "Texture input required");
+		RenderComponentPrimitiveType<bool>* showCollidersInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[0]);
+		RenderComponentPrimitiveType<Entity>* selectedEntityInput = dynamic_cast<RenderComponentPrimitiveType<Entity>*>(inputs[1]);
+		RenderComponentPrimitiveType<float>* entityOutlineThicknessInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[2]);
+		RenderComponentPrimitiveType<glm::vec4>* entityOutlineColourInput = dynamic_cast<RenderComponentPrimitiveType<glm::vec4>*>(inputs[3]);
+		RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 
-			// Ping - pong framebuffer attachment
-			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
-			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
-			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
-			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
-			if (currentTargetTexture != screenTextureInputHandle)
-			{
-				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
-				targetFramebuffer->AddColourAttachment(attach);
-			}
-
-			if (activeCamera && sceneContext)
-			{
-				Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure(), FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
-
-				if (showCollidersInput->Data)
-				{
-					// Box colliders
-					auto boxView = sceneContext->View<ComponentTransform, ComponentBoxCollider2D>();
-					for (auto entityID : boxView)
-					{
-						auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
-
-						glm::vec3 position = glm::vec3(glm::vec2(transform.WorldPosition()), 0.01f);
-						glm::vec3 scale = transform.WorldScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
-						glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-						transformation = glm::rotate(transformation, transform.WorldRotation().z, glm::vec3(0.0, 0.0, 1.0f));
-						transformation = glm::scale(transformation, scale);
-
-						Renderer2D::SetLineWidth(0.01f);
-						Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
-					}
-
-					// Circle colliders
-					auto circleView = sceneContext->View<ComponentTransform, ComponentCircleCollider2D>();
-					for (auto entityID : circleView)
-					{
-						auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
-
-						glm::vec3 position = glm::vec3(glm::vec2(transform.WorldPosition()), 0.01f);
-						glm::vec3 scale = transform.WorldScale() * (circle.Radius() * 2.0f);
-						glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
-						transformation = glm::scale(transformation, scale);
-
-						Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
-					}
-				}
-				Renderer2D::Flush();
-
-				Entity selectedEntity = selectedEntityInput->Data;
-				float outlineThickness = entityOutlineThicknessInput->Data;
-				glm::vec4 outlineColour = entityOutlineColourInput->Data;
-				if (selectedEntity.BelongsToScene(sceneContext) && selectedEntity)
-				{
-					// Entity outline
-					ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
-					transformCopy.SetLocalPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
-					Renderer2D::SetLineWidth(outlineThickness);
-					Renderer2D::DrawRect(transformCopy.GetTransform(), outlineColour);
-
-					// Point light radius
-					if (selectedEntity.HasComponent<ComponentPointLight>())
-					{
-						ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
-						ComponentPointLight& pointLight = selectedEntity.GetComponent<ComponentPointLight>();
-						float radius = pointLight.Radius;
-						float thickness = 0.005f;
-						float fade = 0.0f;
-
-						glm::mat4 transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.WorldPosition());
-						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
-						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
-
-						transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.WorldPosition());
-						transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
-						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
-
-						transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, transformComponent.WorldPosition());
-						transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-						transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
-						Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
-					}
-
-					// Spot light
-					if (selectedEntity.HasComponent<ComponentSpotLight>())
-					{
-						ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
-						ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
-						glm::vec3 position = transformComponent.WorldPosition();
-						glm::quat rotationQuat = glm::quat(transformComponent.WorldRotation());
-						float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
-						float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
-						float thickness = 0.005f;
-						float fade = 0.0f;
-
-						glm::mat4 transform = glm::mat4(1.0f);
-						transform = glm::translate(transform, position);
-						glm::mat4 rotation = glm::toMat4(rotationQuat);
-						transform *= rotation;
-						transform = glm::translate(transform, glm::vec3(0.0, 0.0f, -spotLight.Range));
-
-						glm::vec3 forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
-						glm::vec3 right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
-						glm::vec3 up = glm::cross(forward, right);
-
-						Renderer2D::SetLineWidth(thickness);
-
-						// Outer cone
-						glm::mat4 outerCircleTransform = glm::scale(transform, glm::vec3(outerRadius, outerRadius, 1.0f));
-						Renderer2D::DrawCircle(outerCircleTransform, glm::vec4(1.0f), thickness, fade);
-
-						glm::vec3 line = forward * spotLight.Range + right * outerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						line = forward * spotLight.Range - right * outerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						line = forward * spotLight.Range + up * outerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						line = forward * spotLight.Range - up * outerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						// Inner cone
-						glm::mat4 innerCircleTransform = glm::scale(transform, glm::vec3(innerRadius, innerRadius, 1.0f));
-						Renderer2D::DrawCircle(innerCircleTransform, glm::vec4(1.0f), thickness, fade);
-
-						line = forward * spotLight.Range + right * innerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						line = forward * spotLight.Range - right * innerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						line = forward * spotLight.Range + up * innerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-
-						line = forward * spotLight.Range - up * innerRadius * 0.5f;
-						Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
-					}
-				}
-
-				Renderer2D::EndScene();
-			}
-		};
-
-		// { primitive<glm::ivec2>, Texture, Material, Texture }
-		RenderPass::OnRenderFunc gammaTonemapPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Scene 2D Render Pass");
-			Ref<Scene>& sceneContext = context.ActiveScene;
-			Ref<Camera> activeCamera = context.ActiveCamera;
-			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Target texture input required");
-			PE_CORE_ASSERT(inputs[2], "Material input required");
-			PE_CORE_ASSERT(inputs[3], "Source texture input required");
-			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
-			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
-			RenderComponentMaterial* gammaCorrectionMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
-			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
-
-			// Ping - pong framebuffer attachment
-			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
-			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
-			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
-			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
-			if (currentTargetTexture != screenTextureInputHandle)
-			{
-				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
-				targetFramebuffer->AddColourAttachment(attach);
-			}
-			
-			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
-			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
-			RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-			RenderCommand::Clear();
-
-			Ref<Material> material = AssetManager::GetAsset<Material>(gammaCorrectionMaterialInput->MaterialHandle);
-			material->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = sourceTextureInput->TextureHandle;
-
-			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-			BlendState blend;
-			blend.Enabled = false;
-			Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
-			Renderer::EndScene();
-		};
-
-	FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+		// Ping - pong framebuffer attachment
+		Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+		PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+		AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+		AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+		if (currentTargetTexture != screenTextureInputHandle)
 		{
-			EventDispatcher dispatcher = EventDispatcher(e);
-			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
-				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
-				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
-				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
-				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
-				return false;
-				});
+			Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+			targetFramebuffer->AddColourAttachment(attach);
+		}
+
+		if (activeCamera && sceneContext)
+		{
+			Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure(), FaceCulling::NONE, { DepthFunc::ALWAYS, true, true });
+
+			if (showCollidersInput->Data)
+			{
+				// Box colliders
+				auto boxView = sceneContext->View<ComponentTransform, ComponentBoxCollider2D>();
+				for (auto entityID : boxView)
+				{
+					auto [transform, box] = boxView.get<ComponentTransform, ComponentBoxCollider2D>(entityID);
+
+					glm::vec3 position = glm::vec3(glm::vec2(transform.WorldPosition()), 0.01f);
+					glm::vec3 scale = transform.WorldScale() * (glm::vec3(box.Size() * 2.0f, 1.0f));
+					glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+					transformation = glm::rotate(transformation, transform.WorldRotation().z, glm::vec3(0.0, 0.0, 1.0f));
+					transformation = glm::scale(transformation, scale);
+
+					Renderer2D::SetLineWidth(0.01f);
+					Renderer2D::DrawRect(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), (int)entityID);
+				}
+
+				// Circle colliders
+				auto circleView = sceneContext->View<ComponentTransform, ComponentCircleCollider2D>();
+				for (auto entityID : circleView)
+				{
+					auto [transform, circle] = circleView.get<ComponentTransform, ComponentCircleCollider2D>(entityID);
+
+					glm::vec3 position = glm::vec3(glm::vec2(transform.WorldPosition()), 0.01f);
+					glm::vec3 scale = transform.WorldScale() * (circle.Radius() * 2.0f);
+					glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position);
+					transformation = glm::scale(transformation, scale);
+
+					Renderer2D::DrawCircle(transformation, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.01f, 0.0f, (int)entityID);
+				}
+			}
+			Renderer2D::Flush();
+
+			Entity selectedEntity = selectedEntityInput->Data;
+			float outlineThickness = entityOutlineThicknessInput->Data;
+			glm::vec4 outlineColour = entityOutlineColourInput->Data;
+			if (selectedEntity.BelongsToScene(sceneContext) && selectedEntity)
+			{
+				// Entity outline
+				ComponentTransform transformCopy = selectedEntity.GetComponent<ComponentTransform>();
+				transformCopy.SetLocalPosition(transformCopy.LocalPosition() + glm::vec3(0.0f, 0.0f, 0.01f));
+				Renderer2D::SetLineWidth(outlineThickness);
+				Renderer2D::DrawRect(transformCopy.GetTransform(), outlineColour);
+
+				// Point light radius
+				if (selectedEntity.HasComponent<ComponentPointLight>())
+				{
+					ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+					ComponentPointLight& pointLight = selectedEntity.GetComponent<ComponentPointLight>();
+					float radius = pointLight.Radius;
+					float thickness = 0.005f;
+					float fade = 0.0f;
+
+					glm::mat4 transform = glm::mat4(1.0f);
+					transform = glm::translate(transform, transformComponent.WorldPosition());
+					transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+					Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+
+					transform = glm::mat4(1.0f);
+					transform = glm::translate(transform, transformComponent.WorldPosition());
+					transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+					transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+					Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+
+					transform = glm::mat4(1.0f);
+					transform = glm::translate(transform, transformComponent.WorldPosition());
+					transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+					transform = glm::scale(transform, glm::vec3(radius, radius, 1.0f));
+					Renderer2D::DrawCircle(transform, glm::vec4(1.0f), thickness, fade);
+				}
+
+				// Spot light
+				if (selectedEntity.HasComponent<ComponentSpotLight>())
+				{
+					ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+					ComponentSpotLight& spotLight = selectedEntity.GetComponent<ComponentSpotLight>();
+					glm::vec3 position = transformComponent.WorldPosition();
+					glm::quat rotationQuat = glm::quat(transformComponent.WorldRotation());
+					float outerRadius = glm::tan(glm::radians(spotLight.OuterCutoff)) * spotLight.Range;
+					float innerRadius = glm::tan(glm::radians(spotLight.InnerCutoff)) * spotLight.Range;
+					float thickness = 0.005f;
+					float fade = 0.0f;
+
+					glm::mat4 transform = glm::mat4(1.0f);
+					transform = glm::translate(transform, position);
+					glm::mat4 rotation = glm::toMat4(rotationQuat);
+					transform *= rotation;
+					transform = glm::translate(transform, glm::vec3(0.0, 0.0f, -spotLight.Range));
+
+					glm::vec3 forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
+					glm::vec3 right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
+					glm::vec3 up = glm::cross(forward, right);
+
+					Renderer2D::SetLineWidth(thickness);
+
+					// Outer cone
+					glm::mat4 outerCircleTransform = glm::scale(transform, glm::vec3(outerRadius, outerRadius, 1.0f));
+					Renderer2D::DrawCircle(outerCircleTransform, glm::vec4(1.0f), thickness, fade);
+
+					glm::vec3 line = forward * spotLight.Range + right * outerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					line = forward * spotLight.Range - right * outerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					line = forward * spotLight.Range + up * outerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					line = forward * spotLight.Range - up * outerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					// Inner cone
+					glm::mat4 innerCircleTransform = glm::scale(transform, glm::vec3(innerRadius, innerRadius, 1.0f));
+					Renderer2D::DrawCircle(innerCircleTransform, glm::vec4(1.0f), thickness, fade);
+
+					line = forward * spotLight.Range + right * innerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					line = forward * spotLight.Range - right * innerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					line = forward * spotLight.Range + up * innerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+
+					line = forward * spotLight.Range - up * innerRadius * 0.5f;
+					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
+				}
+			}
+
+			Renderer2D::EndScene();
+		}
+		};
+
+	// { primitive<glm::ivec2>, Texture, Material, Texture }
+	RenderPass::OnRenderFunc gammaTonemapPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		PE_PROFILE_SCOPE("Scene 2D Render Pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		Ref<Camera> activeCamera = context.ActiveCamera;
+		const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+		PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+		PE_CORE_ASSERT(inputs[1], "Target texture input required");
+		PE_CORE_ASSERT(inputs[2], "Material input required");
+		PE_CORE_ASSERT(inputs[3], "Source texture input required");
+		RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
+		RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
+		RenderComponentMaterial* gammaCorrectionMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+		RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+
+		// Ping - pong framebuffer attachment
+		Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+		PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+		AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+		AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+		if (currentTargetTexture != screenTextureInputHandle)
+		{
+			Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+			targetFramebuffer->AddColourAttachment(attach);
+		}
+
+		targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+		RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
+		RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		RenderCommand::Clear();
+
+		Ref<Material> material = AssetManager::GetAsset<Material>(gammaCorrectionMaterialInput->MaterialHandle);
+		material->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = sourceTextureInput->TextureHandle;
+
+		Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+		BlendState blend;
+		blend.Enabled = false;
+		Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+		Renderer::EndScene();
 	};
 
 	Ref<Framebuffer> EditorLayer::InitMainFramebuffer(FrameRenderer* out_Framerenderer)
@@ -1441,6 +1204,20 @@ namespace PaulEngine
 		InitTonemapping(out_Framerenderer);
 		InitEnvMapAndSkybox(out_Framerenderer);
 
+		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+		{
+			EventDispatcher dispatcher = EventDispatcher(e);
+			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
+				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+				return false;
+			});
+		};
 		out_Framerenderer->SetEventFunc(eventFunc);
 
 		// Add render passes
@@ -1471,9 +1248,6 @@ namespace PaulEngine
 	void EditorLayer::CreateDeferredRenderer(FrameRenderer* out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();
-
-		PE_CORE_ASSERT(false, "Not yet implemented");
-
 		// Shaders are now defined with a render context of either forward or deferred
 		
 		// The problem is, any material using a default shader stores the asset handle
@@ -1486,7 +1260,162 @@ namespace PaulEngine
 		// Then, when retrieving the shader, the corresponding deferred vs forward default shader will be retrieved depending on how the project is
 		// set up
 
+		// Create resources
+		// ----------------
 
+		// gBuffer
+		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
+
+		FramebufferSpecification gBufferSpec;
+		gBufferSpec.Width = viewportRes.x;
+		gBufferSpec.Height = viewportRes.y;
+		gBufferSpec.Samples = 1;
+
+		// gBuffer attachments
+		
+		// position
+		TextureSpecification positionSpec;
+		positionSpec.Width = viewportRes.x;
+		positionSpec.Height = viewportRes.y;
+		positionSpec.GenerateMips = false;
+		positionSpec.Format = ImageFormat::RGB32F;
+		positionSpec.MinFilter = ImageMinFilter::NEAREST;
+		positionSpec.MagFilter = ImageMagFilter::NEAREST;
+		positionSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		positionSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		positionSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		positionSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+		Ref<Texture2D> gWorldPositionTexture = AssetManager::CreateAsset<Texture2D>(true, positionSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gWorldPosition", false, gWorldPositionTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> positionAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, gWorldPositionTexture->Handle);
+
+		// normal
+		TextureSpecification normalSpec = positionSpec;
+		normalSpec.Format = ImageFormat::RGB16F;
+		Ref<Texture2D> gNormalTexture = AssetManager::CreateAsset<Texture2D>(true, normalSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gNormal", false, gNormalTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> normalAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, gNormalTexture->Handle);
+
+		// albedo
+		TextureSpecification albedoSpec = normalSpec;
+		Ref<Texture2D> gAlbedoTexture = AssetManager::CreateAsset<Texture2D>(true, albedoSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gAlbedo", false, gAlbedoTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> albedoAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour2, gAlbedoTexture->Handle);
+
+		// specular
+		TextureSpecification specularSpec = albedoSpec;
+		specularSpec.Format = ImageFormat::RGBA16F;
+		Ref<Texture2D> gSpecularTexture = AssetManager::CreateAsset<Texture2D>(true, specularSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gSpecular", false, gSpecularTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> specularAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour3, gSpecularTexture->Handle);
+
+		// arm
+		TextureSpecification armSpec = specularSpec;
+		armSpec.Format = ImageFormat::RGB16F;
+		Ref<Texture2D> gARMTexture = AssetManager::CreateAsset<Texture2D>(true, armSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gARM", false, gARMTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> armAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour4, gARMTexture->Handle);
+
+		// emission
+		TextureSpecification emissionSpec = armSpec;
+		Ref<Texture2D> gEmissionTexture = AssetManager::CreateAsset<Texture2D>(true, emissionSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gEmission", false, gEmissionTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> emissionAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour5, gEmissionTexture->Handle);
+
+		// metadata
+		TextureSpecification metadataSpec = emissionSpec;
+		metadataSpec.Format = ImageFormat::RG32F;
+		Ref<Texture2D> gMetadataTexture = AssetManager::CreateAsset<Texture2D>(true, metadataSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gMetadata", false, gMetadataTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> metadataAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour6, gMetadataTexture->Handle);
+
+		// depth
+		TextureSpecification depthSpec = positionSpec;
+		depthSpec.Format = ImageFormat::Depth24Stencil8;
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, depthSpec, true);
+
+		Ref<Framebuffer> gBuffer = Framebuffer::Create(gBufferSpec, { positionAttachment, normalAttachment, albedoAttachment, specularAttachment, armAttachment, emissionAttachment, metadataAttachment }, depthAttach);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("gBuffer", false, gBuffer);
+
+		Ref<Framebuffer> mainFramebuffer = InitMainFramebuffer(out_Framerenderer);
+		std::vector<Ref<Framebuffer>> dirSpotPointShadowFBOs = InitShadowMapping(out_Framerenderer);
+		InitEditorData(out_Framerenderer);
+		Ref<Framebuffer> bloomFBO = InitBloom(out_Framerenderer);
+		InitTonemapping(out_Framerenderer);
+		InitEnvMapAndSkybox(out_Framerenderer);
+
+		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+		{
+			EventDispatcher dispatcher = EventDispatcher(e);
+			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentFramebuffer>("gBuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
+				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+				return false;
+			});
+		};
+		out_Framerenderer->SetEventFunc(eventFunc);
+
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		AssetHandle gBufferShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
+		AssetHandle defaultLitDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitDeferred.pmat", false);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DefaultLitDeferred", false, defaultLitDeferredMaterialHandle);
+
+		// Create render passes
+		// --------------------
+		
+		// { primitive<glm::ivec2>, Material }
+		RenderPass::OnRenderFunc geometryPass3DFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Scene 3D Render Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Geometry pass material input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+
+			RenderCommand::Clear();
+			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+			if (activeCamera && sceneContext) {
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+				{
+					PE_PROFILE_SCOPE("Submit Mesh");
+					BlendState blend;
+					blend.Enabled = false;
+					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+					for (auto entityID : view)
+					{
+						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+						Renderer::SubmitMesh(mesh.MeshHandle, materialInput->MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+					}
+				}
+
+				Renderer::EndScene();
+			}
+		};
+
+		// Add render passes
+		// -----------------
+
+		// Shadow mapping
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], { "ShadowResolution", "ShadowmapMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], { "ShadowResolution", "ShadowmapMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], { "ShadowResolution", "ShadowmapCubeMaterial" });
+
+		// Deferred rendering
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferred" });
+		// lighting pass
 	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
@@ -1583,11 +1512,11 @@ namespace PaulEngine
 			if (mainFramebuffer)
 			{
 				const FramebufferSpecification& spec = mainFramebuffer->GetSpecification();
-			if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
-				MainViewportResizeEvent e = MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y);
-				OnEvent(e);
+				if ((uint32_t)m_ViewportSize.x != spec.Width || (uint32_t)m_ViewportSize.y != spec.Height) {
+					MainViewportResizeEvent e = MainViewportResizeEvent(m_ViewportSize.x, m_ViewportSize.y);
+					OnEvent(e);
+				}
 			}
-		}
 		}
 
 		Renderer2D::ResetStats();
@@ -1602,59 +1531,60 @@ namespace PaulEngine
 				Ref<Framebuffer> mainFramebuffer = m_FramebufferComponent->Framebuffer;
 				if (mainFramebuffer)
 				{
-			// Clear entity ID attachment to -1
+					// Clear entity ID attachment to -1
 					FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(mainFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour1).get());
-			texAttachment->GetTexture()->Clear(-1);
+					texAttachment->GetTexture()->Clear(-1);
 
-			auto renderResource = m_Renderer->GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
-			if (renderResource) { renderResource->Data = m_SceneHierarchyPanel.GetSelectedEntity(); }
+					auto renderResource = m_Renderer->GetRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity");
+					if (renderResource) { renderResource->Data = m_SceneHierarchyPanel.GetSelectedEntity(); }
 
 					mainFramebuffer->Bind();
-			switch (m_SceneState)
-			{
-				case SceneState::Edit:
-					m_Camera->OnUpdate(timestep, ImGuizmo::IsOver());
-					m_Renderer->RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
-					break;
-				case SceneState::Simulate:
-					m_Camera->OnUpdate(timestep, ImGuizmo::IsOver());
-					m_ActiveScene->OnUpdateSimulation(timestep, *m_Camera.get());
-					m_Renderer->RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
-					break;
-				case SceneState::Play:
-					m_ActiveScene->OnUpdateRuntime(timestep);
+					switch (m_SceneState)
+					{
+					case SceneState::Edit:
+						m_Camera->OnUpdate(timestep, ImGuizmo::IsOver());
+						m_Renderer->RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
+						break;
+					case SceneState::Simulate:
+						m_Camera->OnUpdate(timestep, ImGuizmo::IsOver());
+						m_ActiveScene->OnUpdateSimulation(timestep, *m_Camera.get());
+						m_Renderer->RenderFrame(m_ActiveScene, m_Camera, glm::inverse(m_Camera->GetViewMatrix()));
+						break;
+					case SceneState::Play:
+						m_ActiveScene->OnUpdateRuntime(timestep);
 
-					Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-					if (cameraEntity) {
-						Ref<SceneCamera> camera = CreateRef<SceneCamera>(cameraEntity.GetComponent<ComponentCamera>().Camera);
-						glm::mat4 transform = cameraEntity.GetComponent<ComponentTransform>().GetTransform();
-						m_Renderer->RenderFrame(m_ActiveScene, camera, transform);
+						Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+						if (cameraEntity) {
+							Ref<SceneCamera> camera = CreateRef<SceneCamera>(cameraEntity.GetComponent<ComponentCamera>().Camera);
+							glm::mat4 transform = cameraEntity.GetComponent<ComponentTransform>().GetTransform();
+							m_Renderer->RenderFrame(m_ActiveScene, camera, transform);
+						}
+						else { m_Renderer->RenderFrame(m_ActiveScene, CreateRef<SceneCamera>(SCENE_CAMERA_PERSPECTIVE), glm::mat4(1.0f)); }
+
+						break;
 					}
-					else { m_Renderer->RenderFrame(m_ActiveScene, CreateRef<SceneCamera>(SCENE_CAMERA_PERSPECTIVE), glm::mat4(1.0f)); }
 
-					break;
-			}
+					ImVec2 mousePos = ImGui::GetMousePos();
+					mousePos.x -= m_ViewportBounds[0].x;
+					mousePos.y -= m_ViewportBounds[0].y;
+					glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+					mousePos.y = viewportSize.y - mousePos.y;
 
-			ImVec2 mousePos = ImGui::GetMousePos();
-			mousePos.x -= m_ViewportBounds[0].x;
-			mousePos.y -= m_ViewportBounds[0].y;
-			glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-			mousePos.y = viewportSize.y - mousePos.y;
+					int mouseX = (int)mousePos.x;
+					int mouseY = (int)mousePos.y;
 
-			int mouseX = (int)mousePos.x;
-			int mouseY = (int)mousePos.y;
-
-			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
-			{
+					if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+					{	
+						mainFramebuffer->Bind();
 						m_HoveredEntity = Entity((entt::entity)mainFramebuffer->ReadPixel(FramebufferAttachmentPoint::Colour1, mouseX, mouseY), m_ActiveScene.get());
-			}
-			else {
-				m_HoveredEntity = Entity();
-			}
+					}
+					else {
+						m_HoveredEntity = Entity();
+					}
 
 					mainFramebuffer->Unbind();
-		}
-	}
+				}
+			}
 		}
 	}
 
@@ -1829,8 +1759,8 @@ namespace PaulEngine
 				if (mainFrambuffer)
 				{
 					FramebufferTexture2DAttachment* texAttachment = dynamic_cast<FramebufferTexture2DAttachment*>(mainFrambuffer->GetAttachment(FramebufferAttachmentPoint::Colour0).get());
-			uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
-			ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+					uint32_t textureID = texAttachment->GetTexture()->GetRendererID();
+					ImGui::Image(textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 				}
 			}
 
