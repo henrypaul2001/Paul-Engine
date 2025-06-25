@@ -14,6 +14,8 @@ namespace PaulEngine {
 
 		inline unsigned int GetWidth() const override { return m_Data.Width; }
 		inline unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual int GetPosX() const override;
+		virtual int GetPosY() const override;
 
 		inline void SetEventCallback(const EventCallbackFunction& callback) override { m_Data.eventCallback = callback; }
 		void SetVSync(bool enabled) override;

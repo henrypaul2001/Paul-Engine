@@ -20,6 +20,8 @@ namespace PaulEngine {
 
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
+		virtual int GetPosX() const = 0;
+		virtual int GetPosY() const = 0;
 
 		virtual void SetEventCallback(const EventCallbackFunction& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;

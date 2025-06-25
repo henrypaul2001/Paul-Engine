@@ -166,6 +166,24 @@ namespace PaulEngine {
 		m_Context->SwapBuffers();
 	}
 
+	int WindowsWindow::GetPosX() const
+	{
+		PE_PROFILE_FUNCTION();
+		int posX;
+		int posY;
+		glfwGetWindowPos(m_Window, &posX, &posY);
+		return posX;
+	}
+
+	int WindowsWindow::GetPosY() const
+	{
+		PE_PROFILE_FUNCTION();
+		int posX;
+		int posY;
+		glfwGetWindowPos(m_Window, &posX, &posY);
+		return posY;
+	}
+
 	void WindowsWindow::SetVSync(bool enabled)
 	{
 		glfwSwapInterval(enabled);
