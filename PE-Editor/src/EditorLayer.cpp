@@ -507,12 +507,12 @@ namespace PaulEngine
 					glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, nearClip, farClip);
 
 					UniformBufferStorage* uboStorage = shadowmapMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
-					uboStorage->SetLocalData("ViewProjections[0][0]", lightProjection* glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-					uboStorage->SetLocalData("ViewProjections[0][1]", lightProjection* glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-					uboStorage->SetLocalData("ViewProjections[0][2]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-					uboStorage->SetLocalData("ViewProjections[0][3]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
-					uboStorage->SetLocalData("ViewProjections[0][4]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-					uboStorage->SetLocalData("ViewProjections[0][5]", lightProjection* glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				uboStorage->SetLocalData("ViewProjections[0][0]", lightProjection * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				uboStorage->SetLocalData("ViewProjections[0][1]", lightProjection * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				uboStorage->SetLocalData("ViewProjections[0][2]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+				uboStorage->SetLocalData("ViewProjections[0][3]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+				uboStorage->SetLocalData("ViewProjections[0][4]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				uboStorage->SetLocalData("ViewProjections[0][5]", lightProjection * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 					uboStorage->SetLocalData("CubemapIndex", i);
 					uboStorage->SetLocalData("FarPlane", farClip);
 
@@ -537,7 +537,7 @@ namespace PaulEngine
 		};
 
 		// { primitive<glm::ivec2>, Texture }
-		RenderPass::OnRenderFunc scene2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+	RenderPass::OnRenderFunc forward2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 2D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
@@ -612,7 +612,7 @@ namespace PaulEngine
 			};
 
 		// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture, EnvironmentMap }
-		RenderPass::OnRenderFunc scene3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+	RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
@@ -1186,17 +1186,274 @@ namespace PaulEngine
 			Renderer::EndScene();
 		};
 
+	FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+		{
+			EventDispatcher dispatcher = EventDispatcher(e);
+			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
+				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+				return false;
+				});
+	};
+
+	Ref<Framebuffer> EditorLayer::InitMainFramebuffer(FrameRenderer* out_Framerenderer)
+	{
+		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
+
+		FramebufferSpecification spec;
+		spec.Width = 1280;
+		spec.Height = 720;
+		spec.Samples = 1;
+
+		TextureSpecification screenSpec;
+		screenSpec.Width = 1280;
+		screenSpec.Height = 720;
+		screenSpec.GenerateMips = false;
+		screenSpec.Format = ImageFormat::RGBA16F;
+		screenSpec.MinFilter = ImageMinFilter::NEAREST;
+		screenSpec.MagFilter = ImageMagFilter::NEAREST;
+		screenSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		screenSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		screenSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
+		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
+
+		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
+
+		screenSpec.Format = ImageFormat::RED_INTEGER;
+		Ref<FramebufferTexture2DAttachment> entityIDAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, screenSpec, true);
+
+		screenSpec.Format = ImageFormat::Depth24Stencil8;
+		Ref<FramebufferTexture2DAttachment> depthAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::DepthStencil, screenSpec, true);
+
+		Ref<Framebuffer> mainFramebuffer = Framebuffer::Create(spec, { screenAttachment, entityIDAttach }, depthAttach);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, mainFramebuffer);
+
+		return mainFramebuffer;
+	}
+
+	std::vector<Ref<Framebuffer>> EditorLayer::InitShadowMapping(FrameRenderer* out_Framerenderer)
+	{
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		TextureSpecification depthSpec;
+		depthSpec.Border = glm::vec4(1.0f);
+		depthSpec.Width = m_ShadowWidth;
+		depthSpec.Height = m_ShadowHeight;
+		depthSpec.MinFilter = ImageMinFilter::NEAREST;
+		depthSpec.MagFilter = ImageMagFilter::NEAREST;
+		depthSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Format = ImageFormat::Depth32;
+
+		Ref<Texture2DArray> dirLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
+		Ref<Texture2DArray> spotLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_SPOT_LIGHTS));
+		Ref<TextureCubemapArray> pointLightShadowArray = AssetManager::CreateAsset<TextureCubemapArray>(true, depthSpec, std::vector<std::vector<Buffer>>(Renderer::MAX_ACTIVE_SPOT_LIGHTS, std::vector<Buffer>(6)));
+
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirLightShadowMap", false, dirLightShadowArray->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SpotLightShadowMap", false, spotLightShadowArray->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("PointLightShadowMap", false, pointLightShadowArray->Handle);
+
+		// In the future, this should be serialized. But many of the existing resources such as shadow framebuffers and textures aren't suited for this value to change during runtime
+		glm::ivec2 shadowRes = { m_ShadowWidth, m_ShadowHeight };
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ShadowResolution", false, shadowRes);
+
+		// Framebuffers
+		FramebufferSpecification shadowFBOSpec;
+		shadowFBOSpec.Width = m_ShadowWidth;
+		shadowFBOSpec.Height = m_ShadowHeight;
+		shadowFBOSpec.Samples = 1;
+
+		Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, dirLightShadowArray->Handle);
+		Ref<Framebuffer> dirLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, dirLightShadowDepthArrayAttach);
+
+		Ref<FramebufferTexture2DArrayAttachment> spotLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, spotLightShadowArray->Handle);
+		Ref<Framebuffer> spotLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, spotLightShadowDepthArrayAttach);
+
+		Ref<FramebufferTextureCubemapArrayAttachment> pointLightShadowDepthAttach = FramebufferTextureCubemapArrayAttachment::Create(FramebufferAttachmentPoint::Depth, pointLightShadowArray->Handle);
+		Ref<Framebuffer> pointLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, pointLightShadowDepthAttach);
+
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SpotLightFramebuffer", false, spotLightShadowsFramebuffer);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("PointLightFramebuffer", false, pointLightShadowsFramebuffer);
+
+		AssetHandle shadowmapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
+		Ref<Material> shadowmapMaterial = AssetManager::CreateAsset<Material>(true, shadowmapShaderHandle);
+
+		AssetHandle shadowmapCubeShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShaderCube.glsl", true);
+		Ref<Material> shadowmapCubeMaterial = AssetManager::CreateAsset<Material>(true, shadowmapCubeShaderHandle);
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", false, shadowmapMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapCubeMaterial", false, shadowmapCubeMaterial->Handle);
+
+		return { dirLightShadowsFramebuffer, spotLightShadowsFramebuffer, pointLightShadowsFramebuffer };
+	}
+
+	Ref<Framebuffer> EditorLayer::InitBloom(FrameRenderer* out_Framerenderer)
+	{
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		float bloomThreshold = 1.0f;
+		float bloomSoftThreshold = 0.5f;
+		float filterRadius = 0.005f;
+
+		float bloomStrength = 0.04f;
+		float dirtMaskStrength = 0.5f;
+		bool useDirtMask = true;
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomThreshold", true, bloomThreshold);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomSoftThreshold", true, bloomSoftThreshold);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomFilterRadius", true, filterRadius);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomStrength", true, bloomStrength);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("BloomDirtMaskStrength", true, dirtMaskStrength);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("UseDirtMask", true, useDirtMask);
+
+		// Bloom mip chain
+		// ---------------
+		BloomMipChain bloomMipChain;
+		bloomMipChain.Init(m_ViewportSize, 6);
+
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain", false, bloomMipChain);
+
+		// Framebuffers
+		// ------------
+
+		FramebufferSpecification bloomSpec;
+		bloomSpec.Width = m_ViewportSize.x;
+		bloomSpec.Height = m_ViewportSize.y;
+		Ref<FramebufferTexture2DAttachment> bloomColourAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, bloomMipChain.GetMipLevel(0)->Handle);
+		Ref<Framebuffer> bloomFBO = Framebuffer::Create(bloomSpec, { bloomColourAttachment });
+
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("BloomFramebuffer", false, bloomFBO);
+
+		AssetHandle bloomDownsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainDownsample.glsl", true);
+		Ref<Material> mipchainDownsampleMaterial = AssetManager::CreateAsset<Material>(true, bloomDownsampleShaderHandle);
+
+		AssetHandle bloomUpsampleShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainUpsample.glsl", true);
+		Ref<Material> mipchainUpsampleMaterial = AssetManager::CreateAsset<Material>(true, bloomUpsampleShaderHandle);
+
+		AssetHandle bloomCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MipChainBloomCombine.glsl", true);
+		Ref<Material> bloomCombineMaterial = AssetManager::CreateAsset<Material>(true, bloomCombineShaderHandle);
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MipChainDownsampleMaterial", false, mipchainDownsampleMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MipChainUpsampleMaterial", false, mipchainUpsampleMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("BloomCombineMaterial", false, bloomCombineMaterial->Handle);
+
+		// Textures
+		// --------
+		AssetHandle dirtMaskTextureHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/dirtmask.jpg", true);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
+	
+		return bloomFBO;
+	}
+
+	void EditorLayer::InitEnvMapAndSkybox(FrameRenderer* out_Framerenderer)
+	{
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		AssetHandle skyboxShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
+		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
+
+		// Create skybox cubemap texture from individual faces
+		// TODO: cubemap asset as a single file (probably another custom file format similar to binary texture array file)
+		std::vector<std::filesystem::path> facePaths = {
+			"assets/textures/cubemap/default_skybox/right.png",
+			"assets/textures/cubemap/default_skybox/left.png",
+			"assets/textures/cubemap/default_skybox/top.png",
+			"assets/textures/cubemap/default_skybox/bottom.png",
+			"assets/textures/cubemap/default_skybox/front.png",
+			"assets/textures/cubemap/default_skybox/back.png"
+		};
+
+		std::vector<Buffer> faceData;
+		faceData.reserve(6);
+		for (int i = 0; i < 6; i++)
+		{
+			TextureImporter::ImageFileReadResult result;
+			faceData.push_back(TextureImporter::ReadImageFile(facePaths[i], result, false));
+		}
+
+		TextureSpecification skyboxSpec;
+		skyboxSpec.Format = ImageFormat::RGB8;
+		skyboxSpec.MinFilter = ImageMinFilter::LINEAR;
+		skyboxSpec.MagFilter = ImageMagFilter::LINEAR;
+		skyboxSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
+		skyboxSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
+		skyboxSpec.Wrap_R = ImageWrap::CLAMP_TO_EDGE;
+		skyboxSpec.Width = 2048;
+		skyboxSpec.Height = 2048;
+		Ref<TextureCubemap> skyboxCubemap = AssetManager::CreateAsset<TextureCubemap>(true, skyboxSpec, faceData);
+		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
+
+		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
+		out_Framerenderer->AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
+
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
+	}
+
+	void EditorLayer::InitEditorData(FrameRenderer* out_Framerenderer)
+	{
+		bool showColliders = true;
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<bool>>("ShowColliders", true, showColliders);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<Entity>>("SelectedEntity", false, Entity());
+
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("OutlineThickness", true, m_EntityOutlineThickness);
+
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::vec4>>("OutlineColour", true, m_EntityOutlineColour);
+	}
+
+	void EditorLayer::InitTonemapping(FrameRenderer* out_Framerenderer)
+	{
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
+		Ref<Material> gammaTonemapMaterial = AssetManager::CreateAsset<Material>(true, gammaTonemapShaderHandle);
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
+	}
+
+	void EditorLayer::CreateForwardRenderer(FrameRenderer* out_Framerenderer)
+	{
+		PE_PROFILE_FUNCTION();
+
+		// Create resources
+		// ----------------
+
+		Ref<Framebuffer> mainFramebuffer = InitMainFramebuffer(out_Framerenderer);
+		std::vector<Ref<Framebuffer>> dirSpotPointShadowFBOs = InitShadowMapping(out_Framerenderer);
+		InitEditorData(out_Framerenderer);
+		Ref<Framebuffer> bloomFBO = InitBloom(out_Framerenderer);
+		InitTonemapping(out_Framerenderer);
+		InitEnvMapAndSkybox(out_Framerenderer);
+
+		out_Framerenderer->SetEventFunc(eventFunc);
+
 		// Add render passes
 		// -----------------
 
 		// Shadow mapping
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), spotLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), pointLightShadowsFramebuffer, { "ShadowResolution", "ShadowmapCubeMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], {"ShadowResolution", "ShadowmapMaterial"});
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], {"ShadowResolution", "ShadowmapMaterial"});
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], {"ShadowResolution", "ShadowmapCubeMaterial"});
 	
 		// Main render
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, scene2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, scene3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom

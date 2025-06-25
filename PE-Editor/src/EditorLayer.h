@@ -34,6 +34,14 @@ namespace PaulEngine {
 
 		void OnDuplicatedEntity();
 
+		// TODO: move these functions into a dedicated frame renderer set up class / factory
+		Ref<Framebuffer> InitMainFramebuffer(FrameRenderer* out_Framerenderer);
+		std::vector<Ref<Framebuffer>> InitShadowMapping(FrameRenderer* out_Framerenderer);
+		Ref<Framebuffer> InitBloom(FrameRenderer* out_Framerenderer);
+		void InitEnvMapAndSkybox(FrameRenderer* out_Framerenderer);
+		void InitEditorData(FrameRenderer* out_Framerenderer);
+		void InitTonemapping(FrameRenderer* out_Framerenderer);
+
 		void CreateForwardRenderer(FrameRenderer* out_Framerenderer);
 		void CreateDeferredRenderer(FrameRenderer* out_Framerenderer);
 
