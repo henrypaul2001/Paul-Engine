@@ -1249,10 +1249,10 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 		// Shaders are now defined with a render context of either forward or deferred
-		
+
 		// The problem is, any material using a default shader stores the asset handle
 		// Which means that a material using the default forward shader can't be used in a deferred render pass.
-		
+
 		// Ideally, this wouldn't matter since its just the default shader, and the only thing the user has unqiuely setup are 
 		// the material values
 
@@ -1272,7 +1272,7 @@ namespace PaulEngine
 		gBufferSpec.Samples = 1;
 
 		// gBuffer attachments
-		
+
 		// position
 		TextureSpecification positionSpec;
 		positionSpec.Width = viewportRes.x;
@@ -1346,20 +1346,20 @@ namespace PaulEngine
 		InitEnvMapAndSkybox(out_Framerenderer);
 
 		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
-		{
-			EventDispatcher dispatcher = EventDispatcher(e);
-			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
-				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
-				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
-				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				self->GetRenderResource<RenderComponentFramebuffer>("gBuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
-				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
-				return false;
-			});
-		};
+			{
+				EventDispatcher dispatcher = EventDispatcher(e);
+				dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+					glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+					self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+					self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					self->GetRenderResource<RenderComponentFramebuffer>("gBuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
+					self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+					return false;
+					});
+			};
 		out_Framerenderer->SetEventFunc(eventFunc);
 
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
@@ -1368,10 +1368,28 @@ namespace PaulEngine
 		AssetHandle gBufferShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
 		AssetHandle defaultLitDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitDeferred.pmat", false);
 
-		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", false);
-		AssetHandle deferredLightingPassMaterialHandle = AssetManager::CreateAsset<Material>(false, deferredLightingPassShaderHandle)->Handle;
+		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", true);
+		Ref<Material> deferredLightingPassMaterial = AssetManager::CreateAsset<Material>(true, deferredLightingPassShaderHandle);
+
+		// Set gBuffer textures in lighting pass material
+		Sampler2DShaderParameterTypeStorage* pos = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
+		Sampler2DShaderParameterTypeStorage* normal = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal");
+		Sampler2DShaderParameterTypeStorage* albedo = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo");
+		Sampler2DShaderParameterTypeStorage* specular = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular");
+		Sampler2DShaderParameterTypeStorage* arm = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gARM");
+		Sampler2DShaderParameterTypeStorage* emission = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gEmission");
+		Sampler2DShaderParameterTypeStorage* meta = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata");
+
+		if (pos)	  { pos->TextureHandle = gWorldPositionTexture->Handle; }
+		if (normal)	  { normal->TextureHandle = gNormalTexture->Handle; }
+		if (albedo)	  { albedo->TextureHandle = gAlbedoTexture->Handle; }
+		if (specular) { specular->TextureHandle = gSpecularTexture->Handle; }
+		if (arm)	  { arm->TextureHandle = gARMTexture->Handle; }
+		if (emission) { emission->TextureHandle = gEmissionTexture->Handle; }
+		if (meta)	  { meta->TextureHandle = gMetadataTexture->Handle; }
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DefaultLitDeferred", false, defaultLitDeferredMaterialHandle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DeferredLightingPass", true, deferredLightingPassMaterial->Handle);
 
 		// Create render passes
 		// --------------------
@@ -1408,6 +1426,150 @@ namespace PaulEngine
 				Renderer::EndScene();
 			}
 		};
+		
+		// { primitive<glm::ivec2>, Material, primitive<glm::ivec2>, Texture, Texture, Texture, EnvironmentMap }
+		RenderPass::OnRenderFunc deferredLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Deferred Lighting Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Lighting pass material input required");
+			PE_CORE_ASSERT(inputs[2], "Shadow resolution input required");
+			PE_CORE_ASSERT(inputs[3], "Dir light shadowmap input required");
+			PE_CORE_ASSERT(inputs[4], "Spot light shadowmap input required");
+			PE_CORE_ASSERT(inputs[5], "Point light shadowmap input required");
+			PE_CORE_ASSERT(inputs[6], "Env map input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[2]);
+			RenderComponentTexture* dirLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+			RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
+			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
+			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
+
+			RenderCommand::Clear();
+			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+			if (activeCamera && sceneContext) {
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+				// Submit screen quad
+				BlendState blend;
+				blend.Enabled = false;
+				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+
+				{
+					PE_PROFILE_SCOPE("Submit lights");
+					{
+						PE_PROFILE_SCOPE("Directional lights");
+						auto view = sceneContext->View<ComponentTransform, ComponentDirectionalLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
+							glm::mat4 transformMatrix = transform.GetTransform();
+							glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+							Renderer::DirectionalLight lightSource;
+							lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), (float)light.CastShadows);
+							lightSource.Diffuse = glm::vec4(light.Diffuse, light.ShadowMinBias);
+							lightSource.Specular = glm::vec4(light.Specular, light.ShadowMaxBias);
+							lightSource.Ambient = glm::vec4(light.Ambient, light.ShadowMapCameraDistance);
+
+							float shadowSize = light.ShadowMapProjectionSize;
+
+							glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+							float aspectRatio = (float)shadowResInput->Data.x / (float)shadowResInput->Data.y;
+							float orthoLeft = -shadowSize * aspectRatio * 0.5f;
+							float orthoRight = shadowSize * aspectRatio * 0.5f;
+							float orthoBottom = -shadowSize * 0.5f;
+							float orthoTop = shadowSize * 0.5f;
+
+							glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, light.ShadowMapNearClip, light.ShadowMapFarClip);
+							lightSource.LightMatrix = lightProjection * lightView;
+
+							Renderer::SubmitDirectionalLightSource(lightSource);
+						}
+					}
+
+					{
+						PE_PROFILE_SCOPE("Point lights");
+						auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
+							glm::vec4 position = glm::vec4(transform.WorldPosition(), 1.0f);
+							Renderer::PointLight lightSource;
+							lightSource.Position = position;
+							lightSource.Position.w = light.Radius;
+							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+							lightSource.ShadowData = glm::vec4(light.ShadowMinBias, light.ShadowMaxBias, light.ShadowMapFarClip, (float)light.CastShadows);
+							Renderer::SubmitPointLightSource(lightSource);
+						}
+					}
+
+					{
+						PE_PROFILE_SCOPE("Spot lights");
+						auto view = sceneContext->View<ComponentTransform, ComponentSpotLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentSpotLight>(entityID);
+							glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
+
+							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+							glm::vec3 position = transform.WorldPosition();
+							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
+
+							Renderer::SpotLight lightSource;
+							lightSource.Position = glm::vec4(position, light.Range);
+							lightSource.Direction = glm::vec4(direction, glm::cos(glm::radians(light.InnerCutoff)));
+							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+							lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+							lightSource.ShadowData = glm::vec4((bool)light.CastShadows, light.ShadowMinBias, light.ShadowMaxBias, 1.0f);
+
+							glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
+							glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)shadowResInput->Data.x / (float)shadowResInput->Data.y, light.ShadowMapNearClip, light.ShadowMapFarClip);
+							lightSource.LightMatrix = projection * lightView;
+
+							Renderer::SubmitSpotLightSource(lightSource);
+						}
+					}
+				}
+
+				if (dirLightShadowInput) {
+					Ref<Texture2DArray> dirLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(dirLightShadowInput->TextureHandle);
+					PE_CORE_ASSERT(dirLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");
+					dirLightShadowTexture->Bind(0);
+				}
+				if (spotLightShadowInput) {
+					Ref<Texture2DArray> spotLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(spotLightShadowInput->TextureHandle);
+					PE_CORE_ASSERT(spotLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid spot light shadow map type");
+					spotLightShadowTexture->Bind(1);
+				}
+				if (pointLightShadowInput) {
+					Ref<TextureCubemapArray> pointLightShadowTexture = AssetManager::GetAsset<TextureCubemapArray>(pointLightShadowInput->TextureHandle);
+					PE_CORE_ASSERT(pointLightShadowTexture->GetType() == AssetType::TextureCubemapArray, "Invalid point light shadow map type");
+					pointLightShadowTexture->Bind(2);
+				}
+
+				if (envMapInput)
+				{
+					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+					AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
+					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
+					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+				}
+
+				Renderer::EndScene();
+			}
+		};
 
 		// Add render passes
 		// -----------------
@@ -1419,8 +1581,8 @@ namespace PaulEngine
 
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferred" });
-		// lighting pass
-	}
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
+}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
 
