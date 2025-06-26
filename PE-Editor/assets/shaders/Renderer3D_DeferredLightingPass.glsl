@@ -1,19 +1,28 @@
+#context deferred
+#type vertex
 #version 450 core
-layout(location = 0) out vec4 colour;
-layout(location = 1) out int entityID;
+layout(location = 0) in vec3 a_Position;
+layout(location = 2) in vec2 a_TexCoords;
 
-const int MAX_ACTIVE_DIR_LIGHTS = 8;
-const int MAX_ACTIVE_POINT_LIGHTS = 8;
-const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+layout(location = 1) out vec2 v_TexCoords;
 
-struct VertexData
+void main()
 {
-	vec3 WorldFragPos;
-	vec3 Normal;
-	vec2 TexCoords;
+	gl_Position = vec4(a_Position.xy, 0.0, 1.0);
+	v_TexCoords = a_TexCoords;
+}
 
-	mat3 TBN;
-};
+#type fragment
+#version 450 core
+
+layout(location = 0) out vec4 f_Colour;
+layout(location = 1) out int f_EntityID;
+
+// TODO: Change u_SceneData to be a shader storage buffer to allow for larger array sizes
+// TODO: Before that, implement shader storage buffer abstraction in the engine
+const int MAX_ACTIVE_DIR_LIGHTS = 100;
+const int MAX_ACTIVE_POINT_LIGHTS = 100;
+const int MAX_ACTIVE_SPOT_LIGHTS = 100;
 
 struct DirectionalLight // vec4 for padding
 {
@@ -51,8 +60,7 @@ struct SpotLight
 	mat4 LightMatrix;
 };
 
-layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in VertexData v_VertexData;
+layout(location = 1) in vec2 v_TexCoords;
 
 layout(std140, binding = 0) uniform Camera
 {
@@ -72,36 +80,21 @@ layout(std140, binding = 2) uniform SceneData
 	int ActiveSpotLights;
 } u_SceneData;
 
-layout(std140, binding = 3) uniform Mat_MaterialValues
-{
-	vec4 Albedo;
-	vec4 Specular;
-
-	vec2 TextureScale;
-	float Shininess;
-	float HeightScale;
-
-	vec3 EmissionColour;
-	float EmissionStrength;
-
-	int UseNormalMap;
-	int UseDisplacementMap;
-} u_MaterialValues;
-
 layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
 layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
 layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
-layout(binding = 3) uniform sampler2D Mat_AlbedoMap;
-layout(binding = 4) uniform sampler2D Mat_SpecularMap;
-layout(binding = 5) uniform sampler2D Mat_NormalMap;
-layout(binding = 6) uniform sampler2D Mat_DisplacementMap;
-layout(binding = 7) uniform sampler2D Mat_EmissionMap;
+layout(binding = 3) uniform sampler2D Mat_gWorldPosition;
+layout(binding = 4) uniform sampler2D Mat_gWorldNormal;
+layout(binding = 5) uniform sampler2D Mat_gAlbedo;
+layout(binding = 6) uniform sampler2D Mat_gSpecular;
+layout(binding = 7) uniform sampler2D Mat_gARM;
+layout(binding = 8) uniform sampler2D Mat_gEmission;
+layout(binding = 9) uniform sampler2D Mat_gMetadata;
 
 // Global IBL
 layout(binding = 10) uniform samplerCube IrradianceMap;
 layout(binding = 11) uniform samplerCube PrefilterMap;
 
-vec2 ScaledTexCoords;
 vec3 ViewDir;
 
 // array of offset direction for sampling
@@ -113,16 +106,16 @@ vec3 gridSamplingDisk[20] = vec3[]
 	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
 	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
 	);
-float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, vec3 lightPos, float minBias, float maxBias, vec3 Normal, float farPlane)
+float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, vec3 lightPos, float minBias, float maxBias, vec3 Normal, float farPlane, vec3 WorldFragPos)
 {
-	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
+	vec3 fragToLight = WorldFragPos - lightPos;
 	float currentDepth = length(fragToLight);
 
 	float shadow = 0.0;
 	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
 	int samples = 20;
 
-	float viewDistance = length(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
+	float viewDistance = length(u_CameraBuffer.ViewPos - WorldFragPos);
 	float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
 
 	for (int i = 0; i < samples; i++)
@@ -141,7 +134,7 @@ float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, v
 	return shadow;
 }
 
-float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
+float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, vec3 WorldFragPos)
 {
 	// perspective divide
 	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
@@ -158,7 +151,7 @@ float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 Li
 	float currentDepth = projCoords.z;
 
 	// check against shadow map sample
-	vec3 lightDir = normalize(lightPos - v_VertexData.WorldFragPos);
+	vec3 lightDir = normalize(lightPos - WorldFragPos);
 	float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
 
 	// pcf soft shadowing
@@ -176,7 +169,7 @@ float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 Li
 	return shadow;
 }
 
-float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
+float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal, vec3 WorldFragPos)
 {
 	// perspective divide
 	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
@@ -193,7 +186,7 @@ float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos
 	float currentDepth = projCoords.z;
 
 	// check against shadow map sample
-	vec3 lightDir = normalize(lightPos - v_VertexData.WorldFragPos);
+	vec3 lightDir = normalize(lightPos - WorldFragPos);
 	float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
 
 	// pcf soft shadowing
@@ -211,49 +204,7 @@ float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos
 	return shadow;
 }
 
-const float minLayers = 0.0;
-const float maxLayers = 32.0;
-vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
-{
-	// calculate number of depth layers
-	float numLayers = mix(maxLayers, minLayers, dot(vec3(0.0, 0.0, 1.0), tangentViewDir));
-	float layerDepth = 1.0 / numLayers;
-
-	float currentLayerDepth = 0.0f;
-
-	// amount to shift the texture coordinates per layer
-	vec2 P = tangentViewDir.xy * u_MaterialValues.HeightScale;
-	vec2 deltaTexCoords = (P / numLayers);
-
-	// initial sample
-	vec2 currentTexCoords = texCoords;
-	float currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
-
-	float i = 0.0;
-	while (currentLayerDepth < currentDepthMapValue && i < 32.0) {
-		// shift coords along direction of P
-		currentTexCoords -= deltaTexCoords;
-
-		currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
-
-		currentLayerDepth += layerDepth;
-		i += 1.0;
-	}
-
-	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
-
-	// get depth after and before collision for interpolation
-	float afterDepth = currentDepthMapValue - currentLayerDepth;
-	float beforeDepth = texture(Mat_DisplacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
-
-	// interpolate
-	float weight = afterDepth / (afterDepth - beforeDepth);
-	vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
-
-	return finalTexCoords;
-}
-
-vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
+vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos)
 {
 	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo;
 
@@ -264,7 +215,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), MaterialShininess);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
 
 	// shadow contribution
@@ -275,12 +226,12 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	float shadow = 0.0;
 	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
 	{
-		shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal);
+		shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, Normal, WorldFragPos);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
-vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
+vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos)
 {
 	// attenuation
 	vec4 lightPos = u_SceneData.PointLights[lightIndex].Position;
@@ -291,11 +242,11 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 	float linear = 4.5 / range;
 	float quadratic = 75.0 / (range * range);
 
-	float dist = length(lightPos.xyz - v_VertexData.WorldFragPos);
+	float dist = length(lightPos.xyz - WorldFragPos);
 	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
 
 	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation;
-	vec3 lightDir = normalize(lightPos.xyz - v_VertexData.WorldFragPos);
+	vec3 lightDir = normalize(lightPos.xyz - WorldFragPos);
 
 	// diffuse
 	float diff = max(dot(Normal, lightDir), 0.0);
@@ -303,7 +254,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), MaterialShininess);
 	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
 	// shadow contribution
@@ -314,15 +265,15 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 	float shadow = 0.0;
 	if (bool(u_SceneData.PointLights[lightIndex].ShadowData.w))
 	{
-		shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, Normal, farPlane);
+		shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, Normal, farPlane, WorldFragPos);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
-vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
+vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos)
 {
 	vec4 lightPos = u_SceneData.SpotLights[lightIndex].Position;
-	vec3 lightDir = normalize(lightPos.xyz - v_VertexData.WorldFragPos);
+	vec3 lightDir = normalize(lightPos.xyz - WorldFragPos);
 
 	// spotlight
 	vec3 direction = u_SceneData.SpotLights[lightIndex].Direction.xyz;
@@ -341,7 +292,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	float linear = 4.5 / range;
 	float quadratic = 75.0 / (range * range);
 
-	float dist = length(lightPos.xyz - v_VertexData.WorldFragPos);
+	float dist = length(lightPos.xyz - WorldFragPos);
 	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
 
 	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation;
@@ -352,7 +303,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), MaterialShininess);
 	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
 
 	// shadow contribution
@@ -362,7 +313,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	float shadow = 0.0;
 	if (bool(u_SceneData.SpotLights[lightIndex].ShadowData.r))
 	{
-		shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, Normal);
+		shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, Normal, WorldFragPos);
 	}
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
@@ -386,67 +337,67 @@ vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMa
 	return diffuse + specular;
 }
 
-void main()
+// Lighting models
+// ---------------
+vec3 BlinnPhongLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 MaterialEmission)
 {
-	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
-	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
-
-	ScaledTexCoords = v_VertexData.TexCoords;
-	ScaledTexCoords *= u_MaterialValues.TextureScale;
-
-	// Apply parallax mapping to TexCoords
-	if (u_MaterialValues.UseDisplacementMap != 0)
-	{
-		ScaledTexCoords = ParallaxMapping(ScaledTexCoords, TangentViewDir);
-		//ScaledTexCoords = clamp(ScaledTexCoords, 0.0, 1.0);
-	}
-
-	// If no texture is provided, these samplers will sample a default 1x1 white texture.
-	// This results in no change to the underlying material value when they are multiplied
-	vec3 AlbedoSample = pow(texture(Mat_AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
-	vec3 EmissionSample = pow(texture(Mat_EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
-	vec3 SpecularSample = vec3(texture(Mat_SpecularMap, ScaledTexCoords).r);
-
-	vec3 Normal = normalize(v_VertexData.Normal);
-	if (u_MaterialValues.UseNormalMap != 0)
-	{
-		Normal = texture(Mat_NormalMap, ScaledTexCoords).rgb;
-		Normal = normalize(Normal * 2.0 - 1.0);
-		Normal = normalize(v_VertexData.TBN * Normal);
-	}
-
-	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
-	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
-	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
-
-	vec3 Result = vec3(0.0);
+	vec3 result = vec3(0.0);
 
 	// Directional lights
 	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++)
 	{
-		Result += DirectionalLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
+		result += DirectionalLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos);
 	}
 
 	// Point lights
 	for (int i = 0; i < u_SceneData.ActivePointLights && i < MAX_ACTIVE_POINT_LIGHTS; i++)
 	{
-		Result += PointLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
+		result += PointLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos);
 	}
 
 	// Spot lights
 	for (int i = 0; i < u_SceneData.ActiveSpotLights; i++)
 	{
-		Result += SpotLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
+		result += SpotLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos);
 	}
 
-	colour = vec4(Result, u_MaterialValues.Albedo.a);
-
-	// Emission
-	colour.rgb += MaterialEmission;
+	result += MaterialEmission;
 
 	// Global IBL
-	colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, u_MaterialValues.Shininess, Normal, ViewDir, reflect(-ViewDir, Normal));
+	result += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, ViewDir, reflect(-ViewDir, WorldNormal));
+	
+	return result;
+}
 
-	if (colour.a == 0.0) { discard; }
-	else { entityID = v_EntityID; }
+void main()
+{
+	// Sample gBuffer
+	vec3 WorldFragPos = texture(Mat_gWorldPosition, v_TexCoords).rgb;
+	vec3 WorldNormal = texture(Mat_gWorldNormal, v_TexCoords).rgb;
+	vec3 Albedo = texture(Mat_gAlbedo, v_TexCoords).rgb;
+
+	vec4 specSample = texture(Mat_gSpecular, v_TexCoords).rgba;
+	vec3 SpecularColour = specSample.rgb;
+	float SpecularExponent = specSample.a;
+
+	vec3 armSample = texture(Mat_gARM, v_TexCoords).rgb;
+	float AO = armSample.r;
+	float Roughness = armSample.g;
+	float Metalness = armSample.b;
+
+	vec3 Emission = texture(Mat_gEmission, v_TexCoords).rgb;
+	
+	vec2 metadataSample = texture(Mat_gMetadata, v_TexCoords).rg;
+	int EntityID = int(metadataSample.r);
+	int LightingModelIndex = int(metadataSample.g); // 0 = blinn-phong, 1 = pbr
+
+	f_EntityID = EntityID;
+	if (LightingModelIndex == 0)
+	{
+		f_Colour = vec4(BlinnPhongLighting(WorldFragPos, WorldNormal, Albedo, SpecularColour, SpecularExponent, Emission), 1.0);
+	}
+	else
+	{
+		f_Colour = vec4(0.0, 0.0, 0.0, 1.0);
+	}
 }

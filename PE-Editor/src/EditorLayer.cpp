@@ -1367,6 +1367,10 @@ namespace PaulEngine
 
 		AssetHandle gBufferShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
 		AssetHandle defaultLitDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitDeferred.pmat", false);
+
+		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", false);
+		AssetHandle deferredLightingPassMaterialHandle = AssetManager::CreateAsset<Material>(false, deferredLightingPassShaderHandle)->Handle;
+
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DefaultLitDeferred", false, defaultLitDeferredMaterialHandle);
 
 		// Create render passes

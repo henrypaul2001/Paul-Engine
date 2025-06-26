@@ -182,12 +182,16 @@ void main()
 	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
-	// Write to gBuffer
-	gWorldPosition = v_VertexData.WorldFragPos;
-	gWorldNormal = Normal;
-	gAlbedo = MaterialAlbedo;
-	gSpecular = vec4(MaterialSpecular, u_MaterialValues.Shininess);
-	gARM = vec3(0.0, 0.0, 0.0);
-	gEmission = MaterialEmission;
-	gMetaData = vec2(float(v_EntityID), 0.0);
+	if (u_MaterialValues.Albedo.a == 0.0) { discard; }
+	else
+	{
+		// Write to gBuffer
+		gWorldPosition = v_VertexData.WorldFragPos;
+		gWorldNormal = Normal;
+		gAlbedo = MaterialAlbedo;
+		gSpecular = vec4(MaterialSpecular, u_MaterialValues.Shininess);
+		gARM = vec3(0.0, 0.0, 0.0);
+		gEmission = MaterialEmission;
+		gMetaData = vec2(float(v_EntityID), 0.0);
+	}
 }
