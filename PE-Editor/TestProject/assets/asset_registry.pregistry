@@ -1479,3 +1479,11 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/DefaultLitDeferred.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 16737953756632376020
+    Filepath: ..\..\assets\shaders/Renderer3D_gBufferPBR.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 1941655368120718457
+    Filepath: ..\..\assets\materials/DefaultLitPBRDeferred.pmat
+    Persistent: false
+    Type: AssetType::Material
