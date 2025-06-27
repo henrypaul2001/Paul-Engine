@@ -225,6 +225,73 @@ namespace PaulEngine
 			OpenGLRenderAPI::BufferBitMaskToGLBitMask(bufferMask), OpenGLFramebufferUtils::BlitFilterToGLEnum(filtering));
 	}
 
+	void OpenGLFramebuffer::ClearBuffer(FramebufferAttachmentPoint buffer, float* value)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::None, "Invalid target buffer");
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::Stencil, "Stencil buffer cannot be cleared with float value");
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::DepthStencil, "Depth/Stencil buffer cannot be cleared with float value");
+		
+		if (buffer == FramebufferAttachmentPoint::Depth)
+		{
+			if (m_DepthAttachment->GetAttachPoint() == buffer)
+			{
+				glClearNamedFramebufferfv(m_RendererID, GL_DEPTH, 0, value);
+			}
+			else { PE_CORE_ERROR("Framebuffer target buffer clear mismatch"); }
+		}
+		else
+		{
+			auto it = m_ColourAttachmentMap.find(buffer);
+			if (it != m_ColourAttachmentMap.end())
+			{
+				glClearNamedFramebufferfv(m_RendererID, GL_COLOR, (int)buffer - 1, value);
+			}
+			else { PE_CORE_ERROR("Requested clear buffer does not exist in framebuffer"); }
+		}
+		GL_NONE;
+	}
+
+	void OpenGLFramebuffer::ClearBuffer(FramebufferAttachmentPoint buffer, int* value)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::None, "Invalid target buffer");
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::Depth, "Depth buffer cannot be cleared with integer");
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::DepthStencil, "DepthStencil buffer cannot be cleared with integer");
+
+		if (buffer == FramebufferAttachmentPoint::Stencil)
+		{
+			if (m_DepthAttachment->GetAttachPoint() == buffer)
+			{
+				glClearNamedFramebufferiv(m_RendererID, GL_STENCIL, 0, value);
+			}
+			else { PE_CORE_ERROR("Framebuffer target buffer clear mismatch"); }
+		}
+		else
+		{
+			auto it = m_ColourAttachmentMap.find(buffer);
+			if (it != m_ColourAttachmentMap.end())
+			{
+				glClearNamedFramebufferiv(m_RendererID, GL_COLOR, (int)buffer - 1, value);
+			}
+			else { PE_CORE_ERROR("Requested clear buffer does not exist in framebuffer"); }
+		}
+	}
+
+	void OpenGLFramebuffer::ClearBuffer(FramebufferAttachmentPoint buffer, uint32_t* value)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(buffer != FramebufferAttachmentPoint::None, "Invalid target buffer");
+		PE_CORE_ASSERT(!FramebufferAttachment::IsDepthAttachment(buffer), "Depth | Stencil | DepthStencil buffer cannot be cleared with unsigned integer");
+
+		auto it = m_ColourAttachmentMap.find(buffer);
+		if (it != m_ColourAttachmentMap.end())
+		{
+			glClearNamedFramebufferuiv(m_RendererID, GL_COLOR, (int)buffer - 1, value);
+		}
+		else { PE_CORE_ERROR("Requested clear buffer does not exist in framebuffer"); }
+	}
+
 	bool OpenGLFramebuffer::operator==(const Framebuffer* other) const
 	{
 		if (!other) { return false; }

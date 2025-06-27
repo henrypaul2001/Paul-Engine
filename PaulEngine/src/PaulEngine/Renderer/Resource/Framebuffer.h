@@ -262,6 +262,10 @@ namespace PaulEngine
 			source->BlitTo(target, bufferMask, filtering, sourceRegionMin, sourceRegionMax, targetRegionMin, targetRegionMax);
 		}
 
+		virtual void ClearBuffer(FramebufferAttachmentPoint buffer, float* value) = 0;
+		virtual void ClearBuffer(FramebufferAttachmentPoint buffer, int* value) = 0;
+		virtual void ClearBuffer(FramebufferAttachmentPoint buffer, uint32_t* value) = 0;
+
 		static Ref<Framebuffer> Create(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments = {}, Ref<FramebufferAttachment> depthAttachment = nullptr);
 
 		virtual bool operator ==(const Framebuffer* other) const = 0;

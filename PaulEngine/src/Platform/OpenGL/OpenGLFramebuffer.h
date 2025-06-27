@@ -71,6 +71,10 @@ namespace PaulEngine
 
 		virtual void BlitTo(Framebuffer* targetFramebuffer, int bufferMask, BlitFilter filtering, glm::ivec2 sourceRegionMin, glm::ivec2 sourceRegionMax, glm::ivec2 targetRegionMin, glm::ivec2 targetRegionMax) override;
 
+		virtual void ClearBuffer(FramebufferAttachmentPoint buffer, float* value) override;
+		virtual void ClearBuffer(FramebufferAttachmentPoint buffer, int* value) override;
+		virtual void ClearBuffer(FramebufferAttachmentPoint buffer, uint32_t* value) override;
+
 		uint32_t GetRendererID() const { return m_RendererID; }
 
 		virtual bool operator ==(const Framebuffer* other) const override;
