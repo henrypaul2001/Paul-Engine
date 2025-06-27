@@ -314,6 +314,40 @@ namespace PaulEngine
 		}
 		};
 
+	// { Texture(optional)(texture2D-ColourAttach0) }
+	RenderPass::OnRenderFunc clearFramebufferFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
+	{
+		PE_PROFILE_SCOPE("Clear Framebuffer pass");
+		Ref<Scene>& sceneContext = context.ActiveScene;
+		Ref<Camera> activeCamera = context.ActiveCamera;
+		const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+		
+		RenderComponentTexture* screenTextureInput = nullptr;
+		if (inputs.size() > 0)
+		{
+			screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[0]);
+		}
+		
+		if (screenTextureInput)
+		{
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
+			{
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
+			}
+
+			targetFramebuffer->SetDrawBuffers();
+		}
+
+		RenderCommand::SetClearColour(glm::vec4(0.01f, 0.01f, 0.01f, 1.0f));
+		RenderCommand::Clear();
+	};
+
 	// { primitive<glm::ivec2>, Texture }
 	RenderPass::OnRenderFunc forward2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Scene 2D Render Pass");
@@ -338,8 +372,6 @@ namespace PaulEngine
 
 		targetFramebuffer->SetDrawBuffers();
 		RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
-		RenderCommand::SetClearColour(glm::vec4(0.01f, 0.01f, 0.01f, 1.0f));
-		RenderCommand::Clear();
 
 		if (activeCamera && sceneContext) {
 			Renderer2D::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
@@ -1229,6 +1261,7 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], {"ShadowResolution", "ShadowmapCubeMaterial"});
 	
 		// Main render
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::Texture }, clearFramebufferFunc), mainFramebuffer, { "ScreenTexture" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
