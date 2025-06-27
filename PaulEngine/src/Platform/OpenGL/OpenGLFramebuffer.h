@@ -69,6 +69,8 @@ namespace PaulEngine
 		virtual void SetDrawBuffers(std::vector<FramebufferAttachmentPoint> colourBuffers) override;
 		virtual void SetDrawBuffers() override;
 
+		virtual void BlitTo(Framebuffer* targetFramebuffer, int bufferMask, BlitFilter filtering, glm::ivec2 sourceRegionMin, glm::ivec2 sourceRegionMax, glm::ivec2 targetRegionMin, glm::ivec2 targetRegionMax) override;
+
 		uint32_t GetRendererID() const { return m_RendererID; }
 
 		virtual bool operator ==(const Framebuffer* other) const override;

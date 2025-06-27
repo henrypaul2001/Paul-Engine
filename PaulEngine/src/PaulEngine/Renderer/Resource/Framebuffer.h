@@ -207,6 +207,20 @@ namespace PaulEngine
 	class Framebuffer
 	{
 	public:
+		enum BufferBit
+		{
+			None = 0,
+			COLOUR = BIT(0),
+			DEPTH = BIT(1),
+			STENCIL = BIT(2)
+		};
+
+		enum class BlitFilter
+		{
+			Nearest,
+			Linear
+		};
+
 		virtual ~Framebuffer() {}
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
@@ -225,6 +239,28 @@ namespace PaulEngine
 
 		virtual void SetDrawBuffers(std::vector<FramebufferAttachmentPoint> colourBuffers) = 0;
 		virtual void SetDrawBuffers() = 0;
+
+		void BlitTo(Framebuffer* targetFramebuffer, int bufferMask = (BufferBit::COLOUR | BufferBit::DEPTH | BufferBit::STENCIL), BlitFilter filtering = BlitFilter::Nearest)
+		{
+			PE_CORE_ASSERT(targetFramebuffer, "Invalid target framebuffer");
+			const FramebufferSpecification& sourceSpec = GetSpecification();
+			const FramebufferSpecification& targetSpec = targetFramebuffer->GetSpecification();
+			glm::ivec2 sourceMin = { 0, 0 };
+			glm::ivec2 sourceMax = { sourceSpec.Width, sourceSpec.Height };
+			glm::ivec2 targetMin = { 0, 0 };
+			glm::ivec2 targetMax = { targetSpec.Width, targetSpec.Height };
+
+			BlitTo(targetFramebuffer, bufferMask, filtering, sourceMin, sourceMax, targetMin, targetMax);
+		}
+		virtual void BlitTo(Framebuffer* targetFramebuffer, int bufferMask, BlitFilter filtering, glm::ivec2 sourceRegionMin, glm::ivec2 sourceRegionMax, glm::ivec2 targetRegionMin, glm::ivec2 targetRegionMax) = 0;
+		static void Blit(Framebuffer* source, Framebuffer* target, int bufferMask = (BufferBit::COLOUR | BufferBit::DEPTH | BufferBit::STENCIL), BlitFilter filtering = BlitFilter::Nearest) {
+			PE_CORE_ASSERT(source, "Invalid source framebuffer");
+			source->BlitTo(target, bufferMask, filtering);
+		}
+		static void Blit(Framebuffer* source, Framebuffer* target, int bufferMask, BlitFilter filtering, glm::ivec2 sourceRegionMin, glm::ivec2 sourceRegionMax, glm::ivec2 targetRegionMin, glm::ivec2 targetRegionMax) {
+			PE_CORE_ASSERT(source, "Invalid source framebuffer");
+			source->BlitTo(target, bufferMask, filtering, sourceRegionMin, sourceRegionMax, targetRegionMin, targetRegionMax);
+		}
 
 		static Ref<Framebuffer> Create(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments = {}, Ref<FramebufferAttachment> depthAttachment = nullptr);
 

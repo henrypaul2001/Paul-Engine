@@ -29,6 +29,26 @@ namespace PaulEngine
 			PE_CORE_ASSERT(false, "Undefined attachment point translation");
 			return 0;
 		}
+
+		static GLenum BlitFilterToGLEnum(Framebuffer::BlitFilter filter)
+		{
+			switch (filter)
+			{
+				case Framebuffer::BlitFilter::Linear: return GL_LINEAR;
+				case Framebuffer::BlitFilter::Nearest: return GL_NEAREST;
+			}
+			PE_CORE_ASSERT(false, "Undefined filtering translation");
+			return 0;
+		}
+
+		static int BufferBitMaskToGLBitMask(int bufferMask)
+		{
+			int glMask = 0;
+			if (bufferMask & Framebuffer::BufferBit::COLOUR) { glMask |= GL_COLOR_BUFFER_BIT; }
+			if (bufferMask & Framebuffer::BufferBit::DEPTH) { glMask |= GL_DEPTH_BUFFER_BIT; }
+			if (bufferMask & Framebuffer::BufferBit::STENCIL) { glMask |= GL_STENCIL_BUFFER_BIT; }
+			return glMask;
+		}
 	}
 
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec, std::vector<Ref<FramebufferAttachment>> colourAttachments, Ref<FramebufferAttachment> depthAttachment) : m_RendererID(0), m_Spec(spec)
@@ -202,6 +222,15 @@ namespace PaulEngine
 			}
 			glNamedFramebufferDrawBuffers(m_RendererID, gl_DrawBuffers.size(), &gl_DrawBuffers[0]);
 		}
+	}
+
+	void OpenGLFramebuffer::BlitTo(Framebuffer* targetFramebuffer, int bufferMask, BlitFilter filtering, glm::ivec2 sourceRegionMin, glm::ivec2 sourceRegionMax, glm::ivec2 targetRegionMin, glm::ivec2 targetRegionMax)
+	{
+		PE_CORE_ASSERT(targetFramebuffer, "Invalid framebuffer");
+		OpenGLFramebuffer* castedTarget = static_cast<OpenGLFramebuffer*>(targetFramebuffer);
+		glBlitNamedFramebuffer(GetRendererID(), castedTarget->GetRendererID(),
+			sourceRegionMin.x, sourceRegionMin.y, sourceRegionMax.x, sourceRegionMax.y, targetRegionMin.x, targetRegionMin.y, targetRegionMax.x, targetRegionMax.y,
+			OpenGLFramebufferUtils::BufferBitMaskToGLBitMask(bufferMask), OpenGLFramebufferUtils::BlitFilterToGLEnum(filtering));
 	}
 
 	bool OpenGLFramebuffer::operator==(const Framebuffer* other) const
