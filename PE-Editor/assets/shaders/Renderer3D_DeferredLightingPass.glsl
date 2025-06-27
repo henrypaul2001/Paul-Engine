@@ -20,9 +20,9 @@ layout(location = 1) out int f_EntityID;
 
 // TODO: Change u_SceneData to be a shader storage buffer to allow for larger array sizes
 // TODO: Before that, implement shader storage buffer abstraction in the engine
-const int MAX_ACTIVE_DIR_LIGHTS = 100;
-const int MAX_ACTIVE_POINT_LIGHTS = 100;
-const int MAX_ACTIVE_SPOT_LIGHTS = 100;
+const int MAX_ACTIVE_DIR_LIGHTS = 8;
+const int MAX_ACTIVE_POINT_LIGHTS = 8;
+const int MAX_ACTIVE_SPOT_LIGHTS = 8;
 
 struct DirectionalLight // vec4 for padding
 {
