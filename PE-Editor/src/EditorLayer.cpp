@@ -1443,6 +1443,9 @@ namespace PaulEngine
 			RenderCommand::Clear();
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
+			glm::vec2 clearColour = glm::vec2(-1, -1);
+			targetFramebuffer->ClearBuffer(FramebufferAttachmentPoint::Colour6, &clearColour[0]);
+
 			if (activeCamera && sceneContext) {
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
