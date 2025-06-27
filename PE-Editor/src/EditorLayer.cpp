@@ -1394,7 +1394,7 @@ namespace PaulEngine
 		// Create render passes
 		// --------------------
 		
-		// { primitive<glm::ivec2>, Material }
+		// { primitive<glm::ivec2>, Material, Framebuffer }
 		RenderPass::OnRenderFunc geometryPass3DFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1402,8 +1402,10 @@ namespace PaulEngine
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Geometry pass material input required");
+			PE_CORE_ASSERT(inputs[2], "Main framebuffer input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentFramebuffer* mainFramebufferInput = dynamic_cast<RenderComponentFramebuffer*>(inputs[2]);
 
 			RenderCommand::Clear();
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
@@ -1425,6 +1427,9 @@ namespace PaulEngine
 
 				Renderer::EndScene();
 			}
+
+			// Blit gBuffer depth / stencil to main framebuffer
+			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
 		};
 		
 		// { primitive<glm::ivec2>, Material, primitive<glm::ivec2>, Texture, Texture, Texture, EnvironmentMap }
@@ -1448,7 +1453,7 @@ namespace PaulEngine
 			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
 			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
 
-			RenderCommand::Clear();
+			RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
 			if (activeCamera && sceneContext) {
@@ -1457,7 +1462,9 @@ namespace PaulEngine
 				// Submit screen quad
 				BlendState blend;
 				blend.Enabled = false;
-				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+				DepthState depthState;
+				depthState.Test = false;
+				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 				{
 					PE_PROFILE_SCOPE("Submit lights");
@@ -1580,9 +1587,21 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], { "ShadowResolution", "ShadowmapCubeMaterial" });
 
 		// Deferred rendering
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferred" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferred", "MainFramebuffer" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
-}
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
+
+		// Bloom
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomCombinePass), mainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" });
+
+		// Editor overlay
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
+
+		// Post process
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
+	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
 
