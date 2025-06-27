@@ -312,7 +312,7 @@ namespace PaulEngine
 				Renderer::EndScene();
 			}
 		}
-		};
+	};
 
 	// { Texture(optional)(texture2D-ColourAttach0) }
 	RenderPass::OnRenderFunc clearFramebufferFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
@@ -1622,8 +1622,9 @@ namespace PaulEngine
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferred", "MainFramebuffer" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
-
+		
 		// Bloom
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" });
