@@ -68,8 +68,8 @@ namespace PaulEngine {
 
 		static bool SetDefaultMaterial(AssetHandle materialHandle);
 
-		static AssetHandle DefaultLitShader();
-		static AssetHandle DefaultLitPBRShader();
+		static AssetHandle GetDefaultLitShader();
+		static AssetHandle GetDefaultLitPBRShader();
 
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 

@@ -2,12 +2,32 @@
 #include "Material.h"
 
 #include "PaulEngine/Asset/AssetManager.h"
+#include "PaulEngine/Renderer/Renderer.h"
 
 namespace PaulEngine
 {
-	Material::Material() : m_ShaderHandle(0) {}
-	Material::Material(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle) {
+	static bool IsDeferredRenderer() { return Project::GetActive()->GetSpecification().RenderContext == RenderPipelineContext::Deferred; }
+
+	Material::Material() : m_ShaderHandle(0), m_DeferredOverrideShader(0) {}
+	Material::Material(AssetHandle shaderHandle) : m_ShaderHandle(shaderHandle), m_DeferredOverrideShader(0) {
 		PE_PROFILE_FUNCTION();
+
+		// TODO: revisit this, very messy
+		if (shaderHandle == Renderer::GetDefaultLitShader())
+		{
+			Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+			std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+			m_DeferredOverrideShader = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
+		}
+		else if (shaderHandle == Renderer::GetDefaultLitPBRShader())
+		{
+			Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+			std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+			m_DeferredOverrideShader = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBufferPBR.glsl", true);
+		}
+
 		// Generate parameters from shader reflection data
 		Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
 		PE_CORE_ASSERT(shaderAsset, "Invalid shader asset");
@@ -58,7 +78,11 @@ namespace PaulEngine
 	void Material::Bind()
 	{
 		PE_PROFILE_FUNCTION();
-		Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
+		// TODO: revisit this, very messy
+		Ref<Shader> shaderAsset = nullptr;
+		if (IsDeferredRenderer() && m_DeferredOverrideShader != 0) { shaderAsset = AssetManager::GetAsset<Shader>(m_DeferredOverrideShader); }
+		else { shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle); }
+
 		if (shaderAsset) {
 			shaderAsset->Bind();
 

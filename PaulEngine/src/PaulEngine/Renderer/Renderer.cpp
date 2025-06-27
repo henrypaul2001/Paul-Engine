@@ -373,12 +373,12 @@ namespace PaulEngine {
 		return false;
 	}
 
-	AssetHandle Renderer::DefaultLitShader()
+	AssetHandle Renderer::GetDefaultLitShader()
 	{
 		return s_RenderData.DefaultLitShaderHandle;
 	}
 
-	AssetHandle Renderer::DefaultLitPBRShader()
+	AssetHandle Renderer::GetDefaultLitPBRShader()
 	{
 		return s_RenderData.DefaultLitPBRShaderHandle;
 	}

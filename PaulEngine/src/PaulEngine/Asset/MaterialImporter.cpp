@@ -352,7 +352,7 @@ namespace PaulEngine
 	static Ref<Material> BuildAssimpMaterial(const aiMaterial* material, const std::filesystem::path& sourcePath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
-		const AssetHandle shaderHandle = Renderer::DefaultLitShader();
+		const AssetHandle shaderHandle = Renderer::GetDefaultLitShader();
 		Ref<Material> engineMaterial = CreateRef<Material>(shaderHandle);
 
 		// Read material properties
@@ -438,7 +438,7 @@ namespace PaulEngine
 	static Ref<Material> BuildAssimpMaterialAsPBR(const aiMaterial* material, const std::filesystem::path& sourcePath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
-		const AssetHandle shaderHandle = Renderer::DefaultLitPBRShader();
+		const AssetHandle shaderHandle = Renderer::GetDefaultLitPBRShader();
 		Ref<Material> engineMaterial = CreateRef<Material>(shaderHandle);
 
 		// Read material properties
