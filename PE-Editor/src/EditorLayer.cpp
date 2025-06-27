@@ -1486,6 +1486,8 @@ namespace PaulEngine
 			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
 			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
 
+			targetFramebuffer->SetDrawBuffers();
+
 			RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
