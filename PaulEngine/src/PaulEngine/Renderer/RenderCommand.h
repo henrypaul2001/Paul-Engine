@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
+#include "PaulEngine/Renderer/Resource/Framebuffer.h"
 
 namespace  PaulEngine {
 	class RenderCommand {
@@ -16,8 +17,8 @@ namespace  PaulEngine {
 			s_RenderAPI->SetClearColour(colour);
 		}
 
-		inline static void Clear() {
-			s_RenderAPI->Clear();
+		inline static void Clear(int bufferMask = (Framebuffer::BufferBit::COLOUR | Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL)) {
+			s_RenderAPI->Clear(bufferMask);
 		}
 
 		inline static void ClearDepth() {

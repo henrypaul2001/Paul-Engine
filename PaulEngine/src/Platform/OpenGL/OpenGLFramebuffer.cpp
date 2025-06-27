@@ -1,6 +1,7 @@
 #include "pepch.h"
 #include "OpenGLFramebuffer.h"
 #include "OpenGLTexture.h"
+#include "OpenGLRenderAPI.h"
 
 #include <glad/glad.h>
 #include <set>
@@ -39,15 +40,6 @@ namespace PaulEngine
 			}
 			PE_CORE_ASSERT(false, "Undefined filtering translation");
 			return 0;
-		}
-
-		static int BufferBitMaskToGLBitMask(int bufferMask)
-		{
-			int glMask = 0;
-			if (bufferMask & Framebuffer::BufferBit::COLOUR) { glMask |= GL_COLOR_BUFFER_BIT; }
-			if (bufferMask & Framebuffer::BufferBit::DEPTH) { glMask |= GL_DEPTH_BUFFER_BIT; }
-			if (bufferMask & Framebuffer::BufferBit::STENCIL) { glMask |= GL_STENCIL_BUFFER_BIT; }
-			return glMask;
 		}
 	}
 
@@ -230,7 +222,7 @@ namespace PaulEngine
 		OpenGLFramebuffer* castedTarget = static_cast<OpenGLFramebuffer*>(targetFramebuffer);
 		glBlitNamedFramebuffer(GetRendererID(), castedTarget->GetRendererID(),
 			sourceRegionMin.x, sourceRegionMin.y, sourceRegionMax.x, sourceRegionMax.y, targetRegionMin.x, targetRegionMin.y, targetRegionMax.x, targetRegionMax.y,
-			OpenGLFramebufferUtils::BufferBitMaskToGLBitMask(bufferMask), OpenGLFramebufferUtils::BlitFilterToGLEnum(filtering));
+			OpenGLRenderAPI::BufferBitMaskToGLBitMask(bufferMask), OpenGLFramebufferUtils::BlitFilterToGLEnum(filtering));
 	}
 
 	bool OpenGLFramebuffer::operator==(const Framebuffer* other) const

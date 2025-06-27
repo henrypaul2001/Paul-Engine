@@ -1,5 +1,6 @@
 #include "pepch.h"
 #include "OpenGLRenderAPI.h"
+#include "PaulEngine/Renderer/Resource/Framebuffer.h"
 
 #include <glad/glad.h>
 namespace PaulEngine {
@@ -52,9 +53,10 @@ namespace PaulEngine {
 		glClearColor(colour.r, colour.g, colour.b, colour.a);
 	}
 
-	void OpenGLRenderAPI::Clear()
+	void OpenGLRenderAPI::Clear(int bufferMask)
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		int mask = BufferBitMaskToGLBitMask(bufferMask);
+		glClear(mask);
 	}
 
 	void OpenGLRenderAPI::ClearDepth()
@@ -77,5 +79,14 @@ namespace PaulEngine {
 	{
 		thickness = std::max(0.01f, thickness);
 		glLineWidth(thickness);
+	}
+
+	int OpenGLRenderAPI::BufferBitMaskToGLBitMask(int bufferMask)
+	{
+		int glMask = 0;
+		if (bufferMask & Framebuffer::BufferBit::COLOUR) { glMask |= GL_COLOR_BUFFER_BIT; }
+		if (bufferMask & Framebuffer::BufferBit::DEPTH) { glMask |= GL_DEPTH_BUFFER_BIT; }
+		if (bufferMask & Framebuffer::BufferBit::STENCIL) { glMask |= GL_STENCIL_BUFFER_BIT; }
+		return glMask;
 	}
 }
