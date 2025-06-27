@@ -5,9 +5,6 @@
 
 namespace PaulEngine {
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam) {
-		// ignore warning codes or insignificant errors
-		if (id == 131169 || id == 131185 || id == 131218 || id == 131204  || id == 131140) return;
-
 		PE_CORE_ERROR("OpenGL Error:");
 		PE_CORE_ERROR("Debug message ({0}): {1}", id, message);
 
@@ -94,6 +91,13 @@ namespace PaulEngine {
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			glDebugMessageCallback(glDebugOutput, nullptr);
 			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+
+			// Disable low priority
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0, nullptr, GL_FALSE);
+
+			unsigned int ignoredIDs[] = { 131185, 131169, 131218, 131204, 131140 };
+			glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 1, &ignoredIDs[0], GL_FALSE);
+			glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE, 4, &ignoredIDs[1], GL_FALSE);
 		}
 		else { PE_CORE_INFO("    Debug output: false"); }
 	}
