@@ -401,6 +401,7 @@ namespace PaulEngine {
 
 	void Renderer::ValidateDefaultShader(AssetHandle& shaderHandle)
 	{
+		PE_PROFILE_FUNCTION();
 		bool isDeferredRenderer = Project::GetRendererContext() == RenderPipelineContext::Deferred;
 		if (isDeferredRenderer)
 		{

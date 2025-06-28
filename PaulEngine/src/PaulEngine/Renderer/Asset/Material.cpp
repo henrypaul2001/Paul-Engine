@@ -79,6 +79,17 @@ namespace PaulEngine
 		return;
 	}
 
+	RenderPipelineContext Material::GetShaderRendererContext() const
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
+		if (shaderAsset)
+		{
+			return shaderAsset->GetRenderPipelineContext();
+		}
+		return RenderPipelineContext::Undefined;
+	}
+
 	void Material::AddParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data)
 	{
 		PE_PROFILE_FUNCTION();

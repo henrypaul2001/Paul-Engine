@@ -15,6 +15,8 @@ namespace PaulEngine
 		void Bind();
 		virtual AssetType GetType() const { return AssetType::Material; }
 
+		RenderPipelineContext GetShaderRendererContext() const;
+
 		void AddParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
 		void SetParameter(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
 

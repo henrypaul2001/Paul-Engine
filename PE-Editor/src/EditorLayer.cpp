@@ -463,6 +463,12 @@ namespace PaulEngine
 				auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
 				for (auto entityID : view) {
 					auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+					Ref<Material> material = AssetManager::GetAsset<Material>(mesh.MaterialHandle);
+					if (material && material->GetShaderRendererContext() == RenderPipelineContext::Deferred)
+					{
+						// Ignore deferred shaders
+						continue;
+					}
 					Renderer::SubmitMesh(mesh.MeshHandle, mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
 				}
 			}
@@ -1461,7 +1467,12 @@ namespace PaulEngine
 					for (auto entityID : view)
 					{
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Renderer::SubmitMesh(mesh.MeshHandle, mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+						Ref<Material> material = AssetManager::GetAsset<Material>(mesh.MaterialHandle);
+						// TODO: DefaultDeferredMaterial when material handle is invalid
+						if (material && material->GetShaderRendererContext() == RenderPipelineContext::Deferred)
+						{
+							Renderer::SubmitMesh(mesh.MeshHandle, mesh.MaterialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+						}
 					}
 				}
 
@@ -1632,6 +1643,7 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferredPBR", "MainFramebuffer" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 		
 		// Bloom
