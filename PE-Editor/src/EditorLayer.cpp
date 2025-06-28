@@ -1413,6 +1413,8 @@ namespace PaulEngine
 		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", true);
 		Ref<Material> deferredLightingPassMaterial = AssetManager::CreateAsset<Material>(true, deferredLightingPassShaderHandle);
 
+		AssetHandle ssaoShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSAO.glsl", true);
+
 		// Set gBuffer textures in lighting pass material
 		Sampler2DShaderParameterTypeStorage* pos = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
 		Sampler2DShaderParameterTypeStorage* normal = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal");
