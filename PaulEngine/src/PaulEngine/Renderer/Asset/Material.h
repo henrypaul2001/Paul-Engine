@@ -44,6 +44,7 @@ namespace PaulEngine
 		friend class EditorLayer;
 		friend class MaterialImporter;
 		friend class CreateMaterialWindow;
+		friend class Renderer;
 		AssetHandle m_ShaderHandle;
 		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
 	};

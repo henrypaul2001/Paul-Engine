@@ -81,12 +81,16 @@ namespace PaulEngine {
 		AssetHandle DefaultLitPBRMaterialHandle;
 
 		AssetHandle DefaultLitDeferredShaderHandle;
+		AssetHandle DefaultLitDeferredMaterialHandle;
+
 		AssetHandle DefaultLitPBRDeferredShaderHandle;
+		AssetHandle DefaultLitPBRDeferredMaterialHandle;
 
 		std::unordered_map<AssetHandle, AssetHandle> DefaultForwardToDeferred;
 		std::unordered_map<AssetHandle, AssetHandle> DefaultDeferredToForward;
 
-		AssetHandle DefaultMaterial;
+		AssetHandle DefaultForwardMaterial;
+		AssetHandle DefaultDeferredMaterial;
 
 		struct CameraData
 		{
@@ -280,7 +284,7 @@ namespace PaulEngine {
 
 		DrawSubmission draw;
 		draw.MeshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.SphereMeshHandle;;
-		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultMaterial;
+		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultForwardMaterial;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
@@ -372,11 +376,32 @@ namespace PaulEngine {
 	{
 		if (AssetManager::IsAssetHandleValid(materialHandle))
 		{
-			s_RenderData.DefaultMaterial = materialHandle;
+			s_RenderData.DefaultForwardMaterial = materialHandle;
 			return true;
 		}
 		PE_CORE_ERROR("Invalid material handle '{0}'", (uint64_t)materialHandle);
 		return false;
+	}
+
+	bool Renderer::SetDefaultDeferredMaterial(AssetHandle materialHandle)
+	{
+		if (AssetManager::IsAssetHandleValid(materialHandle))
+		{
+			s_RenderData.DefaultDeferredMaterial = materialHandle;
+			return true;
+		}
+		PE_CORE_ERROR("Invalid material handle '{0}'", (uint64_t)materialHandle);
+		return false;
+	}
+
+	AssetHandle Renderer::GetDefaultMaterial()
+	{
+		return s_RenderData.DefaultForwardMaterial;
+	}
+
+	AssetHandle Renderer::GetDefaultDeferredMaterial()
+	{
+		return s_RenderData.DefaultDeferredMaterial;
 	}
 
 	AssetHandle Renderer::GetDefaultLitShader()
@@ -446,21 +471,29 @@ namespace PaulEngine {
 		s_RenderData.DefaultLitDeferredShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
 		s_RenderData.DefaultLitPBRDeferredShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBufferPBR.glsl", true);
 
-		s_RenderData.DefaultForwardToDeferred =
-		{
+		s_RenderData.DefaultLitDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitDeferred.pmat", true);
+		s_RenderData.DefaultLitPBRDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitPBRDeferred.pmat", true);
+		
+		s_RenderData.DefaultForwardToDeferred = {
 			{ s_RenderData.DefaultLitShaderHandle, s_RenderData.DefaultLitDeferredShaderHandle },
 			{ s_RenderData.DefaultLitPBRShaderHandle, s_RenderData.DefaultLitPBRDeferredShaderHandle }
 		};
-		s_RenderData.DefaultDeferredToForward =
-		{
+		s_RenderData.DefaultDeferredToForward = {
 			{ s_RenderData.DefaultLitDeferredShaderHandle, s_RenderData.DefaultLitShaderHandle },
 			{ s_RenderData.DefaultLitPBRDeferredShaderHandle, s_RenderData.DefaultLitPBRShaderHandle }
 		};
 
 		if (!SetDefaultMaterial(Project::GetActive()->GetSpecification().DefaultMaterial))
 		{
-			SetDefaultMaterial(s_RenderData.DefaultLitMaterialHandle);
+			SetDefaultMaterial(s_RenderData.DefaultLitPBRMaterialHandle);
 		}
+		SetDefaultDeferredMaterial(s_RenderData.DefaultLitPBRDeferredMaterialHandle);
+
+		// Force shader handles to original values regardless of renderer being used
+		AssetManager::GetAsset<Material>(s_RenderData.DefaultLitMaterialHandle)->m_ShaderHandle = s_RenderData.DefaultLitShaderHandle;
+		AssetManager::GetAsset<Material>(s_RenderData.DefaultLitPBRMaterialHandle)->m_ShaderHandle = s_RenderData.DefaultLitPBRShaderHandle;
+		AssetManager::GetAsset<Material>(s_RenderData.DefaultLitDeferredMaterialHandle)->m_ShaderHandle = s_RenderData.DefaultLitDeferredShaderHandle;
+		AssetManager::GetAsset<Material>(s_RenderData.DefaultLitPBRDeferredMaterialHandle)->m_ShaderHandle = s_RenderData.DefaultLitPBRDeferredShaderHandle;
 	}
 
 	void Renderer::CreateAssets()

@@ -67,6 +67,10 @@ namespace PaulEngine {
 		static void DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 
 		static bool SetDefaultMaterial(AssetHandle materialHandle);
+		static bool SetDefaultDeferredMaterial(AssetHandle materialHandle);
+
+		static AssetHandle GetDefaultMaterial();
+		static AssetHandle GetDefaultDeferredMaterial();
 
 		static AssetHandle GetDefaultLitShader();
 		static AssetHandle GetDefaultLitPBRShader();
