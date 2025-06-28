@@ -1410,12 +1410,6 @@ namespace PaulEngine
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		AssetHandle gBufferShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
-		AssetHandle defaultLitDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitDeferred.pmat", false);
-
-		AssetHandle gBufferPBRShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBufferPBR.glsl", true);
-		AssetHandle defaultLitPBRDeferredMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitPBRDeferred.pmat", false);
-
 		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", true);
 		Ref<Material> deferredLightingPassMaterial = AssetManager::CreateAsset<Material>(true, deferredLightingPassShaderHandle);
 
@@ -1436,25 +1430,21 @@ namespace PaulEngine
 		if (emission) { emission->TextureHandle = gEmissionTexture->Handle; }
 		if (meta)	  { meta->TextureHandle = gMetadataTexture->Handle; }
 
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DefaultLitDeferred", false, defaultLitDeferredMaterialHandle);
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DefaultLitDeferredPBR", false, defaultLitPBRDeferredMaterialHandle);
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DeferredLightingPass", true, deferredLightingPassMaterial->Handle);
 
 		// Create render passes
 		// --------------------
 		
-		// { primitive<glm::ivec2>, Material, Framebuffer }
+		// { primitive<glm::ivec2>, Framebuffer }
 		RenderPass::OnRenderFunc geometryPass3DFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Geometry pass material input required");
-			PE_CORE_ASSERT(inputs[2], "Main framebuffer input required");
+			PE_CORE_ASSERT(inputs[1], "Main framebuffer input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
-			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-			RenderComponentFramebuffer* mainFramebufferInput = dynamic_cast<RenderComponentFramebuffer*>(inputs[2]);
+			RenderComponentFramebuffer* mainFramebufferInput = dynamic_cast<RenderComponentFramebuffer*>(inputs[1]);
 
 			RenderCommand::Clear();
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
@@ -1651,7 +1641,7 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], { "ShadowResolution", "ShadowmapCubeMaterial" });
 
 		// Deferred rendering
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "DefaultLitDeferredPBR", "MainFramebuffer" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "MainFramebuffer" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
