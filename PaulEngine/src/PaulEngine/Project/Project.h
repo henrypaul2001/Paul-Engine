@@ -40,6 +40,11 @@ namespace PaulEngine
 			return GetAssetDirectory() / path;
 		}
 
+		static RenderPipelineContext GetRendererContext() {
+			PE_CORE_ASSERT(s_ActiveProject, "No active project");
+			return s_ActiveProject->GetSpecification().RenderContext;
+		}
+
 		ProjectSpecification& GetSpecification() { return m_Spec; }
 		static Ref<Project> GetActive() { return s_ActiveProject; }
 

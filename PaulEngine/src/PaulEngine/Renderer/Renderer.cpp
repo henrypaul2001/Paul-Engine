@@ -80,6 +80,12 @@ namespace PaulEngine {
 		AssetHandle DefaultLitPBRShaderHandle;
 		AssetHandle DefaultLitPBRMaterialHandle;
 
+		AssetHandle DefaultLitDeferredShaderHandle;
+		AssetHandle DefaultLitPBRDeferredShaderHandle;
+
+		std::unordered_map<AssetHandle, AssetHandle> DefaultForwardToDeferred;
+		std::unordered_map<AssetHandle, AssetHandle> DefaultDeferredToForward;
+
 		AssetHandle DefaultMaterial;
 
 		struct CameraData
@@ -383,6 +389,35 @@ namespace PaulEngine {
 		return s_RenderData.DefaultLitPBRShaderHandle;
 	}
 
+	AssetHandle Renderer::GetDefaultLitDeferredShader()
+	{
+		return s_RenderData.DefaultLitDeferredShaderHandle;
+	}
+
+	AssetHandle Renderer::GetDefaultLitPBRDeferredShader()
+	{
+		return s_RenderData.DefaultLitPBRDeferredShaderHandle;
+	}
+
+	void Renderer::ValidateDefaultShader(AssetHandle& shaderHandle)
+	{
+		bool isDeferredRenderer = Project::GetRendererContext() == RenderPipelineContext::Deferred;
+		if (isDeferredRenderer)
+		{
+			if (shaderHandle == s_RenderData.DefaultLitShaderHandle || shaderHandle == s_RenderData.DefaultLitPBRShaderHandle)
+			{
+				shaderHandle = s_RenderData.DefaultForwardToDeferred.at(shaderHandle);
+			}
+		}
+		else
+		{
+			if (shaderHandle == s_RenderData.DefaultLitDeferredShaderHandle || shaderHandle == s_RenderData.DefaultLitPBRDeferredShaderHandle)
+			{
+				shaderHandle = s_RenderData.DefaultDeferredToForward.at(shaderHandle);
+			}
+		}
+	}
+
 	void Renderer::ResetStats()
 	{
 		s_RenderData.Stats.DrawCalls = 0;
@@ -406,6 +441,20 @@ namespace PaulEngine {
 
 		s_RenderData.DefaultLitPBRShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DefaultLitPBR.glsl", true);
 		s_RenderData.DefaultLitPBRMaterialHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "materials/DefaultLitPBR.pmat", true);
+
+		s_RenderData.DefaultLitDeferredShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBuffer.glsl", true);
+		s_RenderData.DefaultLitPBRDeferredShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_gBufferPBR.glsl", true);
+
+		s_RenderData.DefaultForwardToDeferred =
+		{
+			{ s_RenderData.DefaultLitShaderHandle, s_RenderData.DefaultLitDeferredShaderHandle },
+			{ s_RenderData.DefaultLitPBRShaderHandle, s_RenderData.DefaultLitPBRDeferredShaderHandle }
+		};
+		s_RenderData.DefaultDeferredToForward =
+		{
+			{ s_RenderData.DefaultLitDeferredShaderHandle, s_RenderData.DefaultLitShaderHandle },
+			{ s_RenderData.DefaultLitPBRDeferredShaderHandle, s_RenderData.DefaultLitPBRShaderHandle }
+		};
 
 		if (!SetDefaultMaterial(Project::GetActive()->GetSpecification().DefaultMaterial))
 		{

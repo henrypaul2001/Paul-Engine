@@ -70,6 +70,12 @@ namespace PaulEngine {
 
 		static AssetHandle GetDefaultLitShader();
 		static AssetHandle GetDefaultLitPBRShader();
+		static AssetHandle GetDefaultLitDeferredShader();
+		static AssetHandle GetDefaultLitPBRDeferredShader();
+
+		// If the shader argument is a default shader, check to see if the default shader matches the current frame renderer requirements
+		// If it is a default shader and it doesn't match the renderer, swap the shader for the matching default shader of the current renderer
+		static void ValidateDefaultShader(AssetHandle& shaderHandle);
 
 		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 

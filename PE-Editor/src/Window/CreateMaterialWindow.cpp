@@ -615,7 +615,7 @@ namespace PaulEngine
 					if (ImGui::Selectable(shaderNames[i], isSelected)) {
 						m_DropDownShader = i;
 						m_ShaderHandle = assetManager->ImportAssetFromFile(nameToFilepath[shaderNames[i]], true);
-						m_Material = CreateRef<Material>(m_ShaderHandle);
+						m_Material = CreateRef<Material>(m_ShaderHandle, true);
 						auto renderResource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<Ref<Material>>>("PreviewMaterial");
 						if (renderResource) { renderResource->Data = m_Material; }
 					}
@@ -637,7 +637,7 @@ namespace PaulEngine
 					if (AssetManager::GetAssetType(handle) == AssetType::Shader) {
 						m_ShaderHandle = handle;
 						m_DropDownShader = -1;
-						m_Material = CreateRef<Material>(m_ShaderHandle);
+						m_Material = CreateRef<Material>(m_ShaderHandle, true);
 						auto renderResource = m_Renderer.GetRenderResource<RenderComponentPrimitiveType<Ref<Material>>>("PreviewMaterial");
 						if (renderResource) { renderResource->Data = m_Material; }
 					}

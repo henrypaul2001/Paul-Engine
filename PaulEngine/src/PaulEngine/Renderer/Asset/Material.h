@@ -10,7 +10,7 @@ namespace PaulEngine
 	{
 	public:
 		Material();
-		Material(AssetHandle shaderHandle);
+		Material(AssetHandle shaderHandle, bool ignoreDefaultShaderOverride = false);
 
 		void Bind();
 		virtual AssetType GetType() const { return AssetType::Material; }
@@ -42,7 +42,6 @@ namespace PaulEngine
 		friend class EditorLayer;
 		friend class MaterialImporter;
 		friend class CreateMaterialWindow;
-		AssetHandle m_DeferredOverrideShader = 0;
 		AssetHandle m_ShaderHandle;
 		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
 	};
