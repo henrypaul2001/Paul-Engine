@@ -85,6 +85,18 @@ namespace PaulEngine
 			return true;
 		}
 
+		// Set entire block of data at once.
+		// If used incorrectly, may invalidate buffer layout and produce unexpected values when later calling ReadLocalData
+		void MemCopy(void* rawData, size_t size, size_t offset = 0)
+		{
+			size_t end = offset + size;
+			PE_CORE_ASSERT(end <= m_Buffer.size(), "Offset + size too big");
+
+			uint8_t* begin = &m_Buffer[offset];
+			memcpy(begin, rawData, size);
+			m_IsDirty = true;
+		}
+
 		const std::vector<BufferElement>& GetMembers() const { return m_OrderedMembers; }
 		virtual uint32_t GetBinding() const = 0;
 
