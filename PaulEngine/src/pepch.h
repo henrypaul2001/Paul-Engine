@@ -16,6 +16,7 @@
 #include <array>
 #include <unordered_map>
 #include <unordered_set>
+#include <random>
 
 #include "PaulEngine/Core/Core.h"
 #include "PaulEngine/Core/Buffer.h"
