@@ -1473,10 +1473,17 @@ namespace PaulEngine
 		ssaoSamplesUBO->MemCopy(&ssaoKernel[0], sizeof(glm::vec4) * maxSamples, 0);
 
 		// Generate SSAO noise texture
-		glm::vec3 ssaoNoise[16] = { glm::vec3(0.0f) };
-		for (int i = 0; i < 16; i++)
+		uint8_t ssaoNoise[48];
+		for (int i = 0; i < 48; i += 3)
 		{
-			ssaoNoise[i] = glm::vec3(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, 0.0f);
+			float x = randomFloats(generator) * 2.0f - 1.0f;
+			float y = randomFloats(generator) * 2.0f - 1.0f;
+			float z = 0.0f;
+
+			// Map from -1, 1 - 0, 255
+			ssaoNoise[i] = static_cast<uint8_t>((x * 0.5f + 0.5f) * 255.0f);
+			ssaoNoise[i + 1] = static_cast<uint8_t>((y * 0.5f + 0.5f) * 255.0f);
+			ssaoNoise[i + 2] = 0;
 		}
 
 		TextureSpecification noiseSpec;
@@ -1488,7 +1495,7 @@ namespace PaulEngine
 		noiseSpec.Wrap_S = ImageWrap::REPEAT;
 		noiseSpec.Wrap_T = ImageWrap::REPEAT;
 		noiseSpec.GenerateMips = false;
-		Ref<Texture2D> NoiseTexture = AssetManager::CreateAsset<Texture2D>(true, noiseSpec, Buffer(&ssaoNoise[0], 16 * 3));
+		Ref<Texture2D> NoiseTexture = AssetManager::CreateAsset<Texture2D>(true, noiseSpec, Buffer(&ssaoNoise[0], 48));
 
 		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
 		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;

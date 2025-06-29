@@ -51,7 +51,7 @@ void main()
 	// Read inputs
 	vec3 ViewFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, v_TexCoords).xyz, 1.0));
 	vec3 ViewNormal = mat3(View) * texture(Mat_gWorldNormal, v_TexCoords).xyz;
-	vec3 randomVec = normalize(texture(Mat_NoiseTexture, v_TexCoords * NoiseScale).xyz);
+	vec3 randomVec = normalize(texture(Mat_NoiseTexture, v_TexCoords * NoiseScale).xyz * 2.0 - 1.0);
 
 	// Create TBN
 	vec3 tangent = normalize(randomVec - ViewNormal * dot(randomVec, ViewNormal));
