@@ -1525,6 +1525,9 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SSAO_BlurTexture", false, ssaoBlurTexture->Handle);
 		Ref<FramebufferTexture2DAttachment> ssaoBlurAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, ssaoBlurTexture->Handle);
 
+		// Add SSAO blur texture to lighting pass material
+		deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSAOMap")->TextureHandle = ssaoBlurTexture->Handle;
+
 		Ref<Framebuffer> ssaoFBO = Framebuffer::Create(ssaoFBOSpec, { ssaoAttachment }, nullptr);
 		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SSAO_FBO", false, ssaoFBO);
 

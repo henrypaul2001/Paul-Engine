@@ -96,6 +96,8 @@ layout(binding = 10) uniform samplerCube IrradianceMap;
 layout(binding = 11) uniform samplerCube PrefilterMap;
 layout(binding = 12) uniform sampler2D BRDFLut;
 
+layout(binding = 13) uniform sampler2D Mat_SSAOMap;
+
 vec3 ViewDir;
 
 // PBR Utility Functions
@@ -253,9 +255,9 @@ float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos
 	return shadow;
 }
 
-vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos)
+vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos, float AmbientOcclusion)
 {
-	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo;
+	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo * AmbientOcclusion;
 
 	// diffuse
 	vec3 lightDir = normalize(-u_SceneData.DirLights[lightIndex].Direction.xyz);
@@ -280,7 +282,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
-vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos)
+vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos, float AmbientOcclusion)
 {
 	// attenuation
 	vec4 lightPos = u_SceneData.PointLights[lightIndex].Position;
@@ -294,7 +296,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 	float dist = length(lightPos.xyz - WorldFragPos);
 	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
 
-	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation;
+	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * AmbientOcclusion;
 	vec3 lightDir = normalize(lightPos.xyz - WorldFragPos);
 
 	// diffuse
@@ -319,7 +321,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
-vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos)
+vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 Normal, vec3 WorldFragPos, float AmbientOcclusion)
 {
 	vec4 lightPos = u_SceneData.SpotLights[lightIndex].Position;
 	vec3 lightDir = normalize(lightPos.xyz - WorldFragPos);
@@ -344,7 +346,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 	float dist = length(lightPos.xyz - WorldFragPos);
 	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
 
-	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation;
+	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * AmbientOcclusion;
 
 	// diffuse
 	float diff = max(dot(Normal, lightDir), 0.0);
@@ -369,7 +371,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 // Reflectance Functions
 // ---------------------
-vec3 PBR_DirectionalLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0, vec3 WorldFragPos)
+vec3 PBR_DirectionalLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0, vec3 WorldFragPos, float AmbientOcclusion)
 {
 	// Radiance
 	vec3 L = normalize(-u_SceneData.DirLights[lightIndex].Direction.xyz);
@@ -405,12 +407,12 @@ vec3 PBR_DirectionalLightReflectance(int lightIndex, vec3 MaterialAlbedo, float 
 		shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, N, WorldFragPos);
 	}
 
-	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo * MaterialAO;
+	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo * MaterialAO * AmbientOcclusion;
 	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
 	return Lo + ambient;
 }
 
-vec3 PBR_PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0, vec3 WorldFragPos)
+vec3 PBR_PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0, vec3 WorldFragPos, float AmbientOcclusion)
 {
 	vec4 lightPos = u_SceneData.PointLights[lightIndex].Position;
 
@@ -460,13 +462,13 @@ vec3 PBR_PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float Materi
 		shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, N, farPlane, WorldFragPos);
 	}
 
-	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO;
+	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO * AmbientOcclusion;
 	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
 
 	return Lo + ambient;
 }
 
-vec3 PBR_SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0, vec3 WorldFragPos)
+vec3 PBR_SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0, vec3 WorldFragPos, float AmbientOcclusion)
 {
 	vec4 lightPos = u_SceneData.SpotLights[lightIndex].Position;
 
@@ -527,7 +529,7 @@ vec3 PBR_SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float Materia
 		shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, N, WorldFragPos);
 	}
 
-	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO;
+	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO * AmbientOcclusion;
 	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
 	return Lo + ambient;
 }
@@ -573,37 +575,37 @@ vec3 PBR_CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradian
 
 // Lighting models
 // ---------------
-vec3 BlinnPhongLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 MaterialEmission)
+vec3 BlinnPhongLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 MaterialEmission, float AmbientOcclusion)
 {
 	vec3 result = vec3(0.0);
 
 	// Directional lights
 	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++)
 	{
-		result += DirectionalLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos);
+		result += DirectionalLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos, AmbientOcclusion);
 	}
 
 	// Point lights
 	for (int i = 0; i < u_SceneData.ActivePointLights && i < MAX_ACTIVE_POINT_LIGHTS; i++)
 	{
-		result += PointLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos);
+		result += PointLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos, AmbientOcclusion);
 	}
 
 	// Spot lights
 	for (int i = 0; i < u_SceneData.ActiveSpotLights; i++)
 	{
-		result += SpotLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos);
+		result += SpotLightContribution(i, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, WorldFragPos, AmbientOcclusion);
 	}
 
 	result += MaterialEmission;
 
 	// Global IBL
-	result += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, ViewDir, reflect(-ViewDir, WorldNormal));
+	result += AmbientOcclusion * CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, ViewDir, reflect(-ViewDir, WorldNormal));
 	
 	return result;
 }
 
-vec3 PBRLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, float MaterialAO, float MaterialRoughness, float MaterialMetalness, vec3 MaterialEmission)
+vec3 PBRLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, float MaterialAO, float MaterialRoughness, float MaterialMetalness, vec3 MaterialEmission, float AmbientOcclusion)
 {
 	vec3 N = WorldNormal;
 	vec3 V = normalize(u_CameraBuffer.ViewPos - WorldFragPos);
@@ -621,25 +623,25 @@ vec3 PBRLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, float
 	// Directional lights
 	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++)
 	{
-		Lo += PBR_DirectionalLightReflectance(i, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0, WorldFragPos);
+		Lo += PBR_DirectionalLightReflectance(i, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0, WorldFragPos, AmbientOcclusion);
 	}
 
 	// Point lights
 	for (int i = 0; i < u_SceneData.ActivePointLights && i < MAX_ACTIVE_POINT_LIGHTS; i++)
 	{
-		Lo += PBR_PointLightReflectance(i, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0, WorldFragPos);
+		Lo += PBR_PointLightReflectance(i, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0, WorldFragPos, AmbientOcclusion);
 	}
 
 	// Spot lights
 	for (int i = 0; i < u_SceneData.ActiveSpotLights; i++)
 	{
-		Lo += PBR_SpotLightReflectance(i, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0, WorldFragPos);
+		Lo += PBR_SpotLightReflectance(i, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0, WorldFragPos, AmbientOcclusion);
 	}
 
 	vec3 result = Lo + MaterialEmission;
 
 	// Global IBL
-	result += PBR_CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0);
+	result += AmbientOcclusion * PBR_CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0);
 
 	return result;
 }
@@ -666,14 +668,16 @@ void main()
 	int EntityID = int(metadataSample.r);
 	int LightingModelIndex = int(metadataSample.g); // 0 = blinn-phong, 1 = pbr
 
+	float AmbientOcclusion = texture(Mat_SSAOMap, v_TexCoords).r;
+
 	f_EntityID = EntityID;
 	if (LightingModelIndex == 0)
 	{
-		f_Colour = vec4(BlinnPhongLighting(WorldFragPos, WorldNormal, Albedo, SpecularColour, SpecularExponent, Emission), 1.0);
+		f_Colour = vec4(BlinnPhongLighting(WorldFragPos, WorldNormal, Albedo, SpecularColour, SpecularExponent, Emission, AmbientOcclusion), 1.0);
 	}
 	else if (LightingModelIndex == 1)
 	{
-		f_Colour = vec4(PBRLighting(WorldFragPos, WorldNormal, Albedo, AO, Roughness, Metalness, Emission), 1.0);
+		f_Colour = vec4(PBRLighting(WorldFragPos, WorldNormal, Albedo, AO, Roughness, Metalness, Emission, AmbientOcclusion), 1.0);
 	}
 	else
 	{
