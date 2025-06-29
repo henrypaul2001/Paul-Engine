@@ -1402,8 +1402,9 @@ namespace PaulEngine
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 					self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
 					self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+					self->GetRenderResource<RenderComponentFramebuffer>("SSAO_FBO")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
 					return false;
-					});
+				});
 			};
 		out_Framerenderer->SetEventFunc(eventFunc);
 
@@ -1413,7 +1414,6 @@ namespace PaulEngine
 		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", true);
 		Ref<Material> deferredLightingPassMaterial = AssetManager::CreateAsset<Material>(true, deferredLightingPassShaderHandle);
 
-		AssetHandle ssaoShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSAO.glsl", true);
 
 		// Set gBuffer textures in lighting pass material
 		Sampler2DShaderParameterTypeStorage* pos = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
@@ -1433,6 +1433,88 @@ namespace PaulEngine
 		if (meta)	  { meta->TextureHandle = gMetadataTexture->Handle; }
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DeferredLightingPass", true, deferredLightingPassMaterial->Handle);
+
+		// Screen space ambient occlusion
+		// ------------------------------
+		AssetHandle ssaoShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSAO.glsl", true);
+		Ref<Material> ssaoMaterial = AssetManager::CreateAsset<Material>(true, ssaoShaderHandle);
+
+		const int maxSamples = 64;
+		int ssaoSamples = 32;
+		float ssaoRadius = 0.5f;
+		float ssaoBias = 0.025f;
+
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSAO_Samples", true, ssaoSamples);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSAO_Radius", true, ssaoRadius);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSAO_Bias", true, ssaoBias);
+
+		Ref<UniformBufferStorage> ssaoDataUBO = ssaoMaterial->GetParameter<UBOShaderParameterTypeStorage>("SSAOData")->UBO();
+		ssaoDataUBO->SetLocalData("SourceResolution", glm::vec2(viewportRes.x, viewportRes.y));
+		ssaoDataUBO->SetLocalData("Radius", ssaoRadius);
+		ssaoDataUBO->SetLocalData("Bias", ssaoBias);
+		ssaoDataUBO->SetLocalData("KernelSize", ssaoSamples);
+
+		// Generate ssao samples of maxSamples count (no need to regenerate when sample count changes as we just choose a selection of the max samples)
+		glm::vec4 ssaoKernel[maxSamples] = { glm::vec4(0.0f) };
+		std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+		std::default_random_engine generator;
+		for (int i = 0; i < maxSamples; i++)
+		{
+			glm::vec3 randomSample = glm::normalize(glm::vec3(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator)));
+			randomSample *= randomFloats(generator);
+			float scale = (float)i / (float)maxSamples;
+
+			// scale samples to align with center of kernel
+			scale = glm::mix(0.1f, 1.0f, scale * scale); // lerp
+			randomSample *= scale;
+			ssaoKernel[i] = glm::vec4(randomSample, 0.0f);
+		}
+		Ref<UniformBufferStorage> ssaoSamplesUBO = ssaoMaterial->GetParameter<UBOShaderParameterTypeStorage>("SSAOSamples")->UBO();
+		ssaoSamplesUBO->MemCopy(&ssaoKernel[0], sizeof(glm::vec4) * maxSamples, 0);
+
+		// Generate SSAO noise texture
+		glm::vec3 ssaoNoise[16] = { glm::vec3(0.0f) };
+		for (int i = 0; i < 16; i++)
+		{
+			ssaoNoise[i] = glm::vec3(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, 0.0f);
+		}
+
+		TextureSpecification noiseSpec;
+		noiseSpec.Width = 4;
+		noiseSpec.Height = 4;
+		noiseSpec.Format = ImageFormat::RGB16F;
+		noiseSpec.MinFilter = ImageMinFilter::NEAREST;
+		noiseSpec.MagFilter = ImageMagFilter::NEAREST;
+		noiseSpec.Wrap_S = ImageWrap::REPEAT;
+		noiseSpec.Wrap_T = ImageWrap::REPEAT;
+		noiseSpec.GenerateMips = false;
+		Ref<Texture2D> NoiseTexture = AssetManager::CreateAsset<Texture2D>(true, noiseSpec, Buffer(&ssaoNoise[0], 16 * 3));
+
+		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
+		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("NoiseTexture")->TextureHandle = NoiseTexture->Handle;
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSAOMaterial", false, ssaoMaterial->Handle);
+
+		FramebufferSpecification ssaoFBOSpec;
+		ssaoFBOSpec.Width = viewportRes.x;
+		ssaoFBOSpec.Height = viewportRes.y;
+		ssaoFBOSpec.Samples = 1;
+
+		TextureSpecification ssaoSpec;
+		ssaoSpec.Format = ImageFormat::R8;
+		ssaoSpec.Width = viewportRes.x;
+		ssaoSpec.Height = viewportRes.y;
+		ssaoSpec.MinFilter = ImageMinFilter::NEAREST;
+		ssaoSpec.MagFilter = ImageMagFilter::NEAREST;
+		ssaoSpec.GenerateMips = false;
+
+		Ref<Texture2D> ssaoTexture = AssetManager::CreateAsset<Texture2D>(true, ssaoSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SSAO_Texture", false, ssaoTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> ssaoAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, ssaoTexture->Handle);
+
+		Ref<Framebuffer> ssaoFBO = Framebuffer::Create(ssaoFBOSpec, { ssaoAttachment }, nullptr);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SSAO_FBO", false, ssaoFBO);
 
 		// Create render passes
 		// --------------------
@@ -1486,6 +1568,53 @@ namespace PaulEngine
 			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
 		};
 		
+		// { primitive<glm::ivec2>, Material, primitive<float>, primitive<float>, primitive<int> }
+		RenderPass::OnRenderFunc ssaoPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Screen Space Ambient Occlusion Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "SSAO material input required");
+			PE_CORE_ASSERT(inputs[2], "Radius input required");
+			PE_CORE_ASSERT(inputs[3], "Bias input required");
+			PE_CORE_ASSERT(inputs[4], "Sample count input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentPrimitiveType<float>* radiusInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[2]);
+			RenderComponentPrimitiveType<float>* biasInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
+			RenderComponentPrimitiveType<int>* sampleCountInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[4]);
+
+			RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
+
+			if (activeCamera) {
+
+				// Update params
+				Ref<Material> ssaoMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
+				Ref<UniformBufferStorage> ssaoDataUBO = ssaoMat->GetParameter<UBOShaderParameterTypeStorage>("SSAOData")->UBO();
+
+				ssaoDataUBO->SetLocalData("ViewMatrix", glm::inverse(cameraWorldTransform));
+				ssaoDataUBO->SetLocalData("ProjectionMatrix", activeCamera->GetProjection());
+				ssaoDataUBO->SetLocalData("SourceResolution", (glm::vec2)viewportResInput->Data);
+				ssaoDataUBO->SetLocalData("Radius", radiusInput->Data);
+				ssaoDataUBO->SetLocalData("Bias", biasInput->Data);
+				ssaoDataUBO->SetLocalData("KernelSize", sampleCountInput->Data);
+
+				RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+				// Submit screen quad
+				BlendState blend;
+				blend.Enabled = false;
+				DepthState depthState;
+				depthState.Test = false;
+				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+				Renderer::EndScene();
+			}
+		};
+
 		// { primitive<glm::ivec2>, Material, primitive<glm::ivec2>, Texture, Texture, Texture, EnvironmentMap }
 		RenderPass::OnRenderFunc deferredLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Deferred Lighting Pass");
@@ -1644,6 +1773,8 @@ namespace PaulEngine
 
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "MainFramebuffer" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType , RenderComponentType::PrimitiveType }, ssaoPassFunc), ssaoFBO, { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples" });
+
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
