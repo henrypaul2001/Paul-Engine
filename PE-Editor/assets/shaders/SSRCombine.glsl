@@ -27,13 +27,6 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
-//layout(std140, binding = 3) uniform Mat_BloomCombineData
-//{
-//	float BloomStrength;
-//	float DirtMaskStrength;
-//	int UseDirtMask; // (bool)
-//} u_BloomCombineData;
-
 layout(binding = 0) uniform sampler2D Mat_LightingPass;
 layout(binding = 1) uniform sampler2D Mat_SSRUVMap;
 

@@ -1583,6 +1583,21 @@ namespace PaulEngine
 		Ref<Texture2D> ssrUVTexture = AssetManager::CreateAsset<Texture2D>(true, ssrUVSpec);
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SSRUV_Texture", false, ssrUVTexture->Handle);
 
+		AssetHandle ssrCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSRCombine.glsl", true);
+		Ref<Material> ssrCombineMaterial = AssetManager::CreateAsset<Material>(true, ssrCombineShaderHandle);
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("LightingPass")->TextureHandle = out_Framerenderer->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSRUVMap")->TextureHandle = ssrUVTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSRCombineMaterial", false, ssrCombineMaterial->Handle);
+
+		AssetHandle texturePassthroughShader = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/TexturePassthrough.glsl", true);
+		Ref<Material> texturePassthroughMaterial = AssetManager::CreateAsset<Material>(true, texturePassthroughShader);
+		texturePassthroughMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("Input")->TextureHandle = out_Framerenderer->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle;
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("TexturePassthroughMaterial", false, texturePassthroughMaterial->Handle);
+
 		// Create render passes
 		// --------------------
 		
@@ -1941,6 +1956,69 @@ namespace PaulEngine
 			}
 		};
 
+		std::vector<RenderComponentType> ssrCombineInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Material };
+		std::vector<std::string> ssrCombineInputBindings = { "ViewportResolution", "SSRCombineMaterial", "AlternateScreenTexture", "TexturePassthroughMaterial" };
+		RenderPass::OnRenderFunc ssrCombinePassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Screen Space Reflections Combine Render Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Material input required");
+			PE_CORE_ASSERT(inputs[2], "Target texture input required");
+			PE_CORE_ASSERT(inputs[2], "Passthrough material input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
+			RenderComponentMaterial* passthroughMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[3]);
+
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = targetTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
+			{
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
+			}
+
+			glm::vec4 clearColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			targetFramebuffer->ClearBuffer(FramebufferAttachmentPoint::Colour0, &clearColour[0]);
+			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+
+			if (activeCamera)
+			{
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+				// Submit screen quad
+				BlendState blend;
+				blend.Enabled = false;
+				DepthState depthState;
+				depthState.Test = false;
+				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+				Renderer::EndScene();
+
+				// Copy texture back to main screen texture
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, currentTargetTexture);
+				targetFramebuffer->AddColourAttachment(attach);
+				targetFramebuffer->ClearBuffer(FramebufferAttachmentPoint::Colour0, &clearColour[0]);
+
+				targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+
+				Renderer::BeginScene(glm::mat4(1.0f), glm::mat4(1.0f), activeCamera->GetGamma(), activeCamera->GetExposure());
+
+				Renderer::SubmitDefaultQuad(passthroughMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+				Renderer::EndScene();
+			}
+
+			targetFramebuffer->SetDrawBuffers();
+		};
+
 		// Add render passes
 		// -----------------
 
@@ -1955,6 +2033,10 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
 
 		out_Framerenderer->AddRenderPass(RenderPass(deferredLightingInputSpec, deferredLightingPassFunc), mainFramebuffer, deferredLightingInputBindings);
+		
+		// SSR Combine
+		out_Framerenderer->AddRenderPass(RenderPass(ssrCombineInputSpec, ssrCombinePassFunc), mainFramebuffer, ssrCombineInputBindings);
+
 		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass), mainFramebuffer, forward3DInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass), mainFramebuffer, skyboxInputBindings);

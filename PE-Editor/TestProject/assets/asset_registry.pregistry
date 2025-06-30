@@ -327,6 +327,10 @@ AssetRegistry:
     Filepath: textures\space_blanket\metallic.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 15156159705961703235
+    Filepath: ..\..\assets\shaders/TexturePassthrough.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 814898203706997051
     Filepath: materials\ParallaxedCobbleFloor.pmat
     Persistent: false
@@ -1499,3 +1503,7 @@ AssetRegistry:
     Filepath: ..\..\assets\materials/DefaultLitPBRDeferred.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 2286175317895940626
+    Filepath: ..\..\assets\shaders/SSRCombine.glsl
+    Persistent: true
+    Type: AssetType::Shader
