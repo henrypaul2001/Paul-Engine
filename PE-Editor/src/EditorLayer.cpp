@@ -79,7 +79,8 @@ namespace PaulEngine
 		std::vector<AssetHandle> m_Chain;
 	};
 	
-	// { primitive<glm::ivec2>, material }
+	std::vector<RenderComponentType> dirLightShadowPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material };
+	std::vector<std::string> dirLightShadowPassInputBindings = { "ShadowResolution", "ShadowmapMaterial" };
 	RenderPass::OnRenderFunc dirLightShadowPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Directional light shadow map capture pass");
 		Ref<Scene>& sceneContext = context.ActiveScene;
@@ -155,7 +156,8 @@ namespace PaulEngine
 		}
 		};
 
-	// { primitive<glm::ivec2>, material }
+	std::vector<RenderComponentType> spotLightShadowPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material };
+	std::vector<std::string> spotLightShadowPassInputBindings = { "ShadowResolution", "ShadowmapMaterial" };
 	RenderPass::OnRenderFunc spotLightShadowPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Spot light shadow map capture pass");
 		Ref<Scene>& sceneContext = context.ActiveScene;
@@ -231,7 +233,8 @@ namespace PaulEngine
 		}
 		};
 
-	// { primitive<glm::ivec2>, material }
+	std::vector<RenderComponentType> pointLightShadowPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material };
+	std::vector<std::string> pointLightShadowPassInputBindings = { "ShadowResolution", "ShadowmapCubeMaterial" };
 	RenderPass::OnRenderFunc pointLightShadowFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Point light shadow map capture pass");
 		Ref<Scene>& sceneContext = context.ActiveScene;
@@ -348,7 +351,8 @@ namespace PaulEngine
 		RenderCommand::Clear();
 	};
 
-	// { primitive<glm::ivec2>, Texture }
+	std::vector<RenderComponentType> forward2DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Texture };
+	std::vector<std::string> forward2DInputBindings = { "ViewportResolution", "ScreenTexture" };
 	RenderPass::OnRenderFunc forward2DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Scene 2D Render Pass");
 		Ref<Scene>& sceneContext = context.ActiveScene;
@@ -421,7 +425,8 @@ namespace PaulEngine
 		}
 		};
 
-	// { primitive<glm::ivec2>, primitive<glm::ivec2>, Texture, Texture, Texture, Texture, EnvironmentMap }
+	std::vector<RenderComponentType> forward3DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
+	std::vector<std::string> forward3DInputBindings = { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" };
 	RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Scene 3D Render Pass");
 		Ref<Scene>& sceneContext = context.ActiveScene;
@@ -591,7 +596,8 @@ namespace PaulEngine
 		}
 		};
 
-	// { primitive<glm::ivec2>, Material, EnvironmentMap }
+	std::vector<RenderComponentType> skyboxInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap };
+	std::vector<std::string> skyboxInputBindings = { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" };
 	RenderPass::OnRenderFunc skyboxPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Skybox Render Pass");
@@ -627,7 +633,8 @@ namespace PaulEngine
 			Renderer::EndScene();
 		};
 
-	// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, primitive<float>, primitive<float> }
+	std::vector<RenderComponentType> bloomDownsampleInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType };
+	std::vector<std::string> bloomDownsampleInputBindings = { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" };
 	RenderPass::OnRenderFunc bloomDownsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Downsample Pass");
@@ -692,7 +699,8 @@ namespace PaulEngine
 			}
 		};
 
-	// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, primitive<float> }
+	std::vector<RenderComponentType> bloomUpsampleInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType };
+	std::vector<std::string> bloomUpsampleInputBindings = { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" };
 	RenderPass::OnRenderFunc bloomUpsamplePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Bloom Upsample Pass");
 		PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
@@ -741,7 +749,8 @@ namespace PaulEngine
 		}
 		};
 
-	// { primitive<glm::ivec2>, primitive<BloomMipChain>, Material, Texture, Texture, Texture, primitive<float>, primitive<float>, primitive<bool> }
+	std::vector<RenderComponentType> bloomCombineInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType };
+	std::vector<std::string> bloomCombineInputBindings = { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" };
 	RenderPass::OnRenderFunc bloomCombinePass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Bloom Combine Pass");
@@ -1268,20 +1277,20 @@ namespace PaulEngine
 		// -----------------
 
 		// Shadow mapping
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], {"ShadowResolution", "ShadowmapMaterial"});
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], {"ShadowResolution", "ShadowmapMaterial"});
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], {"ShadowResolution", "ShadowmapCubeMaterial"});
+		out_Framerenderer->AddRenderPass(RenderPass(dirLightShadowPassInputSpec, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], dirLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(spotLightShadowPassInputSpec, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], spotLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(pointLightShadowPassInputSpec, pointLightShadowFunc), dirSpotPointShadowFBOs[2], pointLightShadowPassInputBindings);
 	
 		// Main render
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::Texture }, clearFramebufferFunc), mainFramebuffer, { "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass), mainFramebuffer, forward3DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass), mainFramebuffer, skyboxInputBindings);
 
 		// Bloom
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomCombinePass), mainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" });
+		out_Framerenderer->AddRenderPass(RenderPass(bloomDownsampleInputSpec, bloomDownsamplePass), bloomFBO, bloomDownsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomUpsampleInputSpec, bloomUpsamplePass), bloomFBO, bloomUpsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomCombineInputSpec, bloomCombinePass), mainFramebuffer, bloomCombineInputBindings);
 
 		// Editor overlay
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
@@ -1293,17 +1302,6 @@ namespace PaulEngine
 	void EditorLayer::CreateDeferredRenderer(FrameRenderer* out_Framerenderer)
 	{
 		PE_PROFILE_FUNCTION();
-		// Shaders are now defined with a render context of either forward or deferred
-
-		// The problem is, any material using a default shader stores the asset handle
-		// Which means that a material using the default forward shader can't be used in a deferred render pass.
-
-		// Ideally, this wouldn't matter since its just the default shader, and the only thing the user has unqiuely setup are 
-		// the material values
-
-		// Instead, materials that use a default shader shouldn't store the asset handle of the shader, but either a 0 or a 1 for pbr vs non pbr
-		// Then, when retrieving the shader, the corresponding deferred vs forward default shader will be retrieved depending on how the project is
-		// set up
 
 		// Create resources
 		// ----------------
@@ -1537,10 +1535,16 @@ namespace PaulEngine
 		int ssaoBoxBlurSize = 2;
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSAO_BlurSize", true, ssaoBoxBlurSize);
 
+		// Screen space reflections
+		// ------------------------
+		AssetHandle ssrUVMappingShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSRUVMapping.glsl", true);
+		Ref<Material> ssrUVMappingMaterial = AssetManager::CreateAsset<Material>(true, ssrUVMappingShaderHandle);
+		
 		// Create render passes
 		// --------------------
 		
-		// { primitive<glm::ivec2>, Framebuffer }
+		std::vector<RenderComponentType> geometryPassInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer };
+		std::vector<std::string> geometryPassInputBindings		= { "ViewportResolution", "MainFramebuffer" };
 		RenderPass::OnRenderFunc geometryPass3DFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1589,7 +1593,8 @@ namespace PaulEngine
 			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
 		};
 		
-		// { primitive<glm::ivec2>, Material, primitive<float>, primitive<float>, primitive<int>, Texture, Material, primitive<int> }
+		std::vector<RenderComponentType> ssaoPassInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType };
+		std::vector<std::string> ssaoPassInputBindings		= { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" };
 		RenderPass::OnRenderFunc ssaoPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Screen Space Ambient Occlusion Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1681,7 +1686,8 @@ namespace PaulEngine
 			}
 		};
 
-		// { primitive<glm::ivec2>, Material, primitive<glm::ivec2>, Texture, Texture, Texture, EnvironmentMap }
+		std::vector<RenderComponentType> deferredLightingInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
+		std::vector<std::string> deferredLightingInputBindings = { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" };
 		RenderPass::OnRenderFunc deferredLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Deferred Lighting Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1833,23 +1839,23 @@ namespace PaulEngine
 		// -----------------
 
 		// Shadow mapping
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], { "ShadowResolution", "ShadowmapMaterial" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material }, pointLightShadowFunc), dirSpotPointShadowFBOs[2], { "ShadowResolution", "ShadowmapCubeMaterial" });
+		out_Framerenderer->AddRenderPass(RenderPass(dirLightShadowPassInputSpec, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], dirLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(spotLightShadowPassInputSpec, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], spotLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(pointLightShadowPassInputSpec, pointLightShadowFunc), dirSpotPointShadowFBOs[2], pointLightShadowPassInputBindings);
 
 		// Deferred rendering
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer }, geometryPass3DFunc), gBuffer, { "ViewportResolution", "MainFramebuffer" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType }, ssaoPassFunc), ssaoFBO, { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" });
+		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc), gBuffer, geometryPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), ssaoFBO, ssaoPassInputBindings);
 
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, deferredLightingPassFunc), mainFramebuffer, { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture }, forward2DPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap }, forward3DPass), mainFramebuffer, { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), mainFramebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
+		out_Framerenderer->AddRenderPass(RenderPass(deferredLightingInputSpec, deferredLightingPassFunc), mainFramebuffer, deferredLightingInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass), mainFramebuffer, forward3DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass), mainFramebuffer, skyboxInputBindings);
 		
 		// Bloom
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomDownsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainDownsampleMaterial", "ScreenTexture", "BloomThreshold", "BloomSoftThreshold" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial", "BloomFilterRadius" });
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, bloomCombinePass), mainFramebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture", "BloomStrength", "BloomDirtMaskStrength", "UseDirtMask" });
+		out_Framerenderer->AddRenderPass(RenderPass(bloomDownsampleInputSpec, bloomDownsamplePass), bloomFBO, bloomDownsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomUpsampleInputSpec, bloomUpsamplePass), bloomFBO, bloomUpsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomCombineInputSpec, bloomCombinePass), mainFramebuffer, bloomCombineInputBindings);
 
 		// Editor overlay
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
