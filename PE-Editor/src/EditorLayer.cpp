@@ -1400,7 +1400,9 @@ namespace PaulEngine
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 					self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
 					self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
-					self->GetRenderResource<RenderComponentFramebuffer>("SSAO_FBO")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+					self->GetRenderResource<RenderComponentFramebuffer>("Texture_FBO")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_BlurTexture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 					return false;
 				});
@@ -1412,7 +1414,6 @@ namespace PaulEngine
 
 		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", true);
 		Ref<Material> deferredLightingPassMaterial = AssetManager::CreateAsset<Material>(true, deferredLightingPassShaderHandle);
-
 
 		// Set gBuffer textures in lighting pass material
 		Sampler2DShaderParameterTypeStorage* pos = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
@@ -1502,10 +1503,10 @@ namespace PaulEngine
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSAOMaterial", false, ssaoMaterial->Handle);
 
-		FramebufferSpecification ssaoFBOSpec;
-		ssaoFBOSpec.Width = viewportRes.x;
-		ssaoFBOSpec.Height = viewportRes.y;
-		ssaoFBOSpec.Samples = 1;
+		FramebufferSpecification texturedFBOSpec;
+		texturedFBOSpec.Width = viewportRes.x;
+		texturedFBOSpec.Height = viewportRes.y;
+		texturedFBOSpec.Samples = 1;
 
 		TextureSpecification ssaoSpec;
 		ssaoSpec.Format = ImageFormat::R8;
@@ -1526,8 +1527,8 @@ namespace PaulEngine
 		// Add SSAO blur texture to lighting pass material
 		deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSAOMap")->TextureHandle = ssaoBlurTexture->Handle;
 
-		Ref<Framebuffer> ssaoFBO = Framebuffer::Create(ssaoFBOSpec, { ssaoAttachment }, nullptr);
-		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("SSAO_FBO", false, ssaoFBO);
+		Ref<Framebuffer> texturedFBO = Framebuffer::Create(texturedFBOSpec, { ssaoAttachment }, nullptr);
+		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("Texture_FBO", false, texturedFBO);
 
 		AssetHandle boxBlurShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/BoxBlur.glsl", true);
 		Ref<Material> boxBlurMaterial = AssetManager::CreateAsset<Material>(true, boxBlurShaderHandle);
@@ -1540,6 +1541,25 @@ namespace PaulEngine
 		AssetHandle ssrUVMappingShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSRUVMapping.glsl", true);
 		Ref<Material> ssrUVMappingMaterial = AssetManager::CreateAsset<Material>(true, ssrUVMappingShaderHandle);
 		
+		/*
+		layout(std140, binding = 3) uniform Mat_SSRData
+		{
+			mat4 ViewMatrix;
+			mat4 ProjectionMatrix;
+			float RayAcceleration;
+			float RayStep;
+			int MaxSteps;
+			float MaxDistance;
+			float RayThickness;
+			int NumBinarySearchSteps;
+		} u_SSRData;
+
+		layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
+		layout(binding = 1) uniform sampler2D Mat_gWorldNormal;
+		*/
+
+
+
 		// Create render passes
 		// --------------------
 		
@@ -1593,8 +1613,8 @@ namespace PaulEngine
 			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
 		};
 		
-		std::vector<RenderComponentType> ssaoPassInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType };
-		std::vector<std::string> ssaoPassInputBindings		= { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" };
+		std::vector<RenderComponentType> ssaoPassInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType };
+		std::vector<std::string> ssaoPassInputBindings		= { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_Texture", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" };
 		RenderPass::OnRenderFunc ssaoPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Screen Space Ambient Occlusion Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1605,83 +1625,83 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[2], "Radius input required");
 			PE_CORE_ASSERT(inputs[3], "Bias input required");
 			PE_CORE_ASSERT(inputs[4], "Sample count input required");
-			PE_CORE_ASSERT(inputs[5], "Blur texture input required");
-			PE_CORE_ASSERT(inputs[6], "Blur material input required");
-			PE_CORE_ASSERT(inputs[7], "Blur size input required");
+			PE_CORE_ASSERT(inputs[5], "SSAO texture input required");
+			PE_CORE_ASSERT(inputs[6], "Blur texture input required");
+			PE_CORE_ASSERT(inputs[7], "Blur material input required");
+			PE_CORE_ASSERT(inputs[8], "Blur size input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 			RenderComponentPrimitiveType<float>* radiusInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[2]);
 			RenderComponentPrimitiveType<float>* biasInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
 			RenderComponentPrimitiveType<int>* sampleCountInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[4]);
-			RenderComponentTexture* ssaoBlurTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
-			RenderComponentMaterial* blurMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[6]);
-			RenderComponentPrimitiveType<int>* boxBlurSizeInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[7]);
+			RenderComponentTexture* ssaoTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
+			RenderComponentTexture* ssaoBlurTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[6]);
+			RenderComponentMaterial* blurMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[7]);
+			RenderComponentPrimitiveType<int>* boxBlurSizeInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[8]);
 
-			RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
+			if (ssaoTextureInput)
+			{
+				Ref<FramebufferTexture2DAttachment> baseSSAOAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, ssaoTextureInput->TextureHandle);
+				targetFramebuffer->AddColourAttachment(baseSSAOAttach);
 
-			if (activeCamera) {
+				RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
 
-				// Update params
-				Ref<Material> ssaoMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
-				Ref<UniformBufferStorage> ssaoDataUBO = ssaoMat->GetParameter<UBOShaderParameterTypeStorage>("SSAOData")->UBO();
+				if (activeCamera) {
 
-				ssaoDataUBO->SetLocalData("ViewMatrix", glm::inverse(cameraWorldTransform));
-				ssaoDataUBO->SetLocalData("ProjectionMatrix", activeCamera->GetProjection());
-				ssaoDataUBO->SetLocalData("SourceResolution", (glm::vec2)viewportResInput->Data);
-				ssaoDataUBO->SetLocalData("Radius", radiusInput->Data);
-				ssaoDataUBO->SetLocalData("Bias", biasInput->Data);
+					// Update params
+					Ref<Material> ssaoMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
+					Ref<UniformBufferStorage> ssaoDataUBO = ssaoMat->GetParameter<UBOShaderParameterTypeStorage>("SSAOData")->UBO();
 
-				const int maxSamples = 64;
-				sampleCountInput->Data = std::clamp(sampleCountInput->Data, 0, maxSamples);
-				ssaoDataUBO->SetLocalData("KernelSize", sampleCountInput->Data);
+					ssaoDataUBO->SetLocalData("ViewMatrix", glm::inverse(cameraWorldTransform));
+					ssaoDataUBO->SetLocalData("ProjectionMatrix", activeCamera->GetProjection());
+					ssaoDataUBO->SetLocalData("SourceResolution", (glm::vec2)viewportResInput->Data);
+					ssaoDataUBO->SetLocalData("Radius", radiusInput->Data);
+					ssaoDataUBO->SetLocalData("Bias", biasInput->Data);
 
-				RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+					const int maxSamples = 64;
+					sampleCountInput->Data = std::clamp(sampleCountInput->Data, 0, maxSamples);
+					ssaoDataUBO->SetLocalData("KernelSize", sampleCountInput->Data);
 
-				// Initial ssao pass
-				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+					RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
-				// Submit screen quad
-				BlendState blend;
-				blend.Enabled = false;
-				DepthState depthState;
-				depthState.Test = false;
-				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
-
-				Renderer::EndScene();
-
-				// Box blur
-				Ref<Material> boxBlurMaterial = AssetManager::GetAsset<Material>(blurMaterialInput->MaterialHandle);
-				if (boxBlurMaterial)
-				{
-					// Swap framebuffer attachments
-					Ref<FramebufferAttachment> previousAttach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
-					AssetHandle previousTexture = static_cast<FramebufferTexture2DAttachment*>(previousAttach.get())->GetTextureHandle();
-					
-					// Create new attachment with blur texture
-					Ref<FramebufferTexture2DAttachment> newAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, ssaoBlurTextureInput->TextureHandle);
-					targetFramebuffer->AddColourAttachment(newAttach);
-					RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
-	
-					// Set up box blur
-					Ref<UniformBufferStorage> blurDataUBO = boxBlurMaterial->GetParameter<UBOShaderParameterTypeStorage>("BoxBlurData")->UBO();
-					if (blurDataUBO) { blurDataUBO->SetLocalData("Size", boxBlurSizeInput->Data); }
-
-					boxBlurMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("Input")->TextureHandle = previousTexture;
-
-					Renderer::BeginScene(glm::mat4(1.0f), glm::mat4(1.0f), 0.0f, 0.0f);
+					// Initial ssao pass
+					Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
 					// Submit screen quad
 					BlendState blend;
 					blend.Enabled = false;
 					DepthState depthState;
 					depthState.Test = false;
-					Renderer::SubmitDefaultQuad(blurMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+					Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 					Renderer::EndScene();
 
-					// Swap attachments
-					newAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, previousTexture);
-					targetFramebuffer->AddColourAttachment(newAttach);
+					// Box blur
+					Ref<Material> boxBlurMaterial = AssetManager::GetAsset<Material>(blurMaterialInput->MaterialHandle);
+					if (boxBlurMaterial)
+					{
+						// Create new attachment with blur texture
+						Ref<FramebufferTexture2DAttachment> blurAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, ssaoBlurTextureInput->TextureHandle);
+						targetFramebuffer->AddColourAttachment(blurAttach);
+						RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
+
+						// Set up box blur
+						Ref<UniformBufferStorage> blurDataUBO = boxBlurMaterial->GetParameter<UBOShaderParameterTypeStorage>("BoxBlurData")->UBO();
+						if (blurDataUBO) { blurDataUBO->SetLocalData("Size", boxBlurSizeInput->Data); }
+
+						boxBlurMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("Input")->TextureHandle = ssaoTextureInput->TextureHandle;
+
+						Renderer::BeginScene(glm::mat4(1.0f), glm::mat4(1.0f), 0.0f, 0.0f);
+
+						// Submit screen quad
+						BlendState blend;
+						blend.Enabled = false;
+						DepthState depthState;
+						depthState.Test = false;
+						Renderer::SubmitDefaultQuad(blurMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+						Renderer::EndScene();
+					}
 				}
 			}
 		};
@@ -1845,7 +1865,7 @@ namespace PaulEngine
 
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc), gBuffer, geometryPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), ssaoFBO, ssaoPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
 
 		out_Framerenderer->AddRenderPass(RenderPass(deferredLightingInputSpec, deferredLightingPassFunc), mainFramebuffer, deferredLightingInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
