@@ -1404,6 +1404,9 @@ namespace PaulEngine
 
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_BlurTexture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
+					
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSRUV_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
+
 					return false;
 				});
 			};
@@ -1540,25 +1543,45 @@ namespace PaulEngine
 		// ------------------------
 		AssetHandle ssrUVMappingShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSRUVMapping.glsl", true);
 		Ref<Material> ssrUVMappingMaterial = AssetManager::CreateAsset<Material>(true, ssrUVMappingShaderHandle);
-		
-		/*
-		layout(std140, binding = 3) uniform Mat_SSRData
-		{
-			mat4 ViewMatrix;
-			mat4 ProjectionMatrix;
-			float RayAcceleration;
-			float RayStep;
-			int MaxSteps;
-			float MaxDistance;
-			float RayThickness;
-			int NumBinarySearchSteps;
-		} u_SSRData;
 
-		layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
-		layout(binding = 1) uniform sampler2D Mat_gWorldNormal;
-		*/
+		float ssrRayAccleration = 1.0f;
+		float ssrRayStep = 0.3f;
+		int ssrMaxSteps = 30;
+		float ssrMaxDistance = 50.0f;
+		float ssrRayThickness = 0.3f;
+		int ssrNumBinarySearchSteps = 50;
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayAcceleration", true, ssrRayAccleration);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayStep", true, ssrRayStep);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSR_MaxSteps", true, ssrMaxSteps);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_MaxDistance", true, ssrMaxDistance);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayThickness", true, ssrRayThickness);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSR_NumBinarySearchSteps", true, ssrNumBinarySearchSteps);
 
+		Ref<UniformBufferStorage> ssrUVUBO = ssrUVMappingMaterial->GetParameter<UBOShaderParameterTypeStorage>("SSRData")->UBO();
+		ssrUVUBO->SetLocalData("ViewMatrix", glm::mat4(1.0f));
+		ssrUVUBO->SetLocalData("ProjectionMatrix", glm::mat4(1.0f));
+		ssrUVUBO->SetLocalData("RayAcceleration", ssrRayAccleration);
+		ssrUVUBO->SetLocalData("RayStep", ssrRayStep);
+		ssrUVUBO->SetLocalData("MaxSteps", ssrMaxSteps);
+		ssrUVUBO->SetLocalData("MaxDistance", ssrMaxDistance);
+		ssrUVUBO->SetLocalData("RayThickness", ssrRayThickness);
+		ssrUVUBO->SetLocalData("NumBinarySearchSteps", ssrNumBinarySearchSteps);
 
+		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSRUV_Material", false, ssrUVMappingMaterial->Handle);
+
+		TextureSpecification ssrUVSpec;
+		ssrUVSpec.Format = ImageFormat::RGBA16F;
+		ssrUVSpec.Width = viewportRes.x;
+		ssrUVSpec.Height = viewportRes.y;
+		ssrUVSpec.MinFilter = ImageMinFilter::NEAREST;
+		ssrUVSpec.MagFilter = ImageMagFilter::NEAREST;
+		ssrUVSpec.GenerateMips = false;
+
+		Ref<Texture2D> ssrUVTexture = AssetManager::CreateAsset<Texture2D>(true, ssrUVSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SSRUV_Texture", false, ssrUVTexture->Handle);
 
 		// Create render passes
 		// --------------------
@@ -1702,6 +1725,69 @@ namespace PaulEngine
 
 						Renderer::EndScene();
 					}
+				}
+			}
+		};
+
+		std::vector<RenderComponentType> ssrUVPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType };
+		std::vector<std::string> ssrUVPassInputBindings = { "ViewportResolution", "SSRUV_Material", "SSRUV_Texture", "SSR_RayAcceleration", "SSR_RayStep", "SSR_MaxSteps", "SSR_MaxDistance", "SSR_RayThickness", "SSR_NumBinarySearchSteps"};
+		RenderPass::OnRenderFunc ssrUVPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Screen Space Reflections UV Map Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "SSR material input required");
+			PE_CORE_ASSERT(inputs[2], "SSR UV Texture input required");
+			PE_CORE_ASSERT(inputs[3], "SSR ray acceleration input required");
+			PE_CORE_ASSERT(inputs[4], "SSR ray step input required");
+			PE_CORE_ASSERT(inputs[5], "SSR max steps input required");
+			PE_CORE_ASSERT(inputs[6], "SSR max distance input required");
+			PE_CORE_ASSERT(inputs[7], "SSR ray thickness input required");
+			PE_CORE_ASSERT(inputs[8], "SSR binary search steps input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
+			RenderComponentTexture* uvTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
+			RenderComponentPrimitiveType<float>* rayAccelerationInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
+			RenderComponentPrimitiveType<float>* rayStepInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[4]);
+			RenderComponentPrimitiveType<int>* maxStepsInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[5]);
+			RenderComponentPrimitiveType<float>* maxDistanceInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[6]);
+			RenderComponentPrimitiveType<float>* rayThicknessInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[7]);
+			RenderComponentPrimitiveType<int>* binaryStepsInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[8]);
+
+			if (uvTextureInput)
+			{
+				Ref<FramebufferTexture2DAttachment> srrAttach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, uvTextureInput->TextureHandle);
+				targetFramebuffer->AddColourAttachment(srrAttach);
+
+				RenderCommand::Clear(Framebuffer::BufferBit::COLOUR);
+
+				if (activeCamera) {
+
+					// Update params
+					Ref<Material> ssrMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
+					Ref<UniformBufferStorage> ssrUVUBO = ssrMat->GetParameter<UBOShaderParameterTypeStorage>("SSRData")->UBO();
+					ssrUVUBO->SetLocalData("ViewMatrix", glm::inverse(cameraWorldTransform));
+					ssrUVUBO->SetLocalData("ProjectionMatrix", activeCamera->GetProjection());
+					ssrUVUBO->SetLocalData("RayAcceleration", rayAccelerationInput->Data);
+					ssrUVUBO->SetLocalData("RayStep", rayStepInput->Data);
+					ssrUVUBO->SetLocalData("MaxSteps", maxStepsInput->Data);
+					ssrUVUBO->SetLocalData("MaxDistance", maxDistanceInput->Data);
+					ssrUVUBO->SetLocalData("RayThickness", rayThicknessInput->Data);
+					ssrUVUBO->SetLocalData("NumBinarySearchSteps", binaryStepsInput->Data);
+
+					RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+					Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+					// Submit screen quad
+					BlendState blend;
+					blend.Enabled = false;
+					DepthState depthState;
+					depthState.Test = false;
+					Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+					Renderer::EndScene();
 				}
 			}
 		};
@@ -1866,6 +1952,7 @@ namespace PaulEngine
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc), gBuffer, geometryPassInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
 
 		out_Framerenderer->AddRenderPass(RenderPass(deferredLightingInputSpec, deferredLightingPassFunc), mainFramebuffer, deferredLightingInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
