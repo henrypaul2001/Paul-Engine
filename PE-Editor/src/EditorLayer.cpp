@@ -1404,11 +1404,11 @@ namespace PaulEngine
 
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_BlurTexture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
-					
+
 					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSRUV_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 
 					return false;
-				});
+					});
 			};
 		out_Framerenderer->SetEventFunc(eventFunc);
 
@@ -1427,15 +1427,15 @@ namespace PaulEngine
 		Sampler2DShaderParameterTypeStorage* emission = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gEmission");
 		Sampler2DShaderParameterTypeStorage* meta = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata");
 
-		if (pos)	  { pos->TextureHandle = gWorldPositionTexture->Handle; }
-		if (normal)	  { normal->TextureHandle = gNormalTexture->Handle; }
-		if (albedo)	  { albedo->TextureHandle = gAlbedoTexture->Handle; }
+		if (pos) { pos->TextureHandle = gWorldPositionTexture->Handle; }
+		if (normal) { normal->TextureHandle = gNormalTexture->Handle; }
+		if (albedo) { albedo->TextureHandle = gAlbedoTexture->Handle; }
 		if (specular) { specular->TextureHandle = gSpecularTexture->Handle; }
-		if (arm)	  { arm->TextureHandle = gARMTexture->Handle; }
+		if (arm) { arm->TextureHandle = gARMTexture->Handle; }
 		if (emission) { emission->TextureHandle = gEmissionTexture->Handle; }
-		if (meta)	  { meta->TextureHandle = gMetadataTexture->Handle; }
+		if (meta) { meta->TextureHandle = gMetadataTexture->Handle; }
 
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DirectLightingPass", true, directLightingPassMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DirectLightingPass", false, directLightingPassMaterial->Handle);
 
 		// Screen space ambient occlusion
 		// ------------------------------
@@ -1583,31 +1583,31 @@ namespace PaulEngine
 		Ref<Texture2D> ssrUVTexture = AssetManager::CreateAsset<Texture2D>(true, ssrUVSpec);
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SSRUV_Texture", false, ssrUVTexture->Handle);
 
-		AssetHandle ssrCombineShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSRCombine.glsl", true);
-		Ref<Material> ssrCombineMaterial = AssetManager::CreateAsset<Material>(true, ssrCombineShaderHandle);
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("LightingPass")->TextureHandle = out_Framerenderer->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSRUVMap")->TextureHandle = ssrUVTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo")->TextureHandle = gAlbedoTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular")->TextureHandle = gSpecularTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gARM")->TextureHandle = gARMTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata")->TextureHandle = gMetadataTexture->Handle;
-		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("BRDFLut")->TextureHandle = EnvironmentMap::GetBRDFLutHandle();
-
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSRCombineMaterial", false, ssrCombineMaterial->Handle);
-
 		AssetHandle texturePassthroughShader = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/TexturePassthrough.glsl", true);
 		Ref<Material> texturePassthroughMaterial = AssetManager::CreateAsset<Material>(true, texturePassthroughShader);
 		texturePassthroughMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("Input")->TextureHandle = out_Framerenderer->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle;
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("TexturePassthroughMaterial", false, texturePassthroughMaterial->Handle);
 
+		AssetHandle indirectLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_IndirectLightingPass.glsl", true);
+		Ref<Material> indirectLightingPassMaterial = AssetManager::CreateAsset<Material>(true, indirectLightingPassShaderHandle);
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo")->TextureHandle = gAlbedoTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular")->TextureHandle = gSpecularTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gARM")->TextureHandle = gARMTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata")->TextureHandle = gMetadataTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DirectLightingPass")->TextureHandle = out_Framerenderer->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSRUVMap")->TextureHandle = ssrUVTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSAOMap")->TextureHandle = ssaoBlurTexture->Handle;
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("IndirectLightingPass", false, indirectLightingPassMaterial->Handle);
+
 		// Create render passes
 		// --------------------
-		
-		std::vector<RenderComponentType> geometryPassInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer };
-		std::vector<std::string> geometryPassInputBindings		= { "ViewportResolution", "MainFramebuffer" };
+
+		std::vector<RenderComponentType> geometryPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer };
+		std::vector<std::string> geometryPassInputBindings = { "ViewportResolution", "MainFramebuffer" };
 		RenderPass::OnRenderFunc geometryPass3DFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1654,10 +1654,10 @@ namespace PaulEngine
 
 			// Blit gBuffer depth / stencil to main framebuffer
 			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
-		};
-		
-		std::vector<RenderComponentType> ssaoPassInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType };
-		std::vector<std::string> ssaoPassInputBindings		= { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_Texture", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" };
+			};
+
+		std::vector<RenderComponentType> ssaoPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType };
+		std::vector<std::string> ssaoPassInputBindings = { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_Texture", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" };
 		RenderPass::OnRenderFunc ssaoPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Screen Space Ambient Occlusion Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1747,10 +1747,10 @@ namespace PaulEngine
 					}
 				}
 			}
-		};
+			};
 
 		std::vector<RenderComponentType> ssrUVPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType };
-		std::vector<std::string> ssrUVPassInputBindings = { "ViewportResolution", "SSRUV_Material", "SSRUV_Texture", "SSR_RayAcceleration", "SSR_RayStep", "SSR_MaxSteps", "SSR_MaxDistance", "SSR_RayThickness", "SSR_NumBinarySearchSteps"};
+		std::vector<std::string> ssrUVPassInputBindings = { "ViewportResolution", "SSRUV_Material", "SSRUV_Texture", "SSR_RayAcceleration", "SSR_RayStep", "SSR_MaxSteps", "SSR_MaxDistance", "SSR_RayThickness", "SSR_NumBinarySearchSteps" };
 		RenderPass::OnRenderFunc ssrUVPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Screen Space Reflections UV Map Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1810,12 +1810,12 @@ namespace PaulEngine
 					Renderer::EndScene();
 				}
 			}
-		};
+			};
 
-		std::vector<RenderComponentType> directLightingInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
+		std::vector<RenderComponentType> directLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
 		std::vector<std::string> directLightingInputBindings = { "ViewportResolution", "DirectLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" };
 		RenderPass::OnRenderFunc directLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Deferred Lighting Pass");
+			PE_PROFILE_SCOPE("Deferred Direct Lighting Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
@@ -1959,23 +1959,25 @@ namespace PaulEngine
 
 				Renderer::EndScene();
 			}
-		};
+			};
 
-		std::vector<RenderComponentType> ssrCombineInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Material };
-		std::vector<std::string> ssrCombineInputBindings = { "ViewportResolution", "SSRCombineMaterial", "AlternateScreenTexture", "TexturePassthroughMaterial" };
-		RenderPass::OnRenderFunc ssrCombinePassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Screen Space Reflections Combine Render Pass");
+		std::vector<RenderComponentType> indirectLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap, RenderComponentType::Texture, RenderComponentType::Material };
+		std::vector<std::string> indirectLightingInputBindings = { "ViewportResolution", "IndirectLightingPass", "EnvironmentMap", "AlternateScreenTexture", "TexturePassthroughMaterial" };
+		RenderPass::OnRenderFunc indirectLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Deferred Indirect Lighting Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
-			PE_CORE_ASSERT(inputs[1], "Material input required");
-			PE_CORE_ASSERT(inputs[2], "Target texture input required");
-			PE_CORE_ASSERT(inputs[2], "Passthrough material input required");
+			PE_CORE_ASSERT(inputs[1], "Lighting pass material input required");
+			PE_CORE_ASSERT(inputs[2], "Env map input required");
+			PE_CORE_ASSERT(inputs[3], "Target texture input required");
+			PE_CORE_ASSERT(inputs[4], "Passthrough material input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
-			RenderComponentMaterial* passthroughMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[3]);
+			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
+			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+			RenderComponentMaterial* passthroughMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[4]);
 
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -1994,8 +1996,7 @@ namespace PaulEngine
 
 			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
 
-			if (activeCamera)
-			{
+			if (activeCamera) {
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
 				// Submit screen quad
@@ -2004,6 +2005,14 @@ namespace PaulEngine
 				DepthState depthState;
 				depthState.Test = false;
 				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+				if (envMapInput)
+				{
+					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+					AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
+					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
+					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+				}
 
 				Renderer::EndScene();
 
@@ -2037,10 +2046,9 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
 
+		// Lighting
 		out_Framerenderer->AddRenderPass(RenderPass(directLightingInputSpec, directLightingPassFunc), mainFramebuffer, directLightingInputBindings);
-		
-		// SSR Combine
-		out_Framerenderer->AddRenderPass(RenderPass(ssrCombineInputSpec, ssrCombinePassFunc), mainFramebuffer, ssrCombineInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(indirectLightingInputSpec, indirectLightingPassFunc), mainFramebuffer, indirectLightingInputBindings);
 
 		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass), mainFramebuffer, forward3DInputBindings);
