@@ -140,7 +140,7 @@ vec3 PBR_SSRSpecularContribution(vec2 sampleUV, vec2 brdf, vec3 fresnelFactor)
 
 // Lighting models
 // ---------------
-const float minBlend = 0.3;
+const float minIBLContribution = 0.3;
 vec3 IndirectLighting(vec3 Albedo, vec3 Specular, float SpecularExponent, vec2 ssrUVCoords, float ssrContribution, float MaterialAO, float AmbientOcclusion, vec3 N, vec3 R)
 {
 	// Get indirect diffuse contribution
@@ -153,7 +153,7 @@ vec3 IndirectLighting(vec3 Albedo, vec3 Specular, float SpecularExponent, vec2 s
 	vec3 iblSpecular = IBLSpecularContribution(PrefilterMap, Specular, SpecularExponent, R);
 
 	// Get final specular blend
-	vec3 finalSpecularContribution = mix(iblSpecular, ssrSpecular, max(minBlend, ssrContribution));
+	vec3 finalSpecularContribution = mix(ssrSpecular, iblSpecular, max(minIBLContribution, 1.0 - ssrContribution));
 
 	return (iblDiffuse + finalSpecularContribution) * MaterialAO * AmbientOcclusion;
 }
@@ -174,7 +174,7 @@ vec3 PBR_IndirectLighting(vec3 Albedo, float Roughness, float Metalness, float N
 	vec3 iblSpecular = PBR_IBLSpecularContribution(PrefilterMap, Roughness, F, brdf, R);
 
 	// Get final specular blend
-	vec3 finalSpecularContribution = mix(iblSpecular, ssrSpecular, max(minBlend, ssrContribution));
+	vec3 finalSpecularContribution = mix(ssrSpecular, iblSpecular, max(minIBLContribution, 1.0 - ssrContribution));
 
 	return (iblDiffuse + finalSpecularContribution) * MaterialAO * AmbientOcclusion;
 }
