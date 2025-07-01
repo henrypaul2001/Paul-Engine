@@ -1415,17 +1415,17 @@ namespace PaulEngine
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
 		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
-		AssetHandle deferredLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DeferredLightingPass.glsl", true);
-		Ref<Material> deferredLightingPassMaterial = AssetManager::CreateAsset<Material>(true, deferredLightingPassShaderHandle);
+		AssetHandle directLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DirectLightingPass.glsl", true);
+		Ref<Material> directLightingPassMaterial = AssetManager::CreateAsset<Material>(true, directLightingPassShaderHandle);
 
 		// Set gBuffer textures in lighting pass material
-		Sampler2DShaderParameterTypeStorage* pos = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
-		Sampler2DShaderParameterTypeStorage* normal = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal");
-		Sampler2DShaderParameterTypeStorage* albedo = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo");
-		Sampler2DShaderParameterTypeStorage* specular = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular");
-		Sampler2DShaderParameterTypeStorage* arm = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gARM");
-		Sampler2DShaderParameterTypeStorage* emission = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gEmission");
-		Sampler2DShaderParameterTypeStorage* meta = deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata");
+		Sampler2DShaderParameterTypeStorage* pos = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
+		Sampler2DShaderParameterTypeStorage* normal = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal");
+		Sampler2DShaderParameterTypeStorage* albedo = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo");
+		Sampler2DShaderParameterTypeStorage* specular = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular");
+		Sampler2DShaderParameterTypeStorage* arm = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gARM");
+		Sampler2DShaderParameterTypeStorage* emission = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gEmission");
+		Sampler2DShaderParameterTypeStorage* meta = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata");
 
 		if (pos)	  { pos->TextureHandle = gWorldPositionTexture->Handle; }
 		if (normal)	  { normal->TextureHandle = gNormalTexture->Handle; }
@@ -1435,7 +1435,7 @@ namespace PaulEngine
 		if (emission) { emission->TextureHandle = gEmissionTexture->Handle; }
 		if (meta)	  { meta->TextureHandle = gMetadataTexture->Handle; }
 
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DeferredLightingPass", true, deferredLightingPassMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("DirectLightingPass", true, directLightingPassMaterial->Handle);
 
 		// Screen space ambient occlusion
 		// ------------------------------
@@ -1528,7 +1528,7 @@ namespace PaulEngine
 		Ref<FramebufferTexture2DAttachment> ssaoBlurAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, ssaoBlurTexture->Handle);
 
 		// Add SSAO blur texture to lighting pass material
-		deferredLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSAOMap")->TextureHandle = ssaoBlurTexture->Handle;
+		directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSAOMap")->TextureHandle = ssaoBlurTexture->Handle;
 
 		Ref<Framebuffer> texturedFBO = Framebuffer::Create(texturedFBOSpec, { ssaoAttachment }, nullptr);
 		out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("Texture_FBO", false, texturedFBO);
@@ -1589,6 +1589,11 @@ namespace PaulEngine
 		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SSRUVMap")->TextureHandle = ssrUVTexture->Handle;
 		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
 		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo")->TextureHandle = gAlbedoTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular")->TextureHandle = gSpecularTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gARM")->TextureHandle = gARMTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata")->TextureHandle = gMetadataTexture->Handle;
+		ssrCombineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("BRDFLut")->TextureHandle = EnvironmentMap::GetBRDFLutHandle();
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSRCombineMaterial", false, ssrCombineMaterial->Handle);
 
@@ -1807,9 +1812,9 @@ namespace PaulEngine
 			}
 		};
 
-		std::vector<RenderComponentType> deferredLightingInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
-		std::vector<std::string> deferredLightingInputBindings = { "ViewportResolution", "DeferredLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" };
-		RenderPass::OnRenderFunc deferredLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		std::vector<RenderComponentType> directLightingInputSpec	= { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
+		std::vector<std::string> directLightingInputBindings = { "ViewportResolution", "DirectLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" };
+		RenderPass::OnRenderFunc directLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Deferred Lighting Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
@@ -2032,7 +2037,7 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
 
-		out_Framerenderer->AddRenderPass(RenderPass(deferredLightingInputSpec, deferredLightingPassFunc), mainFramebuffer, deferredLightingInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(directLightingInputSpec, directLightingPassFunc), mainFramebuffer, directLightingInputBindings);
 		
 		// SSR Combine
 		out_Framerenderer->AddRenderPass(RenderPass(ssrCombineInputSpec, ssrCombinePassFunc), mainFramebuffer, ssrCombineInputBindings);
