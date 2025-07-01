@@ -1569,6 +1569,7 @@ namespace PaulEngine
 
 		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
 		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
+		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata")->TextureHandle = gMetadataTexture->Handle;
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSRUV_Material", false, ssrUVMappingMaterial->Handle);
 
