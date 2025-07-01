@@ -91,11 +91,6 @@ layout(binding = 7) uniform sampler2D Mat_gARM;
 layout(binding = 8) uniform sampler2D Mat_gEmission;
 layout(binding = 9) uniform sampler2D Mat_gMetadata;
 
-// Global IBL
-layout(binding = 10) uniform samplerCube IrradianceMap;
-layout(binding = 11) uniform samplerCube PrefilterMap;
-layout(binding = 12) uniform sampler2D BRDFLut;
-
 layout(binding = 13) uniform sampler2D Mat_SSAOMap;
 
 vec3 ViewDir;
@@ -534,45 +529,6 @@ vec3 PBR_SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float Materia
 	return Lo + ambient;
 }
 
-// IBL Functions
-// -------------
-vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 N, vec3 V, vec3 R)
-{
-	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
-
-	// Shininess to mip level
-	float gloss = MaterialShininess / 256.0;
-	float mipLevel = (1.0 - gloss) * MAX_REFLECTION_LOD;
-
-	vec3 irradiance = texture(irradianceMap, N).rgb;
-	vec3 diffuse = irradiance * MaterialAlbedo;
-
-	vec3 prefilteredColour = textureLod(prefilterMap, R, mipLevel).rgb;
-	vec3 specular = prefilteredColour * MaterialSpecular;
-
-	return diffuse + specular;
-}
-
-vec3 PBR_CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap, vec3 MaterialAlbedo, float MaterialMetalness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
-{
-	float NdotV = max(dot(N, V), 0.0);
-	vec3 F = FresnelSchlick(NdotV, F0, MaterialRoughness);
-
-	vec3 kS = F;
-	vec3 kD = 1.0 - kS;
-	kD *= 1.0 - MaterialMetalness;
-
-	vec3 irradiance = texture(irradianceMap, N).rgb;
-	vec3 diffuse = irradiance * MaterialAlbedo;
-
-	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
-	vec3 prefilteredColour = textureLod(prefilterMap, R, MaterialRoughness * MAX_REFLECTION_LOD).rgb;
-	vec2 brdf = texture(BRDFLut, vec2(NdotV, MaterialRoughness)).rg;
-	vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
-
-	return (kD * diffuse + specular) * MaterialAO;
-}
-
 // Lighting models
 // ---------------
 vec3 BlinnPhongLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, vec3 MaterialSpecular, float MaterialShininess, vec3 MaterialEmission, float AmbientOcclusion)
@@ -599,9 +555,6 @@ vec3 BlinnPhongLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo
 
 	result += MaterialEmission;
 
-	// Global IBL
-	result += AmbientOcclusion * CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, MaterialShininess, WorldNormal, ViewDir, reflect(-ViewDir, WorldNormal));
-	
 	return result;
 }
 
@@ -639,9 +592,6 @@ vec3 PBRLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, float
 	}
 
 	vec3 result = Lo + MaterialEmission;
-
-	// Global IBL
-	result += AmbientOcclusion * PBR_CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetalness, MaterialRoughness, MaterialAO, N, V, R, F0);
 
 	return result;
 }
