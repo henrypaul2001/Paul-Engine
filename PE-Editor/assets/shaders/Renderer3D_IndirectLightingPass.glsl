@@ -140,7 +140,7 @@ vec3 PBR_SSRSpecularContribution(vec2 sampleUV, vec2 brdf, vec3 fresnelFactor)
 
 // Lighting models
 // ---------------
-const float minIBLContribution = 0.3;
+const float minIBLContribution = 0.0;
 vec3 IndirectLighting(vec3 Albedo, vec3 Specular, float SpecularExponent, vec2 ssrUVCoords, float ssrContribution, float MaterialAO, float AmbientOcclusion, vec3 N, vec3 R)
 {
 	// Get indirect diffuse contribution
