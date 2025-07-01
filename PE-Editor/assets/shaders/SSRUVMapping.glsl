@@ -17,6 +17,7 @@ void main()
 #version 450 core
 
 layout(location = 0) out vec4 f_Colour;
+layout(location = 1) out vec4 f_MultiplierDebug;
 
 layout(location = 1) in vec2 v_TexCoords;
 
@@ -34,6 +35,9 @@ layout(std140, binding = 3) uniform Mat_SSRData
 
 layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
 layout(binding = 1) uniform sampler2D Mat_gWorldNormal;
+layout(binding = 2) uniform sampler2D Mat_gSpecular;
+layout(binding = 3) uniform sampler2D Mat_gARM;
+layout(binding = 4) uniform sampler2D Mat_gMetadata;
 
 vec3 RayRefinementBinarySearch(inout vec3 ref_Dir, inout vec3 ref_Hitcoord, inout float ref_dDepth, int binarySearchSteps)
 {
@@ -118,6 +122,19 @@ void main()
 	vec3 ViewSpaceFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, v_TexCoords).xyz, 1.0));
 	vec3 ViewSpaceNormal = mat3(View) * texture(Mat_gWorldNormal, v_TexCoords).xyz;
 
+	float roughness = 0.0;
+	int LightingModelIndex = int(texture(Mat_gMetadata, v_TexCoords).g); // 0 = blinn-phong, 1 = pbr
+	if (LightingModelIndex == 0)
+	{
+		float SpecularExponent = texture(Mat_gSpecular, v_TexCoords).a;
+		roughness = 1.0 - (SpecularExponent / 256.0);
+	}
+	else if (LightingModelIndex == 1)
+	{
+		vec3 armSample = texture(Mat_gARM, v_TexCoords).rgb;
+		roughness = armSample.g;
+	}
+
 	vec3 UnitViewSpaceFragPos = normalize(ViewSpaceFragPos);
 	vec3 UnitViewSpaceNormal = normalize(ViewSpaceNormal);
 
@@ -146,4 +163,5 @@ void main()
 	multiplier = clamp(multiplier, 0.0, 1.0);
 
 	f_Colour = vec4(coords.xy, vec2(multiplier, steps));
+	f_MultiplierDebug = vec4(screenEdgeFactor, cameraDirectionFactor, collisionAccuracyFactor, distanceFromRayStartFactor);
 }

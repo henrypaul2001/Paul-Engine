@@ -1,6 +1,7 @@
 #version 450 core
 
 layout(location = 0) out vec4 f_Colour;
+layout(location = 1) out vec4 f_MultiplierDebug;
 
 layout(location = 1) in vec2 v_TexCoords;
 
@@ -146,4 +147,5 @@ void main()
 	multiplier = clamp(multiplier, 0.0, 1.0);
 
 	f_Colour = vec4(coords.xy, vec2(multiplier, steps));
+	f_MultiplierDebug = vec4(screenEdgeFactor, cameraDirectionFactor, collisionAccuracyFactor, distanceFromRayStartFactor);
 }

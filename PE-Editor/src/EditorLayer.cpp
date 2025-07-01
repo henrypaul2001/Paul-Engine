@@ -1583,6 +1583,10 @@ namespace PaulEngine
 		Ref<Texture2D> ssrUVTexture = AssetManager::CreateAsset<Texture2D>(true, ssrUVSpec);
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SSRUV_Texture", false, ssrUVTexture->Handle);
 
+		Ref<Texture2D> ssrMultipliersTexture = AssetManager::CreateAsset<Texture2D>(true, ssrUVSpec);
+		Ref<FramebufferTexture2DAttachment> ssrMultAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, ssrMultipliersTexture->Handle);
+		texturedFBO->AddColourAttachment(ssrMultAttachment);
+
 		AssetHandle texturePassthroughShader = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/TexturePassthrough.glsl", true);
 		Ref<Material> texturePassthroughMaterial = AssetManager::CreateAsset<Material>(true, texturePassthroughShader);
 		texturePassthroughMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("Input")->TextureHandle = out_Framerenderer->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle;
