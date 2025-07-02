@@ -9,6 +9,7 @@ layout(std140, binding = 3) uniform Mat_SSRData
 {
 	mat4 ViewMatrix;
 	mat4 ProjectionMatrix;
+	float RayJerk;
 	float RayAcceleration;
 	float RayStep;
 	int MaxSteps;
@@ -64,12 +65,15 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 
 	float depth = 0.0;
 	vec4 projectedCoord = vec4(0.0);
+	float acceleration = u_SSRData.RayAcceleration;
 
 	// Sample position buffer along ray direction until the difference between the sample depth and ray depth is negative (collision with geometry)
 	// If there is a collision, refine the ray with a binary search function (due to a large ray step, the ray may have stepped far behind geometry, so the ray needs to find its
 	// way back to the geometry surface and find the actual point of collision)
 	for (int i = 0; i < u_SSRData.MaxSteps; i++)
 	{
+		dir *= acceleration;
+		acceleration *= u_SSRData.RayJerk;
 		ref_Hitcoord += dir;
 
 		projectedCoord = u_SSRData.ProjectionMatrix * vec4(ref_Hitcoord, 1.0);

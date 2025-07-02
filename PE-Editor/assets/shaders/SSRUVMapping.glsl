@@ -25,6 +25,7 @@ layout(std140, binding = 3) uniform Mat_SSRData
 {
 	mat4 ViewMatrix;
 	mat4 ProjectionMatrix;
+	float RayJerk;
 	float RayAcceleration;
 	float RayStep;
 	int MaxSteps;
@@ -86,6 +87,8 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 	// way back to the geometry surface and find the actual point of collision)
 	for (int i = 0; i < u_SSRData.MaxSteps; i++)
 	{
+		dir *= acceleration;
+		acceleration *= u_SSRData.RayJerk;
 		ref_Hitcoord += dir;
 
 		projectedCoord = u_SSRData.ProjectionMatrix * vec4(ref_Hitcoord, 1.0);
