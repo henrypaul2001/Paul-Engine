@@ -91,7 +91,7 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 		projectedCoord.xyz /= projectedCoord.w;
 		projectedCoord.xyz = projectedCoord.xyz * 0.5 + 0.5;
 
-		if (projectedCoord.x < 0 || projectedCoord.y < 0)
+		if (projectedCoord.x < 0 || projectedCoord.y < 0 || projectedCoord.x > 1.0 || projectedCoord.y > 1.0)
 		{
 			// Attempting to sample outside of screen
 			out_TotalSteps++;
