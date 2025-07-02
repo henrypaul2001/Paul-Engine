@@ -144,8 +144,14 @@ void main()
 	float dDepth;
 	int steps = 0;
 
-	vec4 coords = RayMarch(reflected * u_SSRData.RayStep, hitPos, dDepth, steps);
-	vec2 dCoords = smoothstep(0.2, 0.6, abs(vec2(0.5, 0.5) - coords.xy));
+	vec4 coords = vec4(0.0);
+	float lightingModel = texture(Mat_gMetadata, v_TexCoords.xy).y;
+	if (lightingModel > 0.0)
+	{
+		// Valid ray start position
+		coords = RayMarch(reflected * u_SSRData.RayStep, hitPos, dDepth, steps);
+	}
+
 	vec2 centerDistance = smoothstep(0.1, 0.5, abs(vec2(0.5, 0.5) - v_TexCoords));
 
 	float screenEdgeFactor = clamp(1.0 - (centerDistance.x + centerDistance.y), 0.0, 1.0);
