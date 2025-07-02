@@ -31,6 +31,7 @@ layout(std140, binding = 3) uniform Mat_SSRData
 	float MaxDistance;
 	float RayThickness;
 	int NumBinarySearchSteps;
+	float NormalAlignmentThreshold;
 } u_SSRData;
 
 layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
@@ -100,6 +101,14 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 
 		vec4 posSample = u_SSRData.ViewMatrix * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
 		depth = posSample.z;
+
+		vec3 normalSample = mat3(u_SSRData.ViewMatrix) * texture(Mat_gWorldNormal, projectedCoord.xy).xyz;
+		if (dot(normalSample, dir) >= u_SSRData.NormalAlignmentThreshold)
+		{
+			// Ray is moving away from surface, no collision
+			out_TotalSteps++;
+			continue;
+		}
 
 		float lightingModel = texture(Mat_gMetadata, projectedCoord.xy).y;
 		if (lightingModel < -0.1)

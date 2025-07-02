@@ -15,6 +15,7 @@ layout(std140, binding = 3) uniform Mat_SSRData
 	float MaxDistance;
 	float RayThickness;
 	int NumBinarySearchSteps;
+	float NormalAlignmentThreshold;
 } u_SSRData;
 
 layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
@@ -75,7 +76,7 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 		projectedCoord.xyz /= projectedCoord.w;
 		projectedCoord.xyz = projectedCoord.xyz * 0.5 + 0.5;
 
-		if (projectedCoord.x < 0 || projectedCoord.y < 0)
+		if (projectedCoord.x < 0 || projectedCoord.y < 0 || projectedCoord.x > 1.0 || projectedCoord.y > 1.0)
 		{
 			// Attempting to sample outside of screen
 			out_TotalSteps++;
@@ -84,6 +85,14 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 
 		vec4 posSample = u_SSRData.ViewMatrix * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
 		depth = posSample.z;
+
+		vec3 normalSample = mat3(u_SSRData.ViewMatrix) * texture(Mat_gWorldNormal, projectedCoord.xy).xyz;
+		if (dot(normalSample, dir) >= u_SSRData.NormalAlignmentThreshold)
+		{
+			// Ray is moving away from surface, no collision
+			out_TotalSteps++;
+			continue;
+		}
 
 		float lightingModel = texture(Mat_gMetadata, projectedCoord.xy).y;
 		if (lightingModel < -0.1)
@@ -128,10 +137,17 @@ void main()
 	float dDepth;
 	int steps = 0;
 
-	vec4 coords = RayMarch(reflected * u_SSRData.RayStep, hitPos, dDepth, steps);
-	vec2 dCoords = smoothstep(0.2, 0.6, abs(vec2(0.5, 0.5) - coords.xy));
+	vec4 coords = vec4(0.0);
+	float lightingModel = texture(Mat_gMetadata, v_TexCoords.xy).y;
+	if (lightingModel > 0.0)
+	{
+		// Valid ray start position
+		coords = RayMarch(reflected * u_SSRData.RayStep, hitPos, dDepth, steps);
+	}
 
-	float screenEdgeFactor = clamp(1.0 - (dCoords.x + dCoords.y), 0.0, 1.0);
+	vec2 centerDistance = smoothstep(0.1, 0.5, abs(vec2(0.5, 0.5) - v_TexCoords));
+
+	float screenEdgeFactor = clamp(1.0 - (centerDistance.x + centerDistance.y), 0.0, 1.0);
 	float cameraDirectionFactor = (1 - max(dot(-UnitViewSpaceFragPos, reflected), 0.0));
 	float collisionAccuracyFactor = clamp(1 - smoothstep(0.0, u_SSRData.RayThickness, abs(dDepth)), 0.0, 1.0);
 	//float collisionAccuracyFactor = 1.0 - clamp(abs(dDepth) / u_SSRData.RayThickness, 0.0, 1.0);
