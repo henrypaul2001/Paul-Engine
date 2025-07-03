@@ -34,12 +34,13 @@ void main()
 	int sourceMip = clamp(u_DownsampleData.SourceMipLevel, 0, numMips - 1);
 
 	ivec2 sourceSize = textureSize(Mat_SourceTexture, sourceMip);
-	ivec2 coords = ivec2(vec2(sourceSize) * v_TexCoords);
+	vec2 texelSize = 1.0 / sourceSize;
+	vec2 coords = v_TexCoords;
 
-	vec4 a = texelFetch(Mat_SourceTexture, clamp(coords + ivec2(0, 0), ivec2(0), sourceSize - ivec2(1)), sourceMip);
-	vec4 b = texelFetch(Mat_SourceTexture, clamp(coords + ivec2(1, 0), ivec2(0), sourceSize - ivec2(1)), sourceMip);
-	vec4 c = texelFetch(Mat_SourceTexture, clamp(coords + ivec2(0, 1), ivec2(0), sourceSize - ivec2(1)), sourceMip);
-	vec4 d = texelFetch(Mat_SourceTexture, clamp(coords + ivec2(1, 1), ivec2(0), sourceSize - ivec2(1)), sourceMip);
+	vec4 a = texture(Mat_SourceTexture, coords + ivec2(0, 0) * texelSize, sourceMip);
+	vec4 b = texture(Mat_SourceTexture, coords + ivec2(1, 0) * texelSize, sourceMip);
+	vec4 c = texture(Mat_SourceTexture, coords + ivec2(0, 1) * texelSize, sourceMip);
+	vec4 d = texture(Mat_SourceTexture, coords + ivec2(1, 1) * texelSize, sourceMip);
 
 	f_Downsample = min(min(a, b), min(c, d));
 }
