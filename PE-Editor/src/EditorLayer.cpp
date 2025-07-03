@@ -1306,6 +1306,9 @@ namespace PaulEngine
 		// Create resources
 		// ----------------
 
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
 		// gBuffer
 		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
 
@@ -1320,7 +1323,7 @@ namespace PaulEngine
 		TextureSpecification positionSpec;
 		positionSpec.Width = viewportRes.x;
 		positionSpec.Height = viewportRes.y;
-		positionSpec.GenerateMips = false;
+		positionSpec.GenerateMips = true;
 		positionSpec.Format = ImageFormat::RGB32F;
 		positionSpec.MinFilter = ImageMinFilter::NEAREST;
 		positionSpec.MagFilter = ImageMagFilter::NEAREST;
@@ -1333,9 +1336,16 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gWorldPosition", false, gWorldPositionTexture->Handle);
 		Ref<FramebufferTexture2DAttachment> positionAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, gWorldPositionTexture->Handle);
 
+		AssetHandle minReduceShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MinReduceDownsample.glsl", true);
+		Ref<Material> minReduceMaterial = AssetManager::CreateAsset<Material>(true, minReduceShaderHandle);
+		minReduceMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = gWorldPositionTexture->Handle;
+
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MinReduceMaterial", false, minReduceMaterial->Handle);
+
 		// normal
 		TextureSpecification normalSpec = positionSpec;
 		normalSpec.Format = ImageFormat::RGB16F;
+		normalSpec.GenerateMips = false;
 		Ref<Texture2D> gNormalTexture = AssetManager::CreateAsset<Texture2D>(true, normalSpec);
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gNormal", false, gNormalTexture->Handle);
 		Ref<FramebufferTexture2DAttachment> normalAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour1, gNormalTexture->Handle);
@@ -1411,9 +1421,6 @@ namespace PaulEngine
 					});
 			};
 		out_Framerenderer->SetEventFunc(eventFunc);
-
-		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
-		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
 
 		AssetHandle directLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DirectLightingPass.glsl", true);
 		Ref<Material> directLightingPassMaterial = AssetManager::CreateAsset<Material>(true, directLightingPassShaderHandle);
@@ -1665,7 +1672,61 @@ namespace PaulEngine
 
 			// Blit gBuffer depth / stencil to main framebuffer
 			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
-			};
+		};
+
+		std::vector<RenderComponentType> minReduceInputSpec = { RenderComponentType::Material, RenderComponentType::Texture };
+		std::vector<std::string> minReduceInputBindings = { "MinReduceMaterial", "gWorldPosition" };
+		RenderPass::OnRenderFunc minReducePassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Scene 3D Render Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Min reduce material input required");
+			PE_CORE_ASSERT(inputs[1], "Source / target texture input required");
+			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[0]);
+			RenderComponentTexture* textureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
+			
+			Ref<FramebufferAttachment> previousAttach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+
+			Ref<Texture2D> targetTexture = AssetManager::GetAsset<Texture2D>(textureInput->TextureHandle);
+			PE_CORE_ASSERT(targetTexture, "Invalid texture");
+
+			glm::vec4 clearColour = glm::vec4(0.0f);
+			int width = targetTexture->GetWidth();
+			int height = targetTexture->GetHeight();
+			int mipLevels = 1 + static_cast<int>(std::log2(std::max(width, height)));
+
+			glm::ivec2 resolution = glm::ivec2(width, height);
+
+			Ref<Material> material = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
+			Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, textureInput->TextureHandle);
+			for (int i = 1; i < mipLevels; i++)
+			{
+				resolution /= 2;
+				resolution = glm::max(resolution, glm::ivec2(1, 1));
+
+				attach->TargetMipLevel = i;
+				material->GetParameter<UBOShaderParameterTypeStorage>("DownsampleData")->UBO()->SetLocalData("SourceMipLevel", i);
+
+				targetFramebuffer->AddColourAttachment(attach);
+				targetFramebuffer->ClearBuffer(FramebufferAttachmentPoint::Colour0, &clearColour[0]);
+
+				RenderCommand::SetViewport({ 0, 0 }, resolution);
+
+				Renderer::BeginScene(glm::mat4(1.0f), glm::mat4(1.0f), 0.0f, 0.0f);
+
+				// Submit screen quad
+				BlendState blend;
+				blend.Enabled = false;
+				DepthState depthState;
+				depthState.Test = false;
+				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
+				Renderer::EndScene();
+			}
+
+			if (previousAttach) { targetFramebuffer->AddColourAttachment(previousAttach); }
+		};
 
 		std::vector<RenderComponentType> ssaoPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::PrimitiveType };
 		std::vector<std::string> ssaoPassInputBindings = { "ViewportResolution", "SSAOMaterial", "SSAO_Radius", "SSAO_Bias", "SSAO_Samples", "SSAO_Texture", "SSAO_BlurTexture", "BoxBlurMaterial", "SSAO_BlurSize" };
@@ -2060,6 +2121,7 @@ namespace PaulEngine
 
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc), gBuffer, geometryPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(minReduceInputSpec, minReducePassFunc), texturedFBO, minReduceInputBindings); // TODO: consider writing to gBuffer
 		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
 
