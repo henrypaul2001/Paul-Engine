@@ -55,7 +55,7 @@ void main()
 
 #type fragment
 #version 450 core
-layout(location = 0) out vec3 gWorldPosition;
+layout(location = 0) out vec3 gViewPosition;
 layout(location = 1) out vec3 gWorldNormal;
 layout(location = 2) out vec3 gAlbedo;
 layout(location = 3) out vec4 gSpecular; // r, g, b = specular colour, a = specular exponent
@@ -198,7 +198,7 @@ void main()
 	else
 	{
 		// Write to gBuffer
-		gWorldPosition = v_VertexData.WorldFragPos;
+		gViewPosition = vec3(u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0));
 		gWorldNormal = Normal;
 		gAlbedo = MaterialAlbedo;
 		gSpecular = vec4(0.0, 0.0, 0.0, 0.0);

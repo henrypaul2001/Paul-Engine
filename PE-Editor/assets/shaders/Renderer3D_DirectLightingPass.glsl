@@ -84,7 +84,7 @@ layout(std140, binding = 2) uniform SceneData
 layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
 layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
 layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
-layout(binding = 3) uniform sampler2D Mat_gWorldPosition;
+layout(binding = 3) uniform sampler2D Mat_gViewPosition;
 layout(binding = 4) uniform sampler2D Mat_gWorldNormal;
 layout(binding = 5) uniform sampler2D Mat_gAlbedo;
 layout(binding = 6) uniform sampler2D Mat_gSpecular;
@@ -600,7 +600,7 @@ vec3 PBRLighting(vec3 WorldFragPos, vec3 WorldNormal, vec3 MaterialAlbedo, float
 void main()
 {
 	// Sample gBuffer
-	vec3 WorldFragPos = texture(Mat_gWorldPosition, v_TexCoords).rgb;
+	vec3 WorldFragPos = vec3(inverse(u_CameraBuffer.View) * vec4(texture(Mat_gViewPosition, v_TexCoords).rgb, 1.0));
 	vec3 WorldNormal = texture(Mat_gWorldNormal, v_TexCoords).rgb;
 	vec3 Albedo = texture(Mat_gAlbedo, v_TexCoords).rgb;
 

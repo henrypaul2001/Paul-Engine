@@ -55,7 +55,7 @@ void main()
 
 #type fragment
 #version 450 core
-layout(location = 0) out vec3 gWorldPosition;
+layout(location = 0) out vec3 gViewPosition;
 layout(location = 1) out vec3 gWorldNormal;
 layout(location = 2) out vec3 gAlbedo;
 layout(location = 3) out vec4 gSpecular; // r, g, b = specular colour, a = specular exponent
@@ -184,16 +184,12 @@ void main()
 	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
-	if (u_MaterialValues.Albedo.a == 0.0) { discard; }
-	else
-	{
-		// Write to gBuffer
-		gWorldPosition = v_VertexData.WorldFragPos;
-		gWorldNormal = Normal;
-		gAlbedo = MaterialAlbedo;
-		gSpecular = vec4(MaterialSpecular, u_MaterialValues.Shininess);
-		gARM = vec3(0.0, 0.0, 0.0);
-		gEmission = MaterialEmission;
-		gMetaData = vec2(float(v_EntityID), 0.0);
-	}
+	// Write to gBuffer
+	gViewPosition = vec3(u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0));
+	gWorldNormal = Normal;
+	gAlbedo = MaterialAlbedo;
+	gSpecular = vec4(MaterialSpecular, u_MaterialValues.Shininess);
+	gARM = vec3(0.0, 0.0, 0.0);
+	gEmission = MaterialEmission;
+	gMetaData = vec2(float(v_EntityID), 0.0);
 }

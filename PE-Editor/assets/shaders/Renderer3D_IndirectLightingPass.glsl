@@ -28,7 +28,7 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
-layout(binding = 3) uniform sampler2D Mat_gWorldPosition;
+layout(binding = 3) uniform sampler2D Mat_gViewPosition;
 layout(binding = 4) uniform sampler2D Mat_gWorldNormal;
 layout(binding = 5) uniform sampler2D Mat_gAlbedo;
 layout(binding = 6) uniform sampler2D Mat_gSpecular;
@@ -183,7 +183,7 @@ vec3 PBR_IndirectLighting(vec3 Albedo, float Roughness, float Metalness, float N
 void main()
 {
 	// Sample gBuffer
-	const vec3 WorldFragPos = texture(Mat_gWorldPosition, v_TexCoords).rgb;
+	const vec3 WorldFragPos = vec3(inverse(u_CameraBuffer.View) * vec4(texture(Mat_gViewPosition, v_TexCoords).rgb, 1.0));
 	const vec3 WorldNormal = texture(Mat_gWorldNormal, v_TexCoords).rgb;
 	const vec3 Albedo = texture(Mat_gAlbedo, v_TexCoords).rgb;
 

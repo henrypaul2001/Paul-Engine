@@ -31,7 +31,7 @@ layout(std140, binding = 0) uniform Camera
 layout(binding = 0) uniform sampler2D Mat_LightingPass;
 layout(binding = 1) uniform sampler2D Mat_SSRUVMap;
 
-layout(binding = 2) uniform sampler2D Mat_gWorldPosition;
+layout(binding = 2) uniform sampler2D Mat_gViewPosition;
 layout(binding = 3) uniform sampler2D Mat_gWorldNormal;
 layout(binding = 4) uniform sampler2D Mat_gAlbedo;
 layout(binding = 5) uniform sampler2D Mat_gSpecular;
@@ -59,7 +59,7 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0, float Roughness)
 void main()
 {
 	vec4 sampleUV = texture(Mat_SSRUVMap, v_TexCoords);
-	vec3 WorldFragPos = texture(Mat_gWorldPosition, v_TexCoords).rgb;
+	vec3 WorldFragPos = vec3(inverse(u_CameraBuffer.View) * vec4(texture(Mat_gViewPosition, v_TexCoords).rgb, 1.0));
 	vec3 WorldNormal = texture(Mat_gWorldNormal, v_TexCoords).rgb;
 	vec3 MaterialAlbedo = texture(Mat_gAlbedo, v_TexCoords).rgb;
 

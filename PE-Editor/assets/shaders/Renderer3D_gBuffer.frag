@@ -1,10 +1,10 @@
 #version 450 core
-layout(location = 0) out vec3 gWorldPosition;
+layout(location = 0) out vec3 gViewPosition;
 layout(location = 1) out vec3 gWorldNormal;
 layout(location = 2) out vec3 gAlbedo;
 layout(location = 3) out vec4 gSpecular; // r, g, b = specular colour, a = specular exponent
 layout(location = 4) out vec3 gARM; // ao, roughness, metal (PBR)
-layout (location = 5) out vec3 gEmission; // pre-multiplied with emission strength
+layout(location = 5) out vec3 gEmission; // pre-multiplied with emission strength
 layout(location = 6) out vec2 gMetaData; // (float)entityID, (float)lightingModelIndex
 
 struct VertexData
@@ -36,7 +36,7 @@ layout(std140, binding = 3) uniform Mat_MaterialValues
 	vec2 TextureScale;
 	float Shininess;
 	float HeightScale;
-	
+
 	vec3 EmissionColour;
 	float EmissionStrength;
 
@@ -129,7 +129,7 @@ void main()
 	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
 
 	// Write to gBuffer
-	gWorldPosition = v_VertexData.WorldFragPos;
+	gViewPosition = vec3(u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0));
 	gWorldNormal = Normal;
 	gAlbedo = MaterialAlbedo;
 	gSpecular = vec4(MaterialSpecular, u_MaterialValues.Shininess);

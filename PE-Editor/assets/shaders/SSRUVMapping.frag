@@ -26,7 +26,7 @@ layout(std140, binding = 3) uniform Mat_SSRData
 	float NormalAlignmentThreshold;
 } u_SSRData;
 
-layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
+layout(binding = 0) uniform sampler2D Mat_gViewPosition;
 layout(binding = 1) uniform sampler2D Mat_gWorldNormal;
 layout(binding = 2) uniform sampler2D Mat_gMetadata;
 
@@ -43,7 +43,7 @@ vec3 RayRefinementBinarySearch(inout vec3 ref_Dir, inout vec3 ref_Hitcoord, inou
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		vec4 posSample = u_CameraBuffer.View * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
+		vec4 posSample = vec4(texture(Mat_gViewPosition, projectedCoord.xy).xyz, 1.0);
 		depth = posSample.z;
 
 		ref_dDepth = ref_Hitcoord.z - depth;
@@ -95,7 +95,7 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 			continue;
 		}
 
-		vec4 posSample = u_CameraBuffer.View * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
+		vec4 posSample = vec4(texture(Mat_gViewPosition, projectedCoord.xy).xyz, 1.0);
 		depth = posSample.z;
 
 		vec3 normalSample = mat3(u_CameraBuffer.View) * texture(Mat_gWorldNormal, projectedCoord.xy).xyz;
@@ -134,7 +134,7 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 
 vec4 HiZ_RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int out_TotalSteps)
 {
-	ivec2 fullResSize = textureSize(Mat_gWorldPosition, 0);
+	ivec2 fullResSize = textureSize(Mat_gViewPosition, 0);
 
 	vec3 rayViewSpace = ref_Hitcoord;
 	vec3 normalizedViewSpaceDirection = normalize(dir);
@@ -151,13 +151,13 @@ vec4 HiZ_RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out i
 	vec2 rayScreenSpace = projectedRayStart.xy;
 	vec2 rayDirectionScreenSpace = normalize(projectedRayEnd.xy - projectedRayStart.xy);
 
-	int currentMip = textureQueryLevels(Mat_gWorldPosition) - 1;
+	int currentMip = textureQueryLevels(Mat_gViewPosition) - 1;
 	int maxSteps = 100;
 
 	for (int numSteps = 0; numSteps < maxSteps && currentMip >= 0; numSteps++)
 	{
 		// Calculate screen space step size for current mip level
-		ivec2 mipRes = textureSize(Mat_gWorldPosition, currentMip);
+		ivec2 mipRes = textureSize(Mat_gViewPosition, currentMip);
 		vec2 texelSize = 1.0 / vec2(mipRes);
 		vec2 screenSpaceStep = rayDirectionScreenSpace * texelSize;
 
@@ -167,10 +167,10 @@ vec4 HiZ_RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out i
 			break;
 		}
 		
-		vec4 fullResViewSpaceSample = u_CameraBuffer.View * vec4(texelFetch(Mat_gWorldPosition, ivec2(rayScreenSpace) * fullResSize, 0).xyz, 1.0);
+		vec4 fullResViewSpaceSample = vec4(texelFetch(Mat_gViewPosition, ivec2(rayScreenSpace) * fullResSize, 0).xyz, 1.0);
 
 		// Test HiZ buffer
-		vec4 viewSpaceSample = u_CameraBuffer.View * vec4(texelFetch(Mat_gWorldPosition, ivec2(rayScreenSpace) * mipRes, currentMip).xyz, 1.0);
+		vec4 viewSpaceSample = vec4(texelFetch(Mat_gViewPosition, ivec2(rayScreenSpace) * mipRes, currentMip).xyz, 1.0);
 		float viewSpaceMinDepth = viewSpaceSample.z;
 
 		// Step view space ray to current screen space projected x, y coords to sample view space depth of the ray at this position
@@ -206,7 +206,7 @@ void main()
 	mat4 View = u_CameraBuffer.View;
 	mat4 Projection = u_CameraBuffer.Projection;
 
-	vec3 ViewSpaceFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, v_TexCoords).xyz, 1.0));
+	vec3 ViewSpaceFragPos = texture(Mat_gViewPosition, v_TexCoords).xyz;
 	vec3 ViewSpaceNormal = mat3(View) * texture(Mat_gWorldNormal, v_TexCoords).xyz;
 
 	vec3 UnitViewSpaceFragPos = normalize(ViewSpaceFragPos);

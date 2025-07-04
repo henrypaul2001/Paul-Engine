@@ -44,7 +44,7 @@ layout(std140, binding = 4) uniform Mat_SSAOSamples
 						// but that would create a bit of a mess on the CPU side with reflection. This is fine for now
 } u_SSAOSamples;
 
-layout(binding = 0) uniform sampler2D Mat_gWorldPosition;
+layout(binding = 0) uniform sampler2D Mat_gViewPosition;
 layout(binding = 1) uniform sampler2D Mat_gWorldNormal;
 layout(binding = 2) uniform sampler2D Mat_NoiseTexture;
 
@@ -56,7 +56,7 @@ void main()
 	mat4 Projection = u_CameraBuffer.Projection;
 
 	// Read inputs
-	vec3 ViewFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, v_TexCoords).xyz, 1.0));
+	vec3 ViewFragPos = texture(Mat_gViewPosition, v_TexCoords).xyz;
 	vec3 ViewNormal = mat3(View) * texture(Mat_gWorldNormal, v_TexCoords).xyz;
 	vec3 randomVec = normalize(texture(Mat_NoiseTexture, v_TexCoords * NoiseScale).xyz * 2.0 - 1.0);
 
@@ -79,7 +79,7 @@ void main()
 		offset.xyz /= offset.w;				 // perspective divide
 		offset.xyz = offset.xyz * 0.5 + 0.5; // to range 0.0, 1.0
 
-		vec3 sampleFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, offset.xy).xyz, 1.0));
+		vec3 sampleFragPos = texture(Mat_gViewPosition, offset.xy).xyz;
 		float sampleDepth = sampleFragPos.z;
 
 		// range check and accumulate occlusion factor

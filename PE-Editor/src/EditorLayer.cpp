@@ -1332,13 +1332,13 @@ namespace PaulEngine
 		positionSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
 		positionSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-		Ref<Texture2D> gWorldPositionTexture = AssetManager::CreateAsset<Texture2D>(true, positionSpec);
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gWorldPosition", false, gWorldPositionTexture->Handle);
-		Ref<FramebufferTexture2DAttachment> positionAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, gWorldPositionTexture->Handle);
+		Ref<Texture2D> gViewPositionTexture = AssetManager::CreateAsset<Texture2D>(true, positionSpec);
+		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gViewPosition", false, gViewPositionTexture->Handle);
+		Ref<FramebufferTexture2DAttachment> positionAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, gViewPositionTexture->Handle);
 
 		AssetHandle minReduceShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MinReduceDownsample.glsl", true);
 		Ref<Material> minReduceMaterial = AssetManager::CreateAsset<Material>(true, minReduceShaderHandle);
-		minReduceMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = gWorldPositionTexture->Handle;
+		minReduceMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = gViewPositionTexture->Handle;
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MinReduceMaterial", false, minReduceMaterial->Handle);
 
@@ -1426,7 +1426,7 @@ namespace PaulEngine
 		Ref<Material> directLightingPassMaterial = AssetManager::CreateAsset<Material>(true, directLightingPassShaderHandle);
 
 		// Set gBuffer textures in lighting pass material
-		Sampler2DShaderParameterTypeStorage* pos = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition");
+		Sampler2DShaderParameterTypeStorage* pos = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gViewPosition");
 		Sampler2DShaderParameterTypeStorage* normal = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal");
 		Sampler2DShaderParameterTypeStorage* albedo = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo");
 		Sampler2DShaderParameterTypeStorage* specular = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular");
@@ -1434,7 +1434,7 @@ namespace PaulEngine
 		Sampler2DShaderParameterTypeStorage* emission = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gEmission");
 		Sampler2DShaderParameterTypeStorage* meta = directLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata");
 
-		if (pos) { pos->TextureHandle = gWorldPositionTexture->Handle; }
+		if (pos) { pos->TextureHandle = gViewPositionTexture->Handle; }
 		if (normal) { normal->TextureHandle = gNormalTexture->Handle; }
 		if (albedo) { albedo->TextureHandle = gAlbedoTexture->Handle; }
 		if (specular) { specular->TextureHandle = gSpecularTexture->Handle; }
@@ -1507,7 +1507,7 @@ namespace PaulEngine
 		noiseSpec.GenerateMips = false;
 		Ref<Texture2D> NoiseTexture = AssetManager::CreateAsset<Texture2D>(true, noiseSpec, Buffer(&ssaoNoise[0], 48));
 
-		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gViewPosition")->TextureHandle = gViewPositionTexture->Handle;
 		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
 		ssaoMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("NoiseTexture")->TextureHandle = NoiseTexture->Handle;
 
@@ -1578,7 +1578,7 @@ namespace PaulEngine
 		ssrUVUBO->SetLocalData("NumBinarySearchSteps", ssrNumBinarySearchSteps);
 		ssrUVUBO->SetLocalData("NormalAlignmentThreshold", normalAlignmentThreshold);
 
-		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gViewPosition")->TextureHandle = gViewPositionTexture->Handle;
 		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
 		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata")->TextureHandle = gMetadataTexture->Handle;
 
@@ -1607,7 +1607,7 @@ namespace PaulEngine
 
 		AssetHandle indirectLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_IndirectLightingPass.glsl", true);
 		Ref<Material> indirectLightingPassMaterial = AssetManager::CreateAsset<Material>(true, indirectLightingPassShaderHandle);
-		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldPosition")->TextureHandle = gWorldPositionTexture->Handle;
+		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gViewPosition")->TextureHandle = gViewPositionTexture->Handle;
 		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
 		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gAlbedo")->TextureHandle = gAlbedoTexture->Handle;
 		indirectLightingPassMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gSpecular")->TextureHandle = gSpecularTexture->Handle;
@@ -1673,7 +1673,7 @@ namespace PaulEngine
 		};
 
 		std::vector<RenderComponentType> minReduceInputSpec = { RenderComponentType::Material, RenderComponentType::Texture };
-		std::vector<std::string> minReduceInputBindings = { "MinReduceMaterial", "gWorldPosition" };
+		std::vector<std::string> minReduceInputBindings = { "MinReduceMaterial", "gViewPosition" };
 		RenderPass::OnRenderFunc minReducePassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
