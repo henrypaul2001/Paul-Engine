@@ -52,7 +52,8 @@ layout(location = 0) out vec4 FragColour;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
 	float Exposure;

@@ -7,7 +7,8 @@ layout(location = 4) in vec3 a_Bitangent;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
 	float Exposure;
@@ -47,5 +48,5 @@ void main()
 
 	v_EntityID = u_MeshSubmission.EntityID;
 
-	gl_Position = u_CameraBuffer.ViewProjection * vec4(v_VertexData.WorldFragPos, 1.0);
+	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }

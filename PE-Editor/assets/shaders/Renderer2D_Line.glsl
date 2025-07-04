@@ -8,7 +8,8 @@ layout(location = 2) in int a_EntityID;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
 	float Exposure;
@@ -22,7 +23,7 @@ void main()
 	v_Colour = a_Colour;
 	v_EntityID = a_EntityID;
 
-	gl_Position = u_CameraBuffer.ViewProjection * vec4(a_Position, 1.0);
+	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(a_Position, 1.0);
 }
 
 #type fragment

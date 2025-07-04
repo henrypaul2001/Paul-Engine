@@ -23,7 +23,8 @@ layout(location = 1) in vec2 v_TexCoords;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
 	float Exposure;

@@ -114,7 +114,8 @@ namespace PaulEngine {
 
 		struct CameraData
 		{
-			glm::mat4 ViewProjection;
+			glm::mat4 View;
+			glm::mat4 Projection;
 			glm::vec3 ViewPos;
 			float Gamma = 2.2f;
 			float Exposure = 1.0f;
@@ -230,7 +231,8 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
+		s_RenderData.CameraBuffer.View = camera.GetViewMatrix();
+		s_RenderData.CameraBuffer.Projection = camera.GetProjectionMatrix();
 		s_RenderData.CameraUniformBuffer->SetData(&s_RenderData.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		s_RenderData.QuadPipeline = RenderPipeline::Create(cullState, depthState, blendState, s_RenderData.QuadMaterialHandle);
@@ -244,9 +246,9 @@ namespace PaulEngine {
 	void Renderer2D::BeginScene(const EditorCamera& camera, FaceCulling cullState, DepthState depthState, BlendState blendState)
 	{
 		PE_PROFILE_FUNCTION();
-		glm::mat4 viewProjection = camera.GetViewProjection();
 
-		s_RenderData.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		s_RenderData.CameraBuffer.View = camera.GetViewMatrix();
+		s_RenderData.CameraBuffer.Projection = camera.GetProjection();
 		s_RenderData.CameraBuffer.ViewPos = camera.GetPosition();
 		s_RenderData.CameraBuffer.Gamma = camera.Gamma;
 		s_RenderData.CameraBuffer.Exposure = camera.Exposure;
@@ -264,7 +266,8 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		s_RenderData.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.View = glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.Projection = camera.GetProjection();
 		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
 		s_RenderData.CameraBuffer.Gamma = camera.GetGamma();
 		s_RenderData.CameraBuffer.Exposure = camera.GetExposure();
@@ -282,7 +285,8 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		s_RenderData.CameraBuffer.ViewProjection = projection * glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.View = glm::inverse(worldTransform);
+		s_RenderData.CameraBuffer.Projection = projection;
 		s_RenderData.CameraBuffer.ViewPos = worldTransform[3];
 		s_RenderData.CameraBuffer.Gamma = gamma;
 		s_RenderData.CameraBuffer.Exposure = exposure;

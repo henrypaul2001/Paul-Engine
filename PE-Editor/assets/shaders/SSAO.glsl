@@ -20,10 +20,17 @@ layout(location = 0) out float f_SSAO;
 
 layout(location = 1) in vec2 v_TexCoords;
 
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 View;
+	mat4 Projection;
+	vec3 ViewPos;
+	float Gamma;
+	float Exposure;
+} u_CameraBuffer;
+
 layout(std140, binding = 3) uniform Mat_SSAOData
 {
-	mat4 ViewMatrix;
-	mat4 ProjectionMatrix;
 	vec2 SourceResolution;
 	float Radius;
 	float Bias;
@@ -45,8 +52,8 @@ vec2 NoiseScale = u_SSAOData.SourceResolution / 4.0;
 
 void main()
 {
-	mat4 View = u_SSAOData.ViewMatrix;
-	mat4 Projection = u_SSAOData.ProjectionMatrix;
+	mat4 View = u_CameraBuffer.View;
+	mat4 Projection = u_CameraBuffer.Projection;
 
 	// Read inputs
 	vec3 ViewFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, v_TexCoords).xyz, 1.0));

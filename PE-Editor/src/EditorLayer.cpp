@@ -1569,8 +1569,6 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_NormalAlignmentThreshold", true, normalAlignmentThreshold);
 
 		Ref<UniformBufferStorage> ssrUVUBO = ssrUVMappingMaterial->GetParameter<UBOShaderParameterTypeStorage>("SSRData")->UBO();
-		ssrUVUBO->SetLocalData("ViewMatrix", glm::mat4(1.0f));
-		ssrUVUBO->SetLocalData("ProjectionMatrix", glm::mat4(1.0f));
 		ssrUVUBO->SetLocalData("RayJerk", ssrRayJerk);
 		ssrUVUBO->SetLocalData("RayAcceleration", ssrRayAccleration);
 		ssrUVUBO->SetLocalData("RayStep", ssrRayStep);
@@ -1767,8 +1765,6 @@ namespace PaulEngine
 					Ref<Material> ssaoMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
 					Ref<UniformBufferStorage> ssaoDataUBO = ssaoMat->GetParameter<UBOShaderParameterTypeStorage>("SSAOData")->UBO();
 
-					ssaoDataUBO->SetLocalData("ViewMatrix", glm::inverse(cameraWorldTransform));
-					ssaoDataUBO->SetLocalData("ProjectionMatrix", activeCamera->GetProjection());
 					ssaoDataUBO->SetLocalData("SourceResolution", (glm::vec2)viewportResInput->Data);
 					ssaoDataUBO->SetLocalData("Radius", radiusInput->Data);
 					ssaoDataUBO->SetLocalData("Bias", biasInput->Data);
@@ -1863,8 +1859,6 @@ namespace PaulEngine
 					// Update params
 					Ref<Material> ssrMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
 					Ref<UniformBufferStorage> ssrUVUBO = ssrMat->GetParameter<UBOShaderParameterTypeStorage>("SSRData")->UBO();
-					ssrUVUBO->SetLocalData("ViewMatrix", glm::inverse(cameraWorldTransform));
-					ssrUVUBO->SetLocalData("ProjectionMatrix", activeCamera->GetProjection());
 					ssrUVUBO->SetLocalData("RayJerk", rayJerkInput->Data);
 					ssrUVUBO->SetLocalData("RayAcceleration", rayAccelerationInput->Data);
 					ssrUVUBO->SetLocalData("RayStep", rayStepInput->Data);

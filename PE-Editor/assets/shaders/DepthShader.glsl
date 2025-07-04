@@ -9,7 +9,8 @@ layout(location = 4) in vec3 a_Bitangent;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
 	float Exposure;
@@ -23,7 +24,7 @@ layout(std140, binding = 1) uniform MeshSubmission
 
 void main()
 {
-	gl_Position = u_CameraBuffer.ViewProjection * u_MeshSubmission.Transform * vec4(a_Position, 1.0);
+	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * u_MeshSubmission.Transform * vec4(a_Position, 1.0);
 }
 
 #type fragment

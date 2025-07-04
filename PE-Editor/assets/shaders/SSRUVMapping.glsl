@@ -21,10 +21,17 @@ layout(location = 1) out vec4 f_MultiplierDebug;
 
 layout(location = 1) in vec2 v_TexCoords;
 
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 View;
+	mat4 Projection;
+	vec3 ViewPos;
+	float Gamma;
+	float Exposure;
+} u_CameraBuffer;
+
 layout(std140, binding = 3) uniform Mat_SSRData
 {
-	mat4 ViewMatrix;
-	mat4 ProjectionMatrix;
 	float RayJerk;
 	float RayAcceleration;
 	float RayStep;
@@ -48,11 +55,11 @@ vec3 RayRefinementBinarySearch(inout vec3 ref_Dir, inout vec3 ref_Hitcoord, inou
 	// Each step shortens the distance of the next step. More steps = higher precision
 	for (int i = 0; i < binarySearchSteps; i++)
 	{
-		projectedCoord = u_SSRData.ProjectionMatrix * vec4(ref_Hitcoord, 1.0);
+		projectedCoord = u_CameraBuffer.Projection * vec4(ref_Hitcoord, 1.0);
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		vec4 posSample = u_SSRData.ViewMatrix * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
+		vec4 posSample = u_CameraBuffer.View * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
 		depth = posSample.z;
 
 		ref_dDepth = ref_Hitcoord.z - depth;
@@ -68,19 +75,21 @@ vec3 RayRefinementBinarySearch(inout vec3 ref_Dir, inout vec3 ref_Hitcoord, inou
 		}
 	}
 
-	projectedCoord = u_SSRData.ProjectionMatrix * vec4(ref_Hitcoord, 1.0);
+	projectedCoord = u_CameraBuffer.Projection * vec4(ref_Hitcoord, 1.0);
 	projectedCoord.xy /= projectedCoord.w;
 	projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
 	return vec3(projectedCoord.xy, ref_dDepth);
 }
 
+// Issue:
+// Smaller ray steps result in more accurate reflections, HOWEVER, a large number of steps is needed to reflect objects that are not close to the camera
+// Larger ray steps result in more distant objects being reflected, HOWEVER, small objects close to the camera can be missed by the ray due to the ray stepping through the collision in one step
 vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int out_TotalSteps)
 {
-	dir *= u_SSRData.RayAcceleration;
-
 	float depth = 0.0;
 	vec4 projectedCoord = vec4(0.0);
+	float acceleration = u_SSRData.RayAcceleration;
 
 	// Sample position buffer along ray direction until the difference between the sample depth and ray depth is negative (collision with geometry)
 	// If there is a collision, refine the ray with a binary search function (due to a large ray step, the ray may have stepped far behind geometry, so the ray needs to find its
@@ -91,7 +100,7 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 		acceleration *= u_SSRData.RayJerk;
 		ref_Hitcoord += dir;
 
-		projectedCoord = u_SSRData.ProjectionMatrix * vec4(ref_Hitcoord, 1.0);
+		projectedCoord = u_CameraBuffer.Projection * vec4(ref_Hitcoord, 1.0);
 		projectedCoord.xyz /= projectedCoord.w;
 		projectedCoord.xyz = projectedCoord.xyz * 0.5 + 0.5;
 
@@ -102,10 +111,10 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 			continue;
 		}
 
-		vec4 posSample = u_SSRData.ViewMatrix * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
+		vec4 posSample = u_CameraBuffer.View * vec4(texture(Mat_gWorldPosition, projectedCoord.xy).xyz, 1.0);
 		depth = posSample.z;
 
-		vec3 normalSample = mat3(u_SSRData.ViewMatrix) * texture(Mat_gWorldNormal, projectedCoord.xy).xyz;
+		vec3 normalSample = mat3(u_CameraBuffer.View) * texture(Mat_gWorldNormal, projectedCoord.xy).xyz;
 		if (dot(normalSample, dir) >= u_SSRData.NormalAlignmentThreshold)
 		{
 			// Ray is moving away from surface, no collision
@@ -130,7 +139,7 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 		out_dDepth = ref_Hitcoord.z - depth;
 
 		out_TotalSteps++;
-		if (out_dDepth <= 0.0)
+		if (out_dDepth <= u_SSRData.RayThickness)
 		{
 			return vec4(RayRefinementBinarySearch(dir, ref_Hitcoord, out_dDepth, u_SSRData.NumBinarySearchSteps), 1.0);
 		}
@@ -139,10 +148,79 @@ vec4 RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int o
 	return vec4(projectedCoord.xy, depth, 0.0);
 }
 
+vec4 HiZ_RayMarch(vec3 dir, inout vec3 ref_Hitcoord, out float out_dDepth, out int out_TotalSteps)
+{
+	ivec2 fullResSize = textureSize(Mat_gWorldPosition, 0);
+
+	vec3 rayViewSpace = ref_Hitcoord;
+	vec3 normalizedViewSpaceDirection = normalize(dir);
+
+	// View space to screen space
+	vec4 projectedRayStart = u_CameraBuffer.Projection * vec4(rayViewSpace, 1.0);
+	projectedRayStart.xyz /= projectedRayStart.w;
+	projectedRayStart.xyz = projectedRayStart.xyz * 0.5 + 0.5;
+
+	vec4 projectedRayEnd = u_CameraBuffer.Projection * vec4(rayViewSpace + normalizedViewSpaceDirection, 1.0);
+	projectedRayEnd.xyz /= projectedRayEnd.w;
+	projectedRayEnd.xyz = projectedRayEnd.xyz * 0.5 + 0.5;
+
+	vec2 rayScreenSpace = projectedRayStart.xy;
+	vec2 rayDirectionScreenSpace = normalize(projectedRayEnd.xy - projectedRayStart.xy);
+
+	int currentMip = textureQueryLevels(Mat_gWorldPosition) - 1;
+	int maxSteps = 100;
+
+	for (int numSteps = 0; numSteps < maxSteps && currentMip >= 0; numSteps++)
+	{
+		// Calculate screen space step size for current mip level
+		ivec2 mipRes = textureSize(Mat_gWorldPosition, currentMip);
+		vec2 texelSize = 1.0 / vec2(mipRes);
+		vec2 screenSpaceStep = rayDirectionScreenSpace * texelSize;
+
+		if (rayScreenSpace.x < 0 || rayScreenSpace.y < 0 || rayScreenSpace.x > 1 || rayScreenSpace.y > 1)
+		{
+			// Ray is off screen
+			break;
+		}
+
+		vec4 fullResViewSpaceSample = u_CameraBuffer.View * vec4(texelFetch(Mat_gWorldPosition, ivec2(rayScreenSpace) * fullResSize, 0).xyz, 1.0);
+
+		// Test HiZ buffer
+		vec4 viewSpaceSample = u_CameraBuffer.View * vec4(texelFetch(Mat_gWorldPosition, ivec2(rayScreenSpace) * mipRes, currentMip).xyz, 1.0);
+		float viewSpaceMinDepth = viewSpaceSample.z;
+
+		// Step view space ray to current screen space projected x, y coords to sample view space depth of the ray at this position
+		rayViewSpace = rayViewSpace + dot(fullResViewSpaceSample.xyz - rayViewSpace, normalizedViewSpaceDirection) * normalizedViewSpaceDirection;
+		float viewSpaceRayDepth = rayViewSpace.z;
+
+		out_dDepth = viewSpaceRayDepth - viewSpaceMinDepth;
+
+		if (out_dDepth <= u_SSRData.RayThickness)
+		{
+			// Possible collision in screen region
+			currentMip--;
+
+			if (currentMip < 0)
+			{
+				// Collision with full resolution buffer
+				return vec4(RayRefinementBinarySearch(dir, rayViewSpace, out_dDepth, u_SSRData.NumBinarySearchSteps), 1.0);
+			}
+		}
+		else
+		{
+			rayScreenSpace += screenSpaceStep;
+		}
+
+		out_TotalSteps++;
+	}
+
+	return vec4(rayScreenSpace.xy, 0.0, 0.0);
+}
+
 void main()
 {
-	mat4 View = u_SSRData.ViewMatrix;
-	mat4 Projection = u_SSRData.ProjectionMatrix;
+	mat4 View = u_CameraBuffer.View;
+	mat4 Projection = u_CameraBuffer.Projection;
 
 	vec3 ViewSpaceFragPos = vec3(View * vec4(texture(Mat_gWorldPosition, v_TexCoords).xyz, 1.0));
 	vec3 ViewSpaceNormal = mat3(View) * texture(Mat_gWorldNormal, v_TexCoords).xyz;
