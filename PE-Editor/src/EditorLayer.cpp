@@ -1336,11 +1336,11 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("gViewPosition", false, gViewPositionTexture->Handle);
 		Ref<FramebufferTexture2DAttachment> positionAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, gViewPositionTexture->Handle);
 
-		AssetHandle minReduceShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MinReduceDownsample.glsl", true);
-		Ref<Material> minReduceMaterial = AssetManager::CreateAsset<Material>(true, minReduceShaderHandle);
-		minReduceMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = gViewPositionTexture->Handle;
+		AssetHandle maxReduceShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/MaxReduceDownsample.glsl", true);
+		Ref<Material> maxReduceMaterial = AssetManager::CreateAsset<Material>(true, maxReduceShaderHandle);
+		maxReduceMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = gViewPositionTexture->Handle;
 
-		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MinReduceMaterial", false, minReduceMaterial->Handle);
+		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("MaxReduceMaterial", false, maxReduceMaterial->Handle);
 
 		// normal
 		TextureSpecification normalSpec = positionSpec;
@@ -1634,6 +1634,7 @@ namespace PaulEngine
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentFramebuffer* mainFramebufferInput = dynamic_cast<RenderComponentFramebuffer*>(inputs[1]);
 
+			RenderCommand::SetClearColour(glm::vec4(-1000.0f));
 			RenderCommand::Clear();
 			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
@@ -1672,14 +1673,14 @@ namespace PaulEngine
 			targetFramebuffer->BlitTo(mainFramebufferInput->Framebuffer.get(), (Framebuffer::BufferBit::DEPTH | Framebuffer::BufferBit::STENCIL), Framebuffer::BlitFilter::Nearest);
 		};
 
-		std::vector<RenderComponentType> minReduceInputSpec = { RenderComponentType::Material, RenderComponentType::Texture };
-		std::vector<std::string> minReduceInputBindings = { "MinReduceMaterial", "gViewPosition" };
-		RenderPass::OnRenderFunc minReducePassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Scene 3D Render Pass");
+		std::vector<RenderComponentType> maxReduceInputSpec = { RenderComponentType::Material, RenderComponentType::Texture };
+		std::vector<std::string> maxReduceInputBindings = { "MaxReduceMaterial", "gViewPosition" };
+		RenderPass::OnRenderFunc maxReducePassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("View buffer max reduce pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
-			PE_CORE_ASSERT(inputs[0], "Min reduce material input required");
+			PE_CORE_ASSERT(inputs[0], "Max reduce material input required");
 			PE_CORE_ASSERT(inputs[1], "Source / target texture input required");
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[0]);
 			RenderComponentTexture* textureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
@@ -2115,7 +2116,7 @@ namespace PaulEngine
 
 		// Deferred rendering
 		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc), gBuffer, geometryPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(minReduceInputSpec, minReducePassFunc), texturedFBO, minReduceInputBindings); // TODO: consider writing to gBuffer
+		out_Framerenderer->AddRenderPass(RenderPass(maxReduceInputSpec, maxReducePassFunc), texturedFBO, maxReduceInputBindings); // TODO: consider writing to gBuffer
 		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
 		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
 
