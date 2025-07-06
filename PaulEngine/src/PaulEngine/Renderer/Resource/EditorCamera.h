@@ -26,6 +26,8 @@ namespace PaulEngine
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
 		virtual const glm::mat4& GetProjection() const override { return m_Projection; }
+		virtual const float GetNearPlane() const override { return m_NearClip; }
+		virtual const float GetFarPlane() const override { return m_FarClip; }
 		virtual float GetGamma() const override { return Gamma; }
 		virtual float GetExposure() const override { return Exposure; }
 
