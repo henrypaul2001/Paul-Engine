@@ -1,5 +1,52 @@
 Scene: Untitled
 Entities:
+  - Entity: 16880314327514422701
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [14.211657, 0.48033905, -3.4100754]
+      Rotation: [0, 1.0717251, 0]
+      Scale: [1, 1, 1]
+      Children:
+        []
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 2.074174
+        Gamma: 2.2
+        Exposure: 1
+      FixedAspect: false
+  - Entity: 7944305724354701841
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [-17.479, -5.1465087, 10.863156]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [17.49994, 5, 19.999933]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 7840106116855404345
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4133841982073187721
+    TagComponent:
+      Tag: brass_goblets.obj_Root
+    PrefabComponent:
+      Handle: 16419161166796920133
+    TransformComponent:
+      Position: [0.8033669, 7.344432, -7.1477265]
+      Rotation: [0, 0, 0]
+      Scale: [7.5, 7.5, 7.5]
+      Children:
+        []
   - Entity: 7933029862440823284
     TagComponent:
       Tag: Spot Light
@@ -80,7 +127,7 @@ Entities:
     TagComponent:
       Tag: PBR Cube
     TransformComponent:
-      Position: [0, 12, -6.986519]
+      Position: [1.1219538, 12, -3.7077818]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
       Children:
@@ -96,7 +143,7 @@ Entities:
     TagComponent:
       Tag: PBR Cube
     TransformComponent:
-      Position: [0, 6, -6.986519]
+      Position: [1.0665138, 4.8794107, -6.502037]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
       Children:
@@ -112,7 +159,7 @@ Entities:
     TagComponent:
       Tag: PBR Cube
     TransformComponent:
-      Position: [6, 6, -6.986519]
+      Position: [6, 5.611332, -6.910954]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
       Children:
@@ -144,7 +191,7 @@ Entities:
     TagComponent:
       Tag: PBR Cube
     TransformComponent:
-      Position: [12, 2.3364864e-06, -6.986519]
+      Position: [10.454046, 2.4843485, -11.064474]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
       Children:
@@ -266,7 +313,7 @@ Entities:
       Radius: 62
       Diffuse: [5, 0, 0]
       Specular: [5, 0, 0]
-      Ambient: [1, 0, 0]
+      Ambient: [0, 0, 0]
       CastShadows: true
       ShadowMinBias: 0.005
       ShadowMaxBias: 0.05
@@ -302,7 +349,7 @@ Entities:
     TagComponent:
       Tag: PBR Cube
     TransformComponent:
-      Position: [0, 0, -6.986519]
+      Position: [1.0110323, -2.8340315e-07, -11.470879]
       Rotation: [-3.1415925, 0, -3.1415923]
       Scale: [4.9999833, 5, 4.9999833]
       Children:

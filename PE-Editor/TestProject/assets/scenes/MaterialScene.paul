@@ -222,9 +222,9 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Position: [-0.013916016, 0, 6.271136]
-      Rotation: [0, 0, 0]
-      Scale: [0.99999994, 1, 0.99999994]
+      Position: [5.9, 5.75, 7.25]
+      Rotation: [-0.42882738, 0.5372124, 8.886774e-08]
+      Scale: [1, 1, 1.0000001]
       Children:
         []
     CameraComponent:
@@ -234,7 +234,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0323887
+        AspectRatio: 2.074174
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false

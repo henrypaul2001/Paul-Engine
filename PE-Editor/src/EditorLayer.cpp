@@ -1551,36 +1551,30 @@ namespace PaulEngine
 		AssetHandle ssrUVMappingShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/SSRUVMapping.glsl", true);
 		Ref<Material> ssrUVMappingMaterial = AssetManager::CreateAsset<Material>(true, ssrUVMappingShaderHandle);
 
-		float ssrRayJerk = 1.0f;
-		float ssrRayAccleration = 1.0f;
-		float ssrRayStep = 0.3f;
-		int ssrMaxSteps = 30;
+		float ssrResolution = 0.5f;
 		float ssrMaxDistance = 50.0f;
 		float ssrRayThickness = 0.3f;
 		int ssrNumBinarySearchSteps = 50;
 		float normalAlignmentThreshold = 0.0f;
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayJerk", true, ssrRayJerk);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayAcceleration", true, ssrRayAccleration);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayStep", true, ssrRayStep);
-		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSR_MaxSteps", true, ssrMaxSteps);
+		int ssrMaxSteps = 1000;
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_Resolution", true, ssrResolution);
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_MaxDistance", true, ssrMaxDistance);
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_RayThickness", true, ssrRayThickness);
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSR_NumBinarySearchSteps", true, ssrNumBinarySearchSteps);
 		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<float>>("SSR_NormalAlignmentThreshold", true, normalAlignmentThreshold);
+		out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<int>>("SSR_MaxSteps", true, ssrMaxSteps);
 
 		Ref<UniformBufferStorage> ssrUVUBO = ssrUVMappingMaterial->GetParameter<UBOShaderParameterTypeStorage>("SSRData")->UBO();
-		ssrUVUBO->SetLocalData("RayJerk", ssrRayJerk);
-		ssrUVUBO->SetLocalData("RayAcceleration", ssrRayAccleration);
-		ssrUVUBO->SetLocalData("RayStep", ssrRayStep);
-		ssrUVUBO->SetLocalData("MaxSteps", ssrMaxSteps);
+		ssrUVUBO->SetLocalData("Resolution", ssrResolution);
 		ssrUVUBO->SetLocalData("MaxDistance", ssrMaxDistance);
 		ssrUVUBO->SetLocalData("RayThickness", ssrRayThickness);
 		ssrUVUBO->SetLocalData("NumBinarySearchSteps", ssrNumBinarySearchSteps);
 		ssrUVUBO->SetLocalData("NormalAlignmentThreshold", normalAlignmentThreshold);
+		ssrUVUBO->SetLocalData("CameraNearPlane", 0.02f);
+		ssrUVUBO->SetLocalData("MaxRayMarchSteps", ssrMaxSteps);
 
 		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gViewPosition")->TextureHandle = gViewPositionTexture->Handle;
 		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gWorldNormal")->TextureHandle = gNormalTexture->Handle;
-		ssrUVMappingMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("gMetadata")->TextureHandle = gMetadataTexture->Handle;
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SSRUV_Material", false, ssrUVMappingMaterial->Handle);
 
@@ -1818,8 +1812,8 @@ namespace PaulEngine
 			}
 			};
 
-		std::vector<RenderComponentType> ssrUVPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType };
-		std::vector<std::string> ssrUVPassInputBindings = { "ViewportResolution", "SSRUV_Material", "SSRUV_Texture", "SSR_RayAcceleration", "SSR_RayStep", "SSR_MaxSteps", "SSR_MaxDistance", "SSR_RayThickness", "SSR_NumBinarySearchSteps", "SSR_NormalAlignmentThreshold", "SSR_RayJerk" };
+		std::vector<RenderComponentType> ssrUVPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType };
+		std::vector<std::string> ssrUVPassInputBindings = { "ViewportResolution", "SSRUV_Material", "SSRUV_Texture", "SSR_Resolution", "SSR_MaxDistance", "SSR_RayThickness", "SSR_NumBinarySearchSteps", "SSR_NormalAlignmentThreshold", "SSR_MaxSteps" };
 		RenderPass::OnRenderFunc ssrUVPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Screen Space Reflections UV Map Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1828,25 +1822,21 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "SSR material input required");
 			PE_CORE_ASSERT(inputs[2], "SSR UV Texture input required");
-			PE_CORE_ASSERT(inputs[3], "SSR ray acceleration input required");
-			PE_CORE_ASSERT(inputs[4], "SSR ray step input required");
-			PE_CORE_ASSERT(inputs[5], "SSR max steps input required");
-			PE_CORE_ASSERT(inputs[6], "SSR max distance input required");
-			PE_CORE_ASSERT(inputs[7], "SSR ray thickness input required");
-			PE_CORE_ASSERT(inputs[8], "SSR binary search steps input required");
-			PE_CORE_ASSERT(inputs[9], "SSR normal alignment input required");
-			PE_CORE_ASSERT(inputs[10], "SSR ray jerk input required");
+			PE_CORE_ASSERT(inputs[3], "SSR resolution input required");
+			PE_CORE_ASSERT(inputs[4], "SSR max distance input required");
+			PE_CORE_ASSERT(inputs[5], "SSR ray thickness input required");
+			PE_CORE_ASSERT(inputs[6], "SSR binary search steps input required");
+			PE_CORE_ASSERT(inputs[7], "SSR normal alignment input required");
+			PE_CORE_ASSERT(inputs[8], "SSR max steps input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 			RenderComponentTexture* uvTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
-			RenderComponentPrimitiveType<float>* rayAccelerationInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
-			RenderComponentPrimitiveType<float>* rayStepInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[4]);
-			RenderComponentPrimitiveType<int>* maxStepsInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[5]);
-			RenderComponentPrimitiveType<float>* maxDistanceInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[6]);
-			RenderComponentPrimitiveType<float>* rayThicknessInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[7]);
-			RenderComponentPrimitiveType<int>* binaryStepsInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[8]);
-			RenderComponentPrimitiveType<float>* normalAlignmentInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[9]);
-			RenderComponentPrimitiveType<float>* rayJerkInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[10]);
+			RenderComponentPrimitiveType<float>* resolutionInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[3]);
+			RenderComponentPrimitiveType<float>* maxDistanceInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[4]);
+			RenderComponentPrimitiveType<float>* rayThicknessInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[5]);
+			RenderComponentPrimitiveType<int>* binaryStepsInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[6]);
+			RenderComponentPrimitiveType<float>* alignmentInput = dynamic_cast<RenderComponentPrimitiveType<float>*>(inputs[7]);
+			RenderComponentPrimitiveType<int>* maxStepsInput = dynamic_cast<RenderComponentPrimitiveType<int>*>(inputs[8]);
 
 			if (uvTextureInput)
 			{
@@ -1860,14 +1850,13 @@ namespace PaulEngine
 					// Update params
 					Ref<Material> ssrMat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
 					Ref<UniformBufferStorage> ssrUVUBO = ssrMat->GetParameter<UBOShaderParameterTypeStorage>("SSRData")->UBO();
-					ssrUVUBO->SetLocalData("RayJerk", rayJerkInput->Data);
-					ssrUVUBO->SetLocalData("RayAcceleration", rayAccelerationInput->Data);
-					ssrUVUBO->SetLocalData("RayStep", rayStepInput->Data);
-					ssrUVUBO->SetLocalData("MaxSteps", maxStepsInput->Data);
+					ssrUVUBO->SetLocalData("Resolution", resolutionInput->Data);
 					ssrUVUBO->SetLocalData("MaxDistance", maxDistanceInput->Data);
 					ssrUVUBO->SetLocalData("RayThickness", rayThicknessInput->Data);
 					ssrUVUBO->SetLocalData("NumBinarySearchSteps", binaryStepsInput->Data);
-					ssrUVUBO->SetLocalData("NormalAlignmentThreshold", normalAlignmentInput->Data);
+					ssrUVUBO->SetLocalData("NormalAlignmentThreshold", alignmentInput->Data);
+					ssrUVUBO->SetLocalData("CameraNearPlane", activeCamera->GetNearPlane());
+					ssrUVUBO->SetLocalData("MaxRayMarchSteps", maxStepsInput->Data);
 
 					RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
 
@@ -1883,7 +1872,7 @@ namespace PaulEngine
 					Renderer::EndScene();
 				}
 			}
-			};
+		};
 
 		std::vector<RenderComponentType> directLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
 		std::vector<std::string> directLightingInputBindings = { "ViewportResolution", "DirectLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" };
