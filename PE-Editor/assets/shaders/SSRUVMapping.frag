@@ -292,6 +292,136 @@ vec4 ScreenSpaceRayMarch(vec3 viewSpaceDirection, vec3 viewSpaceRayStart, out fl
 	return vec4(0.0);
 }
 
+vec4 HiZ_ScreenSpaceRayMarch(vec3 viewSpaceDirection, vec3 viewSpaceRayStart, out float out_DepthDifference)
+{
+	float maxRayDistance = u_SSRData.MaxDistance;
+	float resolution = clamp(u_SSRData.Resolution, 0.0, 1.0);
+	int numBinarySteps = u_SSRData.NumBinarySearchSteps;
+	float thickness = u_SSRData.RayThickness;
+	int maxSteps = u_SSRData.MaxRayMarchSteps;
+	float normalAlignment = u_SSRData.NormalAlignmentThreshold;
+
+	vec3 viewSpaceRayEnd = viewSpaceRayStart + (viewSpaceDirection * maxRayDistance);
+
+	// Rays going behind the camera can cause the projection to incorrectly flip the axis of the projected ray end point
+	// Clip the ray to the camera near plane
+	float paddedNearPlane = u_SSRData.CameraNearPlane * 2.0;
+	if (viewSpaceRayEnd.z > -paddedNearPlane)
+	{
+		float safeZ = -paddedNearPlane;
+		float t = min(maxRayDistance, (safeZ - viewSpaceRayStart.z) / viewSpaceDirection.z);
+		if (t > 0.0)
+		{
+			viewSpaceRayEnd = viewSpaceRayStart + (viewSpaceDirection * t);
+		}
+	}
+
+	// Project view space line into screen space
+	vec4 projectedStart = u_CameraBuffer.Projection * vec4(viewSpaceRayStart, 1.0);
+	projectedStart.xyz /= projectedStart.w;
+	projectedStart.xyz = projectedStart.xyz * 0.5 + 0.5;
+
+	vec4 projectedEnd = u_CameraBuffer.Projection * vec4(viewSpaceRayEnd, 1.0);
+	projectedEnd.xyz /= projectedEnd.w;
+	projectedEnd.xyz = projectedEnd.xyz * 0.5 + 0.5;
+
+	const int targetMipBaseLevel = 8;
+	int numMips = textureQueryLevels(Mat_gViewPosition);
+	
+	float distanceAlongRay = 0.0;
+
+	for (int currentMip = min(targetMipBaseLevel, numMips); currentMip >= 0; currentMip--)
+	{
+		vec2 texSize = textureSize(Mat_gViewPosition, currentMip).xy;
+		vec2 texelSize = 1.0 / texSize;
+
+		// Convert screen space points into pixel space points
+		vec2 pixelStart = projectedStart.xy * texSize;
+		vec2 pixelEnd = projectedEnd.xy * texSize;
+
+		// Calculate pixel space increment
+		vec2 pixelDelta = pixelEnd - pixelStart;
+
+		int deltaXLarger = (abs(pixelDelta.x) >= abs(pixelDelta.y)) ? 1 : 0;
+		float scaledDelta = ((deltaXLarger == 1) ? abs(pixelDelta.x) : abs(pixelDelta.y)) * resolution;
+		vec2 pixelIncrement = pixelDelta / scaledDelta;
+
+		// Begin screen space ray march visiting each pixel on path
+		// scaledDelta is the number of pixels along screen space line
+		vec2 currentPixel = mix(pixelStart, pixelEnd, distanceAlongRay);
+		float missDistance = 0.0;
+		int hit = 0;
+		for (int i = 0; i < int(scaledDelta) && i < maxSteps; i++)
+		{
+			missDistance = distanceAlongRay;
+
+			// Calculate current distance along ray
+			if (deltaXLarger == 1)
+			{
+				distanceAlongRay = (currentPixel.x - pixelStart.x) / pixelDelta.x;
+			}
+			else { distanceAlongRay = (currentPixel.y - pixelStart.y) / pixelDelta.y; }
+
+			// Convert to UV space coords
+			vec2 uv = currentPixel * texelSize;
+
+			if (uv.x < 0 || uv.y < 0 || uv.x > 1.0 || uv.y > 1.0)
+			{
+				// Attempting to sample outside of screen
+				continue;
+			}
+
+			vec3 positionSample = textureLod(Mat_gViewPosition, uv, currentMip).xyz;
+			if (positionSample.z < -999.0)
+			{
+				// Invalid sample (clear colour = vec4(-1000)
+				continue;
+			}
+
+			vec3 normalSample = mat3(u_CameraBuffer.View) * texture(Mat_gWorldNormal, uv).xyz;
+			if (dot(normalSample, viewSpaceDirection) >= normalAlignment)
+			{
+				// Ray is moving away from surface, no collision
+				continue;
+			}
+
+			// Perspective correct interpolation of view space line to find current ray depth
+			vec3 currentViewSpaceRay = PerspectiveCorrectLerp(viewSpaceRayStart, viewSpaceRayEnd, distanceAlongRay);
+			float depthDifference = currentViewSpaceRay.z - positionSample.z;
+
+			if (abs(depthDifference) <= thickness)
+			{
+				// Check if this hit is the full resolution texture
+				if (currentMip == 0)
+				{
+					// Hit somewhere between these two points
+					vec3 refinedResult = ScreenSpaceRayRefinementBinarySearch(pixelStart, pixelEnd, texelSize, viewSpaceRayStart, viewSpaceRayEnd, distanceAlongRay, missDistance, numBinarySteps, depthDifference);
+					uv = refinedResult.xy;
+					distanceAlongRay = refinedResult.z;
+					out_DepthDifference = depthDifference;
+					return vec4(uv, distanceAlongRay, 1.0);
+				}
+				else
+				{
+					// Go down a mip level for more detail
+					hit = 1;
+					break;
+				}
+			}
+
+			currentPixel += pixelIncrement;
+		}
+
+		if (hit == 0)
+		{
+			break;
+		}
+	}
+
+	out_DepthDifference = 0.0;
+	return vec4(0.0);
+}
+
 void main()
 {
 	vec3 ViewSpaceFragPos = texture(Mat_gViewPosition, v_TexCoords).xyz;
@@ -307,7 +437,7 @@ void main()
 	if (ViewSpaceFragPos.z >= -999.0)
 	{
 		// Valid ray start position
-		result = ScreenSpaceRayMarch(reflected, ViewSpaceFragPos, depthDifference);
+		result = HiZ_ScreenSpaceRayMarch(reflected, ViewSpaceFragPos, depthDifference);
 	}
 
 	vec2 coords = result.xy;
