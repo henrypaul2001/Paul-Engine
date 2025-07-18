@@ -1,8 +1,14 @@
 #pragma once
 #include "RenderPass.h"
 #include "PaulEngine/Scene/Scene.h"
+
+#include <concepts>
+
 namespace PaulEngine
 {
+	template <typename T>
+	concept IsRenderComponent = std::derived_from<T, IRenderComponent>;
+
 	class FrameRenderer
 	{
 	public:
@@ -13,7 +19,7 @@ namespace PaulEngine
 		void RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera, glm::mat4 cameraWorldTransform);
 		void OnEvent(Event& e) { m_OnEvent(e, this); }
 
-		template <typename T, typename... Args>
+		template <IsRenderComponent T, typename... Args>
 		bool AddRenderResource(const std::string& uniqueName, bool serialized, Args&&... args)
 		{
 			auto it = m_RenderResources.find(uniqueName);
