@@ -64,9 +64,6 @@ namespace PaulEngine
 		std::vector<std::string> m_SerializedComponentNames;
 		std::unordered_map<std::string, Scope<IRenderComponent>> m_RenderResources;
 
-		//std::unordered_map<UUID, Ref<Framebuffer>> m_FramebufferMap;
-		//std::unordered_map<UUID, std::vector<IRenderComponent*>> m_InputMap;
-
 		std::unordered_map<UUID, RenderPassParameters> m_ParameterMap;
 
 		OnEventFunc m_OnEvent;
