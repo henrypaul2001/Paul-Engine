@@ -5,6 +5,12 @@
 #include <functional>
 namespace PaulEngine
 {
+	struct RenderPassParameters
+	{
+		Ref<Framebuffer> TargetFramebuffer;
+		std::vector<IRenderComponent*> InputComponents;
+	};
+
 	class RenderPass
 	{
 	public:

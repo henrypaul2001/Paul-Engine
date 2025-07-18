@@ -10,10 +10,11 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 		Ref<Framebuffer> currentTarget = nullptr;
 		for (RenderPass& p : m_OrderedRenderPasses) {
+			const UUID& renderID = p.GetRenderID();
+			RenderPassParameters params = m_ParameterMap[renderID];
 
 			// First check if next render pass uses the same framebuffer as previous pass to avoid state changes
-			const UUID& renderID = p.GetRenderID();
-			Ref<Framebuffer> targetFramebuffer = m_FramebufferMap[renderID];
+			const Ref<Framebuffer>& targetFramebuffer = params.TargetFramebuffer;
 			if (currentTarget.get() && currentTarget.get() != targetFramebuffer.get()) {
 				if (targetFramebuffer) {
 					targetFramebuffer->Bind();
@@ -27,9 +28,7 @@ namespace PaulEngine
 			}
 			currentTarget = targetFramebuffer;
 
-			std::vector<IRenderComponent*> renderPassInputs = m_InputMap.at(renderID);
-
-			p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, renderPassInputs);
+			p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, params.InputComponents);
 		}
 	}
 
@@ -37,8 +36,8 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 		const UUID& renderID = renderPass.GetRenderID();
-		auto it = m_FramebufferMap.find(renderID);
-		if (it != m_FramebufferMap.end())
+		auto it = m_ParameterMap.find(renderID);
+		if (it != m_ParameterMap.end())
 		{
 			PE_CORE_ERROR("RenderPass with ID '{0}' already exists in FrameRenderer", std::to_string(renderID));
 			return false;
@@ -66,8 +65,7 @@ namespace PaulEngine
 				return false;
 			}
 		}
-		m_FramebufferMap[renderID] = targetFramebuffer;
-		m_InputMap[renderID] = inputs;
+		m_ParameterMap[renderID] = { targetFramebuffer, inputs };
 
 		m_OrderedRenderPasses.push_back(renderPass);
 		return true;
