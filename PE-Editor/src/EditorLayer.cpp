@@ -22,6 +22,7 @@
 
 #include "PaulEngine/Renderer/Asset/EnvironmentMap.h"
 
+
 namespace PaulEngine
 {
 	struct BloomMipChain
@@ -1399,27 +1400,27 @@ namespace PaulEngine
 		InitEnvMapAndSkybox(out_Framerenderer);
 
 		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
-			{
-				EventDispatcher dispatcher = EventDispatcher(e);
-				dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
-					glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
-					self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
-					self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-					self->GetRenderResource<RenderComponentFramebuffer>("gBuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-					self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
-					self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
-					self->GetRenderResource<RenderComponentFramebuffer>("Texture_FBO")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+		{
+			EventDispatcher dispatcher = EventDispatcher(e);
+			dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+				glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+				self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+				self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentFramebuffer>("gBuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+				self->GetRenderResource<RenderComponentPrimitiveType<BloomMipChain>>("BloomMipChain")->Data.Resize(viewportSize);
+				self->GetRenderResource<RenderComponentFramebuffer>("BloomFramebuffer")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
+				self->GetRenderResource<RenderComponentFramebuffer>("Texture_FBO")->Framebuffer->Resize(viewportSize.x, viewportSize.y);
 
-					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
-					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_BlurTexture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSAO_BlurTexture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 
-					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSRUV_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
+				AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("SSRUV_Texture")->TextureHandle)->Resize(viewportSize.x, viewportSize.y);
 
-					return false;
-					});
-			};
+				return false;
+			});
+		};
 		out_Framerenderer->SetEventFunc(eventFunc);
 
 		AssetHandle directLightingPassShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Renderer3D_DirectLightingPass.glsl", true);
@@ -1619,7 +1620,7 @@ namespace PaulEngine
 		std::vector<RenderComponentType> geometryPassInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Framebuffer };
 		std::vector<std::string> geometryPassInputBindings = { "ViewportResolution", "MainFramebuffer" };
 		RenderPass::OnRenderFunc geometryPass3DFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
-			PE_PROFILE_SCOPE("Scene 3D Render Pass");
+			PE_PROFILE_SCOPE("Geometry Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
 			Ref<Camera> activeCamera = context.ActiveCamera;
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
@@ -2021,7 +2022,7 @@ namespace PaulEngine
 
 				Renderer::EndScene();
 			}
-			};
+		};
 
 		std::vector<RenderComponentType> indirectLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap, RenderComponentType::Texture, RenderComponentType::Material };
 		std::vector<std::string> indirectLightingInputBindings = { "ViewportResolution", "IndirectLightingPass", "EnvironmentMap", "AlternateScreenTexture", "TexturePassthroughMaterial" };
