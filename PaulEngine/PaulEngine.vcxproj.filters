@@ -1597,6 +1597,7 @@
     <ClInclude Include="src\PaulEngine\Events\AssetEvent.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.h" />
     <ClInclude Include="src\PaulEngine\Renderer\FrameRendererSerializer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\RenderTree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1801,5 +1802,6 @@
     <ClCompile Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderComponent.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\FrameRendererSerializer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\RenderTree.cpp" />
   </ItemGroup>
 </Project>

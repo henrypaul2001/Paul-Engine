@@ -9,6 +9,8 @@
 
 #include "PaulEngine/Asset/TextureImporter.h"
 
+#include "RenderTree.h"
+
 namespace PaulEngine {
 	struct QuadVertex
 	{
@@ -153,6 +155,8 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
+
+		Test();
 	}
 
 	void Renderer::BeginScene(const EditorCamera& camera)
