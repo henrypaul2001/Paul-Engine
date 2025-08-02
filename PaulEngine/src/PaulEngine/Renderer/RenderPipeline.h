@@ -49,6 +49,12 @@ namespace PaulEngine
 		bool Test = true;
 		bool Write = true;
 	};
+	inline bool operator==(const DepthState& left, const DepthState& right)
+	{
+		return (left.Func == right.Func &&
+				left.Test == right.Test &&
+				left.Write == right.Write);
+	}
 
 	enum class BlendFunc
 	{
