@@ -17,7 +17,14 @@ namespace PaulEngine
 	//	const int EntityID;
 	//};
 
-	using RenderInput = std::tuple<Ref<Mesh>, Ref<Material>, glm::mat4, DepthState, FaceCulling, BlendState, int>();
+	using RenderInput = std::tuple<Ref<Mesh>, Ref<Material>, glm::mat4, DepthState, FaceCulling, BlendState, int>;
+
+	struct MeshInput
+	{
+		Ref<Mesh> MeshAsset;
+		glm::mat4 Transform;
+		int EntityID;
+	};
 
 	class RenderNode
 	{
@@ -34,67 +41,112 @@ namespace PaulEngine
 	class RenderTree
 	{
 	public:
-		RenderTree() : m_DataPools()
+		RenderTree() : m_DataPools(), m_NumLayers(std::tuple_size<std::tuple<Types...>>::value)
 		{
 			RenderNode rootNode;
 			m_Nodes.push_back(rootNode);
-
-			m_NumLayers = std::tuple_size<std::tuple<Types...>>::value;
 		}
-
+		
 		void PushMesh(RenderInput input)
 		{
-			RenderNode& currentNode = m_RootNode;
-			uint8_t layerIndex = 0;
+			//RenderNode& currentNode = m_Nodes[0]; // m_Nodes[0] == rootNode
+			uint8_t currentNodeIndex = 0;
+		
+			forEachDataPool([&, this, input](auto& dataPool, std::size_t index) {
+				// Do stuff
+				using DataType = typename std::decay_t<decltype(dataPool)>::value_type;
+				const auto& inputData = std::get<DataType>(input);
 
-			while (layerIndex < m_NumLayers)
-			{
-				// Test child nodes
+				RenderNode& currentNode = m_Nodes[currentNodeIndex];
+
+				// Test child nodes against input data to find matching branch
+				const uint8_t numChildren = currentNode.m_ChildrenIndices.size();
 				bool success = false;
-				for (int i = 0; i < currentNode.m_ChildrenIndices.size(); i++)
+				for (uint8_t i = 0; i < numChildren; i++)
 				{
-					RenderNode& childNode = m_Nodes[currentNode.m_ChildrenIndices[i]];
+					const uint8_t childIndex = currentNode.m_ChildrenIndices[i];
+					RenderNode& childNode = m_Nodes[childIndex];
 
-					// Get data from node and compare with input
-					const auto& nodeData = std::get<layerIndex>(m_DataPools)[currentNode.m_DataIndex];
-					const auto& inputData = std::get<std::tuple_element<layerIndex, std::tuple<Types...>>>(input);
+					const auto& childData = dataPool[childNode.m_DataIndex];
 
-					if (nodeData == inputData)
+					if (childData == inputData)
 					{
-						// Mesh belongs in this node, test children
-						currentNode = childNode;
 						success = true;
+
+						//currentNode = childNode;
+						currentNodeIndex = childIndex;
+
 						break;
 					}
-
-					// continue testing siblings
 				}
 
 				if (!success)
 				{
-					// Mesh doesn't belong to any existing branches, create new branch
-					break;
+					// No matching branch found, create new branch
+
+					// Create child
+					RenderNode newChild;
+					newChild.m_ParentIndex = currentNodeIndex;
+
+					// Add data to data pool
+					newChild.m_DataIndex = dataPool.size();
+					dataPool.push_back(inputData);
+
+					// Add new child to node list
+					uint8_t newChildIndex = m_Nodes.size();
+					RenderNode& currentNode = m_Nodes[currentNodeIndex];
+					currentNode.m_ChildrenIndices.push_back(newChildIndex);
+					m_Nodes.push_back(newChild);
+
+					//currentNode = m_Nodes[newChildIndex];
+					currentNodeIndex = newChildIndex;
 				}
-
-				layerIndex++;
+			}, std::make_index_sequence<sizeof...(Types)>());
+		
+			// Add to leaf node
+			RenderNode& currentNode = m_Nodes[currentNodeIndex];
+			if (currentNode.m_ChildrenIndices.size() == 0)
+			{
+				currentNode.m_ChildrenIndices.push_back(m_MeshBins.size());
+				m_MeshBins.push_back({});
 			}
-
-			// Add to mesh bin
-
+			uint8_t meshBinIndex = currentNode.m_ChildrenIndices[0];
+			m_MeshBins[meshBinIndex].push_back({ std::get<Ref<Mesh>>(input), std::get<glm::mat4>(input), std::get<int>(input) });
 		}
 
-
 	//private:
-		size_t m_NumLayers;
+		const size_t m_NumLayers;
 		std::tuple<std::vector<Types>...> m_DataPools;
-		
-		RenderNode m_RootNode;
+
 		std::vector<RenderNode> m_Nodes;
+		
+		std::vector<std::vector<MeshInput>> m_MeshBins;
+
+	private:
+		template <typename Func, std::size_t... I>
+		void forEachDataPool(Func&& func, std::index_sequence<I...>)
+		{
+			// Unroll each index into a function call
+			(func(std::get<I>(m_DataPools), I), ...);
+		}
 	};
 
 	static void Test()
 	{
 		RenderTree<Ref<Material>, DepthState> m_Test;
-		auto testCollection = std::get<1>(m_Test.m_DataPools);
+		auto testCollection = std::get<0>(m_Test.m_DataPools);
+
+		RenderInput testInput1 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::GREATER, false, true}, FaceCulling::BACK, BlendState(), -1};
+		RenderInput testInput2 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::LESS, false, true}, FaceCulling::BACK, BlendState(), -1 };
+		RenderInput testInput3 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::GREATER, false, false}, FaceCulling::BACK, BlendState(), -1 };
+		m_Test.PushMesh(testInput1);
+		m_Test.PushMesh(testInput1);
+		m_Test.PushMesh(testInput1);
+		m_Test.PushMesh(testInput2);
+		m_Test.PushMesh(testInput2);
+		m_Test.PushMesh(testInput3);
+		m_Test.PushMesh(testInput2);
+		m_Test.PushMesh(testInput2);
+		m_Test.PushMesh(testInput1);
 	}
 }
