@@ -1,8 +1,10 @@
 #pragma once
+#include "PaulEngine/Renderer/RenderCommand.h"
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Renderer/Asset/Mesh.h"
 #include "PaulEngine/Renderer/Asset/Material.h"
 #include "PaulEngine/Renderer/RenderPipeline.h"
+#include "PaulEngine/Renderer/Resource/UniformBuffer.h"
 
 namespace PaulEngine
 {
@@ -37,6 +39,43 @@ namespace PaulEngine
 		std::vector<uint8_t> m_ChildrenIndices;
 	};
 
+	template <typename T>
+	inline static void visitData(const T& data)
+	{
+		PE_CORE_WARN("Data visited with no specialisation defined");
+	}
+
+	template <>
+	inline static void visitData<Ref<Material>>(const Ref<Material>& data)
+	{
+		data->Bind();
+	}
+
+	template <>
+	inline static void visitData<DepthState>(const DepthState& data)
+	{
+		if (data.Test) { RenderCommand::EnableDepth(); }
+		else { RenderCommand::DisableDepth(); }
+		RenderCommand::DepthMask(data.Write);
+		RenderCommand::DepthFunc(data.Func);
+	}
+
+	template <>
+	inline static void visitData<FaceCulling>(const FaceCulling& data)
+	{
+		RenderCommand::SetFaceCulling(data);
+	}
+
+	template <>
+	inline static void visitData<BlendState>(const BlendState& data)
+	{
+		if (data.Enabled) { RenderCommand::EnableBlend(); }
+		else { RenderCommand::DisableBlend(); }
+		RenderCommand::BlendFunc(data.SrcFactor, data.DstFactor);
+		RenderCommand::BlendColour(data.ConstantColour);
+		RenderCommand::BlendEquation(data.Equation);
+	}
+
 	template <typename... Types>
 	class RenderTree
 	{
@@ -52,7 +91,7 @@ namespace PaulEngine
 			//RenderNode& currentNode = m_Nodes[0]; // m_Nodes[0] == rootNode
 			uint8_t currentNodeIndex = 0;
 		
-			forEachDataPool([&, this, input](auto& dataPool, std::size_t index) {
+			forEachDataPool([&](auto& dataPool, std::size_t index) {
 				// Do stuff
 				using DataType = typename std::decay_t<decltype(dataPool)>::value_type;
 				const auto& inputData = std::get<DataType>(input);
@@ -113,6 +152,32 @@ namespace PaulEngine
 			uint8_t meshBinIndex = currentNode.m_ChildrenIndices[0];
 			m_MeshBins[meshBinIndex].push_back({ std::get<Ref<Mesh>>(input), std::get<glm::mat4>(input), std::get<int>(input) });
 		}
+		void Flush()
+		{
+			uint8_t meshBinsVisited = 0;
+			uint8_t currentNodeIndex = 0;
+			
+			// Traverse from root node to first mesh bin and execute each node on the path
+			ProcessNodeChildren(m_Nodes[0], 0);
+
+			// Clear structure
+			Reset();
+		}
+
+		void Reset()
+		{
+			m_Nodes.clear();
+			RenderNode rootNode;
+			m_Nodes.push_back(rootNode);
+
+			forEachDataPool([](auto& dataPool, std::size_t index) {
+				dataPool.clear();
+				}, std::make_index_sequence<sizeof...(Types)>());
+
+			m_MeshBins.clear();
+
+			m_DrawCalls = 0;
+		}
 
 	//private:
 		const size_t m_NumLayers;
@@ -122,6 +187,9 @@ namespace PaulEngine
 		
 		std::vector<std::vector<MeshInput>> m_MeshBins;
 
+		uint16_t m_DrawCalls = 0;
+		Ref<UniformBuffer> m_MeshDataUniformBuffer;
+
 	private:
 		template <typename Func, std::size_t... I>
 		void forEachDataPool(Func&& func, std::index_sequence<I...>)
@@ -129,11 +197,80 @@ namespace PaulEngine
 			// Unroll each index into a function call
 			(func(std::get<I>(m_DataPools), I), ...);
 		}
+
+		template <typename Func, std::size_t... I>
+		void forDataPoolElement(Func&& func, uint8_t dataPoolIndex, uint8_t elementIndex, std::index_sequence<I...>)
+		{
+			auto verifyFunc = [&](auto& dataPool, std::size_t actualIndex) {
+				if (actualIndex == dataPoolIndex)
+				{
+					func(dataPool[elementIndex]);
+				}
+			};
+
+			(verifyFunc(std::get<I>(m_DataPools), I), ...);
+		}
+
+
+		void ProcessNodeChildren(RenderNode currentNode, uint8_t currentLayer)
+		{
+			if (currentLayer == m_NumLayers)
+			{
+				ProcessMeshBin(currentNode.m_ChildrenIndices[0]);
+			}
+			else
+			{
+				for (int i = 0; i < currentNode.m_ChildrenIndices.size(); i++)
+				{
+					RenderNode childNode = m_Nodes[currentNode.m_ChildrenIndices[i]];
+					uint8_t dataIndex = childNode.m_DataIndex;
+
+					// Get data from data pools
+					// Process data (bind material, set depth test mode, etc)
+					forDataPoolElement([&](const auto& data) {
+						visitData(data);
+					}, currentLayer, dataIndex, std::make_index_sequence<sizeof...(Types)>());
+
+					ProcessNodeChildren(childNode, currentLayer + 1);
+				}
+			}
+		}
+
+		struct MeshSubmissionData
+		{
+			glm::mat4 Transform;
+			int EntityID;
+		};
+		MeshSubmissionData MeshDataBuffer;
+		struct MeshInput
+		{
+			Ref<Mesh> MeshAsset;
+			glm::mat4 Transform;
+			int EntityID;
+		};
+		void ProcessMeshBin(const uint8_t binIndex)
+		{
+			const auto& meshBin = m_MeshBins[binIndex];
+
+			for (const auto& meshInput : meshBin)
+			{
+				MeshSubmissionData bufferData;
+				bufferData.Transform = meshInput.Transform;
+				bufferData.EntityID = meshInput.EntityID;
+				m_MeshDataUniformBuffer->SetData(&bufferData, sizeof(MeshSubmissionData));
+			
+				Ref<VertexArray> vertexArray = meshInput.MeshAsset->GetVertexArray();
+				RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+				m_DrawCalls++;
+			}
+			//PE_CORE_TRACE("Mesh bin visited");
+		}
 	};
 
-	static void Test()
+	static void Test(Ref<UniformBuffer> meshDataBuffer)
 	{
-		RenderTree<Ref<Material>, DepthState> m_Test;
+		RenderTree<Ref<Material>, DepthState, FaceCulling, BlendState> m_Test;
+		m_Test.m_MeshDataUniformBuffer = meshDataBuffer;
 		auto testCollection = std::get<0>(m_Test.m_DataPools);
 
 		RenderInput testInput1 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::GREATER, false, true}, FaceCulling::BACK, BlendState(), -1};
@@ -148,5 +285,7 @@ namespace PaulEngine
 		m_Test.PushMesh(testInput2);
 		m_Test.PushMesh(testInput2);
 		m_Test.PushMesh(testInput1);
+
+		m_Test.Flush();
 	}
 }
