@@ -91,6 +91,14 @@ namespace PaulEngine
 		BlendEquation Equation = BlendEquation::ADD;
 		glm::vec4 ConstantColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	};
+	inline bool operator==(const BlendState& left, const BlendState& right)
+	{
+		return (left.Enabled == right.Enabled &&
+			left.SrcFactor == right.SrcFactor &&
+			left.DstFactor == right.DstFactor &&
+			left.Equation == right.Equation &&
+			left.ConstantColour == right.ConstantColour);
+	}
 
 	class RenderPipeline
 	{
