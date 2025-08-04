@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Resource/VertexArray.h"
+#include "RenderPipeline.h"
 
 namespace PaulEngine {
 	class RenderAPI {
@@ -23,6 +24,11 @@ namespace PaulEngine {
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) = 0;
 		
 		virtual void SetLineWidth(float thickness) = 0;
+
+		virtual void EnableDepth() = 0;
+		virtual void DisableDepth() = 0;
+		virtual void DepthMask(bool write) = 0;
+		virtual void DepthFunc(DepthFunc func) = 0;
 
 		inline static API GetAPI() { return s_API; }
 	private:

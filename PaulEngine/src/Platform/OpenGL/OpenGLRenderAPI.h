@@ -18,6 +18,11 @@ namespace PaulEngine {
 
 		virtual void SetLineWidth(float thickness) override;
 
+		virtual void EnableDepth() override;
+		virtual void DisableDepth() override;
+		virtual void DepthMask(bool write) override;
+		virtual void DepthFunc(PaulEngine::DepthFunc func) override;
+
 		static int BufferBitMaskToGLBitMask(int bufferMask);
 	};
 }

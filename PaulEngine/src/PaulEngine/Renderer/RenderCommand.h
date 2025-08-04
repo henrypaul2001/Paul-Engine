@@ -44,6 +44,22 @@ namespace  PaulEngine {
 			s_RenderAPI->SetLineWidth(thickness);
 		}
 
+		inline static void EnableDepth() {
+			s_RenderAPI->EnableDepth();
+		}
+
+		inline static void DisableDepth() {
+			s_RenderAPI->DisableDepth();
+		}
+
+		inline static void DepthMask(bool write) {
+			s_RenderAPI->DepthMask(write);
+		}
+
+		inline static void DepthFunc(DepthFunc func) {
+			s_RenderAPI->DepthFunc(func);
+		}
+
 	private:
 		static RenderAPI* s_RenderAPI;
 	};

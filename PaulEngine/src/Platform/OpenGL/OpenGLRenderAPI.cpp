@@ -5,6 +5,29 @@
 #include <glad/glad.h>
 namespace PaulEngine {
 
+	constexpr GLenum DepthFuncToGLEnum(DepthFunc func) {
+		switch (func)
+		{
+		case DepthFunc::NEVER:
+			return GL_NEVER;
+		case DepthFunc::LESS:
+			return GL_LESS;
+		case DepthFunc::LEQUAL:
+			return GL_LEQUAL;
+		case DepthFunc::EQUAL:
+			return GL_EQUAL;
+		case DepthFunc::GREATER:
+			return GL_GREATER;
+		case DepthFunc::GEQUAL:
+			return GL_GEQUAL;
+		case DepthFunc::NEQUAL:
+			return GL_NOTEQUAL;
+		case DepthFunc::ALWAYS:
+			return GL_ALWAYS;
+		}
+		return GL_NONE;
+	}
+
 	static GLenum DrawPrimitiveToGLEnum(const DrawPrimitive primitive)
 	{
 		switch (primitive)
@@ -79,6 +102,26 @@ namespace PaulEngine {
 	{
 		thickness = std::max(0.01f, thickness);
 		glLineWidth(thickness);
+	}
+
+	void OpenGLRenderAPI::EnableDepth()
+	{
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void OpenGLRenderAPI::DisableDepth()
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	void OpenGLRenderAPI::DepthMask(bool write)
+	{
+		glDepthMask(write);
+	}
+
+	void OpenGLRenderAPI::DepthFunc(PaulEngine::DepthFunc func)
+	{
+		glDepthFunc(DepthFuncToGLEnum(func));
 	}
 
 	int OpenGLRenderAPI::BufferBitMaskToGLBitMask(int bufferMask)
