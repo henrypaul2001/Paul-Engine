@@ -22,6 +22,12 @@ namespace PaulEngine {
 		virtual void DisableDepth() override;
 		virtual void DepthMask(bool write) override;
 		virtual void DepthFunc(PaulEngine::DepthFunc func) override;
+		virtual void SetFaceCulling(FaceCulling cullState) override;
+		virtual void EnableBlend() override;
+		virtual void DisableBlend() override;
+		virtual void BlendFunc(PaulEngine::BlendFunc srcFactor, PaulEngine::BlendFunc dstFactor) override;
+		virtual void BlendColour(glm::vec4 constantColour) override;
+		virtual void BlendEquation(PaulEngine::BlendEquation blendEquation) override;
 
 		static int BufferBitMaskToGLBitMask(int bufferMask);
 	};

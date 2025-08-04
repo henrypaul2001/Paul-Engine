@@ -29,6 +29,12 @@ namespace PaulEngine {
 		virtual void DisableDepth() = 0;
 		virtual void DepthMask(bool write) = 0;
 		virtual void DepthFunc(DepthFunc func) = 0;
+		virtual void SetFaceCulling(FaceCulling cullState) = 0;
+		virtual void EnableBlend() = 0;
+		virtual void DisableBlend() = 0;
+		virtual void BlendFunc(BlendFunc srcFactor, BlendFunc dstFactor) = 0;
+		virtual void BlendColour(glm::vec4 constantColour) = 0;
+		virtual void BlendEquation(BlendEquation blendEquation) = 0;
 
 		inline static API GetAPI() { return s_API; }
 	private:

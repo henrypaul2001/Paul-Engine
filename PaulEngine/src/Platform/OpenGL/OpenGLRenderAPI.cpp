@@ -28,6 +28,81 @@ namespace PaulEngine {
 		return GL_NONE;
 	}
 
+	constexpr void OpenGLFaceCulling(const FaceCulling culling) {
+		switch (culling)
+		{
+		case FaceCulling::NONE:
+			glDisable(GL_CULL_FACE);
+			return;
+		case FaceCulling::FRONT:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			return;
+		case FaceCulling::BACK:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			return;
+		case FaceCulling::FRONT_AND_BACK:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT_AND_BACK);
+			return;
+		}
+	}
+
+	constexpr GLenum BlendFuncToGLEnum(BlendFunc func)
+	{
+		switch (func)
+		{
+		case BlendFunc::ZERO:
+			return GL_ZERO;
+		case BlendFunc::ONE:
+			return GL_ONE;
+		case BlendFunc::SRC_COLOUR:
+			return GL_SRC_COLOR;
+		case BlendFunc::ONE_MINUS_SRC_COLOUR:
+			return GL_ONE_MINUS_SRC_COLOR;
+		case BlendFunc::DST_COLOUR:
+			return GL_DST_COLOR;
+		case BlendFunc::ONE_MINUS_DST_COLOUR:
+			return GL_ONE_MINUS_DST_COLOR;
+		case BlendFunc::SRC_ALPHA:
+			return GL_SRC_ALPHA;
+		case BlendFunc::ONE_MINUS_SRC_ALPHA:
+			return GL_ONE_MINUS_SRC_ALPHA;
+		case BlendFunc::DST_ALPHA:
+			return GL_DST_ALPHA;
+		case BlendFunc::ONE_MINUS_DST_ALPHA:
+			return GL_ONE_MINUS_DST_ALPHA;
+		case BlendFunc::CONSTANT_COLOUR:
+			return GL_CONSTANT_COLOR;
+		case BlendFunc::ONE_MINUS_CONSTANT_COLOUR:
+			return GL_ONE_MINUS_CONSTANT_COLOR;
+		case BlendFunc::CONSTANT_ALPHA:
+			return GL_CONSTANT_ALPHA;
+		case BlendFunc::ONE_MINUS_CONSTANT_ALPHA:
+			return GL_ONE_MINUS_CONSTANT_ALPHA;
+		}
+		return GL_ONE;
+	}
+
+	constexpr GLenum BlendEquationToGLEnum(BlendEquation func)
+	{
+		switch (func)
+		{
+		case BlendEquation::ADD:
+			return GL_FUNC_ADD;
+		case BlendEquation::SUBTRACT:
+			return GL_FUNC_SUBTRACT;
+		case BlendEquation::REVERSE_SUBTRACT:
+			return GL_FUNC_REVERSE_SUBTRACT;
+		case BlendEquation::MIN:
+			return GL_MIN;
+		case BlendEquation::MAX:
+			return GL_MAX;
+		}
+		return GL_FUNC_ADD;
+	}
+
 	static GLenum DrawPrimitiveToGLEnum(const DrawPrimitive primitive)
 	{
 		switch (primitive)
@@ -122,6 +197,36 @@ namespace PaulEngine {
 	void OpenGLRenderAPI::DepthFunc(PaulEngine::DepthFunc func)
 	{
 		glDepthFunc(DepthFuncToGLEnum(func));
+	}
+
+	void OpenGLRenderAPI::SetFaceCulling(FaceCulling cullState)
+	{
+		OpenGLFaceCulling(cullState);
+	}
+
+	void OpenGLRenderAPI::EnableBlend()
+	{
+		glEnable(GL_BLEND);
+	}
+
+	void OpenGLRenderAPI::DisableBlend()
+	{
+		glDisable(GL_BLEND);
+	}
+
+	void OpenGLRenderAPI::BlendFunc(PaulEngine::BlendFunc srcFactor, PaulEngine::BlendFunc dstFactor)
+	{
+		glBlendFunc(BlendFuncToGLEnum(srcFactor), BlendFuncToGLEnum(dstFactor));
+	}
+
+	void OpenGLRenderAPI::BlendColour(glm::vec4 constantColour)
+	{
+		glBlendColor(constantColour.r, constantColour.g, constantColour.b, constantColour.a);
+	}
+
+	void OpenGLRenderAPI::BlendEquation(PaulEngine::BlendEquation blendEquation)
+	{
+		glBlendEquation(BlendEquationToGLEnum(blendEquation));
 	}
 
 	int OpenGLRenderAPI::BufferBitMaskToGLBitMask(int bufferMask)

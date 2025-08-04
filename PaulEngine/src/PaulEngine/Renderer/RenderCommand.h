@@ -60,6 +60,30 @@ namespace  PaulEngine {
 			s_RenderAPI->DepthFunc(func);
 		}
 
+		inline static void SetFaceCulling(FaceCulling cullState) {
+			s_RenderAPI->SetFaceCulling(cullState);
+		}
+
+		inline static void EnableBlend() {
+			s_RenderAPI->EnableBlend();
+		}
+
+		inline static void DisableBlend() {
+			s_RenderAPI->DisableBlend();
+		}
+
+		inline static void BlendFunc(BlendFunc srcFactor, BlendFunc dstFactor) {
+			s_RenderAPI->BlendFunc(srcFactor, dstFactor);
+		}
+
+		inline static void BlendColour(glm::vec4 constantColour) {
+			s_RenderAPI->BlendColour(constantColour);
+		}
+
+		inline static void BlendEquation(BlendEquation blendEquation) {
+			s_RenderAPI->BlendEquation(blendEquation);
+		}
+
 	private:
 		static RenderAPI* s_RenderAPI;
 	};
