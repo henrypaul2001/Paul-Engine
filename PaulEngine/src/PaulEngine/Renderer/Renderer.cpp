@@ -132,6 +132,10 @@ namespace PaulEngine {
 		SceneData SceneDataBuffer;
 		Ref<UniformBuffer> SceneDataUniformBuffer;
 
+		// RENDER TREE
+		// -----------
+		RenderTree<Ref<Material>, DepthState, FaceCulling, BlendState> RenderTree;
+
 		Renderer::Statistics Stats;
 
 		std::unordered_map<std::string, Ref<RenderPipeline>> PipelineKeyMap;
@@ -156,7 +160,7 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 
-		Test();
+		s_RenderData.RenderTree.m_MeshDataUniformBuffer = s_RenderData.MeshDataUniformBuffer;
 	}
 
 	void Renderer::BeginScene(const EditorCamera& camera)
@@ -238,28 +242,30 @@ namespace PaulEngine {
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(s_RenderData.SceneDataBuffer));
 
-		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
+		s_RenderData.RenderTree.Flush();
 
-			pipeline->Bind();
-			const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
-			for (const DrawSubmission& d : drawList) {
-				AssetHandle meshHandle = d.MeshHandle;
-				if (AssetManager::IsAssetHandleValid(meshHandle))
-				{
-					Ref<VertexArray> vertexArray = AssetManager::GetAsset<Mesh>(meshHandle)->GetVertexArray();
-					s_RenderData.MeshDataBuffer.Transform = d.Transform;
-					s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
-					s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
-
-					RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
-					s_RenderData.Stats.DrawCalls++;
-				}
-				else
-				{
-					PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
-				}
-			}
-		}
+		//for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
+		//
+		//	pipeline->Bind();
+		//	const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
+		//	for (const DrawSubmission& d : drawList) {
+		//		AssetHandle meshHandle = d.MeshHandle;
+		//		if (AssetManager::IsAssetHandleValid(meshHandle))
+		//		{
+		//			Ref<VertexArray> vertexArray = AssetManager::GetAsset<Mesh>(meshHandle)->GetVertexArray();
+		//			s_RenderData.MeshDataBuffer.Transform = d.Transform;
+		//			s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
+		//			s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+		//
+		//			RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+		//			s_RenderData.Stats.DrawCalls++;
+		//		}
+		//		else
+		//		{
+		//			PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
+		//		}
+		//	}
+		//}
 
 		s_RenderData.MeshDataBuffer = Renderer3DData::MeshSubmissionData();
 
@@ -296,23 +302,27 @@ namespace PaulEngine {
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
-		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate mesh
+		RenderInput renderInput = { AssetManager::GetAsset<Mesh>(draw.MeshHandle), AssetManager::GetAsset<Material>(draw.MaterialHandle), transform, depthState, cullState, blendState, entityID };
+		s_RenderData.RenderTree.PushMesh(renderInput);
 
-		// Check for duplicate pipeline state
-		std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
-
-		if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
-		{
-			// Duplicate pipeline state
-			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-		}
-		else
-		{
-			// Unique pipeline state
-			s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
-			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-			s_RenderData.Stats.PipelineCount++;
-		}
+		//
+		//// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate mesh
+		//
+		//// Check for duplicate pipeline state
+		//std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
+		//
+		//if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
+		//{
+		//	// Duplicate pipeline state
+		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
+		//}
+		//else
+		//{
+		//	// Unique pipeline state
+		//	s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
+		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
+		//	s_RenderData.Stats.PipelineCount++;
+		//}
 
 		s_RenderData.Stats.MeshCount++;
 	}
