@@ -9,6 +9,13 @@ namespace PaulEngine
 	template <typename T>
 	concept IsRenderComponent = std::derived_from<T, IRenderComponent>;
 
+	struct FrameRendererProfile
+	{
+		std::vector<RenderPassProfile> OrderedRenderPassProfiles;
+		uint16_t NumFramebufferChanges = 0;
+		size_t NumPasses() const { return OrderedRenderPassProfiles.size(); }
+	};
+
 	class FrameRenderer
 	{
 	public:
@@ -62,10 +69,15 @@ namespace PaulEngine
 		}
 
 		const std::vector<std::string>& GetSerializedComponentNames() const { return m_SerializedComponentNames; }
+		const std::vector<RenderPass>& GetOrderedRenderPasses() const { return m_OrderedRenderPasses; }
+		FrameRendererProfile GetProfile() const { return m_Profile; }
 
 		void SaveResourceConfig(const std::filesystem::path& path);
 		void LoadResourceConfig(const std::filesystem::path& path);
+
 	private:
+		FrameRendererProfile m_Profile;
+
 		std::vector<RenderPass> m_OrderedRenderPasses;
 		std::vector<std::string> m_SerializedComponentNames;
 		std::unordered_map<std::string, Scope<IRenderComponent>> m_RenderResources;

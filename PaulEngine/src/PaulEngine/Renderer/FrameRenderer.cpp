@@ -8,6 +8,10 @@ namespace PaulEngine
 	void FrameRenderer::RenderFrame(Ref<Scene> sceneContext, Ref<Camera> activeCamera, glm::mat4 cameraWorldTransform)
 	{
 		PE_PROFILE_FUNCTION();
+
+		m_Profile = FrameRendererProfile();
+		uint16_t numFBOChanges = 0;
+
 		Ref<Framebuffer> currentTarget = nullptr;
 		for (RenderPass& p : m_OrderedRenderPasses) {
 			const UUID& renderID = p.GetRenderID();
@@ -18,18 +22,24 @@ namespace PaulEngine
 			if (currentTarget.get() && currentTarget.get() != targetFramebuffer.get()) {
 				if (targetFramebuffer) {
 					targetFramebuffer->Bind();
+					numFBOChanges++;
 				}
 				else if (currentTarget) {
 					currentTarget->Unbind();
+					numFBOChanges++;
 				}
 			}
 			else if (targetFramebuffer.get()) {
 				targetFramebuffer->Bind();
+				numFBOChanges++;
 			}
 			currentTarget = targetFramebuffer;
 
 			p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, params.InputComponents);
+			m_Profile.OrderedRenderPassProfiles.push_back(p.GetProfile());
 		}
+
+		m_Profile.NumFramebufferChanges = numFBOChanges;
 	}
 
 	bool FrameRenderer::AddRenderPass(RenderPass renderPass, Ref<Framebuffer> targetFramebuffer, std::vector<std::string> inputBindings)
