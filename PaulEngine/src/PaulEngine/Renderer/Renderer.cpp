@@ -242,7 +242,9 @@ namespace PaulEngine {
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(s_RenderData.SceneDataBuffer));
 
-		s_RenderData.RenderTree.Flush();
+		s_RenderData.Stats.PipelineCount += s_RenderData.RenderTree.MeshBinCount();
+		uint16_t drawCalls = s_RenderData.RenderTree.Flush();
+		s_RenderData.Stats.DrawCalls += drawCalls;
 
 		//for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 		//
