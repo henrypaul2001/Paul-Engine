@@ -2408,20 +2408,20 @@ namespace PaulEngine
 			ImGui::DragFloat("Exposure", &m_Camera->Exposure, 0.01f, 0.0f, 100.0f);
 			ImGui::Spacing();
 
-			const Renderer::Statistics& stats = Renderer::GetStats();
-			ImGui::SeparatorText("Renderer3D Stats:");
-			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			ImGui::Text("Mesh Count: %d", stats.MeshCount);
-			ImGui::Text("Pipeline Count: %d", stats.PipelineCount);
-
-			ImGui::Spacing();
-
-			const Renderer2D::Statistics& statsTwo = Renderer2D::GetStats();
-			ImGui::SeparatorText("Renderer2D Stats:");
-			ImGui::Text("Draw Calls: %d", statsTwo.DrawCalls);
-			ImGui::Text("Quad Count: %d", statsTwo.QuadCount);
-			ImGui::Text("Vertices: %d", statsTwo.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", statsTwo.GetTotalIndexCount());
+			//const Renderer::Statistics& stats = Renderer::GetStats();
+			//ImGui::SeparatorText("Renderer3D Stats:");
+			//ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+			//ImGui::Text("Mesh Count: %d", stats.MeshCount);
+			//ImGui::Text("Pipeline Count: %d", stats.PipelineCount);
+			//
+			//ImGui::Spacing();
+			//
+			//const Renderer2D::Statistics& statsTwo = Renderer2D::GetStats();
+			//ImGui::SeparatorText("Renderer2D Stats:");
+			//ImGui::Text("Draw Calls: %d", statsTwo.DrawCalls);
+			//ImGui::Text("Quad Count: %d", statsTwo.QuadCount);
+			//ImGui::Text("Vertices: %d", statsTwo.GetTotalVertexCount());
+			//ImGui::Text("Indices: %d", statsTwo.GetTotalIndexCount());
 
 			ImGui::Spacing();
 
@@ -2551,6 +2551,8 @@ namespace PaulEngine
 			m_SceneHierarchyPanel.OnImGuiRender();
 			m_ContentBrowserPanel->ImGuiRender();
 			m_FrameRendererPanel.OnImGuiRender();
+			m_FrameRendererProfilePanel.OnImGuiRender();
+
 			m_TextureArrayCreateWindow.OnImGuiRender();
 			m_MaterialCreateWindow.OnImGuiRender();
 			m_AtlasCreateWindow.OnImGuiRender();
@@ -2959,6 +2961,7 @@ namespace PaulEngine
 
 		m_FramebufferComponent = m_Renderer->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer");
 		m_FrameRendererPanel.SetContext(m_Renderer);
+		m_FrameRendererProfilePanel.SetContext(m_Renderer);
 		m_AtlasCreateWindow.Init();
 		m_MaterialCreateWindow.Init();
 		m_TextureArrayCreateWindow.Init();

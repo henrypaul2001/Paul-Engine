@@ -3,6 +3,7 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/FrameRendererPanel.h"
+#include "Panels/FrameRendererProfilePanel.h"
 #include <PaulEngine/Renderer/Resource/EditorCamera.h>
 
 #include "Window/CreateAtlasWindow.h"
@@ -97,6 +98,7 @@ namespace PaulEngine {
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
 		FrameRendererPanel m_FrameRendererPanel;
+		FrameRendererProfilePanel m_FrameRendererProfilePanel;
 
 		// Windows
 		CreateAtlasWindow m_AtlasCreateWindow;
