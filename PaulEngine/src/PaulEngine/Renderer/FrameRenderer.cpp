@@ -29,7 +29,7 @@ namespace PaulEngine
 					numFBOChanges++;
 				}
 			}
-			else if (targetFramebuffer.get()) {
+			else if (!currentTarget && targetFramebuffer.get()) {
 				targetFramebuffer->Bind();
 				numFBOChanges++;
 			}
