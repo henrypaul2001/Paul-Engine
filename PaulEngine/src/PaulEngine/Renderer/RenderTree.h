@@ -89,7 +89,7 @@ namespace PaulEngine
 		void PushMesh(RenderInput input)
 		{
 			//RenderNode& currentNode = m_Nodes[0]; // m_Nodes[0] == rootNode
-			uint8_t currentNodeIndex = 0;
+			uint16_t currentNodeIndex = 0;
 		
 			forEachDataPool([&](auto& dataPool, std::size_t index) {
 				// Do stuff
@@ -99,11 +99,11 @@ namespace PaulEngine
 				RenderNode& currentNode = m_Nodes[currentNodeIndex];
 
 				// Test child nodes against input data to find matching branch
-				const uint8_t numChildren = currentNode.m_ChildrenIndices.size();
+				const uint16_t numChildren = currentNode.m_ChildrenIndices.size();
 				bool success = false;
-				for (uint8_t i = 0; i < numChildren; i++)
+				for (uint16_t i = 0; i < numChildren; i++)
 				{
-					const uint8_t childIndex = currentNode.m_ChildrenIndices[i];
+					const uint16_t childIndex = currentNode.m_ChildrenIndices[i];
 					RenderNode& childNode = m_Nodes[childIndex];
 
 					const auto& childData = dataPool[childNode.m_DataIndex];
@@ -132,7 +132,7 @@ namespace PaulEngine
 					dataPool.push_back(inputData);
 
 					// Add new child to node list
-					uint8_t newChildIndex = m_Nodes.size();
+					uint16_t newChildIndex = m_Nodes.size();
 					RenderNode& currentNode = m_Nodes[currentNodeIndex];
 					currentNode.m_ChildrenIndices.push_back(newChildIndex);
 					m_Nodes.push_back(newChild);
@@ -149,19 +149,25 @@ namespace PaulEngine
 				currentNode.m_ChildrenIndices.push_back(m_MeshBins.size());
 				m_MeshBins.push_back({});
 			}
-			uint8_t meshBinIndex = currentNode.m_ChildrenIndices[0];
+			uint16_t meshBinIndex = currentNode.m_ChildrenIndices[0];
 			m_MeshBins[meshBinIndex].push_back({ std::get<Ref<Mesh>>(input), std::get<glm::mat4>(input), std::get<int>(input) });
 		}
-		void Flush()
+
+		// Returns the number of draw calls
+		uint16_t Flush()
 		{
-			uint8_t meshBinsVisited = 0;
-			uint8_t currentNodeIndex = 0;
+			uint16_t meshBinsVisited = 0;
+			uint16_t currentNodeIndex = 0;
 			
 			// Traverse from root node to first mesh bin and execute each node on the path
 			ProcessNodeChildren(m_Nodes[0], 0);
 
+			uint16_t totalDrawCalls = m_DrawCalls;
+
 			// Clear structure
 			Reset();
+
+			return totalDrawCalls;
 		}
 
 		void Reset()
@@ -178,6 +184,8 @@ namespace PaulEngine
 
 			m_DrawCalls = 0;
 		}
+
+		uint16_t MeshBinCount() const { return m_MeshBins.size(); }
 
 	//private:
 		const size_t m_NumLayers;
@@ -199,7 +207,7 @@ namespace PaulEngine
 		}
 
 		template <typename Func, std::size_t... I>
-		void forDataPoolElement(Func&& func, uint8_t dataPoolIndex, uint8_t elementIndex, std::index_sequence<I...>)
+		void forDataPoolElement(Func&& func, uint16_t dataPoolIndex, uint16_t elementIndex, std::index_sequence<I...>)
 		{
 			auto verifyFunc = [&](auto& dataPool, std::size_t actualIndex) {
 				if (actualIndex == dataPoolIndex)
@@ -212,7 +220,7 @@ namespace PaulEngine
 		}
 
 
-		void ProcessNodeChildren(RenderNode currentNode, uint8_t currentLayer)
+		void ProcessNodeChildren(RenderNode currentNode, uint16_t currentLayer)
 		{
 			if (currentLayer == m_NumLayers)
 			{
@@ -223,7 +231,7 @@ namespace PaulEngine
 				for (int i = 0; i < currentNode.m_ChildrenIndices.size(); i++)
 				{
 					RenderNode childNode = m_Nodes[currentNode.m_ChildrenIndices[i]];
-					uint8_t dataIndex = childNode.m_DataIndex;
+					uint16_t dataIndex = childNode.m_DataIndex;
 
 					// Get data from data pools
 					// Process data (bind material, set depth test mode, etc)
@@ -248,7 +256,7 @@ namespace PaulEngine
 			glm::mat4 Transform;
 			int EntityID;
 		};
-		void ProcessMeshBin(const uint8_t binIndex)
+		void ProcessMeshBin(const uint16_t binIndex)
 		{
 			const auto& meshBin = m_MeshBins[binIndex];
 
