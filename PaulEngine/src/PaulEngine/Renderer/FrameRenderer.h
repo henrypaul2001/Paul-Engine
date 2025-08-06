@@ -13,6 +13,7 @@ namespace PaulEngine
 	{
 		std::vector<RenderPassProfile> OrderedRenderPassProfiles;
 		uint16_t NumFramebufferChanges = 0;
+		uint32_t TotalDrawCalls = 0;
 		size_t NumPasses() const { return OrderedRenderPassProfiles.size(); }
 	};
 

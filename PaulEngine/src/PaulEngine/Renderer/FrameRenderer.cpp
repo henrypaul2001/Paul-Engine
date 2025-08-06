@@ -37,6 +37,7 @@ namespace PaulEngine
 
 			RenderPassProfile passProfile = p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, params.InputComponents);
 			m_Profile.OrderedRenderPassProfiles.push_back(passProfile);
+			m_Profile.TotalDrawCalls += passProfile.DrawCalls2D + passProfile.DrawCalls3D;
 		}
 
 		m_Profile.NumFramebufferChanges = numFBOChanges;

@@ -29,6 +29,7 @@ namespace PaulEngine
 		const size_t numPasses = fullProfile.NumPasses();
 		ImGui::Text("Total render passes: %d", numPasses);
 		ImGui::Text("Total framebuffer changes: %d", fullProfile.NumFramebufferChanges);
+		ImGui::Text("Total draw calls: %d", fullProfile.TotalDrawCalls);
 
 		ImGui::SeparatorText("Render pass details");
 		
