@@ -8,16 +8,10 @@
 
 namespace PaulEngine
 {
-	//struct RenderInput
-	//{
-	//	const AssetHandle MeshHandle;
-	//	const AssetHandle MaterialHandle;
-	//	const glm::mat4 Transform;
-	//	const DepthState DepthState;
-	//	const FaceCulling CullState;
-	//	const BlendState BlendState;
-	//	const int EntityID;
-	//};
+	namespace RenderTreeUtils
+	{
+		static Ref<UniformBuffer> s_MeshDataUniformBuffer = nullptr;
+	}
 
 	using RenderInput = std::tuple<Ref<Mesh>, Ref<Material>, glm::mat4, DepthState, FaceCulling, BlendState, int>;
 
@@ -28,15 +22,18 @@ namespace PaulEngine
 		int EntityID;
 	};
 
-	class RenderNode
+	struct MeshSubmissionData
 	{
-	public:
+		glm::mat4 Transform;
+		int EntityID;
+	};
 
+	struct RenderNode
+	{
+		uint8_t DataIndex;
 
-		uint8_t m_DataIndex;
-
-		int8_t m_ParentIndex = -1;
-		std::vector<uint8_t> m_ChildrenIndices;
+		int8_t ParentIndex = -1;
+		std::vector<uint8_t> ChildrenIndices;
 	};
 
 	template <typename T>
@@ -44,13 +41,11 @@ namespace PaulEngine
 	{
 		PE_CORE_WARN("Data visited with no specialisation defined");
 	}
-
 	template <>
 	inline static void visitData<Ref<Material>>(const Ref<Material>& data)
 	{
 		data->Bind();
 	}
-
 	template <>
 	inline static void visitData<DepthState>(const DepthState& data)
 	{
@@ -59,13 +54,11 @@ namespace PaulEngine
 		RenderCommand::DepthMask(data.Write);
 		RenderCommand::DepthFunc(data.Func);
 	}
-
 	template <>
 	inline static void visitData<FaceCulling>(const FaceCulling& data)
 	{
 		RenderCommand::SetFaceCulling(data);
 	}
-
 	template <>
 	inline static void visitData<BlendState>(const BlendState& data)
 	{
@@ -76,6 +69,7 @@ namespace PaulEngine
 		RenderCommand::BlendEquation(data.Equation);
 	}
 
+	// TODO: Update this so that mesh bins are not a separate collection and exist in the generic data pools
 	template <typename... Types>
 	class RenderTree
 	{
@@ -85,7 +79,13 @@ namespace PaulEngine
 			RenderNode rootNode;
 			m_Nodes.push_back(rootNode);
 		}
-		
+		void Init()
+		{
+			if (!RenderTreeUtils::s_MeshDataUniformBuffer) {
+				RenderTreeUtils::s_MeshDataUniformBuffer = UniformBuffer::Create(sizeof(MeshSubmissionData), 1);
+			}
+		}
+
 		void PushMesh(RenderInput input)
 		{
 			//RenderNode& currentNode = m_Nodes[0]; // m_Nodes[0] == rootNode
@@ -99,14 +99,14 @@ namespace PaulEngine
 				RenderNode& currentNode = m_Nodes[currentNodeIndex];
 
 				// Test child nodes against input data to find matching branch
-				const uint16_t numChildren = currentNode.m_ChildrenIndices.size();
+				const uint16_t numChildren = currentNode.ChildrenIndices.size();
 				bool success = false;
 				for (uint16_t i = 0; i < numChildren; i++)
 				{
-					const uint16_t childIndex = currentNode.m_ChildrenIndices[i];
+					const uint16_t childIndex = currentNode.ChildrenIndices[i];
 					RenderNode& childNode = m_Nodes[childIndex];
 
-					const auto& childData = dataPool[childNode.m_DataIndex];
+					const auto& childData = dataPool[childNode.DataIndex];
 
 					if (childData == inputData)
 					{
@@ -125,16 +125,16 @@ namespace PaulEngine
 
 					// Create child
 					RenderNode newChild;
-					newChild.m_ParentIndex = currentNodeIndex;
+					newChild.ParentIndex = currentNodeIndex;
 
 					// Add data to data pool
-					newChild.m_DataIndex = dataPool.size();
+					newChild.DataIndex = dataPool.size();
 					dataPool.push_back(inputData);
 
 					// Add new child to node list
 					uint16_t newChildIndex = m_Nodes.size();
 					RenderNode& currentNode = m_Nodes[currentNodeIndex];
-					currentNode.m_ChildrenIndices.push_back(newChildIndex);
+					currentNode.ChildrenIndices.push_back(newChildIndex);
 					m_Nodes.push_back(newChild);
 
 					//currentNode = m_Nodes[newChildIndex];
@@ -144,18 +144,20 @@ namespace PaulEngine
 		
 			// Add to leaf node
 			RenderNode& currentNode = m_Nodes[currentNodeIndex];
-			if (currentNode.m_ChildrenIndices.size() == 0)
+			if (currentNode.ChildrenIndices.size() == 0)
 			{
-				currentNode.m_ChildrenIndices.push_back(m_MeshBins.size());
+				currentNode.ChildrenIndices.push_back(m_MeshBins.size());
 				m_MeshBins.push_back({});
 			}
-			uint16_t meshBinIndex = currentNode.m_ChildrenIndices[0];
+			uint16_t meshBinIndex = currentNode.ChildrenIndices[0];
 			m_MeshBins[meshBinIndex].push_back({ std::get<Ref<Mesh>>(input), std::get<glm::mat4>(input), std::get<int>(input) });
 		}
 
 		// Returns the number of draw calls
 		uint16_t Flush()
 		{
+			RenderTreeUtils::s_MeshDataUniformBuffer->Bind(1);
+
 			uint16_t meshBinsVisited = 0;
 			uint16_t currentNodeIndex = 0;
 			
@@ -187,16 +189,10 @@ namespace PaulEngine
 
 		uint16_t MeshBinCount() const { return m_MeshBins.size(); }
 
-	//private:
-		const size_t m_NumLayers;
-		std::tuple<std::vector<Types>...> m_DataPools;
+		size_t NumLayers() const { return m_NumLayers; }
 
-		std::vector<RenderNode> m_Nodes;
-		
-		std::vector<std::vector<MeshInput>> m_MeshBins;
-
-		uint16_t m_DrawCalls = 0;
-		Ref<UniformBuffer> m_MeshDataUniformBuffer;
+		static Ref<UniformBuffer> GetMeshSubmissionBuffer() { return RenderTreeUtils::s_MeshDataUniformBuffer; }
+		static Ref<UniformBuffer>& GetMeshSubmissionBufferRef() { return RenderTreeUtils::s_MeshDataUniformBuffer; }
 
 	private:
 		template <typename Func, std::size_t... I>
@@ -206,6 +202,7 @@ namespace PaulEngine
 			(func(std::get<I>(m_DataPools), I), ...);
 		}
 
+		// Used to process individual data from a generic data pool at runtime
 		template <typename Func, std::size_t... I>
 		void forDataPoolElement(Func&& func, uint16_t dataPoolIndex, uint16_t elementIndex, std::index_sequence<I...>)
 		{
@@ -219,19 +216,18 @@ namespace PaulEngine
 			(verifyFunc(std::get<I>(m_DataPools), I), ...);
 		}
 
-
 		void ProcessNodeChildren(RenderNode currentNode, uint16_t currentLayer)
 		{
 			if (currentLayer == m_NumLayers)
 			{
-				ProcessMeshBin(currentNode.m_ChildrenIndices[0]);
+				ProcessMeshBin(currentNode.ChildrenIndices[0]);
 			}
 			else
 			{
-				for (int i = 0; i < currentNode.m_ChildrenIndices.size(); i++)
+				for (int i = 0; i < currentNode.ChildrenIndices.size(); i++)
 				{
-					RenderNode childNode = m_Nodes[currentNode.m_ChildrenIndices[i]];
-					uint16_t dataIndex = childNode.m_DataIndex;
+					RenderNode childNode = m_Nodes[currentNode.ChildrenIndices[i]];
+					uint16_t dataIndex = childNode.DataIndex;
 
 					// Get data from data pools
 					// Process data (bind material, set depth test mode, etc)
@@ -244,18 +240,6 @@ namespace PaulEngine
 			}
 		}
 
-		struct MeshSubmissionData
-		{
-			glm::mat4 Transform;
-			int EntityID;
-		};
-		MeshSubmissionData MeshDataBuffer;
-		struct MeshInput
-		{
-			Ref<Mesh> MeshAsset;
-			glm::mat4 Transform;
-			int EntityID;
-		};
 		void ProcessMeshBin(const uint16_t binIndex)
 		{
 			const auto& meshBin = m_MeshBins[binIndex];
@@ -265,7 +249,7 @@ namespace PaulEngine
 				MeshSubmissionData bufferData;
 				bufferData.Transform = meshInput.Transform;
 				bufferData.EntityID = meshInput.EntityID;
-				m_MeshDataUniformBuffer->SetData(&bufferData, sizeof(MeshSubmissionData));
+				RenderTreeUtils::s_MeshDataUniformBuffer->SetData(&bufferData, sizeof(MeshSubmissionData));
 			
 				Ref<VertexArray> vertexArray = meshInput.MeshAsset->GetVertexArray();
 				RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
@@ -273,27 +257,12 @@ namespace PaulEngine
 			}
 			//PE_CORE_TRACE("Mesh bin visited");
 		}
+
+		const size_t m_NumLayers;
+		std::tuple<std::vector<Types>...> m_DataPools;
+		std::vector<RenderNode> m_Nodes;
+		std::vector<std::vector<MeshInput>> m_MeshBins;
+
+		uint16_t m_DrawCalls = 0;
 	};
-
-	static void Test(Ref<UniformBuffer> meshDataBuffer)
-	{
-		RenderTree<Ref<Material>, DepthState, FaceCulling, BlendState> m_Test;
-		m_Test.m_MeshDataUniformBuffer = meshDataBuffer;
-		auto testCollection = std::get<0>(m_Test.m_DataPools);
-
-		RenderInput testInput1 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::GREATER, false, true}, FaceCulling::BACK, BlendState(), -1};
-		RenderInput testInput2 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::LESS, false, true}, FaceCulling::BACK, BlendState(), -1 };
-		RenderInput testInput3 = { nullptr, nullptr, glm::mat4(1.0f), {DepthFunc::GREATER, false, false}, FaceCulling::BACK, BlendState(), -1 };
-		m_Test.PushMesh(testInput1);
-		m_Test.PushMesh(testInput1);
-		m_Test.PushMesh(testInput1);
-		m_Test.PushMesh(testInput2);
-		m_Test.PushMesh(testInput2);
-		m_Test.PushMesh(testInput3);
-		m_Test.PushMesh(testInput2);
-		m_Test.PushMesh(testInput2);
-		m_Test.PushMesh(testInput1);
-
-		m_Test.Flush();
-	}
 }

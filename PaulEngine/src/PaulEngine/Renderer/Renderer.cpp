@@ -105,14 +105,6 @@ namespace PaulEngine {
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
 
-		struct MeshSubmissionData
-		{
-			glm::mat4 Transform;
-			int EntityID;
-		};
-		MeshSubmissionData MeshDataBuffer;
-		Ref<UniformBuffer> MeshDataUniformBuffer;
-
 		struct SceneMetaData
 		{
 			int DirLightsHead = 0;
@@ -132,9 +124,7 @@ namespace PaulEngine {
 		SceneData SceneDataBuffer;
 		Ref<UniformBuffer> SceneDataUniformBuffer;
 
-		// RENDER TREE
-		// -----------
-		RenderTree<Ref<Material>, DepthState, FaceCulling, BlendState> RenderTree;
+		RenderTree<DepthState, FaceCulling, BlendState, Ref<Material>> RenderTree;
 
 		Renderer::Statistics Stats;
 
@@ -149,7 +139,7 @@ namespace PaulEngine {
 		Renderer2D::Init();
 
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
-		s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
+		//s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
 		s_RenderData.SceneDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::SceneDataBuffer), 2);
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
@@ -160,7 +150,8 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 
-		s_RenderData.RenderTree.m_MeshDataUniformBuffer = s_RenderData.MeshDataUniformBuffer;
+		//s_RenderData.RenderTree.m_MeshDataUniformBuffer = s_RenderData.MeshDataUniformBuffer;
+		s_RenderData.RenderTree.Init();
 	}
 
 	void Renderer::BeginScene(const EditorCamera& camera)
@@ -238,38 +229,13 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraUniformBuffer->Bind(0);
-		s_RenderData.MeshDataUniformBuffer->Bind(1);
+		//s_RenderData.MeshDataUniformBuffer->Bind(1);
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(s_RenderData.SceneDataBuffer));
-
+		
 		s_RenderData.Stats.PipelineCount += s_RenderData.RenderTree.MeshBinCount();
 		uint16_t drawCalls = s_RenderData.RenderTree.Flush();
 		s_RenderData.Stats.DrawCalls += drawCalls;
-
-		//for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
-		//
-		//	pipeline->Bind();
-		//	const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
-		//	for (const DrawSubmission& d : drawList) {
-		//		AssetHandle meshHandle = d.MeshHandle;
-		//		if (AssetManager::IsAssetHandleValid(meshHandle))
-		//		{
-		//			Ref<VertexArray> vertexArray = AssetManager::GetAsset<Mesh>(meshHandle)->GetVertexArray();
-		//			s_RenderData.MeshDataBuffer.Transform = d.Transform;
-		//			s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
-		//			s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
-		//
-		//			RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
-		//			s_RenderData.Stats.DrawCalls++;
-		//		}
-		//		else
-		//		{
-		//			PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
-		//		}
-		//	}
-		//}
-
-		s_RenderData.MeshDataBuffer = Renderer3DData::MeshSubmissionData();
 
 		s_RenderData.SceneDataBuffer = Renderer3DData::SceneData();
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
@@ -306,25 +272,6 @@ namespace PaulEngine {
 
 		RenderInput renderInput = { AssetManager::GetAsset<Mesh>(draw.MeshHandle), AssetManager::GetAsset<Material>(draw.MaterialHandle), transform, depthState, cullState, blendState, entityID };
 		s_RenderData.RenderTree.PushMesh(renderInput);
-
-		//
-		//// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate mesh
-		//
-		//// Check for duplicate pipeline state
-		//std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
-		//
-		//if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
-		//{
-		//	// Duplicate pipeline state
-		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-		//}
-		//else
-		//{
-		//	// Unique pipeline state
-		//	s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
-		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-		//	s_RenderData.Stats.PipelineCount++;
-		//}
 
 		s_RenderData.Stats.MeshCount++;
 	}
@@ -371,18 +318,20 @@ namespace PaulEngine {
 	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
+		Ref<UniformBuffer>& meshSubmissionBuffer = s_RenderData.RenderTree.GetMeshSubmissionBufferRef();
 
 		s_RenderData.CameraUniformBuffer->Bind(0);
-		s_RenderData.MeshDataUniformBuffer->Bind(1);
+		meshSubmissionBuffer->Bind(1);
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 
 		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, blendState, 0);
 		pipeline->Bind();
 		material->Bind();
 
-		s_RenderData.MeshDataBuffer.Transform = transform;
-		s_RenderData.MeshDataBuffer.EntityID = entityID;
-		s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+		MeshSubmissionData meshDataBuffer;
+		meshDataBuffer.Transform = transform;
+		meshDataBuffer.EntityID = entityID;
+		meshSubmissionBuffer->SetData(&meshDataBuffer, sizeof(MeshSubmissionData));
 
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 
