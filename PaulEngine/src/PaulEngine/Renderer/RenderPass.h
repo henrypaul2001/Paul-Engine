@@ -37,35 +37,37 @@ namespace PaulEngine
 		};
 		using OnRenderFunc = std::function<void(RenderPassContext&, Ref<Framebuffer>, std::vector<IRenderComponent*>)>; // { scene, camera }, target framebuffer, inputs
 		
-		RenderPass(std::vector<RenderComponentType> inputTypes, OnRenderFunc renderFunc) : m_InputTypes(inputTypes), m_RenderFunc(renderFunc) {}
+		RenderPass(std::vector<RenderComponentType> inputTypes, OnRenderFunc renderFunc, const std::string& debugName = "numbered_render_pass") : m_InputTypes(inputTypes), m_RenderFunc(renderFunc), m_DebugName(debugName) {}
 
-		void OnRender(RenderPassContext context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+		RenderPassProfile OnRender(RenderPassContext context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			m_RenderFunc(context, targetFramebuffer, inputs);
 
-			m_Profile = RenderPassProfile();
+			RenderPassProfile profile;
 
 			Renderer2D::Statistics stats2D = Renderer2D::GetStats();
-			m_Profile.DrawCalls2D = stats2D.DrawCalls;
-			m_Profile.QuadCount2D = stats2D.QuadCount;
-			m_Profile.CircleCount2D = stats2D.CircleCount;
-			m_Profile.LineCount2D = stats2D.LineCount;
+			profile.DrawCalls2D = stats2D.DrawCalls;
+			profile.QuadCount2D = stats2D.QuadCount;
+			profile.CircleCount2D = stats2D.CircleCount;
+			profile.LineCount2D = stats2D.LineCount;
 			Renderer2D::ResetStats();
 
 			Renderer::Statistics stats3D = Renderer::GetStats();
-			m_Profile.DrawCalls3D = stats3D.DrawCalls;
-			m_Profile.MeshCount = stats3D.MeshCount;
-			m_Profile.UniquePipelines = stats3D.PipelineCount;
+			profile.DrawCalls3D = stats3D.DrawCalls;
+			profile.MeshCount = stats3D.MeshCount;
+			profile.UniquePipelines = stats3D.PipelineCount;
 			Renderer::ResetStats();
+
+			return profile;
 		}
 
 		const std::vector<RenderComponentType>& GetInputTypes() const { return m_InputTypes; }
 		const UUID& GetRenderID() const { return m_RenderPassID; }
 
-		const RenderPassProfile GetProfile() const { return m_Profile; }
+		const std::string& GetDebugName() const { return m_DebugName; }
 
 		friend class FrameRenderer;
 	private:
-		RenderPassProfile m_Profile;
+		std::string m_DebugName;
 		UUID m_RenderPassID;
 		OnRenderFunc m_RenderFunc;
 	

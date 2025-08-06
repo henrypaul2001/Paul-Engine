@@ -1278,26 +1278,26 @@ namespace PaulEngine
 		// -----------------
 
 		// Shadow mapping
-		out_Framerenderer->AddRenderPass(RenderPass(dirLightShadowPassInputSpec, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], dirLightShadowPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(spotLightShadowPassInputSpec, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], spotLightShadowPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(pointLightShadowPassInputSpec, pointLightShadowFunc), dirSpotPointShadowFBOs[2], pointLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(dirLightShadowPassInputSpec, dirLightShadowPassFunc, "ShadowPass_DirLights"), dirSpotPointShadowFBOs[0], dirLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(spotLightShadowPassInputSpec, spotLightShadowPassFunc, "ShadowPass_SpotLights"), dirSpotPointShadowFBOs[1], spotLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(pointLightShadowPassInputSpec, pointLightShadowFunc, "ShadowPass_PointLights"), dirSpotPointShadowFBOs[2], pointLightShadowPassInputBindings);
 	
 		// Main render
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::Texture }, clearFramebufferFunc), mainFramebuffer, { "ScreenTexture" });
-		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass), mainFramebuffer, forward3DInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass), mainFramebuffer, skyboxInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::Texture }, clearFramebufferFunc, "ClearMainFramebuffer"), mainFramebuffer, {"ScreenTexture"});
+		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass, "Forward2DPass"), mainFramebuffer, forward2DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass, "Forward3DPass"), mainFramebuffer, forward3DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass, "SkyboxPass"), mainFramebuffer, skyboxInputBindings);
 
 		// Bloom
-		out_Framerenderer->AddRenderPass(RenderPass(bloomDownsampleInputSpec, bloomDownsamplePass), bloomFBO, bloomDownsampleInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(bloomUpsampleInputSpec, bloomUpsamplePass), bloomFBO, bloomUpsampleInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(bloomCombineInputSpec, bloomCombinePass), mainFramebuffer, bloomCombineInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomDownsampleInputSpec, bloomDownsamplePass, "BloomDownsamplePass"), bloomFBO, bloomDownsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomUpsampleInputSpec, bloomUpsamplePass, "BloomUpsamplePass"), bloomFBO, bloomUpsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomCombineInputSpec, bloomCombinePass, "BloomCombinePass"), mainFramebuffer, bloomCombineInputBindings);
 
 		// Editor overlay
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass, "DebugOverlayPass"), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
 		
 		// Post process
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass, "GammaTonemapPass"), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
 	void EditorLayer::CreateDeferredRenderer(FrameRenderer* out_Framerenderer)
@@ -2100,34 +2100,34 @@ namespace PaulEngine
 		// -----------------
 
 		// Shadow mapping
-		out_Framerenderer->AddRenderPass(RenderPass(dirLightShadowPassInputSpec, dirLightShadowPassFunc), dirSpotPointShadowFBOs[0], dirLightShadowPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(spotLightShadowPassInputSpec, spotLightShadowPassFunc), dirSpotPointShadowFBOs[1], spotLightShadowPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(pointLightShadowPassInputSpec, pointLightShadowFunc), dirSpotPointShadowFBOs[2], pointLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(dirLightShadowPassInputSpec, dirLightShadowPassFunc, "ShadowPass_DirLights"), dirSpotPointShadowFBOs[0], dirLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(spotLightShadowPassInputSpec, spotLightShadowPassFunc, "ShadowPass_SpotLights"), dirSpotPointShadowFBOs[1], spotLightShadowPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(pointLightShadowPassInputSpec, pointLightShadowFunc, "ShadowPass_PointLights"), dirSpotPointShadowFBOs[2], pointLightShadowPassInputBindings);
 
 		// Deferred rendering
-		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc), gBuffer, geometryPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(maxReduceInputSpec, maxReducePassFunc), texturedFBO, maxReduceInputBindings); // TODO: consider writing to gBuffer
-		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc), texturedFBO, ssaoPassInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc), texturedFBO, ssrUVPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(geometryPassInputSpec, geometryPass3DFunc, "GeometryPass"), gBuffer, geometryPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(maxReduceInputSpec, maxReducePassFunc, "MaxReducePass"), texturedFBO, maxReduceInputBindings); // TODO: consider writing to gBuffer
+		out_Framerenderer->AddRenderPass(RenderPass(ssaoPassInputSpec, ssaoPassFunc, "SSAOPass"), texturedFBO, ssaoPassInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(ssrUVPassInputSpec, ssrUVPassFunc, "SSR_UVPass"), texturedFBO, ssrUVPassInputBindings);
 
 		// Lighting
-		out_Framerenderer->AddRenderPass(RenderPass(directLightingInputSpec, directLightingPassFunc), mainFramebuffer, directLightingInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(indirectLightingInputSpec, indirectLightingPassFunc), mainFramebuffer, indirectLightingInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(directLightingInputSpec, directLightingPassFunc, "Direct_LightingPass"), mainFramebuffer, directLightingInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(indirectLightingInputSpec, indirectLightingPassFunc, "Indirect_LightingPass"), mainFramebuffer, indirectLightingInputBindings);
 
-		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass), mainFramebuffer, forward2DInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass), mainFramebuffer, forward3DInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass), mainFramebuffer, skyboxInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass, "Forward2DPass"), mainFramebuffer, forward2DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass, "Forward3DPass"), mainFramebuffer, forward3DInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(skyboxInputSpec, skyboxPass, "SkyboxPass"), mainFramebuffer, skyboxInputBindings);
 		
 		// Bloom
-		out_Framerenderer->AddRenderPass(RenderPass(bloomDownsampleInputSpec, bloomDownsamplePass), bloomFBO, bloomDownsampleInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(bloomUpsampleInputSpec, bloomUpsamplePass), bloomFBO, bloomUpsampleInputBindings);
-		out_Framerenderer->AddRenderPass(RenderPass(bloomCombineInputSpec, bloomCombinePass), mainFramebuffer, bloomCombineInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomDownsampleInputSpec, bloomDownsamplePass, "BloomDownsamplePass"), bloomFBO, bloomDownsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomUpsampleInputSpec, bloomUpsamplePass, "BloomUpsamplePass"), bloomFBO, bloomUpsampleInputBindings);
+		out_Framerenderer->AddRenderPass(RenderPass(bloomCombineInputSpec, bloomCombinePass, "BloomCombinePass"), mainFramebuffer, bloomCombineInputBindings);
 
 		// Editor overlay
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass, "DebugOverlayPass"), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "AlternateScreenTexture" });
 
 		// Post process
-		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass, "GammaTonemapPass"), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}

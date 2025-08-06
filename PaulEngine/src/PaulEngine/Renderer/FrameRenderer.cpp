@@ -35,8 +35,8 @@ namespace PaulEngine
 			}
 			currentTarget = targetFramebuffer;
 
-			p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, params.InputComponents);
-			m_Profile.OrderedRenderPassProfiles.push_back(p.GetProfile());
+			RenderPassProfile passProfile = p.OnRender({ sceneContext, activeCamera, cameraWorldTransform }, targetFramebuffer, params.InputComponents);
+			m_Profile.OrderedRenderPassProfiles.push_back(passProfile);
 		}
 
 		m_Profile.NumFramebufferChanges = numFBOChanges;
@@ -77,6 +77,7 @@ namespace PaulEngine
 		}
 		m_ParameterMap[renderID] = { targetFramebuffer, inputs };
 
+		if (renderPass.m_DebugName == "numbered_render_pass") { renderPass.m_DebugName = std::string("RenderPass_" + std::to_string(m_OrderedRenderPasses.size())); }
 		m_OrderedRenderPasses.push_back(renderPass);
 		return true;
 	}
@@ -85,7 +86,6 @@ namespace PaulEngine
 	{
 		FrameRendererSerializer::SerializeRenderer(*this, path);
 	}
-
 	void FrameRenderer::LoadResourceConfig(const std::filesystem::path& path)
 	{
 		FrameRendererSerializer::DeserializeRenderer(*this, path);

@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Panels\FrameRendererProfilePanel.h" />
     <ClInclude Include="src\Panels\FrameRendererPanel.h" />
     <ClInclude Include="src\EditorLayer.h" />
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\Window\CreateTextureArrayWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Panels\FrameRendererProfilePanel.cpp" />
     <ClCompile Include="src\Panels\FrameRendererPanel.cpp" />
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />

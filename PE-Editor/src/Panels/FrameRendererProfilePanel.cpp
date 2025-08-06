@@ -25,6 +25,7 @@ namespace PaulEngine
 		ImGui::Begin("Frame Renderer Profile");
 
 		FrameRendererProfile fullProfile = m_Context->GetProfile();
+		const std::vector<RenderPass>& orderedRenderPasses = m_Context->GetOrderedRenderPasses();
 		const size_t numPasses = fullProfile.NumPasses();
 		ImGui::Text("Total render passes: %d", numPasses);
 		ImGui::Text("Total framebuffer changes: %d", fullProfile.NumFramebufferChanges);
@@ -33,8 +34,7 @@ namespace PaulEngine
 		
 		for (int i = 0; i < numPasses; i++)
 		{
-			//const std::string& passName = pass.GetName();
-			std::string passName = "RenderPass_" + std::to_string(i);
+			const std::string& passName = orderedRenderPasses[i].GetDebugName();
 			DrawPassProfile(passName, fullProfile.OrderedRenderPassProfiles[i]);
 		}
 
