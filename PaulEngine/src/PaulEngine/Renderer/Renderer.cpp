@@ -124,7 +124,7 @@ namespace PaulEngine {
 		SceneData SceneDataBuffer;
 		Ref<UniformBuffer> SceneDataUniformBuffer;
 
-		RenderTree<DepthState, FaceCulling, BlendState, Ref<Material>> RenderTree;
+		RenderTree<Ref<VertexArray>, DepthState, FaceCulling, BlendState, Ref<Material>> RenderTree;
 
 		Renderer::Statistics Stats;
 
@@ -270,7 +270,8 @@ namespace PaulEngine {
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
-		RenderInput renderInput = { AssetManager::GetAsset<Mesh>(draw.MeshHandle), AssetManager::GetAsset<Material>(draw.MaterialHandle), transform, depthState, cullState, blendState, entityID };
+		Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(draw.MeshHandle);
+		RenderInput renderInput = { meshAsset->GetVertexArray(), AssetManager::GetAsset<Material>(draw.MaterialHandle), transform, depthState, cullState, blendState, entityID};
 		s_RenderData.RenderTree.PushMesh(renderInput);
 
 		s_RenderData.Stats.MeshCount++;

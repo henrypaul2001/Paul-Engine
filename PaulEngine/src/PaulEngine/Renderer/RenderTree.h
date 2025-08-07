@@ -11,9 +11,10 @@ namespace PaulEngine
 	namespace RenderTreeUtils
 	{
 		static Ref<UniformBuffer> s_MeshDataUniformBuffer = nullptr;
+#define RENDER_TREE_RESERVE_COUNT 100
 	}
 
-	using RenderInput = std::tuple<Ref<Mesh>, Ref<Material>, glm::mat4, DepthState, FaceCulling, BlendState, int>;
+	using RenderInput = std::tuple<Ref<VertexArray>, Ref<Material>, glm::mat4, DepthState, FaceCulling, BlendState, int>;
 
 	struct MeshInput
 	{
@@ -33,13 +34,18 @@ namespace PaulEngine
 		uint8_t DataIndex;
 
 		int8_t ParentIndex = -1;
-		std::vector<uint8_t> ChildrenIndices;
+		std::vector<uint8_t> ChildrenIndices = {};
 	};
 
 	template <typename T>
 	inline static void visitData(const T& data)
 	{
 		PE_CORE_WARN("Data visited with no specialisation defined");
+	}
+	template <>
+	inline static void visitData<Ref<VertexArray>>(const Ref<VertexArray>& data)
+	{
+		data->Bind();
 	}
 	template <>
 	inline static void visitData<Ref<Material>>(const Ref<Material>& data)
@@ -69,7 +75,18 @@ namespace PaulEngine
 		RenderCommand::BlendEquation(data.Equation);
 	}
 
+	struct MeshBin
+	{
+		MeshBin() { Instances.reserve(RENDER_TREE_RESERVE_COUNT); }
+		MeshBin(Ref<VertexArray> vao) { Instances.reserve(RENDER_TREE_RESERVE_COUNT); SharedVertexArray = vao; }
+		Ref<VertexArray> SharedVertexArray = nullptr;
+		std::vector<MeshSubmissionData> Instances;
+		size_t NumInstances() const { return Instances.size(); }
+	};
+
 	// TODO: Update this so that mesh bins are not a separate collection and exist in the generic data pools
+	// TODO: Add constraint that makes sure one of the Types... is Ref<VertexArray>
+	// TODO: Investigate crash when switching to 3DScene.paul
 	template <typename... Types>
 	class RenderTree
 	{
@@ -84,6 +101,10 @@ namespace PaulEngine
 			if (!RenderTreeUtils::s_MeshDataUniformBuffer) {
 				RenderTreeUtils::s_MeshDataUniformBuffer = UniformBuffer::Create(sizeof(MeshSubmissionData), 1);
 			}
+			m_MeshBins.reserve(RENDER_TREE_RESERVE_COUNT);
+			forEachDataPool([&](auto& dataPool, std::size_t index) {
+				dataPool.reserve(RENDER_TREE_RESERVE_COUNT);
+			}, std::make_index_sequence<sizeof...(Types)>());
 		}
 
 		void PushMesh(RenderInput input)
@@ -147,10 +168,10 @@ namespace PaulEngine
 			if (currentNode.ChildrenIndices.size() == 0)
 			{
 				currentNode.ChildrenIndices.push_back(m_MeshBins.size());
-				m_MeshBins.push_back({});
+				m_MeshBins.emplace_back(std::get<Ref<VertexArray>>(input));
 			}
 			uint16_t meshBinIndex = currentNode.ChildrenIndices[0];
-			m_MeshBins[meshBinIndex].push_back({ std::get<Ref<Mesh>>(input), std::get<glm::mat4>(input), std::get<int>(input) });
+			m_MeshBins[meshBinIndex].Instances.push_back({ std::get<glm::mat4>(input), std::get<int>(input) });
 		}
 
 		// Returns the number of draw calls
@@ -242,26 +263,22 @@ namespace PaulEngine
 
 		void ProcessMeshBin(const uint16_t binIndex)
 		{
-			const auto& meshBin = m_MeshBins[binIndex];
+			const MeshBin& meshBin = m_MeshBins[binIndex];
+			const size_t numInstances = meshBin.NumInstances();
+			const Ref<IndexBuffer>& indexBuffer = meshBin.SharedVertexArray->GetIndexBuffer();
 
-			for (const auto& meshInput : meshBin)
+			for (size_t i = 0; i < numInstances; i++)
 			{
-				MeshSubmissionData bufferData;
-				bufferData.Transform = meshInput.Transform;
-				bufferData.EntityID = meshInput.EntityID;
-				RenderTreeUtils::s_MeshDataUniformBuffer->SetData(&bufferData, sizeof(MeshSubmissionData));
-			
-				Ref<VertexArray> vertexArray = meshInput.MeshAsset->GetVertexArray();
-				RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+				RenderTreeUtils::s_MeshDataUniformBuffer->SetData(&meshBin.Instances[i], sizeof(MeshSubmissionData));
+				RenderCommand::DrawIndexed(meshBin.SharedVertexArray, indexBuffer->GetCount()); // TODO: make sure DrawIndexed() doesn't bind vertex array
 				m_DrawCalls++;
 			}
-			//PE_CORE_TRACE("Mesh bin visited");
 		}
 
 		const size_t m_NumLayers;
 		std::tuple<std::vector<Types>...> m_DataPools;
 		std::vector<RenderNode> m_Nodes;
-		std::vector<std::vector<MeshInput>> m_MeshBins;
+		std::vector<MeshBin> m_MeshBins;
 
 		uint16_t m_DrawCalls = 0;
 	};
