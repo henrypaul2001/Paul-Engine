@@ -26,5 +26,12 @@ namespace PaulEngine {
 		virtual DrawPrimitive GetDrawPrimitive() const = 0;
 
 		static Ref<VertexArray> Create(DrawPrimitive drawPrimitive = DrawPrimitive::TRIANGLES);
+
+		virtual bool operator ==(const VertexArray* other) const = 0;
+		virtual bool operator !=(const VertexArray* other) const = 0;
 	};
+	inline bool operator==(const Ref<VertexArray>& left, const Ref<VertexArray>& right)
+	{
+		return (left.get() == right.get());
+	}
 }

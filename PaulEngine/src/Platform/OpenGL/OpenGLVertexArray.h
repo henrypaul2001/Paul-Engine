@@ -18,6 +18,9 @@ namespace PaulEngine {
 
 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
+
+		virtual bool operator ==(const VertexArray* other) const override;
+		virtual bool operator !=(const VertexArray* other) const override;
 	private:
 		uint32_t m_RendererID;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;

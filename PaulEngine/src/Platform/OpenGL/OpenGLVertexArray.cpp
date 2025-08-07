@@ -91,4 +91,14 @@ namespace PaulEngine {
 
 		m_IndexBuffer = indexBuffer;
 	}
+
+	bool OpenGLVertexArray::operator==(const VertexArray* other) const
+	{
+		return (m_RendererID == static_cast<const OpenGLVertexArray*>(other)->m_RendererID);
+	}
+
+	bool OpenGLVertexArray::operator!=(const VertexArray* other) const
+	{
+		return (m_RendererID != static_cast<const OpenGLVertexArray*>(other)->m_RendererID);
+	}
 }
