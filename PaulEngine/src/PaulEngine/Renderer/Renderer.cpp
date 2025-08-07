@@ -336,6 +336,7 @@ namespace PaulEngine {
 
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 
+		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
 
 		s_RenderData.Stats.MeshCount++;

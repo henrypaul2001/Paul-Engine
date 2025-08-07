@@ -324,6 +324,7 @@ namespace PaulEngine {
 				s_RenderData.TextureSlots[i]->Bind(i);
 			}
 
+			s_RenderData.QuadVertexArray->Bind();
 			RenderCommand::DrawIndexed(s_RenderData.QuadVertexArray, s_RenderData.QuadIndexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
@@ -335,6 +336,7 @@ namespace PaulEngine {
 			s_RenderData.CircleVertexBuffer->SetData(s_RenderData.CircleVertexBufferBase, dataSize);
 
 			AssetManager::GetAsset<Shader>(s_RenderData.CircleShaderHandle)->Bind();
+			s_RenderData.CircleVertexArray->Bind();
 			RenderCommand::DrawIndexed(s_RenderData.CircleVertexArray, s_RenderData.CircleIndexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
@@ -347,6 +349,7 @@ namespace PaulEngine {
 
 			AssetManager::GetAsset<Shader>(s_RenderData.LineShaderHandle)->Bind();
 			RenderCommand::SetLineWidth(s_RenderData.LineWidth);
+			s_RenderData.LineVertexArray->Bind();
 			RenderCommand::DrawLines(s_RenderData.LineVertexArray, s_RenderData.LineVertexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
@@ -359,6 +362,7 @@ namespace PaulEngine {
 
 			AssetManager::GetAsset<Shader>(s_RenderData.TextShaderHandle)->Bind();
 			s_RenderData.FontAtlasTexture->Bind(0);
+			s_RenderData.TextVertexArray->Bind();
 			RenderCommand::DrawIndexed(s_RenderData.TextVertexArray, s_RenderData.TextIndexCount);
 			s_RenderData.Stats.DrawCalls++;
 		}
