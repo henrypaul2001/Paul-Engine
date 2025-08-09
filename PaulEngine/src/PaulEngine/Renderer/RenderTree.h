@@ -109,16 +109,18 @@ namespace PaulEngine
 
 		void PushMesh(RenderInput input)
 		{
+			PE_PROFILE_FUNCTION();
 			//RenderNode& currentNode = m_Nodes[0]; // m_Nodes[0] == rootNode
 			uint16_t currentNodeIndex = 0;
-		
+
 			forEachDataPool([&](auto& dataPool, std::size_t index) {
+				PE_PROFILE_SCOPE("ForEachDataPool: Compare input data with data pool")
 				// Do stuff
 				using DataType = typename std::decay_t<decltype(dataPool)>::value_type;
 				const auto& inputData = std::get<DataType>(input);
-
+			
 				RenderNode& currentNode = m_Nodes[currentNodeIndex];
-
+			
 				// Test child nodes against input data to find matching branch
 				const uint16_t numChildren = currentNode.ChildrenIndices.size();
 				bool success = false;
@@ -126,57 +128,61 @@ namespace PaulEngine
 				{
 					const uint16_t childIndex = currentNode.ChildrenIndices[i];
 					RenderNode& childNode = m_Nodes[childIndex];
-
+			
 					const auto& childData = dataPool[childNode.DataIndex];
-
+			
 					if (childData == inputData)
 					{
 						success = true;
-
+			
 						//currentNode = childNode;
 						currentNodeIndex = childIndex;
-
+			
 						break;
 					}
 				}
-
+			
 				if (!success)
 				{
 					// No matching branch found, create new branch
-
+			
 					// Create child
 					RenderNode newChild;
 					newChild.ParentIndex = currentNodeIndex;
-
+			
 					// Add data to data pool
 					newChild.DataIndex = dataPool.size();
 					dataPool.push_back(inputData);
-
+			
 					// Add new child to node list
 					uint16_t newChildIndex = m_Nodes.size();
 					RenderNode& currentNode = m_Nodes[currentNodeIndex];
 					currentNode.ChildrenIndices.push_back(newChildIndex);
 					m_Nodes.push_back(newChild);
-
+			
 					//currentNode = m_Nodes[newChildIndex];
 					currentNodeIndex = newChildIndex;
 				}
 			}, std::make_index_sequence<sizeof...(Types)>());
 		
-			// Add to leaf node
-			RenderNode& currentNode = m_Nodes[currentNodeIndex];
-			if (currentNode.ChildrenIndices.size() == 0)
 			{
-				currentNode.ChildrenIndices.push_back(m_MeshBins.size());
-				m_MeshBins.emplace_back(std::get<Ref<VertexArray>>(input));
+				PE_PROFILE_SCOPE("Push mesh to leaf node");
+				// Add to leaf node
+				RenderNode& currentNode = m_Nodes[currentNodeIndex];
+				if (currentNode.ChildrenIndices.size() == 0)
+				{
+					currentNode.ChildrenIndices.push_back(m_MeshBins.size());
+					m_MeshBins.emplace_back(std::get<Ref<VertexArray>>(input));
+				}
+				uint16_t meshBinIndex = currentNode.ChildrenIndices[0];
+				m_MeshBins[meshBinIndex].Instances.push_back({ std::get<glm::mat4>(input), std::get<int>(input) });
 			}
-			uint16_t meshBinIndex = currentNode.ChildrenIndices[0];
-			m_MeshBins[meshBinIndex].Instances.push_back({ std::get<glm::mat4>(input), std::get<int>(input) });
 		}
 
 		// Returns the number of draw calls
 		uint16_t Flush()
 		{
+			PE_PROFILE_FUNCTION();
 			RenderTreeUtils::s_MeshDataUniformBuffer->Bind(1);
 
 			uint16_t meshBinsVisited = 0;
@@ -195,6 +201,7 @@ namespace PaulEngine
 
 		void Reset()
 		{
+			PE_PROFILE_FUNCTION();
 			m_Nodes.clear();
 			RenderNode rootNode;
 			m_Nodes.push_back(rootNode);
@@ -219,6 +226,8 @@ namespace PaulEngine
 		template <typename Func, std::size_t... I>
 		void forEachDataPool(Func&& func, std::index_sequence<I...>)
 		{
+			PE_PROFILE_FUNCTION();
+
 			// Unroll each index into a function call
 			(func(std::get<I>(m_DataPools), I), ...);
 		}
@@ -263,6 +272,7 @@ namespace PaulEngine
 
 		void ProcessMeshBin(const uint16_t binIndex)
 		{
+			PE_PROFILE_FUNCTION();
 			const MeshBin& meshBin = m_MeshBins[binIndex];
 			const size_t numInstances = meshBin.NumInstances();
 			const Ref<IndexBuffer>& indexBuffer = meshBin.SharedVertexArray->GetIndexBuffer();
