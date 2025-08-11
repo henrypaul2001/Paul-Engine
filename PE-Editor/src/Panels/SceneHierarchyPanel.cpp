@@ -712,7 +712,7 @@ namespace PaulEngine
 		});
 
 		// Mesh Component
-		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [](ComponentMeshRenderer& component) {
+		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [entity](ComponentMeshRenderer& component) {
 			//  Mesh
 			// ------
 			ImGui::PushID(0);
@@ -805,9 +805,10 @@ namespace PaulEngine
 			ImGui::PushID(1);
 			std::string label = "None";
 			bool isMaterialValid = false;
-			if (component.MaterialHandle != 0) {
-				if (AssetManager::IsAssetHandleValid(component.MaterialHandle) && AssetManager::GetAssetType(component.MaterialHandle) == AssetType::Material) {
-					const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(component.MaterialHandle);
+			AssetHandle materialHandle = component.MaterialHandle();
+			if (materialHandle != 0) {
+				if (AssetManager::IsAssetHandleValid(materialHandle) && AssetManager::GetAssetType(materialHandle) == AssetType::Material) {
+					const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(materialHandle);
 					label = metadata.FilePath.filename().stem().string();
 					isMaterialValid = true;
 				}
@@ -827,7 +828,7 @@ namespace PaulEngine
 				{
 					AssetHandle handle = *(AssetHandle*)payload->Data;
 					if (AssetManager::GetAssetType(handle) == AssetType::Material) {
-						component.MaterialHandle = handle;
+						ComponentMeshRenderer::SetMaterial(entity, handle);
 					}
 					else {
 						PE_CORE_WARN("Invalid asset type. Material needed for mesh component");
@@ -841,7 +842,7 @@ namespace PaulEngine
 				ImVec2 xLabelSize = ImGui::CalcTextSize("X");
 				float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 				if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-					component.MaterialHandle = 0;
+					ComponentMeshRenderer::SetMaterial(entity, 0);
 				}
 			}
 			ImGui::SameLine();

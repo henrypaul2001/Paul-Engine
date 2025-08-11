@@ -466,20 +466,14 @@ namespace PaulEngine
 
 			{
 				PE_PROFILE_SCOPE("Submit Mesh");
-				auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+				auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer, ForwardCompatibleMaterialTag>();
 				for (auto entityID : view) {
 					auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-					Ref<Material> material = AssetManager::GetAsset<Material>(mesh.MaterialHandle);
+					
+					AssetHandle materialHandle = mesh.MaterialHandle();
+					Ref<Material> material = AssetManager::GetAsset<Material>(materialHandle);
 
-					// TODO: come up with a better soltution for this whole idea of swapping in default materials without relying on if statements disrupting ecs flow
-					// Maybe add some hidden components to entities that allow for direct iteration over the exact entities that fit the desired if statement conditions
-					// Apply this same logic to the deferred renderer as well
-					AssetHandle materialHandle = mesh.MaterialHandle;
-					if (material)
-					{
-						if (material->GetShaderRendererContext() == RenderPipelineContext::Deferred) { continue; } // skip deferred materials 
-					}
-					else { materialHandle = Renderer::GetDefaultMaterial(); } // Render with default forward material
+					if (!material) { materialHandle = Renderer::GetDefaultMaterial(); } // Render with default forward material
 
 					Renderer::SubmitMesh(mesh.MeshHandle, materialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
 				}
@@ -1643,18 +1637,15 @@ namespace PaulEngine
 					PE_PROFILE_SCOPE("Submit Mesh");
 					BlendState blend;
 					blend.Enabled = false;
-					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer, DeferredCompatibleMaterialTag>();
 					for (auto entityID : view)
 					{
 						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
-						Ref<Material> material = AssetManager::GetAsset<Material>(mesh.MaterialHandle);
 
-						AssetHandle materialHandle = mesh.MaterialHandle;
-						if (material)
-						{
-							if (material->GetShaderRendererContext() == RenderPipelineContext::Forward) { continue; } // skip forward materials 
-						}
-						else { materialHandle = Renderer::GetDefaultDeferredMaterial(); } // Render with default forward material
+						AssetHandle materialHandle = mesh.MaterialHandle();
+						Ref<Material> material = AssetManager::GetAsset<Material>(materialHandle);
+
+						if (!material) { materialHandle = Renderer::GetDefaultDeferredMaterial(); } // Render with default forward material
 
 						Renderer::SubmitMesh(mesh.MeshHandle, materialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
 

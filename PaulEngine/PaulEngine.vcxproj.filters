@@ -1803,5 +1803,6 @@
     <ClCompile Include="src\PaulEngine\Renderer\RenderComponent.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\FrameRendererSerializer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\RenderTree.cpp" />
+    <ClCompile Include="src\PaulEngine\Scene\Components.cpp" />
   </ItemGroup>
 </Project>

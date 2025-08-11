@@ -108,7 +108,7 @@ namespace PaulEngine
 			
 			if (!node.MaterialIndices.empty())
 			{
-				meshComponent.MaterialHandle = materialHandles[node.MaterialIndices[0]];
+				ComponentMeshRenderer::SetMaterial(newEntity, materialHandles[node.MaterialIndices[0]]);
 			}
 		}
 

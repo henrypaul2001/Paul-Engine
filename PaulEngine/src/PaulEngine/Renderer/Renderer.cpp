@@ -11,7 +11,7 @@
 
 #include "RenderTree.h"
 
-#define RENDER_TREE_MODE 1
+#define RENDER_TREE_MODE 0
 
 namespace PaulEngine {
 	struct QuadVertex

@@ -191,7 +191,7 @@ namespace PaulEngine
 			out << YAML::BeginMap;
 
 			ComponentMeshRenderer& meshComponent = entity.GetComponent<ComponentMeshRenderer>();
-			out << YAML::Key << "MaterialHandle" << YAML::Value << meshComponent.MaterialHandle;
+			out << YAML::Key << "MaterialHandle" << YAML::Value << meshComponent.MaterialHandle();
 			out << YAML::Key << "MeshHandle" << YAML::Value << meshComponent.MeshHandle;
 			out << YAML::Key << "DepthFunc" << YAML::Value << (int)meshComponent.DepthState.Func;
 			out << YAML::Key << "DepthTest" << YAML::Value << meshComponent.DepthState.Test;
@@ -439,7 +439,7 @@ namespace PaulEngine
 					YAML::Node meshNode = entity["MeshRendererComponent"];
 					if (meshNode) {
 						ComponentMeshRenderer& meshComponent = deserializedEntity.AddComponent<ComponentMeshRenderer>();
-						meshComponent.MaterialHandle = meshNode["MaterialHandle"].as<AssetHandle>();
+						ComponentMeshRenderer::SetMaterial(deserializedEntity, meshNode["MaterialHandle"].as<AssetHandle>());
 						meshComponent.MeshHandle = meshNode["MeshHandle"].as<AssetHandle>();
 						meshComponent.DepthState.Func = (DepthFunc)meshNode["DepthFunc"].as<int>();
 						meshComponent.DepthState.Test = meshNode["DepthTest"].as<bool>();

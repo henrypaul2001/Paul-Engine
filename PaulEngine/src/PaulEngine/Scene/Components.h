@@ -348,10 +348,26 @@ namespace PaulEngine
 	};
 
 	struct ComponentMeshRenderer {
-		AssetHandle MaterialHandle = 0;
 		AssetHandle MeshHandle = 0;
 		DepthState DepthState;
 		FaceCulling CullState = FaceCulling::BACK;
+
+		AssetHandle MaterialHandle() const { return m_MaterialHandle; }
+		static void SetMaterial(Entity targetEntity, AssetHandle materialHandle);
+
+	private:
+		AssetHandle m_MaterialHandle = 0;
+	};
+
+	struct ForwardCompatibleMaterialTag {
+	private:
+		// without any data, the struct cannot be returned by reference by AddComponent()
+		void* allowForReturnByReference = nullptr;
+	};
+	struct DeferredCompatibleMaterialTag {
+	private:
+		// without any data, the struct cannot be returned by reference by AddComponent()
+		void* allowForReturnByReference = nullptr;
 	};
 
 	struct ComponentDirectionalLight {

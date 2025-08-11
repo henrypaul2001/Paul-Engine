@@ -99,6 +99,8 @@ namespace PaulEngine
 		CopyComponent<ComponentDirectionalLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentPointLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
 		CopyComponent<ComponentSpotLight>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<ForwardCompatibleMaterialTag>(dstSceneRegistry, srcSceneRegistry, entityMap);
+		CopyComponent<DeferredCompatibleMaterialTag>(dstSceneRegistry, srcSceneRegistry, entityMap);
 
 		auto transformView = dstSceneRegistry.view<ComponentTransform>();
 		for (auto entityID : transformView)
@@ -161,6 +163,8 @@ namespace PaulEngine
 		CopyComponentIfExists<ComponentDirectionalLight>(newEntity, entity);
 		CopyComponentIfExists<ComponentPointLight>(newEntity, entity);
 		CopyComponentIfExists<ComponentSpotLight>(newEntity, entity);
+		CopyComponentIfExists<ForwardCompatibleMaterialTag>(newEntity, entity);
+		CopyComponentIfExists<DeferredCompatibleMaterialTag>(newEntity, entity);
 
 		ComponentTransform& newTransform = newEntity.GetComponent<ComponentTransform>();
 		ComponentTransform& originalTransform = entity.GetComponent<ComponentTransform>();
