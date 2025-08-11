@@ -6,14 +6,9 @@
 #include "PaulEngine/Renderer/RenderPipeline.h"
 #include "PaulEngine/Renderer/Resource/UniformBuffer.h"
 
+#define RENDER_TREE_RESERVE_COUNT 100
 namespace PaulEngine
 {
-	namespace RenderTreeUtils
-	{
-		static Ref<UniformBuffer> s_MeshDataUniformBuffer = nullptr;
-#define RENDER_TREE_RESERVE_COUNT 100
-	}
-
 	using RenderInput = std::tuple<Ref<VertexArray>, Ref<Material>, glm::mat4, DepthState, FaceCulling, BlendState, int>;
 
 	struct MeshInput
@@ -96,11 +91,9 @@ namespace PaulEngine
 			RenderNode rootNode;
 			m_Nodes.push_back(rootNode);
 		}
-		void Init()
+		void Init(Ref<UniformBuffer> meshSubmissionBuffer)
 		{
-			if (!RenderTreeUtils::s_MeshDataUniformBuffer) {
-				RenderTreeUtils::s_MeshDataUniformBuffer = UniformBuffer::Create(sizeof(MeshSubmissionData), 1);
-			}
+			m_MeshDataUniformBuffer = meshSubmissionBuffer;
 			m_MeshBins.reserve(RENDER_TREE_RESERVE_COUNT);
 			forEachDataPool([&](auto& dataPool, std::size_t index) {
 				dataPool.reserve(RENDER_TREE_RESERVE_COUNT);
@@ -113,14 +106,14 @@ namespace PaulEngine
 			//RenderNode& currentNode = m_Nodes[0]; // m_Nodes[0] == rootNode
 			uint16_t currentNodeIndex = 0;
 
-			forEachDataPool([&](auto& dataPool, std::size_t index) {
+			auto work = [&](auto& dataPool, std::size_t index) {
 				PE_PROFILE_SCOPE("ForEachDataPool: Compare input data with data pool")
-				// Do stuff
-				using DataType = typename std::decay_t<decltype(dataPool)>::value_type;
+					// Do stuff
+					using DataType = typename std::decay_t<decltype(dataPool)>::value_type;
 				const auto& inputData = std::get<DataType>(input);
-			
+
 				RenderNode& currentNode = m_Nodes[currentNodeIndex];
-			
+
 				// Test child nodes against input data to find matching branch
 				const uint16_t numChildren = currentNode.ChildrenIndices.size();
 				bool success = false;
@@ -128,42 +121,44 @@ namespace PaulEngine
 				{
 					const uint16_t childIndex = currentNode.ChildrenIndices[i];
 					RenderNode& childNode = m_Nodes[childIndex];
-			
+
 					const auto& childData = dataPool[childNode.DataIndex];
-			
+
 					if (childData == inputData)
 					{
 						success = true;
-			
+
 						//currentNode = childNode;
 						currentNodeIndex = childIndex;
-			
+
 						break;
 					}
 				}
-			
+
 				if (!success)
 				{
 					// No matching branch found, create new branch
-			
+
 					// Create child
 					RenderNode newChild;
 					newChild.ParentIndex = currentNodeIndex;
-			
+
 					// Add data to data pool
 					newChild.DataIndex = dataPool.size();
 					dataPool.push_back(inputData);
-			
+
 					// Add new child to node list
 					uint16_t newChildIndex = m_Nodes.size();
 					RenderNode& currentNode = m_Nodes[currentNodeIndex];
 					currentNode.ChildrenIndices.push_back(newChildIndex);
 					m_Nodes.push_back(newChild);
-			
+
 					//currentNode = m_Nodes[newChildIndex];
 					currentNodeIndex = newChildIndex;
 				}
-			}, std::make_index_sequence<sizeof...(Types)>());
+			};
+
+			forEachDataPool(work, std::make_index_sequence<sizeof...(Types)>());
 		
 			{
 				PE_PROFILE_SCOPE("Push mesh to leaf node");
@@ -183,7 +178,7 @@ namespace PaulEngine
 		uint16_t Flush()
 		{
 			PE_PROFILE_FUNCTION();
-			RenderTreeUtils::s_MeshDataUniformBuffer->Bind(1);
+			m_MeshDataUniformBuffer->Bind(1);
 
 			uint16_t meshBinsVisited = 0;
 			uint16_t currentNodeIndex = 0;
@@ -218,9 +213,6 @@ namespace PaulEngine
 		uint16_t MeshBinCount() const { return m_MeshBins.size(); }
 
 		size_t NumLayers() const { return m_NumLayers; }
-
-		static Ref<UniformBuffer> GetMeshSubmissionBuffer() { return RenderTreeUtils::s_MeshDataUniformBuffer; }
-		static Ref<UniformBuffer>& GetMeshSubmissionBufferRef() { return RenderTreeUtils::s_MeshDataUniformBuffer; }
 
 	private:
 		template <typename Func, std::size_t... I>
@@ -279,7 +271,7 @@ namespace PaulEngine
 
 			for (size_t i = 0; i < numInstances; i++)
 			{
-				RenderTreeUtils::s_MeshDataUniformBuffer->SetData(&meshBin.Instances[i], sizeof(MeshSubmissionData));
+				m_MeshDataUniformBuffer->SetData(&meshBin.Instances[i], sizeof(MeshSubmissionData));
 				RenderCommand::DrawIndexed(meshBin.SharedVertexArray, indexBuffer->GetCount()); // TODO: make sure DrawIndexed() doesn't bind vertex array
 				m_DrawCalls++;
 			}
@@ -289,6 +281,7 @@ namespace PaulEngine
 		std::tuple<std::vector<Types>...> m_DataPools;
 		std::vector<RenderNode> m_Nodes;
 		std::vector<MeshBin> m_MeshBins;
+		Ref<UniformBuffer> m_MeshDataUniformBuffer;
 
 		uint16_t m_DrawCalls = 0;
 	};
