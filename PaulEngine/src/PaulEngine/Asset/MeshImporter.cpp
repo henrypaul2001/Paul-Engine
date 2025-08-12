@@ -367,6 +367,77 @@ namespace PaulEngine
 		Project::GetActive()->GetEditorAssetManager()->ImportAssetFromFile(savePath, metadata.Persistent);
 	}
 
+	static ParsedMesh ParseAssimpMesh(const aiMesh* mesh)
+	{
+		PE_PROFILE_FUNCTION();
+
+		// Read vertices
+		unsigned int numVertices = mesh->mNumVertices;
+		std::vector<MeshVertex> vertices = std::vector<MeshVertex>(numVertices);
+		for (unsigned int i = 0; i < numVertices; i++)
+		{
+			MeshVertex& vertex = vertices[i];
+
+			const aiVector3D& aiPosition = mesh->mVertices[i];
+			const aiVector3D& aiNormal = mesh->mNormals[i];
+			const aiVector3D& aiUV = mesh->mTextureCoords[0][i];
+			const aiVector3D& aiTangent = mesh->mTangents[i];
+			const aiVector3D& aiBitangent = mesh->mBitangents[i];
+
+			vertex.Position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
+			vertex.Normal = glm::vec3(aiNormal.x, aiNormal.y, aiNormal.z);
+			vertex.TexCoords = glm::vec2(aiUV.x, aiUV.y);
+			vertex.Tangent = glm::vec3(aiTangent.x, aiTangent.y, aiTangent.z);
+			vertex.Bitangent = glm::vec3(aiBitangent.x, aiBitangent.y, aiBitangent.z);
+		}
+
+		// Read indices
+		std::vector<uint32_t> indices;
+		unsigned int numFaces = mesh->mNumFaces;
+		indices.reserve(numFaces * 3);
+		for (unsigned int i = 0; i < numFaces; i++)
+		{
+			const aiFace& face = mesh->mFaces[i];
+			unsigned int numIndices = face.mNumIndices;
+			for (unsigned int j = 0; j < numIndices; j++)
+			{
+				indices.push_back(face.mIndices[j]);
+			}
+		}
+
+		ParsedMesh result;
+		result.Vertices = vertices;
+		result.Indices = indices;
+
+		return result;
+	}
+
+	Ref<ParsedModelLoadResult> MeshImporter::ParseModelFileRaw(const std::filesystem::path& filepath)
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<ParsedModelLoadResult> result = CreateRef<ParsedModelLoadResult>();
+
+		Assimp::Importer importer;
+		const aiScene* scene = GetAssimpScene(importer, filepath);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			PE_CORE_ERROR("Error loading model file at path: '{0}'", filepath.string());
+			PE_CORE_ERROR("    - {0}", importer.GetErrorString());
+			return nullptr;
+		}
+
+		// Read meshes
+		unsigned int numMeshes = scene->mNumMeshes;
+		result->ParsedMeshes.reserve(numMeshes);
+		for (unsigned int i = 0; i < numMeshes; i++)
+		{
+			result->ParsedMeshes.push_back(ParseAssimpMesh(scene->mMeshes[i]));
+		}
+
+		return result;
+	}
+
 	std::filesystem::path MeshImporter::CreateMeshFile(const std::filesystem::path& baseModelFilepath, const Ref<Mesh>& loadedMesh, uint32_t meshIndex, const AssetHandle modelHandle, const bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
