@@ -166,7 +166,7 @@ namespace PaulEngine {
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
-		virtual void SetData(const void* data, uint32_t size) = 0;
+		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
 
 		static Ref<VertexBuffer> Create(uint32_t size, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
 		static Ref<VertexBuffer> Create(float* vertices, uint32_t size, BufferUsage usage = BufferUsage::STATIC_DRAW);
@@ -182,6 +182,9 @@ namespace PaulEngine {
 
 		inline virtual uint32_t GetCount() = 0;
 
+		virtual void SetData(const uint32_t* indices, uint32_t count, uint32_t offset = 0) = 0;
+
+		static Ref<IndexBuffer> Create(uint32_t count, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
 		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count, BufferUsage usage = BufferUsage::STATIC_DRAW);
 	};
 }
