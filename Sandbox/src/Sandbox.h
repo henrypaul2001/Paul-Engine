@@ -107,14 +107,16 @@ namespace Sandbox
 
 	private:
 		bool OnKeyUp(PaulEngine::KeyReleasedEvent& e);
+		bool OnViewportResize(PaulEngine::MainViewportResizeEvent& e);
 
 		BatchedMeshManager m_MeshManager;
-		PaulEngine::SceneCamera m_SceneCamera;
-		glm::mat4 m_CameraTransform;
+		PaulEngine::Ref<PaulEngine::EditorCamera> m_Camera;
 
 		std::vector<BatchedMesh> m_MeshList;
 		std::vector<glm::mat4> m_MeshTransforms;
 
 		PaulEngine::Ref<PaulEngine::Shader> m_Shader;
+
+		uint32_t m_ViewportWidth, m_ViewportHeight;
 	};
 }
