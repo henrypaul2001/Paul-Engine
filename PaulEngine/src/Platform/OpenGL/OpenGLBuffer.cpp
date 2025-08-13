@@ -106,6 +106,6 @@ namespace PaulEngine {
 
 	void OpenGLIndexBuffer::SetData(const uint32_t* indices, uint32_t count, uint32_t offset)
 	{
-		glNamedBufferSubData(m_RendererID, offset, count * sizeof(indices), indices);
+		glNamedBufferSubData(m_RendererID, offset, count * sizeof(uint32_t), indices);
 	}
 }
