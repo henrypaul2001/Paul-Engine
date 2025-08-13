@@ -164,7 +164,6 @@ namespace PaulEngine {
 
 	void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)
 	{
-		PE_PROFILE_FUNCTION();
 		glDrawElements(DrawPrimitiveToGLEnum(vertexArray->GetDrawPrimitive()), indexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
