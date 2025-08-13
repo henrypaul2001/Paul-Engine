@@ -293,6 +293,7 @@ project "Sandbox"
 	{
 		"PaulEngine/vendor/spdlog/include",
 		"PaulEngine/src",
+		"%{IncludeDir.glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",

@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_DEBUG_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp\include;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\PaulEngine\vendor\yaml\yaml-cpp\include;..\PaulEngine\vendor\glad\include;..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>

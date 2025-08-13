@@ -1,3 +1,4 @@
+#context forward
 #type vertex
 #version 450 core
 layout(location = 0) in vec3 a_Position;
@@ -8,9 +9,11 @@ layout(location = 4) in vec3 a_Bitangent;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
+	float Exposure;
 } u_CameraBuffer;
 
 layout(std140, binding = 1) uniform MeshSubmission
@@ -18,11 +21,6 @@ layout(std140, binding = 1) uniform MeshSubmission
 	mat4 Transform;
 	int EntityID;
 } u_MeshSubmission;
-
-struct ViewData
-{
-	vec3 ViewPos;
-};
 
 struct VertexData
 {
@@ -34,8 +32,7 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out flat ViewData v_ViewData;
-layout(location = 3) out VertexData v_VertexData;
+layout(location = 1) out VertexData v_VertexData;
 
 void main()
 {
@@ -51,11 +48,9 @@ void main()
 	vec3 B = cross(N, T);
 	v_VertexData.TBN = mat3(T, B, N);
 
-	v_ViewData.ViewPos = u_CameraBuffer.ViewPos;
-
 	v_EntityID = u_MeshSubmission.EntityID;
 
-	gl_Position = u_CameraBuffer.ViewProjection * vec4(v_VertexData.WorldFragPos, 1.0);
+	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }
 
 #type fragment
@@ -66,11 +61,6 @@ layout(location = 1) out int entityID;
 const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
-
-struct ViewData
-{
-	vec3 ViewPos;
-};
 
 struct VertexData
 {
@@ -118,14 +108,15 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in flat ViewData v_ViewData;
-layout(location = 3) in VertexData v_VertexData;
+layout(location = 1) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
 {
-	mat4 ViewProjection;
+	mat4 View;
+	mat4 Projection;
 	vec3 ViewPos;
 	float Gamma;
+	float Exposure;
 } u_CameraBuffer;
 
 layout(std140, binding = 2) uniform SceneData
@@ -138,24 +129,9 @@ layout(std140, binding = 2) uniform SceneData
 	int ActiveSpotLights;
 } u_SceneData;
 
-layout(std140, binding = 3) uniform MaterialValues
-{
-	vec4 Albedo;
-	vec4 Specular;
-	vec2 TextureScale;
-	float Shininess;
-	float HeightScale;
-	int UseNormalMap;
-	int UseDisplacementMap;
-} u_MaterialValues;
-
-layout(binding = 0) uniform sampler2D AlbedoMap;
-layout(binding = 1) uniform sampler2D SpecularMap;
-layout(binding = 2) uniform sampler2D NormalMap;
-layout(binding = 3) uniform sampler2D DisplacementMap;
-layout(binding = 4) uniform sampler2DArray DirectionalLightShadowMapArray;
-layout(binding = 5) uniform sampler2DArray SpotLightShadowMapArray;
-layout(binding = 6) uniform samplerCubeArray PointLightShadowMapArray;
+layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
+layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
+layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -173,13 +149,12 @@ float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, v
 {
 	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
 	float currentDepth = length(fragToLight);
-	currentDepth = currentDepth / farPlane;
 
 	float shadow = 0.0;
 	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
 	int samples = 20;
 
-	float viewDistance = length(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	float viewDistance = length(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
 
 	for (int i = 0; i < samples; i++)
@@ -268,46 +243,6 @@ float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos
 	return shadow;
 }
 
-const float minLayers = 0.0;
-const float maxLayers = 32.0;
-vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
-{
-	// calculate number of depth layers
-	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), tangentViewDir), 0.0));
-	float layerDepth = 1.0 / numLayers;
-
-	float currentLayerDepth = 0.0f;
-
-	// amount to shift the texture coordinates per layer
-	vec2 P = tangentViewDir.xy * u_MaterialValues.HeightScale;
-	vec2 deltaTexCoords = (P / numLayers);
-
-	// initial sample
-	vec2 currentTexCoords = texCoords;
-	float currentDepthMapValue = texture(DisplacementMap, currentTexCoords).r;
-
-	while (currentLayerDepth < currentDepthMapValue) {
-		// shift coords along direction of P
-		currentTexCoords -= deltaTexCoords;
-
-		currentDepthMapValue = texture(DisplacementMap, currentTexCoords).r;
-
-		currentLayerDepth += layerDepth;
-	}
-
-	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
-
-	// get depth after and before collision for interpolation
-	float afterDepth = currentDepthMapValue - currentLayerDepth;
-	float beforeDepth = texture(DisplacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
-
-	// interpolate
-	float weight = afterDepth / (afterDepth - beforeDepth);
-	vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
-
-	return finalTexCoords;
-}
-
 vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpecular, vec3 Normal)
 {
 	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo;
@@ -319,7 +254,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
 
 	// shadow contribution
@@ -358,7 +293,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
 	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
 	// shadow contribution
@@ -407,7 +342,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), u_MaterialValues.Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
 	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
 
 	// shadow contribution
@@ -424,34 +359,36 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	ViewDir = normalize(v_ViewData.ViewPos - v_VertexData.WorldFragPos);
+	vec4 Albedo = vec4(1.0, 0.0, 0.0, 1.0);
+	vec4 Specular = Albedo;
+
+	vec2 TextureScale = vec2(1.0);
+	float Shininess = 16.0;
+	float HeightScale = 0.0;
+
+	vec3 EmissionColour = vec3(1.0);
+	float EmissionStrength = 0.0;
+
+	int UseNormalMap = 0;
+	int UseDisplacementMap = 0;
+
+	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
 
 	ScaledTexCoords = v_VertexData.TexCoords;
-	ScaledTexCoords *= u_MaterialValues.TextureScale;
-
-	// Apply parallax mapping to TexCoords
-	if (u_MaterialValues.UseDisplacementMap != 0)
-	{
-		ScaledTexCoords = ParallaxMapping(ScaledTexCoords, TangentViewDir);
-		//ScaledTexCoords = clamp(ScaledTexCoords, 0.0, 1.0);
-	}
+	ScaledTexCoords *= TextureScale;
 
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
-	vec3 AlbedoSample = pow(texture(AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
-	vec3 SpecularSample = vec3(texture(SpecularMap, ScaledTexCoords).r);
+	vec3 AlbedoSample = vec3(1.0);
+	vec3 EmissionSample = vec3(1.0);
+	vec3 SpecularSample = vec3(1.0);
 
 	vec3 Normal = normalize(v_VertexData.Normal);
-	if (u_MaterialValues.UseNormalMap != 0)
-	{
-		Normal = texture(NormalMap, ScaledTexCoords).rgb;
-		Normal = normalize(Normal * 2.0 - 1.0);
-		Normal = normalize(v_VertexData.TBN * Normal);
-	}
 
-	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
-	vec3 MaterialSpecular = SpecularSample * u_MaterialValues.Specular.rgb;
+	vec3 MaterialAlbedo = AlbedoSample * Albedo.rgb;
+	vec3 MaterialEmission = EmissionSample * (EmissionColour * EmissionStrength);
+	vec3 MaterialSpecular = SpecularSample *Specular.rgb;
 
 	vec3 Result = vec3(0.0);
 
@@ -473,7 +410,10 @@ void main()
 		Result += SpotLightContribution(i, MaterialAlbedo, MaterialSpecular, Normal);
 	}
 
-	colour = vec4(Result, u_MaterialValues.Albedo.a);
+	colour = vec4(Result, Albedo.a);
+
+	// Emission
+	colour.rgb += MaterialEmission;
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }
