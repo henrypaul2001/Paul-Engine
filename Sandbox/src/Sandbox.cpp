@@ -73,6 +73,27 @@ namespace Sandbox
 		m_MeshTransforms.push_back(gobletTransform);
 		m_MeshTransforms.push_back(gobletTransform);
 
+		// Create grid of cubes
+		glm::vec3 origin = glm::vec3(5.0f, 0.0f, -1.0f);
+		glm::vec3 delta = glm::vec3(2.0f);
+		const int xNum = 50;
+		const int yNum = 50;
+		const int zNum = 10;
+		for (int x = 0; x < xNum; x++)
+		{
+			for (int y = 0; y < yNum; y++)
+			{
+				for (int z = 0; z < zNum; z++)
+				{
+					m_MeshList.push_back(gobletMesh0);
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), origin);
+					transform = glm::translate(transform, delta * glm::vec3(x, y, z));
+					transform = glm::scale(transform, glm::vec3(3.0f));
+					m_MeshTransforms.push_back(transform);
+				}
+			}
+		}
+
 		s_CameraUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_CameraBuffer), 0);
 		//s_MeshDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_MeshDataBuffer), 1);
 		s_SceneDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_SceneDataBuffer), 2);
@@ -102,6 +123,9 @@ namespace Sandbox
 		m_MeshSubmissionBufferSize = 0;
 
 		m_LocalMeshSubmissionBuffer = std::vector<MeshSubmissionData>(MAX_DRAW_COMMANDS);
+
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 	}
 
 	void Sandbox::OnDetach()

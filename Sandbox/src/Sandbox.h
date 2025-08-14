@@ -9,7 +9,7 @@ namespace Sandbox
 #define INITIAL_BUFFER_CAPACITY_IN_BYTES 56000000
 #define INITIAL_INDEX_CAPACITY_COUNT 1000000
 	// 56 million bytes = 1,000,000 vertices
-#define MAX_DRAW_COMMANDS 100000
+#define MAX_DRAW_COMMANDS 1000000
 
 	struct DrawElementsIndirectCommand
 	{
