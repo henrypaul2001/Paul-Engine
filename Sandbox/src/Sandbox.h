@@ -9,6 +9,25 @@ namespace Sandbox
 #define INITIAL_BUFFER_CAPACITY_IN_BYTES 56000000
 #define INITIAL_INDEX_CAPACITY_COUNT 1000000
 	// 56 million bytes = 1,000,000 vertices
+#define MAX_DRAW_COMMANDS 100000
+
+	struct DrawElementsIndirectCommand
+	{
+		unsigned int count = 0;
+		unsigned int instanceCount = 0;
+		unsigned int firstIndex = 0;
+		int baseVertex = 0;
+		unsigned int baseInstance = 0;
+	};
+
+	struct MeshSubmissionData
+	{
+		glm::mat4 Transform;
+		int EntityID;
+		int padding0;
+		int padding1;
+		int padding2;
+	};
 
 	struct BatchedMesh
 	{
@@ -118,5 +137,13 @@ namespace Sandbox
 		PaulEngine::Ref<PaulEngine::Shader> m_Shader;
 
 		uint32_t m_ViewportWidth, m_ViewportHeight;
+
+		std::vector<DrawElementsIndirectCommand> m_LocalCommandsBuffer;
+		uint32_t m_DrawCommandBufferID;
+		size_t m_DrawCommandBufferSize;
+
+		std::vector<MeshSubmissionData> m_LocalMeshSubmissionBuffer;
+		uint32_t m_MeshSubmissionBufferID;
+		size_t m_MeshSubmissionBufferSize;
 	};
 }

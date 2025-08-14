@@ -21,11 +21,6 @@ namespace Sandbox
 	static CameraData s_CameraBuffer;
 	static PaulEngine::Ref<PaulEngine::UniformBuffer> s_CameraUniformBuffer = nullptr;
 
-	struct MeshSubmissionData
-	{
-		glm::mat4 Transform;
-		int EntityID;
-	};
 	static MeshSubmissionData s_MeshDataBuffer;
 	static PaulEngine::Ref<PaulEngine::UniformBuffer> s_MeshDataUniformBuffer = nullptr;
 
@@ -79,11 +74,11 @@ namespace Sandbox
 		m_MeshTransforms.push_back(gobletTransform);
 
 		s_CameraUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_CameraBuffer), 0);
-		s_MeshDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_MeshDataBuffer), 1);
+		//s_MeshDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_MeshDataBuffer), 1);
 		s_SceneDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_SceneDataBuffer), 2);
 
 		s_CameraUniformBuffer->Bind(0);
-		s_MeshDataUniformBuffer->Bind(1);
+		//s_MeshDataUniformBuffer->Bind(1);
 		s_SceneDataUniformBuffer->Bind(2);
 
 		s_SceneDataUniformBuffer->SetData(&s_SceneDataBuffer, sizeof(s_SceneDataBuffer));
@@ -92,6 +87,21 @@ namespace Sandbox
 
 		m_ViewportWidth = 0;
 		m_ViewportHeight = 0;
+
+		// Create draw command buffer
+		glCreateBuffers(1, &m_DrawCommandBufferID);
+		glNamedBufferStorage(m_DrawCommandBufferID, sizeof(DrawElementsIndirectCommand) * MAX_DRAW_COMMANDS, nullptr, GL_DYNAMIC_STORAGE_BIT);
+		m_DrawCommandBufferSize = 0;
+
+		m_LocalCommandsBuffer = std::vector<DrawElementsIndirectCommand>(MAX_DRAW_COMMANDS);
+	
+		// Create mesh submission buffer
+		glCreateBuffers(1, &m_MeshSubmissionBufferID);
+		glNamedBufferStorage(m_MeshSubmissionBufferID, sizeof(MeshSubmissionData) * MAX_DRAW_COMMANDS, nullptr, GL_DYNAMIC_STORAGE_BIT);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_MeshSubmissionBufferID);
+		m_MeshSubmissionBufferSize = 0;
+
+		m_LocalMeshSubmissionBuffer = std::vector<MeshSubmissionData>(MAX_DRAW_COMMANDS);
 	}
 
 	void Sandbox::OnDetach()
@@ -131,17 +141,41 @@ namespace Sandbox
 		m_MeshManager.GetVertexArray()->Bind();
 		m_Shader->Bind();
 
+		m_MeshSubmissionBufferSize = 0;
+		m_DrawCommandBufferSize = 0;
+
 		for (int i = 0; i < m_MeshList.size(); i++)
 		{
-			BatchedMesh m = m_MeshList[i];
+			MeshSubmissionData meshSubmission;
+			meshSubmission.Transform = m_MeshTransforms[i];
+			meshSubmission.EntityID = -1;
 
-			s_MeshDataBuffer.Transform = m_MeshTransforms[i];
-			s_MeshDataBuffer.EntityID = -1;
-			s_MeshDataUniformBuffer->SetData(&s_MeshDataBuffer, sizeof(s_MeshDataBuffer));
+			m_LocalMeshSubmissionBuffer[m_MeshSubmissionBufferSize++] = meshSubmission;
 
 			// Draw call
-			glDrawElementsBaseVertex(GL_TRIANGLES, m.NumIndices, GL_UNSIGNED_INT, (void*)(m.BaseIndicesIndex * sizeof(uint32_t)), m.BaseVertexIndex);
+			//glDrawElementsBaseVertex(GL_TRIANGLES, m.NumIndices, GL_UNSIGNED_INT, (void*)(m.BaseIndicesIndex * sizeof(uint32_t)), m.BaseVertexIndex);
+			
+			BatchedMesh m = m_MeshList[i];
+			
+			DrawElementsIndirectCommand command;
+			command.count = m.NumIndices;
+			command.instanceCount = 1;
+			command.firstIndex = m.BaseIndicesIndex;
+			command.baseVertex = m.BaseVertexIndex;
+			command.baseInstance = 0;
+
+			m_LocalCommandsBuffer[m_DrawCommandBufferSize++] = command;
 		}
+
+		// Buffer draw commands
+		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DrawCommandBufferID);
+		glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(DrawElementsIndirectCommand) * m_DrawCommandBufferSize, m_LocalCommandsBuffer.data());
+
+		// Buffer per mesh data
+		glNamedBufferSubData(m_MeshSubmissionBufferID, 0, sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize, m_LocalMeshSubmissionBuffer.data());
+
+		// Execute draw commands in a single draw call
+		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, m_DrawCommandBufferSize, 0);
 	}
 
 	void Sandbox::OnImGuiRender()
