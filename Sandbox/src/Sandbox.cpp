@@ -160,7 +160,13 @@ namespace Sandbox
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 
-		//SceneDataUniformBuffer->SetData(&SceneDataBuffer, sizeof(SceneDataBuffer));
+		PaulEngine::Renderer::DirectionalLight dirLight;
+		dirLight.Ambient = glm::vec4(0.1f, 0.1f, 0.1f, 0.0f);
+		dirLight.Diffuse = glm::vec4(1.0f);
+		dirLight.Specular = glm::vec4(1.0f);
+		s_SceneDataBuffer.DirLights[0] = dirLight;
+		s_SceneDataBuffer.ActiveDirLights = 1;
+		s_SceneDataUniformBuffer->SetData(&s_SceneDataBuffer, sizeof(s_SceneDataBuffer));
 
 		m_MeshManager.GetVertexArray()->Bind();
 		m_Shader->Bind();
