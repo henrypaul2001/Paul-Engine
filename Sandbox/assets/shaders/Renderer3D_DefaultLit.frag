@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;
 
@@ -52,7 +52,8 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in VertexData v_VertexData;
+layout(location = 1) in flat uint v_MaterialID;
+layout(location = 2) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
 {
@@ -62,6 +63,26 @@ layout(std140, binding = 0) uniform Camera
 	float Gamma;
 	float Exposure;
 } u_CameraBuffer;
+
+struct MaterialValues
+{
+	vec4 Albedo;
+	vec4 Specular;
+
+	vec3 EmissionColour;
+	float EmissionStrength;
+
+	//vec2 TextureScale;
+	vec3 padding0;
+	float Shininess;
+	//float HeightScale;
+
+	//int UseNormalMap;
+	//int UseDisplacementMap;
+};
+layout(binding = 3, std430) readonly buffer MaterialSSBO {
+	MaterialValues Materials[];
+};
 
 layout(std140, binding = 2) uniform SceneData
 {
@@ -198,7 +219,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
 
 	// shadow contribution
@@ -237,7 +258,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
 	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
 	// shadow contribution
@@ -286,7 +307,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
 	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
 
 	// shadow contribution
@@ -303,18 +324,18 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	vec4 Albedo = vec4(1.0, 0.0, 0.0, 1.0);
-	vec4 Specular = Albedo;
+	vec4 Albedo = Materials[v_MaterialID].Albedo;
+	vec4 Specular = Materials[v_MaterialID].Specular;
 
 	vec2 TextureScale = vec2(1.0);
-	float Shininess = 16.0;
-	float HeightScale = 0.0;
+	float Shininess = Materials[v_MaterialID].Shininess;
+	//float HeightScale = 0.0;
 
-	vec3 EmissionColour = vec3(1.0);
-	float EmissionStrength = 0.0;
+	vec3 EmissionColour = Materials[v_MaterialID].EmissionColour;
+	float EmissionStrength = Materials[v_MaterialID].EmissionStrength;
 
-	int UseNormalMap = 0;
-	int UseDisplacementMap = 0;
+	//int UseNormalMap = 0;
+	//int UseDisplacementMap = 0;
 
 	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;

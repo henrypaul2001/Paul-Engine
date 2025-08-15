@@ -61,10 +61,12 @@ namespace Sandbox
 		glm::mat4 sphereTransform = glm::mat4(1.0f);
 		sphereTransform = glm::translate(sphereTransform, glm::vec3(0.0f, 0.0f, -2.0f));
 		m_MeshTransforms.push_back(sphereTransform);
+		m_MaterialIDs.push_back(2);
 
 		glm::mat4 cubeTransform = glm::mat4(1.0f);
 		cubeTransform = glm::translate(cubeTransform, glm::vec3(-1.0f, 0.0f, -1.0f));
 		m_MeshTransforms.push_back(cubeTransform);
+		m_MaterialIDs.push_back(0);
 
 		glm::mat4 gobletTransform = glm::mat4(1.0f);
 		gobletTransform = glm::translate(gobletTransform, glm::vec3(1.0f, 0.0f, -1.0f));
@@ -72,6 +74,10 @@ namespace Sandbox
 		m_MeshTransforms.push_back(gobletTransform);
 		m_MeshTransforms.push_back(gobletTransform);
 		m_MeshTransforms.push_back(gobletTransform);
+
+		m_MaterialIDs.push_back(1);
+		m_MaterialIDs.push_back(1);
+		m_MaterialIDs.push_back(1);
 
 		// Create grid of cubes
 		glm::vec3 origin = glm::vec3(5.0f, 0.0f, -1.0f);
@@ -90,6 +96,7 @@ namespace Sandbox
 					transform = glm::translate(transform, delta * glm::vec3(x, y, z));
 					transform = glm::scale(transform, glm::vec3(3.0f));
 					m_MeshTransforms.push_back(transform);
+					m_MaterialIDs.push_back(1);
 				}
 			}
 		}
@@ -124,6 +131,45 @@ namespace Sandbox
 
 		m_LocalMeshSubmissionBuffer = std::vector<MeshSubmissionData>(MAX_DRAW_COMMANDS);
 
+		// Create material buffer
+		glCreateBuffers(1, &m_MaterialBufferID);
+		glNamedBufferStorage(m_MaterialBufferID, sizeof(BasicMaterial) * MAX_MATERIALS, nullptr, GL_DYNAMIC_STORAGE_BIT);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_MaterialBufferID);
+		m_MaterialBufferSize = 0;
+
+		m_LocalMaterialBuffer = std::vector<BasicMaterial>(MAX_MATERIALS);
+
+		// Load materials
+		m_MaterialBufferSize = 0;
+
+		// Create defaul material
+		BasicMaterial defaultMaterial;
+		defaultMaterial.Albedo = glm::vec4(1.0f);
+		defaultMaterial.Specular = glm::vec4(1.0f);
+		defaultMaterial.EmissionColour = glm::vec3(1.0f);
+		defaultMaterial.EmissionStrength = 0.0f;
+		defaultMaterial.Shininess = 16.0f;
+		defaultMaterial.padding0 = glm::vec3(0.0f);
+
+		BasicMaterial goldMaterial;
+		goldMaterial.Albedo = glm::vec4(1.0f, 0.84f, 0.0f, 1.0f);
+		goldMaterial.Specular = glm::vec4(1.0f, 0.84f, 0.0f, 1.0f);
+		goldMaterial.EmissionColour = glm::vec3(1.0f);
+		goldMaterial.EmissionStrength = 0.0f;
+		goldMaterial.Shininess = 32.0f;
+		goldMaterial.padding0 = glm::vec3(0.0f);
+
+		BasicMaterial redMaterial = goldMaterial;
+		redMaterial.Albedo = glm::vec4(0.8f, 0.2f, 0.2f, 1.0f);
+		redMaterial.Specular = redMaterial.Albedo;
+		redMaterial.Shininess = 8.0f;
+
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = defaultMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = goldMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = redMaterial;
+
+		glNamedBufferSubData(m_MaterialBufferID, 0, sizeof(BasicMaterial) * m_MaterialBufferSize, m_LocalMaterialBuffer.data());
+
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 	}
@@ -149,6 +195,7 @@ namespace Sandbox
 
 		m_Camera->OnUpdate(timestep, false);
 
+		// Set up camera buffer
 		s_CameraBuffer.View = m_Camera->GetViewMatrix();
 		s_CameraBuffer.Projection = m_Camera->GetProjection();
 		s_CameraBuffer.ViewPos = m_Camera->GetPosition();
@@ -156,10 +203,12 @@ namespace Sandbox
 		s_CameraBuffer.Exposure = m_Camera->GetExposure();
 		s_CameraUniformBuffer->SetData(&s_CameraBuffer, sizeof(s_CameraBuffer));
 
+		// Clear
 		PaulEngine::RenderCommand::SetViewport({ 0, 0 }, { m_ViewportWidth, m_ViewportHeight });
 		PaulEngine::RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		PaulEngine::RenderCommand::Clear();
 
+		// Set up scene data
 		PaulEngine::Renderer::DirectionalLight dirLight;
 		dirLight.Ambient = glm::vec4(0.1f, 0.1f, 0.1f, 0.0f);
 		dirLight.Diffuse = glm::vec4(1.0f);
@@ -168,17 +217,21 @@ namespace Sandbox
 		s_SceneDataBuffer.ActiveDirLights = 1;
 		s_SceneDataUniformBuffer->SetData(&s_SceneDataBuffer, sizeof(s_SceneDataBuffer));
 
+		// Bind for drawing
 		m_MeshManager.GetVertexArray()->Bind();
 		m_Shader->Bind();
 
+		// Init submissions
 		m_MeshSubmissionBufferSize = 0;
 		m_DrawCommandBufferSize = 0;
 
+		// Submit meshes
 		for (int i = 0; i < m_MeshList.size(); i++)
 		{
 			MeshSubmissionData meshSubmission;
 			meshSubmission.Transform = m_MeshTransforms[i];
 			meshSubmission.EntityID = -1;
+			meshSubmission.MaterialID = m_MaterialIDs[i];
 
 			m_LocalMeshSubmissionBuffer[m_MeshSubmissionBufferSize++] = meshSubmission;
 
@@ -196,6 +249,8 @@ namespace Sandbox
 
 			m_LocalCommandsBuffer[m_DrawCommandBufferSize++] = command;
 		}
+
+		// Execute draw calls
 
 		// Buffer draw commands
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DrawCommandBufferID);

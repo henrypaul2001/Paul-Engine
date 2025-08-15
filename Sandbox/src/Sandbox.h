@@ -6,10 +6,28 @@
 
 namespace Sandbox
 {
+#define MAX_MATERIALS 100
 #define INITIAL_BUFFER_CAPACITY_IN_BYTES 56000000
 #define INITIAL_INDEX_CAPACITY_COUNT 1000000
 	// 56 million bytes = 1,000,000 vertices
 #define MAX_DRAW_COMMANDS 1000000
+
+	struct BasicMaterial
+	{
+		glm::vec4 Albedo;
+		glm::vec4 Specular;
+
+		glm::vec3 EmissionColour;
+		float EmissionStrength;
+
+		//glm::vec2 TextureScale;
+		glm::vec3 padding0;
+		float Shininess;
+		//float HeightScale;
+		 
+		//int UseNormalMap;
+		//int UseDisplacementMap;
+	};
 
 	struct DrawElementsIndirectCommand
 	{
@@ -24,7 +42,7 @@ namespace Sandbox
 	{
 		glm::mat4 Transform;
 		int EntityID;
-		int padding0;
+		unsigned int MaterialID;
 		int padding1;
 		int padding2;
 	};
@@ -133,6 +151,7 @@ namespace Sandbox
 
 		std::vector<BatchedMesh> m_MeshList;
 		std::vector<glm::mat4> m_MeshTransforms;
+		std::vector<uint32_t> m_MaterialIDs;
 
 		PaulEngine::Ref<PaulEngine::Shader> m_Shader;
 
@@ -145,5 +164,9 @@ namespace Sandbox
 		std::vector<MeshSubmissionData> m_LocalMeshSubmissionBuffer;
 		uint32_t m_MeshSubmissionBufferID;
 		size_t m_MeshSubmissionBufferSize;
+
+		std::vector<BasicMaterial> m_LocalMaterialBuffer;
+		uint32_t m_MaterialBufferID;
+		size_t m_MaterialBufferSize;
 	};
 }

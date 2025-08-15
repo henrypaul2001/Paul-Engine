@@ -20,6 +20,9 @@ struct MeshSubmission
 {
 	mat4 Transform;
 	int EntityID;
+	uint MaterialID;
+	int padding1;
+	int padding2;
 };
 
 layout(binding = 1, std430) readonly buffer MeshSubmissionSSBO {
@@ -36,12 +39,14 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out VertexData v_VertexData;
+layout(location = 1) out flat uint v_MaterialID;
+layout(location = 2) out VertexData v_VertexData;
 
 void main()
 {
 	mat4 Transform = MeshSubmissions[gl_DrawID].Transform;
 	int EntityID = MeshSubmissions[gl_DrawID].EntityID;
+	uint MaterialID = MeshSubmissions[gl_DrawID].MaterialID;
 
 	mat3 normalMatrix = mat3(transpose(inverse(Transform)));
 	v_VertexData.WorldFragPos = vec3(Transform * vec4(a_Position, 1.0));
@@ -56,6 +61,7 @@ void main()
 	v_VertexData.TBN = mat3(T, B, N);
 
 	v_EntityID = EntityID;
+	v_MaterialID = MaterialID;
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }
@@ -115,7 +121,8 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in VertexData v_VertexData;
+layout(location = 1) in flat uint v_MaterialID;
+layout(location = 2) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
 {
@@ -125,6 +132,26 @@ layout(std140, binding = 0) uniform Camera
 	float Gamma;
 	float Exposure;
 } u_CameraBuffer;
+
+struct MaterialValues
+{
+	vec4 Albedo;
+	vec4 Specular;
+
+	vec3 EmissionColour;
+	float EmissionStrength;
+
+	//vec2 TextureScale;
+	vec3 padding0;
+	float Shininess;
+	//float HeightScale;
+
+	//int UseNormalMap;
+	//int UseDisplacementMap;
+};
+layout(binding = 3, std430) readonly buffer MaterialSSBO {
+	MaterialValues Materials[];
+};
 
 layout(std140, binding = 2) uniform SceneData
 {
@@ -261,7 +288,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
 
 	// shadow contribution
@@ -300,7 +327,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
 	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
 	// shadow contribution
@@ -349,7 +376,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
 	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
 
 	// shadow contribution
@@ -366,18 +393,18 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	vec4 Albedo = vec4(1.0, 0.0, 0.0, 1.0);
-	vec4 Specular = Albedo;
+	vec4 Albedo = Materials[v_MaterialID].Albedo;
+	vec4 Specular = Materials[v_MaterialID].Specular;
 
 	vec2 TextureScale = vec2(1.0);
-	float Shininess = 16.0;
-	float HeightScale = 0.0;
+	float Shininess = Materials[v_MaterialID].Shininess;
+	//float HeightScale = 0.0;
 
-	vec3 EmissionColour = vec3(1.0);
-	float EmissionStrength = 0.0;
+	vec3 EmissionColour = Materials[v_MaterialID].EmissionColour;
+	float EmissionStrength = Materials[v_MaterialID].EmissionStrength;
 
-	int UseNormalMap = 0;
-	int UseDisplacementMap = 0;
+	//int UseNormalMap = 0;
+	//int UseDisplacementMap = 0;
 
 	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
@@ -395,7 +422,7 @@ void main()
 
 	vec3 MaterialAlbedo = AlbedoSample * Albedo.rgb;
 	vec3 MaterialEmission = EmissionSample * (EmissionColour * EmissionStrength);
-	vec3 MaterialSpecular = SpecularSample *Specular.rgb;
+	vec3 MaterialSpecular = SpecularSample * Specular.rgb;
 
 	vec3 Result = vec3(0.0);
 

@@ -18,7 +18,7 @@ struct MeshSubmission
 {
 	mat4 Transform;
 	int EntityID;
-	int padding0;
+	uint MaterialID;
 	int padding1;
 	int padding2;
 };
@@ -37,12 +37,14 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out VertexData v_VertexData;
+layout(location = 1) out flat uint v_MaterialID;
+layout(location = 2) out VertexData v_VertexData;
 
 void main()
 {
 	mat4 Transform = MeshSubmissions[gl_DrawID].Transform;
 	int EntityID = MeshSubmissions[gl_DrawID].EntityID;
+	uint MaterialID = MeshSubmissions[gl_DrawID].MaterialID;
 
 	mat3 normalMatrix = mat3(transpose(inverse(Transform)));
 	v_VertexData.WorldFragPos = vec3(Transform * vec4(a_Position, 1.0));
@@ -57,6 +59,7 @@ void main()
 	v_VertexData.TBN = mat3(T, B, N);
 
 	v_EntityID = EntityID;
+	v_MaterialID = MaterialID;
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }
