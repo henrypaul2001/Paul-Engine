@@ -10,6 +10,8 @@
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
 
+#include "spirv_reflect.h"
+
 namespace PaulEngine {
 
 	namespace OpenGLShaderUtils
@@ -399,96 +401,280 @@ namespace PaulEngine {
 		m_RendererID = program;
 	}
 
+	void OpenGLShader::AsVectorType(ShaderDataType& type, const SpvReflectBlockVariable* member)
+	{
+		uint32_t component_count = member->numeric.vector.component_count;
+
+		if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT)
+		{
+			type = (ShaderDataType)(component_count + ((int)ShaderDataType::Float - 1)); // Float = 1, Float2 = 2, Float3 = 3, Float4 = 4
+		}
+		else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_INT)
+		{
+			type = (ShaderDataType)(component_count + ((int)ShaderDataType::Int - 1)); // Int = 7, Int2 = 8, Int3 = 9, Int4 = 10
+		}
+		else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_BOOL)
+		{
+			PE_CORE_WARN("Bool vector type not supported, using Int instead");
+			type = (ShaderDataType)(component_count + ((int)ShaderDataType::Int - 1));
+		}
+	}
+
+	void OpenGLShader::AsMatrixType(ShaderDataType& type, const SpvReflectBlockVariable* member)
+	{
+		uint32_t column_count = member->numeric.matrix.column_count;
+		uint32_t row_count = member->numeric.matrix.row_count;
+
+		bool four = (column_count == 4 && row_count == 4);
+		if (!four && (column_count == 3 && row_count == 3))
+		{
+			PE_CORE_WARN("Unsupported matrix dimensions");
+		}
+
+		if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT)
+		{
+			type = four ? ShaderDataType::Mat4 : ShaderDataType::Mat3;
+		}
+		else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_INT)
+		{
+			PE_CORE_WARN("Int matrix type not supported");
+		}
+		else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_BOOL)
+		{
+			PE_CORE_WARN("Bool matrix type not supported");
+		}
+	}
+
+	void OpenGLShader::OverrideArrayOpType(SpvOp& op, SpvReflectTypeFlags flags)
+	{
+		if (op == SpvOpTypeArray)
+		{
+			if (flags & SPV_REFLECT_TYPE_FLAG_FLOAT) { op = SpvOpTypeFloat; }
+			if (flags & SPV_REFLECT_TYPE_FLAG_INT) { op = SpvOpTypeInt; }
+			if (flags & SPV_REFLECT_TYPE_FLAG_BOOL) { op = SpvOpTypeBool; }
+			if (flags & SPV_REFLECT_TYPE_FLAG_MATRIX) { op = SpvOpTypeMatrix; }
+			if (flags & SPV_REFLECT_TYPE_FLAG_VECTOR) { op = SpvOpTypeVector; }
+			if (flags & SPV_REFLECT_TYPE_FLAG_STRUCT) { op = SpvOpTypeStruct; }
+		}
+	}
+
+	void OpenGLShader::ReflectBlockVariableRecursive(spv_reflect::ShaderModule& reflection, SpvReflectBlockVariable* member, const std::string& parentName)
+	{
+		bool isStruct = false;
+		ShaderDataType type = ShaderDataType::None;
+
+		// Op type
+		SpvOp op = member->type_description->op;
+		SpvReflectTypeFlags flags = member->type_description->type_flags;
+		OverrideArrayOpType(op, flags);
+
+		const char* struct_member_name = member->type_description->struct_member_name;
+		switch (op)
+		{
+		case SpvOpTypeFloat:
+			type = ShaderDataType::Float;
+			break;
+		case SpvOpTypeInt:
+			type = ShaderDataType::Int;
+			break;
+		case SpvOpTypeBool:
+			type = ShaderDataType::Bool;
+			break;
+		case SpvOpTypeMatrix:
+			AsMatrixType(type, member);
+			break;
+		case SpvOpTypeVector:
+			AsVectorType(type, member);
+			break;
+		case SpvOpTypeStruct:
+			isStruct = true;
+			break;
+		case SpvOpTypeArray:
+			isStruct = true;
+			break;
+		}
+
+		uint32_t arrayDims = member->array.dims_count;
+		uint32_t arraySize = 0;
+
+		std::string name = member->name;
+		if (parentName != "")
+		{
+			name = parentName + "." + name;
+		}
+
+		if (arrayDims > 0)
+		{
+			arraySize = member->array.dims[0];
+			for (uint32_t x = 0; x < arrayDims; x++)
+			{
+				for (uint32_t y = 0; y < arraySize; y++)
+				{
+					std::string indexedName = name + std::string("[" + std::to_string(x) + "][" + std::to_string(y) + "]");
+					if (isStruct)
+					{
+						uint32_t memberCount = member->member_count;
+						for (uint32_t i = 0; i < memberCount; i++)
+						{
+							SpvReflectBlockVariable* child = &member->members[i];
+							ReflectBlockVariableRecursive(reflection, child, indexedName);
+						}
+					}
+					else { PE_CORE_TRACE("       - {0}: {1} ({2})", 0, indexedName.c_str(), ShaderDataTypeToString(type)); }
+				}
+			}
+		}
+		else
+		{
+			if (isStruct)
+			{
+				uint32_t memberCount = member->member_count;
+				for (uint32_t i = 0; i < memberCount; i++)
+				{
+					SpvReflectBlockVariable* child = &member->members[i];
+					ReflectBlockVariableRecursive(reflection, child, name);
+				}
+			}
+			else { PE_CORE_TRACE("       - {0}: {1} ({2})", 0, name.c_str(), ShaderDataTypeToString(type)); }
+		}
+	}
+
+	bool OpenGLShader::ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error)
+	{
+		uint32_t count = 0;
+		SpvReflectResult result;
+		result = reflection.EnumerateDescriptorBindings(&count, nullptr);
+		if (result != SPV_REFLECT_RESULT_SUCCESS)
+		{
+			error = "Failed to count descriptor bindings";
+			return false;
+		}
+
+		std::vector<SpvReflectDescriptorBinding*> bindings(count);
+		result = reflection.EnumerateDescriptorBindings(&count, bindings.data());
+		if (result != SPV_REFLECT_RESULT_SUCCESS)
+		{
+			error = "Failed to enumerate descriptor bindings";
+			return false;
+		}
+
+		// Write buffers
+		for (uint32_t i = 0; i < count; i++)
+		{
+			const SpvReflectDescriptorBinding* binding = bindings[i];
+			if (binding->descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+			{
+				PE_CORE_TRACE("  Uniform buffer: {0}", binding->name);
+				PE_CORE_TRACE("    Binding: {0}", binding->binding);
+				PE_CORE_TRACE("    Size   : {0}", binding->block.size);
+
+				uint32_t member_count = binding->block.member_count;
+				PE_CORE_TRACE("    Members: {0}", member_count);
+
+				for (uint32_t i = 0; i < member_count; i++)
+				{
+					SpvReflectBlockVariable member = binding->block.members[i];
+					ReflectBlockVariableRecursive(reflection, &member);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	bool OpenGLShader::ReflectSamplers(spv_reflect::ShaderModule& reflection, std::string& error)
+	{
+		uint32_t count = 0;
+		SpvReflectResult result;
+		result = reflection.EnumerateDescriptorBindings(&count, nullptr);
+		if (result != SPV_REFLECT_RESULT_SUCCESS)
+		{
+			error = "Failed to count descriptor bindings";
+			return false;
+		}
+
+		std::vector<SpvReflectDescriptorBinding*> bindings(count);
+		result = reflection.EnumerateDescriptorBindings(&count, bindings.data());
+		if (result != SPV_REFLECT_RESULT_SUCCESS)
+		{
+			error = "Failed to enumerate descriptor bindings";
+			return false;
+		}
+
+		// Write samplers
+		for (uint32_t i = 0; i < count; i++)
+		{
+			const SpvReflectDescriptorBinding* binding = bindings[i];
+			if (binding->descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER)
+			{
+				PE_CORE_TRACE("         Sampler: {0}", binding->name);
+				PE_CORE_TRACE("    Binding: {0}", binding->binding);
+
+				switch (binding->user_type)
+				{
+				case SPV_REFLECT_USER_TYPE_TEXTURE_2D:
+					PE_CORE_TRACE("    Type   : Sampler2D");
+					break;
+				case SPV_REFLECT_USER_TYPE_TEXTURE_CUBE:
+					PE_CORE_TRACE("    Type   : SamplerCube");
+					break;
+				case SPV_REFLECT_USER_TYPE_TEXTURE_2D_ARRAY:
+					PE_CORE_TRACE("    Type   : Sampler2DArray");
+					break;
+				case SPV_REFLECT_USER_TYPE_TEXTURE_CUBE_ARRAY:
+					PE_CORE_TRACE("    Type   : SamplerCubeArray");
+					break;
+				default:
+					PE_CORE_TRACE("    Type   : Unknown");
+				}
+				uint32_t dims = binding->array.dims_count;
+				uint32_t arraySize = binding->array.dims[0];
+
+				if (dims > 0)
+				{
+					PE_CORE_TRACE(" Array Dims: {0}", dims);
+					PE_CORE_TRACE(" Array Size: {0}", arraySize);
+				}
+			}
+		}
+
+		return true;
+	}
+
 	void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t>& shaderData)
 	{
-		spirv_cross::Compiler compiler = spirv_cross::Compiler(shaderData);
-		spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+		// Generate reflection data for a shader
+
+		size_t spirv_nbytes = shaderData.size() * sizeof(uint32_t);
+		spv_reflect::ShaderModule reflection = spv_reflect::ShaderModule(spirv_nbytes, shaderData.data());
+
+		if (reflection.GetResult() != SPV_REFLECT_RESULT_SUCCESS)
+		{
+			PE_CORE_ERROR("Error reflecting SPIRV data at source path '{0}'", m_Filepath.c_str());
+			return;
+		}
 
 		PE_CORE_TRACE("OpenGLShader::Reflect - {0} {1}", OpenGLShaderUtils::GLShaderStageToString(stage), m_Filepath);
-		PE_CORE_TRACE("    {0} uniform buffers", resources.uniform_buffers.size());
-		PE_CORE_TRACE("    {0} samplers", resources.sampled_images.size());
 
-		if (resources.uniform_buffers.size() > 0) {
-			PE_CORE_TRACE("Uniform buffers:");
-		}
-		for (const auto& resource : resources.uniform_buffers) {
-			const auto& bufferType = compiler.get_type(resource.base_type_id);
-			uint32_t bufferSize = compiler.get_declared_struct_size(bufferType);
-			uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-			int memberCount = bufferType.member_types.size();
-
-			PE_CORE_TRACE("  {0}", resource.name.c_str());
-			PE_CORE_TRACE("    Size = {0}", bufferSize);
-			PE_CORE_TRACE("    Binding = {0}", binding);
-			PE_CORE_TRACE("    Members = {0}", memberCount);
-
-			Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
-			uboSpec->Size = bufferSize;
-			uboSpec->Binding = binding;
-			uboSpec->Name = resource.name;
-
-			for (int i = 0; i < memberCount; i++) {
-				spirv_cross::TypeID memberTypeID = bufferType.member_types[i];
-				const std::string& memberName = compiler.get_member_name(resource.base_type_id, i);
-				spirv_cross::SPIRType memberType = compiler.get_type(memberTypeID);
-
-				OpenGLShaderUtils::AddSpirTypeToUBOSpecRecursive(compiler, memberType, memberName, uboSpec);
-			}
-			m_ReflectionData.push_back(uboSpec);
+		// Get uniform buffers
+		// -------------------
+		std::string error = "";
+		bool success = ReflectUBOs(reflection, error);
+		if (!success)
+		{
+			PE_CORE_ERROR("Error reflecting SPIRV data at source path '{0}'", m_Filepath.c_str());
+			PE_CORE_ERROR("  - {0}", error.c_str());
 		}
 
-		if (resources.sampled_images.size() > 0) {
-			PE_CORE_TRACE("Image samplers:");
-		}
-		for (const auto& resource : resources.sampled_images) {
-			const auto& samplerType = compiler.get_type(resource.base_type_id);
-			uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
 
-			PE_CORE_TRACE("  {0}", resource.name.c_str());
-			PE_CORE_TRACE("    Binding = {0}", binding);
-
-			spv::Dim dimensions = samplerType.image.dim;
-			bool array = samplerType.image.arrayed;
-			
-			if (dimensions == spv::Dim::Dim2D)
-			{
-				if (array) {
-					Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
-					arraySpec->Binding = binding;
-					arraySpec->Name = resource.name;
-
-					m_ReflectionData.push_back(arraySpec);
-
-					PE_CORE_TRACE("    Type = Sampler2DArray");
-				}
-				else {
-					Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
-					imageSpec->Binding = binding;
-					imageSpec->Name = resource.name;
-
-					m_ReflectionData.push_back(imageSpec);
-
-					PE_CORE_TRACE("    Type = Sampler2D");
-				}
-			}
-			else if (dimensions == spv::Dim::DimCube)
-			{
-				Ref<SamplerCubeShaderParameterTypeSpecification> cubeSpec = CreateRef<SamplerCubeShaderParameterTypeSpecification>();
-				cubeSpec->Binding = binding;
-				cubeSpec->Name = resource.name;
-				m_ReflectionData.push_back(cubeSpec);
-				PE_CORE_TRACE("    Type = SamplerCube");
-			}
-			else
-			{
-				PE_CORE_WARN("Unsupported sampler dimensions");
-			}
-
-			const spirv_cross::SPIRType& spirType = compiler.get_type(resource.type_id);
-			if (spirType.array.size() > 0) {
-				PE_CORE_TRACE("    Array dimensions = {0}", spirType.array.size());
-				PE_CORE_TRACE("    Array size = {0}", spirType.array[0]);
-			}
+		// Get samplers
+		// ------------
+		error = "";
+		success = ReflectSamplers(reflection, error);
+		if (!success)
+		{
+			PE_CORE_ERROR("Error reflecting SPIRV data at source path '{0}'", m_Filepath.c_str());
+			PE_CORE_ERROR("  - {0}", error.c_str());
 		}
 	}
 

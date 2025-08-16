@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 
+#include <spirv_reflect.h>
+
 typedef unsigned int GLenum; // TODO: remove
 
 namespace PaulEngine {
@@ -52,6 +54,12 @@ namespace PaulEngine {
 		void CompileOrGetOpenGLBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
 		void CreateProgram();
 		void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
+		bool ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error);
+		bool ReflectSamplers(spv_reflect::ShaderModule& reflection, std::string& error);
+		void ReflectBlockVariableRecursive(spv_reflect::ShaderModule& reflection, SpvReflectBlockVariable* member, const std::string& parentName = "");
+		void AsVectorType(ShaderDataType& type, const SpvReflectBlockVariable* member);
+		void AsMatrixType(ShaderDataType& type, const SpvReflectBlockVariable* member);
+		void OverrideArrayOpType(SpvOp& op, SpvReflectTypeFlags flags);
 
 		uint32_t m_RendererID;
 		std::string m_Filepath;
