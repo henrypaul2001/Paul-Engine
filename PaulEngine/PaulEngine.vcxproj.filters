@@ -55,6 +55,12 @@
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\SPIRV-Reflect">
+      <UniqueIdentifier>{280B8EB1-149A-177B-BDB8-2B76A9262821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\SPIRV-Reflect\SPIRV-Reflect">
+      <UniqueIdentifier>{5D0BFC66-4947-FFD0-B259-17C89EB4A7EB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
     </Filter>
@@ -168,6 +174,9 @@
     <ClInclude Include="src\PaulEngine\Events\ApplicationEvent.h">
       <Filter>src\PaulEngine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Events\AssetEvent.h">
+      <Filter>src\PaulEngine\Events</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Events\Event.h">
       <Filter>src\PaulEngine\Events</Filter>
     </ClInclude>
@@ -194,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Project\ProjectSerializer.h">
       <Filter>src\PaulEngine\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.h">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Asset\Font.h">
       <Filter>src\PaulEngine\Renderer\Asset</Filter>
@@ -222,6 +234,9 @@
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\FrameRendererSerializer.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\GraphicsContext.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
@@ -238,6 +253,9 @@
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\RenderPipeline.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\RenderTree.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Renderer.h">
@@ -280,6 +298,9 @@
       <Filter>src\PaulEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Scene\EntityScript.h">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Scene\Prefab.h">
       <Filter>src\PaulEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Scene\Scene.h">
@@ -332,6 +353,9 @@
     </ClInclude>
     <ClInclude Include="src\pepch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\SPIRV-Reflect\SPIRV-Reflect\spirv_reflect.h">
+      <Filter>vendor\SPIRV-Reflect\SPIRV-Reflect</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1593,11 +1617,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Scene\Prefab.h" />
-    <ClInclude Include="src\PaulEngine\Events\AssetEvent.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\FrameRendererSerializer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\RenderTree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1672,6 +1691,9 @@
     <ClCompile Include="src\PaulEngine\Project\ProjectSerializer.cpp">
       <Filter>src\PaulEngine\Project</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.cpp">
+      <Filter>src\PaulEngine\Renderer\Asset</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Asset\Font.cpp">
       <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClCompile>
@@ -1696,13 +1718,22 @@
     <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\FrameRendererSerializer.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\RenderAPI.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\RenderCommand.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\RenderComponent.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\RenderPipeline.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\RenderTree.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Renderer.cpp">
@@ -1735,7 +1766,13 @@
     <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArray.cpp">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Scene\Components.cpp">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Entity.cpp">
+      <Filter>src\PaulEngine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Scene\Prefab.cpp">
       <Filter>src\PaulEngine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Scene.cpp">
@@ -1792,17 +1829,17 @@
     <ClCompile Include="src\pepch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\SPIRV-Reflect\SPIRV-Reflect\spirv_reflect.c">
+      <Filter>vendor\SPIRV-Reflect\SPIRV-Reflect</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\SPIRV-Reflect\SPIRV-Reflect\spirv_reflect.cpp">
+      <Filter>vendor\SPIRV-Reflect\SPIRV-Reflect</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Scene\Prefab.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Asset\EnvironmentMap.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\RenderComponent.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\FrameRendererSerializer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\RenderTree.cpp" />
-    <ClCompile Include="src\PaulEngine\Scene\Components.cpp" />
   </ItemGroup>
 </Project>

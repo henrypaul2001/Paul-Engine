@@ -92,7 +92,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <Profile>false</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,21 +141,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Panels\FrameRendererProfilePanel.h" />
-    <ClInclude Include="src\Panels\FrameRendererPanel.h" />
     <ClInclude Include="src\EditorLayer.h" />
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
+    <ClInclude Include="src\Panels\FrameRendererPanel.h" />
+    <ClInclude Include="src\Panels\FrameRendererProfilePanel.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Window\CreateAtlasWindow.h" />
     <ClInclude Include="src\Window\CreateMaterialWindow.h" />
     <ClInclude Include="src\Window\CreateTextureArrayWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Panels\FrameRendererProfilePanel.cpp" />
-    <ClCompile Include="src\Panels\FrameRendererPanel.cpp" />
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\Panels\ContentBrowserPanel.cpp" />
+    <ClCompile Include="src\Panels\FrameRendererPanel.cpp" />
+    <ClCompile Include="src\Panels\FrameRendererProfilePanel.cpp" />
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Window\CreateAtlasWindow.cpp" />
     <ClCompile Include="src\Window\CreateMaterialWindow.cpp" />
