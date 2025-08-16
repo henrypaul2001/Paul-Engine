@@ -198,8 +198,7 @@ namespace PaulEngine {
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 		sources[GL_GEOMETRY_SHADER] = geometrySrc;
 
-		CompileOrGetVulkanBinaries(sources);
-		CompileOrGetOpenGLBinaries();
+		CompileOrGetOpenGLBinaries(sources);
 		CreateProgram();
 	}
 
@@ -212,8 +211,7 @@ namespace PaulEngine {
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 
-		CompileOrGetVulkanBinaries(sources);
-		CompileOrGetOpenGLBinaries();
+		CompileOrGetOpenGLBinaries(sources);
 		CreateProgram();
 	}
 
@@ -226,8 +224,7 @@ namespace PaulEngine {
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		
-		CompileOrGetVulkanBinaries(shaderSources);
-		CompileOrGetOpenGLBinaries();
+		CompileOrGetOpenGLBinaries(shaderSources);
 		CreateProgram();
 
 		// Extract name from filepath
@@ -307,68 +304,9 @@ namespace PaulEngine {
 		return shaderSources;
 	}
 
-	void OpenGLShader::CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
+	void OpenGLShader::CompileOrGetOpenGLBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		PE_PROFILE_FUNCTION();
-
-		GLuint program = glCreateProgram();
-		shaderc::Compiler compiler;
-		shaderc::CompileOptions options;
-
-		options.SetGenerateDebugInfo();
-
-		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
-		const bool optimize = true;
-		if (optimize) { options.SetOptimizationLevel(shaderc_optimization_level_performance); }
-		std::filesystem::path cacheDirectory = OpenGLShaderUtils::GetCacheDirectory();
-
-		auto& shaderData = m_VulkanSPIRV;
-		shaderData.clear();
-		for (auto&& [stage, source] : shaderSources)
-		{
-			std::filesystem::path shaderFilepath = m_Filepath;
-			std::filesystem::path cachedPath = cacheDirectory / (shaderFilepath.filename().string() + OpenGLShaderUtils::GLShaderStageCachedVulkanFileExtension(stage));
-
-			// First check for cached SpirV shader
-			std::ifstream in = std::ifstream(cachedPath, std::ios::in | std::ios::binary);
-			if (in.is_open()) {
-				in.seekg(0, std::ios::end);
-				auto size = in.tellg();
-				in.seekg(0, std::ios::beg);
-
-				auto& data = shaderData[stage];
-				data.resize(size / sizeof(uint32_t));
-				in.read((char*)data.data(), size);
-			}
-			else {
-				// Compile and cache into SpirV
-				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, OpenGLShaderUtils::GLShaderStageToShaderC(stage), m_Filepath.c_str(), options);
-				if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
-					PE_CORE_ERROR(module.GetErrorMessage());
-					PE_CORE_ASSERT(false, "Error compiling OpenGL shader into Vulkan-SpirV cache");
-				}
-
-				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
-
-				std::ofstream out = std::ofstream(cachedPath, std::ios::out | std::ios::binary);
-				if (out.is_open())
-				{
-					auto& data = shaderData[stage];
-					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
-					out.flush();
-					out.close();
-				}
-			}
-		}
-
-		for (auto&& [stage, data] : shaderData) {
-			Reflect(stage, data);
-		}
-	}
-
-	void OpenGLShader::CompileOrGetOpenGLBinaries()
-	{
-		auto& shaderData = m_OpenGLSPIRV;
 
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
@@ -380,9 +318,11 @@ namespace PaulEngine {
 		if (optimize) { options.SetOptimizationLevel(shaderc_optimization_level_performance); }
 
 		std::filesystem::path cacheDirectory = OpenGLShaderUtils::GetCacheDirectory();
+		
+		auto& shaderData = m_OpenGLSPIRV;
 		shaderData.clear();
-		m_OpenGLSourceCode.clear();
-		for (auto&& [stage, spirv] : m_VulkanSPIRV) {
+
+		for (auto&& [stage, source] : shaderSources) {
 			std::filesystem::path shaderFilepath = m_Filepath;
 			std::filesystem::path cachedPath = cacheDirectory / (shaderFilepath.filename().string() + OpenGLShaderUtils::GLShaderStageCachedOpenGLFileExtension(stage));
 
@@ -399,10 +339,6 @@ namespace PaulEngine {
 			}
 			else {
 				// Compile and cache into SpirV
-				spirv_cross::CompilerGLSL glslCompiler = spirv_cross::CompilerGLSL(spirv);
-				m_OpenGLSourceCode[stage] = glslCompiler.compile();
-				auto& source = m_OpenGLSourceCode[stage];
-
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, OpenGLShaderUtils::GLShaderStageToShaderC(stage), m_Filepath.c_str());
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
 					PE_CORE_ERROR(module.GetErrorMessage());
@@ -420,6 +356,10 @@ namespace PaulEngine {
 				}
 			}
 		}
+
+		//for (auto&& [stage, data] : shaderData) {
+		//	Reflect(stage, data);
+		//}
 	}
 
 	void OpenGLShader::CreateProgram()
@@ -551,6 +491,99 @@ namespace PaulEngine {
 			}
 		}
 	}
+
+	//void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t>& shaderData)
+	//{
+	//	spirv_cross::Compiler compiler = spirv_cross::Compiler(shaderData);
+	//	spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+	//
+	//	PE_CORE_TRACE("OpenGLShader::Reflect - {0} {1}", OpenGLShaderUtils::GLShaderStageToString(stage), m_Filepath);
+	//	PE_CORE_TRACE("    {0} uniform buffers", resources.uniform_buffers.size());
+	//	PE_CORE_TRACE("    {0} samplers", resources.sampled_images.size());
+	//
+	//	if (resources.uniform_buffers.size() > 0) {
+	//		PE_CORE_TRACE("Uniform buffers:");
+	//	}
+	//	for (const auto& resource : resources.uniform_buffers) {
+	//		const auto& bufferType = compiler.get_type(resource.base_type_id);
+	//		uint32_t bufferSize = compiler.get_declared_struct_size(bufferType);
+	//		uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+	//		int memberCount = bufferType.member_types.size();
+	//
+	//		PE_CORE_TRACE("  {0}", resource.name.c_str());
+	//		PE_CORE_TRACE("    Size = {0}", bufferSize);
+	//		PE_CORE_TRACE("    Binding = {0}", binding);
+	//		PE_CORE_TRACE("    Members = {0}", memberCount);
+	//
+	//		Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
+	//		uboSpec->Size = bufferSize;
+	//		uboSpec->Binding = binding;
+	//		uboSpec->Name = resource.name;
+	//
+	//		for (int i = 0; i < memberCount; i++) {
+	//			spirv_cross::TypeID memberTypeID = bufferType.member_types[i];
+	//			const std::string& memberName = compiler.get_member_name(resource.base_type_id, i);
+	//			spirv_cross::SPIRType memberType = compiler.get_type(memberTypeID);
+	//
+	//			OpenGLShaderUtils::AddSpirTypeToUBOSpecRecursive(compiler, memberType, memberName, uboSpec);
+	//		}
+	//		m_ReflectionData.push_back(uboSpec);
+	//	}
+	//
+	//	if (resources.sampled_images.size() > 0) {
+	//		PE_CORE_TRACE("Image samplers:");
+	//	}
+	//	for (const auto& resource : resources.sampled_images) {
+	//		const auto& samplerType = compiler.get_type(resource.base_type_id);
+	//		uint32_t binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+	//
+	//		PE_CORE_TRACE("  {0}", resource.name.c_str());
+	//		PE_CORE_TRACE("    Binding = {0}", binding);
+	//
+	//		spv::Dim dimensions = samplerType.image.dim;
+	//		bool array = samplerType.image.arrayed;
+	//		
+	//		if (dimensions == spv::Dim::Dim2D)
+	//		{
+	//			if (array) {
+	//				Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
+	//				arraySpec->Binding = binding;
+	//				arraySpec->Name = resource.name;
+	//
+	//				m_ReflectionData.push_back(arraySpec);
+	//
+	//				PE_CORE_TRACE("    Type = Sampler2DArray");
+	//			}
+	//			else {
+	//				Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
+	//				imageSpec->Binding = binding;
+	//				imageSpec->Name = resource.name;
+	//
+	//				m_ReflectionData.push_back(imageSpec);
+	//
+	//				PE_CORE_TRACE("    Type = Sampler2D");
+	//			}
+	//		}
+	//		else if (dimensions == spv::Dim::DimCube)
+	//		{
+	//			Ref<SamplerCubeShaderParameterTypeSpecification> cubeSpec = CreateRef<SamplerCubeShaderParameterTypeSpecification>();
+	//			cubeSpec->Binding = binding;
+	//			cubeSpec->Name = resource.name;
+	//			m_ReflectionData.push_back(cubeSpec);
+	//			PE_CORE_TRACE("    Type = SamplerCube");
+	//		}
+	//		else
+	//		{
+	//			PE_CORE_WARN("Unsupported sampler dimensions");
+	//		}
+	//
+	//		const spirv_cross::SPIRType& spirType = compiler.get_type(resource.type_id);
+	//		if (spirType.array.size() > 0) {
+	//			PE_CORE_TRACE("    Array dimensions = {0}", spirType.array.size());
+	//			PE_CORE_TRACE("    Array size = {0}", spirType.array[0]);
+	//		}
+	//	}
+	//}
 
 	void OpenGLShader::Bind() const
 	{
