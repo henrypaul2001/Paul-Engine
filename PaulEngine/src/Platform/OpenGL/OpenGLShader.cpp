@@ -154,8 +154,10 @@ namespace PaulEngine {
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 		sources[GL_GEOMETRY_SHADER] = geometrySrc;
 
-		CompileOrGetOpenGLBinaries(sources);
-		CreateProgram();
+		if (!CompileOrGetOpenGLBinaries(sources))
+		{
+			CreateProgram();
+		}
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, RenderPipelineContext shaderContext) : m_Name(name), m_Filepath("null"), m_RendererID(0), m_ShaderContext(shaderContext)
@@ -167,8 +169,10 @@ namespace PaulEngine {
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 
-		CompileOrGetOpenGLBinaries(sources);
-		CreateProgram();
+		if (!CompileOrGetOpenGLBinaries(sources))
+		{
+			CreateProgram();
+		}
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& filepath) : m_Filepath(filepath), m_RendererID(0), m_ShaderContext(RenderPipelineContext::Undefined)
@@ -180,8 +184,10 @@ namespace PaulEngine {
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		
-		CompileOrGetOpenGLBinaries(shaderSources);
-		CreateProgram();
+		if (!CompileOrGetOpenGLBinaries(shaderSources))
+		{
+			CreateProgram();
+		}
 
 		// Extract name from filepath
 		size_t lastSlash = filepath.find_last_of("/\\");
@@ -260,101 +266,161 @@ namespace PaulEngine {
 		return shaderSources;
 	}
 
-	void OpenGLShader::CompileOrGetOpenGLBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
+	bool OpenGLShader::CompileOrGetOpenGLBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		PE_PROFILE_FUNCTION();
 
-		shaderc::Compiler compiler;
-		shaderc::CompileOptions options;
-
-		options.SetGenerateDebugInfo();
-
-		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-		const bool optimize = true;
-		if (optimize) { options.SetOptimizationLevel(shaderc_optimization_level_performance); }
-
 		std::filesystem::path cacheDirectory = OpenGLShaderUtils::GetCacheDirectory();
-		
-		auto& shaderData = m_OpenGLSPIRV;
-		shaderData.clear();
+		m_OpenGLBinaryIDMap.clear();
 
-		for (auto&& [stage, source] : shaderSources) {
-			std::filesystem::path shaderFilepath = m_Filepath;
-			std::filesystem::path cachedPath = cacheDirectory / (shaderFilepath.filename().string() + OpenGLShaderUtils::GLShaderStageCachedOpenGLFileExtension(stage));
+		// Try to load cached binary
+		std::filesystem::path filepath = std::filesystem::path(m_Filepath);
+		std::filesystem::path cachePath = cacheDirectory / (filepath.stem().string() + "GL.bin");
+		if (LoadProgramBinary(cachePath))
+		{
+			PE_CORE_TRACE("Loaded cached shader program at path '{0}'", cachePath.string().c_str());
 
-			// First check for cached SpirV shader
-			std::ifstream in = std::ifstream(cachedPath, std::ios::in | std::ios::binary);
-			if (in.is_open()) {
-				in.seekg(0, std::ios::end);
-				size_t size = in.tellg();
-				in.seekg(0, std::ios::beg);
+			// Load cached reflection data file
 
-				auto& data = shaderData[stage];
-				data.resize(size / sizeof(uint32_t));
-				in.read((char*)data.data(), size);
-			}
-			else {
-				// Compile and cache into SpirV
-				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, OpenGLShaderUtils::GLShaderStageToShaderC(stage), m_Filepath.c_str());
-				if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
-					PE_CORE_ERROR(module.GetErrorMessage());
-					PE_CORE_ASSERT(false, "Error compiling OpenGL shader into OpenGL-SpirV cache");
-				}
-
-				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
-
-				std::ofstream out = std::ofstream(cachedPath, std::ios::out | std::ios::binary);
-				if (out.is_open()) {
-					auto& data = shaderData[stage];
-					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
-					out.flush();
-					out.close();
-				}
-			}
+			return true;
 		}
 
-		for (auto&& [stage, data] : shaderData) {
-			Reflect(stage, data);
+		// Compile each shader stage
+		for (auto&& [stage, source] : shaderSources)
+		{
+			GLuint shader = glCreateShader(stage);
+			const char* src = source.c_str();
+			glShaderSource(shader, 1, &src, nullptr);
+			glCompileShader(shader);
+
+			GLint compiled;
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+			if (!compiled)
+			{
+				GLint length;
+				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+				std::vector<GLchar> infoLog = std::vector<GLchar>(length);
+				glGetShaderInfoLog(shader, length, &length, infoLog.data());
+				PE_CORE_ERROR("Shader compilation failed ({0}):\n{1}", m_Filepath, infoLog.data());
+				glDeleteShader(shader);
+			}
+
+			m_OpenGLBinaryIDMap[stage] = shader;
 		}
+
+		return false;
 	}
 
 	void OpenGLShader::CreateProgram()
 	{
 		GLuint program = glCreateProgram();
-		std::vector<GLuint> shaderIDs;
-		for (auto&& [stage, spirv] : m_OpenGLSPIRV) {
-			GLuint shaderID = shaderIDs.emplace_back(glCreateShader(stage));
-			glShaderBinary(1, &shaderID, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), spirv.size() * sizeof(uint32_t));
-			glSpecializeShader(shaderID, "main", 0, nullptr, nullptr);
+
+		// Attach all compiled shaders
+		for (auto&& [stage, shaderID] : m_OpenGLBinaryIDMap)
+		{
 			glAttachShader(program, shaderID);
 		}
 
 		glLinkProgram(program);
-		GLint isLinked;
-		glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
-		if (isLinked == GL_FALSE)
+
+		GLint linked;
+		glGetProgramiv(program, GL_LINK_STATUS, &linked);
+		if (!linked)
 		{
 			GLint maxLength;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-		
-			std::vector<GLchar> infoLog(maxLength);
+			std::vector<GLchar> infoLog = std::vector<GLchar>(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
 			PE_CORE_ERROR("Shader linking failed ({0}):\n{1}", m_Filepath, infoLog.data());
 
 			glDeleteProgram(program);
-			for (GLuint id : shaderIDs) {
-				glDeleteShader(id);
+			for (auto&& [stage, shaderID] : m_OpenGLBinaryIDMap)
+			{
+				glDeleteShader(shaderID);
 			}
 		}
 
-		for (GLuint id : shaderIDs) {
-			glDetachShader(program, id);
-			glDeleteShader(id);
+		// Delete shaders after linking
+		for (auto&& [stage, shaderID] : m_OpenGLBinaryIDMap)
+		{
+			glDetachShader(program, shaderID);
+			glDeleteShader(shaderID);
+		}
+
+		m_OpenGLBinaryIDMap.clear();
+		m_RendererID = program;
+
+		GLint numFormats = 0;
+		glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numFormats);
+		if (numFormats > 0)
+		{
+			std::filesystem::path filepath = std::filesystem::path(m_Filepath);
+			std::filesystem::path cachePath = OpenGLShaderUtils::GetCacheDirectory() / std::filesystem::path(filepath.stem().string() + "GL.bin");
+			CacheProgramBinary(program, cachePath);
+		}
+		else
+		{
+			PE_CORE_WARN("Driver does not support program binary reading");
+		}
+	}
+
+	void OpenGLShader::CacheProgramBinary(uint32_t program, const std::filesystem::path& cachePath)
+	{
+		GLint length = 0;
+		glGetProgramiv(program, GL_PROGRAM_BINARY_LENGTH, &length);
+		if (length <= 0) { return; }
+
+		std::vector<uint8_t> binary = std::vector<uint8_t>(length);
+		GLenum format;
+		glGetProgramBinary(program, length, nullptr, &format, binary.data());
+
+		std::ofstream out = std::ofstream(cachePath, std::ios::binary);
+		if (!out.is_open()) { 
+			PE_CORE_ERROR("Error writing to path '{0}'", cachePath.string().c_str());
+			return;
+		}
+
+		out.write(reinterpret_cast<const char*>(&format), sizeof(format));
+		out.write(reinterpret_cast<const char*>(binary.data()), binary.size());
+		out.close();
+	}
+
+	bool OpenGLShader::LoadProgramBinary(const std::filesystem::path& cachePath)
+	{
+		if (!std::filesystem::exists(cachePath)) { return false; }
+
+		std::ifstream in = std::ifstream(cachePath, std::ios::binary);
+		if (!in.is_open()) { return false; }
+		
+		GLenum format;
+		in.read(reinterpret_cast<char*>(&format), sizeof(format));
+
+		in.seekg(0, std::ios::end);
+		size_t currentSize = in.tellg();
+		size_t size = currentSize - sizeof(format);
+		in.seekg(sizeof(format), std::ios::beg);
+
+		std::vector<uint8_t> binary = std::vector<uint8_t>(size);
+		in.read(reinterpret_cast<char*>(binary.data()), size);
+		in.close();
+
+		GLuint program = glCreateProgram();
+		glProgramBinary(program, format, binary.data(), size);
+
+		GLint linked;
+		glGetProgramiv(program, GL_LINK_STATUS, &linked);
+		if (!linked)
+		{
+			PE_CORE_ERROR("Failed to load cached shader program at path '{0}'", cachePath.string().c_str());
+			glDeleteProgram(program);
+			return false;
 		}
 
 		m_RendererID = program;
+		return true;
 	}
 
+	/*
 	void OpenGLShader::ReflectBlockVariableRecursive(spv_reflect::ShaderModule& reflection, SpvReflectBlockVariable* member, Ref<UBOShaderParameterTypeSpecification>& uboSpec, const std::string& parentName)
 	{
 		bool isStruct = false;
@@ -626,6 +692,7 @@ namespace PaulEngine {
 			PE_CORE_ERROR("  - {0}", error.c_str());
 		}
 	}
+	*/
 
 	void OpenGLShader::Bind() const
 	{

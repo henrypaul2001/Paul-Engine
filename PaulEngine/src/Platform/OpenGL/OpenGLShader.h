@@ -51,12 +51,15 @@ namespace PaulEngine {
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
 
-		void CompileOrGetOpenGLBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
+		// Returns true if a cached binary was loaded instead of compiling
+		bool CompileOrGetOpenGLBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
 		void CreateProgram();
-		void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
-		bool ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error);
-		bool ReflectSamplers(spv_reflect::ShaderModule& reflection, std::string& error);
-		void ReflectBlockVariableRecursive(spv_reflect::ShaderModule& reflection, SpvReflectBlockVariable* member, Ref<UBOShaderParameterTypeSpecification>& uboSpec, const std::string& parentName = "");
+		void CacheProgramBinary(uint32_t program, const std::filesystem::path& cachePath);
+		bool LoadProgramBinary(const std::filesystem::path& cachePath);
+		//void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
+		//bool ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error);
+		//bool ReflectSamplers(spv_reflect::ShaderModule& reflection, std::string& error);
+		//void ReflectBlockVariableRecursive(spv_reflect::ShaderModule& reflection, SpvReflectBlockVariable* member, Ref<UBOShaderParameterTypeSpecification>& uboSpec, const std::string& parentName = "");
 
 		uint32_t m_RendererID;
 		std::string m_Filepath;
@@ -65,6 +68,6 @@ namespace PaulEngine {
 
 		std::vector<Ref<ShaderParameterTypeSpecificationBase>> m_ReflectionData;
 
-		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRV;
+		std::unordered_map<GLenum, uint32_t> m_OpenGLBinaryIDMap;
     };
 }
