@@ -46,4 +46,17 @@ namespace PaulEngine
 			// TODO: Bind empty cubemap
 		}
 	}
+
+	void SamplerCubeArrayShaderParameterTypeStorage::Bind()
+	{
+		Ref<TextureCubemapArray> textureArray = AssetManager::GetAsset<TextureCubemapArray>(TextureArrayHandle);
+		if (textureArray)
+		{
+			textureArray->Bind(m_Binding);
+		}
+		else
+		{
+			// TODO: Bind empty cubemap array
+		}
+	}
 }
