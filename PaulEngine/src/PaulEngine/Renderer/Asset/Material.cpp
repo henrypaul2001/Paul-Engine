@@ -58,6 +58,13 @@ namespace PaulEngine
 					AddParameterType(strippedName, samplerCubeStorage);
 					break;
 				}
+				case ShaderParameterType::SamplerCubeArray:
+				{
+					SamplerCubeArrayShaderParameterTypeSpecification* samplerCubeArrayParam = dynamic_cast<SamplerCubeArrayShaderParameterTypeSpecification*>(parameter.get());
+					Ref<SamplerCubeArrayShaderParameterTypeStorage> samplerCubeArrayStorage = CreateRef<SamplerCubeArrayShaderParameterTypeStorage>(0, samplerCubeArrayParam->Binding);
+					AddParameterType(strippedName, samplerCubeArrayStorage);
+					break;
+				}
 			}
 		}
 	}
