@@ -56,6 +56,10 @@ namespace PaulEngine {
 		void CreateProgram();
 		void CacheProgramBinary(uint32_t program, const std::filesystem::path& cachePath);
 		bool LoadProgramBinary(const std::filesystem::path& cachePath);
+		void Reflect();
+		void ReflectUBOs();
+		void ReflectUniformMember(int memberIndex, std::vector<std::string>& out_names, std::vector<ShaderDataType>& out_types);
+		void ReflectSamplers();
 		//void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 		//bool ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error);
 		//bool ReflectSamplers(spv_reflect::ShaderModule& reflection, std::string& error);

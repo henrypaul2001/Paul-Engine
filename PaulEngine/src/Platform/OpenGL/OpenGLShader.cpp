@@ -12,6 +12,38 @@ namespace PaulEngine {
 
 	namespace OpenGLShaderUtils
 	{
+		static AssetType GLDataTypeToTextureAssetType(GLenum glType)
+		{
+			switch (glType)
+			{
+				case GL_SAMPLER_2D: return AssetType::Texture2D;
+				case GL_SAMPLER_CUBE: return AssetType::TextureCubemap;
+				case GL_SAMPLER_2D_ARRAY: return AssetType::Texture2DArray;
+				case GL_SAMPLER_CUBE_MAP_ARRAY: return AssetType::TextureCubemapArray;
+			}
+			return AssetType::None;
+		}
+
+		static ShaderDataType GLDataTypeToShaderDataType(GLenum glType)
+		{
+			switch (glType)
+			{
+				case GL_FLOAT: return ShaderDataType::Float;
+				case GL_FLOAT_VEC2: return ShaderDataType::Float2;
+				case GL_FLOAT_VEC3: return ShaderDataType::Float3;
+				case GL_FLOAT_VEC4: return ShaderDataType::Float4;
+				case GL_INT: return ShaderDataType::Int;
+				case GL_INT_VEC2: return ShaderDataType::Int2;
+				case GL_INT_VEC3: return ShaderDataType::Int3;
+				case GL_INT_VEC4: return ShaderDataType::Int4;
+				case GL_BOOL: return ShaderDataType::Bool;
+				case GL_FLOAT_MAT3: return ShaderDataType::Mat3;
+				case GL_FLOAT_MAT4: return ShaderDataType::Mat4;
+			}
+			PE_CORE_WARN("Udefined shader data type glType:{0}", glType);
+			return ShaderDataType::None;
+		}
+
 		static GLenum ShaderTypeFromString(const std::string& type)
 		{
 			if (type == "vertex") { return GL_VERTEX_SHADER; }
@@ -279,8 +311,7 @@ namespace PaulEngine {
 		if (LoadProgramBinary(cachePath))
 		{
 			PE_CORE_TRACE("Loaded cached shader program at path '{0}'", cachePath.string().c_str());
-
-			// Load cached reflection data file
+			Reflect();
 
 			return true;
 		}
@@ -313,6 +344,7 @@ namespace PaulEngine {
 
 	void OpenGLShader::CreateProgram()
 	{
+		PE_PROFILE_FUNCTION();
 		GLuint program = glCreateProgram();
 
 		// Attach all compiled shaders
@@ -362,10 +394,13 @@ namespace PaulEngine {
 		{
 			PE_CORE_WARN("Driver does not support program binary reading");
 		}
+
+		Reflect();
 	}
 
 	void OpenGLShader::CacheProgramBinary(uint32_t program, const std::filesystem::path& cachePath)
 	{
+		PE_PROFILE_FUNCTION();
 		GLint length = 0;
 		glGetProgramiv(program, GL_PROGRAM_BINARY_LENGTH, &length);
 		if (length <= 0) { return; }
@@ -387,6 +422,7 @@ namespace PaulEngine {
 
 	bool OpenGLShader::LoadProgramBinary(const std::filesystem::path& cachePath)
 	{
+		PE_PROFILE_FUNCTION();
 		if (!std::filesystem::exists(cachePath)) { return false; }
 
 		std::ifstream in = std::ifstream(cachePath, std::ios::binary);
@@ -418,6 +454,182 @@ namespace PaulEngine {
 
 		m_RendererID = program;
 		return true;
+	}
+
+	void OpenGLShader::Reflect()
+	{
+		PE_PROFILE_FUNCTION();
+
+		PE_CORE_TRACE("OpenGLShader::Reflect - '{0}'", m_Filepath);
+
+		// Uniform buffers
+		ReflectUBOs();
+
+		// SSBOs
+		GLint numSSBOs;
+		glGetProgramInterfaceiv(m_RendererID, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &numSSBOs);
+		PE_CORE_TRACE("  SSBO count : {0}", (int)numSSBOs);
+
+		// Samplers
+		ReflectSamplers();
+	}
+
+	void OpenGLShader::ReflectUBOs()
+	{
+		GLint numUBOs;
+		glGetProgramInterfaceiv(m_RendererID, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numUBOs);
+		PE_CORE_TRACE("  UBO count  : {0}", (int)numUBOs);
+
+		for (GLint i = 0; i < numUBOs; i++)
+		{
+			GLenum properties[4] = { GL_NAME_LENGTH, GL_BUFFER_BINDING, GL_BUFFER_DATA_SIZE, GL_NUM_ACTIVE_VARIABLES };
+			GLint results[4];
+			glGetProgramResourceiv(m_RendererID, GL_UNIFORM_BLOCK, i, 4, properties, 4, nullptr, results);
+
+			GLuint nameSize = (GLuint)results[0];
+			int bindSlot = (int)results[1];
+			int bufferSize = (int)results[2];
+			int member_count = (int)results[3];
+
+			std::string name = std::string((GLuint)nameSize - 1, '\0');
+			glGetProgramResourceName(m_RendererID, GL_UNIFORM_BLOCK, i, name.capacity() + 1, nullptr, name.data());
+
+			PE_CORE_TRACE("  Uniform buffer: {0}", name.c_str());
+			PE_CORE_TRACE("    Binding: {0}", bindSlot);
+			PE_CORE_TRACE("    Size   : {0}", bufferSize);
+			PE_CORE_TRACE("    Members: {0}", member_count);
+
+			Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
+			uboSpec->Size = bufferSize;
+			uboSpec->Binding = bindSlot;
+			uboSpec->Name = name;
+
+			GLenum memberProperty[1] = { GL_ACTIVE_VARIABLES };
+			std::vector<GLint> memberIndices = std::vector<GLint>(member_count, -1);
+			glGetProgramResourceiv(m_RendererID, GL_UNIFORM_BLOCK, i, 1, memberProperty, memberIndices.capacity(), nullptr, memberIndices.data());
+
+			int member = 0;
+			for (GLint j = 0; j < memberIndices.size(); j++)
+			{
+				GLint memberIndex = memberIndices[j];
+
+				std::vector<std::string> strippedNames;
+				std::vector<ShaderDataType> types;
+				ShaderDataType type;
+				ReflectUniformMember((int)memberIndex, strippedNames, types);
+				
+				for (int k = 0; k < strippedNames.size(); k++)
+				{
+					PE_CORE_TRACE("       - {0}: ({1}) {2}", member++, ShaderDataTypeToString(types[k]).c_str(), strippedNames[k].c_str());
+					uboSpec->BufferLayout.emplace_back(strippedNames[k], types[k]);
+				}
+			}
+
+			m_ReflectionData.push_back(uboSpec);
+		}
+	}
+
+	void OpenGLShader::ReflectUniformMember(int memberIndex, std::vector<std::string>& out_names, std::vector<ShaderDataType>& out_types)
+	{
+		out_names.clear();
+		out_types.clear();
+
+		GLenum properties[1] = { GL_NAME_LENGTH };
+		GLint results[1];
+		glGetProgramResourceiv(m_RendererID, GL_UNIFORM, (GLint)memberIndex, 1, properties, 1, nullptr, results);
+
+		GLuint nameSize = (GLuint)results[0];
+		std::string name = std::string((GLuint)nameSize - 1, '\0');
+		GLint arraySize;
+		GLenum glType;
+		glGetActiveUniform(m_RendererID, (GLint)memberIndex, name.capacity() + 1, nullptr, &arraySize, &glType, name.data());
+
+		size_t firstDot = name.find_first_of('.');
+		std::string strippedName = name.substr(firstDot + 1, name.length() - firstDot);
+
+		out_names.push_back(strippedName);
+		out_types.push_back(OpenGLShaderUtils::GLDataTypeToShaderDataType(glType));
+
+		for (int i = 1; i < arraySize; i++)
+		{
+			strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
+			out_names.push_back(strippedName);
+			out_types.push_back(OpenGLShaderUtils::GLDataTypeToShaderDataType(glType));
+		}
+	}
+
+	void OpenGLShader::ReflectSamplers()
+	{
+		GLint numUniforms;
+		glGetProgramInterfaceiv(m_RendererID, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numUniforms);
+		PE_CORE_TRACE("  Uniform count : {0}", (int)numUniforms);
+
+		// Not a fan of this. Due to uniform buffers, there could be hundreds of uniform variables and only a handful of uniform samplers
+		// Iterate over all uniform variables in program to find sampler objects
+		for (GLint i = 0; i < numUniforms; i++)
+		{
+			GLenum properties[2] = { GL_NAME_LENGTH, GL_LOCATION };
+			GLint results[2];
+			glGetProgramResourceiv(m_RendererID, GL_UNIFORM, i, 2, properties, 2, nullptr, results);
+
+			GLuint nameSize = (GLuint)results[0];
+			std::string name = std::string((GLuint)nameSize - 1, '\0');
+			GLint arraySize;
+			GLenum glType;
+			glGetActiveUniform(m_RendererID, i, name.capacity() + 1, nullptr, &arraySize, &glType, name.data());
+
+			AssetType textureAssetType = OpenGLShaderUtils::GLDataTypeToTextureAssetType(glType);
+			if (Asset::IsTextureType(textureAssetType))
+			{
+				int bindSlot = (int)results[1];
+				PE_CORE_TRACE("  Sampler       : {0}", name);
+				PE_CORE_TRACE("    Binding: {0}", bindSlot);
+
+				switch (textureAssetType)
+				{
+				case AssetType::Texture2D:
+				{
+					Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
+					imageSpec->Binding = bindSlot;
+					imageSpec->Name = name;
+					
+					m_ReflectionData.push_back(imageSpec);
+					PE_CORE_TRACE("    Type   : Sampler2D");
+					break;
+				}
+				case AssetType::Texture2DArray:
+				{
+					Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
+					arraySpec->Binding = bindSlot;
+					arraySpec->Name = name;
+					
+					m_ReflectionData.push_back(arraySpec);
+					PE_CORE_TRACE("    Type   : Sampler2DArray");
+					break;
+				}
+				case AssetType::TextureCubemap:
+				{
+					Ref<SamplerCubeShaderParameterTypeSpecification> cubeSpec = CreateRef<SamplerCubeShaderParameterTypeSpecification>();
+					cubeSpec->Binding = bindSlot;
+					cubeSpec->Name = name;
+					
+					m_ReflectionData.push_back(cubeSpec);
+					PE_CORE_TRACE("    Type   : SamplerCube");
+					break;
+				}
+				case AssetType::TextureCubemapArray:
+				{
+					Ref<SamplerCubeArrayShaderParameterTypeSpecification> cubeArraySpec = CreateRef<SamplerCubeArrayShaderParameterTypeSpecification>();
+					cubeArraySpec->Binding = bindSlot;
+					cubeArraySpec->Name = name;
+					
+					m_ReflectionData.push_back(cubeArraySpec);
+					PE_CORE_TRACE("    Type   : SamplerCubeArray");
+					break;
+				}
+				}
+			}
+		}
 	}
 
 	/*
