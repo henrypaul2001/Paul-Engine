@@ -107,12 +107,12 @@ namespace PaulEngine
 		};
 
 		UniformBufferStorage* uboStorage = cubeCaptureMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
-		uboStorage->SetLocalData("ViewProjections[0][0]", viewProjections[0]);
-		uboStorage->SetLocalData("ViewProjections[0][1]", viewProjections[1]);
-		uboStorage->SetLocalData("ViewProjections[0][2]", viewProjections[2]);
-		uboStorage->SetLocalData("ViewProjections[0][3]", viewProjections[3]);
-		uboStorage->SetLocalData("ViewProjections[0][4]", viewProjections[4]);
-		uboStorage->SetLocalData("ViewProjections[0][5]", viewProjections[5]);
+		uboStorage->SetLocalData("ViewProjections[0]", viewProjections[0]);
+		uboStorage->SetLocalData("ViewProjections[1]", viewProjections[1]);
+		uboStorage->SetLocalData("ViewProjections[2]", viewProjections[2]);
+		uboStorage->SetLocalData("ViewProjections[3]", viewProjections[3]);
+		uboStorage->SetLocalData("ViewProjections[4]", viewProjections[4]);
+		uboStorage->SetLocalData("ViewProjections[5]", viewProjections[5]);
 		uboStorage->SetLocalData("CubemapIndex", 0);
 
 		// Render
@@ -161,12 +161,12 @@ namespace PaulEngine
 		};
 
 		UniformBufferStorage* uboStorage = convolutionMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
-		uboStorage->SetLocalData("ViewProjections[0][0]", viewProjections[0]);
-		uboStorage->SetLocalData("ViewProjections[0][1]", viewProjections[1]);
-		uboStorage->SetLocalData("ViewProjections[0][2]", viewProjections[2]);
-		uboStorage->SetLocalData("ViewProjections[0][3]", viewProjections[3]);
-		uboStorage->SetLocalData("ViewProjections[0][4]", viewProjections[4]);
-		uboStorage->SetLocalData("ViewProjections[0][5]", viewProjections[5]);
+		uboStorage->SetLocalData("ViewProjections[0]", viewProjections[0]);
+		uboStorage->SetLocalData("ViewProjections[1]", viewProjections[1]);
+		uboStorage->SetLocalData("ViewProjections[2]", viewProjections[2]);
+		uboStorage->SetLocalData("ViewProjections[3]", viewProjections[3]);
+		uboStorage->SetLocalData("ViewProjections[4]", viewProjections[4]);
+		uboStorage->SetLocalData("ViewProjections[5]", viewProjections[5]);
 		uboStorage->SetLocalData("CubemapIndex", 0);
 
 		// Render
@@ -212,12 +212,12 @@ namespace PaulEngine
 		};
 
 		UniformBufferStorage* uboStorage = prefilterMaterial->GetParameter<UBOShaderParameterTypeStorage>("CubeData")->UBO().get();
-		uboStorage->SetLocalData("ViewProjections[0][0]", viewProjections[0]);
-		uboStorage->SetLocalData("ViewProjections[0][1]", viewProjections[1]);
-		uboStorage->SetLocalData("ViewProjections[0][2]", viewProjections[2]);
-		uboStorage->SetLocalData("ViewProjections[0][3]", viewProjections[3]);
-		uboStorage->SetLocalData("ViewProjections[0][4]", viewProjections[4]);
-		uboStorage->SetLocalData("ViewProjections[0][5]", viewProjections[5]);
+		uboStorage->SetLocalData("ViewProjections[0]", viewProjections[0]);
+		uboStorage->SetLocalData("ViewProjections[1]", viewProjections[1]);
+		uboStorage->SetLocalData("ViewProjections[2]", viewProjections[2]);
+		uboStorage->SetLocalData("ViewProjections[3]", viewProjections[3]);
+		uboStorage->SetLocalData("ViewProjections[4]", viewProjections[4]);
+		uboStorage->SetLocalData("ViewProjections[5]", viewProjections[5]);
 		uboStorage->SetLocalData("CubemapIndex", 0);
 
 		UniformBufferStorage* prefilterParams = prefilterMaterial->GetParameter<UBOShaderParameterTypeStorage>("PrefilterParams")->UBO().get();
