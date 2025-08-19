@@ -55,12 +55,6 @@
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
-    <Filter Include="vendor\SPIRV-Reflect">
-      <UniqueIdentifier>{280B8EB1-149A-177B-BDB8-2B76A9262821}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="vendor\SPIRV-Reflect\SPIRV-Reflect">
-      <UniqueIdentifier>{5D0BFC66-4947-FFD0-B259-17C89EB4A7EB}</UniqueIdentifier>
-    </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
     </Filter>
@@ -353,9 +347,6 @@
     </ClInclude>
     <ClInclude Include="src\pepch.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\SPIRV-Reflect\SPIRV-Reflect\spirv_reflect.h">
-      <Filter>vendor\SPIRV-Reflect\SPIRV-Reflect</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1828,12 +1819,6 @@
     </ClCompile>
     <ClCompile Include="src\pepch.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\SPIRV-Reflect\SPIRV-Reflect\spirv_reflect.c">
-      <Filter>vendor\SPIRV-Reflect\SPIRV-Reflect</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\SPIRV-Reflect\SPIRV-Reflect\spirv_reflect.cpp">
-      <Filter>vendor\SPIRV-Reflect\SPIRV-Reflect</Filter>
     </ClCompile>
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>

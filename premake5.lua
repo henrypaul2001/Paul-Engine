@@ -57,10 +57,7 @@ project "PaulEngine"
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
 		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
-		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp",
-		"%{prj.name}/vendor/SPIRV-Reflect/SPIRV-Reflect/spirv_reflect.h",
-		"%{prj.name}/vendor/SPIRV-Reflect/SPIRV-Reflect/spirv_reflect.c",
-		"%{prj.name}/vendor/SPIRV-Reflect/SPIRV-Reflect/spirv_reflect.cpp"
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp"
 	}
 
 	includedirs
@@ -80,8 +77,7 @@ project "PaulEngine"
 		"%{IncludeDir.msdfgen}",
 		"%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.assimp}",
-		"%{IncludeDir.assimp_config}",
-		"%{IncludeDir.SPIRV_Reflect}"
+		"%{IncludeDir.assimp_config}"
 	}
 
 	links
@@ -98,12 +94,6 @@ project "PaulEngine"
 
 	filter "files:PaulEngine/vendor/imguizmo/**.cpp"
 	flags { "NoPCH"}
-
-	filter "files:PaulEngine/vendor/SPIRV-Reflect/SPIRV-Reflect/**.c"
-    flags { "NoPCH" }
-
-	filter "files:PaulEngine/vendor/SPIRV-Reflect/SPIRV-Reflect/**.cpp"
-    flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"
