@@ -1,6 +1,6 @@
 #pragma once
 #include "PaulEngine/Renderer/Asset/Texture.h"
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace PaulEngine {
 	namespace OpenGLTextureUtils

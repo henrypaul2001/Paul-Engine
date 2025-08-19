@@ -1,7 +1,7 @@
 #include "pepch.h"
 #include "OpenGLContext.h"
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace PaulEngine {
 	void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam) {
@@ -71,7 +71,7 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_Window);
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		int status = gladLoadGL(glfwGetProcAddress);
 		PE_CORE_ASSERT(status, "Failed to initialise Glad!");
 
 		const char* vendorInfo = (const char*)glGetString(GL_VENDOR);

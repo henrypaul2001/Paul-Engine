@@ -2,7 +2,7 @@
 #include "OpenGLUniformBufferStorage.h"
 #include "OpenGLBuffer.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace PaulEngine
 {

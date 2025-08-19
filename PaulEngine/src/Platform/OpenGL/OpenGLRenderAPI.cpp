@@ -2,7 +2,7 @@
 #include "OpenGLRenderAPI.h"
 #include "PaulEngine/Renderer/Resource/Framebuffer.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 namespace PaulEngine {
 
 	constexpr GLenum DepthFuncToGLEnum(DepthFunc func) {

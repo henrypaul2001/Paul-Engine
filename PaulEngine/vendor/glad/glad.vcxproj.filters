@@ -18,12 +18,12 @@
     <ClInclude Include="include\KHR\khrplatform.h">
       <Filter>include\KHR</Filter>
     </ClInclude>
-    <ClInclude Include="include\glad\glad.h">
+    <ClInclude Include="include\glad\gl.h">
       <Filter>include\glad</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\glad.c">
+    <ClCompile Include="src\gl.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

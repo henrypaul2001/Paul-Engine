@@ -2,7 +2,7 @@
 #include "OpenGLShader.h"
 #include "PaulEngine/Renderer/Resource/ShaderParameterType.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 

@@ -3,7 +3,7 @@
 #include "OpenGLTexture.h"
 #include "OpenGLRenderAPI.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <set>
 
 namespace PaulEngine

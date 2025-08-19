@@ -3,7 +3,7 @@
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Renderer/Asset/Material.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace PaulEngine
 {
