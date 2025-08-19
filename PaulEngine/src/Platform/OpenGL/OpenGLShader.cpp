@@ -6,12 +6,21 @@
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <shaderc/shaderc.hpp>
-
 namespace PaulEngine {
 
 	namespace OpenGLShaderUtils
 	{
+		struct UBOMember
+		{
+			std::string StrippedName;
+			GLenum Type;
+			GLint Offset;
+			GLint ArraySize;
+			GLint ArrayStride;
+			GLint MatrixStride;
+			GLboolean RowMajor;
+		};
+
 		static AssetType GLDataTypeToTextureAssetType(GLenum glType)
 		{
 			switch (glType)
@@ -53,18 +62,6 @@ namespace PaulEngine {
 			return 0;
 		}
 
-		static shaderc_shader_kind GLShaderStageToShaderC(GLenum stage)
-		{
-			switch (stage)
-			{
-				case GL_VERTEX_SHADER: return shaderc_glsl_vertex_shader;
-				case GL_FRAGMENT_SHADER: return shaderc_glsl_fragment_shader;
-				case GL_GEOMETRY_SHADER: return shaderc_glsl_geometry_shader;
-			}
-			PE_CORE_ASSERT(false, "Unknown shader stage");
-			return (shaderc_shader_kind)0;
-		}
-
 		static const char* GLShaderStageToString(GLenum stage)
 		{
 			switch (stage)
@@ -89,89 +86,6 @@ namespace PaulEngine {
 			{
 				PE_CORE_DEBUG("Creating directory '{0}'", cacheDirectory);
 				std::filesystem::create_directories(cacheDirectory);
-			}
-		}
-
-		static const char* GLShaderStageCachedOpenGLFileExtension(uint32_t stage)
-		{
-			switch (stage)
-			{
-				case GL_VERTEX_SHADER: return ".cached_opengl.vert";
-				case GL_FRAGMENT_SHADER: return ".cached_opengl.frag";
-				case GL_GEOMETRY_SHADER: return ".cached_opengl.geom";
-			}
-			PE_CORE_ASSERT(false, "Unknown shader stage");
-			return "";
-		}
-
-		static const char* GLShaderStageCachedVulkanFileExtension(uint32_t stage)
-		{
-			switch (stage)
-			{
-				case GL_VERTEX_SHADER: return ".cached_vulkan.vert";
-				case GL_FRAGMENT_SHADER: return ".cached_vulkan.frag";
-				case GL_GEOMETRY_SHADER: return ".cached_vulkan.geom";
-			}
-			PE_CORE_ASSERT(false, "Unknown shader stage");
-			return "";
-		}
-
-		static void AsVectorType(ShaderDataType& type, const SpvReflectBlockVariable* member)
-		{
-			uint32_t component_count = member->numeric.vector.component_count;
-
-			if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT)
-			{
-				type = (ShaderDataType)(component_count + ((int)ShaderDataType::Float - 1)); // Float = 1, Float2 = 2, Float3 = 3, Float4 = 4
-			}
-			else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_INT)
-			{
-				type = (ShaderDataType)(component_count + ((int)ShaderDataType::Int - 1)); // Int = 7, Int2 = 8, Int3 = 9, Int4 = 10
-			}
-			else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_BOOL)
-			{
-				PE_CORE_WARN("Bool vector type not supported, using Int instead");
-				type = (ShaderDataType)(component_count + ((int)ShaderDataType::Int - 1));
-			}
-		}
-
-		static void AsMatrixType(ShaderDataType& type, const SpvReflectBlockVariable* member)
-		{
-			uint32_t column_count = member->numeric.matrix.column_count;
-			uint32_t row_count = member->numeric.matrix.row_count;
-
-			bool four = (column_count == 4 && row_count == 4);
-			if (!four && (column_count == 3 && row_count == 3))
-			{
-				PE_CORE_WARN("Unsupported matrix dimensions");
-			}
-
-			if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT)
-			{
-				type = four ? ShaderDataType::Mat4 : ShaderDataType::Mat3;
-			}
-			else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_INT)
-			{
-				PE_CORE_WARN("Int matrix type not supported");
-			}
-			else if (member->type_description->type_flags & SPV_REFLECT_TYPE_FLAG_BOOL)
-			{
-				PE_CORE_WARN("Bool matrix type not supported");
-			}
-		}
-
-		static void OverrideArrayOpType(SpvOp& op, SpvReflectTypeFlags flags)
-		{
-			// The order of this is important as matrix types will be defined as both a
-			// vector and a matrix, whereas a vector type will not be defined as a matrix
-			if (op == SpvOpTypeArray)
-			{
-				if (flags & SPV_REFLECT_TYPE_FLAG_FLOAT) { op = SpvOpTypeFloat; }
-				if (flags & SPV_REFLECT_TYPE_FLAG_INT) { op = SpvOpTypeInt; }
-				if (flags & SPV_REFLECT_TYPE_FLAG_BOOL) { op = SpvOpTypeBool; }
-				if (flags & SPV_REFLECT_TYPE_FLAG_VECTOR) { op = SpvOpTypeVector; }
-				if (flags & SPV_REFLECT_TYPE_FLAG_MATRIX) { op = SpvOpTypeMatrix; }
-				if (flags & SPV_REFLECT_TYPE_FLAG_STRUCT) { op = SpvOpTypeStruct; }
 			}
 		}
 	}
@@ -489,72 +403,89 @@ namespace PaulEngine {
 			GLuint nameSize = (GLuint)results[0];
 			int bindSlot = (int)results[1];
 			int bufferSize = (int)results[2];
-			int member_count = (int)results[3];
+			int memberCount = (int)results[3];
 
-			std::string name = std::string((GLuint)nameSize - 1, '\0');
-			glGetProgramResourceName(m_RendererID, GL_UNIFORM_BLOCK, i, name.capacity() + 1, nullptr, name.data());
+			// UBO name
+			std::string name = std::string((int)nameSize, '\0');
+			glGetProgramResourceName(m_RendererID, GL_UNIFORM_BLOCK, i, nameSize, nullptr, name.data());
+			if (!name.empty() && name.back() == '\0') { name.pop_back(); }
 
 			PE_CORE_TRACE("  Uniform buffer: {0}", name.c_str());
 			PE_CORE_TRACE("    Binding: {0}", bindSlot);
 			PE_CORE_TRACE("    Size   : {0}", bufferSize);
-			PE_CORE_TRACE("    Members: {0}", member_count);
+			PE_CORE_TRACE("    Members: {0}", memberCount);
 
 			Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
 			uboSpec->Size = bufferSize;
 			uboSpec->Binding = bindSlot;
 			uboSpec->Name = name;
 
+			// Get indices of UBO's member uniforms
 			GLenum memberProperty[1] = { GL_ACTIVE_VARIABLES };
-			std::vector<GLint> memberIndices = std::vector<GLint>(member_count, -1);
-			glGetProgramResourceiv(m_RendererID, GL_UNIFORM_BLOCK, i, 1, memberProperty, memberIndices.capacity(), nullptr, memberIndices.data());
+			std::vector<GLint> memberIndices = std::vector<GLint>(memberCount, -1);
+			glGetProgramResourceiv(m_RendererID, GL_UNIFORM_BLOCK, i, 1, memberProperty, memberCount, nullptr, memberIndices.data());
 
-			int member = 0;
-			for (GLint j = 0; j < memberIndices.size(); j++)
+			// Collect members
+			std::vector<OpenGLShaderUtils::UBOMember> members;
+			members.reserve(memberCount);
+
+			GLenum memberProperties[] = {
+				GL_NAME_LENGTH,
+				GL_TYPE,
+				GL_OFFSET,
+				GL_ARRAY_SIZE,
+				GL_ARRAY_STRIDE,
+				GL_MATRIX_STRIDE,
+				GL_IS_ROW_MAJOR
+			};
+
+			for (GLint memberIndex : memberIndices)
 			{
-				GLint memberIndex = memberIndices[j];
+				GLint memberResults[7] = {};
+				glGetProgramResourceiv(m_RendererID, GL_UNIFORM, memberIndex, 7, memberProperties, 7, nullptr, memberResults);
 
-				std::vector<std::string> strippedNames;
-				std::vector<ShaderDataType> types;
-				ShaderDataType type;
-				ReflectUniformMember((int)memberIndex, strippedNames, types);
-				
-				for (int k = 0; k < strippedNames.size(); k++)
+				GLuint memberNameSize = (GLuint)memberResults[0];
+				std::string memberName = std::string((int)memberNameSize, '\0');
+				glGetProgramResourceName(m_RendererID, GL_UNIFORM, memberIndex, memberNameSize, nullptr, memberName.data());
+
+				if (!memberName.empty() && memberName.back() == '\0') { memberName.pop_back(); }
+
+				size_t firstDot = memberName.find_first_of('.');
+				std::string strippedName = memberName.substr(firstDot + 1, memberName.length() - firstDot);
+
+				OpenGLShaderUtils::UBOMember member;
+				member.StrippedName = strippedName;
+				member.Type = (GLenum)memberResults[1];
+				member.Offset = memberResults[2];
+				member.ArraySize = memberResults[3];
+				member.ArrayStride = memberResults[4];
+				member.MatrixStride = memberResults[5];
+				member.RowMajor = (GLboolean)memberResults[6];
+
+				members.push_back(member);
+			}
+
+			// Sort members by memory layout
+			std::sort(members.begin(), members.end(), [](const OpenGLShaderUtils::UBOMember& a, const OpenGLShaderUtils::UBOMember& b) {return a.Offset < b.Offset; });
+
+			int memberIndex = 0;
+			for (const OpenGLShaderUtils::UBOMember& member : members)
+			{
+				std::string strippedName = member.StrippedName;
+				ShaderDataType type = OpenGLShaderUtils::GLDataTypeToShaderDataType(member.Type);
+
+				PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
+				uboSpec->BufferLayout.emplace_back(strippedName, type);
+
+				for (int i = 1; i < member.ArraySize; i++)
 				{
-					PE_CORE_TRACE("       - {0}: ({1}) {2}", member++, ShaderDataTypeToString(types[k]).c_str(), strippedNames[k].c_str());
-					uboSpec->BufferLayout.emplace_back(strippedNames[k], types[k]);
+					strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
+					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
+					uboSpec->BufferLayout.emplace_back(strippedName, type);
 				}
 			}
 
 			m_ReflectionData.push_back(uboSpec);
-		}
-	}
-
-	void OpenGLShader::ReflectUniformMember(int memberIndex, std::vector<std::string>& out_names, std::vector<ShaderDataType>& out_types)
-	{
-		out_names.clear();
-		out_types.clear();
-
-		GLenum properties[1] = { GL_NAME_LENGTH };
-		GLint results[1];
-		glGetProgramResourceiv(m_RendererID, GL_UNIFORM, (GLint)memberIndex, 1, properties, 1, nullptr, results);
-
-		GLuint nameSize = (GLuint)results[0];
-		std::string name = std::string((GLuint)nameSize - 1, '\0');
-		GLint arraySize;
-		GLenum glType;
-		glGetActiveUniform(m_RendererID, (GLint)memberIndex, name.capacity() + 1, nullptr, &arraySize, &glType, name.data());
-
-		size_t firstDot = name.find_first_of('.');
-		std::string strippedName = name.substr(firstDot + 1, name.length() - firstDot);
-
-		out_names.push_back(strippedName);
-		out_types.push_back(OpenGLShaderUtils::GLDataTypeToShaderDataType(glType));
-
-		for (int i = 1; i < arraySize; i++)
-		{
-			strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
-			out_names.push_back(strippedName);
-			out_types.push_back(OpenGLShaderUtils::GLDataTypeToShaderDataType(glType));
 		}
 	}
 
@@ -581,7 +512,12 @@ namespace PaulEngine {
 			AssetType textureAssetType = OpenGLShaderUtils::GLDataTypeToTextureAssetType(glType);
 			if (Asset::IsTextureType(textureAssetType))
 			{
-				int bindSlot = (int)results[1];
+				GLint location = results[1];
+				GLint unit;
+				glGetUniformiv(m_RendererID, location, &unit);
+
+				int bindSlot = (int)unit;
+
 				PE_CORE_TRACE("  Sampler       : {0}", name);
 				PE_CORE_TRACE("    Binding: {0}", bindSlot);
 
@@ -631,280 +567,6 @@ namespace PaulEngine {
 			}
 		}
 	}
-
-	/*
-	void OpenGLShader::ReflectBlockVariableRecursive(spv_reflect::ShaderModule& reflection, SpvReflectBlockVariable* member, Ref<UBOShaderParameterTypeSpecification>& uboSpec, const std::string& parentName)
-	{
-		bool isStruct = false;
-		ShaderDataType type = ShaderDataType::None;
-
-		SpvOp op = member->type_description->op;
-		SpvReflectTypeFlags flags = member->type_description->type_flags;
-		OpenGLShaderUtils::OverrideArrayOpType(op, flags);
-
-		const char* struct_member_name = member->type_description->struct_member_name;
-		switch (op)
-		{
-		case SpvOpTypeFloat:
-			type = ShaderDataType::Float;
-			break;
-		case SpvOpTypeInt:
-			type = ShaderDataType::Int;
-			break;
-		case SpvOpTypeBool:
-			type = ShaderDataType::Bool;
-			break;
-		case SpvOpTypeMatrix:
-			OpenGLShaderUtils::AsMatrixType(type, member);
-			break;
-		case SpvOpTypeVector:
-			OpenGLShaderUtils::AsVectorType(type, member);
-			break;
-		case SpvOpTypeStruct:
-			isStruct = true;
-			break;
-		case SpvOpTypeArray:
-			isStruct = true;
-			break;
-		}
-
-		uint32_t arrayDims = member->array.dims_count;
-		uint32_t arraySize = 0;
-
-		std::string name = member->name;
-		if (parentName != "")
-		{
-			name = parentName + "." + name;
-		}
-
-		if (arrayDims > 0)
-		{
-			arraySize = member->array.dims[0];
-			for (uint32_t x = 0; x < arrayDims; x++)
-			{
-				for (uint32_t y = 0; y < arraySize; y++)
-				{
-					std::string indexedName = name + std::string("[" + std::to_string(x) + "][" + std::to_string(y) + "]");
-					if (isStruct)
-					{
-						uint32_t memberCount = member->member_count;
-						for (uint32_t i = 0; i < memberCount; i++)
-						{
-							SpvReflectBlockVariable* child = &member->members[i];
-							ReflectBlockVariableRecursive(reflection, child, uboSpec, indexedName);
-						}
-					}
-					else {
-						PE_CORE_TRACE("       - {0} ({1})", indexedName.c_str(), ShaderDataTypeToString(type));
-						uboSpec->BufferLayout.emplace_back(indexedName, type);
-					}
-				}
-			}
-		}
-		else
-		{
-			if (isStruct)
-			{
-				uint32_t memberCount = member->member_count;
-				for (uint32_t i = 0; i < memberCount; i++)
-				{
-					SpvReflectBlockVariable* child = &member->members[i];
-					ReflectBlockVariableRecursive(reflection, child, uboSpec, name);
-				}
-			}
-			else {
-				PE_CORE_TRACE("       - {0} ({1})", name.c_str(), ShaderDataTypeToString(type));
-				uboSpec->BufferLayout.emplace_back(name, type);
-			}
-		}
-	}
-
-	bool OpenGLShader::ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error)
-	{
-		uint32_t count = 0;
-		SpvReflectResult result;
-		result = reflection.EnumerateDescriptorBindings(&count, nullptr);
-		if (result != SPV_REFLECT_RESULT_SUCCESS)
-		{
-			error = "Failed to count descriptor bindings";
-			return false;
-		}
-
-		std::vector<SpvReflectDescriptorBinding*> bindings(count);
-		result = reflection.EnumerateDescriptorBindings(&count, bindings.data());
-		if (result != SPV_REFLECT_RESULT_SUCCESS)
-		{
-			error = "Failed to enumerate descriptor bindings";
-			return false;
-		}
-
-		// Write buffers
-		for (uint32_t i = 0; i < count; i++)
-		{
-			const SpvReflectDescriptorBinding* binding = bindings[i];
-			if (binding->descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-			{
-				const char* name = binding->type_description->type_name;
-				uint32_t bindSlot = binding->binding;
-				uint32_t bufferSize = binding->block.size;
-				PE_CORE_TRACE("  Uniform buffer: {0}", name);
-				PE_CORE_TRACE("    Binding: {0}", bindSlot);
-				PE_CORE_TRACE("    Size   : {0}", bufferSize);
-
-				uint32_t member_count = binding->block.member_count;
-				PE_CORE_TRACE("    Members: {0}", member_count);
-
-				Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
-				uboSpec->Name = name;
-				uboSpec->Binding = bindSlot;
-				uboSpec->Size = bufferSize;
-
-				for (uint32_t i = 0; i < member_count; i++)
-				{
-					SpvReflectBlockVariable member = binding->block.members[i];
-					ReflectBlockVariableRecursive(reflection, &member, uboSpec);
-				}
-				m_ReflectionData.push_back(uboSpec);
-			}
-		}
-
-		return true;
-	}
-
-	bool OpenGLShader::ReflectSamplers(spv_reflect::ShaderModule& reflection, std::string& error)
-	{
-		uint32_t count = 0;
-		SpvReflectResult result;
-		result = reflection.EnumerateDescriptorBindings(&count, nullptr);
-		if (result != SPV_REFLECT_RESULT_SUCCESS)
-		{
-			error = "Failed to count descriptor bindings";
-			return false;
-		}
-
-		std::vector<SpvReflectDescriptorBinding*> bindings(count);
-		result = reflection.EnumerateDescriptorBindings(&count, bindings.data());
-		if (result != SPV_REFLECT_RESULT_SUCCESS)
-		{
-			error = "Failed to enumerate descriptor bindings";
-			return false;
-		}
-
-		// Write samplers
-		for (uint32_t i = 0; i < count; i++)
-		{
-			const SpvReflectDescriptorBinding* binding = bindings[i];
-			if (binding->type_description->op == SpvOpTypeSampledImage)
-			{
-				const char* name = binding->name;
-				uint32_t bindSlot = binding->binding;
-				PE_CORE_TRACE("  Sampler       : {0}", name);
-				PE_CORE_TRACE("    Binding: {0}", bindSlot);
-
-				SpvDim dim = binding->image.dim;
-				bool arrayed = (bool)binding->image.arrayed;
-
-				switch (dim)
-				{
-				case SpvDim2D:
-				{
-					if (arrayed)
-					{
-						Ref<Sampler2DArrayShaderParameterTypeSpecification> arraySpec = CreateRef<Sampler2DArrayShaderParameterTypeSpecification>();
-						arraySpec->Binding = bindSlot;
-						arraySpec->Name = name;
-
-						m_ReflectionData.push_back(arraySpec);
-						PE_CORE_TRACE("    Type   : Sampler2DArray");
-					}
-					else
-					{
-						Ref<Sampler2DShaderParameterTypeSpecification> imageSpec = CreateRef<Sampler2DShaderParameterTypeSpecification>();
-						imageSpec->Binding = bindSlot;
-						imageSpec->Name = name;
-
-						m_ReflectionData.push_back(imageSpec);
-						PE_CORE_TRACE("    Type   : Sampler2D");
-					}
-					break;
-				}
-				case SpvDimCube:
-				{
-					if (arrayed)
-					{
-						Ref<SamplerCubeArrayShaderParameterTypeSpecification> cubeArraySpec = CreateRef<SamplerCubeArrayShaderParameterTypeSpecification>();
-						cubeArraySpec->Binding = bindSlot;
-						cubeArraySpec->Name = name;
-
-						m_ReflectionData.push_back(cubeArraySpec);
-						PE_CORE_TRACE("    Type   : SamplerCubeArray");
-					}
-					else
-					{
-						Ref<SamplerCubeShaderParameterTypeSpecification> cubeSpec = CreateRef<SamplerCubeShaderParameterTypeSpecification>();
-						cubeSpec->Binding = bindSlot;
-						cubeSpec->Name = name;
-
-						m_ReflectionData.push_back(cubeSpec);
-						PE_CORE_TRACE("    Type   : SamplerCube");
-					}
-					break;
-				}
-				default:
-					PE_CORE_WARN("Unsupported sampler dimensions");
-				}
-
-				uint32_t dims = binding->array.dims_count;
-				uint32_t arraySize = binding->array.dims[0];
-
-				if (dims > 0)
-				{
-					PE_CORE_TRACE(" Array Dims: {0}", dims);
-					PE_CORE_TRACE(" Array Size: {0}", arraySize);
-				}
-			}
-		}
-
-		return true;
-	}
-
-	void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t>& shaderData)
-	{
-		// Generate reflection data for a shader
-
-		size_t spirv_nbytes = shaderData.size() * sizeof(uint32_t);
-		spv_reflect::ShaderModule reflection = spv_reflect::ShaderModule(spirv_nbytes, shaderData.data());
-
-		if (reflection.GetResult() != SPV_REFLECT_RESULT_SUCCESS)
-		{
-			PE_CORE_ERROR("Error reflecting SPIRV data at source path '{0}'", m_Filepath.c_str());
-			return;
-		}
-
-		PE_CORE_TRACE("OpenGLShader::Reflect - {0} {1}", OpenGLShaderUtils::GLShaderStageToString(stage), m_Filepath);
-
-		// Get uniform buffers
-		// -------------------
-		std::string error = "";
-		bool success = ReflectUBOs(reflection, error);
-		if (!success)
-		{
-			PE_CORE_ERROR("Error reflecting SPIRV data at source path '{0}'", m_Filepath.c_str());
-			PE_CORE_ERROR("  - {0}", error.c_str());
-		}
-
-
-		// Get samplers
-		// ------------
-		error = "";
-		success = ReflectSamplers(reflection, error);
-		if (!success)
-		{
-			PE_CORE_ERROR("Error reflecting SPIRV data at source path '{0}'", m_Filepath.c_str());
-			PE_CORE_ERROR("  - {0}", error.c_str());
-		}
-	}
-	*/
 
 	void OpenGLShader::Bind() const
 	{

@@ -3,8 +3,6 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 
-#include <spirv_reflect.h>
-
 typedef unsigned int GLenum; // TODO: remove
 
 namespace PaulEngine {
@@ -58,7 +56,6 @@ namespace PaulEngine {
 		bool LoadProgramBinary(const std::filesystem::path& cachePath);
 		void Reflect();
 		void ReflectUBOs();
-		void ReflectUniformMember(int memberIndex, std::vector<std::string>& out_names, std::vector<ShaderDataType>& out_types);
 		void ReflectSamplers();
 		//void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 		//bool ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error);
