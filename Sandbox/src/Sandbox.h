@@ -4,6 +4,8 @@
 
 #include "Maths/Vector.h"
 
+#include <glad/gl.h>
+
 namespace Sandbox
 {
 #define MAX_MATERIALS 100
@@ -20,11 +22,11 @@ namespace Sandbox
 		glm::vec3 EmissionColour;
 		float EmissionStrength;
 
-		//glm::vec2 TextureScale;
-		glm::vec3 padding0;
+		glm::vec2 TextureScale;
 		float Shininess;
 		//float HeightScale;
 		 
+		int AlbedoTextureIndex;
 		//int UseNormalMap;
 		//int UseDisplacementMap;
 	};
@@ -168,5 +170,10 @@ namespace Sandbox
 		std::vector<BasicMaterial> m_LocalMaterialBuffer;
 		uint32_t m_MaterialBufferID;
 		size_t m_MaterialBufferSize;
+
+		std::vector<PaulEngine::Ref<PaulEngine::Texture2D>> m_Textures;
+
+		std::vector<GLuint64> m_LocalTextureBuffer;
+		uint32_t m_TextureBufferID;
 	};
 }

@@ -2,7 +2,7 @@
 #include <imgui.h>
 #include <PaulEngine/Asset/MeshImporter.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace Sandbox
 {
@@ -36,11 +36,45 @@ namespace Sandbox
 	static SceneData s_SceneDataBuffer;
 	static PaulEngine::Ref<PaulEngine::UniformBuffer> s_SceneDataUniformBuffer = nullptr;
 
+	GLuint64 GetGLTextureHandle(PaulEngine::Ref<PaulEngine::Texture2D> texture)
+	{
+		const GLuint64 handle = glGetTextureHandleARB(texture->GetRendererID());
+		if (handle == 0)
+		{
+			PE_ERROR("Error getting GL64 texture handle");
+		}
+		return handle;
+	}
+
 	void Sandbox::OnAttach()
 	{
 		PE_PROFILE_FUNCTION();
 
 		m_Camera = PaulEngine::CreateRef<PaulEngine::EditorCamera>(PaulEngine::EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f));
+
+		// Load textures
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/rusted_iron/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/brick_wall/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/cobble_floor/diffuse.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/gold/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/leather/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/marble_tile/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_grid/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_vent/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/plastic/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/sci-fi_wall/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/space_blanket/albedo.png"));
+
+		m_LocalTextureBuffer = std::vector<GLuint64>();
+		m_LocalTextureBuffer.reserve(m_Textures.size());
+		for (PaulEngine::Ref<PaulEngine::Texture2D> texture : m_Textures)
+		{
+			m_LocalTextureBuffer.push_back(GetGLTextureHandle(texture));
+		}
+
+		glCreateBuffers(1, &m_TextureBufferID);
+		glNamedBufferStorage(m_TextureBufferID, sizeof(GLuint64) * m_LocalTextureBuffer.size(), m_LocalTextureBuffer.data(), GL_DYNAMIC_STORAGE_BIT);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_TextureBufferID);
 
 		PaulEngine::Ref<PaulEngine::ParsedModelLoadResult> cubeModel = PaulEngine::MeshImporter::ParseModelFileRaw("assets/models/DefaultCube.fbx");
 		PaulEngine::Ref<PaulEngine::ParsedModelLoadResult> sphereModel = PaulEngine::MeshImporter::ParseModelFileRaw("assets/models/DefaultSphere.fbx");
@@ -102,11 +136,9 @@ namespace Sandbox
 		}
 
 		s_CameraUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_CameraBuffer), 0);
-		//s_MeshDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_MeshDataBuffer), 1);
 		s_SceneDataUniformBuffer = PaulEngine::UniformBuffer::Create(sizeof(s_SceneDataBuffer), 2);
 
 		s_CameraUniformBuffer->Bind(0);
-		//s_MeshDataUniformBuffer->Bind(1);
 		s_SceneDataUniformBuffer->Bind(2);
 
 		s_SceneDataUniformBuffer->SetData(&s_SceneDataBuffer, sizeof(s_SceneDataBuffer));
@@ -143,30 +175,33 @@ namespace Sandbox
 		m_MaterialBufferSize = 0;
 
 		// Create defaul material
-		BasicMaterial defaultMaterial;
-		defaultMaterial.Albedo = glm::vec4(1.0f);
-		defaultMaterial.Specular = glm::vec4(1.0f);
-		defaultMaterial.EmissionColour = glm::vec3(1.0f);
-		defaultMaterial.EmissionStrength = 0.0f;
-		defaultMaterial.Shininess = 16.0f;
-		defaultMaterial.padding0 = glm::vec3(0.0f);
+		BasicMaterial plasticMaterial;
+		plasticMaterial.Albedo = glm::vec4(1.0f);
+		plasticMaterial.Specular = glm::vec4(1.0f);
+		plasticMaterial.EmissionColour = glm::vec3(1.0f);
+		plasticMaterial.EmissionStrength = 0.0f;
+		plasticMaterial.Shininess = 16.0f;
+		plasticMaterial.TextureScale = glm::vec2(1.0f);
+		plasticMaterial.AlbedoTextureIndex = 8; // plastic
 
 		BasicMaterial goldMaterial;
-		goldMaterial.Albedo = glm::vec4(1.0f, 0.84f, 0.0f, 1.0f);
+		goldMaterial.Albedo = glm::vec4(1.0f);
 		goldMaterial.Specular = glm::vec4(1.0f, 0.84f, 0.0f, 1.0f);
 		goldMaterial.EmissionColour = glm::vec3(1.0f);
 		goldMaterial.EmissionStrength = 0.0f;
 		goldMaterial.Shininess = 32.0f;
-		goldMaterial.padding0 = glm::vec3(0.0f);
+		goldMaterial.TextureScale = glm::vec2(1.0f);
+		goldMaterial.AlbedoTextureIndex = 3;
 
-		BasicMaterial redMaterial = goldMaterial;
-		redMaterial.Albedo = glm::vec4(0.8f, 0.2f, 0.2f, 1.0f);
-		redMaterial.Specular = redMaterial.Albedo;
-		redMaterial.Shininess = 8.0f;
+		BasicMaterial rustMaterial = goldMaterial;
+		rustMaterial.Albedo = glm::vec4(1.0f);
+		rustMaterial.Specular = rustMaterial.Albedo;
+		rustMaterial.Shininess = 8.0f;
+		rustMaterial.AlbedoTextureIndex = 0;
 
-		m_LocalMaterialBuffer[m_MaterialBufferSize++] = defaultMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = plasticMaterial;
 		m_LocalMaterialBuffer[m_MaterialBufferSize++] = goldMaterial;
-		m_LocalMaterialBuffer[m_MaterialBufferSize++] = redMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = rustMaterial;
 
 		glNamedBufferSubData(m_MaterialBufferID, 0, sizeof(BasicMaterial) * m_MaterialBufferSize, m_LocalMaterialBuffer.data());
 
@@ -250,6 +285,11 @@ namespace Sandbox
 			m_LocalCommandsBuffer[m_DrawCommandBufferSize++] = command;
 		}
 
+		// Texture
+		glMakeTextureHandleResidentARB(m_LocalTextureBuffer[8]);
+		glMakeTextureHandleResidentARB(m_LocalTextureBuffer[3]);
+		glMakeTextureHandleResidentARB(m_LocalTextureBuffer[0]);
+
 		// Execute draw calls
 
 		// Buffer draw commands
@@ -261,6 +301,10 @@ namespace Sandbox
 
 		// Execute draw commands in a single draw call
 		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, m_DrawCommandBufferSize, 0);
+
+		glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[8]);
+		glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[3]);
+		glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[0]);
 	}
 
 	void Sandbox::OnImGuiRender()
