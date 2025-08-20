@@ -375,3 +375,5 @@ FodyWeavers.xsd
 /PE-Editor/PaulEngineProfile-Startup.json
 /PE-Editor/PaulEngineProfile-Shutdown.json
 /PE-Editor/Intel® VTune™ Profiler Results
+/PE-Editor/RenderDocSettings.cap
+/Sandbox/RenderDocSettings.cap
