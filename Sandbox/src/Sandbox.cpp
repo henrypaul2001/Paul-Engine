@@ -63,7 +63,30 @@ namespace Sandbox
 		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_vent/albedo.png"));
 		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/plastic/albedo.png"));
 		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/sci-fi_wall/albedo.png"));
-		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/space_blanket/albedo.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/space_blanket/albedo.png")); // 10
+
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/rusted_iron/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/brick_wall/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/cobble_floor/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/gold/normal.png")); // 14
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/leather/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/marble_tile/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_grid/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_vent/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/plastic/normal.png")); // 19
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/sci-fi_wall/normal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/space_blanket/normal.png")); // 21
+
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/rusted_iron/metallic.png")); // 22
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/brick_wall/specular.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/cobble_floor/specular.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/gold/metallic.png")); // 25
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/marble_tile/metal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_grid/metal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/metal_vent/metal.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/plastic/roughness.png")); // 29
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/sci-fi_wall/metallic.png"));
+		m_Textures.push_back(PaulEngine::TextureImporter::LoadTexture2D("assets/textures/space_blanket/metallic.png"));
 
 		m_LocalTextureBuffer = std::vector<GLuint64>();
 		m_LocalTextureBuffer.reserve(m_Textures.size());
@@ -115,22 +138,28 @@ namespace Sandbox
 
 		// Create grid of cubes
 		glm::vec3 origin = glm::vec3(5.0f, 0.0f, -1.0f);
-		glm::vec3 delta = glm::vec3(2.0f);
-		const int xNum = 50;
-		const int yNum = 50;
-		const int zNum = 10;
+		glm::vec3 delta = glm::vec3(5.0f);
+		// 250,047 cubes
+		const int xNum = 63;
+		const int yNum = 63;
+		const int zNum = 63;
+		int materialID = 0;
 		for (int x = 0; x < xNum; x++)
 		{
 			for (int y = 0; y < yNum; y++)
 			{
 				for (int z = 0; z < zNum; z++)
 				{
-					m_MeshList.push_back(gobletMesh0);
+					m_MeshList.push_back(cubeMesh);
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), origin);
 					transform = glm::translate(transform, delta * glm::vec3(x, y, z));
 					transform = glm::scale(transform, glm::vec3(3.0f));
 					m_MeshTransforms.push_back(transform);
-					m_MaterialIDs.push_back(1);
+					m_MaterialIDs.push_back(materialID++);
+					if (materialID >= 6)
+					{
+						materialID = 0;
+					}
 				}
 			}
 		}
@@ -182,7 +211,9 @@ namespace Sandbox
 		plasticMaterial.EmissionStrength = 0.0f;
 		plasticMaterial.Shininess = 16.0f;
 		plasticMaterial.TextureScale = glm::vec2(1.0f);
-		plasticMaterial.AlbedoTextureIndex = 8; // plastic
+		plasticMaterial.AlbedoTextureIndex = 8;
+		plasticMaterial.NormalTextureIndex = 19;
+		plasticMaterial.SpecularTextureIndex = 29;
 
 		BasicMaterial goldMaterial;
 		goldMaterial.Albedo = glm::vec4(1.0f);
@@ -192,16 +223,42 @@ namespace Sandbox
 		goldMaterial.Shininess = 32.0f;
 		goldMaterial.TextureScale = glm::vec2(1.0f);
 		goldMaterial.AlbedoTextureIndex = 3;
+		goldMaterial.NormalTextureIndex = 14;
+		goldMaterial.SpecularTextureIndex = 25;
 
 		BasicMaterial rustMaterial = goldMaterial;
 		rustMaterial.Albedo = glm::vec4(1.0f);
 		rustMaterial.Specular = rustMaterial.Albedo;
 		rustMaterial.Shininess = 8.0f;
 		rustMaterial.AlbedoTextureIndex = 0;
+		rustMaterial.NormalTextureIndex = 11;
+		rustMaterial.SpecularTextureIndex = 22;
+
+		BasicMaterial metalVentMaterial = goldMaterial;
+		metalVentMaterial.Albedo = glm::vec4(1.0f);
+		metalVentMaterial.Specular = glm::vec4(1.0f);
+		metalVentMaterial.Shininess = 8.0f;
+		metalVentMaterial.AlbedoTextureIndex = 7;
+		metalVentMaterial.NormalTextureIndex = 18;
+		metalVentMaterial.SpecularTextureIndex = 28;
+
+		BasicMaterial scifiMaterial = metalVentMaterial;
+		scifiMaterial.Shininess = 16.0f;
+		scifiMaterial.AlbedoTextureIndex = 9;
+		scifiMaterial.NormalTextureIndex = 20;
+		scifiMaterial.SpecularTextureIndex = 30;
+
+		BasicMaterial metalGrid = metalVentMaterial;
+		metalGrid.AlbedoTextureIndex = 6;
+		metalGrid.NormalTextureIndex = 18;
+		metalGrid.SpecularTextureIndex = 27;
 
 		m_LocalMaterialBuffer[m_MaterialBufferSize++] = plasticMaterial;
 		m_LocalMaterialBuffer[m_MaterialBufferSize++] = goldMaterial;
 		m_LocalMaterialBuffer[m_MaterialBufferSize++] = rustMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = metalVentMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = scifiMaterial;
+		m_LocalMaterialBuffer[m_MaterialBufferSize++] = metalGrid;
 
 		glNamedBufferSubData(m_MaterialBufferID, 0, sizeof(BasicMaterial) * m_MaterialBufferSize, m_LocalMaterialBuffer.data());
 
@@ -260,6 +317,8 @@ namespace Sandbox
 		m_MeshSubmissionBufferSize = 0;
 		m_DrawCommandBufferSize = 0;
 
+		m_TextureSubmissions.clear();
+
 		// Submit meshes
 		for (int i = 0; i < m_MeshList.size(); i++)
 		{
@@ -269,6 +328,11 @@ namespace Sandbox
 			meshSubmission.MaterialID = m_MaterialIDs[i];
 
 			m_LocalMeshSubmissionBuffer[m_MeshSubmissionBufferSize++] = meshSubmission;
+
+			const BasicMaterial& materialRef = m_LocalMaterialBuffer[meshSubmission.MaterialID];
+			m_TextureSubmissions.insert(materialRef.AlbedoTextureIndex);
+			m_TextureSubmissions.insert(materialRef.NormalTextureIndex);
+			m_TextureSubmissions.insert(materialRef.SpecularTextureIndex);
 
 			// Draw call
 			//glDrawElementsBaseVertex(GL_TRIANGLES, m.NumIndices, GL_UNSIGNED_INT, (void*)(m.BaseIndicesIndex * sizeof(uint32_t)), m.BaseVertexIndex);
@@ -286,11 +350,12 @@ namespace Sandbox
 		}
 
 		// Texture
-		glMakeTextureHandleResidentARB(m_LocalTextureBuffer[8]);
-		glMakeTextureHandleResidentARB(m_LocalTextureBuffer[3]);
-		glMakeTextureHandleResidentARB(m_LocalTextureBuffer[0]);
-
-		// Execute draw calls
+		auto it = m_TextureSubmissions.cbegin();
+		while (it != m_TextureSubmissions.cend())
+		{
+			glMakeTextureHandleResidentARB(m_LocalTextureBuffer[*it]);
+			it++;
+		}
 
 		// Buffer draw commands
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DrawCommandBufferID);
@@ -302,9 +367,12 @@ namespace Sandbox
 		// Execute draw commands in a single draw call
 		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, m_DrawCommandBufferSize, 0);
 
-		glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[8]);
-		glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[3]);
-		glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[0]);
+		it = m_TextureSubmissions.cbegin();
+		while (it != m_TextureSubmissions.cend())
+		{
+			glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[*it]);
+			it++;
+		}
 	}
 
 	void Sandbox::OnImGuiRender()

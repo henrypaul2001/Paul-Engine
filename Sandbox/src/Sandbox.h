@@ -25,9 +25,11 @@ namespace Sandbox
 		glm::vec2 TextureScale;
 		float Shininess;
 		//float HeightScale;
-		 
 		int AlbedoTextureIndex;
-		//int UseNormalMap;
+
+		glm::vec2 padding0 = glm::vec2(0.0f);
+		int SpecularTextureIndex;
+		int NormalTextureIndex = -1;
 		//int UseDisplacementMap;
 	};
 
@@ -175,5 +177,7 @@ namespace Sandbox
 
 		std::vector<GLuint64> m_LocalTextureBuffer;
 		uint32_t m_TextureBufferID;
+
+		std::unordered_set<GLuint64> m_TextureSubmissions;
 	};
 }

@@ -148,7 +148,11 @@ struct MaterialValues
 	//float HeightScale;
 
 	int AlbedoTextureIndex;
-	//int UseNormalMap;
+
+	vec2 padding0;
+	int SpecularTextureIndex;
+	int NormalTextureIndex;
+
 	//int UseDisplacementMap;
 };
 layout(binding = 3, std430) readonly buffer MaterialSSBO {
@@ -399,6 +403,8 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 void main()
 {
 	sampler2D albedoTexture = textures[Materials[v_MaterialIndex].AlbedoTextureIndex];
+	sampler2D specularTexture = textures[Materials[v_MaterialIndex].SpecularTextureIndex];
+
 	vec4 Albedo = Materials[v_MaterialIndex].Albedo;
 	vec4 Specular = Materials[v_MaterialIndex].Specular;
 
@@ -422,13 +428,20 @@ void main()
 	// This results in no change to the underlying material value when they are multiplied
 	vec3 AlbedoSample = texture(albedoTexture, ScaledTexCoords).rgb;
 	vec3 EmissionSample = vec3(1.0);
-	vec3 SpecularSample = vec3(1.0);
+	vec3 SpecularSample = texture(specularTexture, ScaledTexCoords).rgb;
 
 	vec3 Normal = normalize(v_VertexData.Normal);
+	if (Materials[v_MaterialIndex].NormalTextureIndex != -1)
+	{
+		sampler2D normalMap = textures[Materials[v_MaterialIndex].NormalTextureIndex];
+		Normal = texture(normalMap, ScaledTexCoords).rgb;
+		Normal = normalize(Normal * 2.0 - 1.0);
+		Normal = normalize(v_VertexData.TBN * Normal);
+	}
 
 	vec3 MaterialAlbedo = AlbedoSample * Albedo.rgb;
 	vec3 MaterialEmission = EmissionSample * (EmissionColour * EmissionStrength);
-	vec3 MaterialSpecular = SpecularSample * Specular.rgb;
+	vec3 MaterialSpecular = SpecularSample.r * Specular.rgb;
 
 	vec3 Result = vec3(0.0);
 
