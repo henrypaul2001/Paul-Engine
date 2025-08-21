@@ -1,4 +1,5 @@
 #version 460 core
+#extension GL_ARB_bindless_texture : require
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec2 a_TexCoords;
@@ -37,7 +38,7 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out flat uint v_MaterialID;
+layout(location = 1) out flat uint v_MaterialIndex;
 layout(location = 2) out VertexData v_VertexData;
 
 void main()
@@ -59,7 +60,7 @@ void main()
 	v_VertexData.TBN = mat3(T, B, N);
 
 	v_EntityID = EntityID;
-	v_MaterialID = MaterialID;
+	v_MaterialIndex = MaterialID;
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }

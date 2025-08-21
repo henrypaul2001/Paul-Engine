@@ -95,9 +95,9 @@ namespace Sandbox
 			m_LocalTextureBuffer.push_back(GetGLTextureHandle(texture));
 		}
 
-		glCreateBuffers(1, &m_TextureBufferID);
-		glNamedBufferStorage(m_TextureBufferID, sizeof(GLuint64) * m_LocalTextureBuffer.size(), m_LocalTextureBuffer.data(), GL_DYNAMIC_STORAGE_BIT);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_TextureBufferID);
+		//glCreateBuffers(1, &m_TextureBufferID);
+		//glNamedBufferStorage(m_TextureBufferID, sizeof(GLuint64) * m_LocalTextureBuffer.size(), m_LocalTextureBuffer.data(), GL_DYNAMIC_STORAGE_BIT);
+		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_TextureBufferID);
 
 		PaulEngine::Ref<PaulEngine::ParsedModelLoadResult> cubeModel = PaulEngine::MeshImporter::ParseModelFileRaw("assets/models/DefaultCube.fbx");
 		PaulEngine::Ref<PaulEngine::ParsedModelLoadResult> sphereModel = PaulEngine::MeshImporter::ParseModelFileRaw("assets/models/DefaultSphere.fbx");
@@ -211,9 +211,10 @@ namespace Sandbox
 		plasticMaterial.EmissionStrength = 0.0f;
 		plasticMaterial.Shininess = 16.0f;
 		plasticMaterial.TextureScale = glm::vec2(1.0f);
-		plasticMaterial.AlbedoTextureIndex = 8;
-		plasticMaterial.NormalTextureIndex = 19;
-		plasticMaterial.SpecularTextureIndex = 29;
+		plasticMaterial.AlbedoTextureARB = m_LocalTextureBuffer[8];
+		plasticMaterial.NormalTextureARB = m_LocalTextureBuffer[19];
+		plasticMaterial.SpecularTextureARB = m_LocalTextureBuffer[29];
+		plasticMaterial.UseNormalMap = 1;
 
 		BasicMaterial goldMaterial;
 		goldMaterial.Albedo = glm::vec4(1.0f);
@@ -222,36 +223,41 @@ namespace Sandbox
 		goldMaterial.EmissionStrength = 0.0f;
 		goldMaterial.Shininess = 32.0f;
 		goldMaterial.TextureScale = glm::vec2(1.0f);
-		goldMaterial.AlbedoTextureIndex = 3;
-		goldMaterial.NormalTextureIndex = 14;
-		goldMaterial.SpecularTextureIndex = 25;
+		goldMaterial.AlbedoTextureARB = m_LocalTextureBuffer[3];
+		goldMaterial.NormalTextureARB = m_LocalTextureBuffer[14];
+		goldMaterial.SpecularTextureARB = m_LocalTextureBuffer[25];
+		goldMaterial.UseNormalMap = 1;
 
 		BasicMaterial rustMaterial = goldMaterial;
 		rustMaterial.Albedo = glm::vec4(1.0f);
 		rustMaterial.Specular = rustMaterial.Albedo;
 		rustMaterial.Shininess = 8.0f;
-		rustMaterial.AlbedoTextureIndex = 0;
-		rustMaterial.NormalTextureIndex = 11;
-		rustMaterial.SpecularTextureIndex = 22;
+		rustMaterial.AlbedoTextureARB = m_LocalTextureBuffer[0];
+		rustMaterial.NormalTextureARB = m_LocalTextureBuffer[11];
+		rustMaterial.SpecularTextureARB = m_LocalTextureBuffer[22];
+		rustMaterial.UseNormalMap = 1;
 
 		BasicMaterial metalVentMaterial = goldMaterial;
 		metalVentMaterial.Albedo = glm::vec4(1.0f);
 		metalVentMaterial.Specular = glm::vec4(1.0f);
 		metalVentMaterial.Shininess = 8.0f;
-		metalVentMaterial.AlbedoTextureIndex = 7;
-		metalVentMaterial.NormalTextureIndex = 18;
-		metalVentMaterial.SpecularTextureIndex = 28;
+		metalVentMaterial.AlbedoTextureARB = m_LocalTextureBuffer[7];
+		metalVentMaterial.NormalTextureARB = m_LocalTextureBuffer[18];
+		metalVentMaterial.SpecularTextureARB = m_LocalTextureBuffer[28];
+		metalVentMaterial.UseNormalMap = 1;
 
 		BasicMaterial scifiMaterial = metalVentMaterial;
 		scifiMaterial.Shininess = 16.0f;
-		scifiMaterial.AlbedoTextureIndex = 9;
-		scifiMaterial.NormalTextureIndex = 20;
-		scifiMaterial.SpecularTextureIndex = 30;
+		scifiMaterial.AlbedoTextureARB = m_LocalTextureBuffer[9];
+		scifiMaterial.NormalTextureARB = m_LocalTextureBuffer[20];
+		scifiMaterial.SpecularTextureARB = m_LocalTextureBuffer[30];
+		scifiMaterial.UseNormalMap = 1;
 
 		BasicMaterial metalGrid = metalVentMaterial;
-		metalGrid.AlbedoTextureIndex = 6;
-		metalGrid.NormalTextureIndex = 18;
-		metalGrid.SpecularTextureIndex = 27;
+		metalGrid.AlbedoTextureARB = m_LocalTextureBuffer[6];
+		metalGrid.NormalTextureARB = m_LocalTextureBuffer[18];
+		metalGrid.SpecularTextureARB = m_LocalTextureBuffer[27];
+		metalGrid.UseNormalMap = 1;
 
 		m_LocalMaterialBuffer[m_MaterialBufferSize++] = plasticMaterial;
 		m_LocalMaterialBuffer[m_MaterialBufferSize++] = goldMaterial;
@@ -330,13 +336,10 @@ namespace Sandbox
 			m_LocalMeshSubmissionBuffer[m_MeshSubmissionBufferSize++] = meshSubmission;
 
 			const BasicMaterial& materialRef = m_LocalMaterialBuffer[meshSubmission.MaterialID];
-			m_TextureSubmissions.insert(materialRef.AlbedoTextureIndex);
-			m_TextureSubmissions.insert(materialRef.NormalTextureIndex);
-			m_TextureSubmissions.insert(materialRef.SpecularTextureIndex);
+			m_TextureSubmissions.insert(materialRef.AlbedoTextureARB);
+			m_TextureSubmissions.insert(materialRef.NormalTextureARB);
+			m_TextureSubmissions.insert(materialRef.SpecularTextureARB);
 
-			// Draw call
-			//glDrawElementsBaseVertex(GL_TRIANGLES, m.NumIndices, GL_UNSIGNED_INT, (void*)(m.BaseIndicesIndex * sizeof(uint32_t)), m.BaseVertexIndex);
-			
 			BatchedMesh m = m_MeshList[i];
 			
 			DrawElementsIndirectCommand command;
@@ -353,7 +356,7 @@ namespace Sandbox
 		auto it = m_TextureSubmissions.cbegin();
 		while (it != m_TextureSubmissions.cend())
 		{
-			glMakeTextureHandleResidentARB(m_LocalTextureBuffer[*it]);
+			glMakeTextureHandleResidentARB(*it);
 			it++;
 		}
 
@@ -370,7 +373,7 @@ namespace Sandbox
 		it = m_TextureSubmissions.cbegin();
 		while (it != m_TextureSubmissions.cend())
 		{
-			glMakeTextureHandleNonResidentARB(m_LocalTextureBuffer[*it]);
+			glMakeTextureHandleNonResidentARB(*it);
 			it++;
 		}
 	}

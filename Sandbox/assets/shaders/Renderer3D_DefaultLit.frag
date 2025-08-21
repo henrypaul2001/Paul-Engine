@@ -1,4 +1,5 @@
 #version 460 core
+#extension GL_ARB_bindless_texture : require
 layout(location = 0) out vec4 colour;
 layout(location = 1) out int entityID;
 
@@ -52,7 +53,7 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in flat uint v_MaterialID;
+layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
@@ -72,17 +73,26 @@ struct MaterialValues
 	vec3 EmissionColour;
 	float EmissionStrength;
 
-	//vec2 TextureScale;
-	vec3 padding0;
+	vec2 TextureScale;
 	float Shininess;
 	//float HeightScale;
+	int padding0;
 
-	//int UseNormalMap;
+	sampler2D AlbedoTexture;
+	sampler2D SpecularTexture;
+
+	float padding1;
+	int UseNormalMap;
+	sampler2D NormalTexture;
+
 	//int UseDisplacementMap;
 };
 layout(binding = 3, std430) readonly buffer MaterialSSBO {
 	MaterialValues Materials[];
 };
+//layout(binding = 4, std430) readonly buffer BindlessTexturesSSBO {
+//	sampler2D textures[];
+//};
 
 layout(std140, binding = 2) uniform SceneData
 {
@@ -219,7 +229,7 @@ vec3 DirectionalLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 Mate
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialIndex].Shininess);
 	vec3 specular = (u_SceneData.DirLights[lightIndex].Specular.rgb * spec * MaterialSpecular) * diff;
 
 	// shadow contribution
@@ -258,7 +268,7 @@ vec3 PointLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSp
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialIndex].Shininess);
 	vec3 specular = spec * u_SceneData.PointLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation;
 
 	// shadow contribution
@@ -307,7 +317,7 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialID].Shininess);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), Materials[v_MaterialIndex].Shininess);
 	vec3 specular = spec * u_SceneData.SpotLights[lightIndex].Specular.rgb * MaterialSpecular * diff * attenuation * intensity;
 
 	// shadow contribution
@@ -324,15 +334,15 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	vec4 Albedo = Materials[v_MaterialID].Albedo;
-	vec4 Specular = Materials[v_MaterialID].Specular;
+	vec4 Albedo = Materials[v_MaterialIndex].Albedo;
+	vec4 Specular = Materials[v_MaterialIndex].Specular;
 
-	vec2 TextureScale = vec2(1.0);
-	float Shininess = Materials[v_MaterialID].Shininess;
+	vec2 TextureScale = Materials[v_MaterialIndex].TextureScale;
+	float Shininess = Materials[v_MaterialIndex].Shininess;
 	//float HeightScale = 0.0;
 
-	vec3 EmissionColour = Materials[v_MaterialID].EmissionColour;
-	float EmissionStrength = Materials[v_MaterialID].EmissionStrength;
+	vec3 EmissionColour = Materials[v_MaterialIndex].EmissionColour;
+	float EmissionStrength = Materials[v_MaterialIndex].EmissionStrength;
 
 	//int UseNormalMap = 0;
 	//int UseDisplacementMap = 0;
@@ -345,15 +355,21 @@ void main()
 
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
-	vec3 AlbedoSample = vec3(1.0);
+	vec3 AlbedoSample = texture(Materials[v_MaterialIndex].AlbedoTexture, ScaledTexCoords).rgb;
 	vec3 EmissionSample = vec3(1.0);
-	vec3 SpecularSample = vec3(1.0);
+	vec3 SpecularSample = texture(Materials[v_MaterialIndex].SpecularTexture, ScaledTexCoords).rgb;
 
 	vec3 Normal = normalize(v_VertexData.Normal);
+	if (Materials[v_MaterialIndex].UseNormalMap != -1)
+	{
+		Normal = texture(Materials[v_MaterialIndex].NormalTexture, ScaledTexCoords).rgb;
+		Normal = normalize(Normal * 2.0 - 1.0);
+		Normal = normalize(v_VertexData.TBN * Normal);
+	}
 
 	vec3 MaterialAlbedo = AlbedoSample * Albedo.rgb;
 	vec3 MaterialEmission = EmissionSample * (EmissionColour * EmissionStrength);
-	vec3 MaterialSpecular = SpecularSample *Specular.rgb;
+	vec3 MaterialSpecular = SpecularSample.r * Specular.rgb;
 
 	vec3 Result = vec3(0.0);
 

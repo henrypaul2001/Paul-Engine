@@ -146,21 +146,23 @@ struct MaterialValues
 	vec2 TextureScale;
 	float Shininess;
 	//float HeightScale;
+	int padding0;
 
-	int AlbedoTextureIndex;
+	sampler2D AlbedoTexture;
+	sampler2D SpecularTexture;
 
-	vec2 padding0;
-	int SpecularTextureIndex;
-	int NormalTextureIndex;
+	float padding1;
+	int UseNormalMap;
+	sampler2D NormalTexture;
 
 	//int UseDisplacementMap;
 };
 layout(binding = 3, std430) readonly buffer MaterialSSBO {
 	MaterialValues Materials[];
 };
-layout(binding = 4, std430) readonly buffer BindlessTexturesSSBO {
-	sampler2D textures[];
-};
+//layout(binding = 4, std430) readonly buffer BindlessTexturesSSBO {
+//	sampler2D textures[];
+//};
 
 layout(std140, binding = 2) uniform SceneData
 {
@@ -402,9 +404,6 @@ vec3 SpotLightContribution(int lightIndex, vec3 MaterialAlbedo, vec3 MaterialSpe
 
 void main()
 {
-	sampler2D albedoTexture = textures[Materials[v_MaterialIndex].AlbedoTextureIndex];
-	sampler2D specularTexture = textures[Materials[v_MaterialIndex].SpecularTextureIndex];
-
 	vec4 Albedo = Materials[v_MaterialIndex].Albedo;
 	vec4 Specular = Materials[v_MaterialIndex].Specular;
 
@@ -426,15 +425,14 @@ void main()
 
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
-	vec3 AlbedoSample = texture(albedoTexture, ScaledTexCoords).rgb;
+	vec3 AlbedoSample = texture(Materials[v_MaterialIndex].AlbedoTexture, ScaledTexCoords).rgb;
 	vec3 EmissionSample = vec3(1.0);
-	vec3 SpecularSample = texture(specularTexture, ScaledTexCoords).rgb;
+	vec3 SpecularSample = texture(Materials[v_MaterialIndex].SpecularTexture, ScaledTexCoords).rgb;
 
 	vec3 Normal = normalize(v_VertexData.Normal);
-	if (Materials[v_MaterialIndex].NormalTextureIndex != -1)
+	if (Materials[v_MaterialIndex].UseNormalMap != -1)
 	{
-		sampler2D normalMap = textures[Materials[v_MaterialIndex].NormalTextureIndex];
-		Normal = texture(normalMap, ScaledTexCoords).rgb;
+		Normal = texture(Materials[v_MaterialIndex].NormalTexture, ScaledTexCoords).rgb;
 		Normal = normalize(Normal * 2.0 - 1.0);
 		Normal = normalize(v_VertexData.TBN * Normal);
 	}
