@@ -9,8 +9,8 @@
 namespace Sandbox
 {
 #define MAX_MATERIALS 100
-#define INITIAL_BUFFER_CAPACITY_IN_BYTES 56000000
-#define INITIAL_INDEX_CAPACITY_COUNT 1000000
+#define INITIAL_BUFFER_CAPACITY_IN_BYTES 5600000000
+#define INITIAL_INDEX_CAPACITY_COUNT 100000000
 	// 56 million bytes = 1,000,000 vertices
 #define MAX_DRAW_COMMANDS 1000000
 
@@ -60,6 +60,25 @@ namespace Sandbox
 		uint32_t BaseVertexIndex;
 		uint32_t BaseIndicesIndex;
 		uint32_t NumIndices;
+		
+		bool operator==(const BatchedMesh& other) const {
+			return BaseVertexIndex == other.BaseVertexIndex &&
+				BaseIndicesIndex == other.BaseIndicesIndex &&
+				NumIndices == other.NumIndices;
+		}
+
+		std::size_t hash() const {
+			std::size_t h1 = std::hash<uint32_t>{}(BaseVertexIndex);
+			std::size_t h2 = std::hash<uint32_t>{}(BaseIndicesIndex);
+			std::size_t h3 = std::hash<uint32_t>{}(NumIndices);
+			return h1 ^ (h2 << 1) ^ (h3 << 2);
+		}
+	};
+
+	struct BatchedMeshHashAdapter {
+		std::size_t operator()(BatchedMesh const& m) const {
+			return m.hash();
+		}
 	};
 
 	// Potential way of tracking freed memory
@@ -107,13 +126,23 @@ namespace Sandbox
 			const size_t verticesStartMemoryPosition = m_CurrentVertexBufferSize;
 			const size_t verticesEndMemoryPosition = verticesStartMemoryPosition + verticesSizeInBytes;
 
-			PE_ASSERT(verticesEndMemoryPosition <= INITIAL_BUFFER_CAPACITY_IN_BYTES, "Vertex buffer overrun");
+			if (verticesEndMemoryPosition > INITIAL_BUFFER_CAPACITY_IN_BYTES)
+			{
+				PE_ERROR("Vertex buffer overrun");
+				return BatchedMesh();
+			}
+			//PE_ASSERT(verticesEndMemoryPosition <= INITIAL_BUFFER_CAPACITY_IN_BYTES, "Vertex buffer overrun");
 
 			const size_t indicesSizeInBytes = sizeof(uint32_t) * indices.size();
 			const size_t indicesStartMemoryPosition = m_CurrentIndexBufferSize;
 			const size_t indicesEndMemoryPosition = indicesStartMemoryPosition + indicesSizeInBytes;
 
-			PE_ASSERT(indicesEndMemoryPosition <= INITIAL_INDEX_CAPACITY_COUNT * sizeof(uint32_t), "Index buffer overrun");
+			if (indicesEndMemoryPosition > INITIAL_INDEX_CAPACITY_COUNT * sizeof(uint32_t))
+			{
+				PE_ERROR("Index buffer overrun");
+				return BatchedMesh();
+			}
+			//PE_ASSERT(indicesEndMemoryPosition <= INITIAL_INDEX_CAPACITY_COUNT * sizeof(uint32_t), "Index buffer overrun");
 
 			m_MasterVertexBuffer->SetData(&vertices[0], verticesSizeInBytes, verticesStartMemoryPosition);
 			m_CurrentVertexBufferSize = verticesEndMemoryPosition;
@@ -129,6 +158,8 @@ namespace Sandbox
 			return registeredMesh;
 		}
 
+		size_t GetVertexBufferSize() const { return m_CurrentVertexBufferSize; }
+		size_t GetIndexBufferSize() const { return m_CurrentIndexBufferSize; }
 	private:
 		size_t m_CurrentVertexBufferSize = 0;
 		size_t m_CurrentIndexBufferSize = 0;
@@ -154,10 +185,14 @@ namespace Sandbox
 		bool OnKeyUp(PaulEngine::KeyReleasedEvent& e);
 		bool OnViewportResize(PaulEngine::MainViewportResizeEvent& e);
 
+		void SubmitMesh(BatchedMesh& mesh);
+
 		BatchedMeshManager m_MeshManager;
 		PaulEngine::Ref<PaulEngine::EditorCamera> m_Camera;
 
-		std::vector<BatchedMesh> m_MeshList;
+		std::unordered_map<BatchedMesh, size_t, BatchedMeshHashAdapter> m_MeshInstances; // <mesh, num instances>
+		std::vector<BatchedMesh> m_UniqueMeshList;
+
 		std::vector<glm::mat4> m_MeshTransforms;
 		std::vector<uint32_t> m_MaterialIDs;
 

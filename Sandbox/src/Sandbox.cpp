@@ -109,21 +109,16 @@ namespace Sandbox
 		BatchedMesh gobletMesh1 = m_MeshManager.RegisterLoadedMesh(gobletsModel->ParsedMeshes[1].Vertices, gobletsModel->ParsedMeshes[1].Indices);
 		BatchedMesh gobletMesh2 = m_MeshManager.RegisterLoadedMesh(gobletsModel->ParsedMeshes[2].Vertices, gobletsModel->ParsedMeshes[2].Indices);
 
-		m_MeshList.push_back(sphereMesh);
-		m_MeshList.push_back(cubeMesh);
-		m_MeshList.push_back(gobletMesh0);
-		m_MeshList.push_back(gobletMesh1);
-		m_MeshList.push_back(gobletMesh2);
+		SubmitMesh(sphereMesh);
+		SubmitMesh(gobletMesh0);
+		SubmitMesh(gobletMesh1);
+		SubmitMesh(gobletMesh2);
+		SubmitMesh(cubeMesh);
 
 		glm::mat4 sphereTransform = glm::mat4(1.0f);
 		sphereTransform = glm::translate(sphereTransform, glm::vec3(0.0f, 0.0f, -2.0f));
 		m_MeshTransforms.push_back(sphereTransform);
 		m_MaterialIDs.push_back(2);
-
-		glm::mat4 cubeTransform = glm::mat4(1.0f);
-		cubeTransform = glm::translate(cubeTransform, glm::vec3(-1.0f, 0.0f, -1.0f));
-		m_MeshTransforms.push_back(cubeTransform);
-		m_MaterialIDs.push_back(0);
 
 		glm::mat4 gobletTransform = glm::mat4(1.0f);
 		gobletTransform = glm::translate(gobletTransform, glm::vec3(1.0f, 0.0f, -1.0f));
@@ -135,6 +130,12 @@ namespace Sandbox
 		m_MaterialIDs.push_back(1);
 		m_MaterialIDs.push_back(1);
 		m_MaterialIDs.push_back(1);
+
+		glm::mat4 cubeTransform = glm::mat4(1.0f);
+		cubeTransform = glm::translate(cubeTransform, glm::vec3(-1.0f, 0.0f, -1.0f));
+		m_MeshTransforms.push_back(cubeTransform);
+		m_MaterialIDs.push_back(0);
+
 
 		// Create grid of cubes
 		glm::vec3 origin = glm::vec3(5.0f, 0.0f, -1.0f);
@@ -150,7 +151,7 @@ namespace Sandbox
 			{
 				for (int z = 0; z < zNum; z++)
 				{
-					m_MeshList.push_back(cubeMesh);
+					SubmitMesh(cubeMesh);
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), origin);
 					transform = glm::translate(transform, delta * glm::vec3(x, y, z));
 					transform = glm::scale(transform, glm::vec3(3.0f));
@@ -270,6 +271,9 @@ namespace Sandbox
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
+
+		PE_TRACE("Vertex buffer size: {0}", m_MeshManager.GetVertexBufferSize());
+		PE_TRACE("Index buffer size : {0}", m_MeshManager.GetIndexBufferSize());
 	}
 
 	void Sandbox::OnDetach()
@@ -326,7 +330,7 @@ namespace Sandbox
 		m_TextureSubmissions.clear();
 
 		// Submit meshes
-		for (int i = 0; i < m_MeshList.size(); i++)
+		for (int i = 0; i < m_MeshTransforms.size(); i++)
 		{
 			MeshSubmissionData meshSubmission;
 			meshSubmission.Transform = m_MeshTransforms[i];
@@ -339,12 +343,16 @@ namespace Sandbox
 			m_TextureSubmissions.insert(materialRef.AlbedoTextureARB);
 			m_TextureSubmissions.insert(materialRef.NormalTextureARB);
 			m_TextureSubmissions.insert(materialRef.SpecularTextureARB);
+		}
 
-			BatchedMesh m = m_MeshList[i];
-			
+		// Submit commands
+		for (int i = 0; i < m_UniqueMeshList.size(); i++)
+		{
+			BatchedMesh& m = m_UniqueMeshList[i];
+
 			DrawElementsIndirectCommand command;
 			command.count = m.NumIndices;
-			command.instanceCount = 1;
+			command.instanceCount = m_MeshInstances[m];
 			command.firstIndex = m.BaseIndicesIndex;
 			command.baseVertex = m.BaseVertexIndex;
 			command.baseInstance = 0;
@@ -405,5 +413,19 @@ namespace Sandbox
 		m_ViewportHeight = e.GetHeight();
 		m_Camera->SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 		return false;
+	}
+
+	void Sandbox::SubmitMesh(BatchedMesh& mesh)
+	{
+		auto it = m_MeshInstances.find(mesh);
+		if (it == m_MeshInstances.end())
+		{
+			m_MeshInstances[mesh] = 1;
+			m_UniqueMeshList.push_back(mesh);
+		}
+		else
+		{
+			it->second += 1;
+		}
 	}
 }

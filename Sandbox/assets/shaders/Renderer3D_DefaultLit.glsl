@@ -45,9 +45,9 @@ layout(location = 2) out VertexData v_VertexData;
 
 void main()
 {
-	mat4 Transform = MeshSubmissions[gl_DrawID].Transform;
-	int EntityID = MeshSubmissions[gl_DrawID].EntityID;
-	uint MaterialID = MeshSubmissions[gl_DrawID].MaterialID;
+	mat4 Transform = MeshSubmissions[gl_DrawID + gl_InstanceID].Transform;
+	int EntityID = MeshSubmissions[gl_DrawID + gl_InstanceID].EntityID;
+	uint MaterialID = MeshSubmissions[gl_DrawID + gl_InstanceID].MaterialID;
 
 	mat3 normalMatrix = mat3(transpose(inverse(Transform)));
 	v_VertexData.WorldFragPos = vec3(Transform * vec4(a_Position, 1.0));
