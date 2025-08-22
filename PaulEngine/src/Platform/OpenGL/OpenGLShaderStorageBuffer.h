@@ -1,0 +1,47 @@
+#pragma once
+#include "PaulEngine/Renderer/Resource/ShaderStorageBuffer.h"
+
+typedef void GLvoid;
+
+namespace PaulEngine
+{
+	class OpenGLShaderStorageBuffer : public ShaderStorageBuffer
+	{
+	public:
+		OpenGLShaderStorageBuffer(size_t size, uint32_t binding, const StorageBufferMapping mapping = StorageBufferMapping::None, const bool dynamicStorage = true);
+		virtual ~OpenGLShaderStorageBuffer();
+
+		virtual void SetData(const void* data, size_t size, size_t offset = 0) override;
+		virtual void Bind(uint32_t binding) override;
+
+	private:
+		uint32_t m_RendererID;
+		const StorageBufferMapping m_Mapping;
+		const bool m_DynamicStorage;
+
+		void BufferSubData(const void* data, size_t size, size_t offset);
+
+		// needs to call glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT) before subsequent commands will see the updated data
+		void SetMappedData(const void* data, size_t size, size_t offset);
+
+		// needs to call glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT) before subsequent commands will see the updated data
+		void SetMappedDataPersistent(const void* data, size_t size, size_t offset);
+
+		void SetMappedDataCoherent(const void* data, size_t size, size_t offset);
+
+		// needs to call glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT) and then call glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE) for the CPU to see the GPU updated data
+		void ReadMappedData();
+
+		// needs to call glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT) and then call glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE) for the CPU to see the GPU updated data
+		void ReadMappedDataPersistent();
+
+		// needs to call glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE) for the CPU to see the GPU updated data
+		void ReadMappedDataCoherent();
+
+		void MapPersisent(size_t size, size_t offset);
+
+		GLvoid* m_Ptr;
+		size_t m_CurrentMapSize;
+		size_t m_CurrentMapOffset;
+	};
+}

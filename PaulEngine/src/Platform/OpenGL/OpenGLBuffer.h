@@ -1,13 +1,17 @@
 #pragma once
 #include "PaulEngine/Renderer/Resource/Buffer.h"
+#include "PaulEngine/Renderer/Resource/ShaderStorageBuffer.h"
 #include <cstdint>
 
 typedef unsigned int GLenum;
+typedef unsigned int GLbitfield;
 
 namespace PaulEngine {
 	namespace OpenGLBufferUtils
 	{
 		constexpr GLenum BufferUsageToGLEnum(const BufferUsage usage);
+		constexpr GLbitfield StorageBufferMappingToGLEnum(const StorageBufferMapping mapping);
+		constexpr bool IsStorageBufferMappingPersistent(const StorageBufferMapping mapping);
 	}
 
 	class OpenGLVertexBuffer : public VertexBuffer

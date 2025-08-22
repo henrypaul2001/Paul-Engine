@@ -1608,6 +1608,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1826,5 +1828,7 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.cpp" />
   </ItemGroup>
 </Project>
