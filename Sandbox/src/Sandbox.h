@@ -205,7 +205,7 @@ namespace Sandbox
 		size_t m_DrawCommandBufferSize;
 
 		std::vector<MeshSubmissionData> m_LocalMeshSubmissionBuffer;
-		uint32_t m_MeshSubmissionBufferID;
+		PaulEngine::Ref<PaulEngine::ShaderStorageBuffer> m_MeshSubmissionBuffer;
 		size_t m_MeshSubmissionBufferSize;
 
 		std::vector<BasicMaterial> m_LocalMaterialBuffer;

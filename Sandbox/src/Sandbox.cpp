@@ -50,6 +50,8 @@ namespace Sandbox
 	{
 		PE_PROFILE_FUNCTION();
 
+		PaulEngine::Application::Get().GetWindow().SetVSync(false);
+
 		m_Camera = PaulEngine::CreateRef<PaulEngine::EditorCamera>(PaulEngine::EditorCamera(90.0f, 1.778f, 0.01f, 1000.0f));
 
 		// Load textures
@@ -94,10 +96,6 @@ namespace Sandbox
 		{
 			m_LocalTextureBuffer.push_back(GetGLTextureHandle(texture));
 		}
-
-		//glCreateBuffers(1, &m_TextureBufferID);
-		//glNamedBufferStorage(m_TextureBufferID, sizeof(GLuint64) * m_LocalTextureBuffer.size(), m_LocalTextureBuffer.data(), GL_DYNAMIC_STORAGE_BIT);
-		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_TextureBufferID);
 
 		PaulEngine::Ref<PaulEngine::ParsedModelLoadResult> cubeModel = PaulEngine::MeshImporter::ParseModelFileRaw("assets/models/DefaultCube.fbx");
 		PaulEngine::Ref<PaulEngine::ParsedModelLoadResult> sphereModel = PaulEngine::MeshImporter::ParseModelFileRaw("assets/models/DefaultSphere.fbx");
@@ -186,9 +184,7 @@ namespace Sandbox
 		m_LocalCommandsBuffer = std::vector<DrawElementsIndirectCommand>(MAX_DRAW_COMMANDS);
 	
 		// Create mesh submission buffer
-		glCreateBuffers(1, &m_MeshSubmissionBufferID);
-		glNamedBufferStorage(m_MeshSubmissionBufferID, sizeof(MeshSubmissionData) * MAX_DRAW_COMMANDS, nullptr, GL_DYNAMIC_STORAGE_BIT);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_MeshSubmissionBufferID);
+		m_MeshSubmissionBuffer = PaulEngine::ShaderStorageBuffer::Create(sizeof(MeshSubmissionData) * MAX_DRAW_COMMANDS, 1, PaulEngine::StorageBufferMapping::MAP_WRITE_COHERENT, false);
 		m_MeshSubmissionBufferSize = 0;
 
 		m_LocalMeshSubmissionBuffer = std::vector<MeshSubmissionData>(MAX_DRAW_COMMANDS);
@@ -373,7 +369,7 @@ namespace Sandbox
 		glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(DrawElementsIndirectCommand) * m_DrawCommandBufferSize, m_LocalCommandsBuffer.data());
 
 		// Buffer per mesh data
-		glNamedBufferSubData(m_MeshSubmissionBufferID, 0, sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize, m_LocalMeshSubmissionBuffer.data());
+		m_MeshSubmissionBuffer->SetData(m_LocalMeshSubmissionBuffer.data(), sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize, 0);
 
 		// Execute draw commands in a single draw call
 		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, m_DrawCommandBufferSize, 0);
