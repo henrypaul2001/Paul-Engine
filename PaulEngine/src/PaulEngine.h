@@ -40,6 +40,7 @@
 #include "PaulEngine/Renderer/Resource/Framebuffer.h"
 #include "PaulEngine/Renderer/Resource/UniformBuffer.h"
 #include "PaulEngine/Renderer/Resource/UniformBufferStorage.h"
+#include "PaulEngine/Renderer/Resource/ShaderStorageBuffer.h"
 #include "PaulEngine/Renderer/Asset/Mesh.h"
 
 #include "PaulEngine/Asset/AssetManager.h"

@@ -27,34 +27,6 @@ namespace PaulEngine {
 		return 0;
 	}
 
-	constexpr GLbitfield OpenGLBufferUtils::StorageBufferMappingToGLEnum(const StorageBufferMapping mapping)
-	{
-		switch (mapping)
-		{
-			case StorageBufferMapping::None: return 0;
-
-			case StorageBufferMapping::MAP_READ: return GL_MAP_READ_BIT;
-			case StorageBufferMapping::MAP_WRITE: return GL_MAP_WRITE_BIT;
-			case StorageBufferMapping::MAP_READ_WRITE: return GL_MAP_READ_BIT | GL_MAP_WRITE_BIT;
-
-			case StorageBufferMapping::MAP_READ_PERSISTENT: return GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT;
-			case StorageBufferMapping::MAP_READ_COHERENT: return GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-
-			case StorageBufferMapping::MAP_WRITE_PERSISTENT: return GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
-			case StorageBufferMapping::MAP_WRITE_COHERENT: return GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-
-			case StorageBufferMapping::MAP_READ_WRITE_PERSISTENT: return GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
-			case StorageBufferMapping::MAP_READ_WRITE_COHERENT: return GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-		}
-		PE_CORE_ERROR("Undefined StorageBufferMapping translation");
-		return 0;
-	}
-
-	constexpr bool OpenGLBufferUtils::IsStorageBufferMappingPersistent(const StorageBufferMapping mapping)
-	{
-		return (int)mapping >= 4;
-	}
-
 	// --   VertexBuffer   --
 	// ----------------------
 

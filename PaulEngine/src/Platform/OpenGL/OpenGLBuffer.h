@@ -10,8 +10,6 @@ namespace PaulEngine {
 	namespace OpenGLBufferUtils
 	{
 		constexpr GLenum BufferUsageToGLEnum(const BufferUsage usage);
-		constexpr GLbitfield StorageBufferMappingToGLEnum(const StorageBufferMapping mapping);
-		constexpr bool IsStorageBufferMappingPersistent(const StorageBufferMapping mapping);
 	}
 
 	class OpenGLVertexBuffer : public VertexBuffer
