@@ -37,15 +37,6 @@ namespace Sandbox
 		//int UseDisplacementMap;
 	};
 
-	struct DrawElementsIndirectCommand
-	{
-		unsigned int count = 0;
-		unsigned int instanceCount = 0;
-		unsigned int firstIndex = 0;
-		int baseVertex = 0;
-		unsigned int baseInstance = 0;
-	};
-
 	struct MeshSubmissionData
 	{
 		glm::mat4 Transform;
@@ -200,8 +191,8 @@ namespace Sandbox
 
 		uint32_t m_ViewportWidth, m_ViewportHeight;
 
-		std::vector<DrawElementsIndirectCommand> m_LocalCommandsBuffer;
-		uint32_t m_DrawCommandBufferID;
+		std::vector<PaulEngine::DrawElementsIndirectCommand> m_LocalCommandsBuffer;
+		PaulEngine::Ref<PaulEngine::DrawIndirectBuffer> m_DrawCommandBuffer;
 		size_t m_DrawCommandBufferSize;
 
 		std::vector<MeshSubmissionData> m_LocalMeshSubmissionBuffer;

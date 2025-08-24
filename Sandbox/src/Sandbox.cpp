@@ -177,11 +177,10 @@ namespace Sandbox
 		m_ViewportHeight = 0;
 
 		// Create draw command buffer
-		glCreateBuffers(1, &m_DrawCommandBufferID);
-		glNamedBufferStorage(m_DrawCommandBufferID, sizeof(DrawElementsIndirectCommand) * MAX_DRAW_COMMANDS, nullptr, GL_DYNAMIC_STORAGE_BIT);
+		m_DrawCommandBuffer = PaulEngine::DrawIndirectBuffer::Create(MAX_DRAW_COMMANDS, PaulEngine::StorageBufferMapping::MAP_WRITE_PERSISTENT, true);
 		m_DrawCommandBufferSize = 0;
 
-		m_LocalCommandsBuffer = std::vector<DrawElementsIndirectCommand>(MAX_DRAW_COMMANDS);
+		m_LocalCommandsBuffer = std::vector<PaulEngine::DrawElementsIndirectCommand>(MAX_DRAW_COMMANDS);
 	
 		// Create mesh submission buffer
 		m_MeshSubmissionBuffer = PaulEngine::ShaderStorageBuffer::Create(sizeof(MeshSubmissionData) * MAX_DRAW_COMMANDS, 1, PaulEngine::StorageBufferMapping::MAP_WRITE_COHERENT, false);
@@ -346,12 +345,12 @@ namespace Sandbox
 		{
 			BatchedMesh& m = m_UniqueMeshList[i];
 
-			DrawElementsIndirectCommand command;
-			command.count = m.NumIndices;
-			command.instanceCount = m_MeshInstances[m];
-			command.firstIndex = m.BaseIndicesIndex;
-			command.baseVertex = m.BaseVertexIndex;
-			command.baseInstance = 0;
+			PaulEngine::DrawElementsIndirectCommand command;
+			command.Count = m.NumIndices;
+			command.InstanceCount = m_MeshInstances[m];
+			command.FirstIndex = m.BaseIndicesIndex;
+			command.BaseVertex = m.BaseVertexIndex;
+			command.BaseInstance = 0;
 
 			m_LocalCommandsBuffer[m_DrawCommandBufferSize++] = command;
 		}
@@ -365,8 +364,7 @@ namespace Sandbox
 		}
 
 		// Buffer draw commands
-		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DrawCommandBufferID);
-		glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(DrawElementsIndirectCommand) * m_DrawCommandBufferSize, m_LocalCommandsBuffer.data());
+		m_DrawCommandBuffer->SetData(m_LocalCommandsBuffer.data(), m_DrawCommandBufferSize, 0, true);
 
 		// Buffer per mesh data
 		m_MeshSubmissionBuffer->SetData(m_LocalMeshSubmissionBuffer.data(), sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize, 0);

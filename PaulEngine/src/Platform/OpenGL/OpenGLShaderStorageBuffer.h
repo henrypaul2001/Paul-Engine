@@ -21,7 +21,7 @@ namespace PaulEngine
 		virtual void ReadData(void* destination, size_t sourceSize, size_t sourceOffset = 0, const bool preferMap = true) override;
 		virtual void Bind(uint32_t binding) override;
 
-	private:
+	protected:
 		uint32_t m_RendererID;
 		const StorageBufferMapping m_Mapping;
 		const bool m_DynamicStorage;

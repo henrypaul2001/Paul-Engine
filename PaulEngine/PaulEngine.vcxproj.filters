@@ -1610,6 +1610,7 @@
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1830,5 +1831,6 @@
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.cpp" />
   </ItemGroup>
 </Project>
