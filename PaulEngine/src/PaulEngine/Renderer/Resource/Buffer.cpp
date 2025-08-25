@@ -5,7 +5,7 @@
 
 #include "../Renderer.h"
 namespace PaulEngine {
-	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size, BufferUsage usage)
+	Ref<VertexBuffer> VertexBuffer::Create(size_t size, BufferUsage usage)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())
@@ -20,7 +20,7 @@ namespace PaulEngine {
 		return nullptr;
 	}
 
-	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size, BufferUsage usage)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, size_t size, BufferUsage usage)
 	{
 		PE_PROFILE_FUNCTION();
 		switch (Renderer::GetAPI())

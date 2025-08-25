@@ -15,8 +15,8 @@ namespace PaulEngine {
 	class OpenGLVertexBuffer : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint32_t size, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
-		OpenGLVertexBuffer(float* vertices, uint32_t size, BufferUsage usage = BufferUsage::STATIC_DRAW);
+		OpenGLVertexBuffer(size_t size, BufferUsage usage = BufferUsage::DYNAMIC_DRAW);
+		OpenGLVertexBuffer(float* vertices, size_t size, BufferUsage usage = BufferUsage::STATIC_DRAW);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -25,7 +25,7 @@ namespace PaulEngine {
 		virtual const BufferLayout& GetLayout() const override { return m_Layout; }
 		virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
 
-		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;
+		virtual void SetData(const void* data, size_t size, size_t offset = 0) override;
 
 	private:
 		uint32_t m_RendererID;
@@ -45,7 +45,7 @@ namespace PaulEngine {
 
 		inline virtual uint32_t GetCount() override { return m_Count; }
 
-		virtual void SetData(const uint32_t* indices, uint32_t count, uint32_t offset = 0) override;
+		virtual void SetData(const uint32_t* indices, uint32_t count, size_t offset = 0) override;
 
 	private:
 		uint32_t m_RendererID;

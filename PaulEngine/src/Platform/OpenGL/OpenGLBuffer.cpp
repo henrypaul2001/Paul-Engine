@@ -30,7 +30,7 @@ namespace PaulEngine {
 	// --   VertexBuffer   --
 	// ----------------------
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(size_t size, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
 	{
 		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
@@ -38,7 +38,7 @@ namespace PaulEngine {
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, OpenGLBufferUtils::BufferUsageToGLEnum(usage));
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, size_t size, BufferUsage usage) : m_RendererID(0), m_Usage(usage)
 	{
 		PE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_RendererID);
@@ -62,7 +62,7 @@ namespace PaulEngine {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size, uint32_t offset)
+	void OpenGLVertexBuffer::SetData(const void* data, size_t size, size_t offset)
 	{
 		glNamedBufferSubData(m_RendererID, offset, size, data);
 		//glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -104,7 +104,7 @@ namespace PaulEngine {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLIndexBuffer::SetData(const uint32_t* indices, uint32_t count, uint32_t offset)
+	void OpenGLIndexBuffer::SetData(const uint32_t* indices, uint32_t count, size_t offset)
 	{
 		glNamedBufferSubData(m_RendererID, offset, count * sizeof(uint32_t), indices);
 	}
