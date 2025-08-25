@@ -162,6 +162,11 @@ namespace PaulEngine {
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
+	void OpenGLRenderAPI::DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount)
+	{
+		glDrawElementsBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, (void*)(baseIndex * sizeof(uint32_t)), baseVertex);
+	}
+
 	void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)
 	{
 		glDrawElements(DrawPrimitiveToGLEnum(vertexArray->GetDrawPrimitive()), indexCount, GL_UNSIGNED_INT, nullptr);

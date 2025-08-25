@@ -134,28 +134,6 @@ namespace PaulEngine
 		spec.Name.resize(25);
 		spec.Name.resize(std::strlen(spec.Name.c_str()));
 		spec.CalculateTangents = false;
-		spec.UsageType = BufferUsage::STATIC_DRAW;
-
-		switch (mesh->mPrimitiveTypes)
-		{
-		case aiPrimitiveType_POINT:
-			spec.PrimitiveType = DrawPrimitive::POINTS;
-			break;
-		case aiPrimitiveType_LINE:
-			spec.PrimitiveType = DrawPrimitive::LINES;
-			break;
-		case aiPrimitiveType_TRIANGLE:
-			spec.PrimitiveType = DrawPrimitive::TRIANGLES;
-			break;
-		case aiPrimitiveType_POLYGON:
-			spec.PrimitiveType = DrawPrimitive::None;
-			PE_CORE_WARN("Unsupported primitive type 'Polygon' in model file");
-			break;
-			// not sure on this one
-			//case aiPrimitiveType_NGONEncodingFlag:
-			//	spec.PrimitiveType = DrawPrimitive::TRIANGLE_FAN;
-			//	break;
-		}
 
 		// Read vertices
 		unsigned int numVertices = mesh->mNumVertices;

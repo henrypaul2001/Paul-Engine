@@ -9,6 +9,11 @@
 
 namespace PaulEngine
 {
+	// Distribution builds should optimise these values according to the assets built into the distribution asset packs
+
+#define INITIAL_MASTER_VERTEX_COUNT 10000000 // 10 million
+#define INITIAL_MASTER_INDEX_COUNT 100000000 // 100 million
+
 	struct MeshVertex
 	{
 		glm::vec3 Position = glm::vec3(0.0f);
@@ -22,22 +27,10 @@ namespace PaulEngine
 
 	struct MeshSpecification
 	{
-		//const BufferLayout VertexLayout = {
-		//	{ ShaderDataType::Float3, "a_Position", false },
-		//	{ ShaderDataType::Float3, "a_Normal", true },
-		//	{ ShaderDataType::Float2, "a_TexCoords", true },
-		//	{ ShaderDataType::Float3, "a_Tangent", true },
-		//	{ ShaderDataType::Float3, "a_Bitangent", true }
-		//};
 		bool CalculateTangents = false;
-		BufferUsage UsageType = BufferUsage::STATIC_DRAW;
-		DrawPrimitive PrimitiveType = DrawPrimitive::TRIANGLES;
 		std::string Name = "Mesh";
 	};
 
-	// As of now, this will only support a fixed vertex buffer layout that all meshes must follow because of how most of the engine shaders use this layout,
-	// and, supporting varying layouts would complicate the use of the Vertex struct. However, allowing a raw array of floats instead of Vertex could be a 
-	// solution worth looking at to support a different vertex layout
 	class Mesh : public Asset
 	{
 	public:
@@ -45,17 +38,35 @@ namespace PaulEngine
 		~Mesh() {}
 
 		virtual AssetType GetType() const override { return AssetType::Mesh; }
-		
-		Ref<VertexArray> GetVertexArray() { return m_VertexArray; }
+
 		const MeshSpecification& GetSpec() const { return m_Spec; }
 
 		uint32_t NumVertices() const { return m_VertexCount; }
-		uint32_t NumIndices() const { return m_VertexArray->GetIndexBuffer()->GetCount();; }
+		uint32_t NumIndices() const { return m_IndexCount; }
+		uint32_t BaseVertexIndex() const { return m_BaseVertexIndex; }
+		uint32_t BaseIndicesIndex() const { return m_BaseIndicesIndex; }
+
+		static Ref<VertexArray> GetMasterVAO() {
+			if (!s_MasterVertexArray) { InitMasterVAO(); }
+			return s_MasterVertexArray;
+		}
+
 	private:
 		MeshSpecification m_Spec;
 		Ref<VertexArray> m_VertexArray;
 
 		uint32_t m_VertexCount = 0;
+		uint32_t m_IndexCount = 0;
+
+		uint32_t m_BaseVertexIndex = 0;
+		uint32_t m_BaseIndicesIndex = 0;
+
+		static uint32_t s_CurrentMasterVertexCount;
+		static uint32_t s_CurrentMasterIndexCount;
+		static Ref<VertexArray> s_MasterVertexArray;
+
+		static void InitMasterVAO();
+		static bool RegisterToMaster(Mesh* m, std::vector<MeshVertex>& vertices, std::vector<uint32_t>& indices);
 	};
 
 	class Model : public Asset

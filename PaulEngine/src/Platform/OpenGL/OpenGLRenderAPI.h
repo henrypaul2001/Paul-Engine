@@ -13,6 +13,7 @@ namespace PaulEngine {
 		virtual void Clear(int bufferMask) override;
 		virtual void ClearDepth() override;
 
+		virtual void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount) override;
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) override;
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) override;
 

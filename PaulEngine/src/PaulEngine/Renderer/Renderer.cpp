@@ -255,6 +255,8 @@ namespace PaulEngine {
 		uint16_t drawCalls = s_RenderData.RenderTree.Flush();
 		s_RenderData.Stats.DrawCalls += drawCalls;
 #else
+		Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
+		masterVAO->Bind();
 		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
 		
 			pipeline->Bind();
@@ -263,13 +265,13 @@ namespace PaulEngine {
 				AssetHandle meshHandle = d.MeshHandle;
 				if (AssetManager::IsAssetHandleValid(meshHandle))
 				{
-					Ref<VertexArray> vertexArray = AssetManager::GetAsset<Mesh>(meshHandle)->GetVertexArray();
+					Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(meshHandle);
+
 					s_RenderData.MeshDataBuffer.Transform = d.Transform;
 					s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
 					s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
 					
-					vertexArray->Bind();
-					RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+					RenderCommand::DrawIndexedBaseVertex(meshAsset->BaseVertexIndex(), meshAsset->BaseIndicesIndex(), meshAsset->NumIndices());
 					s_RenderData.Stats.DrawCalls++;
 				}
 				else
@@ -365,22 +367,22 @@ namespace PaulEngine {
 	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		Ref<Mesh> cubeMesh = AssetManager::GetAsset<Mesh>(s_RenderData.CubeMeshHandle);
-		DrawMeshImmediate(cubeMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
+		DrawMeshImmediate(cubeMesh, material, transform, depthState, cullState, blendState, entityID);
 	}
 
 	void Renderer::DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		Ref<Mesh> quadMesh = AssetManager::GetAsset<Mesh>(s_RenderData.QuadMeshHandle);
-		DrawMeshImmediate(quadMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
+		DrawMeshImmediate(quadMesh, material, transform, depthState, cullState, blendState, entityID);
 	}
 
 	void Renderer::DrawDefaultSphereImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		Ref<Mesh> sphereMesh = AssetManager::GetAsset<Mesh>(s_RenderData.SphereMeshHandle);
-		DrawMeshImmediate(sphereMesh->GetVertexArray(), material, transform, depthState, cullState, blendState, entityID);
+		DrawMeshImmediate(sphereMesh, material, transform, depthState, cullState, blendState, entityID);
 	}
 
-	void Renderer::DrawMeshImmediate(Ref<VertexArray> vertexArray, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
+	void Renderer::DrawMeshImmediate(Ref<Mesh> meshAsset, Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
 	{
 		PE_PROFILE_FUNCTION();
 
@@ -399,8 +401,8 @@ namespace PaulEngine {
 
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 
-		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
+		Mesh::GetMasterVAO()->Bind();
+		RenderCommand::DrawIndexedBaseVertex(meshAsset->BaseVertexIndex(), meshAsset->BaseIndicesIndex(), meshAsset->NumIndices());
 
 		s_RenderData.Stats.MeshCount++;
 		s_RenderData.Stats.DrawCalls++;

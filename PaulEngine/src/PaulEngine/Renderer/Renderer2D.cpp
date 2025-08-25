@@ -317,7 +317,7 @@ namespace PaulEngine {
 			s_RenderData.QuadPipeline->Bind();
 			
 			uint32_t dataSize = (uint8_t*)s_RenderData.QuadVertexBufferPtr - (uint8_t*)s_RenderData.QuadVertexBufferBase;
-			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, dataSize);
+			s_RenderData.QuadVertexBuffer->SetData(s_RenderData.QuadVertexBufferBase, (size_t)dataSize);
 
 			//AssetManager::GetAsset<Shader>(s_RenderData.QuadShaderHandle)->Bind();
 			for (uint32_t i = 0; i < s_RenderData.TextureSlotIndex; i++) {
@@ -333,7 +333,7 @@ namespace PaulEngine {
 			s_RenderData.CirclePipeline->Bind();
 
 			uint32_t dataSize = (uint8_t*)s_RenderData.CircleVertexBufferPtr - (uint8_t*)s_RenderData.CircleVertexBufferBase;
-			s_RenderData.CircleVertexBuffer->SetData(s_RenderData.CircleVertexBufferBase, dataSize);
+			s_RenderData.CircleVertexBuffer->SetData(s_RenderData.CircleVertexBufferBase, (size_t)dataSize);
 
 			AssetManager::GetAsset<Shader>(s_RenderData.CircleShaderHandle)->Bind();
 			s_RenderData.CircleVertexArray->Bind();
@@ -345,7 +345,7 @@ namespace PaulEngine {
 			s_RenderData.LinePipeline->Bind();
 
 			uint32_t dataSize = (uint8_t*)s_RenderData.LineVertexBufferPtr - (uint8_t*)s_RenderData.LineVertexBufferBase;
-			s_RenderData.LineVertexBuffer->SetData(s_RenderData.LineVertexBufferBase, dataSize);
+			s_RenderData.LineVertexBuffer->SetData(s_RenderData.LineVertexBufferBase, (size_t)dataSize);
 
 			AssetManager::GetAsset<Shader>(s_RenderData.LineShaderHandle)->Bind();
 			RenderCommand::SetLineWidth(s_RenderData.LineWidth);
@@ -358,7 +358,7 @@ namespace PaulEngine {
 			s_RenderData.TextPipeline->Bind();
 
 			uint32_t dataSize = (uint8_t*)s_RenderData.TextVertexBufferPtr - (uint8_t*)s_RenderData.TextVertexBufferBase;
-			s_RenderData.TextVertexBuffer->SetData(s_RenderData.TextVertexBufferBase, dataSize);
+			s_RenderData.TextVertexBuffer->SetData(s_RenderData.TextVertexBufferBase, (size_t)dataSize);
 
 			AssetManager::GetAsset<Shader>(s_RenderData.TextShaderHandle)->Bind();
 			s_RenderData.FontAtlasTexture->Bind(0);

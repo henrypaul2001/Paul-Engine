@@ -20,6 +20,7 @@ namespace PaulEngine {
 		virtual void Clear(int bufferMask) = 0;
 		virtual void ClearDepth() = 0;
 
+		virtual void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount) = 0;
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) = 0;
 		

@@ -25,6 +25,10 @@ namespace  PaulEngine {
 			s_RenderAPI->ClearDepth();
 		}
 
+		inline static void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount) {
+			s_RenderAPI->DrawIndexedBaseVertex(baseVertex, baseIndex, indexCount);
+		}
+
 		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray) {
 			s_RenderAPI->DrawIndexed(vertexArray, vertexArray->GetIndexBuffer()->GetCount());
 		}
