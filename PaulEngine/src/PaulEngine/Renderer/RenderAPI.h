@@ -21,6 +21,11 @@ namespace PaulEngine {
 		virtual void ClearDepth() = 0;
 
 		virtual void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount) = 0;
+		virtual void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount, const DrawPrimitive drawPrimitive) = 0;
+
+		virtual void MultiDrawIndexedIndirect(const uint32_t count, const size_t stride = 0) = 0;
+		virtual void MultiDrawIndexedIndirect(const uint32_t count, const size_t stride, const DrawPrimitive drawPrimitive) = 0;
+
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount) = 0;
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, const uint32_t vertexCount) = 0;
 		

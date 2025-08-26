@@ -122,6 +122,10 @@ namespace PaulEngine {
 		uint32_t LocalMeshBufferCount;
 		Ref<ShaderStorageBuffer> MeshDataBuffer;
 
+		std::vector<DrawElementsIndirectCommand> LocalDrawBuffer;
+		uint32_t LocalDrawBufferCount;
+		Ref<DrawIndirectBuffer> DrawCommandBuffer;
+
 		struct SceneMetaData
 		{
 			int DirLightsHead = 0;
@@ -160,8 +164,12 @@ namespace PaulEngine {
 		s_RenderData.LocalMeshBuffer = std::vector<Renderer3DData::MeshSubmissionData>(MAX_INDIRECT_DRAW_COMMANDS);
 		s_RenderData.LocalMeshBufferCount = 0;
 
+		s_RenderData.LocalDrawBuffer = std::vector<DrawElementsIndirectCommand>(MAX_INDIRECT_DRAW_COMMANDS);
+		s_RenderData.LocalDrawBufferCount = 0;
+
+		s_RenderData.DrawCommandBuffer = DrawIndirectBuffer::Create(MAX_INDIRECT_DRAW_COMMANDS, StorageBufferMapping::None, true);
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
-		s_RenderData.MeshDataBuffer = ShaderStorageBuffer::Create(sizeof(Renderer3DData::MeshSubmissionData) * MAX_INDIRECT_DRAW_COMMANDS, 1, StorageBufferMapping::MAP_WRITE_COHERENT, true);
+		s_RenderData.MeshDataBuffer = ShaderStorageBuffer::Create(sizeof(Renderer3DData::MeshSubmissionData) * MAX_INDIRECT_DRAW_COMMANDS, 1, StorageBufferMapping::None, true);
 		s_RenderData.SceneDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::SceneDataBuffer), 2);
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
@@ -265,44 +273,62 @@ namespace PaulEngine {
 		uint16_t drawCalls = s_RenderData.RenderTree.Flush();
 		s_RenderData.Stats.DrawCalls += drawCalls;
 #else
-		Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
-		masterVAO->Bind();
-		for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
-		
-			pipeline->Bind();
-			const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
-			for (const DrawSubmission& d : drawList) {
-				AssetHandle meshHandle = d.MeshHandle;
-				if (AssetManager::IsAssetHandleValid(meshHandle))
-				{
-					Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(meshHandle);
+		if (s_RenderData.LocalDrawBufferCount > 0)
+		{
+			Ref<RenderPipeline> pipeline = RenderPipeline::Create(FaceCulling::BACK, DepthState(), BlendState(), 0);
+			Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
+			masterVAO->Bind();
 
-					Renderer3DData::MeshSubmissionData submission;
-					submission.Transform = d.Transform;
-					submission.EntityID = d.EntityID;
+			Ref<Material> defaultMatAsset = AssetManager::GetAsset<Material>(s_RenderData.DefaultForwardMaterial);
+			defaultMatAsset->Bind();
 
-					s_RenderData.LocalMeshBuffer[s_RenderData.LocalMeshBufferCount++] = submission;
+			s_RenderData.DrawCommandBuffer->Bind();
+			s_RenderData.DrawCommandBuffer->SetData(s_RenderData.LocalDrawBuffer.data(), s_RenderData.LocalDrawBufferCount, 0, true);
 
-					// TODO: temporary mesh data buffering one at a time until indirect rendering is setup
-					s_RenderData.MeshDataBuffer->SetData(s_RenderData.LocalMeshBuffer.data(), sizeof(Renderer3DData::MeshSubmissionData) * s_RenderData.LocalMeshBufferCount, 0, false);
-					
-					s_RenderData.LocalMeshBufferCount = 0;
+			s_RenderData.MeshDataBuffer->SetData(s_RenderData.LocalMeshBuffer.data(), s_RenderData.LocalMeshBufferCount * sizeof(Renderer3DData::MeshSubmissionData), 0, true);
 
-					RenderCommand::DrawIndexedBaseVertex(meshAsset->BaseVertexIndex(), meshAsset->BaseIndicesIndex(), meshAsset->NumIndices());
-					s_RenderData.Stats.DrawCalls++;
-				}
-				else
-				{
-					PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
-				}
-			}
+			RenderCommand::MultiDrawIndexedIndirect(s_RenderData.LocalDrawBufferCount);
 		}
+
+		//for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
+		//
+		//	pipeline->Bind();
+		//	const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
+		//	for (const DrawSubmission& d : drawList) {
+		//		AssetHandle meshHandle = d.MeshHandle;
+		//		if (AssetManager::IsAssetHandleValid(meshHandle))
+		//		{
+		//			Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(meshHandle);
+		//
+		//			Renderer3DData::MeshSubmissionData submission;
+		//			submission.Transform = d.Transform;
+		//			submission.EntityID = d.EntityID;
+		//
+		//			s_RenderData.LocalMeshBuffer[s_RenderData.LocalMeshBufferCount++] = submission;
+		//
+		//			// TODO: temporary mesh data buffering one at a time until indirect rendering is setup
+		//			s_RenderData.MeshDataBuffer->SetData(s_RenderData.LocalMeshBuffer.data(), sizeof(Renderer3DData::MeshSubmissionData) * s_RenderData.LocalMeshBufferCount, 0, false);
+		//			
+		//			s_RenderData.LocalMeshBufferCount = 0;
+		//
+		//			RenderCommand::DrawIndexedBaseVertex(meshAsset->BaseVertexIndex(), meshAsset->BaseIndicesIndex(), meshAsset->NumIndices());
+		//			s_RenderData.Stats.DrawCalls++;
+		//		}
+		//		else
+		//		{
+		//			PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
+		//		}
+		//	}
+		//}
 #endif
 
 		s_RenderData.SceneDataBuffer = Renderer3DData::SceneData();
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+
+		s_RenderData.LocalMeshBufferCount = 0;
+		s_RenderData.LocalDrawBufferCount = 0;
 
 		s_RenderData.PipelineKeyMap.clear();
 	}
@@ -328,7 +354,8 @@ namespace PaulEngine {
 
 		DrawSubmission draw;
 		draw.MeshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.SphereMeshHandle;;
-		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultForwardMaterial;
+		//draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultForwardMaterial;
+		draw.MaterialHandle = s_RenderData.DefaultForwardMaterial;
 		draw.Transform = transform;
 		draw.EntityID = entityID;
 
@@ -338,23 +365,36 @@ namespace PaulEngine {
 		s_RenderData.RenderTree.PushMesh(renderInput);
 #else
 		
-		// TODO: Possibility for automatic instancing if a duplicate pipeline state is found AND a duplicate mesh
-		
 		// Check for duplicate pipeline state
-		std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
-		
-		if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
-		{
-			// Duplicate pipeline state
-			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-		}
-		else
-		{
-			// Unique pipeline state
-			s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
-			s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-			s_RenderData.Stats.PipelineCount++;
-		}
+		//std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
+		//
+		//if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
+		//{
+		//	// Duplicate pipeline state
+		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
+		//}
+		//else
+		//{
+		//	// Unique pipeline state
+		//	s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
+		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
+		//	s_RenderData.Stats.PipelineCount++;
+		//}
+
+		// TODO: multiple pipeline support
+
+		s_RenderData.LocalMeshBuffer[s_RenderData.LocalMeshBufferCount++] = { transform, entityID, 0, 0, 0 };
+
+		Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(draw.MeshHandle);
+
+		DrawElementsIndirectCommand cmd;
+		cmd.Count = meshAsset->NumIndices();
+		cmd.InstanceCount = 1;
+		cmd.FirstIndex = meshAsset->BaseIndicesIndex();
+		cmd.BaseVertex = meshAsset->BaseVertexIndex();
+		cmd.BaseInstance = 0;
+
+		s_RenderData.LocalDrawBuffer[s_RenderData.LocalDrawBufferCount++] = cmd;
 #endif
 
 		s_RenderData.Stats.MeshCount++;

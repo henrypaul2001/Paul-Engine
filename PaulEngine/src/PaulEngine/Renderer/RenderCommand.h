@@ -25,6 +25,18 @@ namespace  PaulEngine {
 			s_RenderAPI->ClearDepth();
 		}
 
+		inline static void MultiDrawIndexedIndirect(const uint32_t count, const size_t stride = 0) {
+			s_RenderAPI->MultiDrawIndexedIndirect(count, stride);
+		}
+
+		inline static void MultiDrawIndexedIndirect(const uint32_t count, const size_t stride, const DrawPrimitive drawPrimitive) {
+			s_RenderAPI->MultiDrawIndexedIndirect(count, stride, drawPrimitive);
+		}
+
+		inline static void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount, const DrawPrimitive drawPrimitve) {
+			s_RenderAPI->DrawIndexedBaseVertex(baseVertex, baseIndex, indexCount, drawPrimitve);
+		}
+
 		inline static void DrawIndexedBaseVertex(const uint32_t baseVertex, const uint32_t baseIndex, const uint32_t indexCount) {
 			s_RenderAPI->DrawIndexedBaseVertex(baseVertex, baseIndex, indexCount);
 		}
