@@ -2121,6 +2121,163 @@ namespace PaulEngine
 		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass, "GammaTonemapPass"), mainFramebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
 
+	void EditorLayer::CreateRawRenderer(FrameRenderer* out_Framerenderer)
+	{
+		Ref<Framebuffer> mainFramebuffer = InitMainFramebuffer(out_Framerenderer);
+		InitEditorData(out_Framerenderer);
+
+		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+			{
+				EventDispatcher dispatcher = EventDispatcher(e);
+				dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+					glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+					self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+					self->GetRenderResource<RenderComponentFramebuffer>("MainFramebuffer")->Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					return false;
+				});
+			};
+		out_Framerenderer->SetEventFunc(eventFunc);
+
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::Texture }, clearFramebufferFunc, "ClearMainFramebuffer"), mainFramebuffer, { "ScreenTexture" });
+		out_Framerenderer->AddRenderPass(RenderPass(forward2DInputSpec, forward2DPass, "Forward2DPass"), mainFramebuffer, forward2DInputBindings);
+
+		std::vector<RenderComponentType> forward3DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Texture };
+		std::vector<std::string> forward3DInputBindings = { "ViewportResolution", "ScreenTexture" };
+		RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Scene 3D Render Pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Target texture attachment input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
+
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
+			{
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
+			}
+
+			RenderCommand::SetViewport({ 0, 0 }, viewportResInput->Data);
+
+			if (activeCamera && sceneContext) {
+				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+
+				{
+					PE_PROFILE_SCOPE("Submit Mesh");
+					auto view = sceneContext->View<ComponentTransform, ComponentMeshRenderer, ForwardCompatibleMaterialTag>();
+					for (auto entityID : view) {
+						auto [transform, mesh] = view.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+
+						AssetHandle materialHandle = mesh.MaterialHandle();
+						Ref<Material> material = AssetManager::GetAsset<Material>(materialHandle);
+
+						if (!material) { materialHandle = Renderer::GetDefaultMaterial(); } // Render with default forward material
+
+						Renderer::SubmitMesh(mesh.MeshHandle, materialHandle, transform.GetTransform(), mesh.DepthState, mesh.CullState, BlendState(), (int)entityID);
+					}
+				}
+
+				{
+					PE_PROFILE_SCOPE("Submit lights");
+					{
+						PE_PROFILE_SCOPE("Directional lights");
+						auto view = sceneContext->View<ComponentTransform, ComponentDirectionalLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentDirectionalLight>(entityID);
+							glm::mat4 transformMatrix = transform.GetTransform();
+							glm::mat3 rotationMatrix = glm::mat3(transformMatrix);
+
+							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+							Renderer::DirectionalLight lightSource;
+							lightSource.Direction = glm::vec4(glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f)), 0.0f);
+							lightSource.Diffuse = glm::vec4(light.Diffuse, light.ShadowMinBias);
+							lightSource.Specular = glm::vec4(light.Specular, light.ShadowMaxBias);
+							lightSource.Ambient = glm::vec4(light.Ambient, light.ShadowMapCameraDistance);
+
+							float shadowSize = light.ShadowMapProjectionSize;
+
+							glm::mat4 lightView = glm::lookAt(-glm::vec3(lightSource.Direction) * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+							float aspectRatio = 1.0f;
+							float orthoLeft = -shadowSize * aspectRatio * 0.5f;
+							float orthoRight = shadowSize * aspectRatio * 0.5f;
+							float orthoBottom = -shadowSize * 0.5f;
+							float orthoTop = shadowSize * 0.5f;
+
+							glm::mat4 lightProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, light.ShadowMapNearClip, light.ShadowMapFarClip);
+							lightSource.LightMatrix = lightProjection * lightView;
+
+							Renderer::SubmitDirectionalLightSource(lightSource);
+						}
+					}
+
+					{
+						PE_PROFILE_SCOPE("Point lights");
+						auto view = sceneContext->View<ComponentTransform, ComponentPointLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentPointLight>(entityID);
+							glm::vec4 position = glm::vec4(transform.WorldPosition(), 1.0f);
+							Renderer::PointLight lightSource;
+							lightSource.Position = position;
+							lightSource.Position.w = light.Radius;
+							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+							lightSource.Ambient = glm::vec4(light.Ambient, 1.0f);
+							lightSource.ShadowData = glm::vec4(light.ShadowMinBias, light.ShadowMaxBias, light.ShadowMapFarClip, 0.0f);
+							Renderer::SubmitPointLightSource(lightSource);
+						}
+					}
+
+					{
+						PE_PROFILE_SCOPE("Spot lights");
+						auto view = sceneContext->View<ComponentTransform, ComponentSpotLight>();
+						for (auto entityID : view) {
+							auto [transform, light] = view.get<ComponentTransform, ComponentSpotLight>(entityID);
+							glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
+
+							rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+							rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+							rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+							glm::vec3 position = transform.WorldPosition();
+							glm::vec3 direction = rotationMatrix * glm::vec3(0.0f, 0.0f, -1.0f);
+
+							Renderer::SpotLight lightSource;
+							lightSource.Position = glm::vec4(position, light.Range);
+							lightSource.Direction = glm::vec4(direction, glm::cos(glm::radians(light.InnerCutoff)));
+							lightSource.Diffuse = glm::vec4(light.Diffuse, 1.0f);
+							lightSource.Specular = glm::vec4(light.Specular, 1.0f);
+							lightSource.Ambient = glm::vec4(light.Ambient, glm::cos(glm::radians(light.OuterCutoff)));
+							lightSource.ShadowData = glm::vec4(0.0f, light.ShadowMinBias, light.ShadowMaxBias, 1.0f);
+
+							glm::mat4 lightView = glm::lookAt(position, position + direction, glm::vec3(0.0f, 1.0f, 0.0f));
+							glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, light.ShadowMapNearClip, light.ShadowMapFarClip);
+							lightSource.LightMatrix = projection * lightView;
+
+							Renderer::SubmitSpotLightSource(lightSource);
+						}
+					}
+				}
+
+				Renderer::EndScene();
+			}
+		};
+		out_Framerenderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass, "Forward3DPass"), mainFramebuffer, forward3DInputBindings);
+
+		out_Framerenderer->AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture }, debugOverlayPass, "DebugOverlayPass"), mainFramebuffer, { "ShowColliders", "SelectedEntity", "OutlineThickness", "OutlineColour", "ScreenTexture" });
+	}
+
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
 
 	EditorLayer::~EditorLayer() {}
@@ -2943,7 +3100,8 @@ namespace PaulEngine
 			PE_CORE_ASSERT(false, "Undefined render context");
 			return;
 		case RenderPipelineContext::Forward:
-			CreateForwardRenderer(m_Renderer.get());
+			//CreateForwardRenderer(m_Renderer.get());
+			CreateRawRenderer(m_Renderer.get());
 			break;
 		case RenderPipelineContext::Deferred:
 			CreateDeferredRenderer(m_Renderer.get());

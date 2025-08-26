@@ -45,6 +45,7 @@ namespace PaulEngine {
 
 		void CreateForwardRenderer(FrameRenderer* out_Framerenderer);
 		void CreateDeferredRenderer(FrameRenderer* out_Framerenderer);
+		void CreateRawRenderer(FrameRenderer* out_Framerenderer);
 
 		bool OnKeyUp(KeyReleasedEvent& e);
 		bool OnMouseUp(MouseButtonReleasedEvent& e);
