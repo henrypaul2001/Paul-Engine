@@ -4,6 +4,7 @@
 #include "RenderCommand.h"
 #include "Renderer2D.h"
 #include "Resource/UniformBuffer.h"
+#include "Resource/ShaderStorageBuffer.h"
 #include "PaulEngine/Asset/AssetManager.h"
 #include "Asset/Material.h"
 
@@ -12,6 +13,7 @@
 #include "RenderTree.h"
 
 #define RENDER_TREE_MODE 0
+#define MAX_INDIRECT_DRAW_COMMANDS 1000000
 
 namespace PaulEngine {
 	struct QuadVertex
@@ -112,8 +114,10 @@ namespace PaulEngine {
 			glm::mat4 Transform;
 			int EntityID;
 		};
-		MeshSubmissionData MeshDataBuffer;
-		Ref<UniformBuffer> MeshDataUniformBuffer;
+		//MeshSubmissionData MeshDataBuffer;
+		std::vector<MeshSubmissionData> LocalMeshBuffer;
+		uint32_t LocalMeshBufferCount;
+		Ref<ShaderStorageBuffer> MeshDataBuffer;
 
 		struct SceneMetaData
 		{
@@ -150,8 +154,11 @@ namespace PaulEngine {
 		RenderCommand::Init();
 		Renderer2D::Init();
 
+		s_RenderData.LocalMeshBuffer = std::vector<Renderer3DData::MeshSubmissionData>(MAX_INDIRECT_DRAW_COMMANDS);
+		s_RenderData.LocalMeshBufferCount = 0;
+
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
-		s_RenderData.MeshDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::MeshDataBuffer), 1);
+		s_RenderData.MeshDataBuffer = ShaderStorageBuffer::Create(sizeof(Renderer3DData::MeshSubmissionData) * MAX_INDIRECT_DRAW_COMMANDS, 1, StorageBufferMapping::MAP_WRITE_COHERENT, true);
 		s_RenderData.SceneDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::SceneDataBuffer), 2);
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
@@ -244,7 +251,7 @@ namespace PaulEngine {
 		s_RenderData.CameraUniformBuffer->Bind(0);
 
 #if !RENDER_TREE_MODE
-		s_RenderData.MeshDataUniformBuffer->Bind(1);
+		s_RenderData.MeshDataBuffer->Bind(1);
 #endif
 
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
@@ -267,10 +274,17 @@ namespace PaulEngine {
 				{
 					Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(meshHandle);
 
-					s_RenderData.MeshDataBuffer.Transform = d.Transform;
-					s_RenderData.MeshDataBuffer.EntityID = d.EntityID;
-					s_RenderData.MeshDataUniformBuffer->SetData(&s_RenderData.MeshDataBuffer, sizeof(Renderer3DData::MeshDataBuffer));
+					Renderer3DData::MeshSubmissionData submission;
+					submission.Transform = d.Transform;
+					submission.EntityID = d.EntityID;
+
+					s_RenderData.LocalMeshBuffer[s_RenderData.LocalMeshBufferCount++] = submission;
+
+					// TODO: temporary mesh data buffering one at a time until indirect rendering is setup
+					s_RenderData.MeshDataBuffer->SetData(s_RenderData.LocalMeshBuffer.data(), sizeof(Renderer3DData::MeshSubmissionData) * s_RenderData.LocalMeshBufferCount, 0, false);
 					
+					s_RenderData.LocalMeshBufferCount = 0;
+
 					RenderCommand::DrawIndexedBaseVertex(meshAsset->BaseVertexIndex(), meshAsset->BaseIndicesIndex(), meshAsset->NumIndices());
 					s_RenderData.Stats.DrawCalls++;
 				}
@@ -387,17 +401,17 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraUniformBuffer->Bind(0);
-		s_RenderData.MeshDataUniformBuffer->Bind(1);
+		s_RenderData.MeshDataBuffer->Bind(1);
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 
 		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, blendState, 0);
 		pipeline->Bind();
 		material->Bind();
 
-		MeshSubmissionData meshDataBuffer;
-		meshDataBuffer.Transform = transform;
-		meshDataBuffer.EntityID = entityID;
-		s_RenderData.MeshDataUniformBuffer->SetData(&meshDataBuffer, sizeof(MeshSubmissionData));
+		MeshSubmissionData submission;
+		submission.Transform = transform;
+		submission.EntityID = entityID;
+		s_RenderData.MeshDataBuffer->SetData(&submission, sizeof(MeshSubmissionData), 0, false);
 
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 

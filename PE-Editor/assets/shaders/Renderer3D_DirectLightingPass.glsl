@@ -1,6 +1,6 @@
 #context deferred
 #type vertex
-#version 450 core
+#version 460 core
 layout(location = 0) in vec3 a_Position;
 layout(location = 2) in vec2 a_TexCoords;
 
@@ -13,7 +13,7 @@ void main()
 }
 
 #type fragment
-#version 450 core
+#version 460 core
 
 layout(location = 0) out vec4 f_Colour;
 layout(location = 1) out int f_EntityID;

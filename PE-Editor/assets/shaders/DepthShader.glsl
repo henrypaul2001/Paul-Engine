@@ -1,6 +1,6 @@
 #context forward
 #type vertex
-#version 450 core
+#version 460 core
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec2 a_TexCoords;
@@ -16,19 +16,22 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
-layout(std140, binding = 1) uniform MeshSubmission
+struct MeshSubmission
 {
 	mat4 Transform;
 	int EntityID;
-} u_MeshSubmission;
+};
+layout(binding = 1, std430) readonly buffer MeshSubmissionSSBO {
+	MeshSubmission MeshSubmissions[];
+};
 
 void main()
 {
-	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * u_MeshSubmission.Transform * vec4(a_Position, 1.0);
+	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * MeshSubmissions[gl_DrawID].Transform * vec4(a_Position, 1.0);
 }
 
 #type fragment
-#version 450 core
+#version 460 core
 
 void main()
 {

@@ -1,5 +1,5 @@
 // This shader downsamples a texture from a source mip level using the minimum value of surrounding pixels
-#version 450 core
+#version 460 core
 
 layout(location = 0) out vec4 f_Downsample;
 

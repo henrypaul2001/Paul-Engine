@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 layout(location = 0) out vec3 gViewPosition;
 layout(location = 1) out vec3 gWorldNormal;
 layout(location = 2) out vec3 gAlbedo;
