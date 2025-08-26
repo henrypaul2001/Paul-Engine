@@ -16,8 +16,11 @@ layout(std140, binding = 0) uniform Camera
 
 struct MeshSubmission
 {
-	mat4 Transform;
-	int EntityID;
+    mat4 Transform;
+    int EntityID;
+    int padding0;
+    int padding1;
+    int padding2;
 };
 layout(binding = 1, std430) readonly buffer MeshSubmissionSSBO {
 	MeshSubmission MeshSubmissions[];

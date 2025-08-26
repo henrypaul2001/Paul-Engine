@@ -113,6 +113,9 @@ namespace PaulEngine {
 		{
 			glm::mat4 Transform;
 			int EntityID;
+			int padding0;
+			int padding1;
+			int padding2;
 		};
 		//MeshSubmissionData MeshDataBuffer;
 		std::vector<MeshSubmissionData> LocalMeshBuffer;
