@@ -1,4 +1,5 @@
 #pragma once
+#include "PaulEngine/Utils/Hash.h"
 #include "PaulEngine/Core/Core.h"
 #include "PaulEngine/Asset/Asset.h"
 
@@ -126,3 +127,8 @@ namespace PaulEngine
 		const BlendState m_BlendState;
 	};
 }
+
+MAKE_HASHABLE(PaulEngine::RenderPipeline, t.m_MaterialHandle, t.m_CullState, t.m_DepthState, t.m_BlendState)
+MAKE_HASHABLE(PaulEngine::DepthState, t.Func, t.Test, t.Write)
+MAKE_HASHABLE(PaulEngine::BlendState, t.Enabled, t.SrcFactor, t.DstFactor, t.Equation, t.ConstantColour)
+MAKE_HASHABLE(PaulEngine::Ref<PaulEngine::RenderPipeline>, t.get())

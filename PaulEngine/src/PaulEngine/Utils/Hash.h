@@ -32,10 +32,3 @@ namespace Utils
 MAKE_HASHABLE(glm::vec2, t.x, t.y)
 MAKE_HASHABLE(glm::vec3, t.x, t.y, t.z)
 MAKE_HASHABLE(glm::vec4, t.x, t.y, t.z, t.w)
-
-#include "PaulEngine/Renderer/RenderPipeline.h"
-
-MAKE_HASHABLE(PaulEngine::RenderPipeline, t.m_MaterialHandle, t.m_CullState, t.m_DepthState, t.m_BlendState)
-MAKE_HASHABLE(PaulEngine::DepthState, t.Func, t.Test, t.Write)
-MAKE_HASHABLE(PaulEngine::BlendState, t.Enabled, t.SrcFactor, t.DstFactor, t.Equation, t.ConstantColour)
-MAKE_HASHABLE(PaulEngine::Ref<PaulEngine::RenderPipeline>, t.get())

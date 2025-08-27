@@ -1,6 +1,6 @@
 #include "pepch.h"
-#include "PaulEngine/Project/Project.h"
 #include "Renderer.h"
+#include "PaulEngine/Project/Project.h"
 #include "RenderCommand.h"
 #include "Renderer2D.h"
 #include "Resource/UniformBuffer.h"
@@ -10,9 +10,12 @@
 
 #include "PaulEngine/Asset/TextureImporter.h"
 
-#include "RenderTree.h"
-
 #define RENDER_TREE_MODE 0
+
+#if RENDER_TREE_MODE
+#include "RenderTree.h"
+#endif
+
 #define MAX_INDIRECT_DRAW_COMMANDS 1000000
 
 namespace PaulEngine {
