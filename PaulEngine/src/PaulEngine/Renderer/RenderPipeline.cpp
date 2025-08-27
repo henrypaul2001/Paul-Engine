@@ -33,6 +33,11 @@ namespace PaulEngine
 		}
 		}
 
+	RenderPipelineHash RenderPipeline::Hash() const
+	{
+		return std::hash<RenderPipeline>{}(*this);
+	}
+
 	void RenderPipeline::ResetBuffers()
 	{
 	}

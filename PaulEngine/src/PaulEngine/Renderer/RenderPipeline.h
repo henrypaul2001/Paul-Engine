@@ -44,6 +44,15 @@ namespace PaulEngine
 		FRONT_AND_BACK
 	};
 
+	enum class DepthFunc : uint8_t
+	{
+		NEVER = 0,
+		LESS, LEQUAL,
+		EQUAL,
+		GREATER, GEQUAL,
+		NEQUAL,
+		ALWAYS
+	};
 	struct DepthState
 	{
 		DepthFunc Func = DepthFunc::LESS;
@@ -101,6 +110,7 @@ namespace PaulEngine
 			left.ConstantColour == right.ConstantColour);
 	}
 
+	using RenderPipelineHash = size_t;
 	class RenderPipeline
 	{
 	public:
@@ -116,9 +126,10 @@ namespace PaulEngine
 		const DepthState& GetDepthState() const { return m_DepthState; }
 		const BlendState& GetBlendState() const { return m_BlendState; }
 
-	protected:
+		RenderPipelineHash Hash() const;
 		static void ResetBuffers();
 	private:
+		friend class std::hash<RenderPipeline>;
 		std::vector<DrawSubmission> m_DrawList;
 		
 		const AssetHandle m_MaterialHandle;
