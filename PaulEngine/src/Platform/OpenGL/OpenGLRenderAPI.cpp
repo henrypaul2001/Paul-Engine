@@ -172,14 +172,14 @@ namespace PaulEngine {
 		glDrawElementsBaseVertex(DrawPrimitiveToGLEnum(drawPrimitive), indexCount, GL_UNSIGNED_INT, (void*)(baseIndex * sizeof(uint32_t)), baseVertex);
 	}
 
-	void OpenGLRenderAPI::MultiDrawIndexedIndirect(const uint32_t count, const size_t stride)
+	void OpenGLRenderAPI::MultiDrawIndexedIndirect(const uint32_t count, const uint32_t offset, const size_t stride)
 	{
-		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, count, stride);
+		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (const void*)(offset * sizeof(DrawElementsIndirectCommand)), count, stride);
 	}
 
-	void OpenGLRenderAPI::MultiDrawIndexedIndirect(const uint32_t count, const size_t stride, const DrawPrimitive drawPrimitive)
+	void OpenGLRenderAPI::MultiDrawIndexedIndirect(const uint32_t count, const uint32_t offset, const size_t stride, const DrawPrimitive drawPrimitive)
 	{
-		glMultiDrawElementsIndirect(DrawPrimitiveToGLEnum(drawPrimitive), GL_UNSIGNED_INT, nullptr, count, stride);
+		glMultiDrawElementsIndirect(DrawPrimitiveToGLEnum(drawPrimitive), GL_UNSIGNED_INT, (const void*)(offset * sizeof(DrawElementsIndirectCommand)), count, stride);
 	}
 
 	void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, const uint32_t indexCount)
