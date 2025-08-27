@@ -1608,6 +1608,7 @@
     <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.h" />
+    <ClInclude Include="src\PaulEngine\Utils\Hash.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">

@@ -24,6 +24,8 @@
 #include "PaulEngine/Core/Log.h"
 #include "PaulEngine/Debug/Instrumentor.h"
 
+#include "PaulEngine/Utils/Hash.h"
+
 #ifdef PE_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif
