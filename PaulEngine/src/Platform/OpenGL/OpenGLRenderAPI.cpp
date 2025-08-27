@@ -5,6 +5,11 @@
 #include <glad/gl.h>
 namespace PaulEngine {
 
+	constexpr void OpenGLDepthTest(const bool test) {
+		if (test) { glEnable(GL_DEPTH_TEST); }
+		else { glDisable(GL_DEPTH_TEST); }
+	}
+
 	constexpr GLenum DepthFuncToGLEnum(DepthFunc func) {
 		switch (func)
 		{

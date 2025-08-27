@@ -2,22 +2,38 @@
 #include "Renderer.h"
 #include "RenderPipeline.h"
 
-#include "Platform/OpenGL/OpenGLRenderPipeline.h"
+#include "RenderCommand.h"
 
 namespace PaulEngine
 {
 	Ref<RenderPipeline> RenderPipeline::Create(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material)
 	{
+		return CreateRef<RenderPipeline>(cullState, depthState, blendState, material);
+	}
+
+	void RenderPipeline::Bind() const
+	{
 		PE_PROFILE_FUNCTION();
-		switch (Renderer::GetAPI())
-		{
-			case RenderAPI::API::None:		PE_CORE_ASSERT(false, "RenderAPI::API::None is not supported"); return nullptr;
-			case RenderAPI::API::OpenGL:	return CreateRef<OpenGLRenderPipeline>(cullState, depthState, blendState, material);
-			case RenderAPI::API::Direct3D:  PE_CORE_ASSERT(false, "RenderAPI::API::Direct3D is not supported"); return nullptr;
-			case RenderAPI::API::Vulkan:	PE_CORE_ASSERT(false, "RenderAPI::API::Vulkan is not supported"); return nullptr;
+		if (m_DepthState.Test) { RenderCommand::EnableDepth(); }
+		else { RenderCommand::DisableDepth(); }
+		RenderCommand::DepthMask(m_DepthState.Write);
+		RenderCommand::DepthFunc(m_DepthState.Func);
+
+		RenderCommand::SetFaceCulling(m_CullState);
+
+		if (m_BlendState.Enabled) { RenderCommand::EnableBlend(); }
+		else { RenderCommand::DisableBlend(); }
+
+		RenderCommand::BlendFunc(m_BlendState.SrcFactor, m_BlendState.DstFactor);
+		RenderCommand::BlendColour(m_BlendState.ConstantColour);
+		RenderCommand::BlendEquation(m_BlendState.Equation);
+
+		if (AssetManager::IsAssetHandleValid(m_MaterialHandle)) {
+			AssetManager::GetAsset<Material>(m_MaterialHandle)->Bind();
+		}
 		}
 
-		PE_CORE_ASSERT(false, "Unknown RenderAPI");
-		return nullptr;
+	void RenderPipeline::ResetBuffers()
+	{
 	}
 }

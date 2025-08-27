@@ -107,14 +107,17 @@ namespace PaulEngine
 
 		RenderPipeline(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_BlendState(blendState), m_MaterialHandle(material) {}
 
-		virtual void Bind() const = 0;
+		void Bind() const;
 
 		const std::vector<DrawSubmission>& GetDrawList() const { return m_DrawList; }
 		std::vector<DrawSubmission>& GetDrawList() { return m_DrawList; }
 		const FaceCulling& GetCullState() const { return m_CullState; }
 		const DepthState& GetDepthState() const { return m_DepthState; }
+		const BlendState& GetBlendState() const { return m_BlendState; }
 
 	protected:
+		static void ResetBuffers();
+	private:
 		std::vector<DrawSubmission> m_DrawList;
 		
 		const AssetHandle m_MaterialHandle;
