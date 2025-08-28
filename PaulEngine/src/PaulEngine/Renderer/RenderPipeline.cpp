@@ -31,14 +31,14 @@ namespace PaulEngine
 		if (AssetManager::IsAssetHandleValid(m_MaterialHandle)) {
 			AssetManager::GetAsset<Material>(m_MaterialHandle)->Bind();
 		}
-		}
+	}
 
 	RenderPipelineHash RenderPipeline::Hash() const
 	{
 		return std::hash<RenderPipeline>{}(*this);
 	}
-
-	void RenderPipeline::ResetBuffers()
+	RenderPipelineHash RenderPipelineSpecification::Hash() const
 	{
+		return std::hash<RenderPipelineSpecification>{}(*this);
 	}
 }

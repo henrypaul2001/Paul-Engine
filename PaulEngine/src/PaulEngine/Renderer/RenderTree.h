@@ -18,12 +18,6 @@ namespace PaulEngine
 		int EntityID;
 	};
 
-	struct MeshSubmissionData
-	{
-		glm::mat4 Transform;
-		int EntityID;
-	};
-
 	struct RenderNode
 	{
 		uint8_t DataIndex;

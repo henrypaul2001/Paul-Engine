@@ -17,6 +17,7 @@
 #endif
 
 #define MAX_INDIRECT_DRAW_COMMANDS 1000000
+#define PIPELINE_BIN_RESERVE_COUNT (MAX_INDIRECT_DRAW_COMMANDS / 100)
 
 namespace PaulEngine {
 	struct QuadVertex
@@ -74,6 +75,104 @@ namespace PaulEngine {
 		}
 	}
 
+	struct PipelineBin
+	{
+		std::vector<MeshSubmissionData> MeshSubmissions;
+		std::vector<DrawElementsIndirectCommand> DrawCommands;
+		size_t DrawCount = 0;
+		size_t Index = 0;
+	};
+	struct PipelineManager
+	{
+		size_t BinCount() const { return m_PipelineBins.size(); }
+		
+		const PipelineBin& GetBin(size_t index) const { return m_PipelineBins[index]; }
+		const Ref<RenderPipeline> GetPipeline(size_t index) const { return m_RenderPipelines[index]; }
+		const std::unordered_map<RenderPipelineHash, size_t>& GetPipelineIndexMap() const { return m_RenderPipelineIndexMap; }
+
+		size_t GetDrawCount() const { return m_TotalDrawCount; }
+
+		void SubmitMesh(DrawElementsIndirectCommand cmd, MeshSubmissionData submissionData, RenderPipelineSpecification pipelineSpec)
+		{
+			PE_PROFILE_FUNCTION();
+			RenderPipelineHash pipelineHash = pipelineSpec.Hash();
+
+			size_t pipelineIndex = FindOrCreatePipelineIndex(pipelineHash, pipelineSpec);
+
+			PipelineBin& bin = m_PipelineBins[pipelineIndex];
+
+			// Submit
+			bin.MeshSubmissions.push_back(submissionData);
+			bin.DrawCommands.push_back(cmd);
+			bin.DrawCount++;
+			m_TotalDrawCount++;
+		}
+
+		void clear()
+		{
+			m_PipelineBins.clear();
+			m_RenderPipelineIndexMap.clear();
+			m_RenderPipelines.clear();
+		}
+
+		void UploadLocalDrawBuffer(DrawIndirectBuffer* buffer)
+		{
+			PE_PROFILE_FUNCTION();
+
+			// Experiment with some other ways to do this without copying potentially large amounts of memory around
+
+			// Join all bin command lists
+			uint32_t offset = 0;
+			for (size_t i = 0; i < m_PipelineBins.size(); i++)
+			{
+				PipelineBin& bin = m_PipelineBins[i];
+				size_t drawCount = bin.DrawCount;
+				std::memcpy(&s_LocalDrawBuffer[offset], bin.DrawCommands.data(), drawCount * sizeof(DrawElementsIndirectCommand));
+				bin.DrawCommands.clear();
+				bin.DrawCommands.shrink_to_fit();
+				offset += drawCount;
+			}
+
+			buffer->SetData(s_LocalDrawBuffer.data(), (uint32_t)m_TotalDrawCount, 0, true);
+		}
+
+	private:
+		size_t FindOrCreatePipelineIndex(const RenderPipelineHash pipelineHash, const RenderPipelineSpecification& pipelineSpec)
+		{
+			size_t pipelineIndex = 0;
+
+			auto it = m_RenderPipelineIndexMap.find(pipelineHash);
+			if (it != m_RenderPipelineIndexMap.end())
+			{
+				// Duplicate pipeline state
+				pipelineIndex = it->second;
+			}
+			else
+			{
+				// Unique pipeline
+				pipelineIndex = m_PipelineBins.size();
+				PipelineBin bin;
+				bin.Index = pipelineIndex;
+				bin.MeshSubmissions.reserve(PIPELINE_BIN_RESERVE_COUNT);
+				bin.DrawCommands.reserve(PIPELINE_BIN_RESERVE_COUNT);
+
+				m_PipelineBins.push_back(bin);
+				m_RenderPipelines.push_back(RenderPipeline::Create(pipelineSpec));
+				m_RenderPipelineIndexMap[pipelineHash] = pipelineIndex;
+			}
+
+			return pipelineIndex;
+		}
+
+		std::vector<Ref<RenderPipeline>> m_RenderPipelines;
+		std::vector<PipelineBin> m_PipelineBins;
+		std::unordered_map<RenderPipelineHash, size_t> m_RenderPipelineIndexMap;
+		size_t m_TotalDrawCount = 0;
+
+		static std::vector<DrawElementsIndirectCommand> s_LocalDrawBuffer;
+	};
+	std::vector<DrawElementsIndirectCommand> PipelineManager::s_LocalDrawBuffer = std::vector<DrawElementsIndirectCommand>(MAX_INDIRECT_DRAW_COMMANDS);
+
 	struct Renderer3DData
 	{
 		AssetHandle QuadMeshHandle = 0;
@@ -112,23 +211,6 @@ namespace PaulEngine {
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
 
-		struct MeshSubmissionData
-		{
-			glm::mat4 Transform;
-			int EntityID;
-			int padding0;
-			int padding1;
-			int padding2;
-		};
-		//MeshSubmissionData MeshDataBuffer;
-		std::vector<MeshSubmissionData> LocalMeshBuffer;
-		uint32_t LocalMeshBufferCount;
-		Ref<ShaderStorageBuffer> MeshDataBuffer;
-
-		std::vector<DrawElementsIndirectCommand> LocalDrawBuffer;
-		uint32_t LocalDrawBufferCount;
-		Ref<DrawIndirectBuffer> DrawCommandBuffer;
-
 		struct SceneMetaData
 		{
 			int DirLightsHead = 0;
@@ -154,7 +236,10 @@ namespace PaulEngine {
 
 		Renderer::Statistics Stats;
 
-		std::unordered_map<std::string, Ref<RenderPipeline>> PipelineKeyMap;
+		PipelineManager PipelineManager;
+
+		Ref<ShaderStorageBuffer> MeshDataBuffer;
+		Ref<DrawIndirectBuffer> DrawCommandBuffer;
 	};
 	static Renderer3DData s_RenderData;
 
@@ -164,15 +249,9 @@ namespace PaulEngine {
 		RenderCommand::Init();
 		Renderer2D::Init();
 
-		s_RenderData.LocalMeshBuffer = std::vector<Renderer3DData::MeshSubmissionData>(MAX_INDIRECT_DRAW_COMMANDS);
-		s_RenderData.LocalMeshBufferCount = 0;
-
-		s_RenderData.LocalDrawBuffer = std::vector<DrawElementsIndirectCommand>(MAX_INDIRECT_DRAW_COMMANDS);
-		s_RenderData.LocalDrawBufferCount = 0;
-
 		s_RenderData.DrawCommandBuffer = DrawIndirectBuffer::Create(MAX_INDIRECT_DRAW_COMMANDS, StorageBufferMapping::None, true);
 		s_RenderData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraBuffer), 0);
-		s_RenderData.MeshDataBuffer = ShaderStorageBuffer::Create(sizeof(Renderer3DData::MeshSubmissionData) * MAX_INDIRECT_DRAW_COMMANDS, 1, StorageBufferMapping::None, true);
+		s_RenderData.MeshDataBuffer = ShaderStorageBuffer::Create(sizeof(MeshSubmissionData) * MAX_INDIRECT_DRAW_COMMANDS, 1, StorageBufferMapping::None, true);
 		s_RenderData.SceneDataUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::SceneDataBuffer), 2);
 
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
@@ -276,64 +355,33 @@ namespace PaulEngine {
 		uint16_t drawCalls = s_RenderData.RenderTree.Flush();
 		s_RenderData.Stats.DrawCalls += drawCalls;
 #else
-		if (s_RenderData.LocalDrawBufferCount > 0)
+		Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
+		masterVAO->Bind();
+		s_RenderData.DrawCommandBuffer->Bind();
+		s_RenderData.PipelineManager.UploadLocalDrawBuffer(s_RenderData.DrawCommandBuffer.get());
+
+		size_t pipelineBinCount = s_RenderData.PipelineManager.BinCount();
+		size_t offset = 0;
+		for (size_t i = 0; i < pipelineBinCount; i++)
 		{
-			Ref<RenderPipeline> pipeline = RenderPipeline::Create({});
-			Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
-			masterVAO->Bind();
+			const PipelineBin& bin = s_RenderData.PipelineManager.GetBin(i);
+			const Ref<RenderPipeline> pipeline = s_RenderData.PipelineManager.GetPipeline(i);
+			pipeline->Bind();
 
-			Ref<Material> defaultMatAsset = AssetManager::GetAsset<Material>(s_RenderData.DefaultForwardMaterial);
-			defaultMatAsset->Bind();
-
-			s_RenderData.DrawCommandBuffer->Bind();
-			s_RenderData.DrawCommandBuffer->SetData(s_RenderData.LocalDrawBuffer.data(), s_RenderData.LocalDrawBufferCount, 0, true);
-
-			s_RenderData.MeshDataBuffer->SetData(s_RenderData.LocalMeshBuffer.data(), s_RenderData.LocalMeshBufferCount * sizeof(Renderer3DData::MeshSubmissionData), 0, true);
-
-			RenderCommand::MultiDrawIndexedIndirect(s_RenderData.LocalDrawBufferCount);
+			s_RenderData.MeshDataBuffer->SetData(bin.MeshSubmissions.data(), bin.MeshSubmissions.size() * sizeof(MeshSubmissionData), 0, true);
+			RenderCommand::MultiDrawIndexedIndirect(bin.DrawCount, offset);
+			offset += bin.DrawCount;
+			s_RenderData.Stats.DrawCalls++;
 		}
-
-		//for (auto& [key, pipeline] : s_RenderData.PipelineKeyMap) {
-		//
-		//	pipeline->Bind();
-		//	const std::vector<DrawSubmission>& drawList = pipeline->GetDrawList();
-		//	for (const DrawSubmission& d : drawList) {
-		//		AssetHandle meshHandle = d.MeshHandle;
-		//		if (AssetManager::IsAssetHandleValid(meshHandle))
-		//		{
-		//			Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(meshHandle);
-		//
-		//			Renderer3DData::MeshSubmissionData submission;
-		//			submission.Transform = d.Transform;
-		//			submission.EntityID = d.EntityID;
-		//
-		//			s_RenderData.LocalMeshBuffer[s_RenderData.LocalMeshBufferCount++] = submission;
-		//
-		//			// TODO: temporary mesh data buffering one at a time until indirect rendering is setup
-		//			s_RenderData.MeshDataBuffer->SetData(s_RenderData.LocalMeshBuffer.data(), sizeof(Renderer3DData::MeshSubmissionData) * s_RenderData.LocalMeshBufferCount, 0, false);
-		//			
-		//			s_RenderData.LocalMeshBufferCount = 0;
-		//
-		//			RenderCommand::DrawIndexedBaseVertex(meshAsset->BaseVertexIndex(), meshAsset->BaseIndicesIndex(), meshAsset->NumIndices());
-		//			s_RenderData.Stats.DrawCalls++;
-		//		}
-		//		else
-		//		{
-		//			PE_CORE_WARN("Invalid mesh handle '{0}'", (uint64_t)meshHandle);
-		//		}
-		//	}
-		//}
 #endif
 
 		s_RenderData.SceneDataBuffer = Renderer3DData::SceneData();
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
-
-		s_RenderData.LocalMeshBufferCount = 0;
-		s_RenderData.LocalDrawBufferCount = 0;
-
-		s_RenderData.PipelineKeyMap.clear();
+		
+		s_RenderData.Stats.PipelineCount += s_RenderData.PipelineManager.BinCount();
+		s_RenderData.PipelineManager.clear();
 	}
 
 	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
@@ -367,28 +415,11 @@ namespace PaulEngine {
 		RenderInput renderInput = { meshAsset->GetVertexArray(), AssetManager::GetAsset<Material>(draw.MaterialHandle), transform, depthState, cullState, blendState, entityID};
 		s_RenderData.RenderTree.PushMesh(renderInput);
 #else
-		
-		// Check for duplicate pipeline state
-		//std::string pipelineKey = ConstructPipelineStateKey(draw.MaterialHandle, depthState, cullState, blendState);
-		//
-		//if (s_RenderData.PipelineKeyMap.find(pipelineKey) != s_RenderData.PipelineKeyMap.end())
-		//{
-		//	// Duplicate pipeline state
-		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-		//}
-		//else
-		//{
-		//	// Unique pipeline state
-		//	s_RenderData.PipelineKeyMap[pipelineKey] = RenderPipeline::Create(cullState, depthState, blendState, draw.MaterialHandle);
-		//	s_RenderData.PipelineKeyMap[pipelineKey]->GetDrawList().push_back(draw);
-		//	s_RenderData.Stats.PipelineCount++;
-		//}
-
-		// TODO: multiple pipeline support
-
-		s_RenderData.LocalMeshBuffer[s_RenderData.LocalMeshBufferCount++] = { transform, entityID, 0, 0, 0 };
-
 		Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(draw.MeshHandle);
+
+		MeshSubmissionData submissionData;
+		submissionData.Transform = transform;
+		submissionData.EntityID = entityID;
 
 		DrawElementsIndirectCommand cmd;
 		cmd.Count = meshAsset->NumIndices();
@@ -397,7 +428,7 @@ namespace PaulEngine {
 		cmd.BaseVertex = meshAsset->BaseVertexIndex();
 		cmd.BaseInstance = 0;
 
-		s_RenderData.LocalDrawBuffer[s_RenderData.LocalDrawBufferCount++] = cmd;
+		s_RenderData.PipelineManager.SubmitMesh(cmd, submissionData, { { cullState, depthState, blendState }, draw.MaterialHandle });
 #endif
 
 		s_RenderData.Stats.MeshCount++;
@@ -450,7 +481,7 @@ namespace PaulEngine {
 		s_RenderData.MeshDataBuffer->Bind(1);
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 
-		Ref<RenderPipeline> pipeline = RenderPipeline::Create(cullState, depthState, blendState, 0);
+		Ref<RenderPipeline> pipeline = RenderPipeline::Create({ { cullState, depthState, blendState }, 0 });
 		pipeline->Bind();
 		material->Bind();
 
