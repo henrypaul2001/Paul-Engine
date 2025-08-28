@@ -6,9 +6,9 @@
 
 namespace PaulEngine
 {
-	Ref<RenderPipeline> RenderPipeline::Create(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material)
+	Ref<RenderPipeline> RenderPipeline::Create(RenderPipelineSpecification spec)
 	{
-		return CreateRef<RenderPipeline>(cullState, depthState, blendState, material);
+		return CreateRef<RenderPipeline>(spec.Params.CullState, spec.Params.DepthState, spec.Params.BlendState, spec.MaterialHandle);
 	}
 
 	void RenderPipeline::Bind() const

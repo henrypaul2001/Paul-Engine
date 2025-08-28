@@ -278,7 +278,7 @@ namespace PaulEngine {
 #else
 		if (s_RenderData.LocalDrawBufferCount > 0)
 		{
-			Ref<RenderPipeline> pipeline = RenderPipeline::Create(FaceCulling::BACK, DepthState(), BlendState(), 0);
+			Ref<RenderPipeline> pipeline = RenderPipeline::Create({});
 			Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
 			masterVAO->Bind();
 

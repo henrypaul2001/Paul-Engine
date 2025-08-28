@@ -110,11 +110,23 @@ namespace PaulEngine
 			left.ConstantColour == right.ConstantColour);
 	}
 
+	struct PipelineParams
+	{
+		FaceCulling CullState = FaceCulling::BACK;
+		DepthState DepthState = {};
+		BlendState BlendState = {};
+	};
+	struct RenderPipelineSpecification
+	{
+		PipelineParams Params;
+		AssetHandle MaterialHandle = 0;
+	};
+
 	using RenderPipelineHash = size_t;
 	class RenderPipeline
 	{
 	public:
-		static Ref<RenderPipeline> Create(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material);
+		static Ref<RenderPipeline> Create(RenderPipelineSpecification spec);
 
 		RenderPipeline(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_BlendState(blendState), m_MaterialHandle(material) {}
 
