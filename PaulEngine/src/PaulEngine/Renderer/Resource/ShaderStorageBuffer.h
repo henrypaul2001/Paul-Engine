@@ -70,7 +70,38 @@ namespace PaulEngine
 	public:
 		virtual ~DrawIndirectBuffer() {}
 
-		virtual void SetData(const DrawElementsIndirectCommand* data, uint32_t numCommands, uint32_t commandOffset = 0, const bool preferMap = true) = 0;
+		struct DrawIndirectSetDataParams
+		{
+			const DrawElementsIndirectCommand* data;
+			uint32_t numCommands;
+			uint32_t commandOffset;
+		};
+		static void GetDataRange(std::vector<DrawIndirectSetDataParams> multiDataParams, size_t& out_Start, size_t& out_End)
+		{
+			const size_t commandSize = sizeof(DrawElementsIndirectCommand);
+			size_t dataStart = std::numeric_limits<size_t>::max();
+			size_t dataEnd = 0;
+
+			for (DrawIndirectSetDataParams& data : multiDataParams)
+			{
+				size_t currentStart = data.commandOffset * commandSize;
+				if (currentStart < dataStart)
+				{
+					dataStart = currentStart;
+				}
+
+				size_t currentEnd = currentStart + (data.numCommands * commandSize);
+				if (currentEnd > dataEnd)
+				{
+					dataEnd = currentEnd;
+				}
+			}
+
+			out_Start = dataStart;
+			out_End = dataEnd;
+		}
+		virtual void SetData(DrawIndirectSetDataParams dataParams, const bool preferMap = true) = 0;
+		virtual void MultiSetData(std::vector<DrawIndirectSetDataParams> multiDataParams, const bool preferMap = true) = 0;
 		virtual void ReadData(DrawElementsIndirectCommand* destination, uint32_t sourceNumCommands, uint32_t sourceCommandOffset = 0, const bool preferMap = true) = 0;
 		virtual void Bind() = 0;
 

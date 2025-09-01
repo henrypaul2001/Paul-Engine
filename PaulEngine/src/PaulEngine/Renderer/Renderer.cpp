@@ -19,6 +19,9 @@
 #define MAX_INDIRECT_DRAW_COMMANDS 1000000
 #define PIPELINE_BIN_RESERVE_COUNT (MAX_INDIRECT_DRAW_COMMANDS / 100)
 
+#define PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU 0
+#define PIPELINE_MULTI_SET_DATA 1
+
 namespace PaulEngine {
 	struct QuadVertex
 	{
@@ -121,19 +124,48 @@ namespace PaulEngine {
 
 			// Experiment with some other ways to do this without copying potentially large amounts of memory around
 
-			// Join all bin command lists
+#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU
+			if (m_PipelineBins.size() > 0)
+			{
+				// Join all bin command lists
+				uint32_t offset = 0;
+				for (size_t i = 0; i < m_PipelineBins.size(); i++)
+				{
+					PipelineBin& bin = m_PipelineBins[i];
+					size_t drawCount = bin.DrawCount;
+					std::memcpy(&s_LocalDrawBuffer[offset], bin.DrawCommands.data(), drawCount * sizeof(DrawElementsIndirectCommand));
+					bin.DrawCommands.clear();
+					bin.DrawCommands.shrink_to_fit();
+					offset += drawCount;
+				}
+
+				buffer->SetData({ s_LocalDrawBuffer.data(), (uint32_t)m_TotalDrawCount, 0 }, true);
+			}
+#else
+#if PIPELINE_MULTI_SET_DATA
+
+			std::vector<DrawIndirectBuffer::DrawIndirectSetDataParams> multiDataParams;
+			multiDataParams.reserve(m_PipelineBins.size());
+
+			uint32_t offset = 0;
+			for (const PipelineBin& bin : m_PipelineBins)
+			{
+				multiDataParams.push_back({ bin.DrawCommands.data(), (uint32_t)bin.DrawCount, offset });
+				offset += bin.DrawCount;
+			}
+
+			buffer->MultiSetData(multiDataParams, true);
+#else
 			uint32_t offset = 0;
 			for (size_t i = 0; i < m_PipelineBins.size(); i++)
 			{
 				PipelineBin& bin = m_PipelineBins[i];
 				size_t drawCount = bin.DrawCount;
-				std::memcpy(&s_LocalDrawBuffer[offset], bin.DrawCommands.data(), drawCount * sizeof(DrawElementsIndirectCommand));
-				bin.DrawCommands.clear();
-				bin.DrawCommands.shrink_to_fit();
+				buffer->SetData({ bin.DrawCommands.data(), (uint32_t)drawCount, offset }, true);
 				offset += drawCount;
 			}
-
-			buffer->SetData(s_LocalDrawBuffer.data(), (uint32_t)m_TotalDrawCount, 0, true);
+#endif
+#endif
 		}
 
 	private:
@@ -169,9 +201,13 @@ namespace PaulEngine {
 		std::unordered_map<RenderPipelineHash, size_t> m_RenderPipelineIndexMap;
 		size_t m_TotalDrawCount = 0;
 
+#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU 
 		static std::vector<DrawElementsIndirectCommand> s_LocalDrawBuffer;
+#endif
 	};
+#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU
 	std::vector<DrawElementsIndirectCommand> PipelineManager::s_LocalDrawBuffer = std::vector<DrawElementsIndirectCommand>(MAX_INDIRECT_DRAW_COMMANDS);
+#endif
 
 	struct Renderer3DData
 	{

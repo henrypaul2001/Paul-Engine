@@ -364,7 +364,7 @@ namespace Sandbox
 		}
 
 		// Buffer draw commands
-		m_DrawCommandBuffer->SetData(m_LocalCommandsBuffer.data(), m_DrawCommandBufferSize, 0, true);
+		m_DrawCommandBuffer->SetData({ m_LocalCommandsBuffer.data(), (uint32_t)m_DrawCommandBufferSize, 0 }, true);
 
 		// Buffer per mesh data
 		m_MeshSubmissionBuffer->SetData(m_LocalMeshSubmissionBuffer.data(), sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize, 0);

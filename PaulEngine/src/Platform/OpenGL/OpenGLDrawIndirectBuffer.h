@@ -9,7 +9,9 @@ namespace PaulEngine
 		OpenGLDrawIndirectBuffer(uint32_t commandCount, const StorageBufferMapping mapping = StorageBufferMapping::None, const bool dynamicStorage = true);
 		virtual ~OpenGLDrawIndirectBuffer();
 
-		virtual void SetData(const DrawElementsIndirectCommand* data, uint32_t numCommands, uint32_t commandOffset = 0, const bool preferMap = true) override;
+		virtual void SetData(DrawIndirectSetDataParams dataParams, const bool preferMap = true) override;
+		virtual void MultiSetData(std::vector<DrawIndirectSetDataParams> multiDataParams, const bool preferMap = true) override;
+
 		virtual void ReadData(DrawElementsIndirectCommand* destination, uint32_t sourceNumCommands, uint32_t sourceCommandOffset = 0, const bool preferMap = true) override;
 		virtual void Bind() override;
 
@@ -19,14 +21,18 @@ namespace PaulEngine
 		const bool m_DynamicStorage;
 
 		void BufferSubData(const DrawElementsIndirectCommand* data, size_t size, size_t offset);
+		void MultiBufferSubData(std::vector<DrawIndirectSetDataParams> multiDataParams);
 
 		// needs to call glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT) before subsequent commands will see the updated data
 		void SetMappedData(const DrawElementsIndirectCommand* data, size_t size, size_t offset);
+		void MultiSetMappedData(std::vector<DrawIndirectSetDataParams> multiDataParams);
 
 		// needs to call glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT) before subsequent commands will see the updated data
 		void SetMappedDataPersistent(const DrawElementsIndirectCommand* data, size_t size, size_t offset);
+		void MultiSetMappedDataPersistent(std::vector<DrawIndirectSetDataParams> multiDataParams);
 
 		void SetMappedDataCoherent(const DrawElementsIndirectCommand* data, size_t size, size_t offset);
+		void MultiSetMappedDataCoherent(std::vector<DrawIndirectSetDataParams> multiDataParams);
 
 		void GetBufferSubData(DrawElementsIndirectCommand* destination, size_t sourceSize, size_t sourceOffset);
 
@@ -42,7 +48,7 @@ namespace PaulEngine
 		void MapPersistent(size_t size, size_t offset);
 		void ValidatePersistentMapping(size_t size, size_t offset);
 
-		static std::unordered_map<int, void(OpenGLDrawIndirectBuffer::*)(const DrawElementsIndirectCommand*, size_t, size_t)> s_WriteFunctions;
+		static std::unordered_map<int, void(OpenGLDrawIndirectBuffer::*)(std::vector<DrawIndirectSetDataParams>)> s_WriteFunctions;
 		static std::unordered_map<int, void(OpenGLDrawIndirectBuffer::*)(DrawElementsIndirectCommand*, size_t, size_t)> s_ReadFunctions;
 
 		GLvoid* m_Ptr;
