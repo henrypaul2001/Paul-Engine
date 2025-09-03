@@ -88,6 +88,30 @@ namespace PaulEngine {
 				std::filesystem::create_directories(cacheDirectory);
 			}
 		}
+
+		static std::vector<std::string> FindTokenStrings(const std::string& source, const char* tokenName)
+		{
+			std::vector<std::string> results;
+
+			size_t tokenLength = strlen(tokenName);
+			size_t pos = source.find(tokenName, 0);
+
+			while (pos != std::string::npos)
+			{
+				size_t eol = source.find_first_of("\r\n", pos);
+				PE_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+				size_t begin = pos + tokenLength + 1;
+				std::string valueString = source.substr(begin, eol - begin);
+
+				results.push_back(valueString);
+
+				size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+				PE_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+				pos = source.find(tokenName, nextLinePos);
+	}
+
+			return results;
+		}
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc, RenderPipelineContext shaderContext) : m_Name(name), m_Filepath("null"), m_RendererID(0), m_ShaderContext(shaderContext)
@@ -178,15 +202,9 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		// Find context type
-		const char* contextToken = "#context";
-		size_t contextTokenLength = strlen(contextToken);
-		size_t contextPos = source.find(contextToken, 0);
-		PE_CORE_ASSERT(contextPos != std::string::npos, "Shader context required");
-		size_t contextEol = source.find_first_of("\r\n", contextPos);
-		PE_CORE_ASSERT(contextEol != std::string::npos, "Syntax error");
-		size_t contextBegin = contextPos + contextTokenLength + 1;
-		std::string contextType = source.substr(contextBegin, contextEol - contextBegin);
-		m_ShaderContext = RenderPipelineContextFromString(contextType);
+		std::vector<std::string> contextStrings = OpenGLShaderUtils::FindTokenStrings(source, "#context");
+		PE_CORE_ASSERT(contextStrings.size() > 0, "Shader context required");
+		m_ShaderContext = RenderPipelineContextFromString(contextStrings[0]);
 
 		// Extract shader sources
 		std::unordered_map<GLenum, std::string> shaderSources;
@@ -207,6 +225,16 @@ namespace PaulEngine {
 			pos = source.find(typeToken, nextLinePos);
 
 			shaderSources[OpenGLShaderUtils::ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
+		}
+
+		// Get defines
+		std::vector<std::string> defineStrings = OpenGLShaderUtils::FindTokenStrings(source, "#define");
+		for (const std::string& defineString : defineStrings)
+		{
+			size_t space = defineString.find_first_of(' ');
+			std::string nameString = defineString.substr(0, space);
+			std::string valueString = defineString.substr(space + 1, defineString.size() - space);
+			m_Defines[nameString] = valueString;
 		}
 
 		return shaderSources;
@@ -376,15 +404,16 @@ namespace PaulEngine {
 
 		PE_CORE_TRACE("OpenGLShader::Reflect - '{0}'", m_Filepath);
 
-		// Uniform buffers
+		PE_CORE_TRACE("  Defines:");
+		auto it = m_Defines.begin();
+		while (it != m_Defines.end())
+		{
+			PE_CORE_TRACE("    {0}: {1}", it->first.c_str(), it->second.c_str());
+			it++;
+		}
+
 		ReflectUBOs();
-
-		// SSBOs
-		GLint numSSBOs;
-		glGetProgramInterfaceiv(m_RendererID, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &numSSBOs);
-		PE_CORE_TRACE("  SSBO count : {0}", (int)numSSBOs);
-
-		// Samplers
+		ReflectSSBOs();
 		ReflectSamplers();
 	}
 

@@ -17,6 +17,8 @@ namespace PaulEngine {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
+		virtual const std::unordered_map<std::string, std::string>& GetDefines() const override { return m_Defines; };
+
 		virtual RenderPipelineContext GetRenderPipelineContext() const { return m_ShaderContext; }
 
 		virtual const std::string& GetName() const override { return m_Name; }
@@ -56,6 +58,7 @@ namespace PaulEngine {
 		bool LoadProgramBinary(const std::filesystem::path& cachePath);
 		void Reflect();
 		void ReflectUBOs();
+		void ReflectSSBOs();
 		void ReflectSamplers();
 		//void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 		//bool ReflectUBOs(spv_reflect::ShaderModule& reflection, std::string& error);
@@ -70,5 +73,7 @@ namespace PaulEngine {
 		std::vector<Ref<ShaderParameterTypeSpecificationBase>> m_ReflectionData;
 
 		std::unordered_map<GLenum, uint32_t> m_OpenGLBinaryIDMap;
+
+		std::unordered_map<std::string, std::string> m_Defines; // <name, value>
     };
 }
