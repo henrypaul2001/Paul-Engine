@@ -108,7 +108,7 @@ namespace PaulEngine {
 				size_t nextLinePos = source.find_first_not_of("\r\n", eol);
 				PE_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
 				pos = source.find(tokenName, nextLinePos);
-	}
+			}
 
 			return results;
 		}
@@ -515,6 +515,141 @@ namespace PaulEngine {
 			}
 
 			m_ReflectionData.push_back(uboSpec);
+		}
+	}
+
+	void OpenGLShader::ReflectSSBOs()
+	{
+		GLint numSSBOs;
+		glGetProgramInterfaceiv(m_RendererID, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &numSSBOs);
+		PE_CORE_TRACE("  SSBO count  : {0}", (int)numSSBOs);
+
+		for (GLint i = 0; i < numSSBOs; i++)
+		{
+			GLenum properties[4] = { GL_NAME_LENGTH, GL_BUFFER_BINDING, GL_BUFFER_DATA_SIZE, GL_NUM_ACTIVE_VARIABLES };
+			GLint results[4];
+			glGetProgramResourceiv(m_RendererID, GL_SHADER_STORAGE_BLOCK, i, 4, properties, 4, nullptr, results);
+
+			GLuint nameSize = (GLuint)results[0];
+			int bindSlot = (int)results[1];
+			int bufferSize = (int)results[2];
+			int memberCount = (int)results[3];
+
+			// UBO name
+			std::string name = std::string((int)nameSize, '\0');
+			glGetProgramResourceName(m_RendererID, GL_SHADER_STORAGE_BLOCK, i, nameSize, nullptr, name.data());
+			if (!name.empty() && name.back() == '\0') { name.pop_back(); }
+
+			PE_CORE_TRACE("  Storage buffer: {0}", name.c_str());
+			PE_CORE_TRACE("    Binding: {0}", bindSlot);
+			PE_CORE_TRACE("    Size   : {0}", bufferSize);
+			PE_CORE_TRACE("    Members: {0}", memberCount);
+
+			//Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
+			//uboSpec->Size = bufferSize;
+			//uboSpec->Binding = bindSlot;
+			//uboSpec->Name = name;
+
+			// Get indices of UBO's member uniforms
+			GLenum memberProperty[1] = { GL_ACTIVE_VARIABLES };
+			std::vector<GLint> memberIndices = std::vector<GLint>(memberCount, -1);
+			glGetProgramResourceiv(m_RendererID, GL_SHADER_STORAGE_BLOCK, i, 1, memberProperty, memberCount, nullptr, memberIndices.data());
+
+			// Collect members
+			std::vector<OpenGLShaderUtils::UBOMember> members;
+			members.reserve(memberCount);
+
+			GLenum memberProperties[] = {
+				GL_NAME_LENGTH,
+				GL_TYPE,
+				GL_OFFSET,
+				GL_ARRAY_SIZE,
+				GL_ARRAY_STRIDE,
+				GL_MATRIX_STRIDE,
+				GL_IS_ROW_MAJOR,
+				GL_TOP_LEVEL_ARRAY_SIZE,
+				GL_TOP_LEVEL_ARRAY_STRIDE
+			};
+
+			for (GLint memberIndex : memberIndices)
+			{
+				GLint memberResults[9] = {};
+				glGetProgramResourceiv(m_RendererID, GL_BUFFER_VARIABLE, memberIndex, 9, memberProperties, 9, nullptr, memberResults);
+
+				GLuint memberNameSize = (GLuint)memberResults[0];
+				std::string memberName = std::string((int)memberNameSize, '\0');
+				glGetProgramResourceName(m_RendererID, GL_BUFFER_VARIABLE, memberIndex, memberNameSize, nullptr, memberName.data());
+
+				if (!memberName.empty() && memberName.back() == '\0') { memberName.pop_back(); }
+
+				size_t firstDot = memberName.find_first_of('.');
+				std::string strippedName = memberName.substr(firstDot + 1, memberName.length() - firstDot);
+
+				OpenGLShaderUtils::UBOMember member;
+				member.StrippedName = memberName;
+				member.Type = (GLenum)memberResults[1];
+				member.Offset = memberResults[2];
+				member.ArraySize = memberResults[3];
+				member.ArrayStride = memberResults[4];
+				member.MatrixStride = memberResults[5];
+				member.RowMajor = (GLboolean)memberResults[6];
+
+				GLint topLevelArraySize = memberResults[7];
+				GLint topLevelArrayStride = memberResults[8];
+
+				if (topLevelArraySize > 1)
+				{
+					members.reserve(topLevelArraySize);
+					std::string topLevelName = memberName.substr(0, memberName.find_first_of('['));
+					for (GLint i = 0; i < topLevelArraySize; i++)
+					{
+						std::string arrayedName = topLevelName + "[" + std::to_string(i) + "]." + strippedName;
+
+						OpenGLShaderUtils::UBOMember arrayedMember;
+						arrayedMember.StrippedName = arrayedName;
+						arrayedMember.Type = (GLenum)memberResults[1];
+						arrayedMember.Offset = memberResults[2] + (i * topLevelArrayStride);
+						arrayedMember.ArraySize = memberResults[3];
+						arrayedMember.ArrayStride = memberResults[4];
+						arrayedMember.MatrixStride = memberResults[5];
+						arrayedMember.RowMajor = (GLboolean)memberResults[6];
+
+						members.push_back(arrayedMember);
+					}
+				}
+				else
+				{
+					if (topLevelArraySize == 0)
+					{
+						std::string topLevelName = memberName.substr(0, memberName.find_first_of('['));
+						std::string arrayedName = topLevelName + "[DYNAMIC]." + strippedName;
+						member.StrippedName = arrayedName;
+					}
+					members.push_back(member);
+				}
+			}
+
+			// Sort members by memory layout
+			std::sort(members.begin(), members.end(), [](const OpenGLShaderUtils::UBOMember& a, const OpenGLShaderUtils::UBOMember& b) {return a.Offset < b.Offset; });
+
+			int memberIndex = 0;
+			for (const OpenGLShaderUtils::UBOMember& member : members)
+			{
+				std::string strippedName = member.StrippedName;
+				ShaderDataType type = OpenGLShaderUtils::GLDataTypeToShaderDataType(member.Type);
+
+				PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
+				//uboSpec->BufferLayout.emplace_back(strippedName, type);
+
+				for (int i = 1; i < member.ArraySize; i++)
+				{
+					strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
+					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
+					//uboSpec->BufferLayout.emplace_back(strippedName, type);
+				}
+			}
+
+			//m_ReflectionData.push_back(uboSpec);
 		}
 	}
 
