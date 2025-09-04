@@ -545,10 +545,10 @@ namespace PaulEngine {
 			PE_CORE_TRACE("    Size   : {0}", bufferSize);
 			PE_CORE_TRACE("    Members: {0}", memberCount);
 
-			//Ref<UBOShaderParameterTypeSpecification> uboSpec = CreateRef<UBOShaderParameterTypeSpecification>();
-			//uboSpec->Size = bufferSize;
-			//uboSpec->Binding = bindSlot;
-			//uboSpec->Name = name;
+			Ref<StorageBufferShaderParameterTypeSpecification> ssboSpec = CreateRef<StorageBufferShaderParameterTypeSpecification>();
+			ssboSpec->Size = bufferSize;
+			ssboSpec->Binding = bindSlot;
+			ssboSpec->Name = name;
 
 			// Get indices of UBO's member uniforms
 			GLenum memberProperty[1] = { GL_ACTIVE_VARIABLES };
@@ -571,6 +571,7 @@ namespace PaulEngine {
 				GL_TOP_LEVEL_ARRAY_STRIDE
 			};
 
+			bool containsDynamicArray = false;
 			for (GLint memberIndex : memberIndices)
 			{
 				GLint memberResults[9] = {};
@@ -624,14 +625,26 @@ namespace PaulEngine {
 						std::string topLevelName = memberName.substr(0, memberName.find_first_of('['));
 						std::string arrayedName = topLevelName + "[DYNAMIC]." + strippedName;
 						member.StrippedName = arrayedName;
+						if (member.Offset < ssboSpec->DynamicArrayStart) { ssboSpec->DynamicArrayStart = member.Offset; }
+						containsDynamicArray = true;
+					}
+					else if (member.ArraySize == 0)
+					{
+						std::string arrayedName = memberName.substr(0, memberName.find_first_of('[')) + "[DYNAMIC]";
+						member.StrippedName = arrayedName;
+						if (member.Offset < ssboSpec->DynamicArrayStart) { ssboSpec->DynamicArrayStart = member.Offset; }
+						containsDynamicArray = true;
 					}
 					members.push_back(member);
 				}
 			}
 
+			if (!containsDynamicArray) { ssboSpec->DynamicArrayStart = -1; }
+
 			// Sort members by memory layout
 			std::sort(members.begin(), members.end(), [](const OpenGLShaderUtils::UBOMember& a, const OpenGLShaderUtils::UBOMember& b) {return a.Offset < b.Offset; });
 
+			size_t currentOffset = 0;
 			int memberIndex = 0;
 			for (const OpenGLShaderUtils::UBOMember& member : members)
 			{
@@ -639,17 +652,30 @@ namespace PaulEngine {
 				ShaderDataType type = OpenGLShaderUtils::GLDataTypeToShaderDataType(member.Type);
 
 				PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-				//uboSpec->BufferLayout.emplace_back(strippedName, type);
+				UniformBufferStorage::BufferElement e = UniformBufferStorage::BufferElement(strippedName, type);
+				e.Offset = currentOffset;
+				currentOffset += e.Size;
+
+				ssboSpec->BufferLayout.push_back(e);
 
 				for (int i = 1; i < member.ArraySize; i++)
 				{
 					strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
 					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-					//uboSpec->BufferLayout.emplace_back(strippedName, type);
+					UniformBufferStorage::BufferElement e = UniformBufferStorage::BufferElement(strippedName, type);
+					e.Offset = currentOffset;
+					currentOffset += e.Size;
+					ssboSpec->BufferLayout.push_back(e);
 				}
 			}
 
-			//m_ReflectionData.push_back(uboSpec);
+			m_ReflectionData.push_back(ssboSpec);
+			
+			if (ssboSpec->Name.substr(0, 5) == "IMat_")
+			{
+				m_MaterialBufferSpecs.push_back(ssboSpec);
+				m_MaterialBuffers.push_back(ShaderStorageBuffer::Create(ssboSpec->Size, ssboSpec->Binding, StorageBufferMapping::None, true));
+			}
 		}
 	}
 

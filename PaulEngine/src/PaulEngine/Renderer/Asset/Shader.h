@@ -1,6 +1,7 @@
 #pragma once
 #include "PaulEngine/Core/Log.h"
 #include "PaulEngine/Asset/Asset.h"
+#include "PaulEngine/Renderer/Resource/ShaderStorageBuffer.h"
 #include "PaulEngine/Renderer/Resource/ShaderParameterType.h"
 
 #include <string>
@@ -39,6 +40,7 @@ namespace PaulEngine {
 	public:
 		virtual ~Shader() = default;
 
+		// keep existing Bind behaviour so that Mat_Sampler or Mat_UBO can still be used for materials that are not intended to be used with the automatic material batching in the Renderer class
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
@@ -60,6 +62,8 @@ namespace PaulEngine {
 		virtual const std::string& GetName() const = 0;
 
 		virtual const std::vector<Ref<ShaderParameterTypeSpecificationBase>>& GetReflectionData() const = 0;
+		virtual const std::vector<Ref<StorageBufferShaderParameterTypeSpecification>>& GetMaterialBufferSpecs() const = 0;
+		virtual const std::vector<Ref<ShaderStorageBuffer>>& GetMaterialBuffers() const = 0;
 
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, RenderPipelineContext shaderContext);
 		static Ref<Shader> Create(const std::string& filepath);

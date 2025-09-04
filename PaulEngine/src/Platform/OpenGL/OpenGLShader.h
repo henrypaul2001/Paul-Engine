@@ -35,6 +35,8 @@ namespace PaulEngine {
 		virtual void SetUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 
 		virtual const std::vector<Ref<ShaderParameterTypeSpecificationBase>>& GetReflectionData() const override { return m_ReflectionData; }
+		virtual const std::vector<Ref<StorageBufferShaderParameterTypeSpecification>>& GetMaterialBufferSpecs() const override { return m_MaterialBufferSpecs; }
+		virtual const std::vector<Ref<ShaderStorageBuffer>>& GetMaterialBuffers() const override { return m_MaterialBuffers; }
 
 		void UploadUniformInt(const std::string& name, const int value);
 		void UploadUniformIntArray(const std::string& name, const int* values, uint32_t count);
@@ -71,6 +73,8 @@ namespace PaulEngine {
 		RenderPipelineContext m_ShaderContext;
 
 		std::vector<Ref<ShaderParameterTypeSpecificationBase>> m_ReflectionData;
+		std::vector<Ref<StorageBufferShaderParameterTypeSpecification>> m_MaterialBufferSpecs;
+		std::vector<Ref<ShaderStorageBuffer>> m_MaterialBuffers;
 
 		std::unordered_map<GLenum, uint32_t> m_OpenGLBinaryIDMap;
 

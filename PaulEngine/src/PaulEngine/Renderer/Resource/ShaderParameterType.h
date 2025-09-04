@@ -12,14 +12,15 @@ namespace PaulEngine
 		Sampler2D,
 		Sampler2DArray,
 		SamplerCube,
-		SamplerCubeArray
+		SamplerCubeArray,
+		SSBO
 	};
 
 	class ShaderParamaterTypeStorageBase
 	{
 	public:
 		virtual ~ShaderParamaterTypeStorageBase() {}
-		virtual ShaderParameterType GetType() = 0;
+		virtual ShaderParameterType GetType() const = 0;
 		virtual void Bind() = 0;
 	};
 
@@ -29,11 +30,15 @@ namespace PaulEngine
 		UBOShaderParameterTypeStorage(std::vector<UniformBufferStorage::BufferElement> layout, uint32_t binding) { m_UBO = UniformBufferStorage::Create(layout, binding); }
 		~UBOShaderParameterTypeStorage() {}
 
-		virtual ShaderParameterType GetType() override { return ShaderParameterType::UBO; }
+		virtual ShaderParameterType GetType() const override { return ShaderParameterType::UBO; }
 		virtual void Bind() override { m_UBO->Bind(); m_UBO->UploadStorage(); }
 
 		Ref<UniformBufferStorage> UBO() { return m_UBO; }
+
 	private:
+		friend class EditorLayer;
+		friend class CreateMaterialWindow;
+
 		Ref<UniformBufferStorage> m_UBO;
 	};
 
@@ -43,7 +48,7 @@ namespace PaulEngine
 		Sampler2DShaderParameterTypeStorage(AssetHandle textureHandle, uint32_t binding) : TextureHandle(textureHandle), m_Binding(binding) {}
 		~Sampler2DShaderParameterTypeStorage() {}
 
-		virtual ShaderParameterType GetType() override { return ShaderParameterType::Sampler2D; }
+		virtual ShaderParameterType GetType() const override { return ShaderParameterType::Sampler2D; }
 		virtual void Bind() override;
 
 		uint32_t GetBinding() const { return m_Binding; }
@@ -61,7 +66,7 @@ namespace PaulEngine
 		Sampler2DArrayShaderParameterTypeStorage(AssetHandle textureArrayHandle, uint32_t binding) : TextureArrayHandle(textureArrayHandle), m_Binding(binding) {}
 		~Sampler2DArrayShaderParameterTypeStorage() {}
 
-		virtual ShaderParameterType GetType() override { return ShaderParameterType::Sampler2DArray; }
+		virtual ShaderParameterType GetType() const override { return ShaderParameterType::Sampler2DArray; }
 		virtual void Bind() override;
 
 		uint32_t GetBinding() const { return m_Binding; }
@@ -79,7 +84,7 @@ namespace PaulEngine
 		SamplerCubeShaderParameterTypeStorage(AssetHandle textureHandle, uint32_t binding) : TextureHandle(textureHandle), m_Binding(binding) {}
 		~SamplerCubeShaderParameterTypeStorage() {}
 
-		virtual ShaderParameterType GetType() override { return ShaderParameterType::SamplerCube; }
+		virtual ShaderParameterType GetType() const override { return ShaderParameterType::SamplerCube; }
 		virtual void Bind() override;
 
 		uint32_t GetBinding() const { return m_Binding; }
@@ -97,7 +102,7 @@ namespace PaulEngine
 		SamplerCubeArrayShaderParameterTypeStorage(AssetHandle textureArrayHandle, uint32_t binding) : TextureArrayHandle(textureArrayHandle), m_Binding(binding) {}
 		~SamplerCubeArrayShaderParameterTypeStorage() {}
 
-		virtual ShaderParameterType GetType() override { return ShaderParameterType::SamplerCubeArray; }
+		virtual ShaderParameterType GetType() const override { return ShaderParameterType::SamplerCubeArray; }
 		virtual void Bind() override;
 
 		uint32_t GetBinding() const { return m_Binding; }
@@ -146,5 +151,15 @@ namespace PaulEngine
 	{
 		uint32_t Binding = 0;
 		virtual ShaderParameterType Type() const override { return ShaderParameterType::SamplerCubeArray; }
+	};
+
+	struct StorageBufferShaderParameterTypeSpecification : public ShaderParameterTypeSpecificationBase
+	{
+		uint32_t Size = 0;
+		uint32_t Binding = 0;
+		std::vector<UniformBufferStorage::BufferElement> BufferLayout;
+		int32_t DynamicArrayStart = std::numeric_limits<int32_t>::max(); // -1 means SSBO is fixed size with no runtime sized array
+
+		virtual ShaderParameterType Type() const override { return ShaderParameterType::SSBO; }
 	};
 }
