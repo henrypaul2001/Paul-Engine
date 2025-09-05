@@ -504,13 +504,13 @@ namespace PaulEngine {
 				ShaderDataType type = OpenGLShaderUtils::GLDataTypeToShaderDataType(member.Type);
 
 				PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-				uboSpec->BufferLayout.emplace_back(strippedName, type);
+				uboSpec->BufferLayout.emplace_back(type, strippedName);
 
 				for (int i = 1; i < member.ArraySize; i++)
 				{
 					strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
 					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-					uboSpec->BufferLayout.emplace_back(strippedName, type);
+					uboSpec->BufferLayout.emplace_back(type, strippedName);
 				}
 			}
 
@@ -652,7 +652,7 @@ namespace PaulEngine {
 				ShaderDataType type = OpenGLShaderUtils::GLDataTypeToShaderDataType(member.Type);
 
 				PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-				UniformBufferStorage::BufferElement e = UniformBufferStorage::BufferElement(strippedName, type);
+				BufferElement e = BufferElement(type, strippedName);
 				e.Offset = currentOffset;
 				currentOffset += e.Size;
 
@@ -662,7 +662,7 @@ namespace PaulEngine {
 				{
 					strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
 					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-					UniformBufferStorage::BufferElement e = UniformBufferStorage::BufferElement(strippedName, type);
+					BufferElement e = BufferElement(type, strippedName);
 					e.Offset = currentOffset;
 					currentOffset += e.Size;
 					ssboSpec->BufferLayout.push_back(e);

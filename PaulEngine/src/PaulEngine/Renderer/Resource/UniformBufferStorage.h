@@ -1,26 +1,15 @@
 #pragma once
-#include "PaulEngine/Core/Core.h"
-#include "Buffer.h"
+#include "PaulEngine/Renderer/Resource/LocalShaderBuffer.h"
 
 namespace PaulEngine
 {
 	class UniformBufferStorage
 	{
 	public:
-		struct BufferElement
-		{
-			BufferElement(std::string name = "null", ShaderDataType type = ShaderDataType::None) : Name(name), Type(type) {
-				Size = ShaderDataTypeSize(type);
-			}
-			std::string Name = "null";
-			uint32_t Size = 0;
-			uint32_t Offset = 0;
-			ShaderDataType Type = ShaderDataType::None;
-		};
-
+		UniformBufferStorage(std::vector<BufferElement> layout) : m_Buffer(layout), m_IsDirty(false) {}
 		virtual ~UniformBufferStorage() {}
 
-		size_t Size() const { return m_Buffer.size(); };
+		inline size_t Size() const { return m_Buffer.Size(); };
 
 		virtual void UploadStorage() = 0;
 		virtual void UploadStorageForced() = 0;
@@ -30,95 +19,31 @@ namespace PaulEngine
 		template <typename T>
 		bool SetLocalData(const std::string& name, T data)
 		{
-			// Find member
-			auto it = m_Layout.find(name);
-			if (it == m_Layout.end())
-			{
-				PE_CORE_ERROR("Error writing to member with name '{0}': Member does not exist", name);
-				return false;
-			}
-
-			const BufferElement& e = m_Layout.at(name);
-
-			// Check for error in member offset and size
-			if (e.Offset + e.Size > m_Buffer.size())
-			{
-				PE_CORE_ERROR("Error writing to member with name '{0}': Buffer overrun", name);
-				return false;
-			}
-
-			// Validate template type size
-			if (sizeof(T) != e.Size)
-			{
-				PE_CORE_ERROR("Error writing to member with name '{0}': Template type size does not match member size", name);
-				return false;
-			}
-
-			uint8_t* begin = &m_Buffer[e.Offset];
-			memcpy(begin, &data, e.Size);
-			m_IsDirty = true;
-			return true;
+			if (m_Buffer.SetLocalMember(name, data)) { m_IsDirty = true; return true; }
+			return false;
 		}
 
 		template <typename T>
-		bool ReadLocalDataAs(const std::string& name, T* out_data)
+		inline bool ReadLocalDataAs(const std::string& name, T& out_data)
 		{
-			// Find member
-			auto it = m_Layout.find(name);
-			if (it == m_Layout.end())
-			{
-				PE_CORE_ERROR("Error reading member with name '{0}': Member does not exist", name);
-				return false;
-			}
-
-			const BufferElement& e = m_Layout.at(name);
-
-			// Validate template type size
-			if (sizeof(T) != e.Size)
-			{
-				PE_CORE_ERROR("Error reading member with name '{0}': Template type size does not match member size", name);
-				return false;
-			}
-
-			uint8_t* begin = &m_Buffer[e.Offset];
-			memcpy(out_data, begin, e.Size);
-			return true;
+			return m_Buffer.ReadLocalMemberAs(name, out_data);
 		}
 
 		// Set entire block of data at once.
 		// If used incorrectly, may invalidate buffer layout and produce unexpected values when later calling ReadLocalData
-		void MemCopy(void* rawData, size_t size, size_t offset = 0)
+		inline void MemCopy(const void* rawData, size_t size, size_t offset = 0)
 		{
-			size_t end = offset + size;
-			PE_CORE_ASSERT(end <= m_Buffer.size(), "Offset + size too big");
-
-			uint8_t* begin = &m_Buffer[offset];
-			memcpy(begin, rawData, size);
-			m_IsDirty = true;
+			m_Buffer.MemCopy(rawData, size, offset);
 		}
 
-		const std::vector<BufferElement>& GetMembers() const { return m_OrderedMembers; }
+		const LocalShaderBuffer& GetLocalBuffer() const { return m_Buffer; }
+		const std::vector<BufferElement>& GetMembers() const { return m_Buffer.GetMembers(); }
 		virtual uint32_t GetBinding() const = 0;
 
 		static Ref<UniformBufferStorage> Create(std::vector<BufferElement> layout, uint32_t binding);
 	
 	protected:
-		void InitLayout(std::vector<BufferElement>& layout)
-		{
-			uint32_t offset = 0;
-			for (BufferElement& e : layout)
-			{
-				e.Offset = offset;
-				offset += e.Size;
-				m_Layout[e.Name] = e;
-				m_OrderedMembers.push_back(e);
-			}
-			m_Buffer = std::vector<uint8_t>(offset);
-		}
-
-		std::vector<BufferElement> m_OrderedMembers;
-		std::unordered_map<std::string, BufferElement> m_Layout;
-		std::vector<uint8_t> m_Buffer;
+		LocalShaderBuffer m_Buffer;
 		bool m_IsDirty;
 	};
 }

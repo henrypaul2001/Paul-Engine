@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.h" />
     <ClInclude Include="src\PaulEngine\Utils\Hash.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h" />
@@ -664,6 +665,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.cpp" />

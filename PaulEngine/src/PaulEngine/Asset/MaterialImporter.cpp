@@ -27,8 +27,8 @@ namespace PaulEngine
 			out << YAML::Key << "Layout" << YAML::Value;
 
 			out << YAML::BeginSeq;
-			const std::vector<UniformBufferStorage::BufferElement>& layout = ubo->GetMembers();
-			for (const UniformBufferStorage::BufferElement& e : layout) {
+			const std::vector<BufferElement>& layout = ubo->GetMembers();
+			for (const BufferElement& e : layout) {
 				out << YAML::BeginMap;
 
 				ShaderDataType type = e.Type;
@@ -45,77 +45,77 @@ namespace PaulEngine
 					case ShaderDataType::Float:
 					{
 						float data = 0.0f;
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Float2:
 					{
 						glm::vec2 data = glm::vec2(0.0f);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Float3:
 					{
 						glm::vec3 data = glm::vec3(0.0f);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Float4:
 					{
 						glm::vec4 data = glm::vec4(0.0f);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Mat3:
 					{
 						glm::mat3 data = glm::mat3(0.0f);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Mat4:
 					{
 						glm::mat4 data = glm::mat4(0.0f);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Int:
 					{
 						int data = 0;
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Int2:
 					{
 						glm::ivec2 data = glm::ivec2(0);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Int3:
 					{
 						glm::ivec3 data = glm::ivec3(0);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Int4:
 					{
 						glm::ivec4 data = glm::ivec4(0);
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
 					case ShaderDataType::Bool:
 					{
 						bool data = 0;
-						ubo->ReadLocalDataAs(name, &data);
+						ubo->ReadLocalDataAs(name, data);
 						out << data;
 						break;
 					}
@@ -131,19 +131,21 @@ namespace PaulEngine
 		{
 			uint32_t binding = valueNode["Binding"].as<uint64_t>();
 
-			std::vector<UniformBufferStorage::BufferElement> layout;
+			std::vector<BufferElement> layout;
 
 			YAML::Node layoutNode = valueNode["Layout"];
 			for (YAML::Node layoutEntry : layoutNode) {
-				ShaderDataType type = StringToShaderDataType(layoutEntry["Type"].as<std::string>());
+				std::string typeString = layoutEntry["Type"].as<std::string>();
+				ShaderDataType type = StringToShaderDataType(typeString);
 				std::string name = layoutEntry["Name"].as<std::string>();
-				layout.emplace_back(name, type);
+				layout.emplace_back(type, name);
 			}
 			Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(layout, binding);
 
 			for (YAML::Node layoutEntry : layoutNode) {
 				std::string name = layoutEntry["Name"].as<std::string>();
-				ShaderDataType type = StringToShaderDataType(layoutEntry["Type"].as<std::string>());
+				std::string typeString = layoutEntry["Type"].as<std::string>();
+				ShaderDataType type = StringToShaderDataType(typeString);
 				switch (type)
 				{
 					case ShaderDataType::None:
