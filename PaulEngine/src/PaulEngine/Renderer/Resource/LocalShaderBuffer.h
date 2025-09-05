@@ -48,7 +48,7 @@ namespace PaulEngine
 		}
 
 		template<typename T>
-		bool ReadLocalMemberAs(const std::string& memberName, T& out_data)
+		bool ReadLocalMemberAs(const std::string& memberName, T& out_data) const
 		{
 			// Find member
 			auto it = m_MemberMap.find(memberName);

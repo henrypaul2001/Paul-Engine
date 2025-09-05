@@ -24,7 +24,7 @@ namespace PaulEngine
 		}
 
 		template <typename T>
-		inline bool ReadLocalDataAs(const std::string& name, T& out_data)
+		inline bool ReadLocalDataAs(const std::string& name, T& out_data) const
 		{
 			return m_Buffer.ReadLocalMemberAs(name, out_data);
 		}
