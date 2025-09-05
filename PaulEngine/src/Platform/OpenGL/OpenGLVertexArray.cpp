@@ -65,7 +65,7 @@ namespace PaulEngine {
 			if (!isInteger) {
 				glVertexAttribPointer(
 					index,
-					element.GetComponentCount(),
+					GetComponentCount(element.Type),
 					ShaderDataTypeToGLBaseType(element.Type),
 					element.Normalized ? GL_TRUE : GL_FALSE,
 					layout.GetStride(),
@@ -74,7 +74,7 @@ namespace PaulEngine {
 			else {
 				glVertexAttribIPointer(
 					index,
-					element.GetComponentCount(),
+					GetComponentCount(element.Type),
 					ShaderDataTypeToGLBaseType(element.Type),
 					layout.GetStride(),
 					(const void*)element.Offset);

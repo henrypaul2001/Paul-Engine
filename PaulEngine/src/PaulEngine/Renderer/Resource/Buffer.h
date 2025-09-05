@@ -1,7 +1,6 @@
 #pragma once
 
 namespace PaulEngine {
-
 	enum class BufferUsage
 	{
 		None = 0,
@@ -25,68 +24,115 @@ namespace PaulEngine {
 		Float, Float2, Float3, Float4,
 		Mat3, Mat4,
 		Int, Int2, Int3, Int4,
-		Bool
+		Bool,
+		Sampler2DHandle, Sampler2DArrayHandle,
+		SamplerCubeHandle, SamplerCubeArrayHandle
 	};
 
-	static std::string ShaderDataTypeToString(ShaderDataType type)
+	namespace BufferUtils
 	{
-		switch (type)
-		{
-			case ShaderDataType::None:		return "None";
-			case ShaderDataType::Float:		return "Float";
-			case ShaderDataType::Float2:	return "Float2";
-			case ShaderDataType::Float3:	return "Float3";
-			case ShaderDataType::Float4:	return "Float4";
-			case ShaderDataType::Mat3:		return "Mat3";
-			case ShaderDataType::Mat4:		return "Mat4";
-			case ShaderDataType::Int:		return "Int";
-			case ShaderDataType::Int2:		return "Int2";
-			case ShaderDataType::Int3:		return "Int3";
-			case ShaderDataType::Int4:		return "Int4";
-			case ShaderDataType::Bool:		return "Bool";
-		}
+		static const std::unordered_map<std::string, ShaderDataType> s_StringToShaderDataTypeMap = {
+			{ "None",					ShaderDataType::None					},
+			{ "Float",					ShaderDataType::Float					},
+			{ "Float2",					ShaderDataType::Float2					},
+			{ "Float3",					ShaderDataType::Float3					},
+			{ "Float4",					ShaderDataType::Float4					},
+			{ "Mat3",					ShaderDataType::Mat3					},
+			{ "Mat4",					ShaderDataType::Mat4					},
+			{ "Int",					ShaderDataType::Int						},
+			{ "Int2",					ShaderDataType::Int2					},
+			{ "Int3",					ShaderDataType::Int3					},
+			{ "Int4",					ShaderDataType::Int4					},
+			{ "Bool",					ShaderDataType::Bool					},
+			{ "Sampler2DHandle",		ShaderDataType::Sampler2DHandle			},
+			{ "Sampler2DArrayHandle",	ShaderDataType::Sampler2DArrayHandle	},
+			{ "SamplerCubeHandle",		ShaderDataType::SamplerCubeHandle		},
+			{ "SamplerCubeArrayHandle", ShaderDataType::SamplerCubeArrayHandle	}
+		};
+		static const std::unordered_map<ShaderDataType, std::string> s_ShaderDataTypeToStringMap = {
+			{ ShaderDataType::None,						"None"					},
+			{ ShaderDataType::Float,					"Float"					},
+			{ ShaderDataType::Float2,					"Float2"				},
+			{ ShaderDataType::Float3,					"Float3"				},
+			{ ShaderDataType::Float4,					"Float4"				},
+			{ ShaderDataType::Mat3,						"Mat3"					},
+			{ ShaderDataType::Mat4,						"Mat4"					},
+			{ ShaderDataType::Int,						"Int"					},
+			{ ShaderDataType::Int2,						"Int2"					},
+			{ ShaderDataType::Int3,						"Int3"					},
+			{ ShaderDataType::Int4,						"Int4"					},
+			{ ShaderDataType::Bool,						"Bool"					},
+			{ ShaderDataType::Sampler2DHandle,			"Sampler2DHandle"		},
+			{ ShaderDataType::Sampler2DArrayHandle,		"Sampler2DArrayHandle"	},
+			{ ShaderDataType::SamplerCubeHandle,		"SamplerCubeHandle"		},
+			{ ShaderDataType::SamplerCubeArrayHandle,	"SamplerCubeArrayHandle"}
+		};
+		static const std::unordered_map<ShaderDataType, size_t> s_ShaderDataTypeSizeMap = {
+			{ ShaderDataType::None,						0	},
+			{ ShaderDataType::Float,					4	},
+			{ ShaderDataType::Float2,					8	},
+			{ ShaderDataType::Float3,					12	},
+			{ ShaderDataType::Float4,					16	},
+			{ ShaderDataType::Mat3,						36	},
+			{ ShaderDataType::Mat4,						64	},
+			{ ShaderDataType::Int,						4	},
+			{ ShaderDataType::Int2,						8	},
+			{ ShaderDataType::Int3,						12	},
+			{ ShaderDataType::Int4,						16	},
+			{ ShaderDataType::Bool,						1	},
+			{ ShaderDataType::Sampler2DHandle,			8	},
+			{ ShaderDataType::Sampler2DArrayHandle,		8	},
+			{ ShaderDataType::SamplerCubeHandle,		8	},
+			{ ShaderDataType::SamplerCubeArrayHandle,	8	}
+		};
+		static const std::unordered_map<ShaderDataType, uint32_t> s_ShaderDataTypeComponentCountMap = {
+			{ ShaderDataType::None,						0	},
+			{ ShaderDataType::Float,					1	},
+			{ ShaderDataType::Float2,					2	},
+			{ ShaderDataType::Float3,					3	},
+			{ ShaderDataType::Float4,					4	},
+			{ ShaderDataType::Mat3,						9	},
+			{ ShaderDataType::Mat4,						16	},
+			{ ShaderDataType::Int,						1	},
+			{ ShaderDataType::Int2,						2	},
+			{ ShaderDataType::Int3,						3	},
+			{ ShaderDataType::Int4,						4	},
+			{ ShaderDataType::Bool,						1	},
+			{ ShaderDataType::Sampler2DHandle,			2	},
+			{ ShaderDataType::Sampler2DArrayHandle,		2	},
+			{ ShaderDataType::SamplerCubeHandle,		2	},
+			{ ShaderDataType::SamplerCubeArrayHandle,	2	}
+		};
+	}
 
+	static std::string ShaderDataTypeToString(const ShaderDataType type)
+	{
+		auto it = BufferUtils::s_ShaderDataTypeToStringMap.find(type);
+		if (it != BufferUtils::s_ShaderDataTypeToStringMap.end()) { return it->second; }
 		PE_CORE_ASSERT(false, "Unknown ShaderDataType");
 		return "Error";
 	}
 
 	static ShaderDataType StringToShaderDataType(const std::string& stringInput)
 	{
-		if (stringInput == "None") { return ShaderDataType::None; }
-		else if (stringInput == "Float") { return ShaderDataType::Float; }
-		else if (stringInput == "Float2") { return ShaderDataType::Float2; }
-		else if (stringInput == "Float3") { return ShaderDataType::Float3; }
-		else if (stringInput == "Float4") { return ShaderDataType::Float4; }
-		else if (stringInput == "Mat3") { return ShaderDataType::Mat3; }
-		else if (stringInput == "Mat4") { return ShaderDataType::Mat4; }
-		else if (stringInput == "Int") { return ShaderDataType::Int; }
-		else if (stringInput == "Int2") { return ShaderDataType::Int2; }
-		else if (stringInput == "Int3") { return ShaderDataType::Int3; }
-		else if (stringInput == "Int4") { return ShaderDataType::Int4; }
-		else if (stringInput == "Bool") { return ShaderDataType::Bool; }
-
+		auto it = BufferUtils::s_StringToShaderDataTypeMap.find(stringInput);
+		if (it != BufferUtils::s_StringToShaderDataTypeMap.end()) { return it->second; }
 		PE_CORE_ASSERT(false, "Unknown ShaderDataType");
 		return ShaderDataType::None;
 	}
 
-	static uint32_t ShaderDataTypeSize(ShaderDataType type)
+	static uint32_t ShaderDataTypeSize(const ShaderDataType type)
 	{
-		switch (type)
-		{
-			case ShaderDataType::None:		return 4 * 0;
-			case ShaderDataType::Float:		return 4 * 1;
-			case ShaderDataType::Float2:	return 4 * 2;
-			case ShaderDataType::Float3:	return 4 * 3;
-			case ShaderDataType::Float4:	return 4 * 4;
-			case ShaderDataType::Mat3:		return 4 * 3 * 3;
-			case ShaderDataType::Mat4:		return 4 * 4 * 4;
-			case ShaderDataType::Int:		return 4 * 1;
-			case ShaderDataType::Int2:		return 4 * 2;
-			case ShaderDataType::Int3:		return 4 * 3;
-			case ShaderDataType::Int4:		return 4 * 4;
-			case ShaderDataType::Bool:		return 1;
-		}
+		auto it = BufferUtils::s_ShaderDataTypeSizeMap.find(type);
+		if (it != BufferUtils::s_ShaderDataTypeSizeMap.end()) { return it->second; }
+		PE_CORE_ASSERT(false, "Unknown ShaderDataType");
+		return 0;
+	}
 
+	static uint32_t GetComponentCount(const ShaderDataType type)
+	{
+		auto it = BufferUtils::s_ShaderDataTypeComponentCountMap.find(type);
+		if (it != BufferUtils::s_ShaderDataTypeComponentCountMap.end()) { return it->second; }
 		PE_CORE_ASSERT(false, "Unknown ShaderDataType");
 		return 0;
 	}
@@ -101,25 +147,6 @@ namespace PaulEngine {
 
 		BufferElement() = default;
 		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false) : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {}
-
-		uint32_t GetComponentCount() const {
-			switch (Type) {
-				case ShaderDataType::None:		return 0;
-				case ShaderDataType::Float:		return 1;
-				case ShaderDataType::Float2:	return 2;
-				case ShaderDataType::Float3:	return 3;
-				case ShaderDataType::Float4:	return 4;
-				case ShaderDataType::Mat3:		return 3 * 3;
-				case ShaderDataType::Mat4:		return 4 * 4;
-				case ShaderDataType::Int:		return 1;
-				case ShaderDataType::Int2:		return 2;
-				case ShaderDataType::Int3:		return 3;
-				case ShaderDataType::Int4:		return 4;
-				case ShaderDataType::Bool:		return 1;
-			}
-			PE_CORE_ASSERT(false, "Unknown ShaderDataType");
-			return 0;
-		}
 	};
 
 	class BufferLayout
