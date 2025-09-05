@@ -652,7 +652,7 @@ namespace PaulEngine
 		out << YAML::Key << "ShaderHandle" << YAML::Value << material->m_ShaderHandle;
 		out << YAML::Key << "ShaderParams" << YAML::Value << YAML::BeginSeq;
 
-		for (auto& [name, parameter] : material->m_ShaderParameters) {
+		for (auto& [name, parameter] : material->m_BindingParameters) {
 			out << YAML::BeginMap;
 
 			out << YAML::Key << "Name" << YAML::Value << name;

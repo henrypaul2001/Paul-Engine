@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Core/Core.h"
+#include "ShaderStorageBuffer.h"
 #include "UniformBufferStorage.h"
 #include "PaulEngine/Asset/Asset.h"
 
@@ -40,6 +41,34 @@ namespace PaulEngine
 		friend class CreateMaterialWindow;
 
 		Ref<UniformBufferStorage> m_UBO;
+	};
+
+	// Used as a buffer instance to buffer into a specific index of a larger storage buffer array
+	class StorageBufferEntryShaderParameterTypeStorage : public ShaderParamaterTypeStorageBase
+	{
+	public:
+		StorageBufferEntryShaderParameterTypeStorage(std::vector<BufferElement> layout, Ref<ShaderStorageBuffer> storageBufferContext, int32_t capacity) : m_LocalBuffer(layout), m_StorageBufferContext(storageBufferContext), m_Capacity(capacity) {}
+		~StorageBufferEntryShaderParameterTypeStorage() {}
+
+		virtual ShaderParameterType GetType() const override { return ShaderParameterType::SSBO; }
+
+		// buffer into the base index of the storage buffer as if this instance is the entire storage buffer
+		virtual void Bind() override;
+		void BindlessUpload(uint32_t materialIndex);
+
+		inline const LocalShaderBuffer& GetLocalBuffer() const { return m_LocalBuffer; }
+		inline LocalShaderBuffer& GetLocalBuffer() { return m_LocalBuffer; }
+
+		// -1 = dynamic capacity
+		inline const int32_t Capacity() const { return m_Capacity; }
+
+	private:
+		friend class EditorLayer;
+		friend class CreateMaterialWindow;
+
+		int32_t m_Capacity; // -1 = dynamic capacity
+		Ref<ShaderStorageBuffer> m_StorageBufferContext;
+		LocalShaderBuffer m_LocalBuffer;
 	};
 
 	class Sampler2DShaderParameterTypeStorage : public ShaderParamaterTypeStorageBase

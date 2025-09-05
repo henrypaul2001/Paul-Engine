@@ -660,7 +660,7 @@ namespace PaulEngine
 				if (isShaderValid) {
 					const Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
 					int index = 0;
-					for (auto& it : m_Material->m_ShaderParameters) {
+					for (auto& it : m_Material->m_BindingParameters) {
 						ImGui::PushID(index);
 						switch (it.second->GetType()) {
 							case ShaderParameterType::UBO:

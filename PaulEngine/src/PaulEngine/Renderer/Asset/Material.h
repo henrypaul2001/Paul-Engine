@@ -4,6 +4,12 @@
 
 #include "../Resource/ShaderParameterType.h"
 
+/*
+	TODO: Currently the plan is to support both bindless (indirect material buffer entries) and binding materials at the same time in one class
+	Once indirect rendering is no longer an experimental feature, consider whether or not materials should be capable of being both 
+	bindless and binding, or if materials in Paul Engine should be purely bindless
+*/
+
 namespace PaulEngine
 {
 	class Material : public Asset
@@ -14,10 +20,12 @@ namespace PaulEngine
 
 		void Bind();
 		virtual AssetType GetType() const { return AssetType::Material; }
-
 		RenderPipelineContext GetShaderRendererContext() const;
 
-		void AddParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
+		// Upload indirect material data (SSBO entries) into their respective, larger material buffers at a specified index
+		void BindlessUpload(uint32_t materialIndex);
+
+		void AddBindingParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
 		void SetParameter(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
 
 		Ref<ShaderParamaterTypeStorageBase> GetParameter(const std::string& name);
@@ -38,7 +46,7 @@ namespace PaulEngine
 			return nullptr;
 		}
 
-		void ClearParameters() { m_ShaderParameters.clear(); }
+		void ClearParameters() { m_BindingParameters.clear(); }
 
 	private:
 		friend class EditorLayer;
@@ -46,6 +54,7 @@ namespace PaulEngine
 		friend class CreateMaterialWindow;
 		friend class Renderer;
 		AssetHandle m_ShaderHandle;
-		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_ShaderParameters;
+		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_BindingParameters;
+		std::vector<Ref<StorageBufferEntryShaderParameterTypeStorage>> m_IndirectParameters;
 	};
 }

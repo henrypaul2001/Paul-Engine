@@ -59,4 +59,29 @@ namespace PaulEngine
 			// TODO: Bind empty cubemap array
 		}
 	}
+
+	void StorageBufferEntryShaderParameterTypeStorage::Bind()
+	{
+		const uint8_t* data = m_LocalBuffer.Data();
+		m_StorageBufferContext->SetData((const void*)data, m_LocalBuffer.Size(), 0, true);
+	}
+
+	void StorageBufferEntryShaderParameterTypeStorage::BindlessUpload(uint32_t materialIndex)
+	{
+		const uint8_t* data = m_LocalBuffer.Data();
+		size_t offset = m_LocalBuffer.Size() * materialIndex;
+		size_t end = offset + m_LocalBuffer.Size();
+
+		if (m_Capacity > -1)
+		{
+			// Validate buffer size
+			if (end > m_Capacity)
+			{
+				PE_CORE_ASSERT(false, "Buffer overrun");
+				return;
+			}
+		}
+
+		m_StorageBufferContext->SetData((const void*)data, m_LocalBuffer.Size(), offset, true);
+	}
 }
