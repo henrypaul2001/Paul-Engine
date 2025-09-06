@@ -118,6 +118,7 @@ namespace PaulEngine {
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
+		virtual uint64_t GetDeviceTextureHandle() const override { return m_DeviceHandle; }
 	
 		static GLenum TextureTarget(bool multisampled);
 		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);
@@ -137,6 +138,8 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+
+		uint64_t m_DeviceHandle;
 	};
 
 	class OpenGLTexture2DArray : public Texture2DArray
@@ -163,6 +166,7 @@ namespace PaulEngine {
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
+		virtual uint64_t GetDeviceTextureHandle() const override { return m_DeviceHandle; }
 
 		virtual bool operator==(const Texture& other) const override {
 			return m_RendererID == ((OpenGLTexture2DArray&)other).m_RendererID;
@@ -181,6 +185,8 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+
+		uint64_t m_DeviceHandle;
 	};
 
 	class OpenGLTextureCubemap : public TextureCubemap
@@ -205,6 +211,7 @@ namespace PaulEngine {
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
+		virtual uint64_t GetDeviceTextureHandle() const override { return m_DeviceHandle; }
 
 		virtual bool operator==(const Texture& other) const override {
 			return m_RendererID == ((OpenGLTextureCubemap&)other).m_RendererID;
@@ -220,6 +227,8 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+
+		uint64_t m_DeviceHandle;
 	};
 
 	class OpenGLTextureCubemapArray : public TextureCubemapArray
@@ -246,6 +255,7 @@ namespace PaulEngine {
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind(const uint32_t slot = 0) const override;
+		virtual uint64_t GetDeviceTextureHandle() const override { return m_DeviceHandle; }
 
 		virtual bool operator==(const Texture& other) const override {
 			return m_RendererID == ((OpenGLTextureCubemapArray&)other).m_RendererID;
@@ -264,5 +274,7 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+
+		uint64_t m_DeviceHandle;
 	};
 }

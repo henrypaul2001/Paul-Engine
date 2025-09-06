@@ -103,6 +103,8 @@ namespace PaulEngine {
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
 
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+
 		if (data) { SetData(data); }
 	}
 #pragma endregion
@@ -202,6 +204,8 @@ namespace PaulEngine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
 
 		for (int i = 0; i < m_NumLayers; i++) {
 			if (layers[i]) {
@@ -307,6 +311,8 @@ namespace PaulEngine {
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
 
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+
 		for (uint8_t i = 0; i < 6; i++) {
 			if (faceData[i])
 			{
@@ -411,6 +417,8 @@ namespace PaulEngine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
 
 		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
 
 		for (uint8_t layer = 0; layer < faceDataLayers.size(); layer++)
 		{
