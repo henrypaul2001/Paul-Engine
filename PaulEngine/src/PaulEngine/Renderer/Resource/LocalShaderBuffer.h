@@ -76,10 +76,14 @@ namespace PaulEngine
 		// If used incorrectly, may invalidate buffer layout and produce unexpected values when later calling ReadLocalMember
 		void MemCopy(const void* rawData, size_t size, size_t offset = 0);
 
+		const std::string& GetCommonNamePrefix() const { return m_CommonPrefix; }
+
 	private:
 		std::vector<BufferElement> m_OrderedMembers;
 		std::unordered_map<std::string, uint32_t> m_MemberMap; // <name, index>
 		std::vector<uint8_t> m_Buffer;
+
+		std::string m_CommonPrefix;
 
 		void InitLayout(std::vector<BufferElement>& layout);
 	};
