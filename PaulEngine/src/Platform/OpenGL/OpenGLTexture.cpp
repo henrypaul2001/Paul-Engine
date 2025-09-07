@@ -1,7 +1,98 @@
 #include "pepch.h"
 #include "OpenGLTexture.h"
+#include <glad/gl.h>
 
 namespace PaulEngine {
+	namespace OpenGLTextureUtils
+	{
+		GLenum PEImageFormatToGLDataFormat(ImageFormat format) {
+			switch (format) {
+				case ImageFormat::Depth16: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth24: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth32: return GL_DEPTH_COMPONENT;
+				case ImageFormat::Depth24Stencil8: return GL_DEPTH_STENCIL;
+				case ImageFormat::RED_INTEGER: return GL_RED_INTEGER;
+				case ImageFormat::R8: return GL_RED;
+				case ImageFormat::RG8: return GL_RG;
+				case ImageFormat::RGB8: return GL_RGB;
+				case ImageFormat::RGBA8: return GL_RGBA;
+				case ImageFormat::R11FG11FB10F: return GL_RGB;
+				case ImageFormat::RG16F: return GL_RG;
+				case ImageFormat::RGB16F: return GL_RGB;
+				case ImageFormat::RGBA16F: return GL_RGBA;
+				case ImageFormat::RG32F: return GL_RG;
+				case ImageFormat::RGB32F: return GL_RGB;
+				case ImageFormat::RGBA32F: return GL_RGBA;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image format translation");
+			return 0;
+		}
+		GLenum PEImageFormatToGLInternalFormat(ImageFormat format) {
+			switch (format) {
+			case ImageFormat::Depth16: return GL_DEPTH_COMPONENT16;
+			case ImageFormat::Depth24: return GL_DEPTH_COMPONENT24;
+			case ImageFormat::Depth32: return GL_DEPTH_COMPONENT32;
+			case ImageFormat::Depth24Stencil8: return GL_DEPTH24_STENCIL8;
+			case ImageFormat::RED_INTEGER: return GL_R32I;
+			case ImageFormat::R8: return GL_R8;
+			case ImageFormat::RG8: return GL_RG8;
+			case ImageFormat::RGB8: return GL_RGB8;
+			case ImageFormat::RGBA8: return GL_RGBA8;
+			case ImageFormat::R11FG11FB10F: return GL_R11F_G11F_B10F;
+			case ImageFormat::RG16F: return GL_RG16F;
+			case ImageFormat::RGB16F: return GL_RGB16F;
+			case ImageFormat::RGBA16F: return GL_RGBA16F;
+			case ImageFormat::RG32F: return GL_RG32F;
+			case ImageFormat::RGB32F: return GL_RGB32F;
+			case ImageFormat::RGBA32F: return GL_RGBA32F;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image format translation");
+			return 0;
+		}
+		GLenum ImageWrapToGLWrap(ImageWrap wrap)
+		{
+			switch (wrap)
+			{
+			case ImageWrap::CLAMP_TO_EDGE: return GL_CLAMP_TO_EDGE;
+			case ImageWrap::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
+			case ImageWrap::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
+			case ImageWrap::REPEAT: return GL_REPEAT;
+			case ImageWrap::MIRROR_CLAMP_TO_EDGE: return GL_MIRROR_CLAMP_TO_EDGE;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image wrap translation");
+			return 0;
+		}
+		GLenum MinFilterToGLMinFilter(ImageMinFilter filter)
+		{
+			switch (filter)
+			{
+			case ImageMinFilter::NEAREST: return GL_NEAREST;
+			case ImageMinFilter::LINEAR: return GL_LINEAR;
+			case ImageMinFilter::NEAREST_MIPMAP_NEAREST: return GL_NEAREST_MIPMAP_NEAREST;
+			case ImageMinFilter::LINEAR_MIPMAP_NEAREST: return GL_LINEAR_MIPMAP_NEAREST;
+			case ImageMinFilter::NEAREST_MIPMAP_LINEAR: return GL_NEAREST_MIPMAP_LINEAR;
+			case ImageMinFilter::LINEAR_MIPMAP_LINEAR: return GL_LINEAR_MIPMAP_LINEAR;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image min filter translation");
+			return 0;
+		}
+		GLenum MagFilterToGLMagFilter(ImageMagFilter filter)
+		{
+			switch (filter)
+			{
+			case ImageMagFilter::NEAREST: return GL_NEAREST;
+			case ImageMagFilter::LINEAR: return GL_LINEAR;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image mag filter translation");
+			return 0;
+		}
+	}
+
 #pragma region Texture2D
 	OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& specification, Buffer data) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
 	{
