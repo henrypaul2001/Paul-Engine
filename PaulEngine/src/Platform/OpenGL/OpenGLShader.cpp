@@ -48,8 +48,12 @@ namespace PaulEngine {
 				case GL_BOOL: return ShaderDataType::Bool;
 				case GL_FLOAT_MAT3: return ShaderDataType::Mat3;
 				case GL_FLOAT_MAT4: return ShaderDataType::Mat4;
+				case GL_SAMPLER_2D: return ShaderDataType::Sampler2DHandle;
+				case GL_SAMPLER_2D_ARRAY: return ShaderDataType::Sampler2DArrayHandle;
+				case GL_SAMPLER_CUBE: return ShaderDataType::SamplerCubeHandle;
+				case GL_SAMPLER_CUBE_MAP_ARRAY: return ShaderDataType::SamplerCubeArrayHandle;
 			}
-			PE_CORE_WARN("Udefined shader data type glType:{0}", glType);
+			PE_CORE_WARN("Undefined shader data type glType:{0}", glType);
 			return ShaderDataType::None;
 		}
 
