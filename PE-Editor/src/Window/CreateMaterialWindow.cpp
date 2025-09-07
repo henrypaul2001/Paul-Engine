@@ -665,19 +665,27 @@ namespace PaulEngine
 						switch (it.second->GetType()) {
 							case ShaderParameterType::UBO:
 							{
-								UBOShaderParameterTypeStorage* ubo = dynamic_cast<UBOShaderParameterTypeStorage*>(it.second.get());
-								DrawUBOEdit(it.first, *ubo);
+								UBOShaderParameterTypeStorage* ubo = static_cast<UBOShaderParameterTypeStorage*>(it.second.get());
+								LocalShaderBuffer& localBuffer = ubo->UBO()->GetLocalBuffer();
+								DrawLocalShaderBufferMembersEdit(it.first, localBuffer);
+								break;
+							}
+							case ShaderParameterType::SSBO:
+							{
+								StorageBufferEntryShaderParameterTypeStorage* ssbo = static_cast<StorageBufferEntryShaderParameterTypeStorage*>(it.second.get());
+								LocalShaderBuffer& localBuffer = ssbo->GetLocalBuffer();
+								DrawLocalShaderBufferMembersEdit(it.first, localBuffer);
 								break;
 							}
 							case ShaderParameterType::Sampler2D:
 							{
-								Sampler2DShaderParameterTypeStorage* sampler2D = dynamic_cast<Sampler2DShaderParameterTypeStorage*>(it.second.get());
+								Sampler2DShaderParameterTypeStorage* sampler2D = static_cast<Sampler2DShaderParameterTypeStorage*>(it.second.get());
 								DrawSampler2DEdit(it.first, *sampler2D);
 								break;
 							}
 							case ShaderParameterType::Sampler2DArray:
 							{
-								Sampler2DArrayShaderParameterTypeStorage* sampler2Darray = dynamic_cast<Sampler2DArrayShaderParameterTypeStorage*>(it.second.get());
+								Sampler2DArrayShaderParameterTypeStorage* sampler2Darray = static_cast<Sampler2DArrayShaderParameterTypeStorage*>(it.second.get());
 								DrawSampler2DArrayEdit(it.first, *sampler2Darray);
 								break;
 							}
@@ -792,73 +800,6 @@ namespace PaulEngine
 		ImGui::PopStyleColor(3);
 	}
 
-	void CreateMaterialWindow::DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo)
-	{
-		Ref<UniformBufferStorage> uboStorage = ubo.UBO();
-		auto& layout = uboStorage->GetMembers();
-
-		if (layout.size() > 0)
-		{
-			ImGui::Text(param_name.c_str());
-		}
-		for (const BufferElement& e : layout) {
-			const std::string& name = e.Name;
-			const ShaderDataType type = e.Type;
-			switch (type) {
-				case ShaderDataType::Float4:
-				{
-					glm::vec4 data = glm::vec4(0.0f);
-					ubo.UBO()->ReadLocalDataAs(name, data);
-					if (ImGui::ColorEdit4(name.c_str(), &data[0]))
-					{
-						uboStorage->SetLocalData(name, data);
-					}
-					break;
-				}
-				case ShaderDataType::Float3:
-				{
-					glm::vec3 data = glm::vec3(0.0f);
-					ubo.UBO()->ReadLocalDataAs(name, data);
-					if (ImGui::ColorEdit3(name.c_str(), &data[0]))
-					{
-						uboStorage->SetLocalData(name, data);
-					}
-					break;
-				}
-				case ShaderDataType::Float2:
-				{
-					glm::vec2 data = glm::vec2(0.0f);
-					ubo.UBO()->ReadLocalDataAs(name, data);
-					if (ImGui::DragFloat2(name.c_str(), &data[0], 0.1f))
-					{
-						uboStorage->SetLocalData(name, data);
-					}
-					break;
-				}
-				case ShaderDataType::Float:
-				{
-					float data = 0.0f;
-					ubo.UBO()->ReadLocalDataAs(name, data);
-					if (ImGui::DragFloat(name.c_str(), &data, 0.01f))
-					{
-						uboStorage->SetLocalData(name, data);
-					}
-					break;
-				}
-				case ShaderDataType::Int:
-				{
-					int data = 0;
-					ubo.UBO()->ReadLocalDataAs(name, data);
-					if (ImGui::DragInt(name.c_str(), &data))
-					{
-						uboStorage->SetLocalData(name, data);
-					}
-					break;
-				}
-			}
-		}
-	}
-
 	void CreateMaterialWindow::DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler)
 	{
 		ImGui::Text(param_name.c_str());
@@ -966,5 +907,140 @@ namespace PaulEngine
 		ImGui::BeginDisabled(true);
 		ImGui::Text("    binding: {0}", samplerArray.m_Binding);
 		ImGui::EndDisabled();
+	}
+
+	void CreateMaterialWindow::DrawLocalShaderBufferMembersEdit(const std::string& param_name, LocalShaderBuffer& localBuffer)
+	{
+		auto& layout = localBuffer.GetMembers();
+
+		if (layout.size() > 0)
+		{
+			ImGui::Text(param_name.c_str());
+		}
+		for (const BufferElement& e : layout) {
+			const std::string& name = e.Name;
+			
+			const std::string& commonPrefix = localBuffer.GetCommonNamePrefix();
+			
+			std::string displayName = name;
+			if (commonPrefix != "")
+			{
+				displayName = name.substr(commonPrefix.size(), name.size() - commonPrefix.size());
+			}
+
+			const ShaderDataType type = e.Type;
+			switch (type) {
+				case ShaderDataType::Float4:
+				{
+					glm::vec4 data = glm::vec4(0.0f);
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::ColorEdit4(displayName.c_str(), &data[0]))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Float3:
+				{
+					glm::vec3 data = glm::vec3(0.0f);
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::ColorEdit3(displayName.c_str(), &data[0]))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Float2:
+				{
+					glm::vec2 data = glm::vec2(0.0f);
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::DragFloat2(displayName.c_str(), &data[0], 0.1f))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Float:
+				{
+					float data = 0.0f;
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::DragFloat(displayName.c_str(), &data, 0.01f))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Int4:
+				{
+					glm::ivec4 data = glm::ivec4(0);
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::DragInt4(displayName.c_str(), &data[0]))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Int3:
+				{
+					glm::ivec3 data = glm::ivec3(0);
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::DragInt3(displayName.c_str(), &data[0]))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Int2:
+				{
+					glm::ivec2 data = glm::ivec2(0);
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::DragInt2(displayName.c_str(), &data[0]))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Int:
+				{
+					int data = 0;
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::DragInt(displayName.c_str(), &data))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Bool:
+				{
+					bool data = false;
+					localBuffer.ReadLocalMemberAs(name, data);
+					if (ImGui::Checkbox(displayName.c_str(), &data))
+					{
+						localBuffer.SetLocalMember(name, data);
+					}
+					break;
+				}
+				case ShaderDataType::Sampler2DHandle:
+				{
+					ImGui::Text(displayName.c_str());
+					break;
+				}
+				case ShaderDataType::Sampler2DArrayHandle:
+				{
+					ImGui::Text(displayName.c_str());
+					break;
+				}
+				case ShaderDataType::SamplerCubeHandle:
+				{
+					ImGui::Text(displayName.c_str());
+					break;
+				}
+				case ShaderDataType::SamplerCubeArrayHandle:
+				{
+					ImGui::Text(displayName.c_str());
+					break;
+				}
+			}
+		}
 	}
 }

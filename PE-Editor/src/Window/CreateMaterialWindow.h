@@ -27,9 +27,9 @@ namespace PaulEngine
 	private:
 		void CreateRenderer(FrameRenderer& out_Framerenderer);
 		void DrawMeshIcons();
-		void DrawUBOEdit(const std::string& param_name, UBOShaderParameterTypeStorage& ubo);
 		void DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler);
 		void DrawSampler2DArrayEdit(const std::string& param_name, Sampler2DArrayShaderParameterTypeStorage& samplerArray);
+		void DrawLocalShaderBufferMembersEdit(const std::string& param_name, LocalShaderBuffer& localBuffer);
 
 		Ref<Texture2D> m_IconSphere;
 		Ref<Texture2D> m_IconCube;

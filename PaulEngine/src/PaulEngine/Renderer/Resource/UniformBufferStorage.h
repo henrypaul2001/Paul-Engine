@@ -37,6 +37,7 @@ namespace PaulEngine
 		}
 
 		const LocalShaderBuffer& GetLocalBuffer() const { return m_Buffer; }
+		LocalShaderBuffer& GetLocalBuffer() { return m_Buffer; }
 		const std::vector<BufferElement>& GetMembers() const { return m_Buffer.GetMembers(); }
 		virtual uint32_t GetBinding() const = 0;
 
