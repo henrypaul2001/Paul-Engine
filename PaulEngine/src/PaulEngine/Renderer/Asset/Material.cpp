@@ -125,7 +125,7 @@ namespace PaulEngine
 		PE_PROFILE_FUNCTION();
 		auto it = m_BindingParameters.find(name);
 		if (it == m_BindingParameters.end()) {
-			it->second = data;
+			m_BindingParameters[name] = data;
 			return;
 		}
 		PE_CORE_ERROR("Name '{0}' already exists in shader parameters map", name);
