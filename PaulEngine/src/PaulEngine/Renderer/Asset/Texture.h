@@ -37,6 +37,16 @@ namespace PaulEngine {
 		RGBA32F
 	};
 
+	static bool IsIntegerFormat(const ImageFormat format)
+	{
+		switch (format)
+		{
+			case ImageFormat::RED_INTEGER: return true;
+		}
+
+		return false;
+	}
+
 	static const std::unordered_map<ImageFormat, int> s_FormatChannels = {
 		{ ImageFormat::None,			0 },
 		{ ImageFormat::Depth16,			1 },

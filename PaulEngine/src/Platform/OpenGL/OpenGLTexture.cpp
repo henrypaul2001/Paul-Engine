@@ -192,11 +192,20 @@ namespace PaulEngine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
 
-		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+		if (IsIntegerFormat(m_Spec.Format))
+		{
+			glm::ivec4 intBorder = (glm::ivec4)m_Spec.Border;
+			glTextureParameterIiv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLint*)&intBorder[0]);
+		}
+		else
+		{
+			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
+		}
 
 		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
 
 		if (data) { SetData(data); }
+		
 	}
 #pragma endregion
 
@@ -294,7 +303,15 @@ namespace PaulEngine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
 
-		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+		if (IsIntegerFormat(m_Spec.Format))
+		{
+			glm::ivec4 intBorder = (glm::ivec4)m_Spec.Border;
+			glTextureParameterIiv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLint*)&intBorder[0]);
+		}
+		else
+		{
+			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
+		}
 
 		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
 
@@ -400,7 +417,15 @@ namespace PaulEngine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
 
-		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+		if (IsIntegerFormat(m_Spec.Format))
+		{
+			glm::ivec4 intBorder = (glm::ivec4)m_Spec.Border;
+			glTextureParameterIiv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLint*)&intBorder[0]);
+		}
+		else
+		{
+			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
+		}
 
 		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
 
@@ -507,7 +532,15 @@ namespace PaulEngine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_T));
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_R, OpenGLTextureUtils::ImageWrapToGLWrap(m_Spec.Wrap_R));
 
-		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, &m_Spec.Border[0]);
+		if (IsIntegerFormat(m_Spec.Format))
+		{
+			glm::ivec4 intBorder = (glm::ivec4)m_Spec.Border;
+			glTextureParameterIiv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLint*)&intBorder[0]);
+		}
+		else
+		{
+			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
+		}
 
 		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
 
