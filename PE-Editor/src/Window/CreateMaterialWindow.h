@@ -30,6 +30,7 @@ namespace PaulEngine
 		void DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler);
 		void DrawSampler2DArrayEdit(const std::string& param_name, Sampler2DArrayShaderParameterTypeStorage& samplerArray);
 		void DrawLocalShaderBufferMembersEdit(const std::string& param_name, LocalShaderBuffer& localBuffer);
+		void DrawTextureHandleMemberEdit(const std::string& member_name, const std::string& display_name, LocalShaderBuffer& localBuffer, AssetType textureType);
 
 		Ref<Texture2D> m_IconSphere;
 		Ref<Texture2D> m_IconCube;

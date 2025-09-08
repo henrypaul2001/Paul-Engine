@@ -1022,25 +1022,83 @@ namespace PaulEngine
 				}
 				case ShaderDataType::Sampler2DHandle:
 				{
-					ImGui::Text(displayName.c_str());
+					DrawTextureHandleMemberEdit(name, displayName, localBuffer, AssetType::Texture2D);
 					break;
 				}
 				case ShaderDataType::Sampler2DArrayHandle:
 				{
-					ImGui::Text(displayName.c_str());
+					DrawTextureHandleMemberEdit(name, displayName, localBuffer, AssetType::Texture2DArray);
 					break;
 				}
 				case ShaderDataType::SamplerCubeHandle:
 				{
-					ImGui::Text(displayName.c_str());
+					DrawTextureHandleMemberEdit(name, displayName, localBuffer, AssetType::TextureCubemap);
 					break;
 				}
 				case ShaderDataType::SamplerCubeArrayHandle:
 				{
-					ImGui::Text(displayName.c_str());
+					DrawTextureHandleMemberEdit(name, displayName, localBuffer, AssetType::TextureCubemapArray);
 					break;
 				}
 			}
 		}
+	}
+
+	void CreateMaterialWindow::DrawTextureHandleMemberEdit(const std::string& member_name, const std::string& display_name, LocalShaderBuffer& localBuffer, AssetType textureType)
+	{
+		PE_CORE_ASSERT(Asset::IsTextureType(textureType), "Invalid asset type");
+
+		ImGui::Text(display_name.c_str());
+
+		// Read member
+		AssetHandle textureHandle = 0;
+		localBuffer.ReadLocalMemberAs(member_name, textureHandle);
+
+		std::string label = "None";
+		bool isTextureValid = false;
+		if (textureHandle != 0) {
+			if (AssetManager::IsAssetHandleValid(textureHandle) && AssetManager::GetAssetType(textureHandle) == textureType) {
+				const AssetMetadata& metadata = AssetManager::GetMetadata(textureHandle);
+				label = metadata.FilePath.filename().string();
+				isTextureValid = true;
+			}
+			else {
+				label = "Invalid";
+			}
+		}
+
+		ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+		buttonLabelSize.x += 20.0f;
+		float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+		ImGui::PushID(member_name.c_str());
+		ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				AssetHandle handle = *(AssetHandle*)payload->Data;
+				if (AssetManager::GetAssetType(handle) == textureType) {
+					localBuffer.SetLocalMember(member_name, handle);
+				}
+				else {
+					PE_CORE_WARN("Invalid asset type. {0} needed", AssetTypeToString(textureType));
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (isTextureValid) {
+			ImGui::SameLine();
+			ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+			float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+			if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+				AssetHandle newHandle = 0;
+				localBuffer.SetLocalMember(member_name, newHandle);
+			}
+		}
+		ImGui::SameLine();
+		ImGui::Text("Texture");
+		ImGui::PopID();
 	}
 }
