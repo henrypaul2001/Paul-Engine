@@ -157,6 +157,14 @@ namespace PaulEngine
 		m_TempAssets.clear();
 	}
 
+	void EditorAssetManager::Clear()
+	{
+		ReleaseTempAssets();
+		m_PersistentAssets.clear();
+		m_AssetRegistry.clear();
+		m_SourceFileRegistry.clear();
+	}
+
 	void EditorAssetManager::RegisterAsset(AssetHandle handle, AssetMetadata metadata)
 	{
 		if (handle != 0) {

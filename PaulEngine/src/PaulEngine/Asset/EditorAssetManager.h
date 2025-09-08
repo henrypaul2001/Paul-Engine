@@ -25,6 +25,7 @@ namespace PaulEngine
 
 		virtual void UnloadAsset(AssetHandle& handle) override;
 		virtual void ReleaseTempAssets() override;
+		virtual void Clear() override;
 		virtual void RegisterAsset(AssetHandle handle, AssetMetadata metadata) override;
 
 		AssetHandle ImportAssetFromFile(const std::filesystem::path& filepath, const bool persistent);

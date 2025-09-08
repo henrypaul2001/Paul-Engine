@@ -22,7 +22,6 @@
 
 #include "PaulEngine/Renderer/Asset/EnvironmentMap.h"
 
-
 namespace PaulEngine
 {
 	struct BloomMipChain
@@ -2280,7 +2279,9 @@ namespace PaulEngine
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_ViewportSize(1280.0f, 720.0f), m_CurrentFilepath(std::string()), m_AtlasCreateWindow(0), m_MaterialCreateWindow(0) {}
 
-	EditorLayer::~EditorLayer() {}
+	EditorLayer::~EditorLayer() {
+		AssetManager::Clear();
+	}
 
 	void EditorLayer::OnAttach()
 	{

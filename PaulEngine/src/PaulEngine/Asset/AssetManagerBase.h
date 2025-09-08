@@ -25,6 +25,7 @@ namespace PaulEngine
 		virtual bool IsAssetProcedural(AssetHandle handle) const = 0;
 		virtual void UnloadAsset(AssetHandle& handle) = 0;
 		virtual void ReleaseTempAssets() = 0;
+		virtual void Clear() = 0;
 		virtual void RegisterAsset(AssetHandle handle, AssetMetadata metadata) = 0;
 
 		template <typename T, typename... Args>
