@@ -12,6 +12,7 @@ namespace PaulEngine
 		inline size_t Size() const { return m_Buffer.size(); }
 		inline const uint8_t* Data() const { return m_Buffer.data(); }
 		inline const std::vector<BufferElement>& GetMembers() const { return m_OrderedMembers; }
+		inline const std::vector<std::string>& GetTextureMemberNames() const { return m_TextureMemberNames; }
 
 		template<typename T>
 		bool SetLocalMember(const std::string& memberName, T& data)
@@ -80,6 +81,7 @@ namespace PaulEngine
 
 	private:
 		std::vector<BufferElement> m_OrderedMembers;
+		std::vector<std::string> m_TextureMemberNames;
 		std::unordered_map<std::string, uint32_t> m_MemberMap; // <name, index>
 		std::vector<uint8_t> m_Buffer;
 

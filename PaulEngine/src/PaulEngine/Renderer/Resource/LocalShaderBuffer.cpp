@@ -63,7 +63,12 @@ namespace PaulEngine
 			{
 				e.Offset = offset;
 				offset += e.Size;
-				m_MemberMap[e.Name] = m_OrderedMembers.size();
+				size_t memberIndex = m_OrderedMembers.size();
+				m_MemberMap[e.Name] = memberIndex;
+				if (IsTextureShaderDataType(e.Type))
+				{
+					m_TextureMemberNames.push_back(e.Name);
+				}
 				m_OrderedMembers.push_back(e);
 			}
 		}
