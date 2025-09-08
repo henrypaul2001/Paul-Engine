@@ -7,22 +7,22 @@ namespace PaulEngine {
 	{
 		GLenum PEImageFormatToGLDataFormat(ImageFormat format) {
 			switch (format) {
-				case ImageFormat::Depth16: return GL_DEPTH_COMPONENT;
-				case ImageFormat::Depth24: return GL_DEPTH_COMPONENT;
-				case ImageFormat::Depth32: return GL_DEPTH_COMPONENT;
-				case ImageFormat::Depth24Stencil8: return GL_DEPTH_STENCIL;
-				case ImageFormat::RED_INTEGER: return GL_RED_INTEGER;
-				case ImageFormat::R8: return GL_RED;
-				case ImageFormat::RG8: return GL_RG;
-				case ImageFormat::RGB8: return GL_RGB;
-				case ImageFormat::RGBA8: return GL_RGBA;
-				case ImageFormat::R11FG11FB10F: return GL_RGB;
-				case ImageFormat::RG16F: return GL_RG;
-				case ImageFormat::RGB16F: return GL_RGB;
-				case ImageFormat::RGBA16F: return GL_RGBA;
-				case ImageFormat::RG32F: return GL_RG;
-				case ImageFormat::RGB32F: return GL_RGB;
-				case ImageFormat::RGBA32F: return GL_RGBA;
+			case ImageFormat::Depth16: return GL_DEPTH_COMPONENT;
+			case ImageFormat::Depth24: return GL_DEPTH_COMPONENT;
+			case ImageFormat::Depth32: return GL_DEPTH_COMPONENT;
+			case ImageFormat::Depth24Stencil8: return GL_DEPTH_STENCIL;
+			case ImageFormat::RED_INTEGER: return GL_RED_INTEGER;
+			case ImageFormat::R8: return GL_RED;
+			case ImageFormat::RG8: return GL_RG;
+			case ImageFormat::RGB8: return GL_RGB;
+			case ImageFormat::RGBA8: return GL_RGBA;
+			case ImageFormat::R11FG11FB10F: return GL_RGB;
+			case ImageFormat::RG16F: return GL_RG;
+			case ImageFormat::RGB16F: return GL_RGB;
+			case ImageFormat::RGBA16F: return GL_RGBA;
+			case ImageFormat::RG32F: return GL_RG;
+			case ImageFormat::RGB32F: return GL_RGB;
+			case ImageFormat::RGBA32F: return GL_RGBA;
 			}
 
 			PE_CORE_ASSERT(false, "Undefined image format translation");
@@ -103,6 +103,7 @@ namespace PaulEngine {
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
 		glDeleteTextures(1, &m_RendererID);
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
 	void OpenGLTexture2D::SetData(Buffer data)
@@ -202,11 +203,19 @@ namespace PaulEngine {
 			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
 		}
 
-		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		UpdateDeviceHandle();
 
 		if (data) { SetData(data); }
 		
 	}
+
+	void OpenGLTexture2D::UpdateDeviceHandle()
+	{
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		DeviceHandleTracker::RegisterTexture(this);
+	}
+
 #pragma endregion
 
 #pragma region Texture2DArray
@@ -219,6 +228,7 @@ namespace PaulEngine {
 	OpenGLTexture2DArray::~OpenGLTexture2DArray()
 	{
 		glDeleteTextures(1, &m_RendererID);
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
 	void OpenGLTexture2DArray::SetData(Buffer data)
@@ -313,13 +323,20 @@ namespace PaulEngine {
 			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
 		}
 
-		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		UpdateDeviceHandle();
 
 		for (int i = 0; i < m_NumLayers; i++) {
 			if (layers[i]) {
 				SetData(layers[i], i);
 			}
 		}
+	}
+
+	void OpenGLTexture2DArray::UpdateDeviceHandle()
+	{
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		DeviceHandleTracker::RegisterTexture(this);
 	}
 
 #pragma endregion
@@ -334,6 +351,7 @@ namespace PaulEngine {
 	OpenGLTextureCubemap::~OpenGLTextureCubemap()
 	{
 		glDeleteTextures(1, &m_RendererID);
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
 	void OpenGLTextureCubemap::SetData(Buffer data)
@@ -427,7 +445,7 @@ namespace PaulEngine {
 			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
 		}
 
-		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		UpdateDeviceHandle();
 
 		for (uint8_t i = 0; i < 6; i++) {
 			if (faceData[i])
@@ -436,6 +454,14 @@ namespace PaulEngine {
 			}
 		}
 	}
+
+	void OpenGLTextureCubemap::UpdateDeviceHandle()
+	{
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		DeviceHandleTracker::RegisterTexture(this);
+	}
+
 #pragma endregion
 
 #pragma region TextureCubemapArray
@@ -448,6 +474,7 @@ namespace PaulEngine {
 	OpenGLTextureCubemapArray::~OpenGLTextureCubemapArray()
 	{
 		glDeleteTextures(1, &m_RendererID);
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
 	void OpenGLTextureCubemapArray::SetData(Buffer data)
@@ -542,7 +569,7 @@ namespace PaulEngine {
 			glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (const GLfloat*)&m_Spec.Border[0]);
 		}
 
-		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		UpdateDeviceHandle();
 
 		for (uint8_t layer = 0; layer < faceDataLayers.size(); layer++)
 		{
@@ -554,6 +581,13 @@ namespace PaulEngine {
 				}
 			}
 		}
+	}
+
+	void OpenGLTextureCubemapArray::UpdateDeviceHandle()
+	{
+		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
+		m_DeviceHandle = glGetTextureHandleARB(m_RendererID);
+		DeviceHandleTracker::RegisterTexture(this);
 	}
 
 #pragma endregion

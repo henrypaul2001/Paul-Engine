@@ -46,6 +46,7 @@ namespace PaulEngine {
 
 	private:
 		void Generate(const TextureSpecification& specification, Buffer data = Buffer());
+		void UpdateDeviceHandle();
 
 		TextureSpecification m_Spec;
 
@@ -91,6 +92,7 @@ namespace PaulEngine {
 	private:
 		void Generate(const TextureSpecification& specification) { Generate(specification, std::vector<Buffer>(m_NumLayers)); }
 		void Generate(const TextureSpecification& specification, std::vector<Buffer> layers);
+		void UpdateDeviceHandle();
 
 		TextureSpecification m_Spec;
 
@@ -135,6 +137,7 @@ namespace PaulEngine {
 
 	private:
 		void Generate(const TextureSpecification& specification, std::vector<Buffer> faceData = std::vector<Buffer>(6));
+		void UpdateDeviceHandle();
 
 		TextureSpecification m_Spec;
 
@@ -180,6 +183,7 @@ namespace PaulEngine {
 	private:
 		void Generate(const TextureSpecification& specification) { Generate(specification, std::vector<std::vector<Buffer>>(m_NumLayers, std::vector<Buffer>(6))); }
 		void Generate(const TextureSpecification& specification, std::vector<std::vector<Buffer>> faceDataLayers);
+		void UpdateDeviceHandle();
 
 		TextureSpecification m_Spec;
 

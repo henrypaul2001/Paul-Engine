@@ -66,6 +66,8 @@ namespace PaulEngine
 		friend class EditorLayer;
 		friend class CreateMaterialWindow;
 
+		void PatchAndSetData(size_t offset = 0);
+
 		int32_t m_Capacity; // -1 = dynamic capacity
 		Ref<ShaderStorageBuffer> m_StorageBufferContext;
 		LocalShaderBuffer m_LocalBuffer;

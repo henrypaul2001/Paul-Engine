@@ -198,4 +198,44 @@ namespace PaulEngine {
 
 		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) = 0;
 	};
+
+	class DeviceHandleTracker
+	{
+	public:
+		static void UnregisterDeviceHandle(uint64_t deviceHandle)
+		{
+			auto it = s_DeviceToAssetHandleMap.find(deviceHandle);
+			if (it != s_DeviceToAssetHandleMap.end())
+			{
+				s_AssetToDeviceHandleMap.erase(it->second);
+				s_DeviceToAssetHandleMap.erase(it);
+			}
+		}
+		static void RegisterTexture(Texture* textureInstance)
+		{
+			s_DeviceToAssetHandleMap[textureInstance->GetDeviceTextureHandle()] = textureInstance->Handle;
+			s_AssetToDeviceHandleMap[textureInstance->Handle] = textureInstance->GetDeviceTextureHandle();
+		}
+		static AssetHandle DeviceHandleToAssetHandle(uint64_t deviceTextureHandle)
+		{
+			auto it = s_DeviceToAssetHandleMap.find(deviceTextureHandle);
+			if (it != s_DeviceToAssetHandleMap.end())
+			{
+				return it->second;
+			}
+			return 0;
+		}
+		static uint64_t AssetHandleToDeviceHandle(AssetHandle assetHandle)
+		{
+			auto it = s_AssetToDeviceHandleMap.find(assetHandle);
+			if (it != s_AssetToDeviceHandleMap.end())
+			{
+				return it->second;
+			}
+			return 0;
+		}
+	private:
+		static std::unordered_map<uint64_t, AssetHandle> s_DeviceToAssetHandleMap;
+		static std::unordered_map<AssetHandle, uint64_t> s_AssetToDeviceHandleMap;
+	};
 }

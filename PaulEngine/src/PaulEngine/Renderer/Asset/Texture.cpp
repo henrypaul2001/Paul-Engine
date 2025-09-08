@@ -5,6 +5,9 @@
 #include "Platform/OpenGL/OpenGLTexture.h"
 
 namespace PaulEngine {
+	std::unordered_map<uint64_t, AssetHandle> DeviceHandleTracker::s_DeviceToAssetHandleMap = std::unordered_map<uint64_t, AssetHandle>();
+	std::unordered_map<AssetHandle, uint64_t> DeviceHandleTracker::s_AssetToDeviceHandleMap = std::unordered_map<AssetHandle, uint64_t>();
+
 	Ref<Texture2D> Texture2D::Create(const TextureSpecification& specification, Buffer data)
 	{
 		PE_PROFILE_FUNCTION();

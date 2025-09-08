@@ -129,6 +129,14 @@ namespace PaulEngine {
 		return 0;
 	}
 
+	static bool IsTextureShaderDataType(const ShaderDataType type)
+	{
+		return (type == ShaderDataType::Sampler2DHandle			||
+				type == ShaderDataType::Sampler2DArrayHandle	||
+				type == ShaderDataType::SamplerCubeHandle		||
+				type == ShaderDataType::SamplerCubeArrayHandle);
+	}
+
 	static uint32_t GetComponentCount(const ShaderDataType type)
 	{
 		auto it = BufferUtils::s_ShaderDataTypeComponentCountMap.find(type);

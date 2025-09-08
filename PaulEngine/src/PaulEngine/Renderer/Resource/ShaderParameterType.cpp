@@ -62,13 +62,11 @@ namespace PaulEngine
 
 	void StorageBufferEntryShaderParameterTypeStorage::Bind()
 	{
-		const uint8_t* data = m_LocalBuffer.Data();
-		m_StorageBufferContext->SetData((const void*)data, m_LocalBuffer.Size(), 0, true);
+		PatchAndSetData();
 	}
 
 	void StorageBufferEntryShaderParameterTypeStorage::BindlessUpload(uint32_t materialIndex)
 	{
-		const uint8_t* data = m_LocalBuffer.Data();
 		size_t offset = m_LocalBuffer.Size() * materialIndex;
 		size_t end = offset + m_LocalBuffer.Size();
 
@@ -82,6 +80,43 @@ namespace PaulEngine
 			}
 		}
 
+		PatchAndSetData(offset);
+	}
+
+	void StorageBufferEntryShaderParameterTypeStorage::PatchAndSetData(size_t offset)
+	{
+		PE_PROFILE_FUNCTION();
+		const uint8_t* data = m_LocalBuffer.Data();
+
+		// TODO: Look into building a GPU indirection table to pass AssetHandle types directly to shaders and allow the shader to map and create the appropriate sampler (would require a rework on reflecting sampler types as they would just be represented as uint64s in GLSL)
+		// Patch local buffer texture handles
+		const std::vector<std::string>& textureMembers = m_LocalBuffer.GetTextureMemberNames();
+		std::vector<AssetHandle> assetHandles = std::vector<AssetHandle>(textureMembers.size());
+
+		for (size_t i = 0; i < textureMembers.size(); i++)
+		{
+			const std::string& name = textureMembers[i];
+
+			AssetHandle textureHandle = 0;
+			m_LocalBuffer.ReadLocalMemberAs(name, textureHandle);
+			assetHandles[i] = textureHandle;
+
+			uint64_t deviceHandle = DeviceHandleTracker::AssetHandleToDeviceHandle(textureHandle);
+			if (deviceHandle == 0)
+			{
+				deviceHandle = Renderer2D::GetWhiteTexture()->GetDeviceTextureHandle();
+			}
+
+			m_LocalBuffer.SetLocalMember(name, deviceHandle);
+		}
+
 		m_StorageBufferContext->SetData((const void*)data, m_LocalBuffer.Size(), offset, true);
+
+		// Unpatch local buffer texture handles
+		for (size_t i = 0; i < textureMembers.size(); i++)
+		{
+			const std::string& name = textureMembers[i];
+			m_LocalBuffer.SetLocalMember(name, assetHandles[i]);
+		}
 	}
 }
