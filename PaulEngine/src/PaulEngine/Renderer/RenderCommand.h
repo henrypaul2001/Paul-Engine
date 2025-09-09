@@ -97,6 +97,14 @@ namespace  PaulEngine {
 			s_RenderAPI->BlendEquation(blendEquation);
 		}
 
+		inline static void MakeTextureResident(uint64_t deviceHandle) {
+			s_RenderAPI->MakeTextureResident(deviceHandle);
+		}
+
+		inline static void MakeTextureNonResident(uint64_t deviceHandle) {
+			s_RenderAPI->MakeTextureNonResident(deviceHandle);
+		}
+
 	private:
 		static RenderAPI* s_RenderAPI;
 	};

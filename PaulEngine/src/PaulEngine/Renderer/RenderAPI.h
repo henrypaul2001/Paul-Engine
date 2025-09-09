@@ -42,6 +42,9 @@ namespace PaulEngine {
 		virtual void BlendColour(glm::vec4 constantColour) = 0;
 		virtual void BlendEquation(BlendEquation blendEquation) = 0;
 
+		virtual void MakeTextureResident(uint64_t deviceHandle) = 0;
+		virtual void MakeTextureNonResident(uint64_t deviceHandle) = 0;
+
 		inline static API GetAPI() { return s_API; }
 	private:
 		static API s_API;

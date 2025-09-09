@@ -35,6 +35,9 @@ namespace PaulEngine {
 		virtual void BlendColour(glm::vec4 constantColour) override;
 		virtual void BlendEquation(PaulEngine::BlendEquation blendEquation) override;
 
+		virtual void MakeTextureResident(uint64_t deviceHandle) override;
+		virtual void MakeTextureNonResident(uint64_t deviceHandle) override;
+
 		static int BufferBitMaskToGLBitMask(int bufferMask);
 	};
 }

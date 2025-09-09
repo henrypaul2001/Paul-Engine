@@ -253,6 +253,16 @@ namespace PaulEngine {
 		glBlendEquation(BlendEquationToGLEnum(blendEquation));
 	}
 
+	void OpenGLRenderAPI::MakeTextureResident(uint64_t deviceHandle)
+	{
+		glMakeTextureHandleResidentARB(deviceHandle);
+	}
+
+	void OpenGLRenderAPI::MakeTextureNonResident(uint64_t deviceHandle)
+	{
+		glMakeTextureHandleNonResidentARB(deviceHandle);
+	}
+
 	int OpenGLRenderAPI::BufferBitMaskToGLBitMask(int bufferMask)
 	{
 		int glMask = 0;
