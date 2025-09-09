@@ -21,6 +21,8 @@ namespace PaulEngine {
 
 		virtual const TextureSpecification& GetSpecification() const override { return m_Spec; }
 
+		virtual void OnImport() override { UpdateDeviceHandle(); }
+
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
@@ -66,6 +68,8 @@ namespace PaulEngine {
 		virtual ~OpenGLTexture2DArray();
 
 		virtual const TextureSpecification& GetSpecification() const override { return m_Spec; }
+
+		virtual void OnImport() override { UpdateDeviceHandle(); }
 
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
@@ -115,6 +119,8 @@ namespace PaulEngine {
 
 		virtual const TextureSpecification& GetSpecification() const override { return m_Spec; }
 
+		virtual void OnImport() override { UpdateDeviceHandle(); }
+
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
@@ -157,6 +163,8 @@ namespace PaulEngine {
 		virtual ~OpenGLTextureCubemapArray();
 
 		virtual const TextureSpecification& GetSpecification() const override { return m_Spec; }
+
+		virtual void OnImport() override { UpdateDeviceHandle(); }
 
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }

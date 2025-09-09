@@ -71,6 +71,7 @@ namespace PaulEngine
 				asset->Handle = handle;
 				AddToLoadedAssets(asset, metadata.Persistent);
 
+				asset->OnImport();
 				AssetImportedEvent e = AssetImportedEvent(handle, false);
 				Application::Get().OnEvent(e);
 
@@ -198,6 +199,7 @@ namespace PaulEngine
 			RegisterAsset(handle, metadata);
 			SerializeAssetRegistry();
 
+			asset->OnImport();
 			AssetImportedEvent e = AssetImportedEvent(handle, true);
 			Application::Get().OnEvent(e);
 		}

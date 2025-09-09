@@ -206,7 +206,6 @@ namespace PaulEngine {
 		UpdateDeviceHandle();
 
 		if (data) { SetData(data); }
-		
 	}
 
 	void OpenGLTexture2D::UpdateDeviceHandle()
