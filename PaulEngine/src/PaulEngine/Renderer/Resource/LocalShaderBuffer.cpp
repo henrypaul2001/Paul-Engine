@@ -14,6 +14,19 @@ namespace PaulEngine
 		InitLayout(layout);
 	}
 
+	std::vector<AssetHandle> LocalShaderBuffer::GetTextureMemberHandles() const
+	{
+		std::vector<AssetHandle> textureAssetHandles = std::vector<AssetHandle>();
+		textureAssetHandles.reserve(m_TextureMemberNames.size());
+		for (const std::string& name : m_TextureMemberNames)
+		{
+			AssetHandle handle = 0;
+			ReadLocalMemberAs(name, handle);
+			textureAssetHandles.push_back(handle);
+		}
+		return textureAssetHandles;
+	}
+
 	void LocalShaderBuffer::MemCopy(const void* rawData, size_t size, size_t offset)
 	{
 		size_t end = offset + size;

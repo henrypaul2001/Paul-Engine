@@ -4,6 +4,8 @@
 
 #include "../Resource/ShaderParameterType.h"
 
+#include <unordered_set>
+
 /*
 	TODO: Currently the plan is to support both bindless (indirect material buffer entries) and binding materials at the same time in one class
 	Once indirect rendering is no longer an experimental feature, consider whether or not materials should be capable of being both 
@@ -20,6 +22,7 @@ namespace PaulEngine
 
 		void Bind();
 		virtual AssetType GetType() const { return AssetType::Material; }
+		inline const AssetHandle GetShaderHandle() const { return m_ShaderHandle; }
 		RenderPipelineContext GetShaderRendererContext() const;
 
 		// Upload indirect material data (SSBO entries) into their respective, larger material buffers at a specified index
@@ -47,6 +50,8 @@ namespace PaulEngine
 		}
 
 		void ClearParameters() { m_BindingParameters.clear(); }
+
+		void AddBindlessTextureHandlesToSet(std::unordered_set<uint64_t>* handleSet);
 
 	private:
 		friend class EditorLayer;

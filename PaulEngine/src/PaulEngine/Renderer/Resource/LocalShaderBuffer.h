@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Renderer/Resource/Buffer.h"
+#include "PaulEngine/Asset/Asset.h"
 
 namespace PaulEngine
 {
@@ -13,6 +14,8 @@ namespace PaulEngine
 		inline const uint8_t* Data() const { return m_Buffer.data(); }
 		inline const std::vector<BufferElement>& GetMembers() const { return m_OrderedMembers; }
 		inline const std::vector<std::string>& GetTextureMemberNames() const { return m_TextureMemberNames; }
+		
+		std::vector<AssetHandle> GetTextureMemberHandles() const;
 
 		template<typename T>
 		bool SetLocalMember(const std::string& memberName, T& data)

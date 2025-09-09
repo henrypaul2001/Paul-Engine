@@ -3,6 +3,9 @@
 
 #include "PaulEngine/Asset/AssetManager.h"
 #include "PaulEngine/Renderer/Renderer.h"
+#include "PaulEngine/Renderer/Renderer2D.h"
+
+#include "Texture.h"
 
 namespace PaulEngine
 {
@@ -140,6 +143,29 @@ namespace PaulEngine
 		}
 		else {
 			PE_CORE_ERROR("Name '{0}' not found in shader parameters", name);
+		}
+	}
+
+	void Material::AddBindlessTextureHandlesToSet(std::unordered_set<uint64_t>* handleSet)
+	{
+		for (Ref<StorageBufferEntryShaderParameterTypeStorage> param : m_IndirectParameters)
+		{
+			const LocalShaderBuffer& localBuffer = param->GetLocalBuffer();
+			std::vector<AssetHandle> textureAssetHandles = localBuffer.GetTextureMemberHandles();
+
+			for (const AssetHandle& handle : textureAssetHandles)
+			{
+				uint64_t deviceHandle = DeviceHandleTracker::AssetHandleToDeviceHandle(handle);
+				if (deviceHandle != 0)
+				{ 
+					handleSet->insert(deviceHandle);
+				}
+				else
+				{
+					deviceHandle = DeviceHandleTracker::AssetHandleToDeviceHandle(Renderer2D::GetWhiteTexture()->Handle);
+					handleSet->insert(deviceHandle);
+				}
+			}
 		}
 	}
 
