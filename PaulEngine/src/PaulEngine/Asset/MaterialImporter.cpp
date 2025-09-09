@@ -17,17 +17,27 @@ namespace PaulEngine
 {
 	namespace MaterialImporterUtils
 	{
-		static void WriteUniformBufferStorageObject(YAML::Emitter& out, UBOShaderParameterTypeStorage* uboStorageParameter)
+		template <typename T>
+		static void ReadLocalBufferMemberAndSetYAMLValue(YAML::Emitter& out, const LocalShaderBuffer& localBuffer, const std::string& memberName)
 		{
-			Ref<UniformBufferStorage> ubo = uboStorageParameter->UBO();
+			T data = T();
+			localBuffer.ReadLocalMemberAs(memberName, data);
+			out << data;
+		}
 
-			out << YAML::BeginMap;
-			out << YAML::Key << "Binding" << YAML::Value << ubo->GetBinding();
-			
+		template <typename T>
+		static void ReadYAMLValueAndSetLocalBufferMember(const YAML::Node& valueNode, LocalShaderBuffer& localBuffer, const std::string& memberName)
+		{
+			T data = valueNode.as<T>();
+			localBuffer.SetLocalMember(memberName, data);
+		}
+		
+		static void WriteLocalShaderBuffer(YAML::Emitter& out, const LocalShaderBuffer& localBuffer)
+		{
 			out << YAML::Key << "Layout" << YAML::Value;
 
 			out << YAML::BeginSeq;
-			const std::vector<BufferElement>& layout = ubo->GetMembers();
+			const std::vector<BufferElement>& layout = localBuffer.GetMembers();
 			for (const BufferElement& e : layout) {
 				out << YAML::BeginMap;
 
@@ -39,91 +49,143 @@ namespace PaulEngine
 
 				switch (type)
 				{
-					case ShaderDataType::None:
-						out << "NULL";
-						break;
-					case ShaderDataType::Float:
-					{
-						float data = 0.0f;
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Float2:
-					{
-						glm::vec2 data = glm::vec2(0.0f);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Float3:
-					{
-						glm::vec3 data = glm::vec3(0.0f);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Float4:
-					{
-						glm::vec4 data = glm::vec4(0.0f);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Mat3:
-					{
-						glm::mat3 data = glm::mat3(0.0f);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Mat4:
-					{
-						glm::mat4 data = glm::mat4(0.0f);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Int:
-					{
-						int data = 0;
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Int2:
-					{
-						glm::ivec2 data = glm::ivec2(0);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Int3:
-					{
-						glm::ivec3 data = glm::ivec3(0);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Int4:
-					{
-						glm::ivec4 data = glm::ivec4(0);
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
-					case ShaderDataType::Bool:
-					{
-						bool data = 0;
-						ubo->ReadLocalDataAs(name, data);
-						out << data;
-						break;
-					}
+				case ShaderDataType::None:
+					out << "NULL";
+					break;
+				case ShaderDataType::Float:
+					ReadLocalBufferMemberAndSetYAMLValue<float>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Float2:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::vec2>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Float3:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::vec3>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Float4:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::vec4>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Mat3:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::mat3>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Mat4:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::mat4>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Int:
+					ReadLocalBufferMemberAndSetYAMLValue<int>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Int2:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::ivec2>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Int3:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::ivec3>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Int4:
+					ReadLocalBufferMemberAndSetYAMLValue<glm::ivec4>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Bool:
+					ReadLocalBufferMemberAndSetYAMLValue<bool>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Sampler2DHandle:
+					ReadLocalBufferMemberAndSetYAMLValue<AssetHandle>(out, localBuffer, name);
+					break;
+				case ShaderDataType::Sampler2DArrayHandle:
+					ReadLocalBufferMemberAndSetYAMLValue<AssetHandle>(out, localBuffer, name);
+					break;
+				case ShaderDataType::SamplerCubeHandle:
+					ReadLocalBufferMemberAndSetYAMLValue<AssetHandle>(out, localBuffer, name);
+					break;
+				case ShaderDataType::SamplerCubeArrayHandle:
+					ReadLocalBufferMemberAndSetYAMLValue<AssetHandle>(out, localBuffer, name);
+					break;
 				}
 
 				out << YAML::EndMap;
 			}
 			out << YAML::EndSeq;
+		}
+
+		static std::vector<BufferElement> ReadLocalShaderBufferLayout(const YAML::Node& layoutNode)
+		{
+			std::vector<BufferElement> layout;
+
+			for (YAML::Node layoutEntry : layoutNode) {
+				std::string typeString = layoutEntry["Type"].as<std::string>();
+				ShaderDataType type = StringToShaderDataType(typeString);
+				std::string name = layoutEntry["Name"].as<std::string>();
+				layout.emplace_back(type, name);
+			}
+
+			return layout;
+		}
+		static void ReadLocalShaderBufferValues(const YAML::Node& layoutNode, LocalShaderBuffer& localBuffer)
+		{
+			for (YAML::Node layoutEntry : layoutNode) {
+				std::string name = layoutEntry["Name"].as<std::string>();
+				std::string typeString = layoutEntry["Type"].as<std::string>();
+				YAML::Node valueNode = layoutEntry["Value"];
+				ShaderDataType type = StringToShaderDataType(typeString);
+				switch (type)
+				{
+					case ShaderDataType::Float:
+						ReadYAMLValueAndSetLocalBufferMember<float>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Float2:
+						ReadYAMLValueAndSetLocalBufferMember<glm::vec2>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Float3:
+						ReadYAMLValueAndSetLocalBufferMember<glm::vec3>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Float4:
+						ReadYAMLValueAndSetLocalBufferMember<glm::vec4>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Mat3:
+						ReadYAMLValueAndSetLocalBufferMember<glm::mat3>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Mat4:
+						ReadYAMLValueAndSetLocalBufferMember<glm::mat4>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Int:
+						ReadYAMLValueAndSetLocalBufferMember<int>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Int2:
+						ReadYAMLValueAndSetLocalBufferMember<glm::ivec2>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Int3:
+						ReadYAMLValueAndSetLocalBufferMember<glm::ivec3>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Int4:
+						ReadYAMLValueAndSetLocalBufferMember<glm::ivec4>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Bool:
+						ReadYAMLValueAndSetLocalBufferMember<bool>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Sampler2DHandle:
+						ReadYAMLValueAndSetLocalBufferMember<AssetHandle>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::Sampler2DArrayHandle:
+						ReadYAMLValueAndSetLocalBufferMember<AssetHandle>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::SamplerCubeHandle:
+						ReadYAMLValueAndSetLocalBufferMember<AssetHandle>(valueNode, localBuffer, name);
+						break;
+					case ShaderDataType::SamplerCubeArrayHandle:
+						ReadYAMLValueAndSetLocalBufferMember<AssetHandle>(valueNode, localBuffer, name);
+						break;
+					default:
+						PE_CORE_WARN("ShaderDataType::{0} ReadLocalShaderBufferValues() case not defined", ShaderDataTypeToString(type).c_str());
+						break;
+				}
+			}
+		}
+
+		static void WriteUniformBufferStorageObject(YAML::Emitter& out, UBOShaderParameterTypeStorage* uboStorageParameter)
+		{
+			Ref<UniformBufferStorage> ubo = uboStorageParameter->UBO();
+
+			out << YAML::BeginMap;
+			out << YAML::Key << "Binding" << YAML::Value << ubo->GetBinding();
+			
+			WriteLocalShaderBuffer(out, ubo->GetLocalBuffer());
 
 			out << YAML::EndMap;
 		}
@@ -131,95 +193,25 @@ namespace PaulEngine
 		{
 			uint32_t binding = valueNode["Binding"].as<uint64_t>();
 
-			std::vector<BufferElement> layout;
-
-			YAML::Node layoutNode = valueNode["Layout"];
-			for (YAML::Node layoutEntry : layoutNode) {
-				std::string typeString = layoutEntry["Type"].as<std::string>();
-				ShaderDataType type = StringToShaderDataType(typeString);
-				std::string name = layoutEntry["Name"].as<std::string>();
-				layout.emplace_back(type, name);
-			}
+			const YAML::Node& layoutNode = valueNode["Layout"];
+			std::vector<BufferElement> layout = ReadLocalShaderBufferLayout(layoutNode);
 			Ref<UBOShaderParameterTypeStorage> ubo = CreateRef<UBOShaderParameterTypeStorage>(layout, binding);
-
-			for (YAML::Node layoutEntry : layoutNode) {
-				std::string name = layoutEntry["Name"].as<std::string>();
-				std::string typeString = layoutEntry["Type"].as<std::string>();
-				ShaderDataType type = StringToShaderDataType(typeString);
-				switch (type)
-				{
-					case ShaderDataType::None:
-						continue;
-						break;
-					case ShaderDataType::Float:
-					{
-						float data = layoutEntry["Value"].as<float>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Float2:
-					{
-						glm::vec2 data = layoutEntry["Value"].as<glm::vec2>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Float3:
-					{
-						glm::vec3 data = layoutEntry["Value"].as<glm::vec3>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Float4:
-					{
-						glm::vec4 data = layoutEntry["Value"].as<glm::vec4>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Mat3:
-					{
-						glm::mat3 data = layoutEntry["Value"].as<glm::mat3>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Mat4:
-					{
-						glm::mat4 data = layoutEntry["Value"].as<glm::mat4>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Int:
-					{
-						int data = layoutEntry["Value"].as<int>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Int2:
-					{
-						glm::ivec2 data = layoutEntry["Value"].as<glm::ivec2>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Int3:
-					{
-						glm::ivec3 data = layoutEntry["Value"].as<glm::ivec3>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Int4:
-					{
-						glm::ivec4 data = layoutEntry["Value"].as<glm::ivec4>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-					case ShaderDataType::Bool:
-					{
-						bool data = layoutEntry["Value"].as<bool>();
-						ubo->UBO()->SetLocalData(name, data);
-						break;
-					}
-				}
-			}
+			ReadLocalShaderBufferValues(layoutNode, ubo->UBO()->GetLocalBuffer());
 			return ubo;
+		}
+
+		static void WriteShaderStorageBufferEntry(YAML::Emitter& out, StorageBufferEntryShaderParameterTypeStorage* ssboEntryParameter)
+		{
+			out << YAML::BeginMap;
+
+			WriteLocalShaderBuffer(out, ssboEntryParameter->GetLocalBuffer());
+
+			out << YAML::EndMap;
+		}
+		static void ReadShaderStorageBufferEntry(YAML::Node& valueNode, Ref<StorageBufferEntryShaderParameterTypeStorage> ssboEntryParameter)
+		{
+			const YAML::Node& layoutNode = valueNode["Layout"];
+			ReadLocalShaderBufferValues(layoutNode, ssboEntryParameter->GetLocalBuffer());
 		}
 
 		static void WriteSampler2DObject(YAML::Emitter& out, Sampler2DShaderParameterTypeStorage* sampler2DStorageParameter)
@@ -351,6 +343,7 @@ namespace PaulEngine
 		return result;
 	}
 
+	// TODO: Material emission values from ASSIMP
 	static Ref<Material> BuildAssimpMaterial(const aiMaterial* material, const std::filesystem::path& sourcePath, bool persistent)
 	{
 		PE_PROFILE_FUNCTION();
@@ -419,20 +412,19 @@ namespace PaulEngine
 
 		// Apply material parameters
 		// -------------------------
-		UBOShaderParameterTypeStorage* matValuesUBO = engineMaterial->GetParameter<UBOShaderParameterTypeStorage>("MaterialValues");
-		Ref<UniformBufferStorage> uboStorage = matValuesUBO->UBO();
-		uboStorage->SetLocalData("Albedo", Albedo);
-		uboStorage->SetLocalData("Specular", Specular);
-		uboStorage->SetLocalData("TextureScale", TextureScale);
-		uboStorage->SetLocalData("Shininess", Shininess);
-		uboStorage->SetLocalData("HeightScale", HeightScale);
-		uboStorage->SetLocalData("UseNormalMap", UseNormalMap);
-		uboStorage->SetLocalData("UseDisplacementMap", UseDisplacementMap);
-
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("AlbedoMap")->TextureHandle = AlbedoMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SpecularMap")->TextureHandle = SpecularMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("NormalMap")->TextureHandle = NormalMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DisplacementMap")->TextureHandle = DisplacementMap;
+		Ref<StorageBufferEntryShaderParameterTypeStorage> ssboEntry = std::static_pointer_cast<StorageBufferEntryShaderParameterTypeStorage>(engineMaterial->GetParameter("MaterialSSBO"));
+		LocalShaderBuffer& localBuffer = ssboEntry->GetLocalBuffer();
+		localBuffer.SetLocalMember("Albedo", Albedo);
+		localBuffer.SetLocalMember("Specular", Specular);
+		localBuffer.SetLocalMember("TextureScale", TextureScale);
+		localBuffer.SetLocalMember("Shininess", Shininess);
+		localBuffer.SetLocalMember("HeightScale", HeightScale);
+		localBuffer.SetLocalMember("UseNormalMap", UseNormalMap);
+		localBuffer.SetLocalMember("UseDisplacementMap", UseDisplacementMap);
+		localBuffer.SetLocalMember("AlbedoMap", AlbedoMap);
+		localBuffer.SetLocalMember("SpecularMap", SpecularMap);
+		localBuffer.SetLocalMember("NormalMap", NormalMap);
+		localBuffer.SetLocalMember("DisplacementMap", DisplacementMap);
 		
 		return engineMaterial;
 	}
@@ -517,23 +509,23 @@ namespace PaulEngine
 
 		// Apply material parameters
 		// -------------------------
-		UBOShaderParameterTypeStorage* matValuesUBO = engineMaterial->GetParameter<UBOShaderParameterTypeStorage>("MaterialValues");
-		Ref<UniformBufferStorage> uboStorage = matValuesUBO->UBO();
-		uboStorage->SetLocalData("Albedo", Albedo);
-		uboStorage->SetLocalData("Metalness", Metalness);
-		uboStorage->SetLocalData("Roughness", Roughness);
-		uboStorage->SetLocalData("AO", AO);
-		uboStorage->SetLocalData("HeightScale", HeightScale);
-		uboStorage->SetLocalData("TextureScale", TextureScale);
-		uboStorage->SetLocalData("UseNormalMap", UseNormalMap);
-		uboStorage->SetLocalData("UseDisplacementMap", UseDisplacementMap);
+		Ref<StorageBufferEntryShaderParameterTypeStorage> ssboEntry = std::static_pointer_cast<StorageBufferEntryShaderParameterTypeStorage>(engineMaterial->GetParameter("MaterialSSBO"));
+		LocalShaderBuffer& localBuffer = ssboEntry->GetLocalBuffer();
+		localBuffer.SetLocalMember("Albedo", Albedo);
+		localBuffer.SetLocalMember("Metalness", Metalness);
+		localBuffer.SetLocalMember("Roughness", Roughness);
+		localBuffer.SetLocalMember("AO", AO);
+		localBuffer.SetLocalMember("HeightScale", HeightScale);
+		localBuffer.SetLocalMember("TextureScale", TextureScale);
+		localBuffer.SetLocalMember("UseNormalMap", UseNormalMap);
+		localBuffer.SetLocalMember("UseDisplacementMap", UseDisplacementMap);
 
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("AlbedoMap")->TextureHandle = AlbedoMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("NormalMap")->TextureHandle = NormalMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("MetallicMap")->TextureHandle = MetallicMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("RoughnessMap")->TextureHandle = RoughnessMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("AOMap")->TextureHandle = AOMap;
-		engineMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("DisplacementMap")->TextureHandle = DisplacementMap;
+		localBuffer.SetLocalMember("AlbedoMap", AlbedoMap);
+		localBuffer.SetLocalMember("NormalMap", NormalMap);
+		localBuffer.SetLocalMember("MetallicMap", MetallicMap);
+		localBuffer.SetLocalMember("RoughnessMap", RoughnessMap);
+		localBuffer.SetLocalMember("AOMap", AOMap);
+		localBuffer.SetLocalMember("DisplacementMap", DisplacementMap);
 
 		return engineMaterial;
 	}
@@ -566,6 +558,7 @@ namespace PaulEngine
 		{
 			case ShaderParameterType::None: return "None";
 			case ShaderParameterType::UBO: return "UBO";
+			case ShaderParameterType::SSBO: return "SSBO";
 			case ShaderParameterType::Sampler2D: return "Sampler2D";
 			case ShaderParameterType::Sampler2DArray: return "Sampler2DArray";
 			case ShaderParameterType::SamplerCube: return "SamplerCube";
@@ -577,6 +570,7 @@ namespace PaulEngine
 	static ShaderParameterType StringToShaderParameterType(const std::string& input) {
 		if (input == "None") { return ShaderParameterType::None; }
 		else if (input == "UBO") { return ShaderParameterType::UBO; }
+		else if (input == "SSBO") { return ShaderParameterType::SSBO; }
 		else if (input == "Sampler2D") { return ShaderParameterType::Sampler2D; }
 		else if (input == "Sampler2DArray") { return ShaderParameterType::Sampler2DArray; }
 		else if (input == "SamplerCube") { return ShaderParameterType::SamplerCube; }
@@ -624,6 +618,12 @@ namespace PaulEngine
 				case ShaderParameterType::UBO:
 					material.SetParameter(paramName, MaterialImporterUtils::ReadUniformBufferStorageObject(value));
 					break;
+				case ShaderParameterType::SSBO:
+				{
+					Ref<StorageBufferEntryShaderParameterTypeStorage> ssboEntry = std::static_pointer_cast<StorageBufferEntryShaderParameterTypeStorage>(material.GetParameter(paramName));
+					MaterialImporterUtils::ReadShaderStorageBufferEntry(value, ssboEntry);
+					break;
+				}
 				case ShaderParameterType::Sampler2D:
 					material.SetParameter(paramName, MaterialImporterUtils::ReadSampler2DObject(value));
 					break;
@@ -673,6 +673,12 @@ namespace PaulEngine
 				{
 					UBOShaderParameterTypeStorage* uboStorage = dynamic_cast<UBOShaderParameterTypeStorage*>(parameter.get());
 					MaterialImporterUtils::WriteUniformBufferStorageObject(out, uboStorage);
+					break;
+				}
+				case ShaderParameterType::SSBO:
+				{
+					Ref<StorageBufferEntryShaderParameterTypeStorage> ssboEntry = std::static_pointer_cast<StorageBufferEntryShaderParameterTypeStorage>(parameter);
+					MaterialImporterUtils::WriteShaderStorageBufferEntry(out, ssboEntry.get());
 					break;
 				}
 				case ShaderParameterType::Sampler2D:
