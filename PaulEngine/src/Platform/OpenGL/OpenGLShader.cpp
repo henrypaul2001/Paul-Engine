@@ -678,7 +678,18 @@ namespace PaulEngine {
 			if (ssboSpec->Name.substr(0, 5) == "IMat_")
 			{
 				m_MaterialBufferSpecs.push_back(ssboSpec);
-				m_MaterialBuffers.push_back(ShaderStorageBuffer::Create(ssboSpec->Size, ssboSpec->Binding, StorageBufferMapping::None, true));
+
+				size_t size = ssboSpec->Size;
+
+				if (ssboSpec->DynamicArrayStart > -1)
+				{
+					size_t dynamicArrayElementSize = ssboSpec->Size - ssboSpec->DynamicArrayStart;
+					size_t baseSize = ssboSpec->Size - dynamicArrayElementSize;
+
+					size = baseSize + (dynamicArrayElementSize * MAX_INDIRECT_MATERIALS);
+				};
+
+				m_MaterialBuffers.push_back(ShaderStorageBuffer::Create(size, ssboSpec->Binding, StorageBufferMapping::None, true));
 			}
 		}
 	}
