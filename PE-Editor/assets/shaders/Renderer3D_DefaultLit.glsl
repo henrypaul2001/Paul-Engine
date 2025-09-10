@@ -38,7 +38,7 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out flat int v_MaterialIndex;
+layout(location = 1) out flat uint v_MaterialIndex;
 layout(location = 2) out VertexData v_VertexData;
 
 void main()
@@ -58,7 +58,7 @@ void main()
 	v_VertexData.TBN = mat3(T, B, N);
 
 	v_EntityID = MeshSubmissions[gl_DrawID].EntityID;
-	v_MaterialIndex = MeshSubmissions[gl_DrawID].MaterialIndex;
+	v_MaterialIndex = uint(MeshSubmissions[gl_DrawID].MaterialIndex);
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }
@@ -119,7 +119,7 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in flat int v_MaterialIndex;
+layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera

@@ -71,3 +71,65 @@ ShaderParams:
     Value:
       Binding: 4
       TextureHandle: 13443798543085402618
+  - Name: MaterialSSBO
+    Type: SSBO
+    Value:
+      Binding: 3
+      Layout:
+        - Type: Float4
+          Name: MaterialBuffer[DYNAMIC].Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].Metalness
+          Value: 1
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].Roughness
+          Value: 1
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].AO
+          Value: 1
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].HeightScale
+          Value: 0
+        - Type: Float3
+          Name: MaterialBuffer[DYNAMIC].EmissionColour
+          Value: [1, 1, 1]
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].EmissionStrength
+          Value: 0
+        - Type: Float2
+          Name: MaterialBuffer[DYNAMIC].TextureScale
+          Value: [1, 1]
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].AlbedoMap
+          Value: 3192248531719347166
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].MetallicMap
+          Value: 11189163735175720657
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].RoughnessMap
+          Value: 6846707220170028532
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].AOMap
+          Value: 4848280801785276419
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].EmissionMap
+          Value: 0
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].NormalMap
+          Value: 13443798543085402618
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].DisplacementMap
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].UseNormalMap
+          Value: 1
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].UseDisplacementMap
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].padding0
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].padding1
+          Value: 0

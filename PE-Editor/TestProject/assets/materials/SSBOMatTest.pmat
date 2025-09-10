@@ -1,5 +1,5 @@
-MaterialAsset: DefaultLitDeferred
-ShaderHandle: 15396152691881081230
+MaterialAsset: SSBOMatTest
+ShaderHandle: 11556801733716284571
 ShaderParams:
   - Name: MaterialSSBO
     Type: SSBO
@@ -16,10 +16,10 @@ ShaderParams:
           Value: [1, 1]
         - Type: Float
           Name: MaterialBuffer[DYNAMIC].Shininess
-          Value: 1
+          Value: 4
         - Type: Float
           Name: MaterialBuffer[DYNAMIC].HeightScale
-          Value: 1
+          Value: -0.06
         - Type: Float3
           Name: MaterialBuffer[DYNAMIC].EmissionColour
           Value: [0, 0, 0]
@@ -28,22 +28,22 @@ ShaderParams:
           Value: 0
         - Type: Sampler2DHandle
           Name: MaterialBuffer[DYNAMIC].AlbedoMap
-          Value: 0
+          Value: 5182932685724668185
         - Type: Sampler2DHandle
           Name: MaterialBuffer[DYNAMIC].SpecularMap
-          Value: 0
+          Value: 14926567481809532121
         - Type: Sampler2DHandle
           Name: MaterialBuffer[DYNAMIC].NormalMap
-          Value: 0
+          Value: 6975251427835361187
         - Type: Sampler2DHandle
           Name: MaterialBuffer[DYNAMIC].DisplacementMap
-          Value: 0
+          Value: 17490890743464863078
         - Type: Sampler2DHandle
           Name: MaterialBuffer[DYNAMIC].EmissionMap
           Value: 0
         - Type: Int
           Name: MaterialBuffer[DYNAMIC].UseNormalMap
-          Value: 0
+          Value: 1
         - Type: Int
           Name: MaterialBuffer[DYNAMIC].UseDisplacementMap
-          Value: 0
+          Value: 1

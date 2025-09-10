@@ -1,73 +1,65 @@
 MaterialAsset: chess_set_pieces_white
 ShaderHandle: 12386273623327009079
 ShaderParams:
-  - Name: MetallicMap
-    Type: Sampler2D
-    Value:
-      Binding: 5
-      TextureHandle: 0
-  - Name: AlbedoMap
-    Type: Sampler2D
-    Value:
-      Binding: 3
-      TextureHandle: 4480160777169911742
-  - Name: MaterialValues
-    Type: UBO
+  - Name: MaterialSSBO
+    Type: SSBO
     Value:
       Binding: 3
       Layout:
         - Type: Float4
-          Name: Albedo
+          Name: MaterialBuffer[DYNAMIC].Albedo
           Value: [0.8, 0.8, 0.8, 1]
         - Type: Float
-          Name: Metalness
+          Name: MaterialBuffer[DYNAMIC].Metalness
           Value: 0
         - Type: Float
-          Name: Roughness
+          Name: MaterialBuffer[DYNAMIC].Roughness
           Value: 1
         - Type: Float
-          Name: AO
+          Name: MaterialBuffer[DYNAMIC].AO
           Value: 1
         - Type: Float
-          Name: HeightScale
+          Name: MaterialBuffer[DYNAMIC].HeightScale
           Value: 0.1
-        - Type: Float2
-          Name: TextureScale
-          Value: [1, 1]
-        - Type: Int
-          Name: UseNormalMap
-          Value: 1
-        - Type: Int
-          Name: UseDisplacementMap
-          Value: 0
         - Type: Float3
-          Name: EmissionColour
+          Name: MaterialBuffer[DYNAMIC].EmissionColour
           Value: [1, 1, 1]
         - Type: Float
-          Name: EmissionStrength
+          Name: MaterialBuffer[DYNAMIC].EmissionStrength
           Value: 0
-  - Name: EmissionMap
-    Type: Sampler2D
-    Value:
-      Binding: 9
-      TextureHandle: 0
-  - Name: DisplacementMap
-    Type: Sampler2D
-    Value:
-      Binding: 8
-      TextureHandle: 0
-  - Name: RoughnessMap
-    Type: Sampler2D
-    Value:
-      Binding: 6
-      TextureHandle: 11877116312390985496
-  - Name: AOMap
-    Type: Sampler2D
-    Value:
-      Binding: 7
-      TextureHandle: 3262629339664691490
-  - Name: NormalMap
-    Type: Sampler2D
-    Value:
-      Binding: 4
-      TextureHandle: 9991496651046884053
+        - Type: Float2
+          Name: MaterialBuffer[DYNAMIC].TextureScale
+          Value: [1, 1]
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].AlbedoMap
+          Value: 4480160777169911742
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].MetallicMap
+          Value: 0
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].RoughnessMap
+          Value: 11877116312390985496
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].AOMap
+          Value: 3262629339664691490
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].EmissionMap
+          Value: 0
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].NormalMap
+          Value: 9991496651046884053
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].DisplacementMap
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].UseNormalMap
+          Value: 1
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].UseDisplacementMap
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].padding0
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].padding1
+          Value: 0

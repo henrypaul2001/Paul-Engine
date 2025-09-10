@@ -53,7 +53,7 @@ struct SpotLight
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in flat int v_MaterialIndex;
+layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
@@ -97,7 +97,7 @@ struct MaterialValues
 	int UseNormalMap;
 	int UseDisplacementMap;
 };
-layout (binding = 3, std430) readonly buffer IMat_MaterialSSBO
+layout(binding = 3, std430) readonly buffer IMat_MaterialSSBO
 {
 	MaterialValues[] MaterialBuffer;
 };

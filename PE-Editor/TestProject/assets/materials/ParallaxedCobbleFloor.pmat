@@ -58,3 +58,49 @@ ShaderParams:
     Value:
       Binding: 5
       TextureHandle: 10162016685960967100
+  - Name: MaterialSSBO
+    Type: SSBO
+    Value:
+      Layout:
+        - Type: Float4
+          Name: MaterialBuffer[DYNAMIC].Albedo
+          Value: [1, 1, 1, 1]
+        - Type: Float4
+          Name: MaterialBuffer[DYNAMIC].Specular
+          Value: [1, 1, 1, 1]
+        - Type: Float2
+          Name: MaterialBuffer[DYNAMIC].TextureScale
+          Value: [1, 1]
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].Shininess
+          Value: 1
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].HeightScale
+          Value: -0.1
+        - Type: Float3
+          Name: MaterialBuffer[DYNAMIC].EmissionColour
+          Value: [1, 1, 1]
+        - Type: Float
+          Name: MaterialBuffer[DYNAMIC].EmissionStrength
+          Value: 0
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].AlbedoMap
+          Value: 17945211788953022010
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].SpecularMap
+          Value: 10529896942821464162
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].NormalMap
+          Value: 10162016685960967100
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].DisplacementMap
+          Value: 15601380242474439612
+        - Type: Sampler2DHandle
+          Name: MaterialBuffer[DYNAMIC].EmissionMap
+          Value: 0
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].UseNormalMap
+          Value: 1
+        - Type: Int
+          Name: MaterialBuffer[DYNAMIC].UseDisplacementMap
+          Value: 1
