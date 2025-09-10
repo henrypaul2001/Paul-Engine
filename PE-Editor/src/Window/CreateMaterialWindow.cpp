@@ -222,7 +222,7 @@ namespace PaulEngine
 		// Render pass functions
 		// ---------------------
 
-		// { primitive<glm::ivec2>, Texture, primitive<Ref<Material>>, primitive<bool> }
+		// { primitive<glm::ivec2>, Texture, primitive<Ref<Material>>, primitive<bool>, EnvironmentMap }
 		RenderPass::OnRenderFunc scene3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Camera> activeCamera = context.ActiveCamera;
@@ -231,10 +231,12 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[1], "Target texture attachment input required");
 			PE_CORE_ASSERT(inputs[2], "Preview Ref<Material> input required");
 			PE_CORE_ASSERT(inputs[3], "Sphere flag input required");
+			PE_CORE_ASSERT(inputs[4], "Environment map input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
 			RenderComponentPrimitiveType<Ref<Material>>* previewMaterialInput = dynamic_cast<RenderComponentPrimitiveType<Ref<Material>>*>(inputs[2]);
 			RenderComponentPrimitiveType<bool>* sphereFlagInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[3]);
+			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[4]);
 
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -258,6 +260,14 @@ namespace PaulEngine
 			pointLight.Specular = glm::vec4(s_LightColour * s_LightIntensity, 1.0f);
 			pointLight.Ambient = glm::vec4((s_LightColour * s_LightIntensity) * 0.1f, 1.0f);
 			Renderer::SubmitPointLightSource(pointLight);
+
+			if (envMapInput)
+			{
+				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
+				AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
+				AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
+				AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+			}
 
 			if (sphereFlagInput->Data)
 			{
@@ -283,11 +293,12 @@ namespace PaulEngine
 			RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
 
+			Ref<Material> skyboxMaterial = AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle);
 			if (envMapInput)
 			{
 				// Apply environment map to skybox
 				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-				AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle)->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+				skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
 			}
 
 			// Remove translation from view matrix
@@ -302,7 +313,7 @@ namespace PaulEngine
 			depthState.Func = DepthFunc::LEQUAL;
 			FaceCulling cullState = FaceCulling::FRONT;
 
-			Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
+			Renderer::DrawDefaultCubeImmediate(skyboxMaterial, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
 			Renderer::EndScene();
 		};
 
@@ -358,7 +369,7 @@ namespace PaulEngine
 					Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 					BlendState blend;
 					blend.Enabled = false;
-					Renderer::SubmitDefaultQuad(downsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+					Renderer::DrawDefaultQuadImmediate(downsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 					Renderer::EndScene();
 
 					// Set resolution for next iteration to the currently written mip
@@ -409,7 +420,7 @@ namespace PaulEngine
 
 				upsampleMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = mip->Handle;
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-				Renderer::SubmitDefaultQuad(upsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+				Renderer::DrawDefaultQuadImmediate(upsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 				Renderer::EndScene();
 			}
 			};
@@ -464,7 +475,7 @@ namespace PaulEngine
 
 				RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-				Renderer::SubmitDefaultQuad(combineMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
+				Renderer::DrawDefaultQuadImmediate(combineMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
 				Renderer::EndScene();
 			};
 
@@ -504,7 +515,7 @@ namespace PaulEngine
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 			BlendState blend;
 			blend.Enabled = false;
-			Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+			Renderer::DrawDefaultQuadImmediate(material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 			Renderer::EndScene();
 		};
 
@@ -512,7 +523,7 @@ namespace PaulEngine
 		// -----------------
 
 		// Main render
-		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, scene3DPass), m_Framebuffer, { "ViewportResolution", "ScreenTexture", "PreviewMaterial", "SphereSelected" });
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::EnvironmentMap }, scene3DPass), m_Framebuffer, { "ViewportResolution", "ScreenTexture", "PreviewMaterial", "SphereSelected", "EnvironmentMap" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap }, skyboxPass), m_Framebuffer, { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" });
 
 		// Bloom
@@ -520,6 +531,172 @@ namespace PaulEngine
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material }, bloomUpsamplePass), bloomFBO, { "ViewportResolution", "BloomMipChain", "MipChainUpsampleMaterial" });
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture }, bloomCombinePass), m_Framebuffer, { "ViewportResolution", "BloomMipChain", "BloomCombineMaterial", "DirtMaskTexture", "ScreenTexture", "AlternateScreenTexture" });
 
+		// Post process
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_Framebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
+	}
+
+	void CreateMaterialWindow::CreateRawRenderer(FrameRenderer& out_Framerenderer)
+	{
+		PE_PROFILE_FUNCTION();
+
+		// Create resources
+		// ----------------
+		TextureSpecification screenSpec;
+		screenSpec.Width = 1280;
+		screenSpec.Height = 720;
+		screenSpec.GenerateMips = false;
+		screenSpec.Format = ImageFormat::RGBA16F;
+		screenSpec.MinFilter = ImageMinFilter::NEAREST;
+		screenSpec.MagFilter = ImageMagFilter::NEAREST;
+		screenSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		screenSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		screenSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		screenSpec.Border = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Ref<Texture2D> screenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
+		Ref<Texture2D> alternateScreenTexture = AssetManager::CreateAsset<Texture2D>(true, screenSpec);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("ScreenTexture", false, screenTexture->Handle);
+		out_Framerenderer.AddRenderResource<RenderComponentTexture>("AlternateScreenTexture", false, alternateScreenTexture->Handle);
+
+		Ref<FramebufferTexture2DAttachment> screenAttachment = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTexture->Handle);
+
+		m_Framebuffer->AddColourAttachment(screenAttachment);
+
+		//  Data
+		// ------
+		glm::ivec2 viewportRes = { (glm::ivec2)m_ViewportSize };
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution", false, viewportRes);
+
+		Ref<Material> material = m_Material;
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<Ref<Material>>>("PreviewMaterial", false, material);
+
+		bool sphereSelected = m_SphereSelected;
+		out_Framerenderer.AddRenderResource<RenderComponentPrimitiveType<bool>>("SphereSelected", false, sphereSelected);
+
+		out_Framerenderer.AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, m_Framebuffer);
+
+		// Materials
+		// ---------
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		AssetHandle gammaTonemapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/GammaTonemap.glsl", true);
+		Ref<Material> gammaTonemapMaterial = AssetManager::CreateAsset<Material>(true, gammaTonemapShaderHandle);
+
+		out_Framerenderer.AddRenderResource<RenderComponentMaterial>("GammaTonemapMaterial", false, gammaTonemapMaterial->Handle);
+
+		// OnEvent
+		// -------
+		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
+			{
+				EventDispatcher dispatcher = EventDispatcher(e);
+				dispatcher.DispatchEvent<MainViewportResizeEvent>([self](MainViewportResizeEvent& e)->bool {
+					glm::ivec2 viewportSize = glm::ivec2(e.GetWidth(), e.GetHeight());
+					self->GetRenderResource<RenderComponentPrimitiveType<glm::ivec2>>("ViewportResolution")->Data = viewportSize;
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("ScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					AssetManager::GetAsset<Texture2D>(self->GetRenderResource<RenderComponentTexture>("AlternateScreenTexture")->TextureHandle)->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+					return false;
+				});
+			};
+		out_Framerenderer.SetEventFunc(eventFunc);
+
+		// Render pass functions
+		// ---------------------
+
+		// { primitive<glm::ivec2>, Texture, primitive<Ref<Material>>, primitive<bool> }
+		RenderPass::OnRenderFunc scene3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Scene 3D Render Pass");
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Target texture attachment input required");
+			PE_CORE_ASSERT(inputs[2], "Preview Ref<Material> input required");
+			PE_CORE_ASSERT(inputs[3], "Sphere flag input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
+			RenderComponentPrimitiveType<Ref<Material>>* previewMaterialInput = dynamic_cast<RenderComponentPrimitiveType<Ref<Material>>*>(inputs[2]);
+			RenderComponentPrimitiveType<bool>* sphereFlagInput = dynamic_cast<RenderComponentPrimitiveType<bool>*>(inputs[3]);
+
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
+			{
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
+			}
+
+			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
+			RenderCommand::SetClearColour(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			RenderCommand::Clear();
+
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+			Renderer::PointLight pointLight;
+			pointLight.Position = glm::vec4(0.0f, 0.0f, 0.0f, 25.0f);
+			pointLight.Diffuse = glm::vec4(s_LightColour * s_LightIntensity, 1.0f);
+			pointLight.Specular = glm::vec4(s_LightColour * s_LightIntensity, 1.0f);
+			pointLight.Ambient = glm::vec4((s_LightColour * s_LightIntensity) * 0.1f, 1.0f);
+			Renderer::SubmitPointLightSource(pointLight);
+
+			if (sphereFlagInput->Data)
+			{
+				Renderer::DrawDefaultSphereImmediate(previewMaterialInput->Data, s_MeshTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
+			}
+			else
+			{
+				Renderer::DrawDefaultCubeImmediate(previewMaterialInput->Data, s_MeshTransform, { DepthFunc::LEQUAL, true, true }, FaceCulling::BACK, BlendState());
+			}
+			Renderer::EndScene();
+			};
+
+		// { primitive<glm::ivec2>, Texture, Material, Texture }
+		RenderPass::OnRenderFunc gammaTonemapPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Scene 2D Render Pass");
+			Ref<Camera> activeCamera = context.ActiveCamera;
+			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
+			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
+			PE_CORE_ASSERT(inputs[1], "Target texture input required");
+			PE_CORE_ASSERT(inputs[2], "Material input required");
+			PE_CORE_ASSERT(inputs[3], "Source texture input required");
+			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*> (inputs[0]);
+			RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[1]);
+			RenderComponentMaterial* gammaCorrectionMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
+			RenderComponentTexture* sourceTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
+
+			// Ping - pong framebuffer attachment
+			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
+			PE_CORE_ASSERT(attach->GetType() == FramebufferAttachmentType::Texture2D, "Invalid framebuffer attachment");
+			AssetHandle screenTextureInputHandle = screenTextureInput->TextureHandle;
+			AssetHandle currentTargetTexture = static_cast<FramebufferTexture2DAttachment*>(attach.get())->GetTextureHandle();
+			if (currentTargetTexture != screenTextureInputHandle)
+			{
+				Ref<FramebufferTexture2DAttachment> attach = FramebufferTexture2DAttachment::Create(FramebufferAttachmentPoint::Colour0, screenTextureInputHandle);
+				targetFramebuffer->AddColourAttachment(attach);
+			}
+
+			targetFramebuffer->SetDrawBuffers({ FramebufferAttachmentPoint::Colour0 });
+			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
+			RenderCommand::SetClearColour(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+			RenderCommand::Clear();
+
+			Ref<Material> material = AssetManager::GetAsset<Material>(gammaCorrectionMaterialInput->MaterialHandle);
+			material->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = sourceTextureInput->TextureHandle;
+
+			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
+			BlendState blend;
+			blend.Enabled = false;
+			Renderer::DrawDefaultQuadImmediate(material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+			//Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+			Renderer::EndScene();
+		};
+
+
+		// Add render passes
+		// -----------------
+
+		// Main render
+		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType }, scene3DPass), m_Framebuffer, { "ViewportResolution", "AlternateScreenTexture", "PreviewMaterial", "SphereSelected" });
 		// Post process
 		out_Framerenderer.AddRenderPass(RenderPass({ RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Material, RenderComponentType::Texture }, gammaTonemapPass), m_Framebuffer, { "ViewportResolution", "ScreenTexture", "GammaTonemapMaterial", "AlternateScreenTexture" });
 	}
@@ -1080,6 +1257,8 @@ namespace PaulEngine
 				AssetHandle handle = *(AssetHandle*)payload->Data;
 				if (AssetManager::GetAssetType(handle) == textureType) {
 					localBuffer.SetLocalMember(member_name, handle);
+					// Load texture to make sure the device handle is generated
+					AssetManager::GetAsset<Texture>(handle);
 				}
 				else {
 					PE_CORE_WARN("Invalid asset type. {0} needed", AssetTypeToString(textureType));

@@ -638,7 +638,9 @@ namespace PaulEngine
 			}
 		}
 
-		return CreateRef<Material>(material);
+		Ref<Material> loadedMaterial = CreateRef<Material>(material);
+		loadedMaterial->LoadBindlessTextures();
+		return loadedMaterial;
 	}
 
 	void MaterialImporter::SaveMaterial(const Ref<Material> material, const std::filesystem::path& filepath)

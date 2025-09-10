@@ -98,10 +98,10 @@ namespace PaulEngine {
 			{ ShaderDataType::Int3,						3	},
 			{ ShaderDataType::Int4,						4	},
 			{ ShaderDataType::Bool,						1	},
-			{ ShaderDataType::Sampler2DHandle,			2	},
-			{ ShaderDataType::Sampler2DArrayHandle,		2	},
-			{ ShaderDataType::SamplerCubeHandle,		2	},
-			{ ShaderDataType::SamplerCubeArrayHandle,	2	}
+			{ ShaderDataType::Sampler2DHandle,			1	},
+			{ ShaderDataType::Sampler2DArrayHandle,		1	},
+			{ ShaderDataType::SamplerCubeHandle,		1	},
+			{ ShaderDataType::SamplerCubeArrayHandle,	1	}
 		};
 	}
 

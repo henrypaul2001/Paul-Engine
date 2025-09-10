@@ -604,11 +604,12 @@ namespace PaulEngine
 			RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
 
+			Ref<Material> skyboxMaterial = AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle);
 			if (envMapInput)
 			{
 				// Apply environment map to skybox
 				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-				AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle)->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+				skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
 			}
 
 			// Remove translation from view matrix
@@ -623,7 +624,7 @@ namespace PaulEngine
 			depthState.Func = DepthFunc::LEQUAL;
 			FaceCulling cullState = FaceCulling::FRONT;
 
-			Renderer::SubmitDefaultCube(skyboxMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
+			Renderer::DrawDefaultCubeImmediate(skyboxMaterial, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
 			Renderer::EndScene();
 		};
 
@@ -684,7 +685,7 @@ namespace PaulEngine
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 				BlendState blend;
 				blend.Enabled = false;
-				Renderer::SubmitDefaultQuad(downsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+				Renderer::DrawDefaultQuadImmediate(downsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 				Renderer::EndScene();
 
 				// Set resolution for next iteration to the currently written mip
@@ -738,7 +739,7 @@ namespace PaulEngine
 
 			upsampleMaterial->GetParameter<Sampler2DShaderParameterTypeStorage>("SourceTexture")->TextureHandle = mip->Handle;
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-			Renderer::SubmitDefaultQuad(upsampleMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+			Renderer::DrawDefaultQuadImmediate(upsampleMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 			Renderer::EndScene();
 		}
 		};
@@ -800,7 +801,7 @@ namespace PaulEngine
 
 			RenderCommand::SetViewport({ 0.0f, 0.0f }, viewportResInput->Data);
 			Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-			Renderer::SubmitDefaultQuad(combineMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
+			Renderer::DrawDefaultQuadImmediate(combineMaterial, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, BlendState(), -1);
 			Renderer::EndScene();
 		};
 
@@ -1007,7 +1008,7 @@ namespace PaulEngine
 		Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 		BlendState blend;
 		blend.Enabled = false;
-		Renderer::SubmitDefaultQuad(gammaCorrectionMaterialInput->MaterialHandle, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
+		Renderer::DrawDefaultQuadImmediate(material, glm::mat4(1.0f), { DepthFunc::ALWAYS, true, true }, FaceCulling::BACK, blend, -1);
 		Renderer::EndScene();
 	};
 
@@ -2354,6 +2355,8 @@ namespace PaulEngine
 		if (m_ProjectSelected) {
 			OnProjectSelected();
 		}
+
+		Application::Get().GetWindow().SetVSync(true);
 	}
 
 	void EditorLayer::OnDetach()
@@ -3101,8 +3104,8 @@ namespace PaulEngine
 			PE_CORE_ASSERT(false, "Undefined render context");
 			return;
 		case RenderPipelineContext::Forward:
-			//CreateForwardRenderer(m_Renderer.get());
-			CreateRawRenderer(m_Renderer.get());
+			CreateForwardRenderer(m_Renderer.get());
+			//CreateRawRenderer(m_Renderer.get());
 			break;
 		case RenderPipelineContext::Deferred:
 			CreateDeferredRenderer(m_Renderer.get());

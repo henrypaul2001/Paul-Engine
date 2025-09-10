@@ -21,10 +21,10 @@ namespace PaulEngine
 	struct MeshSubmissionData
 	{
 		glm::mat4 Transform;
-		int EntityID;
-		int padding0;
-		int padding1;
-		int padding2;
+		int32_t EntityID;
+		uint32_t MaterialIndex;
+		int32_t padding1;
+		int32_t padding2;
 	};
 
 	enum class FaceCulling
@@ -111,7 +111,7 @@ namespace PaulEngine
 	struct RenderPipelineSpecification
 	{
 		PipelineParams Params;
-		AssetHandle MaterialHandle = 0;
+		AssetHandle ShaderHandle = 0;
 		RenderPipelineHash Hash() const;
 	};
 
@@ -120,20 +120,21 @@ namespace PaulEngine
 	public:
 		static Ref<RenderPipeline> Create(RenderPipelineSpecification spec);
 
-		RenderPipeline(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle material) : m_CullState(cullState), m_DepthState(depthState), m_BlendState(blendState), m_MaterialHandle(material) {}
+		RenderPipeline(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle shader) : m_CullState(cullState), m_DepthState(depthState), m_BlendState(blendState), m_ShaderHandle(shader) {}
 
 		void Bind() const;
 
-		const FaceCulling& GetCullState() const { return m_CullState; }
-		const DepthState& GetDepthState() const { return m_DepthState; }
-		const BlendState& GetBlendState() const { return m_BlendState; }
+		inline const AssetHandle& GetShaderHandle() const { return m_ShaderHandle; }
+		inline const FaceCulling& GetCullState() const { return m_CullState; }
+		inline const DepthState& GetDepthState() const { return m_DepthState; }
+		inline const BlendState& GetBlendState() const { return m_BlendState; }
 
 		RenderPipelineHash Hash() const;
 
 	private:
 		friend class std::hash<RenderPipeline>;
 
-		const AssetHandle m_MaterialHandle; // TODO: this will later be m_ShaderHandle and a collection of material instances that share that shader
+		const AssetHandle m_ShaderHandle;
 		const FaceCulling m_CullState = FaceCulling::BACK;
 		const DepthState m_DepthState;
 		const BlendState m_BlendState;
@@ -141,8 +142,8 @@ namespace PaulEngine
 }
 
 MAKE_HASHABLE(PaulEngine::PipelineParams, t.CullState, t.DepthState, t.BlendState)
-MAKE_HASHABLE(PaulEngine::RenderPipelineSpecification, t.Params, t.MaterialHandle)
-MAKE_HASHABLE(PaulEngine::RenderPipeline, t.m_MaterialHandle, t.m_CullState, t.m_DepthState, t.m_BlendState)
+MAKE_HASHABLE(PaulEngine::RenderPipelineSpecification, t.Params, t.ShaderHandle)
+MAKE_HASHABLE(PaulEngine::RenderPipeline, t.m_ShaderHandle, t.m_CullState, t.m_DepthState, t.m_BlendState)
 MAKE_HASHABLE(PaulEngine::DepthState, t.Func, t.Test, t.Write)
 MAKE_HASHABLE(PaulEngine::BlendState, t.Enabled, t.SrcFactor, t.DstFactor, t.Equation, t.ConstantColour)
 MAKE_HASHABLE(PaulEngine::Ref<PaulEngine::RenderPipeline>, t.get())

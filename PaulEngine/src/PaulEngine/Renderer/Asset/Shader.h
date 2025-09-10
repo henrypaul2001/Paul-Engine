@@ -7,6 +7,8 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#define MAX_INDIRECT_MATERIALS 100
+
 namespace PaulEngine {
 	enum class RenderPipelineContext
 	{

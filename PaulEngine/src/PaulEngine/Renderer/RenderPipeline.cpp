@@ -8,7 +8,7 @@ namespace PaulEngine
 {
 	Ref<RenderPipeline> RenderPipeline::Create(RenderPipelineSpecification spec)
 	{
-		return CreateRef<RenderPipeline>(spec.Params.CullState, spec.Params.DepthState, spec.Params.BlendState, spec.MaterialHandle);
+		return CreateRef<RenderPipeline>(spec.Params.CullState, spec.Params.DepthState, spec.Params.BlendState, spec.ShaderHandle);
 	}
 
 	void RenderPipeline::Bind() const
@@ -28,8 +28,9 @@ namespace PaulEngine
 		RenderCommand::BlendColour(m_BlendState.ConstantColour);
 		RenderCommand::BlendEquation(m_BlendState.Equation);
 
-		if (AssetManager::IsAssetHandleValid(m_MaterialHandle)) {
-			AssetManager::GetAsset<Material>(m_MaterialHandle)->Bind();
+		if (AssetManager::IsAssetHandleValid(m_ShaderHandle)) {
+			Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
+			if (shaderAsset) { shaderAsset->Bind(); }
 		}
 	}
 

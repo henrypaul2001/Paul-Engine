@@ -52,6 +52,7 @@ namespace PaulEngine
 		void ClearParameters() { m_BindingParameters.clear(); }
 
 		void AddBindlessTextureHandlesToSet(std::unordered_set<uint64_t>* handleSet);
+		void LoadBindlessTextures();
 
 	private:
 		friend class EditorLayer;

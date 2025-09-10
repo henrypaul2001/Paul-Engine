@@ -169,6 +169,20 @@ namespace PaulEngine
 		}
 	}
 
+	void Material::LoadBindlessTextures()
+	{
+		for (Ref<StorageBufferEntryShaderParameterTypeStorage> param : m_IndirectParameters)
+		{
+			const LocalShaderBuffer& localBuffer = param->GetLocalBuffer();
+			std::vector<AssetHandle> textureAssetHandles = localBuffer.GetTextureMemberHandles();
+
+			for (const AssetHandle& handle : textureAssetHandles)
+			{
+				AssetManager::GetAsset<Texture>(handle);
+			}
+		}
+	}
+
 	Ref<ShaderParamaterTypeStorageBase> Material::GetParameter(const std::string& name)
 	{
 		PE_PROFILE_FUNCTION();

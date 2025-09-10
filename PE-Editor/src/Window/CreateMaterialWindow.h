@@ -26,6 +26,7 @@ namespace PaulEngine
 		void Init();
 	private:
 		void CreateRenderer(FrameRenderer& out_Framerenderer);
+		void CreateRawRenderer(FrameRenderer& out_Framerenderer);
 		void DrawMeshIcons();
 		void DrawSampler2DEdit(const std::string& param_name, Sampler2DShaderParameterTypeStorage& sampler);
 		void DrawSampler2DArrayEdit(const std::string& param_name, Sampler2DArrayShaderParameterTypeStorage& samplerArray);
