@@ -1,5 +1,5 @@
 #pragma once
-#include "PaulEngine/Utils/Hash.h"
+#include "PaulEngine/Core/Hash.h"
 #include "PaulEngine/Core/Core.h"
 #include "PaulEngine/Asset/Asset.h"
 

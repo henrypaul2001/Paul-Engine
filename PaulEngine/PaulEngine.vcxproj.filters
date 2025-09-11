@@ -1608,8 +1608,10 @@
     <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.h" />
-    <ClInclude Include="src\PaulEngine\Utils\Hash.h" />
+    <ClInclude Include="src\PaulEngine\Core\Hash.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.h" />
+    <ClInclude Include="src\PaulEngine\Renderer\DrawBatcher.h" />
+    <ClInclude Include="src\PaulEngine\Core\Container\MappedVector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1829,5 +1831,6 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.cpp" />
+    <ClCompile Include="src\PaulEngine\Renderer\DrawBatcher.cpp" />
   </ItemGroup>
 </Project>
