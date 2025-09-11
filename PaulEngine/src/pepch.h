@@ -26,6 +26,8 @@
 
 #include "PaulEngine/Core/Hash.h"
 
+#include "PaulEngine/Core/Container/MappedVector.h"
+
 #ifdef PE_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif
