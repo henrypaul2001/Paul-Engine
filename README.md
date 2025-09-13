@@ -1,3 +1,6 @@
+# Note:
+This readme presents a much older version of the engine. A full re-write is taking place on the Teardown branch
+
 # Paul Engine: An OpenGL, ECS based game engine
 
 This is currently under development. Below is a preview of what I have so far:
