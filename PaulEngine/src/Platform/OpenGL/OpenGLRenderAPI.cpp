@@ -255,11 +255,27 @@ namespace PaulEngine {
 
 	void OpenGLRenderAPI::MakeTextureResident(uint64_t deviceHandle)
 	{
+#ifdef PE_DEBUG_MODE
+		GLboolean isResident = glIsTextureHandleResidentARB(deviceHandle);
+		if (isResident)
+		{
+			PE_CORE_ERROR("Texture handle '{0}' is already resident", deviceHandle);
+			return;
+		}
+#endif
 		glMakeTextureHandleResidentARB(deviceHandle);
 	}
 
 	void OpenGLRenderAPI::MakeTextureNonResident(uint64_t deviceHandle)
 	{
+#ifdef PE_DEBUG_MODE
+		GLboolean isResident = glIsTextureHandleResidentARB(deviceHandle);
+		if (!isResident)
+		{
+			PE_CORE_ERROR("Texture handle '{0}' is not already resident", deviceHandle);
+			return;
+		}
+#endif
 		glMakeTextureHandleNonResidentARB(deviceHandle);
 	}
 
