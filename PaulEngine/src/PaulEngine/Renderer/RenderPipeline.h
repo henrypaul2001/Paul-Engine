@@ -10,14 +10,6 @@
 
 namespace PaulEngine
 {
-	struct DrawSubmission
-	{
-		AssetHandle MeshHandle;
-		AssetHandle MaterialHandle;
-		glm::mat4 Transform;
-		int EntityID;
-	};
-
 	struct MeshSubmissionData
 	{
 		glm::mat4 Transform;
@@ -107,19 +99,32 @@ namespace PaulEngine
 		FaceCulling CullState = FaceCulling::BACK;
 		DepthState DepthState = {};
 		BlendState BlendState = {};
+
 	};
+	inline bool operator==(const PipelineParams& left, const PipelineParams& right)
+	{
+		return (left.CullState == right.CullState &&
+			left.DepthState == right.DepthState &&
+			left.BlendState == right.BlendState);
+	}
 	struct RenderPipelineSpecification
 	{
 		PipelineParams Params;
 		AssetHandle ShaderHandle = 0;
 		RenderPipelineHash Hash() const;
+
 	};
+	inline bool operator==(const RenderPipelineSpecification& left, const RenderPipelineSpecification& right)
+	{
+		return (left.Params == right.Params && left.ShaderHandle == right.ShaderHandle);
+	}
 
 	class RenderPipeline
 	{
 	public:
 		static Ref<RenderPipeline> Create(RenderPipelineSpecification spec);
 
+		RenderPipeline(RenderPipelineSpecification spec) : m_CullState(spec.Params.CullState), m_DepthState(spec.Params.DepthState), m_BlendState(spec.Params.BlendState), m_ShaderHandle(spec.ShaderHandle) {}
 		RenderPipeline(FaceCulling cullState, DepthState depthState, BlendState blendState, AssetHandle shader) : m_CullState(cullState), m_DepthState(depthState), m_BlendState(blendState), m_ShaderHandle(shader) {}
 
 		void Bind() const;

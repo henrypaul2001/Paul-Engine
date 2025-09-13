@@ -10,17 +10,9 @@
 
 #include "PaulEngine/Asset/TextureImporter.h"
 
-#define RENDER_TREE_MODE 0
+#include "PaulEngine/Renderer/DrawBatcher.h"
 
-#if RENDER_TREE_MODE
-#include "RenderTree.h"
-#endif
-
-#define MAX_INDIRECT_DRAW_COMMANDS 1000000
-#define PIPELINE_BIN_RESERVE_COUNT (MAX_INDIRECT_DRAW_COMMANDS / 100)
-
-#define PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU 0
-#define PIPELINE_MULTI_SET_DATA 1
+#define MAX_INDIRECT_DRAW_COMMANDS 10000
 
 namespace PaulEngine {
 	struct QuadVertex
@@ -77,161 +69,6 @@ namespace PaulEngine {
 			vertices[i].Bitangent = glm::normalize(vertices[i].Bitangent);
 		}
 	}
-
-	struct PipelineBin
-	{
-		std::vector<MeshSubmissionData> MeshSubmissions;
-		std::vector<DrawElementsIndirectCommand> DrawCommands;
-		size_t DrawCount = 0;
-		size_t Index = 0;
-	};
-	struct PipelineManager
-	{
-		size_t BinCount() const { return m_PipelineBins.size(); }
-		
-		const PipelineBin& GetBin(size_t index) const { return m_PipelineBins[index]; }
-		const Ref<RenderPipeline> GetPipeline(size_t index) const { return m_RenderPipelines[index]; }
-		const std::unordered_map<RenderPipelineHash, size_t>& GetPipelineIndexMap() const { return m_RenderPipelineIndexMap; }
-
-		size_t GetDrawCount() const { return m_TotalDrawCount; }
-
-		void SubmitMesh(DrawElementsIndirectCommand cmd, MeshSubmissionData submissionData, RenderPipelineSpecification pipelineSpec, Ref<Material> materialInstance)
-		{
-			PE_PROFILE_FUNCTION();
-			pipelineSpec.ShaderHandle = materialInstance->GetShaderHandle();
-
-			RenderPipelineHash pipelineHash = pipelineSpec.Hash();
-
-			size_t pipelineIndex = FindOrCreatePipelineIndex(pipelineHash, pipelineSpec);
-
-			PipelineBin& bin = m_PipelineBins[pipelineIndex];
-
-			// Insert material
-			size_t materialIndex = 0;
-			auto it = bin.MaterialIndexMap.find(materialInstance->Handle);
-			if (it == bin.MaterialIndexMap.end())
-			{
-				// Unique material
-				materialIndex = bin.OrderedMaterialInstances.size();
-				bin.MaterialIndexMap[materialInstance->Handle] = materialIndex;
-				bin.OrderedMaterialInstances.push_back(materialInstance);
-
-				// Register textures
-				materialInstance->AddBindlessTextureHandlesToSet(&bin.DeviceTextureHandles);
-			}
-			else
-			{
-				materialIndex = it->second;
-			}
-			submissionData.MaterialIndex = materialIndex;
-
-			// Submit
-			bin.MeshSubmissions.push_back(submissionData);
-			bin.DrawCommands.push_back(cmd);
-			bin.DrawCount++;
-
-			m_TotalDrawCount++;
-		}
-
-		void clear()
-		{
-			m_PipelineBins.clear();
-			m_RenderPipelineIndexMap.clear();
-			m_RenderPipelines.clear();
-		}
-
-		void UploadLocalDrawBuffer(DrawIndirectBuffer* buffer)
-		{
-			PE_PROFILE_FUNCTION();
-
-			// Experiment with some other ways to do this without copying potentially large amounts of memory around
-
-#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU
-			if (m_PipelineBins.size() > 0)
-			{
-#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU
-				// Join all bin command lists
-				uint32_t offset = 0;
-				for (size_t i = 0; i < m_PipelineBins.size(); i++)
-				{
-					PipelineBin& bin = m_PipelineBins[i];
-					size_t drawCount = bin.DrawCount;
-					std::memcpy(&s_LocalDrawBuffer[offset], bin.DrawCommands.data(), drawCount * sizeof(DrawElementsIndirectCommand));
-					bin.DrawCommands.clear();
-					bin.DrawCommands.shrink_to_fit();
-					offset += drawCount;
-				}
-
-				buffer->SetData({ s_LocalDrawBuffer.data(), (uint32_t)m_TotalDrawCount, 0 }, true);
-			}
-#else
-#if PIPELINE_MULTI_SET_DATA
-
-			std::vector<DrawIndirectBuffer::DrawIndirectSetDataParams> multiDataParams;
-			multiDataParams.reserve(m_PipelineBins.size());
-
-			uint32_t offset = 0;
-			for (const PipelineBin& bin : m_PipelineBins)
-			{
-				multiDataParams.push_back({ bin.DrawCommands.data(), (uint32_t)bin.DrawCount, offset });
-				offset += bin.DrawCount;
-			}
-
-			buffer->MultiSetData(multiDataParams, true);
-#else
-			uint32_t offset = 0;
-			for (size_t i = 0; i < m_PipelineBins.size(); i++)
-			{
-				PipelineBin& bin = m_PipelineBins[i];
-				size_t drawCount = bin.DrawCount;
-				buffer->SetData({ bin.DrawCommands.data(), (uint32_t)drawCount, offset }, true);
-				offset += drawCount;
-			}
-#endif
-#endif
-		}
-		}
-
-	private:
-		size_t FindOrCreatePipelineIndex(const RenderPipelineHash pipelineHash, const RenderPipelineSpecification& pipelineSpec)
-		{
-			size_t pipelineIndex = 0;
-
-			auto it = m_RenderPipelineIndexMap.find(pipelineHash);
-			if (it != m_RenderPipelineIndexMap.end())
-			{
-				// Duplicate pipeline state
-				pipelineIndex = it->second;
-			}
-			else
-			{
-				// Unique pipeline
-				pipelineIndex = m_PipelineBins.size();
-				PipelineBin bin;
-				bin.Index = pipelineIndex;
-				bin.MeshSubmissions.reserve(PIPELINE_BIN_RESERVE_COUNT);
-				bin.DrawCommands.reserve(PIPELINE_BIN_RESERVE_COUNT);
-
-				m_PipelineBins.push_back(bin);
-				m_RenderPipelines.push_back(RenderPipeline::Create(pipelineSpec));
-				m_RenderPipelineIndexMap[pipelineHash] = pipelineIndex;
-			}
-
-			return pipelineIndex;
-		}
-
-		std::vector<Ref<RenderPipeline>> m_RenderPipelines;
-		std::vector<PipelineBin> m_PipelineBins;
-		std::unordered_map<RenderPipelineHash, size_t> m_RenderPipelineIndexMap;
-		size_t m_TotalDrawCount = 0;
-
-#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU 
-		static std::vector<DrawElementsIndirectCommand> s_LocalDrawBuffer;
-#endif
-	};
-#if PIPELINE_SET_DATA_JOIN_BUFFERS_ON_CPU
-	std::vector<DrawElementsIndirectCommand> PipelineManager::s_LocalDrawBuffer = std::vector<DrawElementsIndirectCommand>(MAX_INDIRECT_DRAW_COMMANDS);
-#endif
 
 	struct Renderer3DData
 	{
@@ -290,13 +127,9 @@ namespace PaulEngine {
 		SceneData SceneDataBuffer;
 		Ref<UniformBuffer> SceneDataUniformBuffer;
 
-#if RENDER_TREE_MODE
-		RenderTree<Ref<VertexArray>, DepthState, FaceCulling, BlendState, Ref<Material>> RenderTree;
-#endif
-
 		Renderer::Statistics Stats;
 
-		PipelineManager PipelineManager;
+		DrawBatcher DrawBatcher;
 
 		Ref<ShaderStorageBuffer> MeshDataBuffer;
 		Ref<DrawIndirectBuffer> DrawCommandBuffer;
@@ -321,10 +154,6 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
-
-#if RENDER_TREE_MODE
-		s_RenderData.RenderTree.Init(s_RenderData.MeshDataUniformBuffer);
-#endif
 	}
 
 	void Renderer::BeginScene(const EditorCamera& camera)
@@ -402,55 +231,55 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 
 		s_RenderData.CameraUniformBuffer->Bind(0);
-
-#if !RENDER_TREE_MODE
 		s_RenderData.MeshDataBuffer->Bind(1);
-#endif
 
 		s_RenderData.SceneDataUniformBuffer->Bind(2);
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(s_RenderData.SceneDataBuffer));
-		
-#if RENDER_TREE_MODE
-		s_RenderData.Stats.PipelineCount += s_RenderData.RenderTree.MeshBinCount();
-		uint16_t drawCalls = s_RenderData.RenderTree.Flush();
-		s_RenderData.Stats.DrawCalls += drawCalls;
-#else
+
 		Ref<VertexArray> masterVAO = Mesh::GetMasterVAO();
 		masterVAO->Bind();
 		s_RenderData.DrawCommandBuffer->Bind();
-		s_RenderData.PipelineManager.UploadLocalDrawBuffer(s_RenderData.DrawCommandBuffer.get());
 
-		size_t pipelineBinCount = s_RenderData.PipelineManager.BinCount();
+		DrawBatcher& batcher = s_RenderData.DrawBatcher;
+
+		batcher.UploadLocalDrawBuffer(s_RenderData.DrawCommandBuffer.get());
+
+		const MappedVector<RenderPipelineSpecification, RenderPipeline>& pipelines = batcher.GetPipelines();
+		const std::span<const DrawBatch<DRAWS_PER_BATCH>> drawBatches = batcher.GetDrawBatches();
+		size_t batchCount = drawBatches.size();
 		size_t offset = 0;
-		for (size_t i = 0; i < pipelineBinCount; i++)
-		{
-			const PipelineBin& bin = s_RenderData.PipelineManager.GetBin(i);
-			const Ref<RenderPipeline> pipeline = s_RenderData.PipelineManager.GetPipeline(i);
-			pipeline->Bind();
 
-			for (size_t i = 0; i < bin.OrderedMaterialInstances.size(); i++)
+		batcher.MakeBatchTexturesResident();
+
+		for (size_t i = 0; i < batchCount; i++)
+		{
+			const DrawBatch<DRAWS_PER_BATCH>& batch = drawBatches[i];
+			const RenderPipeline& pipeline = pipelines[i];
+
+			pipeline.Bind();
+
+			const MappedVector<AssetHandle, Ref<Material>>& batchMaterials = batch.GetMaterialInstances();
+			for (size_t i = 0; i < batchMaterials.size(); i++)
 			{
-				bin.OrderedMaterialInstances[i]->BindlessUpload(i);
+				batchMaterials[i]->BindlessUpload(i);
 			}
 
-			MakeTextureSetResident(bin.DeviceTextureHandles);
-
-			s_RenderData.MeshDataBuffer->SetData(bin.MeshSubmissions.data(), bin.MeshSubmissions.size() * sizeof(MeshSubmissionData), 0, true);
-			RenderCommand::MultiDrawIndexedIndirect(bin.DrawCount, offset);
-			offset += bin.DrawCount;
+			const std::vector<MeshSubmissionData>& meshSubmissions = batch.GetMeshSubmissions();
+			s_RenderData.MeshDataBuffer->SetData(meshSubmissions.data(), meshSubmissions.size() * sizeof(MeshSubmissionData), 0, true);
+			RenderCommand::MultiDrawIndexedIndirect(batch.DrawCount(), offset);
+			offset += batch.DrawCount();
 			s_RenderData.Stats.DrawCalls++;
-
-			MakeTextureSetNonResident(bin.DeviceTextureHandles);
 		}
-#endif
+
+		batcher.MakeBatchTexturesNonResident();
 
 		s_RenderData.SceneDataBuffer = Renderer3DData::SceneData();
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
 		
-		s_RenderData.Stats.PipelineCount += s_RenderData.PipelineManager.BinCount();
-		s_RenderData.PipelineManager.clear();
+		s_RenderData.Stats.PipelineCount += batchCount;
+		batcher.Reset();
 	}
 
 	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
@@ -472,19 +301,10 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 
-		DrawSubmission draw;
-		draw.MeshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.SphereMeshHandle;;
-		draw.MaterialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultForwardMaterial;
-		//draw.MaterialHandle = s_RenderData.DefaultForwardMaterial;
-		draw.Transform = transform;
-		draw.EntityID = entityID;
+		meshHandle = (AssetManager::IsAssetHandleValid(meshHandle)) ? meshHandle : s_RenderData.SphereMeshHandle;;
+		materialHandle = (AssetManager::IsAssetHandleValid(materialHandle)) ? materialHandle : s_RenderData.DefaultForwardMaterial;
 
-#if RENDER_TREE_MODE
-		Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(draw.MeshHandle);
-		RenderInput renderInput = { meshAsset->GetVertexArray(), AssetManager::GetAsset<Material>(draw.MaterialHandle), transform, depthState, cullState, blendState, entityID};
-		s_RenderData.RenderTree.PushMesh(renderInput);
-#else
-		Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(draw.MeshHandle);
+		Ref<Mesh> meshAsset = AssetManager::GetAsset<Mesh>(meshHandle);
 
 		MeshSubmissionData submissionData;
 		submissionData.Transform = transform;
@@ -498,9 +318,8 @@ namespace PaulEngine {
 		cmd.BaseVertex = meshAsset->BaseVertexIndex();
 		cmd.BaseInstance = 0;
 
-		Ref<Material> materialAsset = AssetManager::GetAsset<Material>(draw.MaterialHandle);
-		s_RenderData.PipelineManager.SubmitMesh(cmd, submissionData, { { cullState, depthState, blendState }, materialAsset->GetShaderHandle() }, materialAsset);
-#endif
+		Ref<Material> materialAsset = AssetManager::GetAsset<Material>(materialHandle);
+		s_RenderData.DrawBatcher.SubmitMesh(cmd, submissionData, { cullState, depthState, blendState }, materialAsset);
 
 		s_RenderData.Stats.MeshCount++;
 	}
