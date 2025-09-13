@@ -1,5 +1,840 @@
 Scene: Untitled
 Entities:
+  - Entity: 7025131523495217188
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [173.99463, -21.374636, 77.4591]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 16278003401578962733
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [130.40201, -21.374636, 127.76067]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 13515556564899270367
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-154.858, -21.374638, -94.82286]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 4682093755246741161
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-160.75371, -21.374638, -47.57611]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 26541289087485008
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-120.11542, -21.374638, -142.4275]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 3393630355326678923
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-61.64929, -21.374638, -167.87961]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 4683463413660589345
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [33.620575, -21.374638, -184.56122]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 16208740959928195975
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-15.172916, -21.374638, -176.67487]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 3631552590240868688
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [98.47606, -21.374601, -156.53284]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 14836209747337594535
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [145.64206, -21.374607, -123.29881]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 17434093166293792720
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [174.10739, -21.37461, -76.68082]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 7652577138739180299
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [185.46355, -21.374615, -10.799604]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 838195849197193099
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [91.11224, -21.374615, 165.375]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 3499498653007283359
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [26.501066, -21.37461, 187.74385]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 17965936090967345570
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [167.68161, -21.374615, 40.459305]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 4039042774766245064
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [138.96846, -21.374615, 92.06632]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 10444279947381336277
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [90.08708, -21.374613, 125.850586]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 3315958584641497402
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [9.319256, -21.374603, 153.77971]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 7710171056881607098
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-33.978836, -21.37476, 188.33234]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 8219855133037264071
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-82.52247, -21.3747, 163.22865]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 14181054658356401207
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-118.91291, -21.374672, 147.66994]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 16032532655068661151
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-93.57736, -21.37461, 100.049194]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 1586092808057031790
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-139.05838, -21.374643, 105.85039]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 2620504571492293755
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-114.75111, -21.374643, 64.34813]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 13306771286576492086
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-159.55861, -21.374617, 68.16829]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 6217688334800853170
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-115.61505, -21.374617, 28.80043]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 8755767715183680833
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-154.13092, -21.374619, 16.757797]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 2401108314892950055
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-102.1426, -21.374617, -16.338785]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 6139957172715034158
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-108.905334, -21.374617, -57.674934]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 2176808131990391949
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-85.92799, -21.374617, -104.22203]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 15749628926392719586
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-52.788033, -21.374617, -123.73382]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 16491182269400733809
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [35.82522, -21.37462, -128.6768]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 6502150128282908873
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [70.73434, -21.374622, -129.6198]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 10998154019659235536
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [109.81752, -21.374624, -97.1361]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 7123360614611051167
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [141.87646, -21.374626, -65.75484]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 1147717625526922186
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [153.96533, -21.374628, -34.3611]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 16869199534411723326
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [130.77077, -21.374628, 8.291468]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 10936007074892078444
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [124.19407, -21.374628, 46.148468]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 906455385959570156
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [90.62159, -21.374628, 91.11336]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 4985776682845493883
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [54.906593, -21.374628, 148.9751]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 14935122298130704618
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-26.310684, -21.374624, 124.661606]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 11341001240962966706
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-58.717415, -21.374622, 124.26967]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 13225643438471648450
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-28.34377, -21.374624, 151.25423]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 11165188557279842205
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [18.63934, -21.374626, 121.55633]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 3558669950836273678
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [47.33336, -21.374628, 110.06163]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 17367484475707232635
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [79.86995, -21.37463, 58.32008]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 13168977050393155131
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [92.04242, -21.374594, 15.486228]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 771659471471236520
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [104.203674, -21.374603, -17.74381]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 1494594546912587557
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [108.33873, -21.37468, -57.19746]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 1275784809121515968
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [83.81448, -21.374674, -79.12519]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 12009789595665260243
+    TagComponent:
+      Tag: TexturedShadedCube
+    TransformComponent:
+      Position: [6.099326, 0.43263435, -33.201828]
+      Rotation: [1.0369931, -0.5156063, 1.4971077]
+      Scale: [7.5937104, 7.5937753, 7.5937347]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10526363084022780176
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4611610673531157137
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-20.41291, -21.374697, 94.724335]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 7174962971940039215
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-67.696945, -21.374699, 72.18731]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 12442758350527435870
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-55.696007, -21.374685, -58.31993]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 2299290720480223306
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-5.333479, -21.374687, -120.35629]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 12086429009773450707
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [31.35884, -21.37469, -95.50166]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 8020209997357565978
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [56.773132, -21.374691, -71.80259]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 12698058306897393477
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [75.99765, -21.374693, -34.891487]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 11232994977637161127
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-75.26695, -21.374704, 8.19569]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 6421815288620767331
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-51.887146, -21.374702, 44.286674]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 8217347821128638007
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-18.28253, -21.3747, 60.773277]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 5032898868347395073
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [16.587872, -21.374739, 66.28763]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 13964994455161137228
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [52.391056, -21.374638, 57.940983]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 12330297565233246831
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [62.191048, -21.374638, 28.916962]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 5253409400169688924
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [66.57091, -21.374691, -5.2015204]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 9537351429003729000
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-53.232605, -21.374681, -19.497019]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 8040735720294331718
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-24.127396, -21.374681, -75.890045]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 2979253428899958322
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [9.004613, -21.374678, -73.92929]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 17323378071410617189
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [-18.568937, -21.37468, -34.21998]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 857124283881250458
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [47.35858, -21.374727, -37.912548]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 11463348667946170705
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [20.280043, -21.374727, -37.912548]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 2928053616371754427
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [7.0610285, -21.374706, 1.521882]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 9243614286671818278
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [39.25462, -21.374702, 5.800104]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
+  - Entity: 15782601193870202589
+    TagComponent:
+      Tag: TexturedShadedCube
+    TransformComponent:
+      Position: [-2.3492064, 14.135037, 35.30733]
+      Rotation: [1.1056545, 0.16219683, 1.132675]
+      Scale: [7.5937114, 7.593777, 7.593734]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 6052652825163143337
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 14051334000688286514
+    TagComponent:
+      Tag: chess_set.obj_Root
+    PrefabComponent:
+      Handle: 15871914207323250139
+    TransformComponent:
+      Position: [31.693085, -21.374739, 32.416454]
+      Rotation: [0, 0, 0]
+      Scale: [40, 40, 40]
+      Children:
+        []
   - Entity: 14538369157330925705
     TagComponent:
       Tag: backpack.obj_Root
@@ -47,7 +882,7 @@ Entities:
       Diffuse: [12, 0, 0]
       Specular: [12, 0, 0]
       Ambient: [0.1, 0, 0]
-      CastShadows: true
+      CastShadows: false
       ShadowMinBias: 0.001
       ShadowMaxBias: 0.05
       ShadowMapNearClip: 0.001
@@ -88,7 +923,7 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 14877410352446370834
+      MaterialHandle: 5317045289054481295
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true
@@ -104,7 +939,7 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 814898203706997051
+      MaterialHandle: 9321072322867044035
       MeshHandle: 5829777204823558219
       DepthFunc: 1
       DepthTest: true
@@ -120,7 +955,7 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 0
+      MaterialHandle: 11641754153238842936
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true
@@ -142,7 +977,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0323887
+        AspectRatio: 2.070707
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false
@@ -209,7 +1044,7 @@ Entities:
     TagComponent:
       Tag: Cube
     TransformComponent:
-      Position: [-10.251619, -15.763779, 36.243202]
+      Position: [-0.35081503, -18.333828, 31.564047]
       Rotation: [0, -0.79125977, 0]
       Scale: [0.49998406, 0.49999982, 0.49998406]
       Children:
@@ -269,7 +1104,7 @@ Entities:
       Children:
         []
     MeshRendererComponent:
-      MaterialHandle: 0
+      MaterialHandle: 10327331717423470595
       MeshHandle: 0
       DepthFunc: 1
       DepthTest: true
