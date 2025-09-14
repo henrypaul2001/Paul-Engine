@@ -46,6 +46,8 @@ namespace PaulEngine {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		virtual void BindMaterialBuffers() const = 0;
+
 		virtual const std::unordered_map<std::string, std::string>& GetDefines() const = 0;
 
 		virtual RenderPipelineContext GetRenderPipelineContext() const = 0;

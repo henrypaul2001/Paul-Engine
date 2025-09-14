@@ -30,7 +30,11 @@ namespace PaulEngine
 
 		if (AssetManager::IsAssetHandleValid(m_ShaderHandle)) {
 			Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
-			if (shaderAsset) { shaderAsset->Bind(); }
+			if (shaderAsset)
+			{
+				shaderAsset->Bind();
+				shaderAsset->BindMaterialBuffers();
+			}
 		}
 	}
 

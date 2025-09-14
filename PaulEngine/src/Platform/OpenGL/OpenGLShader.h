@@ -17,6 +17,8 @@ namespace PaulEngine {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
+		virtual void BindMaterialBuffers() const override;
+
 		virtual const std::unordered_map<std::string, std::string>& GetDefines() const override { return m_Defines; };
 
 		virtual RenderPipelineContext GetRenderPipelineContext() const { return m_ShaderContext; }

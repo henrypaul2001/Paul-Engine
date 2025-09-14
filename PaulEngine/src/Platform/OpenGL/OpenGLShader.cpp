@@ -783,6 +783,14 @@ namespace PaulEngine {
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::BindMaterialBuffers() const
+	{
+		for (auto& ssbo : m_MaterialBuffers)
+		{
+			ssbo->Bind();
+		}
+	}
+
 	void OpenGLShader::SetUniformInt(const std::string& name, const int value)
 	{
 		UploadUniformInt(name, value);
