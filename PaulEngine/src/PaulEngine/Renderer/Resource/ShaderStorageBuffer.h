@@ -52,6 +52,7 @@ namespace PaulEngine
 		virtual void SetData(const void* data, size_t size, size_t offset = 0, const bool preferMap = true) = 0;
 		virtual void ReadData(void* destination, size_t sourceSize, size_t sourceOffset = 0, const bool preferMap = true) = 0;
 		virtual void Bind(uint32_t binding) = 0;
+		virtual void Bind() = 0;
 
 		static Ref<ShaderStorageBuffer> Create(size_t size, uint32_t binding, const StorageBufferMapping mapping = StorageBufferMapping::None, const bool dynamicStorage = true);
 	};

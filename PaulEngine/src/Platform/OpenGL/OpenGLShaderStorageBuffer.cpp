@@ -46,7 +46,7 @@ namespace PaulEngine
 		{ (int)StorageBufferMapping::MAP_READ_WRITE_COHERENT, &ReadMappedDataCoherent }
 	};
 
-	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(size_t size, uint32_t binding, const StorageBufferMapping mapping, const bool dynamicStorage) : m_RendererID(0), m_Mapping(mapping), m_DynamicStorage(dynamicStorage), m_Ptr(nullptr), m_CurrentMapSize(size), m_CurrentMapOffset(0)
+	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(size_t size, uint32_t binding, const StorageBufferMapping mapping, const bool dynamicStorage) : m_RendererID(0), m_Binding(binding), m_Mapping(mapping), m_DynamicStorage(dynamicStorage), m_Ptr(nullptr), m_CurrentMapSize(size), m_CurrentMapOffset(0)
 	{
 		PE_PROFILE_FUNCTION();
 		GLbitfield flags = 0;
@@ -105,7 +105,13 @@ namespace PaulEngine
 
 	void OpenGLShaderStorageBuffer::Bind(uint32_t binding)
 	{
+		m_Binding = binding;
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_RendererID);
+	}
+
+	void OpenGLShaderStorageBuffer::Bind()
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_Binding, m_RendererID);
 	}
 
 	void OpenGLShaderStorageBuffer::BufferSubData(const void* data, size_t size, size_t offset)
