@@ -96,8 +96,7 @@ namespace PaulEngine {
 
 	private:
 		static void ImportShaders();
-		static std::string ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState);
-	
+
 		static void MakeTextureSetResident(const std::unordered_set<uint64_t>& textureSet);
 		static void MakeTextureSetNonResident(const std::unordered_set<uint64_t>& textureSet);
 	};

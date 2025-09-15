@@ -538,18 +538,6 @@ namespace PaulEngine {
 		s_RenderData.TorusMeshHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "models/DefaultTorus.pmesh", false);
 	}
 
-	std::string Renderer::ConstructPipelineStateKey(const AssetHandle material, const DepthState depthState, const FaceCulling cullState, const BlendState blendState)
-	{
-		PE_PROFILE_FUNCTION();
-		std::string materialString = std::to_string((uint64_t)material);
-		std::string depthString = std::to_string((int)depthState.Func) + std::to_string((int)depthState.Test) + std::to_string((int)depthState.Write);
-		std::string cullString = std::to_string((int)cullState);
-		std::string blendString = std::to_string((int)blendState.Enabled) + std::to_string((int)blendState.SrcFactor) + std::to_string((int)blendState.DstFactor) + std::to_string((int)blendState.Equation) + 
-			std::to_string((float)blendState.ConstantColour.r) + std::to_string((float)blendState.ConstantColour.g) + std::to_string((float)blendState.ConstantColour.b) + std::to_string((float)blendState.ConstantColour.a);
-
-		return materialString + depthString + cullString + blendString;
-	}
-
 	void Renderer::MakeTextureSetResident(const std::unordered_set<uint64_t>& textureSet)
 	{
 		PE_PROFILE_FUNCTION();
