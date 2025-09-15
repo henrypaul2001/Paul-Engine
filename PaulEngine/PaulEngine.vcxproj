@@ -150,6 +150,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\VertexArrayPool.h" />
     <ClInclude Include="src\PaulEngine\Core\Container\MappedVector.h" />
     <ClInclude Include="src\PaulEngine\Renderer\DrawBatcher.h" />
     <ClInclude Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.h" />
@@ -667,6 +668,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArrayPool.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\DrawBatcher.cpp" />
     <ClCompile Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.cpp" />

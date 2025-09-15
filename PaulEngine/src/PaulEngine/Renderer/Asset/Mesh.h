@@ -1,7 +1,6 @@
 #pragma once
+#include "PaulEngine/Renderer/Resource/VertexArrayPool.h"
 #include "PaulEngine/Asset/Asset.h"
-#include "PaulEngine/Renderer/Resource/VertexArray.h"
-#include "PaulEngine/Renderer/Resource/Buffer.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
@@ -47,13 +46,12 @@ namespace PaulEngine
 		uint32_t BaseIndicesIndex() const { return m_BaseIndicesIndex; }
 
 		static Ref<VertexArray> GetMasterVAO() {
-			if (!s_MasterVertexArray) { InitMasterVAO(); }
-			return s_MasterVertexArray;
+			if (!s_MasterVertexArray.is_initialised()) { s_MasterVertexArray.init(); }
+			return s_MasterVertexArray.GetVertexArray();
 		}
 
 	private:
 		MeshSpecification m_Spec;
-		Ref<VertexArray> m_VertexArray;
 
 		uint32_t m_VertexCount = 0;
 		uint32_t m_IndexCount = 0;
@@ -61,12 +59,7 @@ namespace PaulEngine
 		uint32_t m_BaseVertexIndex = 0;
 		uint32_t m_BaseIndicesIndex = 0;
 
-		static uint32_t s_CurrentMasterVertexCount;
-		static uint32_t s_CurrentMasterIndexCount;
-		static Ref<VertexArray> s_MasterVertexArray;
-
-		static void InitMasterVAO();
-		static bool RegisterToMaster(Mesh* m, std::vector<MeshVertex>& vertices, std::vector<uint32_t>& indices);
+		static VertexArrayPool s_MasterVertexArray;
 	};
 
 	class Model : public Asset

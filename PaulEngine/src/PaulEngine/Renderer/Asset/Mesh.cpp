@@ -3,9 +3,13 @@
 
 namespace PaulEngine
 {
-	Ref<VertexArray> Mesh::s_MasterVertexArray = nullptr;
-	uint32_t Mesh::s_CurrentMasterVertexCount = 0;
-	uint32_t Mesh::s_CurrentMasterIndexCount = 0;
+	VertexArrayPool Mesh::s_MasterVertexArray = VertexArrayPool(INITIAL_MASTER_VERTEX_COUNT, INITIAL_MASTER_INDEX_COUNT, {
+			{ ShaderDataType::Float3, "a_Position",  false },
+			{ ShaderDataType::Float3, "a_Normal",    true  },
+			{ ShaderDataType::Float2, "a_TexCoords", true  },
+			{ ShaderDataType::Float3, "a_Tangent",	 true  },
+			{ ShaderDataType::Float3, "a_Bitangent", true  }
+		});
 
 	void ComputeTangentsIndexed(MeshVertex* vertices, uint32_t* indices, size_t vertexCount, size_t indexCount)
 	{
@@ -59,7 +63,7 @@ namespace PaulEngine
 	{
 		PE_PROFILE_FUNCTION();
 
-		if (!s_MasterVertexArray) { InitMasterVAO(); }
+		if (!s_MasterVertexArray.is_initialised()) { s_MasterVertexArray.init(); }
 
 		uint32_t indicesCount = (uint32_t)indices.size();
 		if (m_Spec.CalculateTangents)
@@ -67,74 +71,13 @@ namespace PaulEngine
 			ComputeTangentsIndexed(&vertices[0], &indices[0], (size_t)m_VertexCount, indices.size());
 		}
 
-		bool success = RegisterToMaster(this, vertices, indices);
+		std::optional<std::pair<uint32_t, uint32_t>> success = s_MasterVertexArray.RegisterMesh((const void*)vertices.data(), m_VertexCount, indices.data(), m_IndexCount);
 		PE_CORE_ASSERT(success, "Error registering mesh");
-	}
 
-	void Mesh::InitMasterVAO()
-	{
-		PE_PROFILE_FUNCTION();
-		s_MasterVertexArray = VertexArray::Create();
-		s_MasterVertexArray->Bind();
-
-		Ref<VertexBuffer> vbo = VertexBuffer::Create(INITIAL_MASTER_VERTEX_COUNT * sizeof(MeshVertex), BufferUsage::DYNAMIC_DRAW);
-		vbo->SetLayout({
-			{ ShaderDataType::Float3, "a_Position",  false },
-			{ ShaderDataType::Float3, "a_Normal",    true  },
-			{ ShaderDataType::Float2, "a_TexCoords", true  },
-			{ ShaderDataType::Float3, "a_Tangent",	 true  },
-			{ ShaderDataType::Float3, "a_Bitangent", true  }
-		});
-		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(INITIAL_MASTER_INDEX_COUNT, BufferUsage::DYNAMIC_DRAW);
-
-		s_MasterVertexArray->AddVertexBuffer(vbo);
-		s_MasterVertexArray->SetIndexBuffer(indexBuffer);
-		s_MasterVertexArray->Unbind();
-	}
-
-	bool Mesh::RegisterToMaster(Mesh* m, std::vector<MeshVertex>& vertices, std::vector<uint32_t>& indices)
-	{
-		// Validate buffer sizes
-
-		const uint32_t vertexCount = m->m_VertexCount;
-		const uint32_t startMasterVertex = s_CurrentMasterVertexCount;
-		const uint32_t endMasterVertex = startMasterVertex + vertexCount;
-
-		if (endMasterVertex > INITIAL_MASTER_VERTEX_COUNT)
+		if (success)
 		{
-			// TODO: Consider dynamic reallocation of master vertex buffer and index buffer to increase size as needed
-			PE_CORE_ERROR("Master vertex buffer size reached");
-			return false;
+			m_BaseVertexIndex = success.value().first;
+			m_BaseIndicesIndex = success.value().second;
 		}
-
-		const uint32_t indexCount = m->m_IndexCount;
-		const uint32_t startMasterIndex = s_CurrentMasterIndexCount;
-		const uint32_t endMasterIndex = startMasterIndex + indexCount;
-
-		if (endMasterIndex > INITIAL_MASTER_INDEX_COUNT)
-		{
-			PE_CORE_ERROR("Master index buffer size reached");
-			return false;
-		}
-		
-		// Buffer data
-
-		const size_t verticesSize = sizeof(MeshVertex) * (size_t)vertexCount;
-		const size_t verticesStart = sizeof(MeshVertex) * (size_t)startMasterVertex;
-
-		Ref<VertexBuffer> masterVBO = s_MasterVertexArray->GetVertexBuffers()[0];
-		masterVBO->SetData(vertices.data(), verticesSize, verticesStart);
-		s_CurrentMasterVertexCount = endMasterVertex;
-
-		const size_t indicesStart = sizeof(uint32_t) * (size_t)startMasterIndex;
-
-		Ref<IndexBuffer> masterIndexBuffer = s_MasterVertexArray->GetIndexBuffer();
-		masterIndexBuffer->SetData(indices.data(), indexCount, indicesStart);
-		s_CurrentMasterIndexCount = endMasterIndex;
-
-		m->m_BaseVertexIndex = startMasterVertex;
-		m->m_BaseIndicesIndex = startMasterIndex;
-
-		return true;
 	}
 }
