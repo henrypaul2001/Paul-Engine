@@ -56,8 +56,15 @@ project "PaulEngine"
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
+
 		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
-		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp"
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp",
+
+		"%{prj.name}/vendor/implot/implot.h",
+		"%{prj.name}/vendor/implot/implot.cpp",
+		"%{prj.name}/vendor/implot/implot_demo.cpp",
+		"%{prj.name}/vendor/implot/implot_internal.h",
+		"%{prj.name}/vendor/implot/implot_items.cpp"
 	}
 
 	includedirs
@@ -72,6 +79,7 @@ project "PaulEngine"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml}",
 		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.implot}",
 		"%{IncludeDir.VulkanSDK}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.msdfgen}",
@@ -93,6 +101,9 @@ project "PaulEngine"
 	}
 
 	filter "files:PaulEngine/vendor/imguizmo/**.cpp"
+	flags { "NoPCH"}
+
+	filter "files:PaulEngine/vendor/implot/**.cpp"
 	flags { "NoPCH"}
 
 	filter "system:windows"
@@ -170,7 +181,8 @@ project "Runtime"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml}",
-		"%{IncludeDir.imguizmo}"
+		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.implot}"
 	}
 
 	links
@@ -233,7 +245,8 @@ project "PE-Editor"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",
 		"{IncludeDir.yaml}",
-		"%{IncludeDir.imguizmo}"
+		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.implot}"
 	}
 
 	links
@@ -298,7 +311,8 @@ project "Sandbox"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml}",
-		"%{IncludeDir.imguizmo}"
+		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.implot}"
 	}
 
 	links

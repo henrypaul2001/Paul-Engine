@@ -25,3 +25,6 @@
 [submodule "PaulEngine/vendor/assimp/assimp"]
 	path = PaulEngine/vendor/assimp/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "PaulEngine/vendor/implot"]
+	path = PaulEngine/vendor/implot
+	url = https://github.com/epezent/implot.git

@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_DEBUG_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\{IncludeDir.yaml};..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\{IncludeDir.yaml};..\PaulEngine\vendor\imguizmo;..\PaulEngine\vendor\implot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\{IncludeDir.yaml};..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\{IncludeDir.yaml};..\PaulEngine\vendor\imguizmo;..\PaulEngine\vendor\implot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -122,7 +122,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>YAML_CPP_STATIC_DEFINE;PE_PLATFORM_WINDOWS;PE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\{IncludeDir.yaml};..\PaulEngine\vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PaulEngine\vendor\spdlog\include;..\PaulEngine\src;..\PaulEngine\vendor\glm;..\PaulEngine\vendor\imgui\imgui;..\PaulEngine\vendor\entt\include;..\{IncludeDir.yaml};..\PaulEngine\vendor\imguizmo;..\PaulEngine\vendor\implot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -145,6 +145,7 @@
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\Panels\FrameRendererPanel.h" />
     <ClInclude Include="src\Panels\FrameRendererProfilePanel.h" />
+    <ClInclude Include="src\Panels\MeshPoolVisualiserPanel.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Window\CreateAtlasWindow.h" />
     <ClInclude Include="src\Window\CreateMaterialWindow.h" />
@@ -156,6 +157,7 @@
     <ClCompile Include="src\Panels\ContentBrowserPanel.cpp" />
     <ClCompile Include="src\Panels\FrameRendererPanel.cpp" />
     <ClCompile Include="src\Panels\FrameRendererProfilePanel.cpp" />
+    <ClCompile Include="src\Panels\MeshPoolVisualiserPanel.cpp" />
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Window\CreateAtlasWindow.cpp" />
     <ClCompile Include="src\Window\CreateMaterialWindow.cpp" />

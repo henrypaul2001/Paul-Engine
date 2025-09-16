@@ -13,6 +13,9 @@
     <Filter Include="src\PaulEngine\Core">
       <UniqueIdentifier>{DC7D8190-48DF-5E9E-D14C-A5503DAD955D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PaulEngine\Core\Container">
+      <UniqueIdentifier>{AE482E9A-1A61-15C4-E30D-A55D4FE5A95D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\PaulEngine\Debug">
       <UniqueIdentifier>{7A94BDA0-6623-476A-0F42-5B65FBAF5710}</UniqueIdentifier>
     </Filter>
@@ -76,6 +79,9 @@
     <Filter Include="vendor\imguizmo">
       <UniqueIdentifier>{B36F5F1F-1FFB-CCE3-280C-50D8941629E4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\implot">
+      <UniqueIdentifier>{5771DC0A-C331-5841-8C6C-A1BEF8EB9C1D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
@@ -129,10 +135,16 @@
     <ClInclude Include="src\PaulEngine\Core\Buffer.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Core\Container\MappedVector.h">
+      <Filter>src\PaulEngine\Core\Container</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\Core.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\EntryPoint.h">
+      <Filter>src\PaulEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Core\Hash.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\Input.h">
@@ -225,6 +237,9 @@
     <ClInclude Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.h">
       <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\DrawBatcher.h">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\FrameRenderer.h">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClInclude>
@@ -270,10 +285,16 @@
     <ClInclude Include="src\PaulEngine\Renderer\Resource\Framebuffer.h">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.h">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderParameterType.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.h">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\UniformBuffer.h">
@@ -283,6 +304,9 @@
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Renderer\Resource\VertexArray.h">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaulEngine\Renderer\Resource\VertexArrayPool.h">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClInclude>
     <ClInclude Include="src\PaulEngine\Scene\Components.h">
@@ -318,6 +342,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -325,6 +352,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
@@ -1602,17 +1632,15 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
+    <ClInclude Include="vendor\implot\implot.h">
+      <Filter>vendor\implot</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\implot\implot_internal.h">
+      <Filter>vendor\implot</Filter>
+    </ClInclude>
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.h" />
-    <ClInclude Include="src\PaulEngine\Core\Hash.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\DrawBatcher.h" />
-    <ClInclude Include="src\PaulEngine\Core\Container\MappedVector.h" />
-    <ClInclude Include="src\PaulEngine\Renderer\Resource\VertexArrayPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">
@@ -1711,6 +1739,9 @@
     <ClCompile Include="src\PaulEngine\Renderer\Asset\TextureAtlas2D.cpp">
       <Filter>src\PaulEngine\Renderer\Asset</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\DrawBatcher.cpp">
+      <Filter>src\PaulEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\FrameRenderer.cpp">
       <Filter>src\PaulEngine\Renderer</Filter>
     </ClCompile>
@@ -1747,10 +1778,16 @@
     <ClCompile Include="src\PaulEngine\Renderer\Resource\Framebuffer.cpp">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\OrthographicCamera.cpp">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderParameterType.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.cpp">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\UniformBuffer.cpp">
@@ -1760,6 +1797,9 @@
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArray.cpp">
+      <Filter>src\PaulEngine\Renderer\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArrayPool.cpp">
       <Filter>src\PaulEngine\Renderer\Resource</Filter>
     </ClCompile>
     <ClCompile Include="src\PaulEngine\Scene\Components.cpp">
@@ -1789,6 +1829,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1796,6 +1839,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
@@ -1825,14 +1871,17 @@
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\implot\implot.cpp">
+      <Filter>vendor\implot</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\implot\implot_demo.cpp">
+      <Filter>vendor\implot</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\implot\implot_items.cpp">
+      <Filter>vendor\implot</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\ShaderStorageBuffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLShaderStorageBuffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLDrawIndirectBuffer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\LocalShaderBuffer.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\DrawBatcher.cpp" />
-    <ClCompile Include="src\PaulEngine\Renderer\Resource\VertexArrayPool.cpp" />
   </ItemGroup>
 </Project>
