@@ -8,6 +8,7 @@ namespace PaulEngine
 		uint32_t StartIndex = 0;
 		uint32_t Count = 0;
 	};
+	bool comp(FreeBlock a, FreeBlock b);
 
 	struct FreeList
 	{
@@ -22,6 +23,31 @@ namespace PaulEngine
 
 		FreeBlock& GetBlock(size_t index) { return m_List[index]; }
 		const FreeBlock& GetBlock(size_t index) const { return m_List[index]; }
+
+		void InsertFreeBlock(FreeBlock newBlock)
+		{
+			m_List.push_back(newBlock);
+
+			// Join adjacent blocks
+			std::sort(m_List.begin(), m_List.end(), comp);
+			size_t i = 0;
+			while (i < m_List.size() - 1)
+			{
+				FreeBlock copiedBlock = m_List[i];
+				uint32_t end = copiedBlock.StartIndex + copiedBlock.Count;
+
+				FreeBlock nextBlock = m_List[i + 1];
+				if (end == nextBlock.StartIndex)
+				{
+					m_List[i].Count += nextBlock.Count;
+					m_List.erase(m_List.begin() + i + 1);
+				}
+				else
+				{
+					i++;
+				}
+			}
+		}
 
 		std::optional<size_t> FindValidFreeBlockIndex(uint32_t requestedCount)
 		{
@@ -97,9 +123,9 @@ namespace PaulEngine
 		// Returns nullopt if fail
 		std::optional<std::pair<uint32_t, uint32_t>> RegisterMesh(const void* vertices, const uint32_t vertexCount, const uint32_t* indices, const uint32_t indexCount);
 
+		void UnregisterMesh(const uint32_t baseVertex, const uint32_t vertexCount, const uint32_t baseIndex, const uint32_t indexCount);
+
 	private:
-		//uint32_t m_CurrentVertexCount = 0;
-		//uint32_t m_CurrentIndexCount = 0;
 		Ref<VertexArray> m_VertexArray = nullptr;
 
 		const uint32_t m_VertexCountCapacity;

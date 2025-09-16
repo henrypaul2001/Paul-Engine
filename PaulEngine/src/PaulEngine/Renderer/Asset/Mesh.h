@@ -34,7 +34,10 @@ namespace PaulEngine
 	{
 	public:
 		Mesh(const MeshSpecification& spec, std::vector<MeshVertex> vertices, std::vector<uint32_t> indices);
-		~Mesh() {}
+		~Mesh()
+		{
+			s_MasterVertexArray.UnregisterMesh(m_BaseVertexIndex, m_VertexCount, m_BaseIndicesIndex, m_IndexCount);
+		}
 
 		virtual AssetType GetType() const override { return AssetType::Mesh; }
 

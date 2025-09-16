@@ -23,7 +23,7 @@ namespace PaulEngine
 	{
 		// Find free block
 		const std::optional<size_t> vertexFreeBlockIndex = m_VertexFreeList.FindValidFreeBlockIndex(vertexCount);
-		const std::optional<size_t> indexFreeBlockIndex = m_IndexFreeList.FindValidFreeBlockIndex(vertexCount);
+		const std::optional<size_t> indexFreeBlockIndex = m_IndexFreeList.FindValidFreeBlockIndex(indexCount);
 
 		if (!vertexFreeBlockIndex)
 		{
@@ -87,5 +87,30 @@ namespace PaulEngine
 		}
 
 		return std::pair<uint32_t, uint32_t>(startMasterVertex, startMasterIndex);
+	}
+
+	void VertexArrayPool::UnregisterMesh(const uint32_t baseVertex, const uint32_t vertexCount, const uint32_t baseIndex, const uint32_t indexCount)
+	{
+		const uint32_t vertexEnd = baseVertex + vertexCount;
+		if (vertexEnd > m_VertexCountCapacity)
+		{
+			PE_CORE_ERROR("Attempting to deallocate vertex buffer memory outside of bounds");
+			return;
+		}
+
+		const uint32_t indexEnd = baseIndex + indexCount;
+		if (indexEnd > m_IndexCountCapacity)
+		{
+			PE_CORE_ERROR("Attempting to deallocate index buffer memory outside of bounds");
+			return;
+		}
+
+		m_VertexFreeList.InsertFreeBlock({ baseVertex, vertexCount });
+		m_IndexFreeList.InsertFreeBlock({ baseIndex, indexCount });
+	}
+
+	bool comp(FreeBlock a, FreeBlock b)
+	{
+		return a.StartIndex < b.StartIndex;
 	}
 }
