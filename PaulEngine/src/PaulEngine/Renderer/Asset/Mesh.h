@@ -10,8 +10,8 @@ namespace PaulEngine
 {
 	// Distribution builds should optimise these values according to the assets built into the distribution asset packs
 
-#define INITIAL_MASTER_VERTEX_COUNT 10000000 // 10 million
-#define INITIAL_MASTER_INDEX_COUNT 100000000 // 100 million
+#define INITIAL_MASTER_VERTEX_COUNT 1000000 // 1 million
+#define INITIAL_MASTER_INDEX_COUNT 10000000 // 10 million
 
 	struct MeshVertex
 	{
@@ -49,6 +49,8 @@ namespace PaulEngine
 			if (!s_MasterVertexArray.is_initialised()) { s_MasterVertexArray.init(); }
 			return s_MasterVertexArray.GetVertexArray();
 		}
+
+		static const VertexArrayPool& GetMasterVertexArrayPool() { return s_MasterVertexArray; }
 
 	private:
 		MeshSpecification m_Spec;
