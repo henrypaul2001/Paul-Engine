@@ -1,10 +1,12 @@
 #pragma once
 #include <PaulEngine.h>
+#include <PaulEngine/Renderer/Resource/EditorCamera.h>
+
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/FrameRendererPanel.h"
 #include "Panels/FrameRendererProfilePanel.h"
-#include <PaulEngine/Renderer/Resource/EditorCamera.h>
+#include "Panels/MeshPoolVisualiserPanel.h"
 
 #include "Window/CreateAtlasWindow.h"
 #include "Window/CreateMaterialWindow.h"
@@ -100,6 +102,7 @@ namespace PaulEngine {
 		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
 		FrameRendererPanel m_FrameRendererPanel;
 		FrameRendererProfilePanel m_FrameRendererProfilePanel;
+		MeshPoolVisualiserPanel m_MeshPoolPanel;
 
 		// Windows
 		CreateAtlasWindow m_AtlasCreateWindow;

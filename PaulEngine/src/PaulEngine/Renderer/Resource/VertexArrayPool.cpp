@@ -65,13 +65,11 @@ namespace PaulEngine
 
 		Ref<VertexBuffer> masterVBO = m_VertexArray->GetVertexBuffers()[0];
 		masterVBO->SetData(vertices, verticesSize, verticesStart);
-		m_CurrentVertexCount = endMasterVertex;
 
 		const size_t indicesStart = sizeof(uint32_t) * (size_t)startMasterIndex;
 
 		Ref<IndexBuffer> masterIndexBuffer = m_VertexArray->GetIndexBuffer();
 		masterIndexBuffer->SetData(indices, indexCount, indicesStart);
-		m_CurrentIndexCount = endMasterIndex;
 
 		// Update free list
 		bool success = m_VertexFreeList.SplitOrRemoveFreeBlock(vertexFreeBlockIndex.value(), vertexCount);

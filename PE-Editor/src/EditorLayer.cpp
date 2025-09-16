@@ -2704,6 +2704,7 @@ namespace PaulEngine
 			m_ContentBrowserPanel->ImGuiRender();
 			m_FrameRendererPanel.OnImGuiRender();
 			m_FrameRendererProfilePanel.OnImGuiRender();
+			m_MeshPoolPanel.OnImGuiRender();
 
 			m_TextureArrayCreateWindow.OnImGuiRender();
 			m_MaterialCreateWindow.OnImGuiRender();

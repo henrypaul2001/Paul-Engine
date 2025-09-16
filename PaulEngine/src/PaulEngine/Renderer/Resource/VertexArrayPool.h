@@ -84,6 +84,12 @@ namespace PaulEngine
 		inline uint32_t IndexCountCapacity() const { return m_IndexCountCapacity; }
 		inline size_t VertexSize() const { return m_BufferLayout.GetStride(); }
 
+		const FreeList& GetVertexFreeList() const { return m_VertexFreeList; }
+		FreeList& GetVertexFreeList() { return m_VertexFreeList; }
+
+		const FreeList& GetIndexFreeList() const { return m_IndexFreeList; }
+		FreeList& GetIndexFreeList() { return m_IndexFreeList; }
+
 		Ref<VertexArray> GetVertexArray() { return m_VertexArray; }
 		const Ref<VertexArray>& GetVertexArray() const { return m_VertexArray; }
 
@@ -92,8 +98,8 @@ namespace PaulEngine
 		std::optional<std::pair<uint32_t, uint32_t>> RegisterMesh(const void* vertices, const uint32_t vertexCount, const uint32_t* indices, const uint32_t indexCount);
 
 	private:
-		uint32_t m_CurrentVertexCount = 0;
-		uint32_t m_CurrentIndexCount = 0;
+		//uint32_t m_CurrentVertexCount = 0;
+		//uint32_t m_CurrentIndexCount = 0;
 		Ref<VertexArray> m_VertexArray = nullptr;
 
 		const uint32_t m_VertexCountCapacity;
