@@ -367,7 +367,7 @@ namespace Sandbox
 		m_DrawCommandBuffer->SetData({ m_LocalCommandsBuffer.data(), (uint32_t)m_DrawCommandBufferSize, 0 }, true);
 
 		// Buffer per mesh data
-		m_MeshSubmissionBuffer->SetData(m_LocalMeshSubmissionBuffer.data(), sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize, 0);
+		m_MeshSubmissionBuffer->SetData({ m_LocalMeshSubmissionBuffer.data(), sizeof(MeshSubmissionData) * m_MeshSubmissionBufferSize }, 0);
 
 		// Execute draw commands in a single draw call
 		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, m_DrawCommandBufferSize, 0);

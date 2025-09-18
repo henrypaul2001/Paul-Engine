@@ -110,7 +110,7 @@ namespace PaulEngine
 			m_LocalBuffer.SetLocalMember(name, deviceHandle);
 		}
 
-		m_StorageBufferContext->SetData((const void*)data, m_LocalBuffer.Size(), offset, true);
+		m_StorageBufferContext->SetData({ (const void*)data, m_LocalBuffer.Size(), offset }, true);
 
 		// Unpatch local buffer texture handles
 		for (size_t i = 0; i < textureMembers.size(); i++)

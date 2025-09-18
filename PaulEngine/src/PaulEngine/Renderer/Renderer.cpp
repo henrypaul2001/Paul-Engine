@@ -265,7 +265,7 @@ namespace PaulEngine {
 			}
 
 			const std::vector<MeshSubmissionData>& meshSubmissions = batch.GetMeshSubmissions();
-			s_RenderData.MeshDataBuffer->SetData(meshSubmissions.data(), meshSubmissions.size() * sizeof(MeshSubmissionData), 0, true);
+			s_RenderData.MeshDataBuffer->SetData({ meshSubmissions.data(), meshSubmissions.size() * sizeof(MeshSubmissionData), 0 }, true);
 			RenderCommand::MultiDrawIndexedIndirect(batch.DrawCount(), offset);
 			offset += batch.DrawCount();
 			s_RenderData.Stats.DrawCalls++;
@@ -385,7 +385,7 @@ namespace PaulEngine {
 		submission.Transform = transform;
 		submission.EntityID = entityID;
 		submission.MaterialIndex = 0;
-		s_RenderData.MeshDataBuffer->SetData(&submission, sizeof(MeshSubmissionData), 0, false);
+		s_RenderData.MeshDataBuffer->SetData({ &submission, sizeof(MeshSubmissionData), 0 }, false);
 
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 

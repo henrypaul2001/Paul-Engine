@@ -29,13 +29,13 @@ namespace PaulEngine
 		return 0;
 	}
 
-	std::unordered_map<int, void(OpenGLShaderStorageBuffer::*)(const void*, size_t, size_t)> OpenGLShaderStorageBuffer::s_WriteFunctions = {
-		{ (int)StorageBufferMapping::MAP_WRITE, &SetMappedData },
-		{ (int)StorageBufferMapping::MAP_READ_WRITE, &SetMappedData },
-		{ (int)StorageBufferMapping::MAP_WRITE_PERSISTENT, &SetMappedDataPersistent },
-		{ (int)StorageBufferMapping::MAP_READ_WRITE_PERSISTENT, &SetMappedDataPersistent },
-		{ (int)StorageBufferMapping::MAP_WRITE_COHERENT, &SetMappedDataCoherent },
-		{ (int)StorageBufferMapping::MAP_READ_WRITE_COHERENT, &SetMappedDataCoherent }
+	std::unordered_map<int, void(OpenGLShaderStorageBuffer::*)(std::vector<ShaderStorageBuffer::SetDataParams>)> OpenGLShaderStorageBuffer::s_WriteFunctions = {
+		{ (int)StorageBufferMapping::MAP_WRITE, &MultiSetMappedData },
+		{ (int)StorageBufferMapping::MAP_READ_WRITE, &MultiSetMappedData },
+		{ (int)StorageBufferMapping::MAP_WRITE_PERSISTENT, &MultiSetMappedDataPersistent },
+		{ (int)StorageBufferMapping::MAP_READ_WRITE_PERSISTENT, &MultiSetMappedDataPersistent },
+		{ (int)StorageBufferMapping::MAP_WRITE_COHERENT, &MultiSetMappedDataCoherent },
+		{ (int)StorageBufferMapping::MAP_READ_WRITE_COHERENT, &MultiSetMappedDataCoherent }
 	};
 	std::unordered_map<int, void(OpenGLShaderStorageBuffer::*)(void*, size_t, size_t)> OpenGLShaderStorageBuffer::s_ReadFunctions = {
 		{ (int)StorageBufferMapping::MAP_READ, &ReadMappedData },
@@ -69,18 +69,23 @@ namespace PaulEngine
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void OpenGLShaderStorageBuffer::SetData(const void* data, size_t size, size_t offset, const bool preferMap)
+	void OpenGLShaderStorageBuffer::SetData(SetDataParams dataParams, const bool preferMap)
+	{
+		MultiSetData({ dataParams }, preferMap);
+	}
+
+	void OpenGLShaderStorageBuffer::MultiSetData(std::vector<SetDataParams> multiDataParams, const bool preferMap)
 	{
 		PE_PROFILE_FUNCTION();
 		if (preferMap && IsStorageBufferMappingWriteable(m_Mapping))
 		{
 			auto funcIt = s_WriteFunctions.find((int)m_Mapping);
 			PE_CORE_ASSERT(funcIt != s_WriteFunctions.end(), "Undefined write function mapping");
-			(this->*(funcIt->second))(data, size, offset);
+			(this->*(funcIt->second))(multiDataParams);
 		}
 		else if (m_DynamicStorage)
 		{
-			BufferSubData(data, size, offset);
+			MultiBufferSubData(multiDataParams);
 		}
 		else
 		{
@@ -120,6 +125,15 @@ namespace PaulEngine
 		glNamedBufferSubData(m_RendererID, offset, size, data);
 	}
 
+	void OpenGLShaderStorageBuffer::MultiBufferSubData(std::vector<SetDataParams> multiDataParams)
+	{
+		PE_PROFILE_FUNCTION();
+		for (SetDataParams& data : multiDataParams)
+		{
+			glNamedBufferSubData(m_RendererID, data.offset, data.size, data.data);
+		}
+	}
+
 	void OpenGLShaderStorageBuffer::SetMappedData(const void* data, size_t size, size_t offset)
 	{
 		PE_PROFILE_FUNCTION();
@@ -133,6 +147,40 @@ namespace PaulEngine
 		m_Ptr = nullptr;
 	}
 
+	void OpenGLShaderStorageBuffer::MultiSetMappedData(std::vector<SetDataParams> multiDataParams)
+	{
+		PE_PROFILE_FUNCTION();
+
+		// Prepare map
+		size_t dataStart = 0;
+		size_t dataEnd = 0;
+		ShaderStorageBuffer::GetDataRange(multiDataParams, dataStart, dataEnd);
+
+		PE_CORE_ASSERT(dataStart < dataEnd, "Invalid buffer map range");
+
+		// Map full range of all data sets
+		m_CurrentMapOffset = dataStart;
+		m_CurrentMapSize = (dataEnd - dataStart);
+		m_Ptr = glMapNamedBufferRange(m_RendererID, m_CurrentMapOffset, m_CurrentMapSize, GL_MAP_WRITE_BIT);
+
+		// Individually copy each data pointer into mapped buffer
+		if (m_Ptr)
+		{
+			for (SetDataParams& data : multiDataParams)
+			{
+				uint8_t* shiftedPtr = static_cast<uint8_t*>(m_Ptr) + (data.offset - m_CurrentMapOffset); // incremented in bytes
+
+				memcpy((void*)shiftedPtr, data.data, data.size);
+			}
+			glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+			glUnmapNamedBuffer(m_RendererID);
+		}
+
+		m_Ptr = nullptr;
+		m_CurrentMapOffset = 0;
+		m_CurrentMapSize = 0;
+	}
+
 	void OpenGLShaderStorageBuffer::SetMappedDataPersistent(const void* data, size_t size, size_t offset)
 	{
 		PE_PROFILE_FUNCTION();
@@ -141,11 +189,57 @@ namespace PaulEngine
 		glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
 	}
 
+	void OpenGLShaderStorageBuffer::MultiSetMappedDataPersistent(std::vector<SetDataParams> multiDataParams)
+	{
+		PE_PROFILE_FUNCTION();
+
+		// Prepare map
+		size_t dataStart = 0;
+		size_t dataEnd = 0;
+		ShaderStorageBuffer::GetDataRange(multiDataParams, dataStart, dataEnd);
+
+		ValidatePersistentMapping(dataEnd - dataStart, dataStart);
+
+		if (m_Ptr)
+		{
+			for (SetDataParams& data : multiDataParams)
+			{
+				uint8_t* shiftedPtr = static_cast<uint8_t*>(m_Ptr) + (data.offset - m_CurrentMapOffset); // incremented in bytes
+
+				memcpy((void*)shiftedPtr, data.data, data.size);
+			}
+
+			glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+		}
+	}
+
 	void OpenGLShaderStorageBuffer::SetMappedDataCoherent(const void* data, size_t size, size_t offset)
 	{
 		PE_PROFILE_FUNCTION();
 		ValidatePersistentMapping(size, offset);
 		memcpy(m_Ptr, data, size);
+	}
+
+	void OpenGLShaderStorageBuffer::MultiSetMappedDataCoherent(std::vector<SetDataParams> multiDataParams)
+	{
+		PE_PROFILE_FUNCTION();
+
+		// Prepare map
+		size_t dataStart = 0;
+		size_t dataEnd = 0;
+		ShaderStorageBuffer::GetDataRange(multiDataParams, dataStart, dataEnd);
+
+		ValidatePersistentMapping(dataEnd - dataStart, dataStart);
+
+		if (m_Ptr)
+		{
+			for (SetDataParams& data : multiDataParams)
+			{
+				uint8_t* shiftedPtr = static_cast<uint8_t*>(m_Ptr) + (data.offset - m_CurrentMapOffset); // incremented in bytes
+
+				memcpy((void*)shiftedPtr, data.data, data.size);
+			}
+		}
 	}
 
 	void OpenGLShaderStorageBuffer::GetBufferSubData(void* destination, size_t sourceSize, size_t sourceOffset)

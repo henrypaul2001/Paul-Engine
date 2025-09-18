@@ -49,10 +49,41 @@ namespace PaulEngine
 	public:
 		virtual ~ShaderStorageBuffer() {}
 	
-		virtual void SetData(const void* data, size_t size, size_t offset = 0, const bool preferMap = true) = 0;
+		struct SetDataParams
+		{
+			const void* data = nullptr;
+			size_t size = 0;
+			size_t offset = 0;
+		};
+		virtual void SetData(SetDataParams dataParams, const bool preferMap = true) = 0;
+		virtual void MultiSetData(std::vector<SetDataParams> multiDataParams, const bool preferMap = true) = 0;
 		virtual void ReadData(void* destination, size_t sourceSize, size_t sourceOffset = 0, const bool preferMap = true) = 0;
 		virtual void Bind(uint32_t binding) = 0;
 		virtual void Bind() = 0;
+
+		static void GetDataRange(std::vector<SetDataParams> multiDataParams, size_t& out_Start, size_t& out_End)
+		{
+			size_t dataStart = std::numeric_limits<size_t>::max();
+			size_t dataEnd = 0;
+
+			for (SetDataParams& data : multiDataParams)
+			{
+				size_t currentStart = data.offset;
+				if (currentStart < dataStart)
+				{
+					dataStart = currentStart;
+				}
+
+				size_t currentEnd = currentStart + (data.size);
+				if (currentEnd > dataEnd)
+				{
+					dataEnd = currentEnd;
+				}
+			}
+
+			out_Start = dataStart;
+			out_End = dataEnd;
+		}
 
 		static Ref<ShaderStorageBuffer> Create(size_t size, uint32_t binding, const StorageBufferMapping mapping = StorageBufferMapping::None, const bool dynamicStorage = true);
 	};
