@@ -46,8 +46,17 @@ namespace PaulEngine
 
 		// Collect data pointers from pipeline bins
 		uint32_t offset = 0;
-		for (const DrawBatch<DRAWS_PER_BATCH>& batch : m_DrawBatches)
+		for (DrawBatch<DRAWS_PER_BATCH>& batch : m_DrawBatches)
 		{
+			// BaseInstance will be used to pass in the running instance count of all previous draw commands to the current draw command so that buffers can be indexed correctly in the shader
+			size_t instanceCount = 0;
+			std::vector<DrawElementsIndirectCommand>& drawCommands = batch.GetDrawCommands();
+			for (DrawElementsIndirectCommand& cmd : drawCommands)
+			{
+				cmd.BaseInstance = instanceCount;
+				instanceCount += cmd.InstanceCount;
+			}
+
 			uint32_t drawCount = (uint32_t)batch.DrawCount();
 			multiDataParams.push_back({ batch.data(), drawCount, offset });
 			offset += drawCount;

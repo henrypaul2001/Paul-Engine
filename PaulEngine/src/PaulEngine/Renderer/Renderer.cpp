@@ -264,8 +264,7 @@ namespace PaulEngine {
 				batchMaterials[i]->BindlessUpload(i);
 			}
 
-			const std::vector<MeshSubmissionData>& meshSubmissions = batch.GetMeshSubmissions();
-			s_RenderData.MeshDataBuffer->SetData({ meshSubmissions.data(), meshSubmissions.size() * sizeof(MeshSubmissionData), 0 }, true);
+			batch.UploadLocalMeshSubmissions(s_RenderData.MeshDataBuffer.get());
 			RenderCommand::MultiDrawIndexedIndirect(batch.DrawCount(), offset);
 			offset += batch.DrawCount();
 			s_RenderData.Stats.DrawCalls++;

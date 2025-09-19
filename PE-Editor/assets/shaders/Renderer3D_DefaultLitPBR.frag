@@ -105,7 +105,7 @@ struct MaterialValues
 	int padding0;
 	int padding1;
 };
-layout (binding = 3, std430) readonly buffer IMat_MaterialSSBO
+layout(binding = 3, std430) readonly buffer IMat_MaterialSSBO
 {
 	MaterialValues[] MaterialBuffer;
 };

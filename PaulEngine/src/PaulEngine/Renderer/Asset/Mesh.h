@@ -48,6 +48,15 @@ namespace PaulEngine
 		uint32_t BaseVertexIndex() const { return m_BaseVertexIndex; }
 		uint32_t BaseIndicesIndex() const { return m_BaseIndicesIndex; }
 
+		bool operator==(const Mesh& other) const {
+			return (
+				m_BaseVertexIndex == other.m_BaseVertexIndex &&
+				m_BaseIndicesIndex == other.m_BaseIndicesIndex &&
+				m_VertexCount == other.m_VertexCount &&
+				m_IndexCount == other.m_IndexCount
+			);
+		}
+
 		static Ref<VertexArray> GetMasterVAO() {
 			if (!s_MasterVertexArray.is_initialised()) { s_MasterVertexArray.init(); }
 			return s_MasterVertexArray.GetVertexArray();
