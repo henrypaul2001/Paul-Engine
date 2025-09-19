@@ -66,8 +66,6 @@ namespace PaulEngine
         std::vector<Interval> allocatedIndexMemory;
         float indexPercentAllocated = GetAllocationIntervals(indexFreeList, indexCountCapacity, allocatedIndexMemory);
 
-        ImGui::ShowDemoWindow();
-
 		ImGui::Begin("Mesh Pool Visualiser");
 
         PlotIntervals(allocatedVertexMemory, 0.0, 100.0, "Vertex Buffer", "Percentage", ImVec2(-1, 150));
