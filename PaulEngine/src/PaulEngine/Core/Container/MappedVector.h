@@ -95,11 +95,11 @@ namespace PaulEngine
 			}
 		}
 
-		Value& operator [](size_t index)
+		inline Value& operator [](size_t index)
 		{
 			return m_Values[index];
 		}
-		const Value& operator[](size_t index) const
+		inline const Value& operator[](size_t index) const
 		{
 			return m_Values[index];
 		}
