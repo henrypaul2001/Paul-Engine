@@ -20,7 +20,7 @@ struct MeshSubmission
 {
 	mat4 Transform;
 	int EntityID;
-	int padding0;
+	int MaterialIndex;
 	int padding1;
 	int padding2;
 };
@@ -30,7 +30,8 @@ layout(binding = 1, std430) readonly buffer MeshSubmissionSSBO {
 
 void main()
 {
-	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * MeshSubmissions[gl_DrawID].Transform * vec4(a_Position, 1.0);
+	const uint submissionIndex = gl_BaseInstance + gl_InstanceID;
+	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * MeshSubmissions[submissionIndex].Transform * vec4(a_Position, 1.0);
 }
 
 #type fragment

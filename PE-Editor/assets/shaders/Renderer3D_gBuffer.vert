@@ -16,11 +16,11 @@ layout(std140, binding = 0) uniform Camera
 
 struct MeshSubmission
 {
-    mat4 Transform;
-    int EntityID;
-    int padding0;
-    int padding1;
-    int padding2;
+	mat4 Transform;
+	int EntityID;
+	int MaterialIndex;
+	int padding1;
+	int padding2;
 };
 layout(binding = 1, std430) readonly buffer MeshSubmissionSSBO {
 	MeshSubmission MeshSubmissions[];
@@ -40,7 +40,8 @@ layout(location = 1) out VertexData v_VertexData;
 
 void main()
 {
-	mat4 Transform = MeshSubmissions[gl_DrawID].Transform;
+	const uint submissionIndex = gl_BaseInstance + gl_InstanceID;
+	mat4 Transform = MeshSubmissions[submissionIndex].Transform;
 
 	mat3 normalMatrix = mat3(transpose(inverse(Transform)));
 	v_VertexData.WorldFragPos = vec3(Transform * vec4(a_Position, 1.0));
@@ -54,7 +55,7 @@ void main()
 	vec3 B = cross(N, T);
 	v_VertexData.TBN = mat3(T, B, N);
 
-	v_EntityID = MeshSubmissions[gl_DrawID].EntityID;
+	v_EntityID = MeshSubmissions[submissionIndex].EntityID;
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }

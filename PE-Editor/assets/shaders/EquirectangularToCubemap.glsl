@@ -11,7 +11,7 @@ struct MeshSubmission
 {
 	mat4 Transform;
 	int EntityID;
-	int padding0;
+	int MaterialIndex;
 	int padding1;
 	int padding2;
 };
@@ -21,7 +21,8 @@ layout(binding = 1, std430) readonly buffer MeshSubmissionSSBO {
 
 void main()
 {
-	mat4 Transform = MeshSubmissions[gl_DrawID].Transform;
+	const uint submissionIndex = gl_BaseInstance + gl_InstanceID;
+	mat4 Transform = MeshSubmissions[submissionIndex].Transform;
 	gl_Position = Transform * vec4(a_Position, 1.0);
 }
 

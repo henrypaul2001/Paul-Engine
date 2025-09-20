@@ -11,7 +11,7 @@ struct MeshSubmission
 {
     mat4 Transform;
     int EntityID;
-    int padding0;
+    int MaterialIndex;
     int padding1;
     int padding2;
 };
@@ -23,8 +23,9 @@ layout(location = 0) out vec2 v_TexCoords;
 
 void main()
 {
+    const uint submissionIndex = gl_BaseInstance + gl_InstanceID;
 	v_TexCoords = a_TexCoords;
-	gl_Position = MeshSubmissions[gl_DrawID].Transform * vec4(a_Position, 1.0);
+	gl_Position = MeshSubmissions[submissionIndex].Transform * vec4(a_Position, 1.0);
 }
 
 #type fragment
