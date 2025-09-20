@@ -7,11 +7,11 @@ namespace PaulEngine
 {
 	// A utility class to manage an std::vector that only allows unique elements backed by an unordered_map but keeps insertion order
 	template <typename Key, typename Value>
-	class MappedVector
+	class mapped_vector
 	{
 	public:
-		MappedVector() : m_Values(), m_Map() {}
-		MappedVector(size_t initialCapacity) : m_Values(), m_Map() { reserve(initialCapacity); }
+		mapped_vector() : m_Values(), m_Map() {}
+		mapped_vector(size_t initialCapacity) : m_Values(), m_Map() { reserve(initialCapacity); }
 
 		inline const std::unordered_map<Key, size_t>& map() const { return m_Map; }
 		inline const std::vector<Value>& vector() const { return m_Values; }

@@ -50,8 +50,8 @@ namespace PaulEngine
 		inline const std::vector<DrawElementsIndirectCommand>& GetDrawCommands() const { return m_DrawCommands; }
 		inline std::vector<DrawElementsIndirectCommand>& GetDrawCommands() { return m_DrawCommands; }
 
-		inline const MappedVector<AssetHandle, Ref<Material>>& GetMaterialInstances() const { return m_MaterialInstances; }
-		inline MappedVector<AssetHandle, Ref<Material>>& GetMaterialInstances() { return m_MaterialInstances; }
+		inline const mapped_vector<AssetHandle, Ref<Material>>& GetMaterialInstances() const { return m_MaterialInstances; }
+		inline mapped_vector<AssetHandle, Ref<Material>>& GetMaterialInstances() { return m_MaterialInstances; }
 
 		inline const std::unordered_set<uint64_t>& GetDeviceTextureHandles() const { return m_DeviceTextureHandles; }
 		inline std::unordered_set<uint64_t>& GetDeviceTextureHandles() { return m_DeviceTextureHandles; }
@@ -199,7 +199,7 @@ namespace PaulEngine
 		std::vector<MeshSubmissionData> m_SingleInstanceMeshSubmissions;
 		std::vector<std::vector<MeshSubmissionData>> m_InstancedMeshSubmissions;
 
-		MappedVector<AssetHandle, Ref<Material>> m_MaterialInstances;
+		mapped_vector<AssetHandle, Ref<Material>> m_MaterialInstances;
 		std::unordered_set<uint64_t> m_DeviceTextureHandles;
 
 		size_t m_SubmissionCount = 0;
@@ -217,7 +217,7 @@ namespace PaulEngine
 			}
 		}
 
-		const MappedVector<RenderPipelineSpecification, RenderPipeline>& GetPipelines() const { return m_RenderPipelines; }
+		const mapped_vector<RenderPipelineSpecification, RenderPipeline>& GetPipelines() const { return m_RenderPipelines; }
 		const std::span<const DrawBatch<DRAWS_PER_BATCH>, std::dynamic_extent> GetDrawBatches() const
 		{
 			std::span<const DrawBatch<DRAWS_PER_BATCH>, std::dynamic_extent> span = std::span<const DrawBatch<DRAWS_PER_BATCH>>(m_DrawBatches);
@@ -245,7 +245,7 @@ namespace PaulEngine
 		size_t FindOrCreatePipelineIndex(const RenderPipelineSpecification& pipelineSpec);
 		DrawBatch<DRAWS_PER_BATCH>& CreateNewDrawBatch(size_t drawBatchIndex);
 
-		MappedVector<RenderPipelineSpecification, RenderPipeline> m_RenderPipelines;
+		mapped_vector<RenderPipelineSpecification, RenderPipeline> m_RenderPipelines;
 
 		// The draw batches vector will not reserve an initial capacity, there could only be 1 pipeline ever used in an application
 		// so no need to allocate more than that in that case (waste of potentially a lot of memory depending on max draw commands)

@@ -244,7 +244,7 @@ namespace PaulEngine {
 
 		batcher.UploadLocalDrawBuffer(s_RenderData.DrawCommandBuffer.get());
 
-		const MappedVector<RenderPipelineSpecification, RenderPipeline>& pipelines = batcher.GetPipelines();
+		const mapped_vector<RenderPipelineSpecification, RenderPipeline>& pipelines = batcher.GetPipelines();
 		const std::span<const DrawBatch<DRAWS_PER_BATCH>> drawBatches = batcher.GetDrawBatches();
 		size_t batchCount = drawBatches.size();
 		size_t offset = 0;
@@ -258,7 +258,7 @@ namespace PaulEngine {
 
 			pipeline.Bind();
 
-			const MappedVector<AssetHandle, Ref<Material>>& batchMaterials = batch.GetMaterialInstances();
+			const mapped_vector<AssetHandle, Ref<Material>>& batchMaterials = batch.GetMaterialInstances();
 			for (size_t i = 0; i < batchMaterials.size(); i++)
 			{
 				batchMaterials[i]->BindlessUpload(i);

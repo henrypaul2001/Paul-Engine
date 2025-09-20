@@ -25,7 +25,7 @@ namespace PaulEngine
 		DrawBatch<DRAWS_PER_BATCH>& batch = m_DrawBatches[pipelineIndex];
 
 		// Insert material
-		MappedVector<AssetHandle, Ref<Material>>& batchMaterials = batch.GetMaterialInstances();
+		mapped_vector<AssetHandle, Ref<Material>>& batchMaterials = batch.GetMaterialInstances();
 
 		std::pair<size_t, bool> materialIndex = batchMaterials.get_index_or_push_back(materialInstance->Handle, materialInstance);
 		if (!materialIndex.second)
