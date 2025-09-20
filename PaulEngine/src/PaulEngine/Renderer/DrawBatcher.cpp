@@ -41,6 +41,7 @@ namespace PaulEngine
 
 	void DrawBatcher::UploadLocalDrawBuffer(DrawIndirectBuffer* drawBuffer)
 	{
+		PE_PROFILE_FUNCTION();
 		std::vector<DrawIndirectBuffer::DrawIndirectSetDataParams> multiDataParams;
 		multiDataParams.reserve(m_DrawBatchesInUse);
 
@@ -67,6 +68,7 @@ namespace PaulEngine
 
 	void DrawBatcher::MakeBatchTexturesResident()
 	{
+		PE_PROFILE_FUNCTION();
 		std::span<const DrawBatch<DRAWS_PER_BATCH>> batches = GetDrawBatches();
 		for (auto& batch : batches)
 		{
@@ -80,6 +82,7 @@ namespace PaulEngine
 
 	void DrawBatcher::MakeBatchTexturesNonResident()
 	{
+		PE_PROFILE_FUNCTION();
 		std::span<const DrawBatch<DRAWS_PER_BATCH>> batches = GetDrawBatches();
 		for (auto& batch : batches)
 		{
@@ -104,6 +107,7 @@ namespace PaulEngine
 
 	DrawBatch<DRAWS_PER_BATCH>& DrawBatcher::CreateNewDrawBatch(size_t drawBatchIndex)
 	{
+		PE_PROFILE_FUNCTION();
 		// Prioritise re-using existing draw batches instead of re-allocating new ones
 		DrawBatch<DRAWS_PER_BATCH>& batch = (drawBatchIndex < m_DrawBatches.size()) ? m_DrawBatches[drawBatchIndex] : m_DrawBatches.emplace_back();
 		batch.init(drawBatchIndex);

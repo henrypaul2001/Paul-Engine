@@ -36,11 +36,9 @@ namespace PaulEngine
 	public:
 		DrawBatch()
 		{
-			//m_DrawCommands = std::vector<DrawElementsIndirectCommand>(DRAW_RESERVE_SIZE);
-			//m_MeshSubmissions = std::vector<MeshSubmissionData>(DRAW_RESERVE_SIZE);
 			m_DrawCommands.reserve(DRAW_RESERVE_SIZE);
 			m_SingleInstanceMeshSubmissions.reserve(DRAW_RESERVE_SIZE);
-			m_InstancedMeshSubmissions.reserve(10);
+			m_InstancedMeshSubmissions = reserved_vectors<MeshSubmissionData, DRAW_RESERVE_SIZE>(5);
 		}
 
 		inline size_t DrawCount() const { return m_DrawCommands.size(); }
@@ -60,6 +58,7 @@ namespace PaulEngine
 
 		void UploadLocalMeshSubmissions(ShaderStorageBuffer* storageBuffer) const
 		{
+			PE_PROFILE_FUNCTION();
 			std::vector<ShaderStorageBuffer::SetDataParams> multiDataParams;
 			multiDataParams.reserve(1 + m_InstancedMeshSubmissions.size());
 			
@@ -73,7 +72,8 @@ namespace PaulEngine
 				offset += m_SingleInstanceMeshSubmissions.size();
 			}
 
-			for (const std::vector<MeshSubmissionData>& buffer : m_InstancedMeshSubmissions)
+			std::span<const std::vector<MeshSubmissionData>> instancedBuffers = m_InstancedMeshSubmissions.get_inner_vectors();
+			for (const std::vector<MeshSubmissionData>& buffer : instancedBuffers)
 			{
 				uint32_t count = (uint32_t)buffer.size();
 				multiDataParams.push_back({ buffer.data(), count * meshSubmissionSize, offset * meshSubmissionSize });
@@ -98,6 +98,7 @@ namespace PaulEngine
 
 		void InsertSubmission(DrawElementsIndirectCommand cmd, MeshSubmissionData submission)
 		{
+			PE_PROFILE_FUNCTION();
 			DrawKey key = { cmd.BaseVertex, cmd.FirstIndex, cmd.Count };
 			auto it = m_DrawCommandMap.find(key);
 			if (it != m_DrawCommandMap.end())
@@ -129,13 +130,11 @@ namespace PaulEngine
 					m_SingleInstanceMeshSubmissions[drawIndex] = backCopy;
 					m_SingleInstanceMeshSubmissions.pop_back();
 
-					// TODO: avoid allocating buffers every frame, reserve on DrawBatch construction instead and keep track of m_InstancedMeshSubmissions.size() manually
-					std::vector<MeshSubmissionData> newInstancedBuffer;
-					newInstancedBuffer.reserve(DRAW_RESERVE_SIZE);
+					m_InstancedMeshSubmissions.create_new_inner_at_front();
+					std::vector<MeshSubmissionData>& newInstancedBuffer = m_InstancedMeshSubmissions.get_front();
 
 					newInstancedBuffer.push_back(transformedDrawCopy);
 					newInstancedBuffer.push_back(submission);
-					m_InstancedMeshSubmissions.insert(m_InstancedMeshSubmissions.begin(), newInstancedBuffer);
 
 					m_DrawCommands[newDrawIndex].InstanceCount++;
 				}
@@ -197,7 +196,7 @@ namespace PaulEngine
 		std::vector<DrawElementsIndirectCommand> m_DrawCommands;
 
 		std::vector<MeshSubmissionData> m_SingleInstanceMeshSubmissions;
-		std::vector<std::vector<MeshSubmissionData>> m_InstancedMeshSubmissions;
+		reserved_vectors<MeshSubmissionData, DRAW_RESERVE_SIZE> m_InstancedMeshSubmissions;
 
 		mapped_vector<AssetHandle, Ref<Material>> m_MaterialInstances;
 		std::unordered_set<uint64_t> m_DeviceTextureHandles;
