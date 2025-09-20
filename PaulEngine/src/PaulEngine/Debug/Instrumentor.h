@@ -203,7 +203,7 @@ namespace PaulEngine {
 }
 
 
-#define PE_PROFILE 1
+#define PE_PROFILE 0
 #if PE_PROFILE
 	#define PE_PROFILE_BEGIN_SESSION(name, filepath) ::PaulEngine::Instrumentor::Get().BeginSession(name, filepath)
 	#define PE_PROFILE_END_SESSION() ::PaulEngine::Instrumentor::Get().EndSession()
