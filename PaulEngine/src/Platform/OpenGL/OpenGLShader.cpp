@@ -510,11 +510,12 @@ namespace PaulEngine {
 				PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
 				uboSpec->BufferLayout.emplace_back(type, strippedName);
 
+				std::string unarrayedName = strippedName.substr(0, strippedName.find_last_of('['));
 				for (int i = 1; i < member.ArraySize; i++)
 				{
-					strippedName.replace(strippedName.size() - 2, 1, std::to_string(i));
-					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), strippedName.c_str());
-					uboSpec->BufferLayout.emplace_back(type, strippedName);
+					std::string arrayedName = unarrayedName + "[" + std::to_string(i) + "]";
+					PE_CORE_TRACE("       - {0}: ({1}) {2}", memberIndex++, ShaderDataTypeToString(type).c_str(), arrayedName.c_str());
+					uboSpec->BufferLayout.emplace_back(type, arrayedName);
 				}
 			}
 
