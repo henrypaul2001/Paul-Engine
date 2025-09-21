@@ -36,7 +36,8 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out VertexData v_VertexData;
+layout(location = 1) out flat uint v_MaterialIndex;
+layout(location = 2) out VertexData v_VertexData;
 
 void main()
 {
@@ -56,6 +57,7 @@ void main()
 	v_VertexData.TBN = mat3(T, B, N);
 
 	v_EntityID = MeshSubmissions[submissionIndex].EntityID;
+	v_MaterialIndex = uint(MeshSubmissions[submissionIndex].MaterialIndex);
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }

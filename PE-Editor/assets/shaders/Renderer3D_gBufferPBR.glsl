@@ -38,7 +38,8 @@ struct VertexData
 };
 
 layout(location = 0) out flat int v_EntityID;
-layout(location = 1) out VertexData v_VertexData;
+layout(location = 1) out flat uint v_MaterialIndex;
+layout(location = 2) out VertexData v_VertexData;
 
 void main()
 {
@@ -58,12 +59,14 @@ void main()
 	v_VertexData.TBN = mat3(T, B, N);
 
 	v_EntityID = MeshSubmissions[submissionIndex].EntityID;
+	v_MaterialIndex = uint(MeshSubmissions[submissionIndex].MaterialIndex);
 
 	gl_Position = u_CameraBuffer.Projection * u_CameraBuffer.View * vec4(v_VertexData.WorldFragPos, 1.0);
 }
 
 #type fragment
 #version 460 core
+#extension GL_ARB_bindless_texture : require
 layout(location = 0) out vec3 gViewPosition;
 layout(location = 1) out vec3 gWorldNormal;
 layout(location = 2) out vec3 gAlbedo;
@@ -82,7 +85,8 @@ struct VertexData
 };
 
 layout(location = 0) in flat int v_EntityID;
-layout(location = 1) in VertexData v_VertexData;
+layout(location = 1) in flat uint v_MaterialIndex;
+layout(location = 2) in VertexData v_VertexData;
 
 layout(std140, binding = 0) uniform Camera
 {
@@ -93,30 +97,40 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
-layout(std140, binding = 3) uniform Mat_MaterialValues
+struct MaterialValues
 {
 	vec4 Albedo;
+
 	float Metalness;
 	float Roughness;
 	float AO;
-
 	float HeightScale;
+
+	vec3 EmissionColour;
+	float EmissionStrength;
+
 	vec2 TextureScale;
+	sampler2D AlbedoMap;
+
+	sampler2D MetallicMap;
+	sampler2D RoughnessMap;
+
+	sampler2D AOMap;
+	sampler2D EmissionMap;
+
+	sampler2D NormalMap;
+	sampler2D DisplacementMap;
 
 	int UseNormalMap;
 	int UseDisplacementMap;
 
-	vec3 EmissionColour;
-	float EmissionStrength;
-} u_MaterialValues;
-
-layout(binding = 3) uniform sampler2D Mat_AlbedoMap;
-layout(binding = 4) uniform sampler2D Mat_NormalMap;
-layout(binding = 5) uniform sampler2D Mat_MetallicMap;
-layout(binding = 6) uniform sampler2D Mat_RoughnessMap;
-layout(binding = 7) uniform sampler2D Mat_AOMap;
-layout(binding = 8) uniform sampler2D Mat_DisplacementMap;
-layout(binding = 9) uniform sampler2D Mat_EmissionMap;
+	int padding0;
+	int padding1;
+};
+layout(binding = 3, std430) readonly buffer IMat_MaterialSSBO
+{
+	MaterialValues[] MaterialBuffer;
+};
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -132,19 +146,19 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 	float currentLayerDepth = 0.0f;
 
 	// amount to shift the texture coordinates per layer
-	vec2 P = tangentViewDir.xy * u_MaterialValues.HeightScale;
+	vec2 P = tangentViewDir.xy * MaterialBuffer[v_MaterialIndex].HeightScale;
 	vec2 deltaTexCoords = (P / numLayers);
 
 	// initial sample
 	vec2 currentTexCoords = texCoords;
-	float currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
+	float currentDepthMapValue = texture(MaterialBuffer[v_MaterialIndex].DisplacementMap, currentTexCoords).r;
 
 	float i = 0.0;
 	while (currentLayerDepth < currentDepthMapValue && i < 32.0) {
 		// shift coords along direction of P
 		currentTexCoords -= deltaTexCoords;
 
-		currentDepthMapValue = texture(Mat_DisplacementMap, currentTexCoords).r;
+		currentDepthMapValue = texture(MaterialBuffer[v_MaterialIndex].DisplacementMap, currentTexCoords).r;
 
 		currentLayerDepth += layerDepth;
 		i += 1.0;
@@ -154,7 +168,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 
 	// get depth after and before collision for interpolation
 	float afterDepth = currentDepthMapValue - currentLayerDepth;
-	float beforeDepth = texture(Mat_DisplacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+	float beforeDepth = texture(MaterialBuffer[v_MaterialIndex].DisplacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
 
 	// interpolate
 	float weight = afterDepth / (afterDepth - beforeDepth);
@@ -165,14 +179,16 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir)
 
 void main()
 {
+	MaterialValues materialValues = MaterialBuffer[v_MaterialIndex];
+
 	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
 	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
 
 	ScaledTexCoords = v_VertexData.TexCoords;
-	ScaledTexCoords *= u_MaterialValues.TextureScale;
+	ScaledTexCoords *= materialValues.TextureScale;
 
 	// Apply parallax mapping to TexCoords
-	if (u_MaterialValues.UseDisplacementMap != 0)
+	if (materialValues.UseDisplacementMap != 0)
 	{
 		ScaledTexCoords = ParallaxMapping(ScaledTexCoords, TangentViewDir);
 		//ScaledTexCoords = clamp(ScaledTexCoords, 0.0, 1.0);
@@ -180,30 +196,30 @@ void main()
 
 	// If no texture is provided, these samplers will sample a default 1x1 white texture.
 	// This results in no change to the underlying material value when they are multiplied
-	vec3 AlbedoSample = pow(texture(Mat_AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
-	vec3 EmissionSample = pow(texture(Mat_EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
-	float MetallicSample = texture(Mat_MetallicMap, ScaledTexCoords).r;
-	float RoughnessSample = texture(Mat_RoughnessMap, ScaledTexCoords).r;
-	float AOSample = texture(Mat_AOMap, ScaledTexCoords).r;
+	vec3 AlbedoSample = pow(texture(materialValues.AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	vec3 EmissionSample = pow(texture(materialValues.EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	float MetallicSample = texture(materialValues.MetallicMap, ScaledTexCoords).r;
+	float RoughnessSample = texture(materialValues.RoughnessMap, ScaledTexCoords).r;
+	float AOSample = texture(materialValues.AOMap, ScaledTexCoords).r;
 
 	vec3 Normal = normalize(v_VertexData.Normal);
-	if (u_MaterialValues.UseNormalMap != 0)
+	if (materialValues.UseNormalMap != 0)
 	{
-		Normal = texture(Mat_NormalMap, ScaledTexCoords).rgb;
+		Normal = texture(materialValues.NormalMap, ScaledTexCoords).rgb;
 		Normal = normalize(Normal * 2.0 - 1.0);
 		Normal = normalize(v_VertexData.TBN * Normal);
 	}
 
-	vec3 MaterialAlbedo = AlbedoSample * u_MaterialValues.Albedo.rgb;
-	vec3 MaterialEmission = EmissionSample * (u_MaterialValues.EmissionColour * u_MaterialValues.EmissionStrength);
-	float MaterialMetallic = MetallicSample * u_MaterialValues.Metalness;
-	float MaterialRoughness = RoughnessSample * u_MaterialValues.Roughness;
-	float MaterialAO = AOSample * u_MaterialValues.AO;
+	vec3 MaterialAlbedo = AlbedoSample * materialValues.Albedo.rgb;
+	vec3 MaterialEmission = EmissionSample * (materialValues.EmissionColour * materialValues.EmissionStrength);
+	float MaterialMetallic = MetallicSample * materialValues.Metalness;
+	float MaterialRoughness = RoughnessSample * materialValues.Roughness;
+	float MaterialAO = AOSample * materialValues.AO;
 
 	MaterialRoughness = clamp(MaterialRoughness, 0.0, 1.0);
 	MaterialMetallic = clamp(MaterialMetallic, 0.0, 1.0);
 
-	if (u_MaterialValues.Albedo.a == 0.0) { discard; }
+	if (materialValues.Albedo.a == 0.0) { discard; }
 	else
 	{
 		// Write to gBuffer

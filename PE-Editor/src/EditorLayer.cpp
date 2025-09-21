@@ -1705,7 +1705,7 @@ namespace PaulEngine
 				blend.Enabled = false;
 				DepthState depthState;
 				depthState.Test = false;
-				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+				Renderer::DrawDefaultQuadImmediate(material, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 				Renderer::EndScene();
 			}
@@ -1770,7 +1770,7 @@ namespace PaulEngine
 					blend.Enabled = false;
 					DepthState depthState;
 					depthState.Test = false;
-					Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+					Renderer::DrawDefaultQuadImmediate(ssaoMat, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 					Renderer::EndScene();
 
@@ -1796,7 +1796,7 @@ namespace PaulEngine
 						blend.Enabled = false;
 						DepthState depthState;
 						depthState.Test = false;
-						Renderer::SubmitDefaultQuad(blurMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+						Renderer::DrawDefaultQuadImmediate(boxBlurMaterial, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 						Renderer::EndScene();
 					}
@@ -1859,7 +1859,7 @@ namespace PaulEngine
 					blend.Enabled = false;
 					DepthState depthState;
 					depthState.Test = false;
-					Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+					Renderer::DrawDefaultQuadImmediate(ssrMat, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 					Renderer::EndScene();
 				}
@@ -1895,13 +1895,6 @@ namespace PaulEngine
 
 			if (activeCamera && sceneContext) {
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
-
-				// Submit screen quad
-				BlendState blend;
-				blend.Enabled = false;
-				DepthState depthState;
-				depthState.Test = false;
-				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 				{
 					PE_PROFILE_SCOPE("Submit lights");
@@ -2011,6 +2004,14 @@ namespace PaulEngine
 					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
 				}
 
+				// Submit screen quad
+				Ref<Material> mat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
+				BlendState blend;
+				blend.Enabled = false;
+				DepthState depthState;
+				depthState.Test = false;
+				Renderer::DrawDefaultQuadImmediate(mat, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+
 				Renderer::EndScene();
 			}
 		};
@@ -2053,13 +2054,6 @@ namespace PaulEngine
 			if (activeCamera) {
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
-				// Submit screen quad
-				BlendState blend;
-				blend.Enabled = false;
-				DepthState depthState;
-				depthState.Test = false;
-				Renderer::SubmitDefaultQuad(materialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
-
 				if (envMapInput)
 				{
 					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
@@ -2067,6 +2061,14 @@ namespace PaulEngine
 					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
 					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
 				}
+
+				// Submit screen quad
+				Ref<Material> mat = AssetManager::GetAsset<Material>(materialInput->MaterialHandle);
+				BlendState blend;
+				blend.Enabled = false;
+				DepthState depthState;
+				depthState.Test = false;
+				Renderer::DrawDefaultQuadImmediate(mat, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 				Renderer::EndScene();
 
@@ -2079,7 +2081,8 @@ namespace PaulEngine
 
 				Renderer::BeginScene(glm::mat4(1.0f), glm::mat4(1.0f), activeCamera->GetGamma(), activeCamera->GetExposure());
 
-				Renderer::SubmitDefaultQuad(passthroughMaterialInput->MaterialHandle, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
+				Ref<Material> passthroughMat = AssetManager::GetAsset<Material>(passthroughMaterialInput->MaterialHandle);
+				Renderer::DrawDefaultQuadImmediate(passthroughMat, glm::mat4(1.0f), depthState, FaceCulling::BACK, blend, -1);
 
 				Renderer::EndScene();
 			}
@@ -2559,24 +2562,7 @@ namespace PaulEngine
 			ImGui::DragFloat("Gamma", &m_Camera->Gamma, 0.01f, 0.0f, 100.0f);
 			ImGui::DragFloat("Exposure", &m_Camera->Exposure, 0.01f, 0.0f, 100.0f);
 			ImGui::Spacing();
-
-			//const Renderer::Statistics& stats = Renderer::GetStats();
-			//ImGui::SeparatorText("Renderer3D Stats:");
-			//ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			//ImGui::Text("Mesh Count: %d", stats.MeshCount);
-			//ImGui::Text("Pipeline Count: %d", stats.PipelineCount);
-			//
-			//ImGui::Spacing();
-			//
-			//const Renderer2D::Statistics& statsTwo = Renderer2D::GetStats();
-			//ImGui::SeparatorText("Renderer2D Stats:");
-			//ImGui::Text("Draw Calls: %d", statsTwo.DrawCalls);
-			//ImGui::Text("Quad Count: %d", statsTwo.QuadCount);
-			//ImGui::Text("Vertices: %d", statsTwo.GetTotalVertexCount());
-			//ImGui::Text("Indices: %d", statsTwo.GetTotalIndexCount());
-
-			ImGui::Spacing();
-
+			
 			ImGui::Text("Timestep (ms): %f", deltaTime.GetMilliseconds());
 			ImGui::Text("FPS: %d", (int)(1.0f / deltaTime.GetSeconds()));
 			ImGui::End();
