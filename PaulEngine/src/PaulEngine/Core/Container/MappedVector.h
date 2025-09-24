@@ -25,6 +25,9 @@ namespace PaulEngine
 		inline void reserve(size_t newCapacity) { m_Values.reserve(newCapacity); }
 		inline void shrink_to_fit() { m_Values.shrink_to_fit(); }
 
+		inline Value& back() { return m_Values.back(); }
+		inline const Value& back() const { return m_Values.back(); }
+
 		inline std::optional<size_t> get_index(const Key& key) const
 		{
 			auto it = find(key);
