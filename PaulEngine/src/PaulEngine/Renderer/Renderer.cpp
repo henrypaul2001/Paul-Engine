@@ -263,6 +263,12 @@ namespace PaulEngine {
 			{
 				batchMaterials[i]->BindlessUpload(i);
 			}
+			
+			// In the event that a binding only material is being used outside of DrawMeshImmediate(), bind the last material in the batch
+			if (batchMaterials.size() > 0)
+			{
+				batchMaterials.back()->BindingUpload(false);
+			}
 
 			batch.UploadLocalMeshSubmissions(s_RenderData.MeshDataBuffer.get());
 			RenderCommand::MultiDrawIndexedIndirect(batch.DrawCount(), offset);
