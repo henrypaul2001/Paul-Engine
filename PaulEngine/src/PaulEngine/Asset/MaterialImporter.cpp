@@ -654,11 +654,13 @@ namespace PaulEngine
 		out << YAML::Key << "ShaderHandle" << YAML::Value << material->m_ShaderHandle;
 		out << YAML::Key << "ShaderParams" << YAML::Value << YAML::BeginSeq;
 
-		for (auto& [name, parameter] : material->m_BindingParameters) {
+		for (auto& [name, parameterLookup] : material->m_ParameterMap) {
+			const auto& parameter = (parameterLookup.IsBinding) ? material->m_BindingParameters[parameterLookup.Index] : material->m_IndirectParameters[parameterLookup.Index];
+			
 			out << YAML::BeginMap;
 
 			out << YAML::Key << "Name" << YAML::Value << name;
-
+			
 			ShaderParameterType type = parameter->GetType();
 			out << YAML::Key << "Type" << YAML::Value << ShaderParameterTypeToString(type);
 

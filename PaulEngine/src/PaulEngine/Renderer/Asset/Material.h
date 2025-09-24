@@ -27,8 +27,10 @@ namespace PaulEngine
 
 		// Upload indirect material data (SSBO entries) into their respective, larger material buffers at a specified index
 		void BindlessUpload(uint32_t materialIndex);
+		void BindingUpload(bool includeBindless = true);
 
 		void AddBindingParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
+		void AddIndirectParameterType(const std::string& name, Ref<StorageBufferEntryShaderParameterTypeStorage> data);
 		void SetParameter(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data);
 
 		Ref<ShaderParamaterTypeStorageBase> GetParameter(const std::string& name);
@@ -49,7 +51,7 @@ namespace PaulEngine
 			return nullptr;
 		}
 
-		void ClearParameters() { m_BindingParameters.clear(); }
+		void ClearParameters() { m_BindingParameters.clear(); m_IndirectParameters.clear(); m_ParameterMap.clear(); }
 
 		void AddBindlessTextureHandlesToSet(std::unordered_set<uint64_t>* handleSet);
 		void LoadBindlessTextures();
@@ -60,7 +62,15 @@ namespace PaulEngine
 		friend class CreateMaterialWindow;
 		friend class Renderer;
 		AssetHandle m_ShaderHandle;
-		std::unordered_map<std::string, Ref<ShaderParamaterTypeStorageBase>> m_BindingParameters;
+
+		struct ParameterLookup
+		{
+			bool IsBinding;
+			size_t Index;
+		};
+		std::unordered_map<std::string, ParameterLookup> m_ParameterMap;
+		
+		std::vector<Ref<ShaderParamaterTypeStorageBase>> m_BindingParameters;
 		std::vector<Ref<StorageBufferEntryShaderParameterTypeStorage>> m_IndirectParameters;
 	};
 }

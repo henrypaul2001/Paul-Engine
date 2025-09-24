@@ -82,8 +82,7 @@ namespace PaulEngine
 			int32_t capacity = (ssboParam->DynamicArrayStart > -1) ? -1 : ssboParam->Size;
 
 			Ref<StorageBufferEntryShaderParameterTypeStorage> ssboEntry = CreateRef<StorageBufferEntryShaderParameterTypeStorage>(ssboParam->BufferLayout, storageBuffers[i], capacity);
-			AddBindingParameterType(strippedName, ssboEntry);
-			m_IndirectParameters.push_back(ssboEntry);
+			AddIndirectParameterType(strippedName, ssboEntry);
 		}
 	}
 
@@ -94,9 +93,7 @@ namespace PaulEngine
 		if (shaderAsset) {
 			shaderAsset->Bind();
 
-			for (auto& it : m_BindingParameters) {
-				it.second->Bind();
-			}
+			BindingUpload();
 
 			return;
 		}
@@ -106,9 +103,24 @@ namespace PaulEngine
 
 	void Material::BindlessUpload(uint32_t materialIndex)
 	{
-		for (auto indirectEntry : m_IndirectParameters)
+		for (auto& indirectEntry : m_IndirectParameters)
 		{
 			indirectEntry->BindlessUpload(materialIndex);
+		}
+	}
+
+	void Material::BindingUpload(bool includeBindless)
+	{
+		for (auto& it : m_BindingParameters) {
+			it->Bind();
+		}
+
+		if (includeBindless)
+		{
+			for (auto& indirectEntry : m_IndirectParameters)
+			{
+				indirectEntry->Bind();
+			}
 		}
 	}
 
@@ -126,9 +138,22 @@ namespace PaulEngine
 	void Material::AddBindingParameterType(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data)
 	{
 		PE_PROFILE_FUNCTION();
-		auto it = m_BindingParameters.find(name);
-		if (it == m_BindingParameters.end()) {
-			m_BindingParameters[name] = data;
+		auto it = m_ParameterMap.find(name);
+		if (it == m_ParameterMap.end()) {
+			m_ParameterMap[name] = { true, m_BindingParameters.size() };
+			m_BindingParameters.push_back(data);
+			return;
+		}
+		PE_CORE_ERROR("Name '{0}' already exists in shader parameters map", name);
+	}
+
+	void Material::AddIndirectParameterType(const std::string& name, Ref<StorageBufferEntryShaderParameterTypeStorage> data)
+	{
+		PE_PROFILE_FUNCTION();
+		auto it = m_ParameterMap.find(name);
+		if (it == m_ParameterMap.end()) {
+			m_ParameterMap[name] = { false, m_IndirectParameters.size() };
+			m_IndirectParameters.push_back(data);
 			return;
 		}
 		PE_CORE_ERROR("Name '{0}' already exists in shader parameters map", name);
@@ -137,9 +162,16 @@ namespace PaulEngine
 	void Material::SetParameter(const std::string& name, Ref<ShaderParamaterTypeStorageBase> data)
 	{
 		PE_PROFILE_FUNCTION();
-		auto it = m_BindingParameters.find(name);
-		if (it != m_BindingParameters.end()) {
-			it->second = data;
+		auto it = m_ParameterMap.find(name);
+		if (it != m_ParameterMap.end()) {
+			if (it->second.IsBinding)
+			{
+				m_BindingParameters[it->second.Index] = data;
+			}
+			else
+			{
+				m_IndirectParameters[it->second.Index] = std::static_pointer_cast<StorageBufferEntryShaderParameterTypeStorage>(data);
+			}
 		}
 		else {
 			PE_CORE_ERROR("Name '{0}' not found in shader parameters", name);
@@ -186,9 +218,16 @@ namespace PaulEngine
 	Ref<ShaderParamaterTypeStorageBase> Material::GetParameter(const std::string& name)
 	{
 		PE_PROFILE_FUNCTION();
-		auto it = m_BindingParameters.find(name);
-		if (it != m_BindingParameters.end()) {
-			return it->second;
+		auto it = m_ParameterMap.find(name);
+		if (it != m_ParameterMap.end()) {
+			if (it->second.IsBinding)
+			{
+				return m_BindingParameters[it->second.Index];
+			}
+			else
+			{
+				return m_IndirectParameters[it->second.Index];
+			}
 		}
 		else {
 			PE_CORE_ERROR("Name '{0}' not found in shader parameters", name);

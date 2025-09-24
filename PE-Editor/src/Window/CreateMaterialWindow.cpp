@@ -837,32 +837,34 @@ namespace PaulEngine
 				if (isShaderValid) {
 					const Ref<Shader> shaderAsset = AssetManager::GetAsset<Shader>(m_ShaderHandle);
 					int index = 0;
-					for (auto& it : m_Material->m_BindingParameters) {
+					for (auto& it : m_Material->m_ParameterMap) {
+						Ref<ShaderParamaterTypeStorageBase> parameter = (it.second.IsBinding) ? m_Material->m_BindingParameters[it.second.Index] : m_Material->m_IndirectParameters[it.second.Index];
+
 						ImGui::PushID(index);
-						switch (it.second->GetType()) {
+						switch (parameter->GetType()) {
 							case ShaderParameterType::UBO:
 							{
-								UBOShaderParameterTypeStorage* ubo = static_cast<UBOShaderParameterTypeStorage*>(it.second.get());
+								UBOShaderParameterTypeStorage* ubo = static_cast<UBOShaderParameterTypeStorage*>(parameter.get());
 								LocalShaderBuffer& localBuffer = ubo->UBO()->GetLocalBuffer();
 								DrawLocalShaderBufferMembersEdit(it.first, localBuffer);
 								break;
 							}
 							case ShaderParameterType::SSBO:
 							{
-								StorageBufferEntryShaderParameterTypeStorage* ssbo = static_cast<StorageBufferEntryShaderParameterTypeStorage*>(it.second.get());
+								StorageBufferEntryShaderParameterTypeStorage* ssbo = static_cast<StorageBufferEntryShaderParameterTypeStorage*>(parameter.get());
 								LocalShaderBuffer& localBuffer = ssbo->GetLocalBuffer();
 								DrawLocalShaderBufferMembersEdit(it.first, localBuffer);
 								break;
 							}
 							case ShaderParameterType::Sampler2D:
 							{
-								Sampler2DShaderParameterTypeStorage* sampler2D = static_cast<Sampler2DShaderParameterTypeStorage*>(it.second.get());
+								Sampler2DShaderParameterTypeStorage* sampler2D = static_cast<Sampler2DShaderParameterTypeStorage*>(parameter.get());
 								DrawSampler2DEdit(it.first, *sampler2D);
 								break;
 							}
 							case ShaderParameterType::Sampler2DArray:
 							{
-								Sampler2DArrayShaderParameterTypeStorage* sampler2Darray = static_cast<Sampler2DArrayShaderParameterTypeStorage*>(it.second.get());
+								Sampler2DArrayShaderParameterTypeStorage* sampler2Darray = static_cast<Sampler2DArrayShaderParameterTypeStorage*>(parameter.get());
 								DrawSampler2DArrayEdit(it.first, *sampler2Darray);
 								break;
 							}
