@@ -34,6 +34,7 @@ namespace PaulEngine
 		inline void MemCopy(const void* rawData, size_t size, size_t offset = 0)
 		{
 			m_Buffer.MemCopy(rawData, size, offset);
+			m_IsDirty = true;
 		}
 
 		const LocalShaderBuffer& GetLocalBuffer() const { return m_Buffer; }
