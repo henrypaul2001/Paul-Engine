@@ -138,6 +138,9 @@
     <ClInclude Include="src\PaulEngine\Core\Container\MappedVector.h">
       <Filter>src\PaulEngine\Core\Container</Filter>
     </ClInclude>
+    <ClInclude Include="src\PaulEngine\Core\Container\ReservedVectors.h">
+      <Filter>src\PaulEngine\Core\Container</Filter>
+    </ClInclude>
     <ClInclude Include="src\PaulEngine\Core\Core.h">
       <Filter>src\PaulEngine\Core</Filter>
     </ClInclude>
@@ -1641,7 +1644,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\PaulEngine\Core\Container\ReservedVectors.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PaulEngine\Asset\Asset.cpp">

@@ -20,6 +20,7 @@ IncludeDir["msdfgen"] = "PaulEngine/vendor/msdfgen/msdfgen"
 IncludeDir["msdf_atlas_gen"] = "PaulEngine/vendor/msdfgen/msdf-atlas-gen"
 IncludeDir["assimp"] = "PaulEngine/vendor/assimp/assimp/include"
 IncludeDir["assimp_config"] = "PaulEngine/vendor/assimp/_config_headers"
+IncludeDir["zlib"] = "PaulEngine/vendor/zlib"
 
 LibraryDir = {}
 LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"

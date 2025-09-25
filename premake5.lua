@@ -27,6 +27,7 @@ group "Dependencies"
 	include "PaulEngine/vendor/box2d"
 	include "PaulEngine/vendor/msdfgen"
 	include "PaulEngine/vendor/assimp"
+	include "PaulEngine/vendor/zlib"
 group ""
 
 project "PaulEngine"
@@ -85,7 +86,8 @@ project "PaulEngine"
 		"%{IncludeDir.msdfgen}",
 		"%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.assimp}",
-		"%{IncludeDir.assimp_config}"
+		"%{IncludeDir.assimp_config}",
+		"%{IncludeDir.zlib}"
 	}
 
 	links
@@ -97,7 +99,8 @@ project "PaulEngine"
 		"opengl32.lib",
 		"yaml-cpp",
 		"msdf-atlas-gen",
-		"assimp"
+		"assimp",
+		"zlib"
 	}
 
 	filter "files:PaulEngine/vendor/imguizmo/**.cpp"

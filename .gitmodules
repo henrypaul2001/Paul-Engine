@@ -28,3 +28,6 @@
 [submodule "PaulEngine/vendor/implot"]
 	path = PaulEngine/vendor/implot
 	url = https://github.com/epezent/implot.git
+[submodule "PaulEngine/vendor/zlib/zlib"]
+	path = PaulEngine/vendor/zlib/zlib
+	url = https://github.com/madler/zlib.git
