@@ -48,6 +48,12 @@ namespace PaulEngine
 			return (T*)m_Data;
 		}
 
+		template <typename T>
+		const T* As() const
+		{
+			return (const T*)m_Data;
+		}
+
 		operator bool() const
 		{
 			return (bool)m_Data;
@@ -72,6 +78,12 @@ namespace PaulEngine
 
 		template <typename T>
 		T* As()
+		{
+			return m_Buffer.As<T>();
+		}
+
+		template <typename T>
+		const T* As() const
 		{
 			return m_Buffer.As<T>();
 		}

@@ -1,0 +1,26 @@
+
+-------------------------------------------------
+BinaryTextureArray File (.BTA) Format Description
+-------------------------------------------------
+
+// Texture spec
+-  4 bytes: spec.Format
+-  4 bytes: spec.MinFilter
+-  4 bytes: spec.MagFilter
+-  4 bytes: spec.Wrap_S
+-  4 bytes: spec.Wrap_T
+-  4 bytes: spec.Wrap_R
+- 16 bytes: spec.Border
+-  4 bytes: spec.Width
+-  4 bytes: spec.Height
+-  1 byte : spec.GenerateMips
+
+// Layer info
+- 4 bytes: numLayers
+- 8 bytes: layerSize
+
+// Buffers
+n : numLayers
+{
+	- (n.bufferSize): n
+}

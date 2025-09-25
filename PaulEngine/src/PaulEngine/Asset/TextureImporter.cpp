@@ -58,18 +58,7 @@ namespace PaulEngine
 
 		PE_CORE_ASSERT(fin.is_open(), "Unable to open file");
 
-		// Read format
-		TextureSpecification spec;
-		fin.read((char*)&spec.Format, sizeof(ImageFormat));
-		fin.read((char*)&spec.MinFilter, sizeof(ImageMinFilter));
-		fin.read((char*)&spec.MagFilter, sizeof(ImageMagFilter));
-		fin.read((char*)&spec.Wrap_S, sizeof(ImageWrap));
-		fin.read((char*)&spec.Wrap_T, sizeof(ImageWrap));
-		fin.read((char*)&spec.Wrap_R, sizeof(ImageWrap));
-		fin.read((char*)&spec.Border, sizeof(glm::vec4));
-		fin.read((char*)&spec.Width, sizeof(uint32_t));
-		fin.read((char*)&spec.Height, sizeof(uint32_t));
-		fin.read((char*)&spec.GenerateMips, sizeof(bool));
+		TextureSpecification spec = ReadTextureSpecBinary(fin);
 
 		int numLayers = 0;
 		uint64_t bufferSize = 0;
@@ -122,17 +111,7 @@ namespace PaulEngine
 		std::ofstream fout;
 		fout.open(filepath, std::ios::out | std::ios::binary);
 
-		// Write format
-		fout.write((char*)&spec.Format, sizeof(ImageFormat));
-		fout.write((char*)&spec.MinFilter, sizeof(ImageMinFilter));
-		fout.write((char*)&spec.MagFilter, sizeof(ImageMagFilter));
-		fout.write((char*)&spec.Wrap_S, sizeof(ImageWrap));
-		fout.write((char*)&spec.Wrap_T, sizeof(ImageWrap));
-		fout.write((char*)&spec.Wrap_R, sizeof(ImageWrap));
-		fout.write((char*)&spec.Border, sizeof(glm::vec4));
-		fout.write((char*)&spec.Width, sizeof(uint32_t));
-		fout.write((char*)&spec.Height, sizeof(uint32_t));
-		fout.write((char*)&spec.GenerateMips, sizeof(bool));
+		WriteTextureSpecBinary(fout, spec);
 
 		// Write layer info
 		fout.write((char*)&numLayers, sizeof(int));
@@ -145,6 +124,122 @@ namespace PaulEngine
 
 		fout.close();
 		return true;
+	}
+
+	Ref<TextureCubemap> TextureImporter::ImportTextureCubemap(AssetHandle handle, const AssetMetadata& metadata)
+	{
+		PE_PROFILE_FUNCTION();
+		Ref<TextureCubemap> cubemap = ReadCubemapFile(Project::GetAssetDirectory() / metadata.FilePath);
+		cubemap->Handle = handle;
+		return cubemap;
+	}
+
+	Ref<TextureCubemap> TextureImporter::ReadCubemapFile(const std::filesystem::path& filepath)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(filepath.extension() == ".ccm", "Invalid file extension");
+
+		std::ifstream fin;
+		fin.open(filepath, std::ios::in | std::ios::binary);
+
+		PE_CORE_ASSERT(fin.is_open(), "Unable to open file");
+
+		TextureSpecification spec = ReadTextureSpecBinary(fin);
+
+		// Read faces
+		std::vector<Buffer> uncompressedFaces = std::vector<Buffer>(6);
+		for (int i = 0; i < 6; i++)
+		{
+			size_t uncompressedSize = 0;
+			size_t compressedSize = 0;
+			fin.read((char*)&uncompressedSize, sizeof(size_t));
+			fin.read((char*)&compressedSize, sizeof(size_t));
+
+			Buffer compressedFace = BinarySerializer::ReadBuffer(fin, compressedSize);
+			uncompressedFaces[i] = BinarySerializer::UncompressBuffer(compressedFace, uncompressedSize);
+			compressedFace.Release();
+		}
+
+		fin.close();
+
+		Ref<TextureCubemap> cubemap = TextureCubemap::Create(spec, uncompressedFaces);
+
+		for (Buffer b : uncompressedFaces) {
+			b.Release();
+		}
+
+		return cubemap;
+	}
+
+	bool TextureImporter::SaveCubemapFile(const std::filesystem::path& filepath, const Buffer uncompressedFaces[6], const TextureSpecification spec)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(filepath.extension() == ".ccm", "Invalid file extension");
+		
+		size_t uncompressedSize = uncompressedFaces[0].Size();
+		for (int i = 1; i < 6; i++)
+		{
+			PE_CORE_ASSERT(uncompressedFaces[i].Size() == uncompressedSize, "Cubemap faces must be same uncompressed size");
+		}
+		
+		int width = spec.Width;
+		int height = spec.Height;
+		int channels = NumChannels(spec.Format);
+		
+		PE_CORE_ASSERT(uncompressedSize == width * height * channels, "Invalid texture spec for buffer size");
+		
+		std::error_code error;
+		std::filesystem::create_directories(filepath.parent_path(), error);
+		
+		std::ofstream fout;
+		fout.open(filepath, std::ios::out | std::ios::binary);
+		
+		WriteTextureSpecBinary(fout, spec);
+
+		// Write faces
+		for (int i = 0; i < 6; i++)
+		{
+			Buffer compressedFace = BinarySerializer::CompressBuffer(uncompressedFaces[i]);
+			size_t compressedSize = compressedFace.Size();
+			fout.write((char*)&uncompressedSize, sizeof(size_t));
+			fout.write((char*)&compressedSize, sizeof(size_t));
+
+			if (!BinarySerializer::WriteBuffer(fout, compressedFace)) { fout.close(); compressedFace.Release(); return false; }
+			compressedFace.Release();
+		}
+		
+		fout.close();
+		return true;
+	}
+
+	void TextureImporter::WriteTextureSpecBinary(std::ofstream& fout, const TextureSpecification& spec)
+	{
+		fout.write((char*)&spec.Format, sizeof(ImageFormat));
+		fout.write((char*)&spec.MinFilter, sizeof(ImageMinFilter));
+		fout.write((char*)&spec.MagFilter, sizeof(ImageMagFilter));
+		fout.write((char*)&spec.Wrap_S, sizeof(ImageWrap));
+		fout.write((char*)&spec.Wrap_T, sizeof(ImageWrap));
+		fout.write((char*)&spec.Wrap_R, sizeof(ImageWrap));
+		fout.write((char*)&spec.Border, sizeof(glm::vec4));
+		fout.write((char*)&spec.Width, sizeof(uint32_t));
+		fout.write((char*)&spec.Height, sizeof(uint32_t));
+		fout.write((char*)&spec.GenerateMips, sizeof(bool));
+	}
+
+	TextureSpecification TextureImporter::ReadTextureSpecBinary(std::ifstream& fin)
+	{
+		TextureSpecification spec;
+		fin.read((char*)&spec.Format, sizeof(ImageFormat));
+		fin.read((char*)&spec.MinFilter, sizeof(ImageMinFilter));
+		fin.read((char*)&spec.MagFilter, sizeof(ImageMagFilter));
+		fin.read((char*)&spec.Wrap_S, sizeof(ImageWrap));
+		fin.read((char*)&spec.Wrap_T, sizeof(ImageWrap));
+		fin.read((char*)&spec.Wrap_R, sizeof(ImageWrap));
+		fin.read((char*)&spec.Border, sizeof(glm::vec4));
+		fin.read((char*)&spec.Width, sizeof(uint32_t));
+		fin.read((char*)&spec.Height, sizeof(uint32_t));
+		fin.read((char*)&spec.GenerateMips, sizeof(bool));
+		return spec;
 	}
 
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)

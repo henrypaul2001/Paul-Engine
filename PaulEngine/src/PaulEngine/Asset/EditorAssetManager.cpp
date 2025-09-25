@@ -27,7 +27,8 @@ namespace PaulEngine
 		{ ".glTF", AssetType::Model },
 		{ ".pmesh", AssetType::Mesh },
 		{ ".pfab", AssetType::Prefab },
-		{ ".hdr", AssetType::EnvironmentMap }
+		{ ".hdr", AssetType::EnvironmentMap },
+		{ ".ccm", AssetType::TextureCubemap }
 	};
 
 	static AssetType GetAssetTypeFromFileExtension(const std::filesystem::path& extension) {

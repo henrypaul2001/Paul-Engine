@@ -49,5 +49,22 @@ namespace PaulEngine
 		static Ref<Texture2DArray> ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata);
 		static Ref<Texture2DArray> ReadBTAFile(const std::filesystem::path& filepath);
 		static bool SaveBTAFile(const std::filesystem::path& filepath, std::vector<Buffer> layerBuffers, const TextureSpecification spec);
+
+		static Ref<TextureCubemap> ImportTextureCubemap(AssetHandle handle, const AssetMetadata& metadata);
+		static Ref<TextureCubemap> ReadCubemapFile(const std::filesystem::path& filepath);
+		/*
+		0: positiveX
+		1: negativeX
+		2: positiveY
+		3: negativeY
+		4: positiveZ
+		5: negativeZ
+		*/
+		static bool SaveCubemapFile(const std::filesystem::path& filepath, const Buffer uncompressedFaces[6], const TextureSpecification spec);
+	
+	private:
+		// TODO: Implement some kind of templated struct type with encode and decode similar to YAML template overrides for custom serialization
+		static void WriteTextureSpecBinary(std::ofstream& fout, const TextureSpecification& spec);
+		static TextureSpecification ReadTextureSpecBinary(std::ifstream& fin);
 	};
 }

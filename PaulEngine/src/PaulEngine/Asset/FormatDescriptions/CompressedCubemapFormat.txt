@@ -1,0 +1,46 @@
+
+-------------------------------------------------
+CompressedCubemap File (.CCM) Format Description
+-------------------------------------------------
+
+// Texture spec
+-  4 bytes: spec.Format
+-  4 bytes: spec.MinFilter
+-  4 bytes: spec.MagFilter
+-  4 bytes: spec.Wrap_S
+-  4 bytes: spec.Wrap_T
+-  4 bytes: spec.Wrap_R
+- 16 bytes: spec.Border
+-  4 bytes: spec.Width
+-  4 bytes: spec.Height
+-  1 byte : spec.GenerateMips
+
+// POSITIVE_X
+- 8 bytes: uncompressedSize
+- 8 bytes: compressedSize
+- (compressedSize): compressedData
+
+// NEGATIVE_X
+- 8 bytes: uncompressedSize
+- 8 bytes: compressedSize
+- (compressedSize): compressedData
+
+// POSITIVE_Y
+- 8 bytes: uncompressedSize
+- 8 bytes: compressedSize
+- (compressedSize): compressedData
+
+// NEGATIVE_Y
+- 8 bytes: uncompressedSize
+- 8 bytes: compressedSize
+- (compressedSize): compressedData
+
+// POSITIVE_Z
+- 8 bytes: uncompressedSize
+- 8 bytes: compressedSize
+- (compressedSize): compressedData
+
+// NEGATIVE_Z
+- 8 bytes: uncompressedSize
+- 8 bytes: compressedSize
+- (compressedSize): compressedData

@@ -63,7 +63,7 @@ namespace PaulEngine
 		return Buffer(uncompressedDst, dstLength);
 	}
 
-	bool BinarySerializer::WriteBuffer(std::ofstream& fout, Buffer& buffer)
+	bool BinarySerializer::WriteBuffer(std::ofstream& fout, const Buffer buffer)
 	{
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(fout.is_open(), "File stream must be open");

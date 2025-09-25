@@ -788,6 +788,9 @@
       <Project>{16CFA17C-0206-A30D-ABF2-881097081F0F}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\PaulEngine\Asset\FormatDescriptions\CompressedCubemapFormat.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
