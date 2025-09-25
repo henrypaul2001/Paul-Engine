@@ -1,8 +1,68 @@
 #include "pepch.h"
 #include "BinarySerializer.h"
 
+#include <zlib.h>
+
 namespace PaulEngine
 {
+	Buffer BinarySerializer::CompressBuffer(const Buffer buffer)
+	{
+		size_t srcLength = buffer.Size();
+		size_t dstLength = (size_t)((float)buffer.Size() * 1.5f);
+
+		const uint8_t* src = buffer.m_Data;
+		uint8_t* dst = (uint8_t*)malloc(dstLength);
+
+		int result = compress((Bytef*)dst, (uLongf*)&dstLength, (const Bytef*)src, (uLongf)srcLength);
+		if (result != Z_OK)
+		{
+			PE_CORE_ERROR("Error compressing buffer: zlib '{0}'", result);
+			free(dst);
+			return Buffer();
+		}
+
+		void* compressedDst = realloc((void*)dst, dstLength);
+		if (!compressedDst)
+		{
+			PE_CORE_ERROR("Error compressing buffer: realloc() fail");
+			free(dst);
+			return Buffer();
+		}
+
+		dst = nullptr;
+
+		return Buffer(compressedDst, dstLength);
+	}
+
+	Buffer BinarySerializer::UncompressBuffer(const Buffer buffer, const size_t expectedSize)
+	{
+		size_t srcLength = buffer.Size();
+		size_t dstLength = expectedSize;
+
+		const uint8_t* src = buffer.m_Data;
+		uint8_t* dst = (uint8_t*)malloc(expectedSize);
+
+		int result = uncompress((Bytef*)dst, (uLongf*)&dstLength, (const Bytef*)src, (uLongf)srcLength);
+		if (result != Z_OK)
+		{
+			PE_CORE_ERROR("Error uncompressing buffer: zlib '{0}'", result);
+			free(dst);
+			return Buffer();
+		}
+
+		void* uncompressedDst = realloc((void*)dst, dstLength);
+		if (!uncompressedDst)
+		{
+			PE_CORE_ERROR("Error uncompressing buffer: realloc() fail");
+			free(dst);
+			return Buffer();
+		}
+
+		dst = nullptr;
+
+		return Buffer(uncompressedDst, dstLength);
+	}
+
 	bool BinarySerializer::WriteBuffer(std::ofstream& fout, Buffer& buffer)
 	{
 		PE_PROFILE_FUNCTION();

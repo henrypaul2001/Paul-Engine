@@ -18,7 +18,7 @@ namespace PaulEngine
 		Buffer(const void* data, uint64_t size) : m_Data((uint8_t*)data), m_Size(size) {}
 		Buffer(const Buffer&) = default;
 
-		uint64_t Size() { return m_Size; }
+		uint64_t Size() const { return m_Size; }
 
 		static Buffer Copy(Buffer other)
 		{
@@ -68,7 +68,7 @@ namespace PaulEngine
 		}
 
 		uint8_t* Data() { return m_Buffer.m_Data; }
-		uint64_t Size() { return m_Buffer.Size(); }
+		uint64_t Size() const { return m_Buffer.Size(); }
 
 		template <typename T>
 		T* As()
