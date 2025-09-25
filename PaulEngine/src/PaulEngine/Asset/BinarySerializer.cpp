@@ -8,7 +8,7 @@ namespace PaulEngine
 	Buffer BinarySerializer::CompressBuffer(const Buffer buffer)
 	{
 		size_t srcLength = buffer.Size();
-		size_t dstLength = (size_t)((float)buffer.Size() * 1.5f);
+		size_t dstLength = buffer.Size() + 2; // 2 byte header
 
 		const uint8_t* src = buffer.m_Data;
 		uint8_t* dst = (uint8_t*)malloc(dstLength);
