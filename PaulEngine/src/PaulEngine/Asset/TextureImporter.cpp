@@ -2,6 +2,7 @@
 #include "TextureImporter.h"
 
 #include <stb_image.h>
+#include <stb_image_write.h>
 #include "PaulEngine/Project/Project.h"
 
 #include "AssetManager.h"
@@ -38,6 +39,32 @@ namespace PaulEngine
 		out_result.Height = height;
 		out_result.Channels = channels;
 		return Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
+	}
+
+	bool TextureImporter::SaveImageFile(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec, bool flipVertical)
+	{
+		stbi_flip_vertically_on_write(flipVertical);
+
+		if (!pixelData)
+		{
+			PE_CORE_ERROR("Null buffer");
+			return false;
+		}
+
+		if (spec.Width * spec.Height * PixelSize(spec.Format) != pixelData.Size())
+		{
+			PE_CORE_ERROR("Buffer / TextureSpecification mismatch");
+			return false;
+		}
+
+		bool success = stbi_write_png(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), (const void*)pixelData.m_Data, spec.Width * NumChannels(spec.Format));
+		if (!success)
+		{
+			PE_CORE_ERROR("Failed to save image to path: '{0}'", filepath.string());
+			return false;
+		}
+
+		return true;
 	}
 
 	Ref<Texture2DArray> TextureImporter::ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata)
