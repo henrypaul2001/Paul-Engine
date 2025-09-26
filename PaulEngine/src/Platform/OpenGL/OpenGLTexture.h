@@ -28,6 +28,7 @@ namespace PaulEngine {
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
 
 		virtual void SetData(Buffer data) override;
+		virtual Buffer GetData(uint8_t mipLevel) const override;
 
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;

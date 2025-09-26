@@ -67,6 +67,26 @@ namespace PaulEngine {
 		{ ImageFormat::RGBA32F,			4 }
 	};
 
+	static const std::unordered_map<ImageFormat, size_t> s_PixelSizes = {
+		{ ImageFormat::None,			0 },
+		{ ImageFormat::Depth16,			1 * 2},
+		{ ImageFormat::Depth24,			1 * 3 },
+		{ ImageFormat::Depth32,			1 * 4 },
+		{ ImageFormat::Depth24Stencil8, 1 * 4 },
+		{ ImageFormat::RED_INTEGER,		1 * 4 },
+		{ ImageFormat::R8,				1 * 1 },
+		{ ImageFormat::RG8,				2 * 1 },
+		{ ImageFormat::RGB8,			3 * 1 },
+		{ ImageFormat::RGBA8,			4 * 1 },
+		{ ImageFormat::R11FG11FB10F,	1 * 4 },
+		{ ImageFormat::RG16F,			2 * 2 },
+		{ ImageFormat::RGB16F,			3 * 2 },
+		{ ImageFormat::RGBA16F,			4 * 2 },
+		{ ImageFormat::RG32F,			2 * 4 },
+		{ ImageFormat::RGB32F,			3 * 4 },
+		{ ImageFormat::RGBA32F,			4 * 4 }
+	};
+
 	// Verifies channel count against requested image format.
 	// numChannels value set to real channel count of image format
 	static bool ValidateChannels(ImageFormat format, int& numChannels)
@@ -127,6 +147,13 @@ namespace PaulEngine {
 		return (it->second);
 	}
 
+	static size_t PixelSize(ImageFormat format)
+	{
+		auto it = s_PixelSizes.find(format);
+		PE_CORE_ASSERT(it != s_PixelSizes.end(), "Undefined format translation");
+		return (it->second);
+	}
+
 	class Texture : public Asset
 	{
 	public:
@@ -158,6 +185,8 @@ namespace PaulEngine {
 
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		virtual AssetType GetType() const override { return GetStaticType(); }
+
+		virtual Buffer GetData(uint8_t mipLevel = 0) const = 0;
 
 		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);
 		static void BindTexture(uint32_t slot, uint32_t id);

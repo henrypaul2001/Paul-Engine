@@ -110,11 +110,22 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 #ifdef PE_ENABLE_ASSERTS
+		// TODO: This can't be right. A pixels size in bytes is not equal to the number of channels. Investigate why this seems to work and add new function for getting true byte size of pixel from format
 		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
 		GenerateMipmaps();
+	}
+
+	Buffer OpenGLTexture2D::GetData(uint8_t mipLevel) const
+	{
+		size_t bufferSize = m_Width * m_Height * PixelSize(m_Spec.Format);
+		Buffer dataBuffer = Buffer(bufferSize);
+
+		glGetTextureImage(m_RendererID, mipLevel, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_UNSIGNED_BYTE, bufferSize, dataBuffer.m_Data);
+
+		return dataBuffer;
 	}
 
 	void OpenGLTexture2D::Clear(int value)
