@@ -129,12 +129,12 @@ namespace PaulEngine
 	Ref<TextureCubemap> TextureImporter::ImportTextureCubemap(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		PE_PROFILE_FUNCTION();
-		Ref<TextureCubemap> cubemap = ReadCubemapFile(Project::GetAssetDirectory() / metadata.FilePath);
+		Ref<TextureCubemap> cubemap = LoadTextureCubemap(Project::GetAssetDirectory() / metadata.FilePath);
 		cubemap->Handle = handle;
 		return cubemap;
 	}
 
-	Ref<TextureCubemap> TextureImporter::ReadCubemapFile(const std::filesystem::path& filepath)
+	Ref<TextureCubemap> TextureImporter::LoadTextureCubemap(const std::filesystem::path& filepath)
 	{
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(filepath.extension() == ".ccm", "Invalid file extension");

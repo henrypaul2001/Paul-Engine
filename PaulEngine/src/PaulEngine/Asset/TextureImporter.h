@@ -51,7 +51,7 @@ namespace PaulEngine
 		static bool SaveBTAFile(const std::filesystem::path& filepath, std::vector<Buffer> layerBuffers, const TextureSpecification spec);
 
 		static Ref<TextureCubemap> ImportTextureCubemap(AssetHandle handle, const AssetMetadata& metadata);
-		static Ref<TextureCubemap> ReadCubemapFile(const std::filesystem::path& filepath);
+		static Ref<TextureCubemap> LoadTextureCubemap(const std::filesystem::path& filepath);
 		/*
 		0: positiveX
 		1: negativeX
