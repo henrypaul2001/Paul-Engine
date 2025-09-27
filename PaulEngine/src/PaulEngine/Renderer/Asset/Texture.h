@@ -47,18 +47,31 @@ namespace PaulEngine {
 		return false;
 	}
 
+	static bool Is32BitLinearFormat(const ImageFormat format)
+	{
+		switch (format)
+		{
+			case ImageFormat::RED_INTEGER: return true;
+			case ImageFormat::Depth32: return  true;
+			case ImageFormat::RG32F: return true;
+			case ImageFormat::RGB32F: return true;
+			case ImageFormat::RGBA32F: return true;
+		}
+		return false;
+	}
+
 	static const std::unordered_map<ImageFormat, int> s_FormatChannels = {
 		{ ImageFormat::None,			0 },
 		{ ImageFormat::Depth16,			1 },
 		{ ImageFormat::Depth24,			1 },
 		{ ImageFormat::Depth32,			1 },
-		{ ImageFormat::Depth24Stencil8, 2 },
+		{ ImageFormat::Depth24Stencil8, 1 },
 		{ ImageFormat::RED_INTEGER,		1 },
 		{ ImageFormat::R8,				1 },
 		{ ImageFormat::RG8,				2 },
 		{ ImageFormat::RGB8,			3 },
 		{ ImageFormat::RGBA8,			4 },
-		{ ImageFormat::R11FG11FB10F,	3 },
+		{ ImageFormat::R11FG11FB10F,	1 },
 		{ ImageFormat::RG16F,			2 },
 		{ ImageFormat::RGB16F,			3 },
 		{ ImageFormat::RGBA16F,			4 },
@@ -67,24 +80,25 @@ namespace PaulEngine {
 		{ ImageFormat::RGBA32F,			4 }
 	};
 
+	// size in bytes
 	static const std::unordered_map<ImageFormat, size_t> s_PixelSizes = {
 		{ ImageFormat::None,			0 },
-		{ ImageFormat::Depth16,			1 * 2},
-		{ ImageFormat::Depth24,			1 * 3 },
-		{ ImageFormat::Depth32,			1 * 4 },
-		{ ImageFormat::Depth24Stencil8, 1 * 4 },
-		{ ImageFormat::RED_INTEGER,		1 * 4 },
-		{ ImageFormat::R8,				1 * 1 },
-		{ ImageFormat::RG8,				2 * 1 },
-		{ ImageFormat::RGB8,			3 * 1 },
-		{ ImageFormat::RGBA8,			4 * 1 },
-		{ ImageFormat::R11FG11FB10F,	1 * 4 },
-		{ ImageFormat::RG16F,			2 * 2 },
-		{ ImageFormat::RGB16F,			3 * 2 },
-		{ ImageFormat::RGBA16F,			4 * 2 },
-		{ ImageFormat::RG32F,			2 * 4 },
-		{ ImageFormat::RGB32F,			3 * 4 },
-		{ ImageFormat::RGBA32F,			4 * 4 }
+		{ ImageFormat::Depth16,			2 },
+		{ ImageFormat::Depth24,			3 },
+		{ ImageFormat::Depth32,			4 },
+		{ ImageFormat::Depth24Stencil8, 4 },
+		{ ImageFormat::RED_INTEGER,		4 },
+		{ ImageFormat::R8,				1 },
+		{ ImageFormat::RG8,				2 },
+		{ ImageFormat::RGB8,			3 },
+		{ ImageFormat::RGBA8,			4 },
+		{ ImageFormat::R11FG11FB10F,	4 },
+		{ ImageFormat::RG16F,			4 },
+		{ ImageFormat::RGB16F,			6 },
+		{ ImageFormat::RGBA16F,			8 },
+		{ ImageFormat::RG32F,			8 },
+		{ ImageFormat::RGB32F,			12 },
+		{ ImageFormat::RGBA32F,			16 }
 	};
 
 	// Verifies channel count against requested image format.
@@ -152,6 +166,64 @@ namespace PaulEngine {
 		auto it = s_PixelSizes.find(format);
 		PE_CORE_ASSERT(it != s_PixelSizes.end(), "Undefined format translation");
 		return (it->second);
+	}
+
+	static ImageFormat BuildImageFormat(uint8_t channels, uint8_t bytesPerPixel)
+	{
+		switch (channels)
+		{
+			case 1:
+				switch (bytesPerPixel)
+				{
+				case 1:
+					return ImageFormat::R8;
+				case 2:
+					return ImageFormat::Depth16;
+				case 3:
+					return ImageFormat::Depth24;
+				case 4:
+					return ImageFormat::Depth32;
+				}
+				break;
+			
+			case 2:
+				switch (bytesPerPixel)
+				{
+				case 2:
+					return ImageFormat::RG8;
+				case 4:
+					return ImageFormat::RG16F;
+				case 8:
+					return ImageFormat::RG32F;
+				}
+				break;
+
+			case 3:
+				switch (bytesPerPixel)
+				{
+				case 3:
+					return ImageFormat::RGB8;
+				case 6:
+					return ImageFormat::RGB16F;
+				case 12:
+					return ImageFormat::RGB32F;
+				}
+				break;
+			
+			case 4:
+				switch (bytesPerPixel)
+				{
+				case 4:
+					return ImageFormat::RGBA8;
+				case 8:
+					return ImageFormat::RGBA16F;
+				case 12:
+					return ImageFormat::RGBA32F;
+				}
+				break;
+			
+		}
+		return ImageFormat::None;
 	}
 
 	class Texture : public Asset
