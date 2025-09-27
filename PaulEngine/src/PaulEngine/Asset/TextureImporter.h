@@ -63,6 +63,13 @@ namespace PaulEngine
 		*/
 		static bool SaveCubemapFile(const std::filesystem::path& filepath, const Buffer uncompressedFaces[6], const TextureSpecification spec);
 	
+		static bool SaveImagePNG(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
+		static bool SaveImageBMP(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
+		static bool SaveImageTGA(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
+		// qualityLevel { 1, 100 }
+		static bool SaveImageJPG(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec, const uint8_t qualityLevel = 50);
+		static bool SaveImageHDR(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
+
 	private:
 		// TODO: Implement some kind of templated struct type with encode and decode similar to YAML template overrides for custom serialization
 		static void WriteTextureSpecBinary(std::ofstream& fout, const TextureSpecification& spec);

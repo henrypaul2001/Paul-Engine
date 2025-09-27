@@ -57,14 +57,58 @@ namespace PaulEngine
 			return false;
 		}
 
-		bool success = stbi_write_png(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), (const void*)pixelData.m_Data, spec.Width * NumChannels(spec.Format));
+		if (filepath.has_parent_path())
+		{
+			std::filesystem::path directory = filepath.parent_path();
+			if (!std::filesystem::exists(directory))
+			{
+				PE_CORE_DEBUG("Creating directory '{0}'", directory.string());
+				std::filesystem::create_directories(directory);
+			}
+		}
+
+		if (!filepath.has_extension())
+		{
+			// Default to png
+			filepath += ".png";
+		}
+
+		bool success = false;
+		std::filesystem::path extension = filepath.extension();
+		
+		std::string extensionString = extension.string();
+		std::transform(extensionString.begin(), extensionString.end(), extensionString.begin(), [](unsigned char c) { return std::tolower(c); } );
+		if (extensionString == ".png")
+		{
+			success = SaveImagePNG(filepath, pixelData, spec);
+		}
+		else if (extensionString == ".bmp")
+		{
+			success = SaveImageBMP(filepath, pixelData, spec);
+		}
+		else if (extensionString == ".tga")
+		{
+			success = SaveImageTGA(filepath, pixelData, spec);
+		}
+		else if (extensionString == ".jpg")
+		{
+			success = SaveImageJPG(filepath, pixelData, spec, jpgQualityLevel);
+		}
+		else if (extensionString == ".hdr")
+		{
+			success = SaveImageHDR(filepath, pixelData, spec);
+		}
+		else
+		{
+			PE_CORE_ERROR("Unsupported image file extension: '{0}'", extension.string());
+		}
+
 		if (!success)
 		{
 			PE_CORE_ERROR("Failed to save image to path: '{0}'", filepath.string());
-			return false;
 		}
 
-		return true;
+		return success;
 	}
 
 	Ref<Texture2DArray> TextureImporter::ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata)
@@ -267,6 +311,36 @@ namespace PaulEngine
 		fin.read((char*)&spec.Height, sizeof(uint32_t));
 		fin.read((char*)&spec.GenerateMips, sizeof(bool));
 		return spec;
+	}
+
+	bool TextureImporter::SaveImagePNG(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec)
+	{
+		return stbi_write_png(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), (const void*)pixelData.m_Data, spec.Width * NumChannels(spec.Format));
+	}
+
+	bool TextureImporter::SaveImageBMP(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec)
+	{
+		return stbi_write_bmp(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), (const void*)pixelData.m_Data);
+	}
+
+	bool TextureImporter::SaveImageTGA(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec)
+	{
+		return stbi_write_tga(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), (const void*)pixelData.m_Data);
+	}
+
+	bool TextureImporter::SaveImageJPG(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec, const uint8_t qualityLevel)
+	{
+		return stbi_write_jpg(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), (const void*)pixelData.m_Data, (int)qualityLevel);
+	}
+
+	bool TextureImporter::SaveImageHDR(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec)
+	{
+		if (!Is32BitLinearFormat(spec.Format))
+		{
+			PE_CORE_ERROR("HDR image format must be 32 bit linear (non interleaved)");
+			return false;
+		}
+		return stbi_write_hdr(filepath.string().c_str(), spec.Width, spec.Height, NumChannels(spec.Format), pixelData.As<float>());
 	}
 
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
