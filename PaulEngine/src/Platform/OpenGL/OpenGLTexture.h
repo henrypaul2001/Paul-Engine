@@ -58,6 +58,7 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+		GLenum m_PixelType;
 
 		uint64_t m_DeviceHandle;
 	};
@@ -108,6 +109,7 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+		GLenum m_PixelType;
 
 		uint64_t m_DeviceHandle;
 	};
@@ -153,6 +155,7 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+		GLenum m_PixelType;
 
 		uint64_t m_DeviceHandle;
 	};
@@ -203,6 +206,7 @@ namespace PaulEngine {
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
+		GLenum m_PixelType;
 
 		uint64_t m_DeviceHandle;
 	};

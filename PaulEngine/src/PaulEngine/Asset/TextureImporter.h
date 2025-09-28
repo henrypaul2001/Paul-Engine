@@ -24,15 +24,17 @@ namespace PaulEngine
 
 		struct ImageFileReadResult
 		{
-			int Width;
-			int Height;
-			int Channels;
+			uint32_t Width;
+			uint32_t Height;
+			uint8_t Channels;
+			uint8_t BytesPerPixel;
 
 			bool operator ==(const ImageFileReadResult& other) {
 				return (
 					Width == other.Width &&
 					Height == other.Height &&
-					Channels == other.Channels
+					Channels == other.Channels &&
+					BytesPerPixel == other.BytesPerPixel
 				);
 			}
 
@@ -40,12 +42,13 @@ namespace PaulEngine
 				return (
 					Width != other.Width ||
 					Height != other.Height ||
-					Channels != other.Channels
+					Channels != other.Channels ||
+					BytesPerPixel != other.BytesPerPixel
 				);
 			}
 		};
 		static Buffer ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical = true);
-		static bool SaveImageFile(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec, bool flipVertical = true);
+		static bool SaveImageFile(std::filesystem::path filepath, const Buffer pixelData, const TextureSpecification spec, bool flipVertical = true, const uint8_t jpgQualityLevel = 50);
 		
 		static Ref<Texture2DArray> ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata);
 		static Ref<Texture2DArray> ReadBTAFile(const std::filesystem::path& filepath);

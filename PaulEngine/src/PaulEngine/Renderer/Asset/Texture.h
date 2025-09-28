@@ -29,6 +29,7 @@ namespace PaulEngine {
 		RGB8,
 		RGBA8,
 		R11FG11FB10F,
+		R16F,
 		RG16F,
 		RGB16F,
 		RGBA16F,
@@ -72,6 +73,7 @@ namespace PaulEngine {
 		{ ImageFormat::RGB8,			3 },
 		{ ImageFormat::RGBA8,			4 },
 		{ ImageFormat::R11FG11FB10F,	1 },
+		{ ImageFormat::R16F,            1 },
 		{ ImageFormat::RG16F,			2 },
 		{ ImageFormat::RGB16F,			3 },
 		{ ImageFormat::RGBA16F,			4 },
@@ -93,6 +95,7 @@ namespace PaulEngine {
 		{ ImageFormat::RGB8,			3 },
 		{ ImageFormat::RGBA8,			4 },
 		{ ImageFormat::R11FG11FB10F,	4 },
+		{ ImageFormat::R16F,			2 },
 		{ ImageFormat::RG16F,			4 },
 		{ ImageFormat::RGB16F,			6 },
 		{ ImageFormat::RGBA16F,			8 },
@@ -178,7 +181,7 @@ namespace PaulEngine {
 				case 1:
 					return ImageFormat::R8;
 				case 2:
-					return ImageFormat::Depth16;
+					return ImageFormat::R16F;
 				case 3:
 					return ImageFormat::Depth24;
 				case 4:
@@ -258,6 +261,7 @@ namespace PaulEngine {
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		virtual AssetType GetType() const override { return GetStaticType(); }
 
+		// TODO: add this to other texture types
 		virtual Buffer GetData(uint8_t mipLevel = 0) const = 0;
 
 		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);

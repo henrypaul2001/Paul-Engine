@@ -17,6 +17,7 @@ namespace PaulEngine {
 			case ImageFormat::RGB8: return GL_RGB;
 			case ImageFormat::RGBA8: return GL_RGBA;
 			case ImageFormat::R11FG11FB10F: return GL_RGB;
+			case ImageFormat::R16F: return GL_RED;
 			case ImageFormat::RG16F: return GL_RG;
 			case ImageFormat::RGB16F: return GL_RGB;
 			case ImageFormat::RGBA16F: return GL_RGBA;
@@ -40,6 +41,7 @@ namespace PaulEngine {
 			case ImageFormat::RGB8: return GL_RGB8;
 			case ImageFormat::RGBA8: return GL_RGBA8;
 			case ImageFormat::R11FG11FB10F: return GL_R11F_G11F_B10F;
+			case ImageFormat::R16F: return GL_R16F;
 			case ImageFormat::RG16F: return GL_RG16F;
 			case ImageFormat::RGB16F: return GL_RGB16F;
 			case ImageFormat::RGBA16F: return GL_RGBA16F;
@@ -91,6 +93,33 @@ namespace PaulEngine {
 			PE_CORE_ASSERT(false, "Undefined image mag filter translation");
 			return 0;
 		}
+		GLenum PEImageFormatToGLPixelFormat(ImageFormat format)
+		{
+			PE_CORE_ASSERT(format != ImageFormat::None, "Undefined image format");
+			switch (format)
+			{
+			case ImageFormat::Depth16: return GL_UNSIGNED_INT;
+			case ImageFormat::Depth24: return GL_UNSIGNED_INT;
+			case ImageFormat::Depth32: return GL_FLOAT;
+			case ImageFormat::Depth24Stencil8: return GL_UNSIGNED_INT_24_8;
+			case ImageFormat::RED_INTEGER: return GL_INT;
+			case ImageFormat::R8: return GL_UNSIGNED_BYTE;
+			case ImageFormat::RG8: return GL_UNSIGNED_BYTE;
+			case ImageFormat::RGB8: return GL_UNSIGNED_BYTE;
+			case ImageFormat::RGBA8: return GL_UNSIGNED_BYTE;
+			case ImageFormat::R11FG11FB10F: return GL_UNSIGNED_INT_10F_11F_11F_REV;
+			case ImageFormat::R16F: return GL_HALF_FLOAT;
+			case ImageFormat::RG16F: return GL_HALF_FLOAT;
+			case ImageFormat::RGB16F: return GL_HALF_FLOAT;
+			case ImageFormat::RGBA16F: return GL_HALF_FLOAT;
+			case ImageFormat::RG32F: return GL_FLOAT;
+			case ImageFormat::RGB32F: return GL_FLOAT;
+			case ImageFormat::RGBA32F: return GL_FLOAT;
+			}
+
+			PE_CORE_ASSERT(false, "Undefined image format translation");
+			return 0;
+		}
 	}
 
 #pragma region Texture2D
@@ -111,32 +140,34 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 #ifdef PE_ENABLE_ASSERTS
 		// TODO: This can't be right. A pixels size in bytes is not equal to the number of channels. Investigate why this seems to work and add new function for getting true byte size of pixel from format
-		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
+		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, m_PixelType, data.m_Data);
 		GenerateMipmaps();
 	}
 
+	// TODO: bufferSize will be invalid when reading a mip level higher than 0 due to the smaller image size
 	Buffer OpenGLTexture2D::GetData(uint8_t mipLevel) const
 	{
 		size_t bufferSize = m_Width * m_Height * PixelSize(m_Spec.Format);
 		Buffer dataBuffer = Buffer(bufferSize);
 
-		glGetTextureImage(m_RendererID, mipLevel, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_UNSIGNED_BYTE, bufferSize, dataBuffer.m_Data);
+		glGetTextureImage(m_RendererID, mipLevel, m_DataFormat, m_PixelType, bufferSize, dataBuffer.m_Data);
 
 		return dataBuffer;
 	}
 
+	// TODO: Not sure if this is the right way to clear a texture by hardcoding GL_INT or GL_FLOAT based on parameter. It should be based on ImageFormat
 	void OpenGLTexture2D::Clear(int value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_INT, &value);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2D::Clear(float value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_FLOAT, &value);
 		GenerateMipmaps();
 	}
 
@@ -185,6 +216,7 @@ namespace PaulEngine {
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+		m_PixelType = OpenGLTextureUtils::PEImageFormatToGLPixelFormat(specification.Format);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 
@@ -251,22 +283,22 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(layer < m_NumLayers, "Layer index out of range");
 #ifdef PE_ENABLE_ASSERTS
-		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
+		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2DArray::Clear(int value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_INT, &value);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTexture2DArray::Clear(float value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_FLOAT, &value);
 		GenerateMipmaps();
 	}
 
@@ -304,6 +336,7 @@ namespace PaulEngine {
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+		m_PixelType = OpenGLTextureUtils::PEImageFormatToGLPixelFormat(specification.Format);
 
 		glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_RendererID);
 
@@ -373,24 +406,24 @@ namespace PaulEngine {
 	{
 		PE_PROFILE_FUNCTION();
 #ifdef PE_ENABLE_ASSERTS
-		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
+		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
 		// cubemaps are represented internally as a 2D texture array, so access a specific face using a z-offset
 		// cubemap arrays are represented as a 2D texture array with numLayers = 6 (faces) * cubemapArraySize. So z-offset for the "face" of cubemap index "i" would be: i * 6 + face;
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		glTextureSubImage3D(m_RendererID, 0, 0, 0, (int)face, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemap::Clear(int value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_INT, &value);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemap::Clear(float value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_FLOAT, &value);
 		GenerateMipmaps();
 	}
 
@@ -424,6 +457,7 @@ namespace PaulEngine {
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+		m_PixelType = OpenGLTextureUtils::PEImageFormatToGLPixelFormat(specification.Format);
 
 		faceData.resize(6, Buffer());
 
@@ -497,22 +531,22 @@ namespace PaulEngine {
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(layer < m_NumLayers, "Layer index out of range");
 #ifdef PE_ENABLE_ASSERTS
-		uint32_t sizeofpixel = NumChannels(m_Spec.Format);
+		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
 		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
 #endif
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, GL_UNSIGNED_BYTE, data.m_Data);
+		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemapArray::Clear(int value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_INT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_INT, &value);
 		GenerateMipmaps();
 	}
 
 	void OpenGLTextureCubemapArray::Clear(float value)
 	{
-		glClearTexImage(m_RendererID, 0, OpenGLTextureUtils::PEImageFormatToGLDataFormat(m_Spec.Format), GL_FLOAT, &value);
+		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_FLOAT, &value);
 		GenerateMipmaps();
 	}
 
@@ -548,6 +582,7 @@ namespace PaulEngine {
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+		m_PixelType = OpenGLTextureUtils::PEImageFormatToGLPixelFormat(specification.Format);
 
 		m_NumLayers = faceDataLayers.size();
 

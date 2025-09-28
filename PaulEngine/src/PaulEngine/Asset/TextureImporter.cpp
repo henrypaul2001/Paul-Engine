@@ -16,32 +16,53 @@ namespace PaulEngine
 {
 	Buffer TextureImporter::ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical)
 	{
-		int width, height, channels;
+		PE_PROFILE_FUNCTION();
+		std::string pathString = filepath.string();
+		
+		int width = 0, height = 0, channels = 0;
 		stbi_set_flip_vertically_on_load(flipVertical);
 
-		unsigned char* imageData = nullptr;
+		bool is16BIT = stbi_is_16_bit(pathString.c_str());
+		bool isHDR = stbi_is_hdr(pathString.c_str());
+
+		size_t bufferSize;
+		void* imageData = nullptr;
+		if (isHDR)
 		{
-			PE_PROFILE_SCOPE("stbi_load image");
-			std::string pathString = filepath.string();
-			imageData = stbi_load(pathString.c_str(), &width, &height, &channels, 0);
+			imageData = (void*)stbi_loadf(pathString.c_str(), &width, &height, &channels, 0);
+			bufferSize = sizeof(uint32_t) * (width * height * channels);
+			out_result.BytesPerPixel = sizeof(uint32_t) * channels;
+		}
+		else if (is16BIT)
+		{
+			imageData = (void*)stbi_load_16(pathString.c_str(), &width, &height, &channels, 0);
+			bufferSize = sizeof(uint16_t) * (width * height * channels);
+			out_result.BytesPerPixel = sizeof(uint16_t) * channels;
+		}
+		else
+		{
+			imageData = (void*)stbi_load(pathString.c_str(), &width, &height, &channels, 0);
+			bufferSize = sizeof(uint8_t) * (width * height * channels);
+			out_result.BytesPerPixel = sizeof(uint8_t) * channels;
 		}
 
 		if (imageData == nullptr)
 		{
-			PE_CORE_ERROR("Failed to load image at path: '{0}'", filepath.string());
+			PE_CORE_ERROR("Failed to load image at path: '{0}'", pathString);
 			out_result.Width = 0;
 			out_result.Height = 0;
 			out_result.Channels = 0;
+			out_result.BytesPerPixel = 0;
 			return Buffer();
 		}
 
 		out_result.Width = width;
 		out_result.Height = height;
 		out_result.Channels = channels;
-		return Buffer(imageData, sizeof(unsigned char) * (width * height * channels));
+		return Buffer(imageData, bufferSize);
 	}
 
-	bool TextureImporter::SaveImageFile(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec, bool flipVertical)
+	bool TextureImporter::SaveImageFile(std::filesystem::path filepath, const Buffer pixelData, const TextureSpecification spec, bool flipVertical, const uint8_t jpgQualityLevel)
 	{
 		stbi_flip_vertically_on_write(flipVertical);
 
@@ -362,20 +383,14 @@ namespace PaulEngine
 		spec.Width = result.Width;
 		spec.Height = result.Height;
 
-		switch (result.Channels)
+		spec.Format = BuildImageFormat(result.Channels, result.BytesPerPixel);
+		if (spec.Format == ImageFormat::None)
 		{
-		case 4:
-			spec.Format = ImageFormat::RGBA8;
-			break;
-		case 3:
-			spec.Format = ImageFormat::RGB8;
-			break;
-		case 2:
-			spec.Format = ImageFormat::RG8;
-			break;
-		case 1:
-			spec.Format = ImageFormat::R8;
-			break;
+			PE_CORE_WARN("No image format matches input: {0} channel(s) with {1} bytes per pixel", result.Channels, result.BytesPerPixel);
+			
+			// Fall back to num channels only
+			spec.Format = BuildImageFormat(result.Channels, result.Channels);
+			PE_CORE_ASSERT(spec.Format != ImageFormat::None, "Failed to create image format from file read");
 		}
 
 		Ref<Texture2D> texture = Texture2D::Create(spec, data);
@@ -387,38 +402,35 @@ namespace PaulEngine
 	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& filepath, TextureSpecification spec)
 	{
 		PE_PROFILE_FUNCTION();
-
+		
 		ImageFileReadResult result;
 		Buffer data = ReadImageFile(filepath, result);
+
+		uint8_t specChannels = (uint8_t)NumChannels(spec.Format);
+		uint8_t specBPP = (uint8_t)PixelSize(spec.Format);
+		if (result.Channels != specChannels || result.BytesPerPixel != specBPP)
+		{
+			PE_CORE_WARN("ImageFormat mismatch in LoadTexture2D. Overriding image format");
+			PE_CORE_WARN("    - Channels found  in image: {0}", result.Channels);
+			PE_CORE_WARN("    - Channels found  in  spec: {0}", specChannels);
+			PE_CORE_WARN("    - Bytes per pixel in image: {0}", result.BytesPerPixel);
+			PE_CORE_WARN("    - Bytes per pixel in  spec: {0}", specBPP);
+
+			spec.Format = BuildImageFormat(result.Channels, result.BytesPerPixel);
+			if (spec.Format == ImageFormat::None)
+			{
+				PE_CORE_ERROR("No image format matches input: {0} channel(s) with {1} bytes per pixel", result.Channels, result.BytesPerPixel);
+				PE_CORE_ASSERT(false, "Failed to create image format from file read");
+			}
+		}
 
 		spec.Width = result.Width;
 		spec.Height = result.Height;
 
-		int channels = result.Channels;
-		bool validateChannels = ValidateChannels(spec.Format, result.Channels);
-
-		if (!validateChannels)
-		{
-			PE_CORE_WARN("ImageFormat mismatch in LoadTexture2D. Overriding image format");
-			PE_CORE_WARN("    - Channels found in image: {0}", result.Channels);
-			PE_CORE_WARN("    - Channels found in  spec: {0}", channels);
-
-			switch (result.Channels)
-			{
-			case 4:
-				spec.Format = ImageFormat::RGBA8;
-				break;
-			case 3:
-				spec.Format = ImageFormat::RGB8;
-				break;
-			case 2:
-				spec.Format = ImageFormat::RG8;
-				break;
-			case 1:
-				spec.Format = ImageFormat::R8;
-				break;
-			}
-		}
+		//if (Texture2D::floatData)
+		//{
+		//	std::vector<float> floatData(data.As<float>(), data.As<float>() + (data.Size() / sizeof(float)));
+		//}
 
 		Ref<Texture2D> texture = Texture2D::Create(spec, data);
 		data.Release();
