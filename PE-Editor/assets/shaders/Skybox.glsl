@@ -40,5 +40,6 @@ layout(std140, binding = 0) uniform Camera
 
 void main()
 {
-	f_Colour = pow(texture(Mat_Skybox, v_TexCoords), vec4(vec3(u_CameraBuffer.Gamma), 1.0));
+	//f_Colour = pow(texture(Mat_Skybox, v_TexCoords), vec4(vec3(u_CameraBuffer.Gamma), 1.0));
+	f_Colour = texture(Mat_Skybox, v_TexCoords);
 }
