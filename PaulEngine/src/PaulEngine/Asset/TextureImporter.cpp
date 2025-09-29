@@ -33,12 +33,14 @@ namespace PaulEngine
 			bufferSize = sizeof(uint32_t) * (width * height * channels);
 			out_result.BytesPerPixel = sizeof(uint32_t) * channels;
 		}
-		else if (is16BIT)
-		{
-			imageData = (void*)stbi_load_16(pathString.c_str(), &width, &height, &channels, 0);
-			bufferSize = sizeof(uint16_t) * (width * height * channels);
-			out_result.BytesPerPixel = sizeof(uint16_t) * channels;
-		}
+		// TODO: Add some kind of LoadRequest struct so the user can specifiy requested colour channels and bit depth
+		// Disabled 16bit loading due to issues with problematic assets producing unexpected results (example: TestProject/assets/textures/brick_wall/displacement.png has two 32 bit channels red and alpha which stbi perceives as a 16 bit texture)
+		//else if (is16BIT)
+		//{
+		//	imageData = (void*)stbi_load_16(pathString.c_str(), &width, &height, &channels, 0);
+		//	bufferSize = sizeof(uint16_t) * (width * height * channels);
+		//	out_result.BytesPerPixel = sizeof(uint16_t) * channels;
+		//}
 		else
 		{
 			imageData = (void*)stbi_load(pathString.c_str(), &width, &height, &channels, 0);
