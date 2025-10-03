@@ -51,6 +51,24 @@ namespace PaulEngine
 			return std::static_pointer_cast<T>(asset);
 		}
 
+		// Add a loaded asset to the asset manager as procedural
+		// Returns false if asset is already tracked
+		bool TrackAsset(Ref<Asset> assetInstance, bool persistent = false)
+		{
+			if (IsAssetLoaded(assetInstance->Handle)) { return false; }
+			if (IsAssetRegistered(assetInstance->Handle)) { return false; }
+		
+			AssetType assetType = assetInstance->GetType();
+			PE_CORE_ASSERT(assetType != AssetType::None, "Cannot track asset with type of 'AssetType::None'");
+
+			AddToLoadedAssets(assetInstance, persistent);
+			AssetMetadata metadata;
+			metadata.Type = assetType;
+			metadata.Persistent = persistent;
+			RegisterAsset(assetInstance->Handle, metadata);
+			return true;
+		}
+
 	protected:
 		virtual void AddToLoadedAssets(Ref<Asset> asset, bool persistent = false) = 0;
 	};

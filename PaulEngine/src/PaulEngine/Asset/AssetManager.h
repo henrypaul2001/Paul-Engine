@@ -30,6 +30,15 @@ namespace PaulEngine
 			return nullptr;
 		}
 
+		// Add a loaded asset to the asset manager as procedural
+		// Returns false if asset is already tracked
+		static bool TrackAsset(const Ref<Asset>& assetInstance, bool persistent = false)
+		{
+			Ref<Project> project = Project::GetActive();
+			if (project) { return project->GetAssetManager()->TrackAsset(assetInstance, persistent); }
+			else { return false; }
+		}
+
 		static bool IsAssetHandleValid(AssetHandle handle)
 		{
 			Ref<Project> project = Project::GetActive();
