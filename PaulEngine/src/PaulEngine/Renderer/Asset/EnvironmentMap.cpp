@@ -359,4 +359,34 @@ namespace PaulEngine
 
 		tempFBO->Unbind();
 	}
+
+	template<>
+	size_t BinarySerializer::SerializeAssetBinary<EnvironmentMap>(EnvironmentMap& asset, std::ostream& stream)
+	{
+		PE_CORE_ASSERT(stream.good(), "Invalid stream state");
+
+		size_t dataSize = sizeof(AssetHandle) * 3;
+		AssetType type = AssetType::EnvironmentMap;
+
+		WriteBinary(&dataSize, stream);
+		WriteBinary(&type, stream);
+
+		WriteBinary(&asset.m_BaseCubemapHandle, stream);
+		WriteBinary(&asset.m_IrradianceCubemapHandle, stream);
+		WriteBinary(&asset.m_PrefilteredCubemapHandle, stream);
+
+		return dataSize;
+	}
+
+	template<>
+	bool BinarySerializer::DeserializeAssetBinaryData<EnvironmentMap>(EnvironmentMap& asset, std::istream& stream)
+	{
+		PE_CORE_ASSERT(stream.good(), "Invalid stream state");
+
+		asset.m_BaseCubemapHandle = ReadBinary<AssetHandle>(stream);
+		asset.m_IrradianceCubemapHandle = ReadBinary<AssetHandle>(stream);
+		asset.m_PrefilteredCubemapHandle = ReadBinary<AssetHandle>(stream);
+
+		return stream.good();
+	}
 }

@@ -85,4 +85,19 @@ namespace PaulEngine
 
 		return Buffer(data, size);
 	}
+
+	bool BinarySerializer::DeserializePAssetHeader(std::istream& stream, size_t& dataSize, AssetType& assetType)
+	{
+		PE_CORE_ASSERT(stream.good(), "Invalid stream state");
+
+		dataSize = ReadBinary<size_t>(stream);
+
+		if (!stream.good()) { PE_CORE_ERROR("Error reading data size"); return false; }
+
+		assetType = ReadBinary<AssetType>(stream);
+
+		if (!stream.good()) { PE_CORE_ERROR("Error reading asset type"); return false; }
+
+		return true;
+	}
 }

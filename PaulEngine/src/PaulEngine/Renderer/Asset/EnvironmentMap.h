@@ -10,6 +10,8 @@ namespace PaulEngine
 	class EnvironmentMap : public Asset
 	{
 	public:
+		EnvironmentMap() : m_BaseCubemapHandle(0), m_IrradianceCubemapHandle(0), m_PrefilteredCubemapHandle(0) {}
+
 		// Generates an environment map: basecubemap, irradiance cubemap and prefiltered cubemap from a .hdr equirectangular source file
 		// No caching yet
 		EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset = false);
@@ -26,6 +28,7 @@ namespace PaulEngine
 		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 	private:
+		friend class BinarySerializer;
 		static void InitEnvMapProcessing();
 		static void GenerateBRDFLut();
 
@@ -44,19 +47,10 @@ namespace PaulEngine
 		static AssetHandle s_BRDFLutMaterialHandle;
 		static AssetHandle s_BRDFLutTextureHandle;
 	};
+
+	template <>
+	size_t BinarySerializer::SerializeAssetBinary<EnvironmentMap>(EnvironmentMap& asset, std::ostream& stream);
+
+	template <>
+	bool BinarySerializer::DeserializeAssetBinaryData<EnvironmentMap>(EnvironmentMap& asset, std::istream& stream);
 }
-
-/*
-
-class EnvironmentMap : public Asset
-	AssetType::EnvironmentMap
-
-AssetMetadata filepath points to an equirectangular .hdr file
-
-- When importing this asset, the base hdr file will be converted to a cubemap stored inside the environment map class
-- Then the generated cubemap will be processed such as convolution which will also be stored in the environment map class
-  as a seperate cubemap
-
-- The processed cubemaps will be cached in the engine assets/cache/ibl/(HDRName)/ folder similar to how shaders are cached
-- In the future, there will be a custom cubemap asset file type. So, for now, these cached cubemaps will be stored as individual faces
-*/

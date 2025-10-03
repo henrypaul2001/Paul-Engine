@@ -7,5 +7,6 @@ namespace PaulEngine
 	{
 	public:
 		static Ref<Asset> ImportAsset(AssetHandle handle, const AssetMetadata& metadata);
+		static Ref<Asset> ImportAssetFromSource(AssetHandle handle, const AssetMetadata& metadata);
 	};
 }

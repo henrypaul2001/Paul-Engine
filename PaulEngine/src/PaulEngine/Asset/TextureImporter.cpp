@@ -429,11 +429,6 @@ namespace PaulEngine
 		spec.Width = result.Width;
 		spec.Height = result.Height;
 
-		//if (Texture2D::floatData)
-		//{
-		//	std::vector<float> floatData(data.As<float>(), data.As<float>() + (data.Size() / sizeof(float)));
-		//}
-
 		Ref<Texture2D> texture = Texture2D::Create(spec, data);
 		data.Release();
 
