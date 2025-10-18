@@ -1204,7 +1204,9 @@ namespace PaulEngine
 		for (int i = 0; i < 6; i++)
 		{
 			TextureImporter::ImageFileReadResult result;
-			faceData.push_back(TextureImporter::ReadImageFile(facePaths[i], result, false));
+			Load2DParams params = facePaths[i];
+			params.FlipVertical = false;
+			faceData.push_back(TextureImporter::ReadImageFile(params, result));
 		}
 
 		TextureSpecification skyboxSpec;

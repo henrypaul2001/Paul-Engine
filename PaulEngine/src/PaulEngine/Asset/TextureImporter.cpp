@@ -14,39 +14,57 @@
 
 namespace PaulEngine
 {
-	Buffer TextureImporter::ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical)
+	void* STBI_LoadAs8Bit(const char* path, int* width, int* height, int* channels_in_file, int desired_channels, TextureImporter::ImageFileReadResult& out_result)
+	{
+		void* imageData = (void*)stbi_load(path, width, height, channels_in_file, desired_channels);
+		out_result.BytesPerPixel = sizeof(uint8_t) * *channels_in_file;
+		return imageData;
+	}
+	void* STBI_LoadAs16Bit(const char* path, int* width, int* height, int* channels_in_file, int desired_channels, TextureImporter::ImageFileReadResult& out_result)
+	{
+		void* imageData = (void*)stbi_load_16(path, width, height, channels_in_file, desired_channels);
+		out_result.BytesPerPixel = sizeof(uint16_t) * *channels_in_file;
+		return imageData;
+	}
+	void* STBI_LoadAs32Bit(const char* path, int* width, int* height, int* channels_in_file, int desired_channels, TextureImporter::ImageFileReadResult& out_result)
+	{
+		void* imageData = (void*)stbi_loadf(path, width, height, channels_in_file, desired_channels);
+		out_result.BytesPerPixel = sizeof(uint32_t) * *channels_in_file;
+		return imageData;
+	}
+
+	Buffer TextureImporter::ReadImageFile(const Load2DParams& loadParams, ImageFileReadResult& out_result)
 	{
 		PE_PROFILE_FUNCTION();
-		std::string pathString = filepath.string();
+		std::string pathString = loadParams.Filepath.string();
 		
 		int width = 0, height = 0, channels = 0;
-		stbi_set_flip_vertically_on_load(flipVertical);
+		stbi_set_flip_vertically_on_load(loadParams.FlipVertical);
 
-		bool is16BIT = stbi_is_16_bit(pathString.c_str());
-		bool isHDR = stbi_is_hdr(pathString.c_str());
+		Load2DBitDepth loadAs = loadParams.DesiredBitDepth;
+		if (loadAs == Load2DBitDepth::AUTO)
+		{
+			if (stbi_is_hdr(pathString.c_str())) { loadAs = Load2DBitDepth::BIT32; }
+			else if (stbi_is_16_bit(pathString.c_str())) { loadAs = Load2DBitDepth::BIT16; }
+			else { loadAs = Load2DBitDepth::BIT8; }
+		}
 
-		size_t bufferSize;
+		size_t bufferSize = 0;
 		void* imageData = nullptr;
-		if (isHDR)
+		switch (loadAs)
 		{
-			imageData = (void*)stbi_loadf(pathString.c_str(), &width, &height, &channels, 0);
-			bufferSize = sizeof(uint32_t) * (width * height * channels);
-			out_result.BytesPerPixel = sizeof(uint32_t) * channels;
+		case BIT8:
+			imageData = STBI_LoadAs8Bit(pathString.c_str(), &width, &height, &channels, loadParams.DesiredChannels, out_result);
+			break;
+		case BIT16:
+			imageData = STBI_LoadAs16Bit(pathString.c_str(), &width, &height, &channels, loadParams.DesiredChannels, out_result);
+			break;
+		case BIT32:
+			imageData = STBI_LoadAs32Bit(pathString.c_str(), &width, &height, &channels, loadParams.DesiredChannels, out_result);
+			break;
 		}
-		// TODO: Add some kind of LoadRequest struct so the user can specifiy requested colour channels and bit depth
-		// Disabled 16bit loading due to issues with problematic assets producing unexpected results (example: TestProject/assets/textures/brick_wall/displacement.png has two 32 bit channels red and alpha which stbi perceives as a 16 bit texture)
-		//else if (is16BIT)
-		//{
-		//	imageData = (void*)stbi_load_16(pathString.c_str(), &width, &height, &channels, 0);
-		//	bufferSize = sizeof(uint16_t) * (width * height * channels);
-		//	out_result.BytesPerPixel = sizeof(uint16_t) * channels;
-		//}
-		else
-		{
-			imageData = (void*)stbi_load(pathString.c_str(), &width, &height, &channels, 0);
-			bufferSize = sizeof(uint8_t) * (width * height * channels);
-			out_result.BytesPerPixel = sizeof(uint8_t) * channels;
-		}
+
+		bufferSize = out_result.BytesPerPixel * (width * height);
 
 		if (imageData == nullptr)
 		{
@@ -369,17 +387,22 @@ namespace PaulEngine
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		PE_PROFILE_FUNCTION();
-		Ref<Texture2D> texture = LoadTexture2D(Project::GetAssetDirectory() / metadata.FilePath);
+		// Disabled 16bit loading due to issues with problematic assets producing unexpected results 
+		// (example: TestProject/assets/textures/brick_wall/displacement.png has two 32 bit channels 
+		// red and alpha which stbi perceives as a 16 bit texture)
+		Load2DParams params = Project::GetAssetDirectory() / metadata.FilePath;
+		params.DesiredBitDepth = Load2DBitDepth::BIT8;
+		Ref<Texture2D> texture = LoadTexture2D(params);
 		texture->Handle = handle;
 		return texture;
 	}
 
-	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& filepath)
+	Ref<Texture2D> TextureImporter::LoadTexture2D(const Load2DParams& loadParams)
 	{
 		PE_PROFILE_FUNCTION();
 
 		ImageFileReadResult result;
-		Buffer data = ReadImageFile(filepath, result);
+		Buffer data = ReadImageFile(loadParams, result);
 
 		TextureSpecification spec;
 		spec.Width = result.Width;
@@ -401,12 +424,12 @@ namespace PaulEngine
 		return texture;
 	}
 
-	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& filepath, TextureSpecification spec)
+	Ref<Texture2D> TextureImporter::LoadTexture2D(const Load2DParams& loadParams, TextureSpecification spec)
 	{
 		PE_PROFILE_FUNCTION();
 		
 		ImageFileReadResult result;
-		Buffer data = ReadImageFile(filepath, result);
+		Buffer data = ReadImageFile(loadParams, result);
 
 		uint8_t specChannels = (uint8_t)NumChannels(spec.Format);
 		uint8_t specBPP = (uint8_t)PixelSize(spec.Format);

@@ -7,12 +7,31 @@
 
 namespace PaulEngine
 {
+	enum Load2DBitDepth
+	{
+		AUTO = 0,
+		BIT8,
+		BIT16,
+		BIT32
+	};
+	struct Load2DParams
+	{
+		Load2DParams(const char* filepath) : Filepath(filepath), DesiredChannels(0), DesiredBitDepth(AUTO), FlipVertical(true) {}
+		Load2DParams(const std::string& filepath) : Filepath(filepath), DesiredChannels(0), DesiredBitDepth(AUTO), FlipVertical(true) {}
+		Load2DParams(const std::filesystem::path& filepath) : Filepath(filepath), DesiredChannels(0), DesiredBitDepth(AUTO), FlipVertical(true) {}
+		Load2DParams(const std::filesystem::path& filepath, uint8_t desiredChannels, Load2DBitDepth desiredBitDepth, bool flipVertical) : Filepath(filepath), DesiredChannels(desiredChannels), DesiredBitDepth(desiredBitDepth), FlipVertical(flipVertical) {}
+		std::filesystem::path Filepath;
+		uint8_t DesiredChannels = 0;
+		Load2DBitDepth DesiredBitDepth = AUTO;
+		bool FlipVertical = true;
+	};
+
 	class TextureImporter
 	{
 	public:
 		static Ref<Texture2D> ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata);
-		static Ref<Texture2D> LoadTexture2D(const std::filesystem::path& filepath);
-		static Ref<Texture2D> LoadTexture2D(const std::filesystem::path& filepath, TextureSpecification spec);
+		static Ref<Texture2D> LoadTexture2D(const Load2DParams& loadParams);
+		static Ref<Texture2D> LoadTexture2D(const Load2DParams& loadParams, TextureSpecification spec);
 		static Ref<Texture2D> LoadTexture2D(Buffer dataBuffer, TextureSpecification spec);
 
 		static Ref<TextureAtlas2D> ImportTextureAtlas2D(AssetHandle handle, const AssetMetadata& metadata);
@@ -47,7 +66,7 @@ namespace PaulEngine
 				);
 			}
 		};
-		static Buffer ReadImageFile(const std::filesystem::path& filepath, ImageFileReadResult& out_result, bool flipVertical = true);
+		static Buffer ReadImageFile(const Load2DParams& loadParams, ImageFileReadResult& out_result);
 		static bool SaveImageFile(std::filesystem::path filepath, const Buffer pixelData, const TextureSpecification spec, bool flipVertical = true, const uint8_t jpgQualityLevel = 50);
 		
 		static Ref<Texture2DArray> ImportTexture2DArray(AssetHandle handle, const AssetMetadata& metadata);
