@@ -299,6 +299,36 @@ namespace PaulEngine {
 		GenerateMipmaps();
 	}
 
+	Buffer OpenGLTexture2DArray::GetData(uint8_t layer, uint8_t numLayers, uint8_t mipLevel) const
+	{
+		if (layer + numLayers > m_NumLayers)
+		{
+			PE_CORE_WARN("Attempting to retrieve excess layers in 2D texture array");
+			uint8_t availableLayers = m_NumLayers - layer;
+			PE_CORE_WARN("    {0} requested, {1} available", numLayers, availableLayers);
+			numLayers = availableLayers;
+		}
+
+		if (numLayers == 0) { return Buffer(); }
+
+		uint32_t mipWidth = m_Width;
+		uint32_t mipHeight = m_Height;
+
+		if (mipLevel > 0)
+		{
+			// divide by power of 2
+			mipWidth = std::max(1u, m_Width >> mipLevel);
+			mipHeight = std::max(1u, m_Height >> mipLevel);
+		}
+
+		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format) * numLayers;
+		Buffer dataBuffer = Buffer(bufferSize);
+
+		glGetTextureSubImage(m_RendererID, mipLevel, 0, 0, layer, mipWidth, mipHeight, numLayers, m_DataFormat, m_PixelType, bufferSize, dataBuffer.m_Data);
+
+		return dataBuffer;
+	}
+
 	void OpenGLTexture2DArray::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_INT, &value);
@@ -424,6 +454,26 @@ namespace PaulEngine {
 		GenerateMipmaps();
 	}
 
+	Buffer OpenGLTextureCubemap::GetData(CubemapFace face, uint8_t mipLevel) const
+	{
+		uint32_t mipWidth = m_Width;
+		uint32_t mipHeight = m_Height;
+
+		if (mipLevel > 0)
+		{
+			// divide by power of 2
+			mipWidth = std::max(1u, m_Width >> mipLevel);
+			mipHeight = std::max(1u, m_Height >> mipLevel);
+		}
+
+		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format);
+		Buffer dataBuffer = Buffer(bufferSize);
+
+		glGetTextureSubImage(m_RendererID, mipLevel, 0, 0, (GLint)face, mipWidth, mipHeight, 1, m_DataFormat, m_PixelType, bufferSize, dataBuffer.m_Data);
+
+		return dataBuffer;
+	}
+
 	void OpenGLTextureCubemap::Clear(int value)
 	{
 		glClearTexImage(m_RendererID, 0, m_DataFormat, GL_INT, &value);
@@ -545,6 +595,34 @@ namespace PaulEngine {
 #endif
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
 		GenerateMipmaps();
+	}
+
+	Buffer OpenGLTextureCubemapArray::GetData(CubemapFace face, uint8_t layer, uint8_t mipLevel) const
+	{
+		if (layer >= m_NumLayers)
+		{
+			PE_CORE_WARN("Attempting to retrieve excess layers in cubemap texture array");
+			uint8_t availableLayers = m_NumLayers - 1;
+			PE_CORE_WARN("    {0} requested, {1} available", layer, availableLayers);
+			layer = availableLayers;
+		}
+
+		uint32_t mipWidth = m_Width;
+		uint32_t mipHeight = m_Height;
+
+		if (mipLevel > 0)
+		{
+			// divide by power of 2
+			mipWidth = std::max(1u, m_Width >> mipLevel);
+			mipHeight = std::max(1u, m_Height >> mipLevel);
+		}
+
+		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format);
+		Buffer dataBuffer = Buffer(bufferSize);
+
+		glGetTextureSubImage(m_RendererID, mipLevel, 0, 0, layer * 6 + (GLint)face, mipWidth, mipHeight, 1, m_DataFormat, m_PixelType, bufferSize, dataBuffer.m_Data);
+
+		return dataBuffer;
 	}
 
 	void OpenGLTextureCubemapArray::Clear(int value)

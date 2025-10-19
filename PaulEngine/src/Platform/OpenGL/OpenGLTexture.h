@@ -82,6 +82,8 @@ namespace PaulEngine {
 		virtual void SetData(Buffer data) override;
 		virtual void SetData(Buffer data, uint8_t layer) override;
 
+		virtual Buffer GetData(uint8_t layer, uint8_t numLayers = 1, uint8_t mipLevel = 0) const override;
+
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
@@ -131,6 +133,8 @@ namespace PaulEngine {
 		virtual void SetData(Buffer data) override;
 		virtual void SetData(Buffer data, CubemapFace face) override;
 
+		virtual Buffer GetData(CubemapFace face, uint8_t mipLevel = 0) const override;
+
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;
 
@@ -178,6 +182,8 @@ namespace PaulEngine {
 
 		virtual void SetData(Buffer data) override;
 		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) override;
+
+		virtual Buffer GetData(CubemapFace face, uint8_t layer, uint8_t mipLevel = 0) const override;
 
 		virtual void Clear(int value) override;
 		virtual void Clear(float value) override;

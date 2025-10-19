@@ -261,7 +261,6 @@ namespace PaulEngine {
 		static AssetType GetStaticType() { return AssetType::Texture2D; }
 		virtual AssetType GetType() const override { return GetStaticType(); }
 
-		// TODO: add this to other texture types
 		virtual Buffer GetData(uint8_t mipLevel = 0) const = 0;
 
 		static void CreateTextures(bool multisampled, uint32_t* out_ID, uint32_t count);
@@ -278,6 +277,7 @@ namespace PaulEngine {
 		virtual uint8_t GetNumLayers() const = 0;
 
 		virtual void SetData(Buffer data, uint8_t layer) = 0;
+		virtual Buffer GetData(uint8_t layer, uint8_t numLayers = 1, uint8_t mipLevel = 0) const = 0;
 	};
 
 	class TextureCubemap : public Texture
@@ -289,6 +289,7 @@ namespace PaulEngine {
 		virtual AssetType GetType() const override { return AssetType::TextureCubemap; }
 
 		virtual void SetData(Buffer data, CubemapFace face) = 0;
+		virtual Buffer GetData(CubemapFace face, uint8_t mipLevel = 0) const = 0;
 	};
 
 	class TextureCubemapArray : public Texture
@@ -302,6 +303,7 @@ namespace PaulEngine {
 		virtual uint8_t GetNumLayers() const = 0;
 
 		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) = 0;
+		virtual Buffer GetData(CubemapFace face, uint8_t layer, uint8_t mipLevel = 0) const = 0;
 	};
 
 	class DeviceHandleTracker
