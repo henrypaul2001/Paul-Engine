@@ -102,6 +102,31 @@ namespace PaulEngine
 		return it->second;
 	}
 
+	bool EditorAssetManager::UpdateAssetSourcePath(const AssetHandle targetAssetHandle, const std::filesystem::path& newPath)
+	{
+		// Check validity
+		auto it = m_AssetRegistry.find(targetAssetHandle);
+		if (it == m_AssetRegistry.end()) {
+			return false;
+		}
+
+		// Remove old path
+		const std::filesystem::path& oldPath = it->second.FilePath;
+		auto fileRegIt = m_SourceFileRegistry.find(oldPath);
+		if (fileRegIt != m_SourceFileRegistry.end())
+		{
+			m_SourceFileRegistry.erase(oldPath);
+		}
+
+		// Set new filepath
+		m_SourceFileRegistry[newPath] = targetAssetHandle;
+		it->second.FilePath = newPath;
+
+		SerializeAssetRegistry();
+
+		return true;
+	}
+
 	bool EditorAssetManager::IsAssetTempLoaded(AssetHandle handle) const
 	{
 		return (m_TempAssets.find(handle) != m_TempAssets.end());
@@ -110,6 +135,20 @@ namespace PaulEngine
 	bool EditorAssetManager::IsAssetPersistentLoaded(AssetHandle handle) const
 	{
 		return (m_PersistentAssets.find(handle) != m_PersistentAssets.end());
+	}
+
+	bool EditorAssetManager::ValidateAsset(AssetHandle handle, AssetType expectedType, bool isProcedural) const
+	{
+		// Validate metadata
+		if (IsAssetRegistered(handle))
+		{
+			const AssetMetadata& meta = GetMetadata(handle);
+			const bool proceduralMatch = isProcedural == (meta.FilePath.empty());
+			const bool typeMatch = expectedType == meta.Type;
+			const bool fileValid = meta.FilePath.empty() ? true : std::filesystem::exists(Project::GetAssetDirectory() / meta.FilePath);
+			return (proceduralMatch && typeMatch && fileValid);
+		}
+		return false;
 	}
 
 	bool EditorAssetManager::IsAssetRegistered(AssetHandle handle) const
@@ -167,14 +206,16 @@ namespace PaulEngine
 		m_SourceFileRegistry.clear();
 	}
 
-	void EditorAssetManager::RegisterAsset(AssetHandle handle, AssetMetadata metadata)
+	bool EditorAssetManager::RegisterAsset(AssetHandle handle, AssetMetadata metadata)
 	{
-		if (handle != 0) {
+		if (!IsAssetRegistered(handle) && handle != 0) {
 			m_AssetRegistry[handle] = metadata;
 			if (!metadata.FilePath.empty()) {
 				m_SourceFileRegistry[metadata.FilePath] = handle;
 			}
+			return true;
 		}
+		return false;
 	}
 
 	AssetHandle EditorAssetManager::ImportAssetFromFile(const std::filesystem::path& filepath, const bool persistent)

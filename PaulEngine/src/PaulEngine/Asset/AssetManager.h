@@ -39,6 +39,12 @@ namespace PaulEngine
 			else { return false; }
 		}
 
+		static bool RegisterAsset(const Ref<Asset>& assetInstance, const AssetMetadata metadata)
+		{
+			Ref<Project> project = Project::GetActive();
+			if (project) { return project->GetAssetManager()->RegisterAsset(assetInstance->Handle, metadata); }
+		}
+
 		static bool IsAssetHandleValid(AssetHandle handle)
 		{
 			Ref<Project> project = Project::GetActive();
@@ -90,6 +96,13 @@ namespace PaulEngine
 		{
 			Ref<Project> project = Project::GetActive();
 			if (project) { project->GetAssetManager()->Clear(); }
+		}
+
+		static bool ValidateAsset(AssetHandle handle, AssetType expectedType, bool isProcedural)
+		{
+			Ref<Project> project = Project::GetActive();
+			if (project) { return project->GetAssetManager()->ValidateAsset(handle, expectedType, isProcedural); }
+			return false;
 		}
 	};
 }

@@ -14,9 +14,13 @@ namespace PaulEngine
 		virtual Ref<Asset> GetAsset(AssetHandle handle) override;
 		virtual AssetType GetAssetType(AssetHandle handle) const override;
 		virtual const AssetMetadata& GetMetadata(AssetHandle handle) const override;
+		
+		bool UpdateAssetSourcePath(const AssetHandle targetAssetHandle, const std::filesystem::path& newPath);
 
 		bool IsAssetTempLoaded(AssetHandle handle) const;
 		bool IsAssetPersistentLoaded(AssetHandle handle) const;
+
+		virtual bool ValidateAsset(AssetHandle handle, AssetType expectedType, bool isProcedural) const override;
 
 		virtual bool IsAssetRegistered(AssetHandle handle) const override;
 		bool IsSourceFileRegistered(const std::filesystem::path& filepath) const;
@@ -26,7 +30,7 @@ namespace PaulEngine
 		virtual void UnloadAsset(AssetHandle& handle) override;
 		virtual void ReleaseTempAssets() override;
 		virtual void Clear() override;
-		virtual void RegisterAsset(AssetHandle handle, AssetMetadata metadata) override;
+		virtual bool RegisterAsset(AssetHandle handle, AssetMetadata metadata) override;
 
 		AssetHandle ImportAssetFromFile(const std::filesystem::path& filepath, const bool persistent);
 

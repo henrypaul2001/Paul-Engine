@@ -26,7 +26,8 @@ namespace PaulEngine
 		virtual void UnloadAsset(AssetHandle& handle) = 0;
 		virtual void ReleaseTempAssets() = 0;
 		virtual void Clear() = 0;
-		virtual void RegisterAsset(AssetHandle handle, AssetMetadata metadata) = 0;
+		virtual bool RegisterAsset(AssetHandle handle, AssetMetadata metadata) = 0;
+		virtual bool ValidateAsset(AssetHandle handle, AssetType expectedType, bool isProcedural) const = 0;
 
 		template <typename T, typename... Args>
 		Ref<T> CreateAsset(bool persistent, Args&&... args)
