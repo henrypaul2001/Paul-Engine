@@ -40,6 +40,7 @@ namespace PaulEngine
 
 		static Ref<EnvironmentMap> ImportEnvironmentMap(AssetHandle handle, const AssetMetadata& metadata);
 		static Ref<EnvironmentMap> LoadEnvironmentMap(const std::filesystem::path& filepath, bool persistentAsset = false);
+		static Ref<EnvironmentMap> DeserializeCachedEnvironmentMap(std::istream& stream);
 
 		struct ImageFileReadResult
 		{

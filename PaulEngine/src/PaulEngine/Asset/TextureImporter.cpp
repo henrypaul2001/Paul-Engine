@@ -559,4 +559,32 @@ namespace PaulEngine
 	{
 		return CreateRef<EnvironmentMap>(filepath, persistentAsset);
 	}
+
+	Ref<EnvironmentMap> TextureImporter::DeserializeCachedEnvironmentMap(std::istream& stream)
+	{
+		EnvironmentMap envMap = EnvironmentMap();
+		bool success = BinarySerializer::DeserializeAssetBinaryData(envMap, stream);
+		if (!success) { return nullptr; }
+
+		// Validate
+		AssetHandle baseCubemap = envMap.GetUnfilteredHandle();
+		AssetHandle irradianceCubemap = envMap.GetIrradianceMapHandle();
+		AssetHandle prefilteredCubemap = envMap.GetPrefilteredMapHandle();
+
+		if (!AssetManager::ValidateAsset(baseCubemap, AssetType::TextureCubemap, false) ||
+			!AssetManager::ValidateAsset(irradianceCubemap, AssetType::TextureCubemap, false) ||
+			!AssetManager::ValidateAsset(prefilteredCubemap, AssetType::TextureCubemap, false))
+		{
+			// Load from souce
+
+			// TODO: Remove asset handles from asset registry (they are about to be recreated with new handles)
+			// The problem with this being, if any other assets or files reference those original asset handles, those references will be invalid
+			// The binary .passet file is fine becuase it gets regenerated with the new asset handles, but if the user has decided to use the previously generated assets then we have a problem
+			// One solution is to find a way to tell the environment map constructor that it needs to generate the cubemap assets with these asset handles specifically, possibly through an entirely new constructor / imnport function existsing as a "failed cache load" importer function
+			return nullptr;
+		}
+
+		PE_CORE_DEBUG("Load cached environment map success");
+		return CreateRef<EnvironmentMap>(envMap);
+	}
 }

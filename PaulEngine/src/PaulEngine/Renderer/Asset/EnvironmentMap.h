@@ -16,13 +16,20 @@ namespace PaulEngine
 		// Generates an environment map: basecubemap, irradiance cubemap and prefiltered cubemap from a .hdr equirectangular source file
 		EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset = false);
 
+		EnvironmentMap(const std::filesystem::path& basePath, const std::filesystem::path& irradiancePath, const std::filesystem::path& prefilteredPath, bool persistentAsset = false);
+
+		EnvironmentMap(const AssetHandle baseCubemapHandle, const AssetHandle irradianceMapHandle, const AssetHandle prefilteredMapHandle);
+
 		virtual AssetType GetType() const override { return AssetType::EnvironmentMap; }
 
 		const AssetHandle GetUnfilteredHandle() const { return m_BaseCubemapHandle; }
 		const AssetHandle GetIrradianceMapHandle() const { return m_IrradianceCubemapHandle; }
 		const AssetHandle GetPrefilteredMapHandle() const { return m_PrefilteredCubemapHandle; }
 
-		static AssetHandle GetBRDFLutHandle() { return s_BRDFLutTextureHandle; }
+		static AssetHandle GetBRDFLutHandle() { 
+			if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
+			return s_BRDFLutTextureHandle;
+		}
 
 		static void ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle);
 		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);

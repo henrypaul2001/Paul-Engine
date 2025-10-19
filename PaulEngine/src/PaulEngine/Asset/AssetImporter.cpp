@@ -14,14 +14,22 @@
 
 namespace PaulEngine
 {
-
 	static std::filesystem::path GetAssetFileCacheDirectory()
 	{
 		return "assets/cache/asset_file";
 	}
+	static void ValidateAssetFileCacheDirectory()
+	{
+		std::filesystem::path cacheDirectory = GetAssetFileCacheDirectory();
+		if (!std::filesystem::exists(cacheDirectory))
+		{
+			PE_CORE_DEBUG("Creating directory '{0}'", cacheDirectory.string().c_str());
+			std::filesystem::create_directories(cacheDirectory);
+		}
+	}
 	static std::filesystem::path GetAssetFileCachePath(AssetHandle handle)
 	{
-		return GetAssetFileCacheDirectory() / std::filesystem::path(std::to_string(handle));
+		return GetAssetFileCacheDirectory() / std::filesystem::path(std::to_string(handle) + ".passet");
 	}
 	static bool IsAssetFileCached(AssetHandle handle)
 	{
@@ -51,10 +59,7 @@ namespace PaulEngine
 		{
 			case AssetType::EnvironmentMap:
 			{
-				EnvironmentMap envMap = EnvironmentMap();
-				bool success = BinarySerializer::DeserializeAssetBinaryData(envMap, stream);
-				if (!success) { return nullptr; }
-				return CreateRef<EnvironmentMap>(envMap);
+				return TextureImporter::DeserializeCachedEnvironmentMap(stream);
 			}
 		}
 		PE_CORE_ERROR("Undefined asset type to binary deserializer translation");
@@ -93,6 +98,29 @@ namespace PaulEngine
 		else { return ImportAssetFromSource(handle, metadata); }
 	}
 
+	bool SerializeAssetFromType(const Ref<Asset>& asset)
+	{
+		size_t dataSize = 0;
+
+		ValidateAssetFileCacheDirectory();
+
+		switch (asset->GetType())
+		{
+			case AssetType::EnvironmentMap:
+			{
+				std::ofstream fileStream = std::ofstream(GetAssetFileCachePath(asset->Handle), std::ios::binary);
+				dataSize = BinarySerializer::SerializeAssetBinary<EnvironmentMap>(*std::static_pointer_cast<EnvironmentMap>(asset), fileStream);
+				fileStream.close();
+				break;
+			}
+			default:
+				// not yet implemented serializer
+				break;
+		}
+
+		return ((bool)dataSize);
+	}
+
 	Ref<Asset> AssetImporter::ImportAssetFromSource(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		if (s_AssetImportFunctions.find(metadata.Type) == s_AssetImportFunctions.end()) {
@@ -100,6 +128,11 @@ namespace PaulEngine
 			return nullptr;
 		}
 
-		return s_AssetImportFunctions.at(metadata.Type)(handle, metadata);
+		Ref<Asset> result = s_AssetImportFunctions.at(metadata.Type)(handle, metadata);
+
+		bool cacheSuccess = SerializeAssetFromType(result);
+		// only one asset has a binary serialize function so no logging yet (dont want to flood the log with failed attempts)
+
+		return result;
 	}
 }

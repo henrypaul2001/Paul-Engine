@@ -14,6 +14,9 @@
 constexpr uint32_t CUBE_MAP_RESOLUTION = 512u;
 constexpr uint32_t IRRADIANCE_MAP_RESOLUTION = 32u;
 
+// TODO: Investigate this solution for specular artefacts in environment map sampling
+// https://graphicrants.blogspot.com/2013/12/tone-mapping.html
+
 namespace PaulEngine
 {
 	Ref<Framebuffer> EnvironmentMap::s_CubeCaptureFBO = nullptr;
@@ -31,6 +34,11 @@ namespace PaulEngine
 	AssetHandle EnvironmentMap::s_BRDFLutMaterialHandle = 0;
 	AssetHandle EnvironmentMap::s_BRDFLutTextureHandle = 0;
 
+	// TODO Checklist:
+	// - Save cubemaps as .ccm files upon first import and procedural creation of cubemaps
+	// - Register cubemaps as assets
+	// - Save environment map as cached binary asset file
+	// - Add error check for missing cached .ccm files and safely recreate missing cubemaps from source equirectangular map or existing cubemaps
 	EnvironmentMap::EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
@@ -40,19 +48,14 @@ namespace PaulEngine
 		spec.Format = ImageFormat::RGB32F;
 		spec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
 		spec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
+		spec.Wrap_R = ImageWrap::CLAMP_TO_EDGE;
 		spec.MinFilter = ImageMinFilter::LINEAR;
 		spec.MagFilter = ImageMagFilter::LINEAR;
 		Ref<Texture2D> hdrTexture = TextureImporter::LoadTexture2D(hdrPath, spec);
 
 		spec = TextureSpecification();
-		spec.Format = ImageFormat::RGB32F;
 		spec.Width = CUBE_MAP_RESOLUTION;
 		spec.Height = CUBE_MAP_RESOLUTION;
-		spec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
-		spec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
-		spec.Wrap_R = ImageWrap::CLAMP_TO_EDGE;
-		spec.MinFilter = ImageMinFilter::LINEAR;
-		spec.MagFilter = ImageMagFilter::LINEAR;
 		spec.GenerateMips = true;
 		
 		Ref<TextureCubemap> baseCubemap = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec);
@@ -76,6 +79,39 @@ namespace PaulEngine
 		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
 
 		CacheCubemaps(hdrPath.parent_path(), hdrPath.stem().string());
+	}
+
+	EnvironmentMap::EnvironmentMap(const std::filesystem::path& basePath, const std::filesystem::path& irradiancePath, const std::filesystem::path& prefilteredPath, bool persistentAsset)
+	{
+		PE_PROFILE_FUNCTION();
+		
+		Ref<TextureCubemap> baseCubemap = TextureImporter::LoadTextureCubemap(basePath);
+		PE_CORE_ASSERT(baseCubemap, "Error loading base cubemap");
+
+		Ref<TextureCubemap> irradianceCubemap = TextureImporter::LoadTextureCubemap(irradiancePath);
+		PE_CORE_ASSERT(irradianceCubemap, "Error loading irradiance cubemap");
+
+		Ref<TextureCubemap> prefilteredCubemap = TextureImporter::LoadTextureCubemap(prefilteredPath);
+		PE_CORE_ASSERT(prefilteredCubemap, "Error loading prefiltered cubemap");
+
+		AssetManager::TrackAsset(baseCubemap, persistentAsset);
+		AssetManager::TrackAsset(irradianceCubemap, persistentAsset);
+		AssetManager::TrackAsset(prefilteredCubemap, persistentAsset);
+
+		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
+	}
+
+	EnvironmentMap::EnvironmentMap(const AssetHandle baseCubemapHandle, const AssetHandle irradianceMapHandle, const AssetHandle prefilteredMapHandle)
+	{
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(baseCubemapHandle), "Invalid base cubemap");
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(irradianceMapHandle), "Invalid irradiance cubemap");
+		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(prefilteredMapHandle), "Invalid prefiltered cubemap");
+
+		m_BaseCubemapHandle = baseCubemapHandle;
+		m_IrradianceCubemapHandle = irradianceMapHandle;
+		m_PrefilteredCubemapHandle = prefilteredMapHandle;
+
+		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
 	}
 
 	void EnvironmentMap::ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle)
@@ -287,7 +323,8 @@ namespace PaulEngine
 		if (success)
 		{
 			// TODO: Editor specific asset management should be changed when runtime asset manager is implemented (this whole function is editor specific anyway but it would need to be looked at)
-			Project::GetActive()->GetEditorAssetManager()->UpdateAssetSourcePath(cubemapHandle, cubemapPath);
+			std::filesystem::path relativePath = cubemapPath.lexically_relative(Project::GetAssetDirectory());
+			Project::GetActive()->GetEditorAssetManager()->UpdateAssetSourcePath(cubemapHandle, relativePath);
 		}
 		else
 		{
