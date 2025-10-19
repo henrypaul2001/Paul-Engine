@@ -1,5 +1,6 @@
 #pragma once
 #include "PaulEngine/Asset/Asset.h"
+#include "PaulEngine/Asset/BinarySerializer.h"
 #include "PaulEngine/Renderer/Asset/Texture.h"
 #include "PaulEngine/Renderer/Resource/Framebuffer.h"
 
@@ -13,7 +14,6 @@ namespace PaulEngine
 		EnvironmentMap() : m_BaseCubemapHandle(0), m_IrradianceCubemapHandle(0), m_PrefilteredCubemapHandle(0) {}
 
 		// Generates an environment map: basecubemap, irradiance cubemap and prefiltered cubemap from a .hdr equirectangular source file
-		// No caching yet
 		EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset = false);
 
 		virtual AssetType GetType() const override { return AssetType::EnvironmentMap; }
@@ -29,6 +29,10 @@ namespace PaulEngine
 		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 	private:
 		friend class BinarySerializer;
+
+		void CacheCubemaps(const std::filesystem::path& cubemapDirectory, const std::string& baseName);
+		void CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath);
+
 		static void InitEnvMapProcessing();
 		static void GenerateBRDFLut();
 
