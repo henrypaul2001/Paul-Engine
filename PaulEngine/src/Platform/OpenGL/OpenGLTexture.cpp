@@ -147,10 +147,19 @@ namespace PaulEngine {
 		GenerateMipmaps();
 	}
 
-	// TODO: bufferSize will be invalid when reading a mip level higher than 0 due to the smaller image size
 	Buffer OpenGLTexture2D::GetData(uint8_t mipLevel) const
 	{
-		size_t bufferSize = m_Width * m_Height * PixelSize(m_Spec.Format);
+		uint32_t mipWidth = m_Width;
+		uint32_t mipHeight = m_Height;
+
+		if (mipLevel > 0)
+		{
+			// divide by power of 2
+			mipWidth = std::max(1u, m_Width >> mipLevel);
+			mipHeight = std::max(1u, m_Height >> mipLevel);
+		}
+
+		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format);
 		Buffer dataBuffer = Buffer(bufferSize);
 
 		glGetTextureImage(m_RendererID, mipLevel, m_DataFormat, m_PixelType, bufferSize, dataBuffer.m_Data);
