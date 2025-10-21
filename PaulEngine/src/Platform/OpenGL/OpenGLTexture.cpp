@@ -135,29 +135,26 @@ namespace PaulEngine {
 		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
-	void OpenGLTexture2D::SetData(Buffer data)
+	void OpenGLTexture2D::SetData(Buffer data, uint8_t mipLevel)
 	{
 		PE_PROFILE_FUNCTION();
+
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
+
 #ifdef PE_ENABLE_ASSERTS
 		// TODO: This can't be right. A pixels size in bytes is not equal to the number of channels. Investigate why this seems to work and add new function for getting true byte size of pixel from format
 		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
-		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
+		PE_CORE_ASSERT(data.Size() == mipWidth * mipHeight * sizeofpixel, "Data size must be entire texture!");
 #endif
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, m_PixelType, data.m_Data);
-		GenerateMipmaps();
+		glTextureSubImage2D(m_RendererID, mipLevel, 0, 0, mipWidth, mipHeight, m_DataFormat, m_PixelType, data.m_Data);
+		if (mipLevel == 0) { GenerateMipmaps(); }
 	}
 
 	Buffer OpenGLTexture2D::GetData(uint8_t mipLevel) const
 	{
-		uint32_t mipWidth = m_Width;
-		uint32_t mipHeight = m_Height;
-
-		if (mipLevel > 0)
-		{
-			// divide by power of 2
-			mipWidth = std::max(1u, m_Width >> mipLevel);
-			mipHeight = std::max(1u, m_Height >> mipLevel);
-		}
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
 
 		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format);
 		Buffer dataBuffer = Buffer(bufferSize);
@@ -222,6 +219,7 @@ namespace PaulEngine {
 		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
+		m_MaxMips = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
@@ -233,7 +231,7 @@ namespace PaulEngine {
 		uint8_t levels = 1;
 		if (m_Spec.GenerateMips)
 		{
-			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+			levels = m_MaxMips;
 		}
 
 		glTextureStorage2D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height);
@@ -282,21 +280,25 @@ namespace PaulEngine {
 		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
-	void OpenGLTexture2DArray::SetData(Buffer data)
+	void OpenGLTexture2DArray::SetData(Buffer data, uint8_t mipLevel)
 	{
-		SetData(data, 0);
+		SetData(data, 0, mipLevel);
 	}
 
-	void OpenGLTexture2DArray::SetData(Buffer data, uint8_t layer)
+	void OpenGLTexture2DArray::SetData(Buffer data, uint8_t layer, uint8_t mipLevel)
 	{
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(layer < m_NumLayers, "Layer index out of range");
+
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
+
 #ifdef PE_ENABLE_ASSERTS
 		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
-		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
+		PE_CORE_ASSERT(data.Size() == mipWidth * mipHeight * sizeofpixel, "Data size must be entire texture!");
 #endif
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
-		GenerateMipmaps();
+		glTextureSubImage3D(m_RendererID, mipLevel, 0, 0, layer, mipWidth, mipHeight, 1, m_DataFormat, m_PixelType, data.m_Data);
+		if (mipLevel == 0) { GenerateMipmaps(); }
 	}
 
 	Buffer OpenGLTexture2DArray::GetData(uint8_t layer, uint8_t numLayers, uint8_t mipLevel) const
@@ -311,15 +313,8 @@ namespace PaulEngine {
 
 		if (numLayers == 0) { return Buffer(); }
 
-		uint32_t mipWidth = m_Width;
-		uint32_t mipHeight = m_Height;
-
-		if (mipLevel > 0)
-		{
-			// divide by power of 2
-			mipWidth = std::max(1u, m_Width >> mipLevel);
-			mipHeight = std::max(1u, m_Height >> mipLevel);
-		}
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
 
 		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format) * numLayers;
 		Buffer dataBuffer = Buffer(bufferSize);
@@ -370,6 +365,7 @@ namespace PaulEngine {
 		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
+		m_MaxMips = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
 
 		m_NumLayers = layers.size();
 
@@ -383,7 +379,7 @@ namespace PaulEngine {
 		uint8_t levels = 1;
 		if (m_Spec.GenerateMips)
 		{
-			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+			levels = m_MaxMips;
 		}
 
 		glTextureStorage3D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height, layers.size());
@@ -430,41 +426,44 @@ namespace PaulEngine {
 		Generate(specification, faceData);
 	}
 
+	OpenGLTextureCubemap::OpenGLTextureCubemap(const TextureSpecification& specification, std::vector<std::vector<Buffer>> mippedFaceData) : m_Spec(specification), m_Width(m_Spec.Width), m_Height(m_Spec.Height)
+	{
+		PE_PROFILE_FUNCTION();
+		Generate(specification, mippedFaceData);
+	}
+
 	OpenGLTextureCubemap::~OpenGLTextureCubemap()
 	{
 		glDeleteTextures(1, &m_RendererID);
 		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
-	void OpenGLTextureCubemap::SetData(Buffer data)
+	void OpenGLTextureCubemap::SetData(Buffer data, uint8_t mipLevel)
 	{
-		SetData(data, CubemapFace::POSITIVE_X);
+		SetData(data, CubemapFace::POSITIVE_X, mipLevel);
 	}
 
-	void OpenGLTextureCubemap::SetData(Buffer data, CubemapFace face)
+	void OpenGLTextureCubemap::SetData(Buffer data, CubemapFace face, uint8_t mipLevel)
 	{
 		PE_PROFILE_FUNCTION();
+
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
+
 #ifdef PE_ENABLE_ASSERTS
 		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
-		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
+		PE_CORE_ASSERT(data.Size() == mipWidth * mipHeight * sizeofpixel, "Data size must be entire texture!");
 #endif
 		// cubemaps are represented internally as a 2D texture array, so access a specific face using a z-offset
 		// cubemap arrays are represented as a 2D texture array with numLayers = 6 (faces) * cubemapArraySize. So z-offset for the "face" of cubemap index "i" would be: i * 6 + face;
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, (int)face, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
-		GenerateMipmaps();
+		glTextureSubImage3D(m_RendererID, mipLevel, 0, 0, (int)face, mipWidth, mipHeight, 1, m_DataFormat, m_PixelType, data.m_Data);
+		if (mipLevel == 0) { GenerateMipmaps(); }
 	}
 
 	Buffer OpenGLTextureCubemap::GetData(CubemapFace face, uint8_t mipLevel) const
 	{
-		uint32_t mipWidth = m_Width;
-		uint32_t mipHeight = m_Height;
-
-		if (mipLevel > 0)
-		{
-			// divide by power of 2
-			mipWidth = std::max(1u, m_Width >> mipLevel);
-			mipHeight = std::max(1u, m_Height >> mipLevel);
-		}
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
 
 		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format);
 		Buffer dataBuffer = Buffer(bufferSize);
@@ -513,6 +512,7 @@ namespace PaulEngine {
 		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
+		m_MaxMips = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
@@ -526,9 +526,57 @@ namespace PaulEngine {
 		uint8_t levels = 1;
 		if (m_Spec.GenerateMips)
 		{
-			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+			levels = m_MaxMips;
 		}
 
+		AllocateAndSpec(levels);
+
+		for (uint8_t i = 0; i < 6; i++) {
+			if (faceData[i])
+			{
+				SetData(faceData[i], (CubemapFace)i, 0);
+			}
+		}
+	}
+
+	void OpenGLTextureCubemap::Generate(const TextureSpecification& specification, std::vector<std::vector<Buffer>> mippedFaceData)
+	{
+		if (mippedFaceData.size() == 1) { return Generate(specification, mippedFaceData[0]); }
+
+		m_Spec = specification;
+		m_Width = specification.Width;
+		m_Height = specification.Height;
+		m_MaxMips = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+
+		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
+		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
+		m_PixelType = OpenGLTextureUtils::PEImageFormatToGLPixelFormat(specification.Format);
+
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
+
+		// Calculate mipmap levels
+		mippedFaceData.resize(m_MaxMips);
+		for (std::vector<Buffer>& level : mippedFaceData)
+		{
+			level.resize(6, Buffer());
+		}
+
+		AllocateAndSpec(m_MaxMips);
+
+		for (uint8_t level = 0; level < mippedFaceData.size(); level++)
+		{
+			for (uint8_t i = 0; i < 6; i++)
+			{
+				if (mippedFaceData[level][i])
+				{
+					SetData(mippedFaceData[level][i], (CubemapFace)i, level);
+				}
+			}
+		}
+	}
+
+	void OpenGLTextureCubemap::AllocateAndSpec(const uint8_t levels)
+	{
 		glTextureStorage2D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OpenGLTextureUtils::MinFilterToGLMinFilter(m_Spec.MinFilter));
@@ -549,13 +597,6 @@ namespace PaulEngine {
 		}
 
 		UpdateDeviceHandle();
-
-		for (uint8_t i = 0; i < 6; i++) {
-			if (faceData[i])
-			{
-				SetData(faceData[i], (CubemapFace)i);
-			}
-		}
 	}
 
 	void OpenGLTextureCubemap::UpdateDeviceHandle()
@@ -580,21 +621,25 @@ namespace PaulEngine {
 		DeviceHandleTracker::UnregisterDeviceHandle(m_DeviceHandle);
 	}
 
-	void OpenGLTextureCubemapArray::SetData(Buffer data)
+	void OpenGLTextureCubemapArray::SetData(Buffer data, uint8_t mipLevel)
 	{
-		SetData(data, 0, CubemapFace::POSITIVE_X);
+		SetData(data, 0, CubemapFace::POSITIVE_X, mipLevel);
 	}
 
-	void OpenGLTextureCubemapArray::SetData(Buffer data, uint8_t layer, CubemapFace face)
+	void OpenGLTextureCubemapArray::SetData(Buffer data, uint8_t layer, CubemapFace face, uint8_t mipLevel)
 	{
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(layer < m_NumLayers, "Layer index out of range");
+
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
+
 #ifdef PE_ENABLE_ASSERTS
 		uint32_t sizeofpixel = PixelSize(m_Spec.Format);
-		PE_CORE_ASSERT(data.Size() == m_Width * m_Height * sizeofpixel, "Data size must be entire texture!");
+		PE_CORE_ASSERT(data.Size() == mipWidth * mipHeight * sizeofpixel, "Data size must be entire texture!");
 #endif
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, layer * 6 + (int)face, m_Width, m_Height, 1, m_DataFormat, m_PixelType, data.m_Data);
-		GenerateMipmaps();
+		glTextureSubImage3D(m_RendererID, mipLevel, 0, 0, layer * 6 + (int)face, mipWidth, mipHeight, 1, m_DataFormat, m_PixelType, data.m_Data);
+		if (mipLevel == 0) { GenerateMipmaps(); }
 	}
 
 	Buffer OpenGLTextureCubemapArray::GetData(CubemapFace face, uint8_t layer, uint8_t mipLevel) const
@@ -607,15 +652,8 @@ namespace PaulEngine {
 			layer = availableLayers;
 		}
 
-		uint32_t mipWidth = m_Width;
-		uint32_t mipHeight = m_Height;
-
-		if (mipLevel > 0)
-		{
-			// divide by power of 2
-			mipWidth = std::max(1u, m_Width >> mipLevel);
-			mipHeight = std::max(1u, m_Height >> mipLevel);
-		}
+		mipLevel = (m_Spec.GenerateMips) ? std::min(m_MaxMips, mipLevel) : 0;
+		auto [mipWidth, mipHeight] = GetMipDimensions(mipLevel, m_Width, m_Height);
 
 		size_t bufferSize = mipWidth * mipHeight * PixelSize(m_Spec.Format);
 		Buffer dataBuffer = Buffer(bufferSize);
@@ -666,6 +704,7 @@ namespace PaulEngine {
 		m_Spec = specification;
 		m_Width = specification.Width;
 		m_Height = specification.Height;
+		m_MaxMips = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
 
 		m_InternalFormat = OpenGLTextureUtils::PEImageFormatToGLInternalFormat(specification.Format);
 		m_DataFormat = OpenGLTextureUtils::PEImageFormatToGLDataFormat(specification.Format);
@@ -679,7 +718,7 @@ namespace PaulEngine {
 		uint8_t levels = 1;
 		if (m_Spec.GenerateMips)
 		{
-			levels = 1 + (uint8_t)std::floor(std::log2(std::max(m_Width, m_Height)));
+			levels = m_MaxMips;
 		}
 
 		glTextureStorage3D(m_RendererID, levels, m_InternalFormat, m_Width, m_Height, faceDataLayers.size() * 6);

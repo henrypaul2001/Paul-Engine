@@ -26,8 +26,9 @@ namespace PaulEngine {
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+		virtual uint8_t GetMaxMipLevel() const override { return m_MaxMips; }
 
-		virtual void SetData(Buffer data) override;
+		virtual void SetData(Buffer data, uint8_t mipLevel = 0) override;
 		virtual Buffer GetData(uint8_t mipLevel) const override;
 
 		virtual void Clear(int value) override;
@@ -55,6 +56,7 @@ namespace PaulEngine {
 
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
+		uint8_t m_MaxMips;
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
@@ -76,11 +78,12 @@ namespace PaulEngine {
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+		virtual uint8_t GetMaxMipLevel() const override { return m_MaxMips; }
 		
 		virtual uint8_t GetNumLayers() const override { return m_NumLayers; }
 
-		virtual void SetData(Buffer data) override;
-		virtual void SetData(Buffer data, uint8_t layer) override;
+		virtual void SetData(Buffer data, uint8_t mipLevel = 0) override;
+		virtual void SetData(Buffer data, uint8_t layer, uint8_t mipLevel) override;
 
 		virtual Buffer GetData(uint8_t layer, uint8_t numLayers = 1, uint8_t mipLevel = 0) const override;
 
@@ -108,6 +111,7 @@ namespace PaulEngine {
 	
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
+		uint8_t m_MaxMips;
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
@@ -120,6 +124,7 @@ namespace PaulEngine {
 	{
 	public:
 		OpenGLTextureCubemap(const TextureSpecification& specification, std::vector<Buffer> faceData);
+		OpenGLTextureCubemap(const TextureSpecification& specification, std::vector<std::vector<Buffer>> mippedFaceData);
 		virtual ~OpenGLTextureCubemap();
 
 		virtual const TextureSpecification& GetSpecification() const override { return m_Spec; }
@@ -129,9 +134,10 @@ namespace PaulEngine {
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+		virtual uint8_t GetMaxMipLevel() const override { return m_MaxMips; }
 
-		virtual void SetData(Buffer data) override;
-		virtual void SetData(Buffer data, CubemapFace face) override;
+		virtual void SetData(Buffer data, uint8_t mipLevel = 0) override;
+		virtual void SetData(Buffer data, CubemapFace face, uint8_t mipLevel = 0) override;
 
 		virtual Buffer GetData(CubemapFace face, uint8_t mipLevel = 0) const override;
 
@@ -150,12 +156,15 @@ namespace PaulEngine {
 
 	private:
 		void Generate(const TextureSpecification& specification, std::vector<Buffer> faceData = std::vector<Buffer>(6));
+		void Generate(const TextureSpecification& specification, std::vector<std::vector<Buffer>> mippedFaceData);
+		void AllocateAndSpec(const uint8_t levels);
 		void UpdateDeviceHandle();
 
 		TextureSpecification m_Spec;
 
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
+		uint8_t m_MaxMips;
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
@@ -177,11 +186,12 @@ namespace PaulEngine {
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+		virtual uint8_t GetMaxMipLevel() const override { return m_MaxMips; }
 
 		virtual uint8_t GetNumLayers() const override { return m_NumLayers; }
 
-		virtual void SetData(Buffer data) override;
-		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) override;
+		virtual void SetData(Buffer data, uint8_t mipLevel = 0) override;
+		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face, uint8_t mipLevel = 0) override;
 
 		virtual Buffer GetData(CubemapFace face, uint8_t layer, uint8_t mipLevel = 0) const override;
 
@@ -209,6 +219,7 @@ namespace PaulEngine {
 
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
+		uint8_t m_MaxMips;
 
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;

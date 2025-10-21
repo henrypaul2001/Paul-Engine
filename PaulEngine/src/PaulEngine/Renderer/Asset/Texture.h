@@ -229,6 +229,21 @@ namespace PaulEngine {
 		return ImageFormat::None;
 	}
 
+	static std::pair<uint32_t, uint32_t> GetMipDimensions(uint8_t mipLevel, uint32_t baseWidth, uint32_t baseHeight)
+	{
+		uint32_t mipWidth = baseWidth;
+		uint32_t mipHeight = baseHeight;
+
+		if (mipLevel > 0)
+		{
+			// divide by power of 2
+			mipWidth = std::max(1u, baseWidth >> mipLevel);
+			mipHeight = std::max(1u, baseHeight >> mipLevel);
+		}
+
+		return std::make_pair(mipWidth, mipHeight);
+	}
+
 	class Texture : public Asset
 	{
 	public:
@@ -239,8 +254,9 @@ namespace PaulEngine {
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 		virtual uint32_t GetRendererID() const = 0;
+		virtual uint8_t GetMaxMipLevel() const = 0;
 
-		virtual void SetData(Buffer data) = 0;
+		virtual void SetData(Buffer data, uint8_t mipLevel = 0) = 0;
 		virtual void Clear(int value) = 0;
 		virtual void Clear(float value) = 0;
 
@@ -276,7 +292,7 @@ namespace PaulEngine {
 
 		virtual uint8_t GetNumLayers() const = 0;
 
-		virtual void SetData(Buffer data, uint8_t layer) = 0;
+		virtual void SetData(Buffer data, uint8_t layer, uint8_t mipLevel) = 0;
 		virtual Buffer GetData(uint8_t layer, uint8_t numLayers = 1, uint8_t mipLevel = 0) const = 0;
 	};
 
@@ -285,10 +301,12 @@ namespace PaulEngine {
 	public:
 		// First 6 elements of face data are uploaded to cubemap texture in the following face order: right, left, top, bottom, front, back. Empty buffers will be created to match face count if less than 6 buffers are provided
 		static Ref<TextureCubemap> Create(const TextureSpecification& specification, std::vector<Buffer> faceData = std::vector<Buffer>(6));
-	
+		
+		static Ref<TextureCubemap> Create(const TextureSpecification& specification, std::vector<std::vector<Buffer>> mippedFaceData);
+
 		virtual AssetType GetType() const override { return AssetType::TextureCubemap; }
 
-		virtual void SetData(Buffer data, CubemapFace face) = 0;
+		virtual void SetData(Buffer data, CubemapFace face, uint8_t mipLevel = 0) = 0;
 		virtual Buffer GetData(CubemapFace face, uint8_t mipLevel = 0) const = 0;
 	};
 
@@ -302,7 +320,7 @@ namespace PaulEngine {
 
 		virtual uint8_t GetNumLayers() const = 0;
 
-		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face) = 0;
+		virtual void SetData(Buffer data, uint8_t layer, CubemapFace face, uint8_t mipLevel = 0) = 0;
 		virtual Buffer GetData(CubemapFace face, uint8_t layer, uint8_t mipLevel = 0) const = 0;
 	};
 
