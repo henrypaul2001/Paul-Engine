@@ -298,28 +298,30 @@ namespace PaulEngine
 		s_CubeCaptureFBO->Unbind();
 	}
 
-
 	void EnvironmentMap::CacheCubemaps(const std::filesystem::path& cubemapDirectory, const std::string& baseName)
 	{
 		CacheCubemap(m_BaseCubemapHandle, cubemapDirectory / (baseName + "_Base.ccm"));
 		CacheCubemap(m_IrradianceCubemapHandle, cubemapDirectory / (baseName + "_Irradiance.ccm"));
-		CacheCubemap(m_PrefilteredCubemapHandle, cubemapDirectory / (baseName + "_Filtered.ccm"));
+		const uint8_t maxMipLevels = 7;
+		CacheCubemap(m_PrefilteredCubemapHandle, cubemapDirectory / (baseName + "_Filtered.ccm"), maxMipLevels);
 	}
 
-	void EnvironmentMap::CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath)
+	void EnvironmentMap::CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath, uint8_t mips)
 	{
 		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(cubemapHandle), "Invalid asset handle");
 
 		Ref<TextureCubemap> cubemap = AssetManager::GetAsset<TextureCubemap>(cubemapHandle);
-		Buffer cubemapFaces[6] = {
-			cubemap->GetData(CubemapFace::POSITIVE_X),
-			cubemap->GetData(CubemapFace::NEGATIVE_X),
-			cubemap->GetData(CubemapFace::POSITIVE_Y),
-			cubemap->GetData(CubemapFace::NEGATIVE_Y),
-			cubemap->GetData(CubemapFace::POSITIVE_Z),
-			cubemap->GetData(CubemapFace::NEGATIVE_Z)
-		};
-		bool success = TextureImporter::SaveCubemapFile(cubemapPath, cubemapFaces, cubemap->GetSpecification());
+		std::vector<std::array<Buffer, 6>> levels = std::vector<std::array<Buffer, 6>>(mips + 1);
+		for (uint8_t level = 0; level <= mips; level++)
+		{
+			levels[level][0] = cubemap->GetData(CubemapFace::POSITIVE_X, level);
+			levels[level][1] = cubemap->GetData(CubemapFace::NEGATIVE_X, level);
+			levels[level][2] = cubemap->GetData(CubemapFace::POSITIVE_Y, level);
+			levels[level][3] = cubemap->GetData(CubemapFace::NEGATIVE_Y, level);
+			levels[level][4] = cubemap->GetData(CubemapFace::POSITIVE_Z, level);
+			levels[level][5] = cubemap->GetData(CubemapFace::NEGATIVE_Z, level);
+		}
+		bool success = (levels.size() > 1) ? TextureImporter::SaveCubemapFileWithMips(cubemapPath, levels, cubemap->GetSpecification()) : TextureImporter::SaveCubemapFile(cubemapPath, levels[0], cubemap->GetSpecification());
 		if (success)
 		{
 			// TODO: Editor specific asset management should be changed when runtime asset manager is implemented (this whole function is editor specific anyway but it would need to be looked at)
@@ -330,7 +332,10 @@ namespace PaulEngine
 		{
 			PE_CORE_ERROR("Error saving cubemap to path: {0}", cubemapPath.string().c_str());
 		}
-		for (Buffer& buffer : cubemapFaces) { buffer.Release(); }
+		for (uint8_t level = 0; level <= mips; level++)
+		{
+			for (Buffer& buffer : levels[level]) { buffer.Release(); }
+		}
 	}
 
 	void EnvironmentMap::InitEnvMapProcessing()

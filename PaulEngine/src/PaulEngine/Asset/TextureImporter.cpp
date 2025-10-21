@@ -258,32 +258,39 @@ namespace PaulEngine
 
 		TextureSpecification spec = ReadTextureSpecBinary(fin);
 
+		uint8_t mipLevels = BinarySerializer::ReadBinary<uint8_t>(fin);
+
 		// Read faces
-		std::vector<Buffer> uncompressedFaces = std::vector<Buffer>(6);
-		for (int i = 0; i < 6; i++)
+		std::vector<std::vector<Buffer>> uncompressedFaces = std::vector<std::vector<Buffer>>(mipLevels + 1);
+		for (uint8_t level = 0; level <= mipLevels; level++)
 		{
-			size_t uncompressedSize = 0;
-			size_t compressedSize = 0;
-			fin.read((char*)&uncompressedSize, sizeof(size_t));
-			fin.read((char*)&compressedSize, sizeof(size_t));
+			uncompressedFaces[level].resize(6, Buffer());
+			for (int i = 0; i < 6; i++)
+			{
+				size_t uncompressedSize = BinarySerializer::ReadBinary<size_t>(fin);
+				size_t compressedSize = BinarySerializer::ReadBinary<size_t>(fin);
 
-			Buffer compressedFace = BinarySerializer::ReadBuffer(fin, compressedSize);
-			uncompressedFaces[i] = BinarySerializer::UncompressBuffer(compressedFace, uncompressedSize);
-			compressedFace.Release();
+				Buffer compressedFace = BinarySerializer::ReadBuffer(fin, compressedSize);
+				uncompressedFaces[level][i] = BinarySerializer::UncompressBuffer(compressedFace, uncompressedSize);
+				compressedFace.Release();
+			}
 		}
-
 		fin.close();
 
 		Ref<TextureCubemap> cubemap = TextureCubemap::Create(spec, uncompressedFaces);
 
-		for (Buffer b : uncompressedFaces) {
-			b.Release();
+		for (uint8_t level = 0; level <= mipLevels; level++)
+		{
+			for (Buffer b : uncompressedFaces[level])
+			{
+				b.Release();
+			}
 		}
 
 		return cubemap;
 	}
 
-	bool TextureImporter::SaveCubemapFile(const std::filesystem::path& filepath, const Buffer uncompressedFaces[6], const TextureSpecification spec)
+	bool TextureImporter::SaveCubemapFile(const std::filesystem::path& filepath, const std::array<Buffer, 6> uncompressedFaces, const TextureSpecification spec)
 	{
 		PE_PROFILE_FUNCTION();
 		PE_CORE_ASSERT(filepath.extension() == ".ccm", "Invalid file extension");
@@ -308,18 +315,91 @@ namespace PaulEngine
 		
 		WriteTextureSpecBinary(fout, spec);
 
+		uint8_t mipLevels = 0;
+		BinarySerializer::WriteBinary(&mipLevels, fout);
+
 		// Write faces
 		for (int i = 0; i < 6; i++)
 		{
 			Buffer compressedFace = BinarySerializer::CompressBuffer(uncompressedFaces[i]);
 			size_t compressedSize = compressedFace.Size();
-			fout.write((char*)&uncompressedSize, sizeof(size_t));
-			fout.write((char*)&compressedSize, sizeof(size_t));
+			BinarySerializer::WriteBinary(&uncompressedSize, fout);
+			BinarySerializer::WriteBinary(&compressedSize, fout);
 
 			if (!BinarySerializer::WriteBuffer(fout, compressedFace)) { fout.close(); compressedFace.Release(); return false; }
 			compressedFace.Release();
 		}
 		
+		fout.close();
+		return true;
+	}
+
+	bool TextureImporter::SaveCubemapFileWithMips(const std::filesystem::path& filepath, const std::vector<std::array<Buffer, 6>>& uncompressedFaces, const TextureSpecification spec)
+	{
+		PE_PROFILE_FUNCTION();
+		PE_CORE_ASSERT(filepath.extension() == ".ccm", "Invalid file extension");
+
+		size_t baseUncompressedSize = uncompressedFaces[0][0].Size();
+		for (int i = 1; i < 6; i++)
+		{
+			PE_CORE_ASSERT(uncompressedFaces[i].Size() == uncompressedSize, "Base cubemap faces must be same uncompressed size");
+		}
+
+		uint32_t baseWidth = spec.Width;
+		uint32_t baseHeight = spec.Height;
+		int channels = NumChannels(spec.Format);
+
+		PE_CORE_ASSERT(baseUncompressedSize == baseWidth * baseHeight * channels, "Invalid texture spec for buffer size");
+
+		uint8_t mipLevels = (uint8_t)(uncompressedFaces.size() - 1);
+		uint8_t maxLevels = (uint8_t)std::floor(std::log2(std::max(baseWidth, baseHeight)));
+
+		if (mipLevels > maxLevels)
+		{
+			PE_CORE_WARN("Provided mip levels exceed maximum mip levels for texture dimensions. Clamping to max");
+			PE_CORE_WARN("    - Mip levels provided : {0}", mipLevels);
+			PE_CORE_WARN("    - Max levels available: {0}", maxLevels);
+		}
+		uint8_t constrainedMipLevels = std::min(mipLevels, maxLevels);
+
+		// Validate mip sizes
+		for (uint8_t mip = 1; mip <= constrainedMipLevels; mip++)
+		{
+			size_t uncompressedMipSize = uncompressedFaces[mip][0].Size();
+
+			size_t mipWidth = std::max(1u, baseWidth >> mip);
+			size_t mipHeight = std::max(1u, baseHeight >> mip);
+			PE_CORE_ASSERT(uncompressedMipSize == mipWidth * mipHeight * channels);
+		}
+
+		// Begin write
+		std::error_code error;
+		std::filesystem::create_directories(filepath.parent_path(), error);
+
+		std::ofstream fout;
+		fout.open(filepath, std::ios::out | std::ios::binary);
+
+		WriteTextureSpecBinary(fout, spec);
+
+		BinarySerializer::WriteBinary(&constrainedMipLevels, fout);
+
+		// Write mip levels
+		for (uint8_t level = 0; level <= constrainedMipLevels; level++)
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				const Buffer& uncompressedFace = uncompressedFaces[level][i];
+				Buffer compressedFace = BinarySerializer::CompressBuffer(uncompressedFace);
+				size_t uncompressedSize = uncompressedFace.Size();
+				size_t compressedSize = compressedFace.Size();
+				BinarySerializer::WriteBinary(&uncompressedSize, fout);
+				BinarySerializer::WriteBinary(&compressedSize, fout);
+
+				if (!BinarySerializer::WriteBuffer(fout, compressedFace)) { fout.close(); compressedFace.Release(); return false; }
+				compressedFace.Release();
+			}
+		}
+
 		fout.close();
 		return true;
 	}

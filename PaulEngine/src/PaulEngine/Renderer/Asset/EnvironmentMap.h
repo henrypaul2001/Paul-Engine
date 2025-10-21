@@ -38,7 +38,7 @@ namespace PaulEngine
 		friend class BinarySerializer;
 
 		void CacheCubemaps(const std::filesystem::path& cubemapDirectory, const std::string& baseName);
-		void CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath);
+		void CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath, uint8_t mips = 0);
 
 		static void InitEnvMapProcessing();
 		static void GenerateBRDFLut();

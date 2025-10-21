@@ -15,6 +15,9 @@ CompressedCubemap File (.CCM) Format Description
 -  4 bytes: spec.Height
 -  1 byte : spec.GenerateMips
 
+- 1 byte: mipLevelsOnDisk (0 means no additional mips beyond base face data)
+
+// Base face data
 // POSITIVE_X
 - 8 bytes: uncompressedSize
 - 8 bytes: compressedSize
@@ -44,3 +47,6 @@ CompressedCubemap File (.CCM) Format Description
 - 8 bytes: uncompressedSize
 - 8 bytes: compressedSize
 - (compressedSize): compressedData
+
+// Mip face data
+// from 1 to mipLevelsOnDisk

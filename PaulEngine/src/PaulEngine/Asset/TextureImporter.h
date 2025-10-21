@@ -84,8 +84,17 @@ namespace PaulEngine
 		4: positiveZ
 		5: negativeZ
 		*/
-		static bool SaveCubemapFile(const std::filesystem::path& filepath, const Buffer uncompressedFaces[6], const TextureSpecification spec);
-	
+		static bool SaveCubemapFile(const std::filesystem::path& filepath, const std::array<Buffer, 6> uncompressedFaces, const TextureSpecification spec);
+		/*
+		0: positiveX
+		1: negativeX
+		2: positiveY
+		3: negativeY
+		4: positiveZ
+		5: negativeZ
+		*/
+		static bool SaveCubemapFileWithMips(const std::filesystem::path& filepath, const std::vector<std::array<Buffer, 6>>& uncompressedFaces, const TextureSpecification spec);
+
 		static bool SaveImagePNG(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
 		static bool SaveImageBMP(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
 		static bool SaveImageTGA(const std::filesystem::path& filepath, const Buffer pixelData, const TextureSpecification spec);
