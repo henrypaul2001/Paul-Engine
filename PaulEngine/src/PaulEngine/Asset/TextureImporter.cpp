@@ -664,7 +664,6 @@ namespace PaulEngine
 			return nullptr;
 		}
 
-		PE_CORE_DEBUG("Load cached environment map success");
 		return CreateRef<EnvironmentMap>(envMap);
 	}
 }
