@@ -34,11 +34,6 @@ namespace PaulEngine
 	AssetHandle EnvironmentMap::s_BRDFLutMaterialHandle = 0;
 	AssetHandle EnvironmentMap::s_BRDFLutTextureHandle = 0;
 
-	// TODO Checklist:
-	// - Save cubemaps as .ccm files upon first import and procedural creation of cubemaps
-	// - Register cubemaps as assets
-	// - Save environment map as cached binary asset file
-	// - Add error check for missing cached .ccm files and safely recreate missing cubemaps from source equirectangular map or existing cubemaps
 	EnvironmentMap::EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();

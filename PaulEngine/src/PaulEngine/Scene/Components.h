@@ -413,4 +413,20 @@ namespace PaulEngine
 		float ShadowMapNearClip = 0.01f;
 		float ShadowMapFarClip = 50.0f;
 	};
+
+	struct ComponentReflectionProbe
+	{
+		glm::vec3 GeometryBoundsMinExtent = glm::vec3(-5.0f);
+		glm::vec3 GeometryBoundsMaxExtent = glm::vec3(5.0f);
+		
+		float SOIRadius = 5.0f;
+
+		uint8_t BakeIterations = 1;
+
+		AssetHandle GetEnvironmentMapHandle() const { return m_EnvironmentMapHandle; }
+
+	private:
+		friend class SceneSerializer;
+		AssetHandle m_EnvironmentMapHandle = 0;
+	};
 }

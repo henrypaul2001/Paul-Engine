@@ -258,6 +258,20 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentReflectionProbe>()) {
+			out << YAML::Key << "ReflectionProbeComponent";
+			out << YAML::BeginMap;
+
+			ComponentReflectionProbe& reflectComponent = entity.GetComponent<ComponentReflectionProbe>();
+			out << YAML::Key << "GeometryBoundsMinExtent" << YAML::Value << reflectComponent.GeometryBoundsMinExtent;
+			out << YAML::Key << "GeometryBoundsMaxExtent" << YAML::Value << reflectComponent.GeometryBoundsMaxExtent;
+			out << YAML::Key << "SOIRadius" << YAML::Value << reflectComponent.SOIRadius;
+			out << YAML::Key << "BakeIterations" << YAML::Value << (int)reflectComponent.BakeIterations;
+			out << YAML::Key << "EnvironmentMapHandle" << YAML::Value << reflectComponent.GetEnvironmentMapHandle();
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -490,6 +504,16 @@ namespace PaulEngine
 						lightComponent.ShadowMaxBias = spotLightNode["ShadowMaxBias"].as<float>();
 						lightComponent.ShadowMapNearClip = spotLightNode["ShadowMapNearClip"].as<float>();
 						lightComponent.ShadowMapFarClip = spotLightNode["ShadowMapFarClip"].as<float>();
+					}
+
+					YAML::Node reflectNode = entity["ReflectionProbeComponent"];
+					if (reflectNode) {
+						ComponentReflectionProbe& reflectComponent = deserializedEntity.AddComponent<ComponentReflectionProbe>();
+						reflectComponent.GeometryBoundsMinExtent = reflectNode["GeometryBoundsMinExtent"].as<glm::vec3>();
+						reflectComponent.GeometryBoundsMaxExtent = reflectNode["GeometryBoundsMaxExtent"].as<glm::vec3>();
+						reflectComponent.SOIRadius = reflectNode["SOIRadius"].as<float>();
+						reflectComponent.BakeIterations = reflectNode["BakeIterations"].as<uint8_t>();
+						reflectComponent.m_EnvironmentMapHandle = reflectNode["EnvironmentMapHandle"].as<AssetHandle>();
 					}
 				}
 				else

@@ -42,7 +42,7 @@ namespace PaulEngine
 			{
 				DrawEntityNode(entity);
 			}
-		});
+			});
 
 		ImGui::Dummy(ImGui::GetContentRegionAvail());
 
@@ -261,9 +261,9 @@ namespace PaulEngine
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		ImVec2 buttonSize = ImVec2(lineHeight + 3.0f, lineHeight);
 
-		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.9f, 0.2f, 0.25f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(1.0f, 0.05f, 0.1f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.2f, 0.25f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.05f, 0.1f, 1.0f));
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("X", buttonSize)) {
 			value.x = resetValue;
@@ -277,9 +277,9 @@ namespace PaulEngine
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.15f, 0.8f, 0.1f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.25f, 0.9f, 0.2f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(0.1f, 1.0f, 0.05f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.8f, 0.1f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.25f, 0.9f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 1.0f, 0.05f, 1.0f));
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Y", buttonSize)) {
 			value.y = resetValue;
@@ -293,9 +293,9 @@ namespace PaulEngine
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.1f, 0.15f, 0.8f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.2f, 0.25f, 0.8f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(0.05f, 0.1f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.15f, 0.8f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.25f, 0.8f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.05f, 0.1f, 1.0f, 1.0f));
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Z", buttonSize)) {
 			value.z = resetValue;
@@ -321,7 +321,7 @@ namespace PaulEngine
 	static void DrawComponent(const std::string& name, Entity entity, bool canBeRemoved, UIFunction uiFunction) {
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 		if (entity.HasComponent<T>()) {
-			
+
 			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
@@ -366,7 +366,7 @@ namespace PaulEngine
 		// Tag
 		if (entity.HasComponent<ComponentTag>()) {
 			ComponentTag& tagComponent = entity.GetComponent<ComponentTag>();
-		
+
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
 			strcpy_s(buffer, sizeof(buffer), tagComponent.Tag.c_str());
@@ -376,11 +376,11 @@ namespace PaulEngine
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		
+
 		if (ImGui::Button("Add Component")) {
 			ImGui::OpenPopup("AddComponent");
 		}
-		
+
 		if (ImGui::BeginPopup("AddComponent")) {
 			DrawAddComponentEntry<ComponentCamera>("Camera Component");
 			DrawAddComponentEntry<Component2DSprite>("Sprite 2D Component");
@@ -393,6 +393,7 @@ namespace PaulEngine
 			DrawAddComponentEntry<ComponentDirectionalLight>("Directional Light Component");
 			DrawAddComponentEntry<ComponentPointLight>("Point Light Component");
 			DrawAddComponentEntry<ComponentSpotLight>("Spot Light Component");
+			DrawAddComponentEntry<ComponentReflectionProbe>("Reflection Probe Component");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -445,7 +446,7 @@ namespace PaulEngine
 			ImGui::SameLine();
 			ImGui::Text("Parent");
 			ImGui::Text("Children: %d", component.NumChildren());
-		});
+			});
 
 		// Camera
 		DrawComponent<ComponentCamera>("Camera Component", entity, true, [](ComponentCamera& component) {
@@ -495,7 +496,7 @@ namespace PaulEngine
 				if (component.Camera.IsPerspective()) { component.Camera.SetPerspective(vfov, aspectRatio, nearClip, farClip); }
 				else { component.Camera.SetOrthographic(orthoSize, aspectRatio, nearClip, farClip); }
 			}
-		});
+			});
 
 		// Sprite
 		DrawComponent<Component2DSprite>("Sprite Renderer Component", entity, true, [](Component2DSprite& component) {
@@ -590,14 +591,14 @@ namespace PaulEngine
 				bool edited = DrawVec2Control("Texture Scale", component.TextureScale, 1.0f);
 			}
 
-		});
+			});
 
 		// Circle
 		DrawComponent<Component2DCircle>("Circle Renderer Component", entity, true, [](Component2DCircle& component) {
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
 			ImGui::DragFloat("Thickness", &component.Thickness, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Fade", &component.Fade, 0.01f, 0.0f, 1.0f);
-		});
+			});
 
 		// Rigid Body 2D
 		DrawComponent<ComponentRigidBody2D>("Rigid Body 2D", entity, true, [](ComponentRigidBody2D& component) {
@@ -624,7 +625,7 @@ namespace PaulEngine
 			if (ImGui::Checkbox("Fixed Rotation", &fixedRotation)) {
 				component.SetFixedRotation(fixedRotation);
 			}
-		});
+			});
 
 		// Box Collider 2D
 		DrawComponent<ComponentBoxCollider2D>("Box Collider 2D", entity, true, [](ComponentBoxCollider2D& component) {
@@ -640,7 +641,7 @@ namespace PaulEngine
 			if (ImGui::DragFloat("Density", &density, 0.1f)) { component.SetDensity(density); }
 			if (ImGui::DragFloat("Friction", &friction, 0.1f, 0.0f, 1.0f)) { component.SetFriction(friction); }
 			if (ImGui::DragFloat("Restitution", &restitution, 0.1f, 0.0f, 1.0f)) { component.SetRestitution(restitution); }
-		});
+			});
 
 		// Circle Collider 2D
 		DrawComponent<ComponentCircleCollider2D>("Circle Collider 2D", entity, true, [](ComponentCircleCollider2D& component) {
@@ -654,7 +655,7 @@ namespace PaulEngine
 			if (ImGui::DragFloat("Density", &density, 0.1f)) { component.SetDensity(density); }
 			if (ImGui::DragFloat("Friction", &friction, 0.1f, 0.0f, 1.0f)) { component.SetFriction(friction); }
 			if (ImGui::DragFloat("Restitution", &restitution, 0.1f, 0.0f, 1.0f)) { component.SetRestitution(restitution); }
-		});
+			});
 
 		// Text Component
 		DrawComponent<ComponentTextRenderer>("Text Renderer", entity, true, [](ComponentTextRenderer& component) {
@@ -709,7 +710,7 @@ namespace PaulEngine
 			ImGui::ColorEdit4("Colour", &component.Colour[0]);
 			ImGui::DragFloat("Kerning", &component.Kerning, 0.025f);
 			ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.025f);
-		});
+			});
 
 		// Mesh Component
 		DrawComponent<ComponentMeshRenderer>("Mesh Renderer", entity, true, [entity](ComponentMeshRenderer& component) {
@@ -862,19 +863,19 @@ namespace PaulEngine
 			};
 			const char* currentDepthFuncString = depthFuncStrings[(int)component.DepthState.Func];
 			if (ImGui::BeginCombo("Func", currentDepthFuncString)) {
-			
+
 				for (int i = 0; i < 8; i++) {
 					bool isSelected = currentDepthFuncString == depthFuncStrings[i];
 					if (ImGui::Selectable(depthFuncStrings[i], isSelected)) {
 						currentDepthFuncString = depthFuncStrings[i];
 						component.DepthState.Func = (DepthFunc)i;
 					}
-			
+
 					if (isSelected) {
 						ImGui::SetItemDefaultFocus();
 					}
 				}
-			
+
 				ImGui::EndCombo();
 			}
 			ImGui::Checkbox("Test", &component.DepthState.Test);
@@ -906,8 +907,8 @@ namespace PaulEngine
 
 				ImGui::EndCombo();
 			}
-		});
-	
+			});
+
 		// Directional Light
 		DrawComponent<ComponentDirectionalLight>("Directional Light", entity, true, [](ComponentDirectionalLight& component) {
 			ImGui::ColorEdit3("Diffuse", &component.Diffuse[0], ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
@@ -927,7 +928,7 @@ namespace PaulEngine
 				ImGui::DragFloat("Near clip", &component.ShadowMapNearClip, 0.01f);
 				ImGui::DragFloat("Far clip", &component.ShadowMapFarClip, 0.1f);
 			}
-		});
+			});
 
 		// Point Light
 		DrawComponent<ComponentPointLight>("Point Light", entity, true, [](ComponentPointLight& component) {
@@ -947,8 +948,8 @@ namespace PaulEngine
 				ImGui::DragFloat("Near clip", &component.ShadowMapNearClip, 0.01f);
 				ImGui::DragFloat("Far clip", &component.ShadowMapFarClip, 0.1f);
 			}
-		});
-	
+			});
+
 		// Spot Light
 		DrawComponent<ComponentSpotLight>("Spot Light", entity, true, [](ComponentSpotLight& component) {
 			ImGui::DragFloat("Range", &component.Range, 1.0f, 0.0f);
@@ -969,6 +970,24 @@ namespace PaulEngine
 				ImGui::DragFloat("Near clip", &component.ShadowMapNearClip, 0.01f);
 				ImGui::DragFloat("Far clip", &component.ShadowMapFarClip, 0.1f);
 			}
+			});
+
+		// Reflection Probe
+		DrawComponent<ComponentReflectionProbe>("Reflection Probe", entity, true, [](ComponentReflectionProbe& component) {
+			glm::vec3& minBounds = component.GeometryBoundsMinExtent;
+			glm::vec3& maxBounds = component.GeometryBoundsMaxExtent;
+			float& soiRadius = component.SOIRadius;
+			uint8_t& bakeIterations = component.BakeIterations;
+			ImGui::DragFloat("Sphere of Influence", &soiRadius, 1.0f, 0.1f, 10000.0f, "%.1f");
+			ImGui::SliderInt("Bake Iterations", (int*)&bakeIterations, 1, 6);
+			ImGui::SetItemTooltip("Number of times the cubemap is captured during baking. More iterations allows for reflection bounces to be captured.");
+			
+			ImGui::BeginGroup();
+			ImGui::SeparatorText("Geometry Bounds");
+			DrawVec3Control("Min Extent", minBounds, -5.0f);
+			DrawVec3Control("Max Extent", maxBounds, 5.0f);
+			ImGui::EndGroup();
+			ImGui::SetItemTooltip("Used for parallax correcting cubemap reflections to align with surrounding geometry");
 		});
 	}
 }
