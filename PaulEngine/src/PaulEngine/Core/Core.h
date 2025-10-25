@@ -43,4 +43,12 @@ namespace PaulEngine {
 	constexpr Ref<T> CreateRef(Args&& ... args) {
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
+
+	template <typename T>
+	// (std::weak_ptr)
+	using WeakRef = std::weak_ptr<T>;
+	template <typename T>
+	constexpr WeakRef<T> CreateWeak(Ref<T> owning_ref) {
+		return  std::weak_ptr<T>(owning_ref);
+	}
 }
