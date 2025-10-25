@@ -342,7 +342,7 @@ namespace PaulEngine
 		size_t baseUncompressedSize = uncompressedFaces[0][0].Size();
 		for (int i = 1; i < 6; i++)
 		{
-			PE_CORE_ASSERT(uncompressedFaces[i].Size() == uncompressedSize, "Base cubemap faces must be same uncompressed size");
+			PE_CORE_ASSERT(uncompressedFaces[0][i].Size() == baseUncompressedSize, "Base cubemap faces must be same uncompressed size");
 		}
 
 		uint32_t baseWidth = spec.Width;
@@ -369,7 +369,7 @@ namespace PaulEngine
 
 			size_t mipWidth = std::max(1u, baseWidth >> mip);
 			size_t mipHeight = std::max(1u, baseHeight >> mip);
-			PE_CORE_ASSERT(uncompressedMipSize == mipWidth * mipHeight * channels);
+			PE_CORE_ASSERT(uncompressedMipSize == mipWidth * mipHeight * channels, "Invalid mip size");
 		}
 
 		// Begin write
