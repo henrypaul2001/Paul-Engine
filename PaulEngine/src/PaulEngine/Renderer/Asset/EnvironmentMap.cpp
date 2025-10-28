@@ -34,6 +34,27 @@ namespace PaulEngine
 	AssetHandle EnvironmentMap::s_BRDFLutMaterialHandle = 0;
 	AssetHandle EnvironmentMap::s_BRDFLutTextureHandle = 0;
 
+	EnvironmentMap::EnvironmentMap(glm::uvec2 resolution, bool persistentAsset)
+	{
+		TextureSpecification spec;
+		spec.Width = resolution.x;
+		spec.Height = resolution.y;
+		spec.GenerateMips = true;
+
+		Ref<TextureCubemap> baseCubemap = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec);
+		m_BaseCubemapHandle = baseCubemap->Handle;
+
+		spec.MinFilter = ImageMinFilter::LINEAR_MIPMAP_LINEAR;
+		m_PrefilteredCubemapHandle = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec)->Handle;
+
+		spec.Width = 32;
+		spec.Height = 32;
+		spec.GenerateMips = false;
+		m_IrradianceCubemapHandle = AssetManager::CreateAsset<TextureCubemap>(persistentAsset, spec)->Handle;
+
+		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
+	}
+
 	EnvironmentMap::EnvironmentMap(const std::filesystem::path& hdrPath, bool persistentAsset)
 	{
 		PE_PROFILE_FUNCTION();
@@ -66,12 +87,7 @@ namespace PaulEngine
 
 		// Convert loaded equirectangular hdr texture to a cubemap texture
 		ConvertEquirectangularToCubemap(hdrTexture, m_BaseCubemapHandle);
-
-		ConvoluteEnvironmentMap(baseCubemap, m_IrradianceCubemapHandle);
-
-		PrefilterEnvironmentMap(baseCubemap, m_PrefilteredCubemapHandle);
-
-		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
+		ProcessBaseCubemap();
 
 		CacheCubemaps(hdrPath.parent_path(), hdrPath.stem().string());
 	}
@@ -106,6 +122,14 @@ namespace PaulEngine
 		m_IrradianceCubemapHandle = irradianceMapHandle;
 		m_PrefilteredCubemapHandle = prefilteredMapHandle;
 
+		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
+	}
+
+	void EnvironmentMap::ProcessBaseCubemap()
+	{
+		Ref<TextureCubemap> baseCubemap = AssetManager::GetAsset<TextureCubemap>(m_BaseCubemapHandle);
+		ConvoluteEnvironmentMap(baseCubemap, m_IrradianceCubemapHandle);
+		PrefilterEnvironmentMap(baseCubemap, m_PrefilteredCubemapHandle);
 		if (!AssetManager::IsAssetHandleValid(s_BRDFLutTextureHandle)) { GenerateBRDFLut(); }
 	}
 
@@ -221,16 +245,20 @@ namespace PaulEngine
 
 		// Attach target cubemap to framebuffer draw attachment
 		PE_CORE_ASSERT(AssetManager::IsAssetHandleValid(targetCubemapHandle), "Invalid target cubemap asset handle");
+		Ref<TextureCubemap> targetCubemap = AssetManager::GetAsset<TextureCubemap>(targetCubemapHandle);
+		uint32_t baseWidth = environmentMap->GetWidth(); 
+		uint32_t baseHeight = environmentMap->GetHeight();
+		targetCubemap->Resize(baseWidth, baseHeight);
 		Ref<FramebufferTextureCubemapAttachment> drawAttachment = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Colour0, targetCubemapHandle);
 		drawAttachment->BindAsLayered = false;
 		s_CubeCaptureFBO->AddColourAttachment(drawAttachment);
 		s_CubeCaptureFBO->Bind();
 
 		// Resize depth buffer
-		s_CubeCaptureFBO->Resize(CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION);
+		s_CubeCaptureFBO->Resize(baseWidth, baseHeight);
 
 		RenderCommand::Clear();
-		RenderCommand::SetViewport({ 0, 0 }, { CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION });
+		RenderCommand::SetViewport({ 0, 0 }, { baseWidth, baseHeight });
 
 		// Setup cubemap capture view projections
 		Ref<Material> prefilterMaterial = AssetManager::GetAsset<Material>(s_PrefilterMaterialHandle);
@@ -254,8 +282,8 @@ namespace PaulEngine
 		uboStorage->SetLocalData("CubemapIndex", 0);
 
 		UniformBufferStorage* prefilterParams = prefilterMaterial->GetParameter<UBOShaderParameterTypeStorage>("PrefilterParams")->UBO().get();
-		prefilterParams->SetLocalData("FaceWidth", CUBE_MAP_RESOLUTION);
-		prefilterParams->SetLocalData("FaceHeight", CUBE_MAP_RESOLUTION);
+		prefilterParams->SetLocalData("FaceWidth", baseWidth);
+		prefilterParams->SetLocalData("FaceHeight", baseHeight);
 
 		// Render
 		SceneCamera cam = SceneCamera(SCENE_CAMERA_PERSPECTIVE);
@@ -264,7 +292,7 @@ namespace PaulEngine
 		const uint8_t maxMipLevels = 7;
 		for (uint8_t mip = 0; mip < maxMipLevels; mip++)
 		{
-			const uint32_t mipWidth = CUBE_MAP_RESOLUTION * std::pow(0.5f, mip);
+			const uint32_t mipWidth = baseWidth * std::pow(0.5f, mip);
 			const uint32_t mipHeight = mipWidth;
 
 			Ref<FramebufferAttachment> colourAttach = s_CubeCaptureFBO->GetAttachment(FramebufferAttachmentPoint::Colour0);
