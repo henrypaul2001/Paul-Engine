@@ -22,6 +22,8 @@
 
 #include "PaulEngine/Renderer/Asset/EnvironmentMap.h"
 
+#include "PaulEngine/Renderer/RenderBuilder.h"
+
 namespace PaulEngine
 {
 	struct BloomMipChain
@@ -1174,10 +1176,12 @@ namespace PaulEngine
 		// --------
 		AssetHandle dirtMaskTextureHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/dirtmask.jpg", true);
 		out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirtMaskTexture", true, dirtMaskTextureHandle);
-	
+
 		return bloomFBO;
 	}
 
+	// TODO: These resources should not be owned by the renderer, but by the scene. That way, when the same scene is used by other renderers with the same behaviour, the skybox will be the same, as expected. Such as the ReflectionProbeBaker
+	//			Move these values to some kind of "GlobalVolume" component
 	void EditorLayer::InitEnvMapAndSkybox(FrameRenderer* out_Framerenderer)
 	{
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
@@ -1198,7 +1202,7 @@ namespace PaulEngine
 			"assets/textures/cubemap/default_skybox/front.png",
 			"assets/textures/cubemap/default_skybox/back.png"
 		};
-
+		
 		std::vector<Buffer> faceData;
 		faceData.reserve(6);
 		for (int i = 0; i < 6; i++)
@@ -1208,7 +1212,7 @@ namespace PaulEngine
 			params.FlipVertical = false;
 			faceData.push_back(TextureImporter::ReadImageFile(params, result));
 		}
-
+		
 		TextureSpecification skyboxSpec;
 		skyboxSpec.Format = ImageFormat::RGB8;
 		skyboxSpec.MinFilter = ImageMinFilter::LINEAR;
@@ -2702,6 +2706,22 @@ namespace PaulEngine
 			m_FrameRendererPanel.OnImGuiRender();
 			m_FrameRendererProfilePanel.OnImGuiRender();
 			m_MeshPoolPanel.OnImGuiRender();
+
+			// Lighting manager panel (temp)
+			ImGui::Begin("Lighting Manager");
+
+			ImGui::SeparatorText("Reflection Probes");
+			if (ImGui::Button("Bake Reflection Probes"))
+			{
+				if (Ref<ProbeBakeRenderer> baker = RenderBuilder::GetProbeBakerInstance().lock())
+				{
+					baker->SceneContext = m_ActiveScene;
+					baker->Run();
+					baker->SceneContext = nullptr;
+				}
+			}
+
+			ImGui::End();
 
 			m_TextureArrayCreateWindow.OnImGuiRender();
 			m_MaterialCreateWindow.OnImGuiRender();

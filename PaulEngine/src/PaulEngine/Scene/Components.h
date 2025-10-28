@@ -427,6 +427,7 @@ namespace PaulEngine
 
 	private:
 		friend class SceneSerializer;
+		friend class ProbeBakeRenderer;
 		AssetHandle m_EnvironmentMapHandle = 0;
 	};
 }
