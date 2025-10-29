@@ -2719,7 +2719,11 @@ namespace PaulEngine
 					baker->Run();
 					baker->SceneContext = nullptr;
 				}
+
+				Project::GetActive()->GetEditorAssetManager()->SerializeAssetRegistry();
+				SaveSceneAs(m_CurrentFilepath);
 			}
+			ImGui::SetItemTooltip("Bake all reflection probe components and save current scene");
 
 			ImGui::End();
 

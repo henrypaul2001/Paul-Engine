@@ -1,5 +1,149 @@
 Scene: Untitled
 Entities:
+  - Entity: 2667024170169442487
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 10, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 6745024451471262044
+  - Entity: 8347897144039709158
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 0, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 17948214213643752989
+  - Entity: 15865806163336471416
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 0, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 14828980108310254924
+  - Entity: 5474143896841346242
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 0, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 3058549776774378802
+  - Entity: 4024505113901018203
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 10, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 9118106477705312841
+  - Entity: 15473095217072289690
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 10, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 13339556716015345627
+  - Entity: 7981834387562441801
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 10, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 6528301549694833071
+  - Entity: 10202265984702790958
+    TagComponent:
+      Tag: Reflection Probes
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 2667024170169442487
+        - 4821169483295719679
+        - 7981834387562441801
+        - 15473095217072289690
+        - 4024505113901018203
+        - 5474143896841346242
+        - 15865806163336471416
+        - 8347897144039709158
+  - Entity: 4821169483295719679
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 0, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-5, -5, -5]
+      GeometryBoundsMaxExtent: [5, 5, 5]
+      SOIRadius: 5
+      BakeIterations: 1
+      EnvironmentMapHandle: 17798105823382816681
   - Entity: 16880314327514422701
     TagComponent:
       Tag: Camera
@@ -16,7 +160,7 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.074174
+        AspectRatio: 2.0188425
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false

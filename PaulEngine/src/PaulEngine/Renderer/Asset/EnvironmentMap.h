@@ -39,11 +39,34 @@ namespace PaulEngine
 		static void ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle);
 		static void ConvoluteEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
 		static void PrefilterEnvironmentMap(Ref<TextureCubemap> environmentMap, AssetHandle targetCubemapHandle);
+		
+		static void CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath, uint8_t mips = 0);
+
+		static std::filesystem::path GetProbeCacheDirectory()
+		{
+			return "assets/cache/ibl_probe";
+		}
+		static void ValidateProbeCacheDirectory()
+		{
+			std::filesystem::path cacheDirectory = GetProbeCacheDirectory();
+			if (!std::filesystem::exists(cacheDirectory))
+			{
+				PE_CORE_DEBUG("Creating directory '{0}'", cacheDirectory.string().c_str());
+				std::filesystem::create_directories(cacheDirectory);
+			}
+		}
+		static std::filesystem::path GetProbeCachePath(AssetHandle handle)
+		{
+			return GetProbeCacheDirectory() / std::filesystem::path(std::to_string(handle) + ".ccm");
+		}
+		static bool IsAssetFileCached(AssetHandle handle)
+		{
+			return std::filesystem::exists(GetProbeCachePath(handle));
+		}
 	private:
 		friend class BinarySerializer;
 
 		void CacheCubemaps(const std::filesystem::path& cubemapDirectory, const std::string& baseName);
-		void CacheCubemap(const AssetHandle cubemapHandle, const std::filesystem::path& cubemapPath, uint8_t mips = 0);
 
 		static void InitEnvMapProcessing();
 		static void GenerateBRDFLut();

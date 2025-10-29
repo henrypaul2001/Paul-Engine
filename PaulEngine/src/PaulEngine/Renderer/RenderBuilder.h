@@ -4,6 +4,7 @@
 #include "PaulEngine/Renderer/FrameRenderer.h"
 #include "PaulEngine/Events/SceneEvent.h"
 #include "PaulEngine/Renderer/Asset/EnvironmentMap.h"
+#include "PaulEngine/Asset/AssetImporter.h"
 
 namespace PaulEngine
 {
@@ -41,7 +42,6 @@ namespace PaulEngine
 					{
 						numProbes++;
 					}
-					numProbes = std::min((size_t)1, numProbes);
 					
 					if (numProbes == 1) { PE_CORE_INFO("Running probe baking for 1 probe"); }
 					else				{ PE_CORE_INFO("Running probe baking for {0} probes", numProbes); }
@@ -49,8 +49,7 @@ namespace PaulEngine
 					size_t currentProbe = 1;
 					for (auto entityID : probeView)
 					{
-						if (currentProbe > numProbes) { break; }
-						PE_CORE_INFO("Baking probe {0}/{1}...", currentProbe++, numProbes);
+						PE_CORE_INFO("    Baking probe {0}/{1}...", currentProbe++, numProbes);
 						auto [transform, probe] = probeView.get(entityID);
 
 						if (!AssetManager::IsAssetHandleValid(probe.GetEnvironmentMapHandle()))
@@ -60,11 +59,36 @@ namespace PaulEngine
 						envMapComponent->EnvironmentHandle = probe.GetEnvironmentMapHandle();
 						Renderer->RenderFrame(SceneContext, captureCamera, transform.GetTransform());
 					}
-
-					// Save env maps to disk
-
 					PE_CORE_INFO("Reflection probe baking complete");
 
+					// Save env maps to disk
+					EnvironmentMap::ValidateProbeCacheDirectory();
+					const std::filesystem::path cacheDirectory = EnvironmentMap::GetProbeCacheDirectory();
+					
+					currentProbe = 1;
+					PE_CORE_INFO("Saving probes to disk");
+					for (auto entityID : probeView)
+					{
+						PE_CORE_INFO("    Saving probe {0}/{1}...", currentProbe++, numProbes);
+						auto [transform, probe] = probeView.get(entityID);
+
+						AssetHandle envMapHandle = probe.GetEnvironmentMapHandle();
+						Ref<EnvironmentMap> envMapAsset = AssetManager::GetAsset<EnvironmentMap>(envMapHandle);
+						
+						AssetHandle baseCubemapHandle = envMapAsset->GetUnfilteredHandle();
+						AssetHandle irradianceCubemapHandle = envMapAsset->GetIrradianceMapHandle();
+						AssetHandle prefilteredCubemapHandle = envMapAsset->GetPrefilteredMapHandle();
+
+						EnvironmentMap::CacheCubemap(baseCubemapHandle, cacheDirectory / (std::to_string(baseCubemapHandle) + ".ccm"));
+						EnvironmentMap::CacheCubemap(irradianceCubemapHandle, cacheDirectory / (std::to_string(irradianceCubemapHandle) + ".ccm"));
+						const uint8_t maxMipLevels = 7;
+						EnvironmentMap::CacheCubemap(prefilteredCubemapHandle, cacheDirectory / (std::to_string(prefilteredCubemapHandle) + ".ccm"), maxMipLevels);
+
+						AssetImporter::SerializeAssetFromType(envMapAsset);
+						std::filesystem::path relativePath = AssetImporter::GetAssetFileCachePath(envMapHandle).lexically_relative(Project::GetAssetDirectory());
+						Project::GetActive()->GetEditorAssetManager()->UpdateAssetSourcePath(envMapHandle, relativePath);
+					}
+					PE_CORE_INFO("Reflection probe saving complete");
 				} else { PE_CORE_ERROR("Missing target environment map render component"); }
 			} else { PE_CORE_ERROR("Invalid scene context"); }
 		}

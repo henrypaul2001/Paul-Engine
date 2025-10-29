@@ -14,28 +14,6 @@
 
 namespace PaulEngine
 {
-	static std::filesystem::path GetAssetFileCacheDirectory()
-	{
-		return "assets/cache/asset_file";
-	}
-	static void ValidateAssetFileCacheDirectory()
-	{
-		std::filesystem::path cacheDirectory = GetAssetFileCacheDirectory();
-		if (!std::filesystem::exists(cacheDirectory))
-		{
-			PE_CORE_DEBUG("Creating directory '{0}'", cacheDirectory.string().c_str());
-			std::filesystem::create_directories(cacheDirectory);
-		}
-	}
-	static std::filesystem::path GetAssetFileCachePath(AssetHandle handle)
-	{
-		return GetAssetFileCacheDirectory() / std::filesystem::path(std::to_string(handle) + ".passet");
-	}
-	static bool IsAssetFileCached(AssetHandle handle)
-	{
-		return std::filesystem::exists(GetAssetFileCachePath(handle));
-	}
-
 	using AssetImportFunction = std::function<Ref<Asset>(AssetHandle, const AssetMetadata&)>;
 
 	static std::unordered_map<AssetType, AssetImportFunction> s_AssetImportFunctions = {
@@ -98,7 +76,7 @@ namespace PaulEngine
 		else { return ImportAssetFromSource(handle, metadata); }
 	}
 
-	bool SerializeAssetFromType(const Ref<Asset>& asset)
+	bool AssetImporter::SerializeAssetFromType(const Ref<Asset>& asset)
 	{
 		size_t dataSize = 0;
 
