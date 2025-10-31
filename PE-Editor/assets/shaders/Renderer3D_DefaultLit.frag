@@ -6,6 +6,7 @@ layout(location = 1) out int entityID;
 const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+const int MAX_ACTIVE_LOCAL_IBL = 32;
 
 struct VertexData
 {
@@ -52,6 +53,15 @@ struct SpotLight
 	mat4 LightMatrix;
 };
 
+struct LocalIBL
+{
+	vec4 WorldMinBounds; // w = sphere of influence
+	vec4 WorldMaxBounds; // w = unused
+	vec4 WorldOrigin;	 // w = unused
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+};
+
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
@@ -70,9 +80,11 @@ layout(std140, binding = 2) uniform SceneData
 	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
+	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
 	int ActiveDirLights;
 	int ActivePointLights;
 	int ActiveSpotLights;
+	int ActiveReflectionProbes;
 } u_SceneData;
 
 struct MaterialValues

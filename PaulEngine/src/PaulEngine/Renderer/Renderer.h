@@ -14,6 +14,7 @@ namespace PaulEngine {
 		static const int MAX_ACTIVE_DIR_LIGHTS = 8;
 		static const int MAX_ACTIVE_POINT_LIGHTS = 8;
 		static const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+		static const int MAX_ACTIVE_LOCAL_IBL = 32;
 
 		struct DirectionalLight // vec4 for padding
 		{
@@ -43,6 +44,14 @@ namespace PaulEngine {
 			glm::vec4 ShadowData = glm::vec4(1.0f); // r = (bool)castShadows, g = minBias, b = maxBias
 			glm::mat4 LightMatrix = glm::mat4(1.0f);
 		};
+		struct LocalIBL
+		{
+			glm::vec4 WorldMinBounds; // w = sphere of influence
+			glm::vec4 WorldMaxBounds; // w = unused
+			glm::vec4 WorldOrigin;	  // w = unused
+			uint64_t PrefilteredCubemapDeviceHandle;
+			uint64_t IrradianceCubemapDeviceHandle;
+		};
 
 		static void Init();
 
@@ -60,6 +69,8 @@ namespace PaulEngine {
 		static void SubmitDirectionalLightSource(const DirectionalLight& light);
 		static void SubmitPointLightSource(const PointLight& light);
 		static void SubmitSpotLightSource(const SpotLight& light);
+
+		static void SubmitLocalReflectionProbe(const LocalIBL& probe);
 
 		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);

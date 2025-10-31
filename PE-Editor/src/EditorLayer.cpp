@@ -573,6 +573,33 @@ namespace PaulEngine
 				}
 			}
 
+			{
+				PE_PROFILE_SCOPE("Submit probes");
+				auto view = sceneContext->View<ComponentTransform, ComponentReflectionProbe>();
+				for (auto entityID : view) {
+					auto [transform, probe] = view.get<ComponentTransform, ComponentReflectionProbe>(entityID);
+					
+					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(probe.GetEnvironmentMapHandle());
+					if (envMap)
+					{
+						Ref<TextureCubemap> prefilteredMap = AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle());
+						Ref<TextureCubemap> irradianceMap = AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle());
+
+						if (prefilteredMap && irradianceMap)
+						{
+							glm::vec3 position = transform.WorldPosition();
+							Renderer::LocalIBL iblSubmit;
+							iblSubmit.WorldMinBounds = glm::vec4(position + probe.GeometryBoundsMaxExtent, probe.SOIRadius);
+							iblSubmit.WorldMaxBounds = glm::vec4(position + probe.GeometryBoundsMinExtent, 1.0f);
+							iblSubmit.WorldOrigin = glm::vec4(position, 1.0f);
+							iblSubmit.PrefilteredCubemapDeviceHandle = prefilteredMap->GetDeviceTextureHandle();
+							iblSubmit.IrradianceCubemapDeviceHandle = irradianceMap->GetDeviceTextureHandle();
+							Renderer::SubmitLocalReflectionProbe(iblSubmit);
+						}
+					}
+				}
+			}
+
 			if (dirLightShadowInput) {
 				Ref<Texture2DArray> dirLightShadowTexture = AssetManager::GetAsset<Texture2DArray>(dirLightShadowInput->TextureHandle);
 				PE_CORE_ASSERT(dirLightShadowTexture->GetType() == AssetType::Texture2DArray, "Invalid directional light shadow map type");

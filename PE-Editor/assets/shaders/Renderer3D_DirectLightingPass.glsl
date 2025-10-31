@@ -23,6 +23,7 @@ layout(location = 1) out int f_EntityID;
 const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+const int MAX_ACTIVE_LOCAL_IBL = 32;
 
 struct DirectionalLight // vec4 for padding
 {
@@ -60,6 +61,15 @@ struct SpotLight
 	mat4 LightMatrix;
 };
 
+struct LocalIBL
+{
+	vec4 WorldMinBounds; // w = sphere of influence
+	vec4 WorldMaxBounds; // w = unused
+	vec4 WorldOrigin;	 // w = unused
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+};
+
 layout(location = 1) in vec2 v_TexCoords;
 
 layout(std140, binding = 0) uniform Camera
@@ -76,9 +86,11 @@ layout(std140, binding = 2) uniform SceneData
 	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
+	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
 	int ActiveDirLights;
 	int ActivePointLights;
 	int ActiveSpotLights;
+	int ActiveReflectionProbes;
 } u_SceneData;
 
 layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;

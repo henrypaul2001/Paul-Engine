@@ -113,6 +113,7 @@ namespace PaulEngine {
 			int DirLightsHead = 0;
 			int PointLightsHead = 0;
 			int SpotLightsHead = 0;
+			int ReflectionProbesHead = 0;
 		};
 		SceneMetaData SceneBufferMetaData;
 		struct SceneData
@@ -120,12 +121,15 @@ namespace PaulEngine {
 			Renderer::DirectionalLight DirLights[Renderer::MAX_ACTIVE_DIR_LIGHTS];
 			Renderer::PointLight PointLights[Renderer::MAX_ACTIVE_POINT_LIGHTS];
 			Renderer::SpotLight SpotLights[Renderer::MAX_ACTIVE_SPOT_LIGHTS];
+			Renderer::LocalIBL ReflectionProbes[Renderer::MAX_ACTIVE_LOCAL_IBL];
 			int ActiveDirLights = 0;
 			int ActivePointLights = 0;
 			int ActiveSpotLights = 0;
+			int ActiveReflectionProbes = 0;
 		};
 		SceneData SceneDataBuffer;
 		Ref<UniformBuffer> SceneDataUniformBuffer;
+		std::unordered_set<uint64_t> ReflectionProbeTextureSet;
 
 		Renderer::Statistics Stats;
 
@@ -150,9 +154,11 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.ReflectionProbesHead = 0;
 		s_RenderData.SceneDataUniformBuffer->SetData(&s_RenderData.SceneDataBuffer, sizeof(Renderer3DData::SceneDataBuffer));
 	}
 
@@ -172,9 +178,11 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.ReflectionProbesHead = 0;
 	}
 
 	void Renderer::BeginScene(const Camera& camera, const glm::mat4& worldTransform)
@@ -193,9 +201,11 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.ReflectionProbesHead = 0;
 	}
 
 	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& worldTransform, float gamma, float exposure)
@@ -214,9 +224,11 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActiveDirLights = 0;
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
+		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.ReflectionProbesHead = 0;
 	}
 
 	void Renderer::EndScene()
@@ -241,7 +253,7 @@ namespace PaulEngine {
 		s_RenderData.DrawCommandBuffer->Bind();
 
 		DrawBatcher& batcher = s_RenderData.DrawBatcher;
-
+		
 		batcher.UploadLocalDrawBuffer(s_RenderData.DrawCommandBuffer.get());
 
 		const mapped_vector<RenderPipelineSpecification, RenderPipeline>& pipelines = batcher.GetPipelines();
@@ -282,9 +294,13 @@ namespace PaulEngine {
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
+		s_RenderData.SceneBufferMetaData.ReflectionProbesHead = 0;
 		
 		s_RenderData.Stats.PipelineCount += batchCount;
 		batcher.Reset();
+
+		MakeTextureSetNonResident(s_RenderData.ReflectionProbeTextureSet);
+		s_RenderData.ReflectionProbeTextureSet.clear();
 	}
 
 	void Renderer::SubmitDefaultCube(AssetHandle materialHandle, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
@@ -348,6 +364,19 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.SpotLights[s_RenderData.SceneBufferMetaData.SpotLightsHead] = light;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = ++s_RenderData.SceneBufferMetaData.SpotLightsHead % MAX_ACTIVE_SPOT_LIGHTS;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = std::min(MAX_ACTIVE_SPOT_LIGHTS, ++s_RenderData.SceneDataBuffer.ActiveSpotLights);
+	}
+
+	void Renderer::SubmitLocalReflectionProbe(const LocalIBL& probe)
+	{
+		s_RenderData.SceneDataBuffer.ReflectionProbes[s_RenderData.SceneBufferMetaData.ReflectionProbesHead] = probe;
+		s_RenderData.SceneBufferMetaData.ReflectionProbesHead = ++s_RenderData.SceneBufferMetaData.ReflectionProbesHead % MAX_ACTIVE_LOCAL_IBL;
+		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = std::min(MAX_ACTIVE_LOCAL_IBL, ++s_RenderData.SceneDataBuffer.ActiveReflectionProbes);
+		
+		if (!s_RenderData.ReflectionProbeTextureSet.contains(probe.PrefilteredCubemapDeviceHandle)) { RenderCommand::MakeTextureResident(probe.PrefilteredCubemapDeviceHandle); }
+		if (!s_RenderData.ReflectionProbeTextureSet.contains(probe.IrradianceCubemapDeviceHandle)) { RenderCommand::MakeTextureResident(probe.IrradianceCubemapDeviceHandle); }
+
+		s_RenderData.ReflectionProbeTextureSet.insert(probe.PrefilteredCubemapDeviceHandle);
+		s_RenderData.ReflectionProbeTextureSet.insert(probe.IrradianceCubemapDeviceHandle);
 	}
 
 	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)
