@@ -73,6 +73,7 @@ layout(location = 1) out int entityID;
 const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+const int MAX_ACTIVE_LOCAL_IBL = 32;
 
 struct VertexData
 {
@@ -119,6 +120,15 @@ struct SpotLight
 	mat4 LightMatrix;
 };
 
+struct LocalIBL
+{
+	vec4 WorldMinBounds; // w = sphere of influence
+	vec4 WorldMaxBounds; // w = unused
+	vec4 WorldOrigin;	 // w = unused
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+};
+
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
@@ -137,9 +147,11 @@ layout(std140, binding = 2) uniform SceneData
 	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
+	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
 	int ActiveDirLights;
 	int ActivePointLights;
 	int ActiveSpotLights;
+	int ActiveReflectionProbes;
 } u_SceneData;
 
 struct MaterialValues
@@ -573,6 +585,43 @@ vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMa
 	return (kD * diffuse + specular) * MaterialAO;
 }
 
+bool IntersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax, out vec3 out_intersectPoint)
+{
+	vec3 invDir = 1.0 / rayDir;
+
+	vec3 t0 = (aabbMin - rayOrigin) * invDir;
+	vec3 t1 = (aabbMax - rayOrigin) * invDir;
+
+	vec3 tMin = min(t0, t1);
+	vec3 tMax = max(t0, t1);
+
+	float tNear = max(max(tMin.x, tMin.y), tMin.z);
+	float tFar = min(min(tMax.x, tMax.y), tMax.z);
+
+	if (tNear < tFar || tFar < 0.0)
+	{
+		out_intersectPoint = rayOrigin;
+		return false;
+	}
+
+	out_intersectPoint = rayOrigin + tFar * rayDir;
+	return true;
+}
+
+vec3 ParallaxCorrection(vec3 uncorrectedR, vec3 worldFragPos, vec3 probeWorldOrigin, vec3 geoApproximationWorldMin, vec3 geoApproximationWorldMax)
+{
+	vec3 rayOrigin = worldFragPos;
+	vec3 rayDir = normalize(uncorrectedR);
+
+	vec3 intersectPoint = vec3(0.0);
+	if (IntersectAABB(rayOrigin, rayDir, geoApproximationWorldMin, geoApproximationWorldMax, intersectPoint))
+	{
+		return normalize(intersectPoint - probeWorldOrigin);
+	}
+
+	return uncorrectedR;
+}
+
 void main()
 {
 	MaterialValues materialValues = MaterialBuffer[v_MaterialIndex];
@@ -641,7 +690,7 @@ void main()
 	}
 
 	// Spot lights
-	for (int i = 0; i < u_SceneData.ActiveSpotLights; i++)
+	for (int i = 0; i < u_SceneData.ActiveSpotLights && i < MAX_ACTIVE_SPOT_LIGHTS; i++)
 	{
 		Lo += SpotLightReflectance(i, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
 	}
@@ -651,8 +700,36 @@ void main()
 	// Emission
 	colour.rgb += MaterialEmission;
 
-	// Global IBL
-	colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+	// IBL
+	float localIBLTotalContribution = 0.0;
+	vec3 accumulatedAmbient = vec3(0.0);
+	for (int i = 0; i < u_SceneData.ActiveReflectionProbes && i < MAX_ACTIVE_LOCAL_IBL; i++)
+	{
+		vec3 probeOrigin = u_SceneData.ReflectionProbes[i].WorldOrigin.xyz;
+		float probeSOI = max(u_SceneData.ReflectionProbes[i].WorldMinBounds.w, 0.001);
+
+		vec3 fragToProbe = probeOrigin - v_VertexData.WorldFragPos;
+		float distanceToProbe = length(fragToProbe);
+
+		float contribution = 1.0 - (distanceToProbe / probeSOI);
+
+		if (contribution > 0.0)
+		{
+			vec3 R_Parallaxed = ParallaxCorrection(R, v_VertexData.WorldFragPos, probeOrigin, u_SceneData.ReflectionProbes[i].WorldMinBounds.xyz, u_SceneData.ReflectionProbes[i].WorldMaxBounds.xyz);
+			vec3 probeAmbient = CalculateAmbienceFromIBL(u_SceneData.ReflectionProbes[i].PrefilteredCubemap, u_SceneData.ReflectionProbes[i].IrradianceCubemap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R_Parallaxed, F0);
+			accumulatedAmbient += probeAmbient * contribution;
+			localIBLTotalContribution += contribution;
+		}
+	}
+	if (localIBLTotalContribution > 0.0)
+	{
+		colour.rgb += accumulatedAmbient;
+	}
+	else
+	{
+		// Global IBL fallback
+		colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+	}
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }
