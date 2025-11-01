@@ -1003,6 +1003,16 @@ namespace PaulEngine
 					line = forward * spotLight.Range - up * innerRadius * 0.5f;
 					Renderer2D::DrawLine(position, position + line, glm::vec4(1.0f));
 				}
+
+				// Reflection probe
+				if (selectedEntity.HasComponent<ComponentReflectionProbe>())
+				{
+					ComponentTransform& transformComponent = selectedEntity.GetComponent<ComponentTransform>();
+					ComponentReflectionProbe& probeComponent = selectedEntity.GetComponent<ComponentReflectionProbe>();
+					glm::vec3 origin = transformComponent.WorldPosition();
+
+					Renderer2D::DrawAABB(origin + probeComponent.GeometryBoundsMinExtent, origin + probeComponent.GeometryBoundsMaxExtent, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), -1);
+				}
 			}
 
 			Renderer2D::EndScene();
