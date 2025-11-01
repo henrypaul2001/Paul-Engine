@@ -531,7 +531,7 @@ bool IntersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax, out 
 	float tNear = max(max(tMin.x, tMin.y), tMin.z);
 	float tFar = min(min(tMax.x, tMax.y), tMax.z);
 
-	if (tNear < tFar || tFar < 0.0)
+	if (tNear > tFar || tFar < 0.0)
 	{
 		out_intersectPoint = rayOrigin;
 		return false;

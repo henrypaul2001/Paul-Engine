@@ -598,7 +598,7 @@ bool IntersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax, out 
 	float tNear = max(max(tMin.x, tMin.y), tMin.z);
 	float tFar = min(min(tMax.x, tMax.y), tMax.z);
 
-	if (tNear < tFar || tFar < 0.0)
+	if (tNear > tFar || tFar < 0.0)
 	{
 		out_intersectPoint = rayOrigin;
 		return false;
@@ -701,6 +701,7 @@ void main()
 	colour.rgb += MaterialEmission;
 
 	// IBL
+	// TODO: This method of accumulation is incorrect as multiple probes can create more light than what exists in the scene. Need a smarter way of accumulating ambience in a way that conserves energy similar to lighting functions
 	float localIBLTotalContribution = 0.0;
 	vec3 accumulatedAmbient = vec3(0.0);
 	for (int i = 0; i < u_SceneData.ActiveReflectionProbes && i < MAX_ACTIVE_LOCAL_IBL; i++)
