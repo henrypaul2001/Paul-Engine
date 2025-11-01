@@ -1,0 +1,157 @@
+Scene: Untitled
+Entities:
+  - Entity: 16690756880345159344
+    TagComponent:
+      Tag: Point Light
+    TransformComponent:
+      Position: [-6.13317, 3.445752, 5.4827137]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.5, 0.5]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 15604103736719438516
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 209
+      Diffuse: [1, 0.9953141, 0.7366548]
+      Specular: [1, 1, 1]
+      Ambient: [0, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 50
+  - Entity: 10273684478222269091
+    TagComponent:
+      Tag: MainProbe
+    TransformComponent:
+      Position: [0, 2.5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10526363084022780176
+      MeshHandle: 9093818122123693406
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-10, -5, -10]
+      GeometryBoundsMaxExtent: [10, 5, 10]
+      SOIRadius: 15
+      BakeIterations: 1
+      EnvironmentMapHandle: 10331862274896932254
+  - Entity: 14982822633102537385
+    TagComponent:
+      Tag: brass_goblets.obj_Root
+    PrefabComponent:
+      Handle: 16419161166796920133
+    TransformComponent:
+      Position: [0, -2.5721817, 0]
+      Rotation: [0, 0, 0]
+      Scale: [10, 10, 10]
+      Children:
+        []
+  - Entity: 8809174442425362120
+    TagComponent:
+      Tag: Ceiling
+    TransformComponent:
+      Position: [0, 7.5, 0]
+      Rotation: [1.5707964, 0, 0]
+      Scale: [10, 10, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5404285593151240272
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16369238110774874381
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [0, -2.5, 0]
+      Rotation: [-1.5707963, 0, 0]
+      Scale: [10, 9.999999, 0.99999994]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 4566950916869207811
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3328038069128343107
+    TagComponent:
+      Tag: WallBack
+    TransformComponent:
+      Position: [0, 2.5, 10]
+      Rotation: [0, 3.1415927, 0]
+      Scale: [10, 5, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 18267150240899827061
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4325998498788921490
+    TagComponent:
+      Tag: WallRight
+    TransformComponent:
+      Position: [10, 2.5, 0]
+      Rotation: [0, -1.5707964, 0]
+      Scale: [10, 5, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10327331717423470595
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 12306022534333937723
+    TagComponent:
+      Tag: WallLeft
+    TransformComponent:
+      Position: [-10, 2.5, 0]
+      Rotation: [0, 1.5707964, 0]
+      Scale: [10, 5, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 6052652825163143337
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 11464394317479489094
+    TagComponent:
+      Tag: WallFront
+    TransformComponent:
+      Position: [0, 2.5, -10]
+      Rotation: [0, 0, 0]
+      Scale: [10, 5, 1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5317045289054481295
+      MeshHandle: 6931656594350507425
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
