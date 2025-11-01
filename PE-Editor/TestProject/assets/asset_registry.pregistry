@@ -15,6 +15,10 @@ AssetRegistry:
     Filepath: fonts\Bangers-Regular.ttf
     Persistent: false
     Type: AssetType::Font
+  - Handle: 1732625535741970896
+    Filepath: textures\Checkerboard.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 13097557419926503983
     Filepath: ..\..\assets\cache\ibl_probe\13097557419926503983.ccm
     Persistent: false
@@ -27,26 +31,22 @@ AssetRegistry:
     Filepath: ../../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
     Persistent: true
     Type: AssetType::Font
-  - Handle: 1732625535741970896
-    Filepath: textures\Checkerboard.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 4566192558940935376
-    Filepath: scenes\3DCube.paul
-    Persistent: false
-    Type: AssetType::Scene
   - Handle: 595089826126213518
     Filepath: ..\..\assets\materials/Line2DMaterial.pmat
     Persistent: true
     Type: AssetType::Material
-  - Handle: 5699979129781682678
-    Filepath: materials\CobbleFloor.pmat
+  - Handle: 4566192558940935376
+    Filepath: scenes\3DCube.paul
     Persistent: false
-    Type: AssetType::Material
+    Type: AssetType::Scene
   - Handle: 10323641907013583963
     Filepath: models\brass_goblet\brass_goblet_03_diff_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 5699979129781682678
+    Filepath: materials\CobbleFloor.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 2510263345310005911
     Filepath: scenes\Example.paul
     Persistent: false
@@ -55,18 +55,22 @@ AssetRegistry:
     Filepath: scenes\MaterialScene.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 14046064469291239366
-    Filepath: textures/RPGpack_sheet_2X.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 16753372314544090665
     Filepath: textures\sci-fi_wall\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14046064469291239366
+    Filepath: textures/RPGpack_sheet_2X.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 11922114141701769481
     Filepath: scenes\Physics2D.paul
     Persistent: false
     Type: AssetType::Scene
+  - Handle: 172793675780015653
+    Filepath: textures\space_blanket\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 8423197064840513990
     Filepath: ..\..\assets\cache\ibl_probe\8423197064840513990.ccm
     Persistent: false
@@ -75,46 +79,42 @@ AssetRegistry:
     Filepath: atlas\RPGpack.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
-  - Handle: 172793675780015653
-    Filepath: textures\space_blanket\ao.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 14095763519938001238
     Filepath: atlas\RPGpack2.patlas
     Persistent: false
     Type: AssetType::TextureAtlas2D
-  - Handle: 5404285593151240272
-    Filepath: materials\LeatherPBR.pmat
+  - Handle: 6022420030894400195
+    Filepath: textures\brick_wall\ao.png
     Persistent: false
-    Type: AssetType::Material
-  - Handle: 8875943540767945680
-    Filepath: models\backpack\Plane.013__0.pmesh
+    Type: AssetType::Texture2D
+  - Handle: 5273167371312302242
+    Filepath: scenes\AtlasScene.paul
     Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 12624618747111179535
-    Filepath: models\backpack\Cylinder.032__0.pmesh
+    Type: AssetType::Scene
+  - Handle: 9444880112451928586
+    Filepath: ..\..\assets\cache\asset_file\9444880112451928586.passet
+    Persistent: false
+    Type: AssetType::EnvironmentMap
+  - Handle: 5829777204823558219
+    Filepath: ..\..\assets\models\DefaultCube.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 4930861306935266327
     Filepath: models\backpack\Sphere.026__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 5829777204823558219
-    Filepath: ..\..\assets\models\DefaultCube.pmesh
+  - Handle: 12624618747111179535
+    Filepath: models\backpack\Cylinder.032__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 9444880112451928586
-    Filepath: ..\..\assets\cache\asset_file\9444880112451928586.passet
+  - Handle: 8875943540767945680
+    Filepath: models\backpack\Plane.013__0.pmesh
     Persistent: false
-    Type: AssetType::EnvironmentMap
-  - Handle: 5273167371312302242
-    Filepath: scenes\AtlasScene.paul
+    Type: AssetType::Mesh
+  - Handle: 5404285593151240272
+    Filepath: materials\LeatherPBR.pmat
     Persistent: false
-    Type: AssetType::Scene
-  - Handle: 6022420030894400195
-    Filepath: textures\brick_wall\ao.png
-    Persistent: false
-    Type: AssetType::Texture2D
+    Type: AssetType::Material
   - Handle: 5960017973469150653
     Filepath: ..\..\assets\cache\ibl_probe\5960017973469150653.ccm
     Persistent: false
@@ -123,50 +123,50 @@ AssetRegistry:
     Filepath: textures\tilemap_packed.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 1575296387178993679
-    Filepath: ..\..\assets\textures/dirtmask.jpg
-    Persistent: true
-    Type: AssetType::Texture2D
   - Handle: 12571260564905094005
     Filepath: models\backpack\Cube.032__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 7412640952308102654
-    Filepath: atlas\TinyTown.patlas
-    Persistent: false
-    Type: AssetType::TextureAtlas2D
+  - Handle: 1575296387178993679
+    Filepath: ..\..\assets\textures/dirtmask.jpg
+    Persistent: true
+    Type: AssetType::Texture2D
   - Handle: 4417004561359234411
     Filepath: textures\metal_vent\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 6858784628465755598
-    Filepath: ..\..\assets\cache\ibl_probe\6858784628465755598
+  - Handle: 7412640952308102654
+    Filepath: atlas\TinyTown.patlas
     Persistent: false
-    Type: AssetType::TextureCubemap
-  - Handle: 803195346929345758
-    Filepath: textures\space_blanket\normal.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 3634995299478154298
-    Filepath: textures\space_blanket\height.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 13960601534352678645
-    Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
-    Persistent: true
-    Type: AssetType::Shader
-  - Handle: 10331862274896932254
-    Filepath: ..\..\assets\cache\asset_file\10331862274896932254.passet
-    Persistent: false
-    Type: AssetType::EnvironmentMap
-  - Handle: 10162016685960967100
-    Filepath: textures\cobble_floor\normal.png
-    Persistent: false
-    Type: AssetType::Texture2D
+    Type: AssetType::TextureAtlas2D
   - Handle: 4083934395185596167
     Filepath: ..\..\assets\cache\ibl_probe\4083934395185596167
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 10162016685960967100
+    Filepath: textures\cobble_floor\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 10331862274896932254
+    Filepath: ..\..\assets\cache\asset_file\10331862274896932254.passet
+    Persistent: false
+    Type: AssetType::EnvironmentMap
+  - Handle: 13960601534352678645
+    Filepath: ..\..\assets\shaders/Renderer2D_Quad.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 6858784628465755598
+    Filepath: ..\..\assets\cache\ibl_probe\6858784628465755598
+    Persistent: false
+    Type: AssetType::TextureCubemap
+  - Handle: 3634995299478154298
+    Filepath: textures\space_blanket\height.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 803195346929345758
+    Filepath: textures\space_blanket\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 1083992321171041232
     Filepath: ..\..\assets\shaders/Renderer2D_Circle.glsl
     Persistent: true
@@ -179,77 +179,69 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer2D_Text.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 14505388853857111747
-    Filepath: shaders/MaterialTest.glsl
-    Persistent: false
-    Type: AssetType::Shader
-  - Handle: 15601380242474439612
-    Filepath: textures\cobble_floor\displace.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 17198016934199391621
     Filepath: ..\..\assets\cache\ibl_probe\17198016934199391621.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 15601380242474439612
+    Filepath: textures\cobble_floor\displace.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 14505388853857111747
+    Filepath: shaders/MaterialTest.glsl
+    Persistent: false
+    Type: AssetType::Shader
+  - Handle: 15199826332006340637
+    Filepath: textures\metal_vent\metal.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 1897318988700985028
     Filepath: materials\TestMaterial.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 15199826332006340637
-    Filepath: textures\metal_vent\metal.png
+  - Handle: 13693965115870028380
+    Filepath: ..\..\assets\cache\ibl_probe\13693965115870028380.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
+  - Handle: 3505851729629241938
+    Filepath: models\chess_set\piece_pawn_white_08_Cylin.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 17212045457893958598
+    Filepath: models\chess_set\piece_bishop_white_01_Cyl.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 12386273623327009079
+    Filepath: ..\..\assets\shaders/Renderer3D_DefaultLitPBR.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 1399705667285737100
+    Filepath: models\backpack\Cube.050__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 12953002197827827912
+    Filepath: models\chess_set\chess_set.obj
+    Persistent: false
+    Type: AssetType::Model
+  - Handle: 13498097975499482490
+    Filepath: textures\earth_albedo.jpg
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 11885824974798216900
     Filepath: scenes\3DScene.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 13498097975499482490
-    Filepath: textures\earth_albedo.jpg
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 12953002197827827912
-    Filepath: models\chess_set\chess_set.obj
-    Persistent: false
-    Type: AssetType::Model
-  - Handle: 1399705667285737100
-    Filepath: models\backpack\Cube.050__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 3505851729629241938
-    Filepath: models\chess_set\piece_pawn_white_08_Cylin.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 13693965115870028380
-    Filepath: ..\..\assets\cache\ibl_probe\13693965115870028380.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
-  - Handle: 12386273623327009079
-    Filepath: ..\..\assets\shaders/Renderer3D_DefaultLitPBR.glsl
-    Persistent: true
-    Type: AssetType::Shader
-  - Handle: 17212045457893958598
-    Filepath: models\chess_set\piece_bishop_white_01_Cyl.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 9022188185105073562
-    Filepath: ..\..\assets\materials/Quad2DMaterial.pmat
-    Persistent: true
-    Type: AssetType::Material
   - Handle: 3192248531719347166
     Filepath: textures\rusted_iron\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 9022188185105073562
+    Filepath: ..\..\assets\materials/Quad2DMaterial.pmat
+    Persistent: true
+    Type: AssetType::Material
   - Handle: 1984638280190401155
     Filepath: ..\..\assets\materials/Circle2DMaterial.pmat
     Persistent: true
-    Type: AssetType::Material
-  - Handle: 6036446631686507032
-    Filepath: shaders/TextureArrayTest.glsl
-    Persistent: false
-    Type: AssetType::Shader
-  - Handle: 2517003279346773415
-    Filepath: models\brass_goblet\brass_goblets_03.pmat
-    Persistent: false
     Type: AssetType::Material
   - Handle: 17905908055135409808
     Filepath: ..\..\assets\cache\ibl_probe\17905908055135409808
@@ -259,6 +251,14 @@ AssetRegistry:
     Filepath: models\brass_goblet\brass_goblet_03_ao_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 2517003279346773415
+    Filepath: models\brass_goblet\brass_goblets_03.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 6036446631686507032
+    Filepath: shaders/TextureArrayTest.glsl
+    Persistent: false
+    Type: AssetType::Shader
   - Handle: 8694202715835494202
     Filepath: ..\..\assets\materials/Text2DMaterial.pmat
     Persistent: true
@@ -267,6 +267,10 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.037__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 4674610988906034021
+    Filepath: ..\..\assets\shaders/EquirectangularToCubemap.glsl
+    Persistent: false
+    Type: AssetType::Shader
   - Handle: 14399674261966082871
     Filepath: models\brass_goblet\brass_goblet_03.pmesh
     Persistent: false
@@ -275,10 +279,6 @@ AssetRegistry:
     Filepath: materials/TextureArrayMaterial.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 4674610988906034021
-    Filepath: ..\..\assets\shaders/EquirectangularToCubemap.glsl
-    Persistent: false
-    Type: AssetType::Shader
   - Handle: 11252410981118468342
     Filepath: models\backpack\Cylinder.044__0.pmesh
     Persistent: false
@@ -295,14 +295,6 @@ AssetRegistry:
     Filepath: shaders\ArrayedUBOTest.glsl
     Persistent: false
     Type: AssetType::Shader
-  - Handle: 13443798543085402618
-    Filepath: textures\rusted_iron\normal.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 18228672211693352086
-    Filepath: ..\..\assets\shaders/CubemapPrefilter.glsl
-    Persistent: false
-    Type: AssetType::Shader
   - Handle: 5247201903829821303
     Filepath: textures\environment_maps\passendorf_snow_8k_Base.ccm
     Persistent: false
@@ -311,6 +303,14 @@ AssetRegistry:
     Filepath: textures\environment_maps\voortrekker_interior_8k_Irradiance.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 13443798543085402618
+    Filepath: textures\rusted_iron\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 18228672211693352086
+    Filepath: ..\..\assets\shaders/CubemapPrefilter.glsl
+    Persistent: false
+    Type: AssetType::Shader
   - Handle: 8010315835890785092
     Filepath: textures\environment_maps\kloofendal_43d_clear_puresky_8k.hdr
     Persistent: false
@@ -335,10 +335,6 @@ AssetRegistry:
     Filepath: materials\SpaceBlanket.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 13339556716015345627
-    Filepath: ..\..\assets\cache\asset_file\13339556716015345627.passet
-    Persistent: false
-    Type: AssetType::EnvironmentMap
   - Handle: 10529896942821464162
     Filepath: textures\cobble_floor\specular.png
     Persistent: false
@@ -347,6 +343,10 @@ AssetRegistry:
     Filepath: textures\environment_maps\kloofendal_43d_clear_puresky_8k_Base.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 13339556716015345627
+    Filepath: ..\..\assets\cache\asset_file\13339556716015345627.passet
+    Persistent: false
+    Type: AssetType::EnvironmentMap
   - Handle: 15073402538144088202
     Filepath: ..\..\assets\materials/DefaultLit.pmat
     Persistent: true
@@ -367,6 +367,10 @@ AssetRegistry:
     Filepath: textures\space_blanket\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 12364511148346535644
+    Filepath: models\cart\CoffeeCart_01_props.002.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 14002643597453130384
     Filepath: ..\..\assets\shaders/DepthShader.glsl
     Persistent: true
@@ -379,12 +383,16 @@ AssetRegistry:
     Filepath: models\backpack\Cube.049__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 12364511148346535644
-    Filepath: models\cart\CoffeeCart_01_props.002.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 15644780486505557580
     Filepath: textures\space_blanket\metallic.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 15156159705961703235
+    Filepath: ..\..\assets\shaders/TexturePassthrough.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 6589077115010867636
+    Filepath: models\cart\CoffeeCart_01_cart_diff_4k.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 4140416264728508029
@@ -395,14 +403,6 @@ AssetRegistry:
     Filepath: materials\ParallaxedCobbleFloor.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 15156159705961703235
-    Filepath: ..\..\assets\shaders/TexturePassthrough.glsl
-    Persistent: true
-    Type: AssetType::Shader
-  - Handle: 6589077115010867636
-    Filepath: models\cart\CoffeeCart_01_cart_diff_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 8064715025807366947
     Filepath: ..\..\assets\shaders/DepthShaderCube.glsl
     Persistent: true
@@ -411,34 +411,34 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/MipChainDownsample.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 10189580744591152586
-    Filepath: ..\..\assets\shaders/MipChainBloomCombine.glsl
-    Persistent: true
-    Type: AssetType::Shader
   - Handle: 8897927472611851536
     Filepath: ..\..\assets\cache\asset_file\8897927472611851536.passet
     Persistent: false
     Type: AssetType::EnvironmentMap
+  - Handle: 10189580744591152586
+    Filepath: ..\..\assets\shaders/MipChainBloomCombine.glsl
+    Persistent: true
+    Type: AssetType::Shader
   - Handle: 8500989174652391076
     Filepath: ..\..\assets\shaders/GammaTonemap.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 10427286592414991733
-    Filepath: ..\..\assets\cache\ibl_probe\10427286592414991733.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 2104311818284452138
     Filepath: textures\space_blanket\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 2965463127839537361
-    Filepath: textures\cobble_floor\roughness.png
+  - Handle: 10427286592414991733
+    Filepath: ..\..\assets\cache\ibl_probe\10427286592414991733.ccm
     Persistent: false
-    Type: AssetType::Texture2D
+    Type: AssetType::TextureCubemap
   - Handle: 8650834104021182698
     Filepath: ..\..\assets\models/DefaultSphere.fbx
     Persistent: false
     Type: AssetType::Model
+  - Handle: 2965463127839537361
+    Filepath: textures\cobble_floor\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 10152760683967465258
     Filepath: ..\..\assets\cache\ibl_probe\10152760683967465258.ccm
     Persistent: false
@@ -447,14 +447,6 @@ AssetRegistry:
     Filepath: scenes\PBRScene.paul
     Persistent: false
     Type: AssetType::Scene
-  - Handle: 6846707220170028532
-    Filepath: textures\rusted_iron\roughness.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 5299677624901573691
-    Filepath: textures\environment_maps\passendorf_snow_8k_Filtered.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 5962031261469703283
     Filepath: models\chess_set\piece_pawn_white_05_Cylin.pmesh
     Persistent: false
@@ -463,26 +455,38 @@ AssetRegistry:
     Filepath: models\chess_set\piece_pawn_black_03_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 12446052345689294350
-    Filepath: textures\plastic\albedo.png
+  - Handle: 6846707220170028532
+    Filepath: textures\rusted_iron\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 15981315749699214463
-    Filepath: textures\marble_tile\ao.png
+  - Handle: 5299677624901573691
+    Filepath: textures\environment_maps\passendorf_snow_8k_Filtered.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
+  - Handle: 12446052345689294350
+    Filepath: textures\plastic\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 17842755580034340088
     Filepath: ..\..\assets\cache\ibl_probe\17842755580034340088
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 17964790514648814656
-    Filepath: ..\..\assets\cache\ibl_probe\17964790514648814656
+  - Handle: 15981315749699214463
+    Filepath: textures\marble_tile\ao.png
     Persistent: false
-    Type: AssetType::TextureCubemap
+    Type: AssetType::Texture2D
   - Handle: 10327331717423470595
     Filepath: materials\RustedIronPBR.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 17964790514648814656
+    Filepath: ..\..\assets\cache\ibl_probe\17964790514648814656
+    Persistent: false
+    Type: AssetType::TextureCubemap
+  - Handle: 536532705217740146
+    Filepath: models\brass_goblet\brass_goblet_03_metal_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 18267150240899827061
     Filepath: materials\MarbleTilePBR.pmat
     Persistent: false
@@ -491,18 +495,14 @@ AssetRegistry:
     Filepath: ..\..\assets\textures\environment\default_environment_Base.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 536532705217740146
-    Filepath: models\brass_goblet\brass_goblet_03_metal_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 6604831647599126162
-    Filepath: textures\gold\roughness.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 8442751321443502157
     Filepath: ..\..\assets\cache\ibl_probe\8442751321443502157.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 6604831647599126162
+    Filepath: textures\gold\roughness.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 9321072322867044035
     Filepath: materials\CobblePBR.pmat
     Persistent: false
@@ -531,14 +531,14 @@ AssetRegistry:
     Filepath: textures\brick_wall\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 2884191266391184644
-    Filepath: ..\..\assets\textures\environment\default_environment_Filtered.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 17490890743464863078
     Filepath: textures\brick_wall\displacement.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 2884191266391184644
+    Filepath: ..\..\assets\textures\environment\default_environment_Filtered.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 6975251427835361187
     Filepath: textures\brick_wall\normal.png
     Persistent: false
@@ -547,6 +547,10 @@ AssetRegistry:
     Filepath: models\backpack\Plane.011__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 9446155159879830374
+    Filepath: textures\environment_maps\voortrekker_interior_8k_Irradiance.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 18266325272027338574
     Filepath: textures\brick_wall\roughness.png
     Persistent: false
@@ -555,22 +559,22 @@ AssetRegistry:
     Filepath: models\brass_goblet\brass_goblet_01.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 9446155159879830374
-    Filepath: textures\environment_maps\voortrekker_interior_8k_Irradiance.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
-  - Handle: 856607539180794933
-    Filepath: models\chess_set\board_Cube.001.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 14926567481809532121
     Filepath: textures\brick_wall\specular.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 856607539180794933
+    Filepath: models\chess_set\board_Cube.001.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 12856186902108215016
     Filepath: materials\BrickWallPBR.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 7188973712425713851
+    Filepath: ..\..\assets\cache\asset_file\7188973712425713851.passet
+    Persistent: false
+    Type: AssetType::EnvironmentMap
   - Handle: 1833600436622665324
     Filepath: ..\..\assets\shaders/SSAO.glsl
     Persistent: true
@@ -583,18 +587,14 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.042__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 7188973712425713851
-    Filepath: ..\..\assets\cache\asset_file\7188973712425713851.passet
-    Persistent: false
-    Type: AssetType::EnvironmentMap
-  - Handle: 6704486786259494027
-    Filepath: textures\gold\ao.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 4667658296926098968
     Filepath: ..\..\assets\cache\ibl_probe\4667658296926098968
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 6704486786259494027
+    Filepath: textures\gold\ao.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 5315122133693836471
     Filepath: textures\gold\metallic.png
     Persistent: false
@@ -623,10 +623,6 @@ AssetRegistry:
     Filepath: textures\leather\normal.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 12836424549491576160
-    Filepath: models\brass_goblet\brass_goblet_02.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 6773505444026193566
     Filepath: ..\..\assets\cache\ibl_probe\6773505444026193566.ccm
     Persistent: false
@@ -635,6 +631,14 @@ AssetRegistry:
     Filepath: textures\leather\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 12836424549491576160
+    Filepath: models\brass_goblet\brass_goblet_02.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 8262779594184096130
+    Filepath: materials\NonTextured\Paper.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 3768930464094628223
     Filepath: textures\marble_tile\albedo.png
     Persistent: false
@@ -647,10 +651,6 @@ AssetRegistry:
     Filepath: textures\environment_maps\newport_loft_Filtered.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 8262779594184096130
-    Filepath: materials\NonTextured\Paper.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 9952585698058264345
     Filepath: textures\marble_tile\height.png
     Persistent: false
@@ -659,26 +659,26 @@ AssetRegistry:
     Filepath: textures\marble_tile\metal.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 4838858534030856914
-    Filepath: textures\metal_vent\normal.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 3678118412805230954
     Filepath: textures\marble_tile\normal.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 4838858534030856914
+    Filepath: textures\metal_vent\normal.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 2234126318046469328
     Filepath: textures\marble_tile\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 123007877598155132
-    Filepath: models\backpack\Cylinder.040__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 13518560812662968470
     Filepath: textures\metal_grid\albedo.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 123007877598155132
+    Filepath: models\backpack\Cylinder.040__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 15822576708931449106
     Filepath: textures\metal_grid\AO.png
     Persistent: false
@@ -687,18 +687,22 @@ AssetRegistry:
     Filepath: textures\metal_grid\metal.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 11962704056230961926
-    Filepath: models\backpack\Cylinder.049__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 15565804452399579614
     Filepath: textures\metal_grid\normal.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 11962704056230961926
+    Filepath: models\backpack\Cylinder.049__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 2867233175135387278
     Filepath: textures\metal_grid\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 14953401462234966565
+    Filepath: materials\MetalGridPBR.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 15856691328798274363
     Filepath: scenes\ProbeTest.paul
     Persistent: false
@@ -707,10 +711,6 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.033__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 14953401462234966565
-    Filepath: materials\MetalGridPBR.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 11429543455551471984
     Filepath: materials\NonTextured\MusouBlack.pmat
     Persistent: false
@@ -731,34 +731,34 @@ AssetRegistry:
     Filepath: textures\metal_vent\height.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 7039009388700113622
-    Filepath: materials\MetalVentPBR.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 9884976918304277124
     Filepath: materials\NonTextured\Lead.pmat
+    Persistent: false
+    Type: AssetType::Material
+  - Handle: 7039009388700113622
+    Filepath: materials\MetalVentPBR.pmat
     Persistent: false
     Type: AssetType::Material
   - Handle: 17567023037920077665
     Filepath: textures\plastic\ao.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 14962449398488603083
-    Filepath: models\backpack\Sphere.014__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 16134729670087873108
     Filepath: textures\plastic\metallic.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 4204421036587418736
-    Filepath: models\chess_set\piece_pawn_black_05_Cylin.pmesh
+  - Handle: 14962449398488603083
+    Filepath: models\backpack\Sphere.014__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 4930401161151728174
     Filepath: textures\plastic\normal.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 4204421036587418736
+    Filepath: models\chess_set\piece_pawn_black_05_Cylin.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 427062276693863001
     Filepath: textures\plastic\roughness.png
     Persistent: false
@@ -775,10 +775,6 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.055__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 9078471446494432490
-    Filepath: ..\..\assets\models/DefaultTorus.fbx
-    Persistent: false
-    Type: AssetType::Model
   - Handle: 1035823652955169759
     Filepath: models\cart\CoffeeCart_01_mugs_diff_4k.png
     Persistent: false
@@ -787,18 +783,22 @@ AssetRegistry:
     Filepath: textures\sci-fi_wall\metallic.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 9078471446494432490
+    Filepath: ..\..\assets\models/DefaultTorus.fbx
+    Persistent: false
+    Type: AssetType::Model
   - Handle: 12322924423154327800
     Filepath: textures\sci-fi_wall\roughness.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 16736619473495720513
-    Filepath: textures\environment_maps\voortrekker_interior_8k_Base.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 6052652825163143337
     Filepath: materials\ScifiPBR.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 16736619473495720513
+    Filepath: textures\environment_maps\voortrekker_interior_8k_Base.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 400681757883519208
     Filepath: materials\WhitePBR.pmat
     Persistent: false
@@ -875,20 +875,24 @@ AssetRegistry:
     Filepath: materials\NonTextured\Mirror.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 18070525760824714408
-    Filepath: models\chess_set\piece_bishop_white_02_Cyl.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 451846205488416411
     Filepath: models\cart\CoffeeCart_01_cart_metallic_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 18070525760824714408
+    Filepath: models\chess_set\piece_bishop_white_02_Cyl.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 6131799447228377702
     Filepath: models\cart\CoffeeCart_01_cart.002.pmat
     Persistent: false
     Type: AssetType::Material
   - Handle: 11640611188074365824
     Filepath: models\cart\CoffeeCart_01_mugs_nor_gl_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
+  - Handle: 7223583999209254682
+    Filepath: models\cart\CoffeeCart_01_mugs_metallic_4k.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 3510559406638389857
@@ -899,10 +903,10 @@ AssetRegistry:
     Filepath: models\chess_set\piece_pawn_white_01_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 7223583999209254682
-    Filepath: models\cart\CoffeeCart_01_mugs_metallic_4k.png
+  - Handle: 7314825921140163179
+    Filepath: models\cart\CoffeeCart_01_mugs.002.pmat
     Persistent: false
-    Type: AssetType::Texture2D
+    Type: AssetType::Material
   - Handle: 2353645898924961375
     Filepath: models\backpack\Plane.008__0.pmesh
     Persistent: false
@@ -911,10 +915,10 @@ AssetRegistry:
     Filepath: ..\..\assets\cache\ibl_probe\11194027741174406499.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 7314825921140163179
-    Filepath: models\cart\CoffeeCart_01_mugs.002.pmat
+  - Handle: 8345209633974861654
+    Filepath: models\cart\CoffeeCart_01_props_diff_4k.png
     Persistent: false
-    Type: AssetType::Material
+    Type: AssetType::Texture2D
   - Handle: 5303961630435638932
     Filepath: models\backpack\Cube.036__0.pmesh
     Persistent: false
@@ -923,10 +927,6 @@ AssetRegistry:
     Filepath: models\backpack\Sphere.027__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 8345209633974861654
-    Filepath: models\cart\CoffeeCart_01_props_diff_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 15516970787121080899
     Filepath: models\cart\CoffeeCart_01_props_nor_gl_4k.png
     Persistent: false
@@ -959,6 +959,14 @@ AssetRegistry:
     Filepath: ..\..\assets\textures\environment\default_environment_Filtered.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 17799017667797625014
+    Filepath: ..\..\assets\shaders/SSRUVMapping.glsl
+    Persistent: true
+    Type: AssetType::Shader
+  - Handle: 14380193557172937708
+    Filepath: models\chess_set\chess_set_pieces_black_diff_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 17823649522910951674
     Filepath: models\backpack\Cube.033__0.pmesh
     Persistent: false
@@ -971,26 +979,22 @@ AssetRegistry:
     Filepath: ..\..\assets\textures\environment\default_environment_Irradiance.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 17799017667797625014
-    Filepath: ..\..\assets\shaders/SSRUVMapping.glsl
-    Persistent: true
-    Type: AssetType::Shader
-  - Handle: 14380193557172937708
-    Filepath: models\chess_set\chess_set_pieces_black_diff_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 18062150629750899195
-    Filepath: models\backpack\Cube.051__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 6153780509430614881
     Filepath: models\backpack\Sphere.016__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 18062150629750899195
+    Filepath: models\backpack\Cube.051__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 13253053356187694718
     Filepath: models\chess_set\piece_pawn_white_04_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 13951606739414830835
+    Filepath: ..\..\assets\textures\environment\default_environment_Filtered.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 12219524117719612818
     Filepath: ..\..\assets\cache\ibl_probe\12219524117719612818.ccm
     Persistent: false
@@ -999,10 +1003,6 @@ AssetRegistry:
     Filepath: models\backpack\Cube.035__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 13951606739414830835
-    Filepath: ..\..\assets\textures\environment\default_environment_Filtered.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 16603626438920917016
     Filepath: ..\..\assets\cache\asset_file\16603626438920917016.passet
     Persistent: false
@@ -1031,14 +1031,14 @@ AssetRegistry:
     Filepath: models\backpack\Cube.054__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 10045763880487192395
-    Filepath: models\brass_goblet\brass_goblets.obj
-    Persistent: false
-    Type: AssetType::Model
   - Handle: 13143014458993934615
     Filepath: ..\..\assets\cache\ibl_probe\13143014458993934615.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 10045763880487192395
+    Filepath: models\brass_goblet\brass_goblets.obj
+    Persistent: false
+    Type: AssetType::Model
   - Handle: 13023444606722431831
     Filepath: models\brass_goblet\brass_goblet_01_diff_4k.png
     Persistent: false
@@ -1055,28 +1055,32 @@ AssetRegistry:
     Filepath: models\brass_goblet\brass_goblet_01_rough_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 4092301087186480241
+    Filepath: materials\NonTextured\Whiteboard.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 17112820235292324728
     Filepath: models\brass_goblet\brass_goblet_01_ao_4k.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 4092301087186480241
-    Filepath: materials\NonTextured\Whiteboard.pmat
+  - Handle: 11290211471786617983
+    Filepath: models\brass_goblet\brass_goblets_01.pmat
     Persistent: false
     Type: AssetType::Material
   - Handle: 2933430414616031874
     Filepath: ..\..\assets\cache\ibl_probe\2933430414616031874.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 11290211471786617983
-    Filepath: models\brass_goblet\brass_goblets_01.pmat
+  - Handle: 11915519062414436633
+    Filepath: models\brass_goblet\brass_goblet_02_metal_4k.png
     Persistent: false
-    Type: AssetType::Material
+    Type: AssetType::Texture2D
   - Handle: 4865308995175100025
     Filepath: models\brass_goblet\brass_goblet_02_diff_4k.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 11915519062414436633
-    Filepath: models\brass_goblet\brass_goblet_02_metal_4k.png
+  - Handle: 8979224199512832096
+    Filepath: models\brass_goblet\brass_goblet_02_nor_gl_4k.png
     Persistent: false
     Type: AssetType::Texture2D
   - Handle: 6301205656150202368
@@ -1091,18 +1095,14 @@ AssetRegistry:
     Filepath: models\chess_set\piece_pawn_black_02_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 8979224199512832096
-    Filepath: models\brass_goblet\brass_goblet_02_nor_gl_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 3945870768376836400
-    Filepath: models\brass_goblet\brass_goblet_02_rough_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
   - Handle: 9856121944146156889
     Filepath: ..\..\assets\cache\ibl_probe\9856121944146156889.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 3945870768376836400
+    Filepath: models\brass_goblet\brass_goblet_02_rough_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 12989229520213383035
     Filepath: models\brass_goblet\brass_goblet_02_ao_4k.png
     Persistent: false
@@ -1123,6 +1123,10 @@ AssetRegistry:
     Filepath: models\brass_goblet\brass_goblet_03_nor_gl_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 788712260504535995
+    Filepath: models\brass_goblet\brass_goblet_03_rough_4k.png
+    Persistent: false
+    Type: AssetType::Texture2D
   - Handle: 6800961332898812302
     Filepath: materials\NonTextured\StainlessSteel.pmat
     Persistent: false
@@ -1131,18 +1135,14 @@ AssetRegistry:
     Filepath: models\chess_set\piece_knight_white_02_mes.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 788712260504535995
-    Filepath: models\brass_goblet\brass_goblet_03_rough_4k.png
-    Persistent: false
-    Type: AssetType::Texture2D
-  - Handle: 8467930323905434794
-    Filepath: models\backpack\Cylinder.036__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 16419161166796920133
     Filepath: models\brass_goblet\brass_goblets.pfab
     Persistent: false
     Type: AssetType::Prefab
+  - Handle: 8467930323905434794
+    Filepath: models\backpack\Cylinder.036__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 11998940865093372851
     Filepath: materials\BlinnMirrorTest.pmat
     Persistent: false
@@ -1167,10 +1167,6 @@ AssetRegistry:
     Filepath: models\chess_set\piece_pawn_white_02_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 920206054195951213
-    Filepath: models\backpack\Cube.040__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 7127120866274681269
     Filepath: ..\..\assets\textures\environment\default_environment_Irradiance.ccm
     Persistent: false
@@ -1179,16 +1175,20 @@ AssetRegistry:
     Filepath: models\chess_set\piece_pawn_white_03_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 920206054195951213
+    Filepath: models\backpack\Cube.040__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 4709093573837908608
+    Filepath: models\chess_set\piece_pawn_white_06_Cylin.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 18345139161042057162
     Filepath: ..\..\assets\cache\ibl_probe\18345139161042057162.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
   - Handle: 16933529341407678321
     Filepath: models\chess_set\piece_bishop_black_02_Cyl.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 4709093573837908608
-    Filepath: models\chess_set\piece_pawn_white_06_Cylin.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 9378180013050290237
@@ -1271,14 +1271,14 @@ AssetRegistry:
     Filepath: models\chess_set\chess_set_board_rough_4k.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 2761275047675996365
-    Filepath: models\backpack\Cube.048__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 11652600117401237610
     Filepath: models\chess_set\chess_set_board_ao_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 2761275047675996365
+    Filepath: models\backpack\Cube.048__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 11459889544886280587
     Filepath: ..\..\assets\shaders/BRDFLut.glsl
     Persistent: false
@@ -1307,14 +1307,14 @@ AssetRegistry:
     Filepath: models\chess_set\chess_set_pieces_black.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 6745024451471262044
-    Filepath: ..\..\assets\cache\asset_file\6745024451471262044.passet
-    Persistent: false
-    Type: AssetType::EnvironmentMap
   - Handle: 4480160777169911742
     Filepath: models\chess_set\chess_set_pieces_white_diff_4k.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 6745024451471262044
+    Filepath: ..\..\assets\cache\asset_file\6745024451471262044.passet
+    Persistent: false
+    Type: AssetType::EnvironmentMap
   - Handle: 9991496651046884053
     Filepath: models\chess_set\chess_set_pieces_white_nor_gl_4k.png
     Persistent: false
@@ -1351,14 +1351,6 @@ AssetRegistry:
     Filepath: ..\..\assets\cache\ibl_probe\8018727226669672102.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 9241784528101293875
-    Filepath: models\backpack\Plane.010__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 14043908153933558210
-    Filepath: models\backpack\Cylinder.047__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 7607328015537959184
     Filepath: ..\..\assets\cache\ibl_probe\7607328015537959184.ccm
     Persistent: false
@@ -1367,16 +1359,20 @@ AssetRegistry:
     Filepath: ..\..\assets\cache\asset_file\7249206740251839564.passet
     Persistent: false
     Type: AssetType::EnvironmentMap
+  - Handle: 9241784528101293875
+    Filepath: models\backpack\Plane.010__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 14043908153933558210
+    Filepath: models\backpack\Cylinder.047__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 7273509660587950330
     Filepath: textures\environment_maps\kloofendal_43d_clear_puresky_8k_Base.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
   - Handle: 9805386958591699138
     Filepath: models\backpack\Cube.030__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
-  - Handle: 12204148292327107109
-    Filepath: models\backpack\Plane.012__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 3117293477681076892
@@ -1387,6 +1383,10 @@ AssetRegistry:
     Filepath: textures\environment_maps\voortrekker_interior_8k.hdr
     Persistent: false
     Type: AssetType::EnvironmentMap
+  - Handle: 12204148292327107109
+    Filepath: models\backpack\Plane.012__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 13123453798335720754
     Filepath: models\backpack\Cylinder.030__0.pmesh
     Persistent: false
@@ -1395,22 +1395,22 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.041__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 6208202117791147090
-    Filepath: ..\..\assets\cache\asset_file\6208202117791147090.passet
-    Persistent: false
-    Type: AssetType::EnvironmentMap
   - Handle: 17413176415656886031
     Filepath: models\backpack\Plane.014__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 15024158533870833270
-    Filepath: models\backpack\Cylinder.031__0.pmesh
+  - Handle: 6208202117791147090
+    Filepath: ..\..\assets\cache\asset_file\6208202117791147090.passet
     Persistent: false
-    Type: AssetType::Mesh
+    Type: AssetType::EnvironmentMap
   - Handle: 9717579908415249994
     Filepath: materials\NonTextured\Plastic.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 15024158533870833270
+    Filepath: models\backpack\Cylinder.031__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 14657159168256902687
     Filepath: ..\..\assets\cache\ibl_probe\14657159168256902687
     Persistent: false
@@ -1427,22 +1427,22 @@ AssetRegistry:
     Filepath: models\backpack\Cube.037__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 3882277336061557897
-    Filepath: models\backpack\Cylinder.034__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 15667505005606930794
     Filepath: models\earth\textures\Earth_HEIGHT.png
     Persistent: false
     Type: AssetType::Texture2D
-  - Handle: 14784430403455580975
-    Filepath: models\backpack\Cylinder.035__0.pmesh
+  - Handle: 3882277336061557897
+    Filepath: models\backpack\Cylinder.034__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 8722378501056246160
     Filepath: models\earth\textures\Earth_ALB.png
     Persistent: false
     Type: AssetType::Texture2D
+  - Handle: 14784430403455580975
+    Filepath: models\backpack\Cylinder.035__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 140346952343820752
     Filepath: models\backpack\Cylinder.038__0.pmesh
     Persistent: false
@@ -1455,26 +1455,26 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.043__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 11442855101586206871
-    Filepath: models\backpack\Cylinder.046__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 18205238908339428259
     Filepath: materials\NonTextured\MITBlack.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 11442855101586206871
+    Filepath: models\backpack\Cylinder.046__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 854605620471938998
     Filepath: models\backpack\Cube.041__0.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
+  - Handle: 6875632510800087314
+    Filepath: models\backpack\Cube.042__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
   - Handle: 1123730861056186677
     Filepath: ..\..\assets\cache\ibl_probe\1123730861056186677.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 6875632510800087314
-    Filepath: models\backpack\Cube.042__0.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 3386206113856211669
     Filepath: models\backpack\Cube.043__0.pmesh
     Persistent: false
@@ -1499,14 +1499,14 @@ AssetRegistry:
     Filepath: models\backpack\Cylinder.051__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 9873875703438241583
-    Filepath: ..\..\assets\cache\ibl_probe\9873875703438241583.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 1793136599762746835
     Filepath: models\backpack\Cylinder.054__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 9873875703438241583
+    Filepath: ..\..\assets\cache\ibl_probe\9873875703438241583.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 8127193466744749083
     Filepath: models\backpack\BezierCurve.003__0.pmesh
     Persistent: false
@@ -1535,6 +1535,10 @@ AssetRegistry:
     Filepath: models\backpack\Sphere.021__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
+  - Handle: 15843346467105343605
+    Filepath: materials\NonTextured\Silver.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 9558929483918735411
     Filepath: materials\NonTextured\BrushedGold.pmat
     Persistent: false
@@ -1543,10 +1547,6 @@ AssetRegistry:
     Filepath: models\backpack\Cube.052__0.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 15843346467105343605
-    Filepath: materials\NonTextured\Silver.pmat
-    Persistent: false
-    Type: AssetType::Material
   - Handle: 946063390628492775
     Filepath: models\backpack\Cube.053__0.pmesh
     Persistent: false
@@ -1639,14 +1639,14 @@ AssetRegistry:
     Filepath: ..\..\assets\models\DefaultSphere.pmesh
     Persistent: false
     Type: AssetType::Mesh
-  - Handle: 9532340775357960451
-    Filepath: ..\..\assets\models/DefaultCone.pmesh
-    Persistent: false
-    Type: AssetType::Mesh
   - Handle: 17289593657424023365
     Filepath: textures\environment_maps\kloofendal_43d_clear_puresky_8k_Filtered.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 9532340775357960451
+    Filepath: ..\..\assets\models/DefaultCone.pmesh
+    Persistent: false
+    Type: AssetType::Mesh
   - Handle: 16203042032453081832
     Filepath: materials\NonTextured\PolishedAluminium.pmat
     Persistent: false
@@ -1679,6 +1679,10 @@ AssetRegistry:
     Filepath: materials\NonTextured\Iron.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 15728380668709998160
+    Filepath: ..\..\assets\cache\ibl_probe\15728380668709998160.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 12048616344118508156
     Filepath: materials\NonTextured\Banana.pmat
     Persistent: false
@@ -1687,10 +1691,6 @@ AssetRegistry:
     Filepath: materials\NonTextured\Ketchup.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 15728380668709998160
-    Filepath: ..\..\assets\cache\ibl_probe\15728380668709998160.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 10120199264963984380
     Filepath: materials\NonTextured\Marble.pmat
     Persistent: false
@@ -1711,50 +1711,50 @@ AssetRegistry:
     Filepath: materials\NonTextured\Pearl.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 6874821970659490605
-    Filepath: ..\..\assets\cache\ibl_probe\6874821970659490605.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 15226618652064220963
     Filepath: materials\NonTextured\Platinum.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 6874821970659490605
+    Filepath: ..\..\assets\cache\ibl_probe\6874821970659490605.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 17588892634905631451
     Filepath: materials\NonTextured\Skin.pmat
-    Persistent: false
-    Type: AssetType::Material
-  - Handle: 9288443252386615325
-    Filepath: materials\NonTextured\Snow.pmat
     Persistent: false
     Type: AssetType::Material
   - Handle: 17703433095696582462
     Filepath: textures\environment_maps\newport_loft_Filtered.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 11696482391274558325
-    Filepath: materials\NonTextured\Tire.pmat
+  - Handle: 9288443252386615325
+    Filepath: materials\NonTextured\Snow.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 6164613825605045297
-    Filepath: materials\NonTextured\CarPaint.pmat
+  - Handle: 11696482391274558325
+    Filepath: materials\NonTextured\Tire.pmat
     Persistent: false
     Type: AssetType::Material
   - Handle: 14318079748422351543
     Filepath: ..\..\assets\cache\ibl_probe\14318079748422351543.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
+  - Handle: 6164613825605045297
+    Filepath: materials\NonTextured\CarPaint.pmat
+    Persistent: false
+    Type: AssetType::Material
   - Handle: 7708089298961369431
     Filepath: materials\NonTextured\Brick.pmat
     Persistent: false
     Type: AssetType::Material
-  - Handle: 11907222986945768156
-    Filepath: ..\..\assets\cache\ibl_probe\11907222986945768156.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 17094093347415131833
     Filepath: models\earth\source\Earth.fbx
     Persistent: false
     Type: AssetType::Model
+  - Handle: 11907222986945768156
+    Filepath: ..\..\assets\cache\ibl_probe\11907222986945768156.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 14979669302599605913
     Filepath: models\earth\source\Cube.002.pmesh
     Persistent: false
@@ -1791,6 +1791,10 @@ AssetRegistry:
     Filepath: models\earth\EarthParallaxed.pmat
     Persistent: false
     Type: AssetType::Material
+  - Handle: 796145314163825815
+    Filepath: textures\environment_maps\passendorf_snow_8k_Irradiance.ccm
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 14828980108310254924
     Filepath: ..\..\assets\cache\asset_file\14828980108310254924.passet
     Persistent: false
@@ -1799,10 +1803,6 @@ AssetRegistry:
     Filepath: ..\..\assets\shaders/Renderer3D_gBuffer.glsl
     Persistent: true
     Type: AssetType::Shader
-  - Handle: 796145314163825815
-    Filepath: textures\environment_maps\passendorf_snow_8k_Irradiance.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 1127606865987558734
     Filepath: ..\..\assets\materials/DefaultLitDeferred.pmat
     Persistent: false
@@ -1883,12 +1883,12 @@ AssetRegistry:
     Filepath: textures\environment_maps\newport_loft_Irradiance.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 10407278097430775409
-    Filepath: textures\environment_maps\passendorf_snow_8k_Irradiance.ccm
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 17444487099987714202
     Filepath: ..\..\assets\cache\ibl_probe\17444487099987714202
+    Persistent: false
+    Type: AssetType::TextureCubemap
+  - Handle: 10407278097430775409
+    Filepath: textures\environment_maps\passendorf_snow_8k_Irradiance.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
   - Handle: 12193688486367140166
@@ -1899,14 +1899,14 @@ AssetRegistry:
     Filepath: ..\..\assets\cache\ibl_probe\5437718614202936898
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 2051522478901309123
-    Filepath: ..\..\assets\cache\ibl_probe\2051522478901309123
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 13307719187886560281
     Filepath: ..\..\assets\cache\asset_file\13307719187886560281.passet
     Persistent: false
     Type: AssetType::EnvironmentMap
+  - Handle: 2051522478901309123
+    Filepath: ..\..\assets\cache\ibl_probe\2051522478901309123
+    Persistent: false
+    Type: AssetType::TextureCubemap
   - Handle: 15359175262073067192
     Filepath: ..\..\assets\cache\ibl_probe\15359175262073067192
     Persistent: false
@@ -1915,20 +1915,20 @@ AssetRegistry:
     Filepath: ..\..\assets\cache\ibl_probe\2769096103290136117
     Persistent: false
     Type: AssetType::TextureCubemap
-  - Handle: 3707837117496115803
-    Filepath: ..\..\assets\cache\ibl_probe\3707837117496115803
-    Persistent: false
-    Type: AssetType::TextureCubemap
   - Handle: 10258861743764169199
     Filepath: ..\..\assets\cache\asset_file\10258861743764169199.passet
     Persistent: false
     Type: AssetType::EnvironmentMap
-  - Handle: 14632540401497485141
-    Filepath: ..\..\assets\cache\ibl_probe\14632540401497485141.ccm
+  - Handle: 3707837117496115803
+    Filepath: ..\..\assets\cache\ibl_probe\3707837117496115803
     Persistent: false
     Type: AssetType::TextureCubemap
   - Handle: 1820420999750568173
     Filepath: ..\..\assets\cache\ibl_probe\1820420999750568173
+    Persistent: false
+    Type: AssetType::TextureCubemap
+  - Handle: 14632540401497485141
+    Filepath: ..\..\assets\cache\ibl_probe\14632540401497485141.ccm
     Persistent: false
     Type: AssetType::TextureCubemap
   - Handle: 2552022641659150399
