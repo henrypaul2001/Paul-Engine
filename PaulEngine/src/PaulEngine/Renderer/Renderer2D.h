@@ -31,6 +31,7 @@ namespace PaulEngine {
 		
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& colour, const int entityID = -1);
 		static void DrawRect(const glm::mat4& transform, const glm::vec4& colour, const int entityID = -1);
+		static void DrawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& colour, const int entityID = -1);
 
 		struct TextParams {
 			glm::vec4 Colour = glm::vec4(1.0f);

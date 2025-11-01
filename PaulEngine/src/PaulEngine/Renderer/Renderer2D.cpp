@@ -607,6 +607,43 @@ namespace PaulEngine {
 		DrawLine(lineVertices[3], lineVertices[0], colour, entityID);
 	}
 
+	void Renderer2D::DrawAABB(const glm::vec3& min, const glm::vec3& max, const glm::vec4& colour, const int entityID)
+	{
+		// C --- D
+		// |     |
+		// A --- B
+
+		glm::vec3 front_A = min;
+		glm::vec3 front_B = glm::vec3(max.x, min.y, min.z);
+		glm::vec3 front_C = glm::vec3(min.x, max.y, min.z);
+		glm::vec3 front_D = glm::vec3(max.x, max.y, min.z);
+
+		glm::vec3 back_A = glm::vec3(min.x, min.y, max.z);
+		glm::vec3 back_B = glm::vec3(max.x, min.y, max.z);
+		glm::vec3 back_C = glm::vec3(min.x, max.y, max.z);
+		glm::vec3 back_D = glm::vec3(max.x, max.y, max.z);
+
+		// Front
+		Renderer2D::DrawLine(front_A, front_B, colour, entityID);
+		Renderer2D::DrawLine(front_C, front_D, colour, entityID);
+		Renderer2D::DrawLine(front_A, front_C, colour, entityID);
+		Renderer2D::DrawLine(front_B, front_D, colour, entityID);
+
+		// Back
+		Renderer2D::DrawLine(back_A, back_B, colour, entityID);
+		Renderer2D::DrawLine(back_C, back_D, colour, entityID);
+		Renderer2D::DrawLine(back_A, back_C, colour, entityID);
+		Renderer2D::DrawLine(back_B, back_D, colour, entityID);
+
+		// Left
+		Renderer2D::DrawLine(front_A, back_A, colour, entityID);
+		Renderer2D::DrawLine(front_C, back_C, colour, entityID);
+
+		// Right
+		Renderer2D::DrawLine(front_B, back_B, colour, entityID);
+		Renderer2D::DrawLine(front_D, back_D, colour, entityID);
+	}
+
 	void Renderer2D::DrawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const TextParams& textParams, int entityID)
 	{
 		const auto& fontGeometry = font->GetMSDFData()->FontGeometry;
