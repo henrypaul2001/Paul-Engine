@@ -68,53 +68,6 @@ namespace PaulEngine
 		ImGui::Text("Not yet implemented");
     }
 
-    void RenderComponentMaterial::OnImGuiRender()
-    {
-		std::string label = "None";
-		bool isMaterialValid = false;
-		if (MaterialHandle != 0) {
-			if (AssetManager::IsAssetHandleValid(MaterialHandle) && AssetManager::GetAssetType(MaterialHandle) == AssetType::Material) {
-				const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(MaterialHandle);
-				label = metadata.FilePath.filename().stem().string();
-				isMaterialValid = true;
-			}
-			else {
-				label = "Invalid";
-			}
-		}
-
-		ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
-		buttonLabelSize.x += 20.0f;
-		float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
-
-		ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-			{
-				AssetHandle handle = *(AssetHandle*)payload->Data;
-				if (AssetManager::GetAssetType(handle) == AssetType::Material) {
-					MaterialHandle = handle;
-				}
-				else {
-					PE_CORE_WARN("Invalid asset type. Material needed for RenderComponentMaterial");
-				}
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		if (isMaterialValid) {
-			ImGui::SameLine();
-			ImVec2 xLabelSize = ImGui::CalcTextSize("X");
-			float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
-			if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-				MaterialHandle = 0;
-			}
-		}
-		ImGui::SameLine();
-		ImGui::Text("Material");
-    }
-
     void RenderComponentUBO::OnImGuiRender()
     {
 		ImGui::Text("Not yet implemented");
@@ -125,53 +78,6 @@ namespace PaulEngine
     {
 		ImGui::Text("Not yet implemented");
 		// again, not currently much to add here other than initialisation stuff
-    }
-
-    void RenderComponentEnvironmentMap::OnImGuiRender()
-    {
-		std::string label = "None";
-		bool isTextureValid = false;
-		if (EnvironmentHandle != 0) {
-			if (AssetManager::IsAssetHandleValid(EnvironmentHandle) && AssetManager::GetAssetType(EnvironmentHandle) == AssetType::EnvironmentMap) {
-				const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(EnvironmentHandle);
-				label = metadata.FilePath.filename().string();
-				isTextureValid = true;
-			}
-			else {
-				label = "Invalid";
-			}
-		}
-
-		ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
-		buttonLabelSize.x += 20.0f;
-		float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
-
-		ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-			{
-				AssetHandle handle = *(AssetHandle*)payload->Data;
-				if (AssetManager::GetAssetType(handle) == AssetType::EnvironmentMap) {
-					EnvironmentHandle = handle;
-				}
-				else {
-					PE_CORE_WARN("Invalid asset type. EnvironmentMap needed for RenderComponentTexture");
-				}
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		if (isTextureValid) {
-			ImGui::SameLine();
-			ImVec2 xLabelSize = ImGui::CalcTextSize("X");
-			float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
-			if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
-				EnvironmentHandle = 0;
-			}
-		}
-		ImGui::SameLine();
-		ImGui::Text("Environment Map");
     }
 
 	void RenderComponentImGuiUtils::DrawNotYetImplemented()
@@ -242,5 +148,53 @@ namespace PaulEngine
 	void RenderComponentImGuiUtils::DrawCheckbox(bool* b)
 	{
 		ImGui::Checkbox("##", b);
+	}
+
+	void RenderComponentImGuiUtils::DrawAssetHandleDragDrop(AssetHandle& targetHandle, AssetType allowedType, const char* title)
+	{
+		std::string label = "None";
+		bool isTextureValid = false;
+		if (targetHandle != 0) {
+			if (AssetManager::IsAssetHandleValid(targetHandle) && AssetManager::GetAssetType(targetHandle) == allowedType) {
+				const AssetMetadata& metadata = Project::GetActive()->GetEditorAssetManager()->GetMetadata(targetHandle);
+				label = metadata.FilePath.filename().string();
+				isTextureValid = true;
+			}
+			else {
+				label = "Invalid";
+			}
+		}
+
+		ImVec2 buttonLabelSize = ImGui::CalcTextSize(label.c_str());
+		buttonLabelSize.x += 20.0f;
+		float buttonLabelWidth = glm::max<float>(100.0f, buttonLabelSize.x);
+
+		ImGui::Button(label.c_str(), ImVec2(buttonLabelWidth, 0.0f));
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				AssetHandle handle = *(AssetHandle*)payload->Data;
+				if (AssetManager::GetAssetType(handle) == allowedType) {
+					targetHandle = handle;
+				}
+				else {
+					std::string warnString = "Invalid asset type. " + AssetTypeToString(allowedType) + " required";
+					PE_CORE_WARN(warnString.c_str());
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (isTextureValid) {
+			ImGui::SameLine();
+			ImVec2 xLabelSize = ImGui::CalcTextSize("X");
+			float buttonSize = xLabelSize.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+			if (ImGui::Button("X", ImVec2(buttonSize, buttonSize))) {
+				targetHandle = 0;
+			}
+		}
+		ImGui::SameLine();
+		ImGui::Text(title);
 	}
 }

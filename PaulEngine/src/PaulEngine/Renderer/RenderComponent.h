@@ -7,6 +7,31 @@
 
 namespace PaulEngine
 {
+	// TODO: These utility functions would be better suited in their own file as ImGuiUtils without being associated with RenderComponent
+	namespace RenderComponentImGuiUtils
+	{
+		void DrawNotYetImplemented();
+
+		void DrawEditFloat (float* f, const float speed = 0.1f);
+		void DrawEditFloat2(float* f, const float speed = 0.1f);
+		void DrawEditFloat3(float* f, const float speed = 0.1f);
+		void DrawEditFloat4(float* f, const float speed = 0.1f);
+
+		void DrawEditInt (int* i, const float speed = 1.0f);
+		void DrawEditInt2(int* i, const float speed = 1.0f);
+		void DrawEditInt3(int* i, const float speed = 1.0f);
+		void DrawEditInt4(int* i, const float speed = 1.0f);
+
+		void DrawEditUInt(unsigned int* i, const float speed = 1.0f);
+		void DrawEditUInt2(unsigned int* i, const float speed = 1.0f);
+		void DrawEditUInt3(unsigned int* i, const float speed = 1.0f);
+		void DrawEditUInt4(unsigned int* i, const float speed = 1.0f);
+
+		void DrawCheckbox(bool* b);
+
+		void DrawAssetHandleDragDrop(AssetHandle& targetHandle, AssetType allowedType, const char* title);
+	}
+
 	enum class RenderComponentType
 	{
 		None = 0,
@@ -97,7 +122,7 @@ namespace PaulEngine
 		RenderComponentMaterial(AssetHandle materialHandle) : MaterialHandle(materialHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::Material; }
-		virtual void OnImGuiRender() override;
+		virtual void OnImGuiRender() override { RenderComponentImGuiUtils::DrawAssetHandleDragDrop(MaterialHandle, AssetType::Material, "Material"); }
 
 		AssetHandle MaterialHandle;
 	};
@@ -145,32 +170,10 @@ namespace PaulEngine
 		RenderComponentEnvironmentMap(AssetHandle envHandle) : EnvironmentHandle(envHandle) {}
 
 		virtual RenderComponentType GetType() const override { return RenderComponentType::EnvironmentMap; }
-		virtual void OnImGuiRender() override;
+		virtual void OnImGuiRender() { RenderComponentImGuiUtils::DrawAssetHandleDragDrop(EnvironmentHandle, AssetType::EnvironmentMap, "Environment Map"); }
 
 		AssetHandle EnvironmentHandle;
 	};
-
-	namespace RenderComponentImGuiUtils
-	{
-		void DrawNotYetImplemented();
-
-		void DrawEditFloat (float* f, const float speed = 0.1f);
-		void DrawEditFloat2(float* f, const float speed = 0.1f);
-		void DrawEditFloat3(float* f, const float speed = 0.1f);
-		void DrawEditFloat4(float* f, const float speed = 0.1f);
-
-		void DrawEditInt (int* i, const float speed = 1.0f);
-		void DrawEditInt2(int* i, const float speed = 1.0f);
-		void DrawEditInt3(int* i, const float speed = 1.0f);
-		void DrawEditInt4(int* i, const float speed = 1.0f);
-
-		void DrawEditUInt(unsigned int* i, const float speed = 1.0f);
-		void DrawEditUInt2(unsigned int* i, const float speed = 1.0f);
-		void DrawEditUInt3(unsigned int* i, const float speed = 1.0f);
-		void DrawEditUInt4(unsigned int* i, const float speed = 1.0f);
-
-		void DrawCheckbox(bool* b);
-	}
 
 	template<typename T>
 	inline void RenderComponentPrimitiveType<T>::OnImGuiRender()
