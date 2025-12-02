@@ -15,6 +15,8 @@
 
 #include <PaulEngine/Renderer/Asset/TextureAtlas2D.h>
 
+#include "PaulEngine/Renderer/RenderComponent.h"
+
 namespace PaulEngine
 {
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
@@ -394,6 +396,7 @@ namespace PaulEngine
 			DrawAddComponentEntry<ComponentPointLight>("Point Light Component");
 			DrawAddComponentEntry<ComponentSpotLight>("Spot Light Component");
 			DrawAddComponentEntry<ComponentReflectionProbe>("Reflection Probe Component");
+			DrawAddComponentEntry<ComponentRenderVolume>("Render Volume Component");
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -988,6 +991,52 @@ namespace PaulEngine
 			DrawVec3Control("Max Extent", maxBounds, 5.0f);
 			ImGui::EndGroup();
 			ImGui::SetItemTooltip("Used for parallax correcting cubemap reflections to align with surrounding geometry");
+		});
+
+		// Render Volume
+		DrawComponent<ComponentRenderVolume>("Render Volume", entity, true, [](ComponentRenderVolume& component) {
+			ImGui::Text("Global Render Volume");
+
+			const char* skyTypeStrings[] = { "None", "Skybox", "Environment Map" };
+			const char* currentSkyTypeString = skyTypeStrings[(int)component.SkyboxType];
+			if (ImGui::BeginCombo("Sky Type", currentSkyTypeString)) {
+
+				for (int i = 0; i < 3; i++) {
+					bool isSelected = currentSkyTypeString == skyTypeStrings[i];
+					if (ImGui::Selectable(skyTypeStrings[i], isSelected)) {
+						currentSkyTypeString = skyTypeStrings[i];
+						component.SkyboxType = (ComponentRenderVolume::SkyType)i;
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+
+			ImGui::Spacing();
+			switch (component.SkyboxType)
+			{
+				case ComponentRenderVolume::SkyType::SKY_NONE:
+				{
+					// Maybe support clear colour editing here?
+					// ImGui::ColorEdit3();
+					break;
+				}
+				case ComponentRenderVolume::SkyType::SKY_SKYBOX:
+				{
+					ImGui::Text("Stasfdas fasf");
+					RenderComponentImGuiUtils::DrawAssetHandleDragDrop(component.SkyboxHandle, AssetType::TextureCubemap, "Skybox Handle");
+					break;
+				}
+				case ComponentRenderVolume::SkyType::SKY_ENVMAP:
+				{
+					RenderComponentImGuiUtils::DrawAssetHandleDragDrop(component.EnvironmentMapHandle, AssetType::EnvironmentMap, "Environment Map Handle");
+					break;
+				}
+			}
 		});
 	}
 }

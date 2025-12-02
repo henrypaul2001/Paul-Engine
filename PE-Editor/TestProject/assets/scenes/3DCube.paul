@@ -61,7 +61,11 @@ Entities:
         NearClip: 0.01
         FarClip: 1000
         OrthoSize: 10
-        AspectRatio: 2.0323887
+        AspectRatio: 2.017485
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false
+    RenderVolumeComponent:
+      Type: 2
+      SkyboxHandle: 0
+      EnvironmentMapHandle: 4354221900252890319

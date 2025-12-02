@@ -272,6 +272,17 @@ namespace PaulEngine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ComponentRenderVolume>()) {
+			out << YAML::Key << "RenderVolumeComponent";
+			out << YAML::BeginMap;
+
+			ComponentRenderVolume& volumeComponent = entity.GetComponent<ComponentRenderVolume>();
+			out << YAML::Key << "Type" << YAML::Value << (int)volumeComponent.SkyboxType;
+			out << YAML::Key << "SkyboxHandle" << YAML::Value << volumeComponent.SkyboxHandle;
+			out << YAML::Key << "EnvironmentMapHandle" << YAML::Value << volumeComponent.EnvironmentMapHandle;
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -514,6 +525,15 @@ namespace PaulEngine
 						reflectComponent.SOIRadius = reflectNode["SOIRadius"].as<float>();
 						reflectComponent.BakeIterations = reflectNode["BakeIterations"].as<uint8_t>();
 						reflectComponent.m_EnvironmentMapHandle = reflectNode["EnvironmentMapHandle"].as<AssetHandle>();
+					}
+
+					YAML::Node volumeNode = entity["RenderVolumeComponent"];
+					if (volumeNode)
+					{
+						ComponentRenderVolume& volumeComponent = deserializedEntity.AddComponent<ComponentRenderVolume>();
+						volumeComponent.SkyboxType = (ComponentRenderVolume::SkyType)volumeNode["Type"].as<int>();
+						volumeComponent.SkyboxHandle = volumeNode["SkyboxHandle"].as<AssetHandle>();
+						volumeComponent.EnvironmentMapHandle = volumeNode["EnvironmentMapHandle"].as<AssetHandle>();
 					}
 				}
 				else

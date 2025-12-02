@@ -414,8 +414,10 @@ namespace PaulEngine
 		float ShadowMapFarClip = 50.0f;
 	};
 
+	// TODO: When this component is copied, the asset handle is also copied. This is intended behaviour for scene copies but not for entity duplications. Entity duplications should clear the env map handle to avoid conflicts when baking and rendering
 	struct ComponentReflectionProbe
 	{
+	public:
 		glm::vec3 GeometryBoundsMinExtent = glm::vec3(-5.0f);
 		glm::vec3 GeometryBoundsMaxExtent = glm::vec3(5.0f);
 		
@@ -429,5 +431,23 @@ namespace PaulEngine
 		friend class SceneSerializer;
 		friend class ProbeBakeRenderer;
 		AssetHandle m_EnvironmentMapHandle = 0;
+	};
+
+	// TODO: Support local render volumes
+	// Currently acts as a global volume
+	struct ComponentRenderVolume
+	{
+	public:
+		enum SkyType
+		{
+			SKY_NONE = 0,
+			SKY_SKYBOX,
+			SKY_ENVMAP
+			// SKY_PROCEDURAL
+		};
+		SkyType SkyboxType = SkyType::SKY_NONE;
+
+		AssetHandle SkyboxHandle = 0;
+		AssetHandle EnvironmentMapHandle = 0;
 	};
 }
