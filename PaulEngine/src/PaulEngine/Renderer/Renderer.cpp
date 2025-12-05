@@ -122,6 +122,7 @@ namespace PaulEngine {
 			Renderer::PointLight PointLights[Renderer::MAX_ACTIVE_POINT_LIGHTS];
 			Renderer::SpotLight SpotLights[Renderer::MAX_ACTIVE_SPOT_LIGHTS];
 			Renderer::LocalIBL ReflectionProbes[Renderer::MAX_ACTIVE_LOCAL_IBL];
+			Renderer::GlobalIBL GlobalIBLData;
 			int ActiveDirLights = 0;
 			int ActivePointLights = 0;
 			int ActiveSpotLights = 0;
@@ -179,6 +180,7 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
+		s_RenderData.SceneDataBuffer.GlobalIBLData.IsActive = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
@@ -202,6 +204,7 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
+		s_RenderData.SceneDataBuffer.GlobalIBLData.IsActive = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
@@ -225,6 +228,7 @@ namespace PaulEngine {
 		s_RenderData.SceneDataBuffer.ActivePointLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveSpotLights = 0;
 		s_RenderData.SceneDataBuffer.ActiveReflectionProbes = 0;
+		s_RenderData.SceneDataBuffer.GlobalIBLData.IsActive = 0;
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.PointLightsHead = 0;
 		s_RenderData.SceneBufferMetaData.SpotLightsHead = 0;
@@ -289,6 +293,15 @@ namespace PaulEngine {
 		}
 
 		batcher.MakeBatchTexturesNonResident();
+
+		if (s_RenderData.SceneDataBuffer.GlobalIBLData.IsActive)
+		{
+			RenderCommand::MakeTextureNonResident(s_RenderData.SceneDataBuffer.GlobalIBLData.PrefilteredCubemapDeviceHandle);
+			RenderCommand::MakeTextureNonResident(s_RenderData.SceneDataBuffer.GlobalIBLData.IrradianceCubemapDeviceHandle);
+		}
+
+		uint64_t brdfLutDeviceHandle = s_RenderData.SceneDataBuffer.GlobalIBLData.BRDFLutDeviceHandle;
+		if (brdfLutDeviceHandle) { RenderCommand::MakeTextureNonResident(brdfLutDeviceHandle); }
 
 		s_RenderData.SceneDataBuffer = Renderer3DData::SceneData();
 		s_RenderData.SceneBufferMetaData.DirLightsHead = 0;
@@ -377,6 +390,42 @@ namespace PaulEngine {
 
 		s_RenderData.ReflectionProbeTextureSet.insert(probe.PrefilteredCubemapDeviceHandle);
 		s_RenderData.ReflectionProbeTextureSet.insert(probe.IrradianceCubemapDeviceHandle);
+	
+		if (s_RenderData.SceneDataBuffer.GlobalIBLData.BRDFLutDeviceHandle == 0)
+		{
+			uint64_t brdfDeviceHandle = EnvironmentMap::GetBRDFLutDeviceHandle();
+			s_RenderData.SceneDataBuffer.GlobalIBLData.BRDFLutDeviceHandle = brdfDeviceHandle;
+			RenderCommand::MakeTextureResident(brdfDeviceHandle);
+		}
+	}
+
+	void Renderer::SubmitGlobalIBL(AssetHandle prefilteredCubemapHandle, AssetHandle irradianceCubemapHandle)
+	{
+		Ref<TextureCubemap> prefilteredCubemap = AssetManager::GetAsset<TextureCubemap>(prefilteredCubemapHandle);
+		Ref<TextureCubemap> irradianceCubemap = AssetManager::GetAsset<TextureCubemap>(irradianceCubemapHandle);
+
+		if (prefilteredCubemap && irradianceCubemap)
+		{
+			if (s_RenderData.SceneDataBuffer.GlobalIBLData.IsActive)
+			{
+				RenderCommand::MakeTextureNonResident(s_RenderData.SceneDataBuffer.GlobalIBLData.PrefilteredCubemapDeviceHandle);
+				RenderCommand::MakeTextureNonResident(s_RenderData.SceneDataBuffer.GlobalIBLData.IrradianceCubemapDeviceHandle);
+			}
+
+			s_RenderData.SceneDataBuffer.GlobalIBLData.PrefilteredCubemapDeviceHandle = prefilteredCubemap->GetDeviceTextureHandle();
+			s_RenderData.SceneDataBuffer.GlobalIBLData.IrradianceCubemapDeviceHandle = irradianceCubemap->GetDeviceTextureHandle();
+
+			RenderCommand::MakeTextureResident(s_RenderData.SceneDataBuffer.GlobalIBLData.PrefilteredCubemapDeviceHandle);
+			RenderCommand::MakeTextureResident(s_RenderData.SceneDataBuffer.GlobalIBLData.IrradianceCubemapDeviceHandle);
+			s_RenderData.SceneDataBuffer.GlobalIBLData.IsActive = 1;
+
+			if (s_RenderData.SceneDataBuffer.GlobalIBLData.BRDFLutDeviceHandle == 0)
+			{
+				uint64_t brdfDeviceHandle = EnvironmentMap::GetBRDFLutDeviceHandle();
+				s_RenderData.SceneDataBuffer.GlobalIBLData.BRDFLutDeviceHandle = brdfDeviceHandle;
+				RenderCommand::MakeTextureResident(brdfDeviceHandle);
+			}
+		}
 	}
 
 	void Renderer::DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID)

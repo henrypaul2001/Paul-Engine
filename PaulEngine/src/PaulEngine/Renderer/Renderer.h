@@ -46,11 +46,18 @@ namespace PaulEngine {
 		};
 		struct LocalIBL
 		{
-			glm::vec4 WorldMinBounds; // w = sphere of influence
-			glm::vec4 WorldMaxBounds; // w = unused
-			glm::vec4 WorldOrigin;	  // w = unused
-			uint64_t PrefilteredCubemapDeviceHandle;
-			uint64_t IrradianceCubemapDeviceHandle;
+			glm::vec4 WorldMinBounds = glm::vec4(1.0f); // w = sphere of influence
+			glm::vec4 WorldMaxBounds = glm::vec4(1.0f); // w = unused
+			glm::vec4 WorldOrigin	 = glm::vec4(0.0f);	  // w = unused
+			uint64_t PrefilteredCubemapDeviceHandle = 0;
+			uint64_t IrradianceCubemapDeviceHandle  = 0;
+		};
+		struct GlobalIBL
+		{
+			uint64_t PrefilteredCubemapDeviceHandle = 0;
+			uint64_t IrradianceCubemapDeviceHandle = 0;
+			uint64_t BRDFLutDeviceHandle = 0;
+			int IsActive = 0;
 		};
 
 		static void Init();
@@ -71,6 +78,7 @@ namespace PaulEngine {
 		static void SubmitSpotLightSource(const SpotLight& light);
 
 		static void SubmitLocalReflectionProbe(const LocalIBL& probe);
+		static void SubmitGlobalIBL(AssetHandle prefilteredCubemapHandle, AssetHandle irradianceCubemapHandle);
 
 		static void DrawDefaultCubeImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);
 		static void DrawDefaultQuadImmediate(Ref<Material> material, const glm::mat4& transform, DepthState depthState, FaceCulling cullState, BlendState blendState, int entityID = -1);

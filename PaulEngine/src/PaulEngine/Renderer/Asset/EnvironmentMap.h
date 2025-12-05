@@ -34,6 +34,11 @@ namespace PaulEngine
 			return s_BRDFLutTextureHandle;
 		}
 
+		static uint64_t GetBRDFLutDeviceHandle() {
+			if (s_BRDFLutDeviceHandle == 0) { GenerateBRDFLut(); }
+			return s_BRDFLutDeviceHandle;
+		}
+
 		void ProcessBaseCubemap();
 
 		static void ConvertEquirectangularToCubemap(Ref<Texture2D> equirectangular, AssetHandle targetCubemapHandle);
@@ -85,6 +90,7 @@ namespace PaulEngine
 		static AssetHandle s_BRDFLutShaderHandle;
 		static AssetHandle s_BRDFLutMaterialHandle;
 		static AssetHandle s_BRDFLutTextureHandle;
+		static uint64_t s_BRDFLutDeviceHandle;
 	};
 
 	template <>

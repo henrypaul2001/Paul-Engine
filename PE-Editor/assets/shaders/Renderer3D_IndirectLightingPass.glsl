@@ -19,6 +19,65 @@ layout(location = 0) out vec4 f_Colour;
 
 layout(location = 1) in vec2 v_TexCoords;
 
+// TODO: Change u_SceneData to be a shader storage buffer to allow for larger array sizes
+const int MAX_ACTIVE_DIR_LIGHTS = 8;
+const int MAX_ACTIVE_POINT_LIGHTS = 8;
+const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+const int MAX_ACTIVE_LOCAL_IBL = 32;
+
+struct DirectionalLight // vec4 for padding
+{
+	vec4 Direction; // w = (bool)castShadows
+
+	vec4 Ambient; // w = shadow distance
+	vec4 Diffuse; // w = min bias
+	vec4 Specular; // w = max bias
+
+	mat4 LightMatrix;
+};
+
+struct PointLight // vec4 for padding
+{
+	vec4 Position; // w = range
+
+	vec4 Ambient;
+	vec4 Diffuse;
+	vec4 Specular;
+
+	vec4 ShadowData; // r = minBias, g = maxBias, b = farPlane, w = (bool)castShadows
+};
+
+struct SpotLight
+{
+	vec4 Position; // w = range
+	vec4 Direction; // w = cutoff
+
+	vec4 Ambient; // w = outer cutoff
+	vec4 Diffuse;
+	vec4 Specular;
+
+	vec4 ShadowData; // r = (bool)castShadows, g = minBias, b = maxBias
+
+	mat4 LightMatrix;
+};
+
+struct LocalIBL
+{
+	vec4 WorldMinBounds; // w = sphere of influence
+	vec4 WorldMaxBounds; // w = unused
+	vec4 WorldOrigin;	 // w = unused
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+};
+
+struct GlobalIBL
+{
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+	sampler2D BRDFLut;
+	int IsActive;
+};
+
 layout(std140, binding = 0) uniform Camera
 {
 	mat4 View;
@@ -28,17 +87,25 @@ layout(std140, binding = 0) uniform Camera
 	float Exposure;
 } u_CameraBuffer;
 
+layout(std140, binding = 2) uniform SceneData
+{
+	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
+	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
+	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
+	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
+	GlobalIBL GlobalIBLData;
+	int ActiveDirLights;
+	int ActivePointLights;
+	int ActiveSpotLights;
+	int ActiveReflectionProbes;
+} u_SceneData;
+
 layout(binding = 3) uniform sampler2D Mat_gViewPosition;
 layout(binding = 4) uniform sampler2D Mat_gWorldNormal;
 layout(binding = 5) uniform sampler2D Mat_gAlbedo;
 layout(binding = 6) uniform sampler2D Mat_gSpecular;
 layout(binding = 7) uniform sampler2D Mat_gARM;
 layout(binding = 8) uniform sampler2D Mat_gMetadata;
-
-// Global IBL
-layout(binding = 10) uniform samplerCube IrradianceMap;
-layout(binding = 11) uniform samplerCube PrefilterMap;
-layout(binding = 12) uniform sampler2D BRDFLut;
 
 layout(binding = 13) uniform sampler2D Mat_SSAOMap;
 layout(binding = 14) uniform sampler2D Mat_DirectLightingPass;
@@ -145,13 +212,13 @@ const float minIBLContribution = 0.0;
 vec3 IndirectLighting(vec3 Albedo, vec3 Specular, float SpecularExponent, vec2 ssrUVCoords, float ssrContribution, float MaterialAO, float AmbientOcclusion, vec3 N, vec3 R)
 {
 	// Get indirect diffuse contribution
-	vec3 iblDiffuse = IBLDiffuseContribution(IrradianceMap, Albedo, N);
+	vec3 iblDiffuse = IBLDiffuseContribution(u_SceneData.GlobalIBLData.IrradianceCubemap, Albedo, N);
 
 	// Get SSR specular contribution
 	vec3 ssrSpecular = SSRSpecularContribution(ssrUVCoords);
 
 	// Get IBL Specular contribution
-	vec3 iblSpecular = IBLSpecularContribution(PrefilterMap, Specular, SpecularExponent, R);
+	vec3 iblSpecular = IBLSpecularContribution(u_SceneData.GlobalIBLData.PrefilterCubemap, Specular, SpecularExponent, R);
 
 	// Get final specular blend
 	vec3 finalSpecularContribution = mix(ssrSpecular, iblSpecular, max(minIBLContribution, 1.0 - ssrContribution));
@@ -164,15 +231,15 @@ vec3 PBR_IndirectLighting(vec3 Albedo, float Roughness, float Metalness, float N
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, Albedo, Metalness);
 	const vec3 F = FresnelSchlick(NdotV, F0, Roughness);
-	const vec2 brdf = texture(BRDFLut, vec2(NdotV, Roughness)).rg;
+	const vec2 brdf = texture(u_SceneData.GlobalIBLData.BRDFLut, vec2(NdotV, Roughness)).rg;
 
-	vec3 iblDiffuse = PBR_IBLDiffuseContribution(IrradianceMap, Albedo, F, Metalness, N);
+	vec3 iblDiffuse = PBR_IBLDiffuseContribution(u_SceneData.GlobalIBLData.IrradianceCubemap, Albedo, F, Metalness, N);
 
 	// Get SSR specular contribution
 	vec3 ssrSpecular = PBR_SSRSpecularContribution(ssrUVCoords, brdf, F);
 
 	// Get IBL specular contribution
-	vec3 iblSpecular = PBR_IBLSpecularContribution(PrefilterMap, Roughness, F, brdf, R);
+	vec3 iblSpecular = PBR_IBLSpecularContribution(u_SceneData.GlobalIBLData.PrefilterCubemap, Roughness, F, brdf, R);
 
 	// Get final specular blend
 	vec3 finalSpecularContribution = mix(ssrSpecular, iblSpecular, max(minIBLContribution, 1.0 - ssrContribution));

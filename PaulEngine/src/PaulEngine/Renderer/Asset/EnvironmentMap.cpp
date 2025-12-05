@@ -33,6 +33,7 @@ namespace PaulEngine
 	AssetHandle EnvironmentMap::s_BRDFLutShaderHandle = 0;
 	AssetHandle EnvironmentMap::s_BRDFLutMaterialHandle = 0;
 	AssetHandle EnvironmentMap::s_BRDFLutTextureHandle = 0;
+	uint64_t EnvironmentMap::s_BRDFLutDeviceHandle = 0;
 
 	EnvironmentMap::EnvironmentMap(glm::uvec2 resolution, bool persistentAsset)
 	{
@@ -421,7 +422,8 @@ namespace PaulEngine
 		brdfSpec.MinFilter = ImageMinFilter::LINEAR;
 		brdfSpec.MagFilter = ImageMagFilter::LINEAR;
 		brdfSpec.GenerateMips = false;
-		s_BRDFLutTextureHandle = AssetManager::CreateAsset<Texture2D>(true, brdfSpec)->Handle;
+		Ref<Texture2D> brdfLutTexture = AssetManager::CreateAsset<Texture2D>(true, brdfSpec);
+		s_BRDFLutTextureHandle = brdfLutTexture->Handle;
 
 		TextureSpecification depthSpec;
 		depthSpec.Format = ImageFormat::Depth32;
@@ -459,6 +461,8 @@ namespace PaulEngine
 		Renderer::EndScene();
 
 		tempFBO->Unbind();
+
+		EnvironmentMap::s_BRDFLutDeviceHandle = brdfLutTexture->GetDeviceTextureHandle();
 	}
 
 	template<>

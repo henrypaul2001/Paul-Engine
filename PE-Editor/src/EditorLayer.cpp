@@ -436,8 +436,8 @@ namespace PaulEngine
 		}
 		};
 
-	std::vector<RenderComponentType> forward3DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
-	std::vector<std::string> forward3DInputBindings = { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture", "EnvironmentMap" };
+	std::vector<RenderComponentType> forward3DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture , RenderComponentType::Texture, RenderComponentType::Texture };
+	std::vector<std::string> forward3DInputBindings = { "ViewportResolution", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "ScreenTexture" };
 	RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 		PE_PROFILE_SCOPE("Scene 3D Render Pass");
 		Ref<Scene>& sceneContext = context.ActiveScene;
@@ -449,14 +449,12 @@ namespace PaulEngine
 		PE_CORE_ASSERT(inputs[3], "Spot light shadow map input required");
 		PE_CORE_ASSERT(inputs[4], "Point light shadow map input required");
 		PE_CORE_ASSERT(inputs[5], "Target texture attachment input required");
-		PE_CORE_ASSERT(inputs[6], "Environment map input required");
 		RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 		RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[1]);
 		RenderComponentTexture* dirLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
 		RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 		RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 		RenderComponentTexture* screenTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
-		RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
 
 		// Ping - pong framebuffer attachment
 		Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -616,20 +614,38 @@ namespace PaulEngine
 				pointLightShadowTexture->Bind(2);
 			}
 
-			if (envMapInput)
+			// Apply global volume from scene
 			{
-				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-				AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
-				AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
-				AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+				auto view = sceneContext->View<ComponentRenderVolume>();
+				for (auto entityID : view)
+				{
+					// Use first volume since we do not currently support local volumes
+					auto renderVolumeComponent = view.get<ComponentRenderVolume>(entityID);
+
+					switch (renderVolumeComponent.SkyboxType)
+					{
+						case ComponentRenderVolume::SkyType::SKY_NONE:
+							break;
+						case ComponentRenderVolume::SkyType::SKY_SKYBOX:
+							break;
+						case ComponentRenderVolume::SkyType::SKY_ENVMAP:
+						{
+							Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(renderVolumeComponent.EnvironmentMapHandle);
+							if (envMap) { Renderer::SubmitGlobalIBL(envMap->GetPrefilteredMapHandle(), envMap->GetIrradianceMapHandle()); }
+							break;
+						}
+					}
+
+					break;
+				}
 			}
 
 			Renderer::EndScene();
 		}
-		};
+	};
 
-	std::vector<RenderComponentType> skyboxInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap };
-	std::vector<std::string> skyboxInputBindings = { "ViewportResolution", "SkyboxMaterial", "EnvironmentMap" };
+	std::vector<RenderComponentType> skyboxInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material };
+	std::vector<std::string> skyboxInputBindings = { "ViewportResolution", "SkyboxMaterial" };
 	RenderPass::OnRenderFunc skyboxPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs)
 		{
 			PE_PROFILE_SCOPE("Skybox Render Pass");
@@ -640,14 +656,32 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[1], "Skybox material input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
 
 			Ref<Material> skyboxMaterial = AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle);
-			if (envMapInput)
+			auto skyboxParam = skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox");
+			auto view = sceneContext->View<ComponentRenderVolume>();
+			for (auto entityID : view)
 			{
-				// Apply environment map to skybox
-				Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-				skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = envMap->GetUnfilteredHandle();
+				// Use first volume since we do not currently support local volumes
+				auto renderVolumeComponent = view.get<ComponentRenderVolume>(entityID);
+
+				switch (renderVolumeComponent.SkyboxType)
+				{
+					case ComponentRenderVolume::SkyType::SKY_NONE:
+						skyboxParam->TextureHandle = 0;
+						return;
+					case ComponentRenderVolume::SkyType::SKY_SKYBOX:
+						skyboxParam->TextureHandle = renderVolumeComponent.SkyboxHandle;
+						break;
+					case ComponentRenderVolume::SkyType::SKY_ENVMAP:
+					{
+						Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(renderVolumeComponent.EnvironmentMapHandle);
+						if (envMap) { skyboxParam->TextureHandle = envMap->GetUnfilteredHandle(); }
+						break;
+					}
+				}
+
+				break;
 			}
 
 			// Remove translation from view matrix
@@ -1217,8 +1251,6 @@ namespace PaulEngine
 		return bloomFBO;
 	}
 
-	// TODO: These resources should not be owned by the renderer, but by the scene. That way, when the same scene is used by other renderers with the same behaviour, the skybox will be the same, as expected. Such as the ReflectionProbeBaker
-	//			Move these values to some kind of "GlobalVolume" component
 	void EditorLayer::InitEnvMapAndSkybox(FrameRenderer* out_Framerenderer)
 	{
 		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
@@ -1228,44 +1260,6 @@ namespace PaulEngine
 		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
 
 		out_Framerenderer->AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
-
-		// Create skybox cubemap texture from individual faces
-		// TODO: cubemap asset as a single file (probably another custom file format similar to binary texture array file)
-		std::vector<std::filesystem::path> facePaths = {
-			"assets/textures/cubemap/default_skybox/right.png",
-			"assets/textures/cubemap/default_skybox/left.png",
-			"assets/textures/cubemap/default_skybox/top.png",
-			"assets/textures/cubemap/default_skybox/bottom.png",
-			"assets/textures/cubemap/default_skybox/front.png",
-			"assets/textures/cubemap/default_skybox/back.png"
-		};
-		
-		std::vector<Buffer> faceData;
-		faceData.reserve(6);
-		for (int i = 0; i < 6; i++)
-		{
-			TextureImporter::ImageFileReadResult result;
-			Load2DParams params = facePaths[i];
-			params.FlipVertical = false;
-			faceData.push_back(TextureImporter::ReadImageFile(params, result));
-		}
-		
-		TextureSpecification skyboxSpec;
-		skyboxSpec.Format = ImageFormat::RGB8;
-		skyboxSpec.MinFilter = ImageMinFilter::LINEAR;
-		skyboxSpec.MagFilter = ImageMagFilter::LINEAR;
-		skyboxSpec.Wrap_S = ImageWrap::CLAMP_TO_EDGE;
-		skyboxSpec.Wrap_T = ImageWrap::CLAMP_TO_EDGE;
-		skyboxSpec.Wrap_R = ImageWrap::CLAMP_TO_EDGE;
-		skyboxSpec.Width = 2048;
-		skyboxSpec.Height = 2048;
-		Ref<TextureCubemap> skyboxCubemap = AssetManager::CreateAsset<TextureCubemap>(true, skyboxSpec, faceData);
-		skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox")->TextureHandle = skyboxCubemap->Handle;
-
-		AssetHandle envMapHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "textures/environment/default_environment.hdr", false);
-		out_Framerenderer->AddRenderResource<RenderComponentEnvironmentMap>("EnvironmentMap", true, envMapHandle);
-
-		out_Framerenderer->AddRenderResource<RenderComponentTexture>("SkyboxTexture", true, skyboxCubemap->Handle);
 	}
 
 	void EditorLayer::InitEditorData(FrameRenderer* out_Framerenderer)

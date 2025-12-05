@@ -62,6 +62,14 @@ struct LocalIBL
 	samplerCube IrradianceCubemap;
 };
 
+struct GlobalIBL
+{
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+	sampler2D BRDFLut;
+	int IsActive;
+};
+
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
@@ -81,6 +89,7 @@ layout(std140, binding = 2) uniform SceneData
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
 	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
+	GlobalIBL GlobalIBLData;
 	int ActiveDirLights;
 	int ActivePointLights;
 	int ActiveSpotLights;
@@ -125,11 +134,6 @@ layout(binding = 3, std430) readonly buffer IMat_MaterialSSBO
 layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
 layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
 layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
-
-// Global IBL
-layout(binding = 10) uniform samplerCube IrradianceMap;
-layout(binding = 11) uniform samplerCube PrefilterMap;
-layout(binding = 12) uniform sampler2D BRDFLut;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -512,7 +516,7 @@ vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMa
 
 	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
 	vec3 prefilteredColour = textureLod(prefilterMap, R, MaterialRoughness * MAX_REFLECTION_LOD).rgb;
-	vec2 brdf = texture(BRDFLut, vec2(NdotV, MaterialRoughness)).rg;
+	vec2 brdf = texture(u_SceneData.GlobalIBLData.BRDFLut, vec2(NdotV, MaterialRoughness)).rg;
 	vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
 
 	return (kD * diffuse + specular) * MaterialAO;
@@ -658,10 +662,10 @@ void main()
 	{
 		colour.rgb += accumulatedAmbient;	
 	}
-	else
+	else if (u_SceneData.GlobalIBLData.IsActive > 0)
 	{
 		// Global IBL fallback
-		colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+		colour.rgb += CalculateAmbienceFromIBL(u_SceneData.GlobalIBLData.PrefilteredCubemap, u_SceneData.GlobalIBLData.IrradianceCubemap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
 	}
 
 	if (colour.a == 0.0) { discard; }

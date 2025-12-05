@@ -129,6 +129,14 @@ struct LocalIBL
 	samplerCube IrradianceCubemap;
 };
 
+struct GlobalIBL
+{
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+	sampler2D BRDFLut;
+	int IsActive;
+};
+
 layout(location = 0) in flat int v_EntityID;
 layout(location = 1) in flat uint v_MaterialIndex;
 layout(location = 2) in VertexData v_VertexData;
@@ -148,6 +156,7 @@ layout(std140, binding = 2) uniform SceneData
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
 	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
+	GlobalIBL GlobalIBLData;
 	int ActiveDirLights;
 	int ActivePointLights;
 	int ActiveSpotLights;
@@ -184,10 +193,6 @@ layout(binding = 3, std430) readonly buffer IMat_MaterialSSBO
 layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
 layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
 layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
-
-// Global IBL
-layout(binding = 10) uniform samplerCube IrradianceMap;
-layout(binding = 11) uniform samplerCube PrefilterMap;
 
 vec2 ScaledTexCoords;
 vec3 ViewDir;
@@ -533,7 +538,10 @@ void main()
 	colour.rgb += MaterialEmission;
 
 	// Global IBL
-	colour.rgb += CalculateAmbienceFromIBL(PrefilterMap, IrradianceMap, MaterialAlbedo, MaterialSpecular, MaterialBuffer[v_MaterialIndex].Shininess, Normal, ViewDir, reflect(-ViewDir, Normal));
+	if (u_SceneData.GlobalIBLData.IsActive > 0)
+	{
+		colour.rgb += CalculateAmbienceFromIBL(u_SceneData.GlobalIBLData.PrefilteredCubemap, u_SceneData.GlobalIBLData.IrradianceCubemap, MaterialAlbedo, MaterialSpecular, MaterialBuffer[v_MaterialIndex].Shininess, Normal, ViewDir, reflect(-ViewDir, Normal));
+	}
 
 	if (colour.a == 0.0) { discard; }
 	else { entityID = v_EntityID; }

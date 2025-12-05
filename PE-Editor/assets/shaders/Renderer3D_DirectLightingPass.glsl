@@ -19,7 +19,6 @@ layout(location = 0) out vec4 f_Colour;
 layout(location = 1) out int f_EntityID;
 
 // TODO: Change u_SceneData to be a shader storage buffer to allow for larger array sizes
-// TODO: Before that, implement shader storage buffer abstraction in the engine
 const int MAX_ACTIVE_DIR_LIGHTS = 8;
 const int MAX_ACTIVE_POINT_LIGHTS = 8;
 const int MAX_ACTIVE_SPOT_LIGHTS = 8;
@@ -70,6 +69,14 @@ struct LocalIBL
 	samplerCube IrradianceCubemap;
 };
 
+struct GlobalIBL
+{
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+	sampler2D BRDFLut;
+	int IsActive;
+};
+
 layout(location = 1) in vec2 v_TexCoords;
 
 layout(std140, binding = 0) uniform Camera
@@ -87,6 +94,7 @@ layout(std140, binding = 2) uniform SceneData
 	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
 	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
 	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
+	GlobalIBL GlobalIBLData;
 	int ActiveDirLights;
 	int ActivePointLights;
 	int ActiveSpotLights;

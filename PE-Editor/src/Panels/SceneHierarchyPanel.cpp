@@ -1027,7 +1027,6 @@ namespace PaulEngine
 				}
 				case ComponentRenderVolume::SkyType::SKY_SKYBOX:
 				{
-					ImGui::Text("Stasfdas fasf");
 					RenderComponentImGuiUtils::DrawAssetHandleDragDrop(component.SkyboxHandle, AssetType::TextureCubemap, "Skybox Handle");
 					break;
 				}
