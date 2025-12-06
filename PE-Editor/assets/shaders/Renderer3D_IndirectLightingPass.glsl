@@ -1,6 +1,6 @@
 #context deferred
 #type vertex
-#version 450 core
+#version 460 core
 layout(location = 0) in vec3 a_Position;
 layout(location = 2) in vec2 a_TexCoords;
 
@@ -13,7 +13,8 @@ void main()
 }
 
 #type fragment
-#version 450 core
+#version 460 core
+#extension GL_ARB_bindless_texture : require
 
 layout(location = 0) out vec4 f_Colour;
 
@@ -218,7 +219,7 @@ vec3 IndirectLighting(vec3 Albedo, vec3 Specular, float SpecularExponent, vec2 s
 	vec3 ssrSpecular = SSRSpecularContribution(ssrUVCoords);
 
 	// Get IBL Specular contribution
-	vec3 iblSpecular = IBLSpecularContribution(u_SceneData.GlobalIBLData.PrefilterCubemap, Specular, SpecularExponent, R);
+	vec3 iblSpecular = IBLSpecularContribution(u_SceneData.GlobalIBLData.PrefilteredCubemap, Specular, SpecularExponent, R);
 
 	// Get final specular blend
 	vec3 finalSpecularContribution = mix(ssrSpecular, iblSpecular, max(minIBLContribution, 1.0 - ssrContribution));
@@ -239,7 +240,7 @@ vec3 PBR_IndirectLighting(vec3 Albedo, float Roughness, float Metalness, float N
 	vec3 ssrSpecular = PBR_SSRSpecularContribution(ssrUVCoords, brdf, F);
 
 	// Get IBL specular contribution
-	vec3 iblSpecular = PBR_IBLSpecularContribution(u_SceneData.GlobalIBLData.PrefilterCubemap, Roughness, F, brdf, R);
+	vec3 iblSpecular = PBR_IBLSpecularContribution(u_SceneData.GlobalIBLData.PrefilteredCubemap, Roughness, F, brdf, R);
 
 	// Get final specular blend
 	vec3 finalSpecularContribution = mix(ssrSpecular, iblSpecular, max(minIBLContribution, 1.0 - ssrContribution));

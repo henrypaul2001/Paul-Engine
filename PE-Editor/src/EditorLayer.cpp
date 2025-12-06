@@ -1912,8 +1912,8 @@ namespace PaulEngine
 			}
 		};
 
-		std::vector<RenderComponentType> directLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::EnvironmentMap };
-		std::vector<std::string> directLightingInputBindings = { "ViewportResolution", "DirectLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap", "EnvironmentMap" };
+		std::vector<RenderComponentType> directLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::PrimitiveType, RenderComponentType::Texture, RenderComponentType::Texture, RenderComponentType::Texture };
+		std::vector<std::string> directLightingInputBindings = { "ViewportResolution", "DirectLightingPass", "ShadowResolution", "DirLightShadowMap", "SpotLightShadowMap", "PointLightShadowMap" };
 		RenderPass::OnRenderFunc directLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Deferred Direct Lighting Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -1925,14 +1925,12 @@ namespace PaulEngine
 			PE_CORE_ASSERT(inputs[3], "Dir light shadowmap input required");
 			PE_CORE_ASSERT(inputs[4], "Spot light shadowmap input required");
 			PE_CORE_ASSERT(inputs[5], "Point light shadowmap input required");
-			PE_CORE_ASSERT(inputs[6], "Env map input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
 			RenderComponentPrimitiveType<glm::ivec2>* shadowResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[2]);
 			RenderComponentTexture* dirLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
 			RenderComponentTexture* spotLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[4]);
 			RenderComponentTexture* pointLightShadowInput = dynamic_cast<RenderComponentTexture*>(inputs[5]);
-			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[6]);
 
 			targetFramebuffer->SetDrawBuffers();
 
@@ -2042,12 +2040,30 @@ namespace PaulEngine
 					pointLightShadowTexture->Bind(2);
 				}
 
-				if (envMapInput)
+				// Apply global volume from scene
 				{
-					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-					AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
-					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
-					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+					auto view = sceneContext->View<ComponentRenderVolume>();
+					for (auto entityID : view)
+					{
+						// Use first volume since we do not currently support local volumes
+						auto renderVolumeComponent = view.get<ComponentRenderVolume>(entityID);
+
+						switch (renderVolumeComponent.SkyboxType)
+						{
+						case ComponentRenderVolume::SkyType::SKY_NONE:
+							break;
+						case ComponentRenderVolume::SkyType::SKY_SKYBOX:
+							break;
+						case ComponentRenderVolume::SkyType::SKY_ENVMAP:
+						{
+							Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(renderVolumeComponent.EnvironmentMapHandle);
+							if (envMap) { Renderer::SubmitGlobalIBL(envMap->GetPrefilteredMapHandle(), envMap->GetIrradianceMapHandle()); }
+							break;
+						}
+						}
+
+						break;
+					}
 				}
 
 				// Submit screen quad
@@ -2062,8 +2078,8 @@ namespace PaulEngine
 			}
 		};
 
-		std::vector<RenderComponentType> indirectLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::EnvironmentMap, RenderComponentType::Texture, RenderComponentType::Material };
-		std::vector<std::string> indirectLightingInputBindings = { "ViewportResolution", "IndirectLightingPass", "EnvironmentMap", "AlternateScreenTexture", "TexturePassthroughMaterial" };
+		std::vector<RenderComponentType> indirectLightingInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::Material, RenderComponentType::Texture, RenderComponentType::Material };
+		std::vector<std::string> indirectLightingInputBindings = { "ViewportResolution", "IndirectLightingPass", "AlternateScreenTexture", "TexturePassthroughMaterial" };
 		RenderPass::OnRenderFunc indirectLightingPassFunc = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Deferred Indirect Lighting Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -2071,14 +2087,12 @@ namespace PaulEngine
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "Viewport resolution input required");
 			PE_CORE_ASSERT(inputs[1], "Lighting pass material input required");
-			PE_CORE_ASSERT(inputs[2], "Env map input required");
-			PE_CORE_ASSERT(inputs[3], "Target texture input required");
-			PE_CORE_ASSERT(inputs[4], "Passthrough material input required");
+			PE_CORE_ASSERT(inputs[2], "Target texture input required");
+			PE_CORE_ASSERT(inputs[3], "Passthrough material input required");
 			RenderComponentPrimitiveType<glm::ivec2>* viewportResInput = dynamic_cast<RenderComponentPrimitiveType<glm::ivec2>*>(inputs[0]);
 			RenderComponentMaterial* materialInput = dynamic_cast<RenderComponentMaterial*>(inputs[1]);
-			RenderComponentEnvironmentMap* envMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[2]);
-			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[3]);
-			RenderComponentMaterial* passthroughMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[4]);
+			RenderComponentTexture* targetTextureInput = dynamic_cast<RenderComponentTexture*>(inputs[2]);
+			RenderComponentMaterial* passthroughMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[3]);
 
 			// Ping - pong framebuffer attachment
 			Ref<FramebufferAttachment> attach = targetFramebuffer->GetAttachment(FramebufferAttachmentPoint::Colour0);
@@ -2100,12 +2114,30 @@ namespace PaulEngine
 			if (activeCamera) {
 				Renderer::BeginScene(activeCamera->GetProjection(), cameraWorldTransform, activeCamera->GetGamma(), activeCamera->GetExposure());
 
-				if (envMapInput)
+				// Apply global volume from scene
 				{
-					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
-					AssetManager::GetAsset<TextureCubemap>(envMap->GetIrradianceMapHandle())->Bind(10);
-					AssetManager::GetAsset<TextureCubemap>(envMap->GetPrefilteredMapHandle())->Bind(11);
-					AssetManager::GetAsset<Texture2D>(EnvironmentMap::GetBRDFLutHandle())->Bind(12);
+					auto view = sceneContext->View<ComponentRenderVolume>();
+					for (auto entityID : view)
+					{
+						// Use first volume since we do not currently support local volumes
+						auto renderVolumeComponent = view.get<ComponentRenderVolume>(entityID);
+
+						switch (renderVolumeComponent.SkyboxType)
+						{
+						case ComponentRenderVolume::SkyType::SKY_NONE:
+							break;
+						case ComponentRenderVolume::SkyType::SKY_SKYBOX:
+							break;
+						case ComponentRenderVolume::SkyType::SKY_ENVMAP:
+						{
+							Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(renderVolumeComponent.EnvironmentMapHandle);
+							if (envMap) { Renderer::SubmitGlobalIBL(envMap->GetPrefilteredMapHandle(), envMap->GetIrradianceMapHandle()); }
+							break;
+						}
+						}
+
+						break;
+					}
 				}
 
 				// Submit screen quad

@@ -14,6 +14,7 @@ void main()
 
 #type fragment
 #version 460 core
+#extension GL_ARB_bindless_texture : require
 
 layout(location = 0) out vec4 f_Colour;
 layout(location = 1) out int f_EntityID;

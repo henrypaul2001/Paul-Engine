@@ -164,6 +164,10 @@ Entities:
         Gamma: 2.2
         Exposure: 1
       FixedAspect: false
+    RenderVolumeComponent:
+      Type: 2
+      SkyboxHandle: 0
+      EnvironmentMapHandle: 8010315835890785092
   - Entity: 7944305724354701841
     TagComponent:
       Tag: PBR Cube
