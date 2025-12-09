@@ -1,10 +1,13 @@
 #include "ContentBrowserPanel.h"
+#include "../Event/EditorEvent.h"
 
 #include "PaulEngine/Project/Project.h"
 #include "PaulEngine/Asset/TextureImporter.h"
 
 #include <imgui.h>
 #include <PaulEngine/Core/Log.h>
+
+#include "PaulEngine/Core/Application.h"
 
 namespace PaulEngine
 {
@@ -60,6 +63,7 @@ namespace PaulEngine
 			ImGui::SameLine();
 		}
 		ImGui::Text("%s", m_CurrentDirectory.string().c_str());
+		ImGui::Text("Selected Asset Handle: %d", (UUID)m_SelectedAssetHandle);
 		ImGui::Separator();
 
 		static float padding = 16.0f;
@@ -142,22 +146,30 @@ namespace PaulEngine
 					if (ImGui::BeginPopupContextItem()) {
 						if (ImGui::MenuItem("Delete"))
 						{
+							// TODO: Implement asset deleting
 							PE_CORE_WARN("Asset delete not yet implemented");
 						}
 						ImGui::EndPopup();
 					}
 
+					AssetHandle currentAssetHandle = m_TreeNodes[treeNodeIndex].Handle;
 					if (ImGui::BeginDragDropSource()) {
-						AssetHandle handle = m_TreeNodes[treeNodeIndex].Handle;
-						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &handle, sizeof(AssetHandle));
+						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &currentAssetHandle, sizeof(AssetHandle));
 						ImGui::EndDragDropSource();
 					}
 
 					ImGui::PopStyleColor();
 
-					if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-						if (isDirectory) {
+					if (ImGui::IsItemHovered())
+					{
+						if (isDirectory && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 							m_CurrentDirectory /= item.filename();
+						}
+						else if (!isDirectory && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+						{
+							m_SelectedAssetHandle = currentAssetHandle;
+							ContentBrowserAssetSelected event(m_SelectedAssetHandle);
+							Application::Get().OnEvent(event);
 						}
 					}
 

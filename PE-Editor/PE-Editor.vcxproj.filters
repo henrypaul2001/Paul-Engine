@@ -34,6 +34,8 @@
     <ClInclude Include="src\Window\CreateTextureArrayWindow.h">
       <Filter>Window</Filter>
     </ClInclude>
+    <ClInclude Include="src\Panels\AssetPreviewPanel.h" />
+    <ClInclude Include="src\Event\EditorEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
@@ -62,5 +64,6 @@
     <ClCompile Include="src\Window\CreateTextureArrayWindow.cpp">
       <Filter>Window</Filter>
     </ClCompile>
+    <ClCompile Include="src\Panels\AssetPreviewPanel.cpp" />
   </ItemGroup>
 </Project>

@@ -7,6 +7,9 @@
 #include "Panels/FrameRendererPanel.h"
 #include "Panels/FrameRendererProfilePanel.h"
 #include "Panels/MeshPoolVisualiserPanel.h"
+#include "Panels/AssetPreviewPanel.h"
+
+#include "Event/EditorEvent.h"
 
 #include "Window/CreateAtlasWindow.h"
 #include "Window/CreateMaterialWindow.h"
@@ -15,6 +18,7 @@
 #include "PaulEngine/Renderer/Asset/Material.h"
 
 #include "PaulEngine/Renderer/FrameRenderer.h"
+
 
 namespace PaulEngine {
 	class EditorLayer : public Layer
@@ -55,6 +59,7 @@ namespace PaulEngine {
 		bool OnSceneChanged(SceneChangedEvent& e);
 		bool OnViewportResize(MainViewportResizeEvent& e);
 		bool OnAssetImport(AssetImportedEvent& e);
+		bool OnAssetSelected(ContentBrowserAssetSelected& e);
 
 		void NewScene();
 		void OpenScene();
@@ -103,6 +108,7 @@ namespace PaulEngine {
 		FrameRendererPanel m_FrameRendererPanel;
 		FrameRendererProfilePanel m_FrameRendererProfilePanel;
 		MeshPoolVisualiserPanel m_MeshPoolPanel;
+		AssetPreviewPanel m_AssetPreviewPanel;
 
 		// Windows
 		CreateAtlasWindow m_AtlasCreateWindow;

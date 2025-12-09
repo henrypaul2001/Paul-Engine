@@ -12,6 +12,7 @@ namespace PaulEngine
 		ContentBrowserPanel();
 
 		void ImGuiRender();
+		AssetHandle GetSelectedAssetHandle() const { return m_SelectedAssetHandle; }
 
 		float m_ThumbnailSize;
 
@@ -39,8 +40,8 @@ namespace PaulEngine
 		};
 
 		std::vector<TreeNode> m_TreeNodes;
-
 		std::map<std::filesystem::path, std::vector<std::filesystem::path>> m_AssetTree;
+		AssetHandle m_SelectedAssetHandle = 0;
 
 		enum class BrowserMode
 		{

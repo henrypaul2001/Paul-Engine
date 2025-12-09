@@ -2919,6 +2919,7 @@ namespace PaulEngine
 		dispatcher.DispatchEvent<WindowDropEvent>(PE_BIND_EVENT_FN(EditorLayer::OnWindowDrop));
 		dispatcher.DispatchEvent<SceneChangedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnSceneChanged));
 		dispatcher.DispatchEvent<AssetImportedEvent>(PE_BIND_EVENT_FN(EditorLayer::OnAssetImport));
+		dispatcher.DispatchEvent<ContentBrowserAssetSelected>(PE_BIND_EVENT_FN(EditorLayer::OnAssetSelected));
 
 		if (m_SceneState != SceneState::Play) {
 			m_Camera->OnEvent(e);
@@ -3041,6 +3042,12 @@ namespace PaulEngine
 			MeshImporter::CreatePrefabFromImportedModel(e.GetAssetHandle());
 		}
 
+		return false;
+	}
+
+	bool EditorLayer::OnAssetSelected(ContentBrowserAssetSelected& e)
+	{
+		m_AssetPreviewPanel.SetContext(e.GetHandle());
 		return false;
 	}
 
