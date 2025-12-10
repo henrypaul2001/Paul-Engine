@@ -1298,6 +1298,12 @@ namespace PaulEngine
 		InitTonemapping(out_Framerenderer);
 		InitEnvMapAndSkybox(out_Framerenderer);
 
+		// TODO: Maybe this event behaviour would be better passed to the render components themselves. Instead of setting up an event func per renderer
+		// , having to manually set up all of the resource responses, the resources should have their own on event function parameter that can be
+		// set by an external builder, avoiding repeating these event functions everywhere we build a renderer and having to know which resources exist
+		//    - Set up bloom render pass with factory class
+		//    - Render pass components have their event function set up by the factory
+		//    - The simple call of building the render pass was enough to handle the events without manually implementing them like this
 		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
 		{
 			EventDispatcher dispatcher = EventDispatcher(e);

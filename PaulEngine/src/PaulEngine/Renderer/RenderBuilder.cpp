@@ -5,6 +5,144 @@
 
 namespace PaulEngine
 {
+	void RenderBuilder::BuildBasicForwardRenderer(Ref<FrameRenderer> out_Framerenderer)
+	{
+	}
+
+	RenderBuilder::PrebuiltRenderFunc RenderBuilder::BuildDirLightShadowPass(Ref<FrameRenderer> out_Framerenderer)
+	{
+		static RenderPass::OnRenderFunc dirLightShadowPassFunc = 
+			[](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
+			PE_PROFILE_SCOPE("Directional light shadow map capture pass");
+			Ref<Scene>& sceneContext = context.ActiveScene;
+			RenderComponentPrimitiveType<glm::uvec2>* shadowResInput = (inputs[0]) ? dynamic_cast<RenderComponentPrimitiveType<glm::uvec2>*>(inputs[0]) : nullptr;
+			RenderComponentMaterial* shadowmapMaterialInput = (inputs[1]) ? dynamic_cast<RenderComponentMaterial*>(inputs[1]) : nullptr;
+
+			glm::uvec2 shadowResolution = (shadowResInput) ? shadowResInput->Data : glm::uvec2(1024u, 1024u);
+			Ref<Material> shadowmapMaterial = (shadowmapMaterialInput) ? AssetManager::GetAsset<Material>(shadowmapMaterialInput->MaterialHandle) : nullptr;
+
+			PE_CORE_ASSERT(shadowmapMaterial, "Invalid directional light shadow map material");
+
+			Ref<FramebufferAttachment> depthAttachment = targetFramebuffer->GetDepthAttachment();
+			PE_CORE_ASSERT(depthAttachment && depthAttachment->GetType() == FramebufferAttachmentType::Texture2DArray, "Invalid dir light shadow pass framebuffer. Texture2DArray depth attachment required");
+
+			RenderCommand::SetViewport({ 0, 0 }, shadowResolution);
+			
+			std::vector<Entity> dirLights = std::vector<Entity>(Renderer::MAX_ACTIVE_DIR_LIGHTS);
+			int dirLightsHead = 0;
+			int activeLights = 0;
+			auto view = sceneContext->View<ComponentDirectionalLight>();
+
+			// Get directional light entities within maximum active lights constraint in order matching Renderer::SubmitLightSource
+			for (auto entityID : view) {
+				dirLights[dirLightsHead] = Entity(entityID, sceneContext.get());
+				dirLightsHead = ++dirLightsHead % Renderer::MAX_ACTIVE_DIR_LIGHTS;
+				activeLights = std::min(Renderer::MAX_ACTIVE_DIR_LIGHTS, ++activeLights);
+			}
+
+			// Capture shadow maps for previously gathered light sources
+			FramebufferTexture2DArrayAttachment* depthArrayAttachment = static_cast<FramebufferTexture2DArrayAttachment*>(depthAttachment.get());
+			for (int i = 0; i < activeLights; ++i)
+			{
+				Entity entity = dirLights[i];
+				ComponentTransform& transform = entity.GetComponent<ComponentTransform>();
+				ComponentDirectionalLight& light = entity.GetComponent<ComponentDirectionalLight>();
+
+				if (light.CastShadows)
+				{
+					depthArrayAttachment->SetTargetIndex(i);
+					targetFramebuffer->SetDepthAttachment(depthAttachment);
+					RenderCommand::Clear();
+
+					glm::mat3 rotationMatrix = glm::mat3(transform.GetTransform());
+
+					// Remove scaling
+					rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+					rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+					rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+					glm::vec3 direction = glm::normalize(rotationMatrix * glm::vec3(0.0f, 0.0f, 1.0f));
+
+					float shadowSize = light.ShadowMapProjectionSize;
+					float nearClip = light.ShadowMapNearClip;
+					float farClip = light.ShadowMapFarClip;
+
+					glm::mat4 cameraTransform = glm::inverse(glm::lookAt(-direction * light.ShadowMapCameraDistance, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+					SceneCamera cam = SceneCamera(SCENE_CAMERA_ORTHOGRAPHIC);
+					cam.SetOrthographic(shadowSize, (float)shadowResolution.x / (float)shadowResolution.y, nearClip, farClip);
+
+					Renderer::BeginScene(cam, cameraTransform);
+					{
+						PE_PROFILE_SCOPE("Submit Mesh");
+						AssetHandle shadowmapHandle = shadowmapMaterialInput->MaterialHandle;
+						auto meshView = sceneContext->View<ComponentTransform, ComponentMeshRenderer>();
+						for (auto entityID : meshView)
+						{
+							auto [meshTransform, mesh] = meshView.get<ComponentTransform, ComponentMeshRenderer>(entityID);
+							BlendState blend;
+							blend.Enabled = false;
+							Renderer::SubmitMesh(mesh.MeshHandle, shadowmapHandle, meshTransform.GetTransform(), mesh.DepthState, mesh.CullState, blend, (int)entityID);
+						}
+					}
+					Renderer::EndScene();
+				}
+			}
+		};
+		
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		uint32_t shadowWidth = 1280; uint32_t shadowHeight = 1280;
+
+		TextureSpecification depthSpec;
+		depthSpec.Border = glm::vec4(1.0f);
+		depthSpec.Width = shadowWidth;
+		depthSpec.Height = shadowHeight;
+		depthSpec.MinFilter = ImageMinFilter::NEAREST;
+		depthSpec.MagFilter = ImageMagFilter::NEAREST;
+		depthSpec.Wrap_S = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Wrap_T = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Wrap_R = ImageWrap::CLAMP_TO_BORDER;
+		depthSpec.Format = ImageFormat::Depth32;
+
+		if (!out_Framerenderer->ContainsRenderResource("DirLightShadowMap"))
+		{
+			Ref<Texture2DArray> dirLightShadowArray = AssetManager::CreateAsset<Texture2DArray>(true, depthSpec, std::vector<Buffer>(Renderer::MAX_ACTIVE_DIR_LIGHTS));
+			out_Framerenderer->AddRenderResource<RenderComponentTexture>("DirLightShadowMap", false, dirLightShadowArray->Handle);
+		}
+
+		if (!out_Framerenderer->ContainsRenderResource("ShadowResolution"))
+		{
+			// In the future, this should be serialized. But many of the existing resources such as shadow framebuffers and textures aren't suited for this value to change during runtime
+			glm::uvec2 shadowRes = { shadowWidth, shadowHeight };
+			out_Framerenderer->AddRenderResource<RenderComponentPrimitiveType<glm::uvec2>>("ShadowResolution", false, shadowRes);
+		}
+
+		if (!out_Framerenderer->ContainsRenderResource("DirLightFramebuffer"))
+		{
+			FramebufferSpecification shadowFBOSpec;
+			shadowFBOSpec.Width = shadowWidth;
+			shadowFBOSpec.Height = shadowHeight;
+			shadowFBOSpec.Samples = 1;
+
+			Ref<FramebufferTexture2DArrayAttachment> dirLightShadowDepthArrayAttach = FramebufferTexture2DArrayAttachment::Create(FramebufferAttachmentPoint::Depth, dirLightShadowArray->Handle);
+			Ref<Framebuffer> dirLightShadowsFramebuffer = Framebuffer::Create(shadowFBOSpec, {}, dirLightShadowDepthArrayAttach);
+
+			out_Framerenderer->AddRenderResource<RenderComponentFramebuffer>("DirLightFramebuffer", false, dirLightShadowsFramebuffer);
+		}
+
+		if (!out_Framerenderer->ContainsRenderResource("ShadowmapMaterial"))
+		{
+			AssetHandle shadowmapShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/DepthShader.glsl", true);
+			Ref<Material> shadowmapMaterial = AssetManager::CreateAsset<Material>(true, shadowmapShaderHandle);
+			out_Framerenderer->AddRenderResource<RenderComponentMaterial>("ShadowmapMaterial", false, shadowmapMaterial->Handle);
+		}
+
+		return { { RenderComponentType::PrimitiveType, RenderComponentType::Material },
+				 { "ShadowResolution", "ShadowmapMaterial" },
+				 dirLightShadowPassFunc };
+	}
+
 	Ref<ProbeBakeRenderer> RenderBuilder::InitProbeRenderer()
 	{
 		// Main render pass should create a view into the scene ReflectionProbeComponent pool
@@ -51,6 +189,14 @@ namespace PaulEngine
 
 		renderer->AddRenderResource<RenderComponentFramebuffer>("MainFramebuffer", false, mainFramebuffer);
 
+		Ref<EditorAssetManager> assetManager = Project::GetActive()->GetEditorAssetManager();
+		std::filesystem::path engineAssetsRelativeToProjectAssets = std::filesystem::path("assets").lexically_relative(Project::GetAssetDirectory());
+
+		AssetHandle skyboxShaderHandle = assetManager->ImportAssetFromFile(engineAssetsRelativeToProjectAssets / "shaders/Skybox.glsl", true);
+		Ref<Material> skyboxMaterial = AssetManager::CreateAsset<Material>(true, skyboxShaderHandle);
+
+		renderer->AddRenderResource<RenderComponentMaterial>("SkyboxMaterial", false, skyboxMaterial->Handle);
+
 		FrameRenderer::OnEventFunc eventFunc = [](Event& e, FrameRenderer* self)
 		{
 			EventDispatcher dispatcher = EventDispatcher(e);
@@ -63,8 +209,8 @@ namespace PaulEngine
 		};
 		renderer->SetEventFunc(eventFunc);
 
-		std::vector<RenderComponentType> forward3DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::EnvironmentMap };
-		std::vector<std::string> forward3DInputBindings = { "CubemapRes", "TargetEnvironmentMap" };
+		std::vector<RenderComponentType> forward3DInputSpec = { RenderComponentType::PrimitiveType, RenderComponentType::EnvironmentMap, RenderComponentType::Material };
+		std::vector<std::string> forward3DInputBindings = { "CubemapRes", "TargetEnvironmentMap", "SkyboxMaterial" };
 		RenderPass::OnRenderFunc forward3DPass = [](RenderPass::RenderPassContext& context, Ref<Framebuffer> targetFramebuffer, std::vector<IRenderComponent*> inputs) {
 			PE_PROFILE_SCOPE("Scene 3D Render Pass");
 			Ref<Scene>& sceneContext = context.ActiveScene;
@@ -72,8 +218,10 @@ namespace PaulEngine
 			const glm::mat4& cameraWorldTransform = context.CameraWorldTransform;
 			PE_CORE_ASSERT(inputs[0], "CubemapRes input required");
 			PE_CORE_ASSERT(inputs[1], "TargetEnvironmentMap input required");
+			PE_CORE_ASSERT(inputs[2], "Skybox material input required");
 			RenderComponentPrimitiveType<glm::uvec2>* cubemapResInput = dynamic_cast<RenderComponentPrimitiveType<glm::uvec2>*>(inputs[0]);
 			RenderComponentEnvironmentMap* targetEnvironmentMapInput = dynamic_cast<RenderComponentEnvironmentMap*>(inputs[1]);
+			RenderComponentMaterial* skyboxMaterialInput = dynamic_cast<RenderComponentMaterial*>(inputs[2]);
 			glm::uvec2 cubemapRes = cubemapResInput->Data;
 			glm::uvec2 shadowRes = { 1024, 1024 };
 
@@ -84,6 +232,9 @@ namespace PaulEngine
 			Ref<TextureCubemap> baseCubemap = AssetManager::GetAsset<TextureCubemap>(targetEnvironmentMap->GetUnfilteredHandle());
 			PE_CORE_ASSERT(baseCubemap, "Error retrieving base cubemap from environment map");
 			if (baseCubemap->GetWidth() != cubemapRes.x || baseCubemap->GetHeight() != cubemapRes.y) { baseCubemap->Resize(cubemapRes.x, cubemapRes.y); }
+
+			Ref<Material> skyboxMaterial = AssetManager::GetAsset<Material>(skyboxMaterialInput->MaterialHandle);
+			auto skyboxParam = skyboxMaterial->GetParameter<SamplerCubeShaderParameterTypeStorage>("Skybox");
 
 			Ref<FramebufferTextureCubemapAttachment> colourAttach = FramebufferTextureCubemapAttachment::Create(FramebufferAttachmentPoint::Colour0, targetEnvironmentMap->GetUnfilteredHandle());
 			colourAttach->BindAsLayered = true;
@@ -227,6 +378,7 @@ namespace PaulEngine
 					pointLightShadowTexture->Bind(2);
 				}
 
+				// TODO: Only use environment map reflections after first pass as it needs to blend with other reflection probes in the scene
 				if (envMapInput)
 				{
 					Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(envMapInput->EnvironmentHandle);
@@ -237,6 +389,44 @@ namespace PaulEngine
 				*/
 
 				Renderer::EndScene();
+			
+				// Draw sky
+				{
+					auto view = sceneContext->View<ComponentRenderVolume>();
+					for (auto entityID : view)
+					{
+						// Use first volume since we do not currently support local volumes
+						auto renderVolumeComponent = view.get<ComponentRenderVolume>(entityID);
+
+						switch (renderVolumeComponent.SkyboxType)
+						{
+						case ComponentRenderVolume::SkyType::SKY_NONE:
+							skyboxParam->TextureHandle = 0;
+							return;
+						case ComponentRenderVolume::SkyType::SKY_SKYBOX:
+							skyboxParam->TextureHandle = renderVolumeComponent.SkyboxHandle;
+							break;
+						case ComponentRenderVolume::SkyType::SKY_ENVMAP:
+						{
+							Ref<EnvironmentMap> envMap = AssetManager::GetAsset<EnvironmentMap>(renderVolumeComponent.EnvironmentMapHandle);
+							if (envMap) { skyboxParam->TextureHandle = envMap->GetUnfilteredHandle(); }
+							break;
+						}
+						}
+
+						break;
+					}
+
+					Renderer::BeginScene(activeCamera->GetProjection(), glm::inverse(viewMatrices[face]), activeCamera->GetGamma(), activeCamera->GetExposure());
+
+					DepthState depthState;
+					depthState.Func = DepthFunc::LEQUAL;
+					FaceCulling cullState = FaceCulling::FRONT;
+
+					Renderer::DrawDefaultCubeImmediate(skyboxMaterial, glm::mat4(1.0f), depthState, cullState, BlendState(), -1);
+
+					Renderer::EndScene();
+				}
 			}
 
 			baseCubemap->GenerateMipmaps();
@@ -248,5 +438,17 @@ namespace PaulEngine
 		renderer->AddRenderPass(RenderPass(forward3DInputSpec, forward3DPass, "IBL_Bake_Forward_3D"), mainFramebuffer, forward3DInputBindings);
 
 		return probeRenderer;
+	}
+
+	Ref<BasicSceneRenderer> RenderBuilder::InitBasicRenderer()
+	{
+		// shadow passes
+		// forward 2d pass
+		// forward 3d pass
+		// skybox pass
+		// bloom passes
+		// tonemapping pass
+
+		return Ref<BasicSceneRenderer>();
 	}
 }

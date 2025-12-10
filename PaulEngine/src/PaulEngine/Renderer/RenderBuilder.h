@@ -10,7 +10,7 @@ namespace PaulEngine
 {
 	struct ProbeBakeRenderer
 	{
-		Ref<FrameRenderer> Renderer = CreateRef<FrameRenderer>();
+		Ref<FrameRenderer> Renderer = CreateRef<FrameRenderer>(); // todo: why does this need to be on the heap?
 		Ref<Scene> SceneContext = nullptr;
 		uint32_t CubemapWidth = 1024;
 		uint32_t CubemapHeight = 1024;
@@ -94,6 +94,23 @@ namespace PaulEngine
 		}
 	};
 
+	struct BasicSceneRenderer
+	{
+		FrameRenderer Renderer = FrameRenderer();
+		WeakRef<Scene> SceneContext;
+
+		void Run()
+		{
+			if (Ref<Scene> scene = SceneContext.lock())
+			{
+				Entity cameraEntity = scene->GetPrimaryCameraEntity();
+				Ref<SceneCamera> sceneCamera = (cameraEntity) ? CreateRef<SceneCamera>(cameraEntity.GetComponent<ComponentCamera>().Camera) : nullptr;
+				glm::mat4 cameraWorldTransform = (cameraEntity) ? cameraEntity.GetComponent<ComponentTransform>().GetTransform() : glm::mat4(1.0f);
+				Renderer.RenderFrame(scene, sceneCamera, cameraWorldTransform);
+			}
+		}
+	};
+
 	class RenderBuilder
 	{
 	public:
@@ -103,7 +120,26 @@ namespace PaulEngine
 			return CreateWeak<ProbeBakeRenderer>(renderer);
 		}
 
+		static WeakRef<BasicSceneRenderer> GetBasicSceneRenderer()
+		{
+			static Ref<BasicSceneRenderer> renderer = InitBasicRenderer();
+			return CreateWeak<BasicSceneRenderer>(renderer);
+		}
+
+		static void BuildBasicForwardRenderer(Ref<FrameRenderer> out_Framerenderer);
+
+		struct PrebuiltRenderFunc
+		{
+			std::vector<RenderComponentType> InputSpec;
+			std::vector<const char*> DefaultInputBindings;
+			RenderPass::OnRenderFunc Func;
+		};
+		// BuildXPass functions will return an OnRenderFunc object that can be added to your frame renderer 
+		// instance and will also create all of the necessary resources inside of out_Framerenderer
+		static PrebuiltRenderFunc BuildDirLightShadowPass(Ref<FrameRenderer> out_Framerenderer);
+
 	private:
 		static Ref<ProbeBakeRenderer> InitProbeRenderer();
+		static Ref<BasicSceneRenderer> InitBasicRenderer();
 	};
 }
