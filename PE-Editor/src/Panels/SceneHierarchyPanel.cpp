@@ -773,7 +773,7 @@ namespace PaulEngine
 					bool isSelected = dropDownMesh == i;
 					if (ImGui::Selectable(meshNames[i], isSelected)) {
 						dropDownMesh = i;
-						component.MeshHandle = assetManager->ImportAssetFromFile(nameToFilepath[meshNames[i]].first, true);;
+						component.MeshHandle = assetManager->ImportAssetFromFile(nameToFilepath[meshNames[i]].first, true);
 					}
 
 					if (isSelected) {

@@ -2,6 +2,7 @@
 #include "PaulEngine/Core/Core.h"
 #include "PaulEngine/Asset/Asset.h"
 #include "PaulEngine/Scene/Scene.h"
+#include "PaulEngine/Scene/Entity.h"
 
 namespace PaulEngine
 {
