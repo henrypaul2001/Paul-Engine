@@ -9,8 +9,7 @@ namespace  PaulEngine {
 			s_RenderAPI->Init();
 		}
 
-		// TODO: Change to uvec2
-		inline static void SetViewport(const glm::ivec2& position, const glm::ivec2& size) {
+		inline static void SetViewport(const glm::uvec2& position, const glm::uvec2& size) {
 			s_RenderAPI->SetViewport(position, size);
 		}
 

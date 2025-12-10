@@ -146,7 +146,7 @@ namespace PaulEngine {
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	}
 
-	void OpenGLRenderAPI::SetViewport(const glm::ivec2& position, const glm::ivec2& size)
+	void OpenGLRenderAPI::SetViewport(const glm::uvec2& position, const glm::uvec2& size)
 	{
 		glViewport(position.x, position.y, size.x, size.y);
 	}

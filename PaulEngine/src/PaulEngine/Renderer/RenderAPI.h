@@ -15,7 +15,7 @@ namespace PaulEngine {
 	public:
 		virtual ~RenderAPI() {}
 		virtual void Init() = 0;
-		virtual void SetViewport(const glm::ivec2& position, const glm::ivec2& size) = 0;
+		virtual void SetViewport(const glm::uvec2& position, const glm::uvec2& size) = 0;
 		virtual void SetClearColour(const glm::vec4& colour) = 0;
 		virtual void Clear(int bufferMask) = 0;
 		virtual void ClearDepth() = 0;
