@@ -58,6 +58,11 @@ namespace PaulEngine
 			return nullptr;
 		}
 
+		bool ContainsRenderResource(const std::string& resourceName)
+		{
+			return m_RenderResources.contains(resourceName);
+		}
+
 		IRenderComponent* GetRenderResource(const std::string& resourceName)
 		{
 			auto it = m_RenderResources.find(resourceName);
