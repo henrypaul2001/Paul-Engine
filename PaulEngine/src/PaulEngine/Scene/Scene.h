@@ -33,6 +33,9 @@ namespace PaulEngine
 		Entity CopyEntityToScene(Entity srcEntity, Scene* dstScene);
 		Entity FindEntityWithUUID(UUID id);
 		void DestroyEntity(Entity entity);
+	
+		// Completely wipe all entities from the scene
+		void Clear();
 
 		Entity GetPrimaryCameraEntity();
 

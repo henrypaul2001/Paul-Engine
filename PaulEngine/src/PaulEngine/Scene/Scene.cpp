@@ -277,6 +277,12 @@ namespace PaulEngine
 		transform.m_Children.clear();
 	}
 
+	void Scene::Clear()
+	{
+		m_Registry.clear();
+		m_EntityMap.clear();
+	}
+
 	Entity Scene::GetPrimaryCameraEntity()
 	{
 		auto view = m_Registry.view<ComponentCamera>();
