@@ -1,0 +1,673 @@
+#version 460 core
+#extension GL_ARB_bindless_texture : require
+layout(location = 0) out vec4 colour;
+layout(location = 1) out int entityID;
+
+const int MAX_ACTIVE_DIR_LIGHTS = 8;
+const int MAX_ACTIVE_POINT_LIGHTS = 8;
+const int MAX_ACTIVE_SPOT_LIGHTS = 8;
+const int MAX_ACTIVE_LOCAL_IBL = 32;
+
+struct VertexData
+{
+	vec3 WorldFragPos;
+	vec3 Normal;
+	vec2 TexCoords;
+
+	mat3 TBN;
+};
+
+struct DirectionalLight // vec4 for padding
+{
+	vec4 Direction; // w = (bool)castShadows
+
+	vec4 Ambient; // w = shadow distance
+	vec4 Diffuse; // w = min bias
+	vec4 Specular; // w = max bias
+
+	mat4 LightMatrix;
+};
+
+struct PointLight // vec4 for padding
+{
+	vec4 Position; // w = range
+
+	vec4 Ambient;
+	vec4 Diffuse;
+	vec4 Specular;
+
+	vec4 ShadowData; // r = minBias, g = maxBias, b = farPlane, w = (bool)castShadows
+};
+
+struct SpotLight
+{
+	vec4 Position; // w = range
+	vec4 Direction; // w = cutoff
+
+	vec4 Ambient; // w = outer cutoff
+	vec4 Diffuse;
+	vec4 Specular;
+
+	vec4 ShadowData; // r = (bool)castShadows, g = minBias, b = maxBias
+
+	mat4 LightMatrix;
+};
+
+struct LocalIBL
+{
+	vec4 WorldMinBounds; // w = sphere of influence
+	vec4 WorldMaxBounds; // w = unused
+	vec4 WorldOrigin;	 // w = unused
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+};
+
+struct GlobalIBL
+{
+	samplerCube PrefilteredCubemap;
+	samplerCube IrradianceCubemap;
+	sampler2D BRDFLut;
+	int IsActive;
+};
+
+layout(location = 0) in flat int v_EntityID;
+layout(location = 1) in flat uint v_MaterialIndex;
+layout(location = 2) in VertexData v_VertexData;
+
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 View;
+	mat4 Projection;
+	vec3 ViewPos;
+	float Gamma;
+	float Exposure;
+} u_CameraBuffer;
+
+layout(std140, binding = 2) uniform SceneData
+{
+	DirectionalLight DirLights[MAX_ACTIVE_DIR_LIGHTS];
+	PointLight PointLights[MAX_ACTIVE_POINT_LIGHTS];
+	SpotLight SpotLights[MAX_ACTIVE_SPOT_LIGHTS];
+	LocalIBL ReflectionProbes[MAX_ACTIVE_LOCAL_IBL];
+	GlobalIBL GlobalIBLData;
+	int ActiveDirLights;
+	int ActivePointLights;
+	int ActiveSpotLights;
+	int ActiveReflectionProbes;
+} u_SceneData;
+
+struct MaterialValues
+{
+	vec4 Albedo;
+
+	float Metalness;
+	float Roughness;
+	float AO;
+	float HeightScale;
+
+	vec3 EmissionColour;
+	float EmissionStrength;
+
+	vec2 TextureScale;
+	sampler2D AlbedoMap;
+
+	sampler2D MetallicMap;
+	sampler2D RoughnessMap;
+
+	sampler2D AOMap;
+	sampler2D EmissionMap;
+
+	sampler2D NormalMap;
+	sampler2D DisplacementMap;
+
+	int UseNormalMap;
+	int UseDisplacementMap;
+
+	int padding0;
+	int padding1;
+};
+layout(binding = 3, std430) readonly buffer IMat_MaterialSSBO
+{
+	MaterialValues[] MaterialBuffer;
+};
+
+layout(binding = 0) uniform sampler2DArray DirectionalLightShadowMapArray;
+layout(binding = 1) uniform sampler2DArray SpotLightShadowMapArray;
+layout(binding = 2) uniform samplerCubeArray PointLightShadowMapArray;
+
+vec2 ScaledTexCoords;
+vec3 ViewDir;
+
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+	);
+float GetShadowFactor(samplerCubeArray cubeShadowMapArray, int shadowMapLayer, vec3 lightPos, float minBias, float maxBias, vec3 Normal, float farPlane)
+{
+	vec3 fragToLight = v_VertexData.WorldFragPos - lightPos;
+	float currentDepth = length(fragToLight);
+
+	float shadow = 0.0;
+	float bias = max(maxBias * (1.0 - dot(Normal, fragToLight)), minBias);
+	int samples = 20;
+
+	float viewDistance = length(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
+	float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
+
+	for (int i = 0; i < samples; i++)
+	{
+		float closestDepth = texture(cubeShadowMapArray, vec4(fragToLight + gridSamplingDisk[i] * diskRadius, shadowMapLayer)).r;
+		closestDepth *= farPlane;
+
+		if (currentDepth - bias > closestDepth)
+		{
+			shadow += 1.0;
+		}
+	}
+
+	shadow /= float(samples);
+
+	return shadow;
+}
+
+float GetShadowFactor(sampler2DArray shadowMapArray, int shadowMapLayer, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
+{
+	// perspective divide
+	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
+
+	// transform to [0, 1]
+	projCoords.xyz = projCoords.xyz * 0.5 + 0.5;
+
+	if (projCoords.z > 1.0) { return 0.0; }
+
+	// closest depth value from lights perspective
+	float closestDepth = texture(shadowMapArray, vec3(projCoords.xy, shadowMapLayer)).r;
+
+	// get fragment depth
+	float currentDepth = projCoords.z;
+
+	// check against shadow map sample
+	vec3 lightDir = normalize(lightPos - v_VertexData.WorldFragPos);
+	float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
+
+	// pcf soft shadowing
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMapArray, 0).xy;
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			float pcfDepth = texture(shadowMapArray, vec3(projCoords.xy + vec2(x, y) * texelSize, shadowMapLayer)).r;
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+	shadow /= 9.0;
+	return shadow;
+}
+
+float GetShadowFactor(sampler2D shadowMap, vec4 LightSpaceFragPos, vec3 lightPos, float minBias, float maxBias, vec3 Normal)
+{
+	// perspective divide
+	vec3 projCoords = LightSpaceFragPos.xyz / LightSpaceFragPos.w;
+
+	// transform to [0, 1]
+	projCoords.xyz = projCoords.xyz * 0.5 + 0.5;
+
+	if (projCoords.z > 1.0) { return 0.0; }
+
+	// closest depth value from lights perspective
+	float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+	// get fragment depth
+	float currentDepth = projCoords.z;
+
+	// check against shadow map sample
+	vec3 lightDir = normalize(lightPos - v_VertexData.WorldFragPos);
+	float bias = max(maxBias * (1.0 - dot(Normal, lightDir)), minBias);
+
+	// pcf soft shadowing
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0).xy;
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+	shadow /= 9.0;
+	return shadow;
+}
+
+// PBR Utility Functions
+// ---------------------
+const float PI = 3.14159265359;
+float DistributionGGX(vec3 N, vec3 H, float Roughness)
+{
+	float a = Roughness * Roughness;
+	float a2 = a * a;
+	float NdotH = max(dot(N, H), 0.0);
+	float NdotH2 = NdotH * NdotH;
+
+	float num = a2;
+	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+	denom = PI * denom * denom;
+
+	return num / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float Roughness)
+{
+	float r = (Roughness + 1.0);
+	float k = (r * r) / 8.0;
+
+	float num = NdotV;
+	float denom = NdotV * (1.0 - k) + k;
+
+	return num / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
+{
+	float NdotV = max(dot(N, V), 0.0);
+	float NdotL = max(dot(N, L), 0.0);
+	float ggx2 = GeometrySchlickGGX(NdotV, Roughness);
+	float ggx1 = GeometrySchlickGGX(NdotL, Roughness);
+
+	return ggx1 * ggx2;
+}
+
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
+{
+	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 FresnelSchlick(float cosTheta, vec3 F0, float Roughness)
+{
+	return F0 + (max(vec3(1.0 - Roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+const float minLayers = 0.0;
+const float maxLayers = 32.0;
+vec2 ParallaxMapping(vec2 texCoords, vec3 tangentViewDir, float heightScale, sampler2D displacementMap)
+{
+	// calculate number of depth layers
+	float numLayers = mix(maxLayers, minLayers, dot(vec3(0.0, 0.0, 1.0), tangentViewDir));
+	float layerDepth = 1.0 / numLayers;
+
+	float currentLayerDepth = 0.0f;
+
+	// amount to shift the texture coordinates per layer
+	vec2 P = tangentViewDir.xy * heightScale;
+	vec2 deltaTexCoords = (P / numLayers);
+
+	// initial sample
+	vec2 currentTexCoords = texCoords;
+	float currentDepthMapValue = texture(displacementMap, currentTexCoords).r;
+
+	float i = 0.0;
+	while (currentLayerDepth < currentDepthMapValue && i < 32.0) {
+		// shift coords along direction of P
+		currentTexCoords -= deltaTexCoords;
+
+		currentDepthMapValue = texture(displacementMap, currentTexCoords).r;
+
+		currentLayerDepth += layerDepth;
+		i += 1.0;
+	}
+
+	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+	// get depth after and before collision for interpolation
+	float afterDepth = currentDepthMapValue - currentLayerDepth;
+	float beforeDepth = texture(displacementMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+	// interpolate
+	float weight = afterDepth / (afterDepth - beforeDepth);
+	vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+	return finalTexCoords;
+}
+
+// Reflectance Functions
+// ---------------------
+vec3 DirectionalLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
+{
+	// Radiance
+	vec3 L = normalize(-u_SceneData.DirLights[lightIndex].Direction.xyz);
+	vec3 H = normalize(V + L);
+
+	vec3 radiance = u_SceneData.DirLights[lightIndex].Diffuse.rgb;
+
+	// Cook-Torrance BRDF
+	float NDF = DistributionGGX(N, H, MaterialRoughness);
+	float G = GeometrySmith(N, V, L, MaterialRoughness);
+	vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0, MaterialRoughness);
+
+	vec3 numerator = NDF * G * F;
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // prevent divide by zero
+	vec3 specular = numerator / denominator;
+
+	vec3 kS = F;
+
+	// For energy conservation, the diffuse and specular light can't be above 1.0 (unless the surface emits light)
+	// To preserve this relationship the diffuse component (kD) should equal 1.0 - kS
+	vec3 kD = vec3(1.0) - kS;
+	kD *= 1.0 - MaterialMetallness;
+
+	float NdotL = max(dot(N, L), 0.0);
+
+	// shadow contribution
+	float shadowDistance = u_SceneData.DirLights[lightIndex].Ambient.w;
+	float minBias = u_SceneData.DirLights[lightIndex].Diffuse.w;
+	float maxBias = u_SceneData.DirLights[lightIndex].Specular.w;
+	float shadow = 0.0;
+	if (bool(u_SceneData.DirLights[lightIndex].Direction.w))
+	{
+		shadow = GetShadowFactor(DirectionalLightShadowMapArray, lightIndex, u_SceneData.DirLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), -u_SceneData.DirLights[lightIndex].Direction.xyz * shadowDistance, minBias, maxBias, N);
+	}
+
+	vec3 ambient = u_SceneData.DirLights[lightIndex].Ambient.rgb * MaterialAlbedo * MaterialAO;
+	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
+	return Lo + ambient;
+}
+
+vec3 PointLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
+{
+	vec4 lightPos = u_SceneData.PointLights[lightIndex].Position;
+
+	// Radiance
+	vec3 L = normalize(lightPos.xyz - v_VertexData.WorldFragPos);
+	vec3 H = normalize(V + L);
+
+	// attenuation
+	float range = lightPos.w;
+	float constant = 1.0;
+
+	// derive unfriendly linear and quadratic values from range value
+	float linear = 4.5 / range;
+	float quadratic = 75.0 / (range * range);
+
+	float dist = length(lightPos.xyz - v_VertexData.WorldFragPos);
+	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
+	//float attenuation = 1.0 / (dist * dist);
+
+	vec3 radiance = u_SceneData.PointLights[lightIndex].Diffuse.rgb * attenuation;
+
+	// Cook-Torrance BRDF
+	float NDF = DistributionGGX(N, H, MaterialRoughness);
+	float G = GeometrySmith(N, V, L, MaterialRoughness);
+	vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0, MaterialRoughness);
+
+	vec3 numerator = NDF * G * F;
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // prevent divide by zero
+	vec3 specular = numerator / denominator;
+
+	vec3 kS = F;
+
+	// For energy conservation, the diffuse and specular light can't be above 1.0 (unless the surface emits light)
+	// To preserve this relationship the diffuse component (kD) should equal 1.0 - kS
+	vec3 kD = vec3(1.0) - kS;
+	kD *= 1.0 - MaterialMetallness;
+
+	float NdotL = max(dot(N, L), 0.0);
+
+	// shadow contribution
+	float minBias = u_SceneData.PointLights[lightIndex].ShadowData.r;
+	float maxBias = u_SceneData.PointLights[lightIndex].ShadowData.g;
+	float farPlane = u_SceneData.PointLights[lightIndex].ShadowData.b;
+	float shadow = 0.0;
+	if (bool(u_SceneData.PointLights[lightIndex].ShadowData.w))
+	{
+		shadow = GetShadowFactor(PointLightShadowMapArray, lightIndex, lightPos.xyz, minBias, maxBias, N, farPlane);
+	}
+
+	vec3 ambient = u_SceneData.PointLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO;
+	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
+
+	return Lo + ambient;
+}
+
+vec3 SpotLightReflectance(int lightIndex, vec3 MaterialAlbedo, float MaterialMetallness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
+{
+	vec4 lightPos = u_SceneData.SpotLights[lightIndex].Position;
+
+	// Radiance
+	vec3 L = normalize(lightPos.xyz - v_VertexData.WorldFragPos);
+	vec3 H = normalize(V + L);
+
+	// attenuation
+	float range = lightPos.w;
+	float constant = 1.0;
+
+	// derive unfriendly linear and quadratic values from range value
+	float linear = 4.5 / range;
+	float quadratic = 75.0 / (range * range);
+
+	float dist = length(L);
+	float attenuation = 1.0 / (constant + linear * dist + quadratic * (dist * dist));
+
+	vec3 radiance = u_SceneData.SpotLights[lightIndex].Diffuse.rgb * attenuation;
+
+	// spot light
+	vec3 direction = u_SceneData.SpotLights[lightIndex].Direction.xyz;
+	float cutoff = u_SceneData.SpotLights[lightIndex].Direction.w;
+	float outerCutoff = u_SceneData.SpotLights[lightIndex].Ambient.w;
+
+	float theta = dot(L, normalize(-direction));
+	float epsilon = cutoff - outerCutoff;
+	float intensity = clamp((theta - outerCutoff) / epsilon, 0.0, 1.0);
+
+	// Cook-Torrance BRDF
+	float NDF = DistributionGGX(N, H, MaterialRoughness);
+	float G = GeometrySmith(N, V, L, MaterialRoughness);
+	vec3 F = FresnelSchlick(max(dot(H, V), 0.0), F0, MaterialRoughness);
+
+	vec3 numerator = NDF * G * F;
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // prevent divide by zero
+	vec3 specular = numerator / denominator;
+
+	vec3 kS = F;
+
+	// For energy conservation, the diffuse and specular light can't be above 1.0 (unless the surface emits light)
+	// To preserve this relationship the diffuse component (kD) should equal 1.0 - kS
+	vec3 kD = vec3(1.0) - kS;
+	kD *= 1.0 - MaterialMetallness;
+
+	float NdotL = max(dot(N, L), 0.0);
+
+	kD *= intensity;
+	specular *= intensity;
+	radiance *= intensity;
+
+	// shadow contribution
+	float minBias = u_SceneData.SpotLights[lightIndex].ShadowData.g;
+	float maxBias = u_SceneData.SpotLights[lightIndex].ShadowData.b;
+	float shadow = 0.0;
+	if (bool(u_SceneData.SpotLights[lightIndex].ShadowData.r))
+	{
+		shadow = GetShadowFactor(SpotLightShadowMapArray, lightIndex, u_SceneData.SpotLights[lightIndex].LightMatrix * vec4(v_VertexData.WorldFragPos, 1.0), lightPos.xyz, minBias, maxBias, N);
+	}
+
+	vec3 ambient = u_SceneData.SpotLights[lightIndex].Ambient.rgb * MaterialAlbedo * attenuation * MaterialAO;
+	vec3 Lo = (kD * MaterialAlbedo / PI + specular) * (radiance * (1.0 - shadow)) * NdotL;
+	return Lo + ambient;
+}
+
+// IBL Functions
+// -------------
+vec3 CalculateAmbienceFromIBL(samplerCube prefilterMap, samplerCube irradianceMap, vec3 MaterialAlbedo, float MaterialMetalness, float MaterialRoughness, float MaterialAO, vec3 N, vec3 V, vec3 R, vec3 F0)
+{
+	float NdotV = max(dot(N, V), 0.0);
+	vec3 F = FresnelSchlick(NdotV, F0, MaterialRoughness);
+
+	vec3 kS = F;
+	vec3 kD = 1.0 - kS;
+	kD *= 1.0 - MaterialMetalness;
+
+	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 diffuse = irradiance * MaterialAlbedo;
+
+	const float MAX_REFLECTION_LOD = 6.0; // maxMipLevels = 7 in EnvironmentMap::PrefilterEnvironmentMap();
+	vec3 prefilteredColour = textureLod(prefilterMap, R, MaterialRoughness * MAX_REFLECTION_LOD).rgb;
+	vec2 brdf = texture(u_SceneData.GlobalIBLData.BRDFLut, vec2(NdotV, MaterialRoughness)).rg;
+	vec3 specular = prefilteredColour * (F * brdf.x + brdf.y);
+
+	return (kD * diffuse + specular) * MaterialAO;
+}
+
+bool IntersectAABB(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax, out vec3 out_intersectPoint)
+{
+	vec3 invDir = 1.0 / rayDir;
+
+	vec3 t0 = (aabbMin - rayOrigin) * invDir;
+	vec3 t1 = (aabbMax - rayOrigin) * invDir;
+
+	vec3 tMin = min(t0, t1);
+	vec3 tMax = max(t0, t1);
+
+	float tNear = max(max(tMin.x, tMin.y), tMin.z);
+	float tFar = min(min(tMax.x, tMax.y), tMax.z);
+
+	if (tNear > tFar || tFar < 0.0)
+	{
+		out_intersectPoint = rayOrigin;
+		return false;
+	}
+
+	out_intersectPoint = rayOrigin + tFar * rayDir;
+	return true;
+}
+
+vec3 ParallaxCorrection(vec3 uncorrectedR, vec3 worldFragPos, vec3 probeWorldOrigin, vec3 geoApproximationWorldMin, vec3 geoApproximationWorldMax)
+{
+	vec3 rayOrigin = worldFragPos;
+	vec3 rayDir = normalize(uncorrectedR);
+
+	vec3 intersectPoint = vec3(0.0);
+	if (IntersectAABB(rayOrigin, rayDir, geoApproximationWorldMin, geoApproximationWorldMax, intersectPoint))
+	{
+		return normalize(intersectPoint - probeWorldOrigin);
+	}
+
+	return uncorrectedR;
+}
+
+void main()
+{
+	MaterialValues materialValues = MaterialBuffer[v_MaterialIndex];
+
+	ViewDir = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
+	vec3 TangentViewDir = transpose(v_VertexData.TBN) * ViewDir;
+
+	ScaledTexCoords = v_VertexData.TexCoords;
+	ScaledTexCoords *= materialValues.TextureScale;
+
+	// Apply parallax mapping to TexCoords
+	if (materialValues.UseDisplacementMap != 0)
+	{
+		ScaledTexCoords = ParallaxMapping(ScaledTexCoords, TangentViewDir, materialValues.HeightScale, materialValues.DisplacementMap);
+		//ScaledTexCoords = clamp(ScaledTexCoords, 0.0, 1.0);
+	}
+
+	// If no texture is provided, these samplers will sample a default 1x1 white texture.
+	// This results in no change to the underlying material value when they are multiplied
+	vec3 AlbedoSample = pow(texture(materialValues.AlbedoMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	vec3 EmissionSample = pow(texture(materialValues.EmissionMap, ScaledTexCoords).rgb, vec3(u_CameraBuffer.Gamma));
+	float MetallicSample = texture(materialValues.MetallicMap, ScaledTexCoords).r;
+	float RoughnessSample = texture(materialValues.RoughnessMap, ScaledTexCoords).r;
+	float AOSample = texture(materialValues.AOMap, ScaledTexCoords).r;
+
+	vec3 Normal = normalize(v_VertexData.Normal);
+	if (materialValues.UseNormalMap != 0)
+	{
+		Normal = texture(materialValues.NormalMap, ScaledTexCoords).rgb;
+		Normal = normalize(Normal * 2.0 - 1.0);
+		Normal = normalize(v_VertexData.TBN * Normal);
+	}
+
+	vec3 MaterialAlbedo = AlbedoSample * materialValues.Albedo.rgb;
+	vec3 MaterialEmission = EmissionSample * (materialValues.EmissionColour * materialValues.EmissionStrength);
+	float MaterialMetallic = MetallicSample * materialValues.Metalness;
+	float MaterialRoughness = RoughnessSample * materialValues.Roughness;
+	float MaterialAO = AOSample * materialValues.AO;
+
+	MaterialRoughness = clamp(MaterialRoughness, 0.0, 1.0);
+	MaterialMetallic = clamp(MaterialMetallic, 0.0, 1.0);
+
+	vec3 N = Normal;
+	vec3 V = normalize(u_CameraBuffer.ViewPos - v_VertexData.WorldFragPos);
+	vec3 R = reflect(-V, N);
+
+	// calculate reflectance at normal incidence
+	// if dialectric, use F0 of 0.04
+	// if metal, use albedo colour as F0
+	vec3 F0 = vec3(0.04);
+	F0 = mix(F0, MaterialAlbedo.rgb, MaterialMetallic);
+
+	// per-light reflectance
+	vec3 Lo = vec3(0.0);
+
+	// Directional lights
+	for (int i = 0; i < u_SceneData.ActiveDirLights && i < MAX_ACTIVE_DIR_LIGHTS; i++)
+	{
+		Lo += DirectionalLightReflectance(i, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+	}
+
+	// Point lights
+	for (int i = 0; i < u_SceneData.ActivePointLights && i < MAX_ACTIVE_POINT_LIGHTS; i++)
+	{
+		Lo += PointLightReflectance(i, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+	}
+
+	// Spot lights
+	for (int i = 0; i < u_SceneData.ActiveSpotLights && i < MAX_ACTIVE_SPOT_LIGHTS; i++)
+	{
+		Lo += SpotLightReflectance(i, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+	}
+
+	colour = vec4(Lo, materialValues.Albedo.a);
+
+	// Emission
+	colour.rgb += MaterialEmission;
+
+	// IBL
+	float localIBLTotalContribution = 0.0;
+	vec3 accumulatedAmbient = vec3(0.0);
+	for (int i = 0; i < u_SceneData.ActiveReflectionProbes && i < MAX_ACTIVE_LOCAL_IBL; i++)
+	{
+		vec3 probeOrigin = u_SceneData.ReflectionProbes[i].WorldOrigin.xyz;
+		float probeSOI = max(u_SceneData.ReflectionProbes[i].WorldMinBounds.w, 0.001);
+
+		vec3 fragToProbe = probeOrigin - v_VertexData.WorldFragPos;
+		float distanceToProbe = length(fragToProbe);
+
+		float contribution = 1.0 - (distanceToProbe / probeSOI);
+
+		if (contribution > 0.0)
+		{
+			vec3 R_Parallaxed = ParallaxCorrection(R, v_VertexData.WorldFragPos, probeOrigin, u_SceneData.ReflectionProbes[i].WorldMinBounds.xyz, u_SceneData.ReflectionProbes[i].WorldMaxBounds.xyz);
+			vec3 probeAmbient = CalculateAmbienceFromIBL(u_SceneData.ReflectionProbes[i].PrefilteredCubemap, u_SceneData.ReflectionProbes[i].IrradianceCubemap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R_Parallaxed, F0);
+			accumulatedAmbient += probeAmbient * contribution;
+			localIBLTotalContribution += contribution;
+		}
+	}
+	if (localIBLTotalContribution > 0.0)
+	{
+		colour.rgb += accumulatedAmbient;	
+	}
+	else if (u_SceneData.GlobalIBLData.IsActive > 0)
+	{
+		// Global IBL fallback
+		colour.rgb += CalculateAmbienceFromIBL(u_SceneData.GlobalIBLData.PrefilteredCubemap, u_SceneData.GlobalIBLData.IrradianceCubemap, MaterialAlbedo, MaterialMetallic, MaterialRoughness, MaterialAO, N, V, R, F0);
+	}
+
+	if (colour.a == 0.0) { discard; }
+	else { entityID = v_EntityID; }
+}

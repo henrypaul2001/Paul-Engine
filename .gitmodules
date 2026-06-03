@@ -1,0 +1,33 @@
+[submodule "PaulEngine/vendor/spdlog"]
+	path = PaulEngine/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "PaulEngine/vendor/GLFW/GLFW"]
+	path = PaulEngine/vendor/GLFW/GLFW
+	url = https://github.com/glfw/glfw
+[submodule "PaulEngine/vendor/imgui/imgui"]
+	path = PaulEngine/vendor/imgui/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "PaulEngine/vendor/glm"]
+	path = PaulEngine/vendor/glm
+	url = https://github.com/g-truc/glm
+[submodule "PaulEngine/vendor/imguizmo"]
+	path = PaulEngine/vendor/imguizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git
+[submodule "PaulEngine/vendor/yaml/yaml-cpp"]
+	path = PaulEngine/vendor/yaml/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "PaulEngine/vendor/box2d/box2d"]
+	path = PaulEngine/vendor/box2d/box2d
+	url = https://github.com/erincatto/box2d
+[submodule "PaulEngine/vendor/msdfgen"]
+	path = PaulEngine/vendor/msdfgen
+	url = https://github.com/TheCherno/msdf-atlas-gen
+[submodule "PaulEngine/vendor/assimp/assimp"]
+	path = PaulEngine/vendor/assimp/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "PaulEngine/vendor/implot"]
+	path = PaulEngine/vendor/implot
+	url = https://github.com/epezent/implot.git
+[submodule "PaulEngine/vendor/zlib/zlib"]
+	path = PaulEngine/vendor/zlib/zlib
+	url = https://github.com/madler/zlib.git

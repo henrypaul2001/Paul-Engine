@@ -1,0 +1,604 @@
+Scene: chess_set.obj
+Entities:
+  - Entity: 16820643196549261064
+    TagComponent:
+      Tag: piece_pawn_black_08_Cylinder.048
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 14617770522764927692
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13553179113573771606
+    TagComponent:
+      Tag: piece_pawn_black_07_Cylinder.047
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 10577164146726138045
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1225206757505688474
+    TagComponent:
+      Tag: piece_pawn_black_06_Cylinder.046
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 4061331568470995438
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 2252820858389172655
+    TagComponent:
+      Tag: piece_pawn_black_05_Cylinder.045
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 4204421036587418736
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16040258237308555203
+    TagComponent:
+      Tag: piece_pawn_black_04_Cylinder.044
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 2728071499149128373
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 7377559218027026042
+    TagComponent:
+      Tag: piece_pawn_black_03_Cylinder.043
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 8609302317338643297
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 12332559294866515772
+    TagComponent:
+      Tag: piece_pawn_black_02_Cylinder.042
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 12532111635443183658
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 11304394501113526552
+    TagComponent:
+      Tag: piece_bishop_black_02_Cylinder.041
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 16933529341407678321
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 11129060747802299768
+    TagComponent:
+      Tag: piece_rook_black_02_ChessRook.006
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 6047507855130760743
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5852286422809683697
+    TagComponent:
+      Tag: piece_knight_black_02_mesh.004
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 144358263704835551
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4501523114215723912
+    TagComponent:
+      Tag: piece_knight_black_01_mesh.003
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 6087138945354444244
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17850169943586430367
+    TagComponent:
+      Tag: piece_king_black_Cylinder.040
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 5760014997979297431
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4715497700028591219
+    TagComponent:
+      Tag: piece_queen_black_Cylinder.039
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 3021245495321537784
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 13133150204227606100
+    TagComponent:
+      Tag: piece_bishop_black_01_Cylinder.038
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 5828361114711636925
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10600888755203698073
+    TagComponent:
+      Tag: piece_pawn_black_01_Cylinder.037
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 9780560988864356549
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16910727220033925522
+    TagComponent:
+      Tag: piece_rook_black_01_ChessRook.005
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 16714024733286157673
+      MeshHandle: 10066563434839448128
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10828440988214248604
+    TagComponent:
+      Tag: piece_pawn_white_08_Cylinder.036
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 3505851729629241938
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17255133623869407997
+    TagComponent:
+      Tag: piece_pawn_white_07_Cylinder.035
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 9378180013050290237
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 3179498440324687212
+    TagComponent:
+      Tag: piece_pawn_white_06_Cylinder.034
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 4709093573837908608
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9799381945549893731
+    TagComponent:
+      Tag: piece_pawn_white_05_Cylinder.033
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 5962031261469703283
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1464706730501970888
+    TagComponent:
+      Tag: piece_pawn_white_04_Cylinder.013
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 13253053356187694718
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9922337600049031209
+    TagComponent:
+      Tag: piece_pawn_white_03_Cylinder.012
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 4117693544573520436
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9695846135483420328
+    TagComponent:
+      Tag: piece_pawn_white_02_Cylinder.011
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 5858466637832908624
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17912500485421213309
+    TagComponent:
+      Tag: piece_bishop_white_02_Cylinder.010
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 18070525760824714408
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16293278906063502375
+    TagComponent:
+      Tag: piece_rook_white_02_ChessRook.004
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 12652089489121773059
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5460415835312005466
+    TagComponent:
+      Tag: piece_knight_white_02_mesh.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 17646689242547785811
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 14435299496967230746
+    TagComponent:
+      Tag: board_Cube.001
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 1263943826319595974
+      MeshHandle: 856607539180794933
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 18155903980085103368
+    TagComponent:
+      Tag: piece_knight_white_01_mesh.001
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 3564900752069309706
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 12287798774786743491
+    TagComponent:
+      Tag: piece_king_white_Cylinder.009
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 11858364923124140839
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17938675401691176499
+    TagComponent:
+      Tag: piece_queen_white_Cylinder.008
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 15085248636144454400
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9944180714671408339
+    TagComponent:
+      Tag: piece_bishop_white_01_Cylinder.007
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 17212045457893958598
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17669038262168595569
+    TagComponent:
+      Tag: piece_pawn_white_01_Cylinder.004
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 3069334512037784530
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 11003793961658111522
+    TagComponent:
+      Tag: piece_rook_white_01_ChessRook.001
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 9071653487475253926
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 17261833888599282541
+      MeshHandle: 11647509146591873135
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9071653487475253926
+    TagComponent:
+      Tag: chess_set.obj
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 11003793961658111522
+        - 17669038262168595569
+        - 9944180714671408339
+        - 17938675401691176499
+        - 12287798774786743491
+        - 18155903980085103368
+        - 14435299496967230746
+        - 5460415835312005466
+        - 16293278906063502375
+        - 17912500485421213309
+        - 9695846135483420328
+        - 9922337600049031209
+        - 1464706730501970888
+        - 9799381945549893731
+        - 3179498440324687212
+        - 17255133623869407997
+        - 10828440988214248604
+        - 16910727220033925522
+        - 10600888755203698073
+        - 13133150204227606100
+        - 4715497700028591219
+        - 17850169943586430367
+        - 4501523114215723912
+        - 5852286422809683697
+        - 11129060747802299768
+        - 11304394501113526552
+        - 12332559294866515772
+        - 7377559218027026042
+        - 16040258237308555203
+        - 2252820858389172655
+        - 1225206757505688474
+        - 13553179113573771606
+        - 16820643196549261064

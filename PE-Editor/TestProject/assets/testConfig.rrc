@@ -1,0 +1,38 @@
+FrameRendererConfig: true
+SerializedResources:
+  - Name: ShowColliders
+    Type: PrimitiveType
+    Data: true
+  - Name: OutlineThickness
+    Type: PrimitiveType
+    Data: 5
+  - Name: OutlineColour
+    Type: PrimitiveType
+    Data: [1, 0.5, 0.8, 1]
+  - Name: BloomThreshold
+    Type: PrimitiveType
+    Data: 1
+  - Name: BloomSoftThreshold
+    Type: PrimitiveType
+    Data: 0.5
+  - Name: BloomFilterRadius
+    Type: PrimitiveType
+    Data: 0.005
+  - Name: BloomStrength
+    Type: PrimitiveType
+    Data: 0.04
+  - Name: BloomDirtMaskStrength
+    Type: PrimitiveType
+    Data: 0.5
+  - Name: UseDirtMask
+    Type: PrimitiveType
+    Data: true
+  - Name: EnvironmentMap
+    Type: EnvironmentMap
+    EnvMapAssetHandle: 872453493425289202
+  - Name: DirtMaskTexture
+    Type: Texture
+    TextureAssetHandle: 1575296387178993679
+  - Name: SkyboxTexture
+    Type: Texture
+    TextureAssetHandle: 10029005586606027829

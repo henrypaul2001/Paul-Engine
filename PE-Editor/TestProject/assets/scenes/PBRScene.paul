@@ -1,0 +1,511 @@
+Scene: Untitled
+Entities:
+  - Entity: 2667024170169442487
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 10, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-56.5, -13.6, -25.8]
+      GeometryBoundsMaxExtent: [24.3, 10.9, 24.4]
+      SOIRadius: 28
+      BakeIterations: 1
+      EnvironmentMapHandle: 6745024451471262044
+  - Entity: 8347897144039709158
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 0, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-23.7, -4, -24.7]
+      GeometryBoundsMaxExtent: [64.4, 21.7, 25.4]
+      SOIRadius: 24
+      BakeIterations: 1
+      EnvironmentMapHandle: 17948214213643752989
+  - Entity: 15865806163336471416
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 0, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-22, -4, -22.3]
+      GeometryBoundsMaxExtent: [26.9, 30.1, 21]
+      SOIRadius: 18
+      BakeIterations: 1
+      EnvironmentMapHandle: 14828980108310254924
+  - Entity: 5474143896841346242
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 0, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-39.9, -4, -22.2]
+      GeometryBoundsMaxExtent: [22.6, 22.9, 15.1]
+      SOIRadius: 11
+      BakeIterations: 1
+      EnvironmentMapHandle: 3058549776774378802
+  - Entity: 4024505113901018203
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 10, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-7.1, -14, -22.7]
+      GeometryBoundsMaxExtent: [22, 12.2, 61.7]
+      SOIRadius: 11
+      BakeIterations: 1
+      EnvironmentMapHandle: 9118106477705312841
+  - Entity: 15473095217072289690
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 10, -20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-23.3, -13.4, -21.2]
+      GeometryBoundsMaxExtent: [20.8, 10.5, 20.7]
+      SOIRadius: 3
+      BakeIterations: 1
+      EnvironmentMapHandle: 13339556716015345627
+  - Entity: 7981834387562441801
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [-20, 10, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-17.4, -13.9, -23.6]
+      GeometryBoundsMaxExtent: [63.4, 15.7, 23]
+      SOIRadius: 25
+      BakeIterations: 1
+      EnvironmentMapHandle: 6528301549694833071
+  - Entity: 10202265984702790958
+    TagComponent:
+      Tag: Reflection Probes
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 2667024170169442487
+        - 4821169483295719679
+        - 7981834387562441801
+        - 15473095217072289690
+        - 4024505113901018203
+        - 5474143896841346242
+        - 15865806163336471416
+        - 8347897144039709158
+  - Entity: 4821169483295719679
+    TagComponent:
+      Tag: ReflectionProbe
+    TransformComponent:
+      Position: [20, 0, 20]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 10202265984702790958
+      Children:
+        []
+    ReflectionProbeComponent:
+      GeometryBoundsMinExtent: [-28.5, -4, -23.9]
+      GeometryBoundsMaxExtent: [25, 21.2, 26.5]
+      SOIRadius: 23
+      BakeIterations: 1
+      EnvironmentMapHandle: 17798105823382816681
+  - Entity: 16880314327514422701
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [14.211657, 0.48033905, -3.4100754]
+      Rotation: [0, 1.0717251, 0]
+      Scale: [1, 1, 1]
+      Children:
+        []
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 90
+        NearClip: 0.01
+        FarClip: 1000
+        OrthoSize: 10
+        AspectRatio: 2.017485
+        Gamma: 2.2
+        Exposure: 1
+      FixedAspect: false
+    RenderVolumeComponent:
+      Type: 2
+      SkyboxHandle: 0
+      EnvironmentMapHandle: 8010315835890785092
+  - Entity: 7944305724354701841
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [-17.479, -5.1465087, 10.863156]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [17.49994, 5, 19.999933]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 7840106116855404345
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4133841982073187721
+    TagComponent:
+      Tag: brass_goblets.obj_Root
+    PrefabComponent:
+      Handle: 16419161166796920133
+    TransformComponent:
+      Position: [0.8033669, 7.344432, -7.1477265]
+      Rotation: [0, 0, 0]
+      Scale: [7.5, 7.5, 7.5]
+      Children:
+        []
+  - Entity: 7933029862440823284
+    TagComponent:
+      Tag: Spot Light
+    TransformComponent:
+      Position: [3.5322747, 6.2397785, 8.968737]
+      Rotation: [-0.41976404, 0.041773286, -0.018635118]
+      Scale: [0.099999964, 0.10000011, 0.10000006]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    SpotLightComponent:
+      Range: 20
+      InnerCutoff: 20
+      OuterCutoff: 30
+      Diffuse: [10, 10, 10]
+      Specular: [0, 0, 0]
+      Ambient: [0, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0
+      ShadowMaxBias: 0.01
+      ShadowMapNearClip: 1.31
+      ShadowMapFarClip: 100
+  - Entity: 16418724243234588683
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [0, 18, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 400681757883519208
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 10151514116921693919
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [12, 12, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 6052652825163143337
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5014205110432584159
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [6, 12, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 11641754153238842936
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4535116726294513953
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [1.1219538, 12, -3.7077818]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 7039009388700113622
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 15262750839685224752
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [1.0665138, 4.8794107, -6.502037]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 14953401462234966565
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 7482342534408833690
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [6, 5.611332, -6.910954]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 18267150240899827061
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17552751927625924552
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [12, 6, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5404285593151240272
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16745027769740536287
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [10.454046, 2.4843485, -11.064474]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 9321072322867044035
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 9900183390934137563
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [6, 2.3364864e-06, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 7840106116855404345
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 17017844451477025967
+    TagComponent:
+      Tag: Point Light
+    TransformComponent:
+      Position: [15.22577, 0.0020428544, 12.248129]
+      Rotation: [0, 0, 0]
+      Scale: [0.1, 0.1, 0.1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 62
+      Diffuse: [5, 0, 0]
+      Specular: [5, 0, 0]
+      Ambient: [1, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0.01
+      ShadowMaxBias: 0.453
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 50
+  - Entity: 16727737244032373714
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [12, 18, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 5317045289054481295
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 4174337342493513591
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [6, 18, -6.986519]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 10327331717423470595
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 7997869277597060505
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Position: [0, -3.940456, 0]
+      Rotation: [0, 0, 0]
+      Scale: [50, 0.25, 50]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 14213523979022365877
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 16817889263131600831
+    TagComponent:
+      Tag: Point Light
+    TransformComponent:
+      Position: [0.827664, 0.119325034, -3.5037913]
+      Rotation: [0, 0, 0]
+      Scale: [0.1, 0.1, 0.1]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 1897318988700985028
+      MeshHandle: 0
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+    PointLightComponent:
+      Radius: 62
+      Diffuse: [5, 0, 0]
+      Specular: [5, 0, 0]
+      Ambient: [0, 0, 0]
+      CastShadows: true
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 50
+  - Entity: 6024276429591692513
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [2.2947966e-06, 3.7978952, 3.3484585]
+      Rotation: [-2.3857338, 2.2789507e-07, 3.1415923]
+      Scale: [0.5000021, 0.49999994, 1.0000002]
+      Children:
+        []
+    SpriteComponent:
+      Colour: [1, 1, 1, 1]
+      TextureHandle: 0
+      TextureScale: [1, 1]
+      AtlasHandle: 0
+      SelectedSubTextureName: ""
+    DirectionalLightComponent:
+      Diffuse: [1, 1, 1]
+      Specular: [1, 1, 1]
+      Ambient: [0.14047442, 0.16725981, 0.16697384]
+      CastShadows: true
+      ShadowMinBias: 0.005
+      ShadowMaxBias: 0.05
+      ShadowMapCameraDistance: 50
+      ShadowMapProjectionSize: 50
+      ShadowMapNearClip: 0.01
+      ShadowMapFarClip: 150
+  - Entity: 7150846805327674574
+    TagComponent:
+      Tag: PBR Cube
+    TransformComponent:
+      Position: [1.0110323, -2.8340315e-07, -11.470879]
+      Rotation: [-3.1415925, 0, -3.1415923]
+      Scale: [4.9999833, 5, 4.9999833]
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 12856186902108215016
+      MeshHandle: 5829777204823558219
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2

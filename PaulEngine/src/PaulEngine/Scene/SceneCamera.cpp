@@ -1,0 +1,66 @@
+#include "pepch.h"
+#include "PaulEngine/Scene/SceneCamera.h"
+
+namespace PaulEngine
+{
+	SceneCamera::SceneCamera(SceneCameraType type) : m_OrthographicSize(10.0f), m_NearClip(0.01f), m_FarClip(1000.0f), m_PerspectiveVFOV(90.0f), m_AspectRatio(1.777f), m_Type(type)
+	{
+		SetViewportSize(16, 9);
+	}
+
+	SceneCamera::~SceneCamera()
+	{
+
+	}
+
+	void SceneCamera::SetPerspective(const float vfov, const float aspect, const float nearClip, const float farClip)
+	{
+		PE_PROFILE_FUNCTION();
+		m_Type = SCENE_CAMERA_PERSPECTIVE;
+		m_NearClip = nearClip;
+		m_FarClip = farClip;
+		m_AspectRatio = aspect;
+		m_PerspectiveVFOV = vfov;
+		m_Projection = glm::perspective(glm::radians(m_PerspectiveVFOV), m_AspectRatio, m_NearClip, m_FarClip);
+	}
+
+	void SceneCamera::SetOrthographic(float size, float aspect, float nearClip, float farClip)
+	{
+		PE_PROFILE_FUNCTION();
+		m_Type = SCENE_CAMERA_ORTHOGRAPHIC;
+		m_NearClip = nearClip;
+		m_FarClip = farClip;
+		m_OrthographicSize = size;
+		m_AspectRatio = aspect;
+
+		float orthoLeft = -m_OrthographicSize * m_AspectRatio * 0.5f;
+		float orthoRight = m_OrthographicSize * m_AspectRatio * 0.5f;
+		float orthoBottom = -m_OrthographicSize * 0.5f;
+		float orthoTop = m_OrthographicSize * 0.5f;
+
+		m_Projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, nearClip, farClip);
+	}
+
+	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
+	{
+		m_AspectRatio = (float)width / (float)height;
+
+		if (IsPerspective()) { SetPerspective(m_PerspectiveVFOV, m_AspectRatio, m_NearClip, m_FarClip); }
+		else { SetOrthographic(m_OrthographicSize, m_AspectRatio, m_NearClip, m_FarClip); }
+	}
+
+	void SceneCamera::SwitchProjectionType(SceneCameraType projectionType)
+	{
+		PE_PROFILE_FUNCTION();
+		if (projectionType != m_Type) {
+			switch (projectionType) {
+			case SCENE_CAMERA_ORTHOGRAPHIC:
+				SetOrthographic(m_OrthographicSize, m_AspectRatio, m_NearClip, m_FarClip);
+				break;
+			case SCENE_CAMERA_PERSPECTIVE:
+				SetPerspective(m_PerspectiveVFOV, m_AspectRatio, m_NearClip, m_FarClip);
+				break;
+			}
+		}
+	}
+}

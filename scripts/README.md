@@ -1,0 +1,1 @@
+Scripts apapted from https://github.com/TheCherno/Hazel

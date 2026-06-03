@@ -1,0 +1,8 @@
+
+---------------------------------------------------
+Paul Engine Asset File (.PAsset) Format Description
+---------------------------------------------------
+
+- 8 bytes: data size in bytes
+- 2 bytes: AssetType enum
+- (data size in bytes): asset data

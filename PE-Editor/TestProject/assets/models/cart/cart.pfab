@@ -1,0 +1,97 @@
+Scene: cart.obj
+Entities:
+  - Entity: 11135374418537061227
+    TagComponent:
+      Tag: CoffeeCart_01_mugs_Mugs.002_CoffeeCart_01_mugs.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 16728135290479532402
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 7314825921140163179
+      MeshHandle: 6024923378351121850
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 1048814727438651515
+    TagComponent:
+      Tag: CoffeeCart_01_mugs_Mugs.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 16728135290479532402
+      Children:
+        []
+  - Entity: 9089997284276017733
+    TagComponent:
+      Tag: CoffeeCart_01_props_Top_Cart.002_CoffeeCart_01_props.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 16728135290479532402
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 12364511148346535644
+      MeshHandle: 2714698616034052558
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 11762081194110912388
+    TagComponent:
+      Tag: CoffeeCart_01_props_Top_Cart.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 16728135290479532402
+      Children:
+        []
+  - Entity: 10146613646324307346
+    TagComponent:
+      Tag: CoffeeCart_01_cart_Bottom_Cart.002_CoffeeCart_01_cart.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 16728135290479532402
+      Children:
+        []
+    MeshRendererComponent:
+      MaterialHandle: 6131799447228377702
+      MeshHandle: 8462271785429353995
+      DepthFunc: 1
+      DepthTest: true
+      DepthWrite: true
+      FaceCulling: 2
+  - Entity: 5065355408842267728
+    TagComponent:
+      Tag: CoffeeCart_01_cart_Bottom_Cart.002
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Parent: 16728135290479532402
+      Children:
+        []
+  - Entity: 16728135290479532402
+    TagComponent:
+      Tag: cart.obj
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+      Children:
+        - 5065355408842267728
+        - 10146613646324307346
+        - 11762081194110912388
+        - 9089997284276017733
+        - 1048814727438651515
+        - 11135374418537061227

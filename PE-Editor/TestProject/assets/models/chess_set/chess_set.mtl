@@ -1,0 +1,50 @@
+# Blender MTL File: 'None'
+# Material Count: 3
+
+newmtl chess_set_board
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+Pr 1.0
+Pm 0.0
+illum 1
+map_Kd chess_set_board_diff_4k.png
+map_Kn chess_set_board_nor_gl_4k.png
+map_Pr chess_set_board_rough_4k.png
+map_Ka chess_set_board_ao_4k.png
+
+newmtl chess_set_pieces_black
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+Pr 1.0
+Pm 0.0
+illum 1
+map_Kd chess_set_pieces_black_diff_4k.png
+map_Kn chess_set_pieces_black_nor_gl_4k.png
+map_Pr chess_set_pieces_black_rough_4k.png
+map_Ka chess_set_pieces_black_ao_4k.png
+
+newmtl chess_set_pieces_white
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+Pr 1.0
+Pm 0.0
+illum 1
+map_Kd chess_set_pieces_white_diff_4k.png
+map_Kn chess_set_pieces_white_nor_gl_4k.png
+map_Pr chess_set_pieces_white_rough_4k.png
+map_Ka chess_set_pieces_white_ao_4k.png

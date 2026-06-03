@@ -17,7 +17,6 @@
 mono_crash.*
 
 # Build results
-[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -28,10 +27,20 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+[Bb]in-int/
 [Oo]bj/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+
+# Directories
+/vendor/binaries/premake
+/scripts/__pycache__
+/PE-Editor/assets/cache
+
+PaulEngineProfile-Runtime.json
+PaulEngineProfile-Shutdown.json
+PaulEngineProfile-Startup.json
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -362,3 +371,9 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /CustomGameEngine/Models/PBR/newSponza
+/PE-Editor/PaulEngineProfile-Runtime.json
+/PE-Editor/PaulEngineProfile-Startup.json
+/PE-Editor/PaulEngineProfile-Shutdown.json
+/PE-Editor/Intel® VTune™ Profiler Results
+/PE-Editor/RenderDocSettings.cap
+/Sandbox/RenderDocSettings.cap
